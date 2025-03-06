@@ -1,1 +1,7 @@
-# wasm optimizer designed for warp
+# WARPO
+
+wasm optimizer designed for warp
+
+## dependencies
+
+- [binaryen](https://github.com/WebAssembly/binaryen)
