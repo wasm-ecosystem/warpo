@@ -1,2 +1,6 @@
 Binaryen
+ccache
+emcmake
+emscripten
+emsdk
 warpo

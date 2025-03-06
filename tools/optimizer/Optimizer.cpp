@@ -1,6 +1,8 @@
 #include <cstddef>
+#include <format>
 #include <fstream>
 #include <ios>
+#include <iostream>
 #include <span>
 
 #include "passes/Runner.hpp"
@@ -16,11 +18,19 @@ int main(int argc, char const *argv[]) {
 
   passes::init();
 
-  std::ifstream f{inputPath, std::ios::binary | std::ios::in};
-  std::vector<char> input{std::istreambuf_iterator<char>{f}, {}};
+  std::ifstream ifstream{inputPath, std::ios::binary | std::ios::in};
+  if (!ifstream.good()) {
+    std::cerr << std::format("ERROR: failed to open file: {}\n", static_cast<const char *>(inputPath));
+    return 1;
+  }
+  std::vector<char> input{std::istreambuf_iterator<char>{ifstream}, {}};
 
   std::vector<uint8_t> output = passes::run(input, {"extract-most-frequently-used-global"});
 
-  std::ofstream of{outputPath, std::ios::binary | std::ios::out};
-  of.write(reinterpret_cast<char const *>(output.data()), output.size());
+  std::ofstream ofstream{outputPath, std::ios::binary | std::ios::out};
+  if (!ofstream.good()) {
+    std::cerr << std::format("ERROR: failed to open file: {}\n", static_cast<const char *>(outputPath));
+    return 1;
+  }
+  ofstream.write(reinterpret_cast<char const *>(output.data()), output.size());
 }

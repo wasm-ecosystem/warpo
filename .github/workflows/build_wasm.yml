@@ -1,0 +1,17 @@
+name: build wasm version
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: atc-ubuntu-latest-xlarge
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/action/build_wasm

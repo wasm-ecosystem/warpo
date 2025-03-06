@@ -1,0 +1,18 @@
+{
+  "name": "@cdc/warpo",
+  "version": "0.0.0",
+  "description": "wasm optimizer designed for warp",
+  "bin": {
+    "warpo": "build_wasm/tools/optimizer/warpo.js"
+  },
+  "scripts": {},
+  "publishConfig": {
+    "registry": "https://packages.orbit.bmwgroup.net/artifactory/api/npm/cdc-npm-local/"
+  },
+  "license": "MIT",
+  "keywords": [],
+  "author": "congcong.cai@bmw.com",
+  "files": [
+    "build_wasm/tools/optimizer/warpo.js"
+  ]
+}

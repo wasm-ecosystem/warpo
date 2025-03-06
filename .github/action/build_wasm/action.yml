@@ -1,0 +1,50 @@
+name: "build wasm version"
+description: "use emscripten to build wasm version of WARPO"
+
+runs:
+  using: "composite"
+  steps:
+    - name: install dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ccache cmake
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+        cache: "npm"
+
+    - uses: actions/cache@v3
+      with:
+        path: |
+          ~/.ccache
+        key: ${{ runner.os }}-ccache-wasm-build-${{ hashFiles('**/CMakeLists.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-ccache-wasm-build-
+
+    - uses: actions/cache@v3
+      with:
+        path: |
+          third_party/emsdk/upstream
+          third_party/emsdk/node
+          third_party/emsdk/upstream
+          third_party/emsdk/.emscripten
+        key: ${{ runner.os }}-emsdk-${{ hashFiles('scripts/build_wasm.mjs') }}
+        restore-keys: |
+          ${{ runner.os }}-emsdk-
+
+    - shell: bash
+      run: |
+        echo "CMAKE_C_COMPILER_LAUNCHER=$(which ccache)" >> $GITHUB_ENV
+        echo "CMAKE_CXX_COMPILER_LAUNCHER=$(which ccache)" >> $GITHUB_ENV
+    - shell: bash
+      run: |
+        ccache --max-size=512M
+        ccache --show-stats
+
+    - run: node scripts/build_wasm.mjs
+      shell: bash
+
+    - name: show ccache stats
+      shell: bash
+      run: ccache --show-stats

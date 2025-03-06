@@ -13,6 +13,13 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-warning-option")
 
 add_subdirectory(third_party EXCLUDE_FROM_ALL)
 
+if(EMSCRIPTEN)
+  add_link_options("-sENVIRONMENT=node" "-sEXPORT_ES6=0") # runtime
+  add_link_options("-sNODERAWFS=1") # file system
+  add_link_options("-sALLOW_MEMORY_GROWTH" "-sSTACK_SIZE=4mb") # memory
+  add_link_options("--post-js=${PROJECT_SOURCE_DIR}/tools/optimizer/EnvironmentLoader.js")
+endif()
+
 add_subdirectory(passes)
 add_subdirectory(support)
 add_subdirectory(tools)
