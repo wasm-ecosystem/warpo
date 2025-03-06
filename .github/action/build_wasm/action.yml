@@ -8,16 +8,23 @@ runs:
       shell: bash
       run: |
         sudo apt-get update
-        sudo apt-get install -y ccache cmake
+        sudo apt-get install -y ccache cmake ninja-build
     - uses: actions/setup-node@v3
       with:
         node-version: 18.x
         cache: "npm"
 
+    - shell: bash
+      run: |
+        set -ex
+        echo "CCACHE_DIR=$(pwd)/build_wasm_cache" >> $GITHUB_ENV
+        mkdir -p build_wasm_cache
+    - shell: bash
+      run: |
+        ccache --max-size=512M
     - uses: actions/cache@v3
       with:
-        path: |
-          ~/.ccache
+        path: build_wasm_cache
         key: ${{ runner.os }}-ccache-wasm-build-${{ hashFiles('**/CMakeLists.txt') }}
         restore-keys: |
           ${{ runner.os }}-ccache-wasm-build-
@@ -25,26 +32,17 @@ runs:
     - uses: actions/cache@v3
       with:
         path: |
-          third_party/emsdk/upstream
           third_party/emsdk/node
+          third_party/emsdk/python
           third_party/emsdk/upstream
           third_party/emsdk/.emscripten
         key: ${{ runner.os }}-emsdk-${{ hashFiles('scripts/build_wasm.mjs') }}
         restore-keys: |
           ${{ runner.os }}-emsdk-
 
-    - shell: bash
-      run: |
-        echo "CMAKE_C_COMPILER_LAUNCHER=$(which ccache)" >> $GITHUB_ENV
-        echo "CMAKE_CXX_COMPILER_LAUNCHER=$(which ccache)" >> $GITHUB_ENV
-    - shell: bash
-      run: |
-        ccache --max-size=512M
-        ccache --show-stats
-
     - run: node scripts/build_wasm.mjs
       shell: bash
-
-    - name: show ccache stats
-      shell: bash
-      run: ccache --show-stats
+      env:
+        CMAKE_GENERATOR: Ninja
+        CMAKE_C_COMPILER_LAUNCHER: ccache
+        CMAKE_CXX_COMPILER_LAUNCHER: ccache

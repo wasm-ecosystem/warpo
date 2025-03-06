@@ -19,9 +19,6 @@ function initEmscripten() {
 
 initEmscripten();
 
-const args = [
-  env["CMAKE_C_COMPILER_LAUNCHER"] ? `-DCMAKE_C_COMPILER_LAUNCHER=${env["CMAKE_C_COMPILER_LAUNCHER"]}` : "",
-  env["CMAKE_CXX_COMPILER_LAUNCHER"] ? `-DCMAKE_CXX_COMPILER_LAUNCHER=${env["CMAKE_CXX_COMPILER_LAUNCHER"]}` : "",
-].join(" ");
+const args = [].join(" ");
 execSync(`emcmake cmake -B build_wasm -S . ${args}`, execConfig);
 execSync("cmake --build build_wasm --parallel", execConfig);
