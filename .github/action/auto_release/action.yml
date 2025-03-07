@@ -58,6 +58,8 @@ runs:
             });
           }
           core.setOutput('nextVersion', nextVersion);
+    - uses: ./.github/action/build_wasm
+      if: steps.check-version.outputs.nextVersion != null
     - shell: bash
       if: steps.check-version.outputs.nextVersion != null
       run: |
