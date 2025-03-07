@@ -13,6 +13,7 @@
   "keywords": [],
   "author": "congcong.cai@bmw.com",
   "files": [
-    "build_wasm/tools/optimizer/warpo.js"
+    "build_wasm/tools/optimizer/warpo.js",
+    "build_wasm/tools/optimizer/warpo.wasm"
   ]
 }
