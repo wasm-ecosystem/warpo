@@ -1,3 +1,9 @@
+/// @brief pass to extract the most frequently used global variable as the first global
+///
+/// @details
+/// WARP has inner optimization to put the first i32 mutable global in register
+/// It can reduce the jit code size
+
 #include <algorithm>
 #include <atomic>
 #include <cassert>
@@ -61,14 +67,14 @@ struct ExtractMostFrequentlyUsedGlobalsAnalyzer : public wasm::Pass {
   void run(wasm::Module *m) override {
     std::map<wasm::Name, std::atomic<wasm::Index>> counter{};
     for (std::unique_ptr<wasm::Global> const &global : m->globals) {
-      // if (global->type != wasm::Type::i32)
-      //   continue;
-      // if (!global->mutable_)
-      //   continue;
-      // if (global->imported())
-      //   continue;
-      // if (!global->init->is<wasm::Const>())
-      //   continue;
+      if (global->type != wasm::Type::i32)
+        continue;
+      if (!global->mutable_)
+        continue;
+      if (global->imported())
+        continue;
+      if (!global->init->is<wasm::Const>())
+        continue;
       bool const success = counter.insert_or_assign(global->name, 0U).second;
       assert(success);
     }
@@ -91,6 +97,12 @@ struct ExtractMostFrequentlyUsedGlobalsAnalyzer : public wasm::Pass {
   }
 };
 
-wasm::Pass *createExtractMostFrequentlyUsedGlobalsPass() { return new ExtractMostFrequentlyUsedGlobalsAnalyzer(); }
-
 } // namespace warpo::passes
+
+namespace warpo {
+
+wasm::Pass *passes::createExtractMostFrequentlyUsedGlobalsPass() {
+  return new ExtractMostFrequentlyUsedGlobalsAnalyzer();
+}
+
+} // namespace warpo
