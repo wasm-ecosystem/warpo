@@ -1,9 +1,8 @@
 name: publish
 
 on:
-  push:
-    tags:
-      - "*"
+  release:
+    types: [published]
 
 jobs:
   publish:
@@ -11,8 +10,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/action/build_wasm
-      - run: npm version $(echo "${GITHUB_REF}" | sed 's/refs\/tags\///') --git-tag-version false
-      - run: echo "//packages.orbit.bmwgroup.net/artifactory/api/npm/:_authToken=${NPM_PUBLISH_TOKEN}" >> .npmrc
+      - id: get_tag
+        run: |
+          echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+      - run: |
+          set -ex
+          npm version ${{ steps.get_tag.outputs.TAG_NAME }} --git-tag-version false
+          echo "//packages.orbit.bmwgroup.net/artifactory/api/npm/:_authToken=${NPM_PUBLISH_TOKEN}" >> .npmrc
+          npm publish
         env:
           NPM_PUBLISH_TOKEN: ${{ secrets.NPM_PUBLISH_TOKEN }}
-      - run: npm publish

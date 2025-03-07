@@ -1,0 +1,67 @@
+name: auto-release
+description: automatically bump version and release
+
+inputs:
+  npm-token:
+    description: "npm publish token"
+    required: true
+  github-token:
+    description: "github token"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      id: get_release
+      run: |
+        lastVersion=$(gh api -X GET /repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/releases/latest --jq '.tag_name')
+        echo "last version: $lastVersion"
+        echo "tag_name=$lastVersion" >> $GITHUB_OUTPUT
+      env:
+        GH_HOST: atc-github.azure.cloud.bmw
+        GH_ENTERPRISE_TOKEN: ${{ inputs.github-token }}
+    - uses: actions/github-script@v7
+      id: check-version
+      with:
+        script: |
+          const lastVersion = "${{ steps.get_release.outputs.tag_name }}";
+          console.log(`last version: ${lastVersion}`);
+
+          const lastVersionParts = lastVersion.split(".");
+          const lastVersionMajor = parseInt(lastVersionParts[0]);
+          const lastVersionMinor = parseInt(lastVersionParts[1]);
+          const lastVersionPatch = parseInt(lastVersionParts[2]);
+
+          const { data: { commit } } = await github.rest.repos.getCommit({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: context.sha
+          })
+          console.log(`commit message: ${commit.message}`);
+          let nextVersion = null;
+          if (commit.message.startsWith("break:")) {
+            nextVersion = `${lastVersionMajor + 1}.0.0`;
+          }
+          if (commit.message.startsWith("feat:")) {
+            nextVersion = `${lastVersionMajor}.${lastVersionMinor + 1}.0`;
+          }
+          if (commit.message.startsWith("fix:")) {
+            nextVersion = `${lastVersionMajor}.${lastVersionMinor}.${lastVersionPatch + 1}`;
+          }
+          if (nextVersion != null) {
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: nextVersion,
+              generate_release_notes: true
+            });
+          }
+          core.setOutput('nextVersion', nextVersion);
+    - shell: bash
+      if: steps.check-version.outputs.nextVersion != null
+      run: |
+        set -ex
+        npm version ${{ steps.check-version.outputs.nextVersion }} --git-tag-version false
+        echo "//packages.orbit.bmwgroup.net/artifactory/api/npm/:_authToken=${{ inputs.npm-token }}" >> .npmrc
+        npm publish

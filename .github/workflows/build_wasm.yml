@@ -1,15 +1,12 @@
-name: build wasm version
+name: build
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
 
 jobs:
-  build:
+  build-wasm:
     runs-on: atc-ubuntu-latest-xlarge
 
     steps:

@@ -1,5 +1,5 @@
-name: "build wasm version"
-description: "use emscripten to build wasm version of WARPO"
+name: build-wasm
+description: use emscripten to build wasm version of WARPO
 
 runs:
   using: "composite"
