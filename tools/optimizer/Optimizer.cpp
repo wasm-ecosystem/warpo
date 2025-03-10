@@ -25,7 +25,11 @@ int main(int argc, char const *argv[]) {
   }
   std::vector<char> input{std::istreambuf_iterator<char>{ifstream}, {}};
 
-  std::vector<uint8_t> output = passes::run(input, {"extract-most-frequently-used-global"});
+  std::vector<const char *> const passNames{
+      "extract-most-frequently-used-global",
+      "inline-getter-function",
+  };
+  std::vector<uint8_t> output = passes::run(input, passNames);
 
   std::ofstream ofstream{outputPath, std::ios::binary | std::ios::out};
   if (!ofstream.good()) {

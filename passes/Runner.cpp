@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "ExtractMostFrequentlyUsedGlobals.hpp"
+#include "InlineSetterFunction.hpp"
 #include "binaryen-c.h"
 #include "pass.h"
 #include "passes/Runner.hpp"
@@ -13,6 +14,7 @@ namespace warpo {
 void passes::init() {
   wasm::PassRegistry::get()->registerPass("extract-most-frequently-used-global", "",
                                           createExtractMostFrequentlyUsedGlobalsPass);
+  wasm::PassRegistry::get()->registerPass("inline-setter-function", "", createInlineSetterFunctionPass);
 }
 
 static std::unique_ptr<wasm::Module> load(const std::vector<char> &input) {
