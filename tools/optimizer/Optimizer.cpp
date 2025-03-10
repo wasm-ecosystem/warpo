@@ -15,6 +15,14 @@ int main(int argc, char const *argv[]) {
 
   if (support::parser(std::span<const char *>{argv, static_cast<size_t>(argc)}, inputPath, outputPath))
     return 1;
+  if (static_cast<const char *>(inputPath) == nullptr) {
+    std::cerr << "ERROR: missing input path\n";
+    return 1;
+  }
+  if (static_cast<const char *>(outputPath) == nullptr) {
+    std::cerr << "ERROR: missing output path\n";
+    return 1;
+  }
 
   passes::init();
 
