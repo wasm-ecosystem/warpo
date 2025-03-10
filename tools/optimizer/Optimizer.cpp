@@ -27,7 +27,7 @@ int main(int argc, char const *argv[]) {
 
   std::vector<const char *> const passNames{
       "extract-most-frequently-used-global",
-      "inline-getter-function",
+      "inline-setter-function",
   };
   std::vector<uint8_t> output = passes::run(input, passNames);
 
