@@ -8,8 +8,7 @@
 /// i32.store offset=x
 
 #include <cassert>
-#include <format>
-#include <iostream>
+#include <fmt/format.h>
 #include <map>
 #include <memory>
 
@@ -52,7 +51,7 @@ void Scanner::visitFunction(wasm::Function *curr) {
   bool success = setterFunction_.insert_or_assign(curr->name, curr).second;
   assert(success);
   if (support::isDebug())
-    std::clog << std::format(DEBUG_PREFIX "function '{}' can be inlined\n", curr->name.str);
+    fmt::println(DEBUG_PREFIX "function '{}' can be inlined", curr->name.str);
 }
 
 struct Replacer : wasm::WalkerPass<wasm::PostWalker<Replacer>> {
@@ -79,8 +78,8 @@ struct Replacer : wasm::WalkerPass<wasm::PostWalker<Replacer>> {
     wasm::Store *replace =
         builder.makeStore(store->bytes, store->offset, store->align, ptr, value, store->valueType, store->memory);
     if (support::isDebug()) {
-      std::clog << std::format(DEBUG_PREFIX " replace 'call {}' with '{}.store offset={}'\n", curr->target.str,
-                               replace->valueType.toString(), replace->offset.addr);
+      fmt::println(DEBUG_PREFIX "replace 'call {}' with '{}.store offset={}'", curr->target.str,
+                   replace->valueType.toString(), replace->offset.addr);
     }
     replaceCurrent(replace);
   }
@@ -104,7 +103,7 @@ void InlineSetterFunction::run(wasm::Module *m) {
   Scanner scanner{inlinableFunction};
   scanner.run(getPassRunner(), m);
   if (support::isDebug())
-    std::clog << std::format(DEBUG_PREFIX "{} functions can be inlined\n", inlinableFunction.size());
+    fmt::println(DEBUG_PREFIX "can be inlined functions count: {}", inlinableFunction.size());
   Replacer replacer{inlinableFunction};
   replacer.run(getPassRunner(), m);
   clean(m, inlinableFunction);

@@ -7,8 +7,7 @@
 #include <algorithm>
 #include <atomic>
 #include <cassert>
-#include <format>
-#include <iostream>
+#include <fmt/format.h>
 #include <map>
 #include <memory>
 
@@ -72,7 +71,7 @@ static wasm::Name findMostFrequentlyUsed(Counter const &counter) {
   wasm::Index maxCount = 0;
   for (auto const &[name, count] : counter) {
     if (support::isDebug())
-      std::clog << std::format(DEBUG_PREFIX "'{}' used {} times\n", name.str, count.load());
+      fmt::println(DEBUG_PREFIX "'{}' used {} times", name.str, count.load());
     if (count.load() >= maxCount) {
       maxCount = count.load();
       maxGlobalName = name;
@@ -89,22 +88,22 @@ struct ExtractMostFrequentlyUsedGlobalsAnalyzer : public wasm::Pass {
     scanner.runOnModuleCode(getPassRunner(), m);
 
     wasm::Name maxGlobalName = findMostFrequentlyUsed(counter);
-    if (support::isDebug())
-      std::clog << std::format(DEBUG_PREFIX "Most frequently used global: {}\n", maxGlobalName.str);
 
     std::vector<std::unique_ptr<wasm::Global>>::iterator const it =
         std::find_if(m->globals.begin(), m->globals.end(),
                      [&](std::unique_ptr<wasm::Global> &global) -> bool { return maxGlobalName == global->name; });
     assert(it != m->globals.end());
     if (it != m->globals.begin()) {
+      if (support::isDebug())
+        fmt::println(DEBUG_PREFIX "move frequently used global '{}' to index 0", maxGlobalName.str);
+
       std::unique_ptr<wasm::Global> mostFrequentlyUsedGlobal = std::move(*it);
       m->globals.erase(it);
       m->globals.insert(m->globals.begin(), std::move(mostFrequentlyUsedGlobal));
       m->updateMaps();
     } else {
       if (support::isDebug()) {
-        std::clog << std::format(DEBUG_PREFIX "Most frequently used global: {} is already at index 0\n",
-                                 maxGlobalName.str);
+        fmt::println(DEBUG_PREFIX " most frequently used global '{}' is already at index 0", maxGlobalName.str);
       }
     }
   }

@@ -1,4 +1,4 @@
-name: build
+name: pull-request-check
 
 on:
   pull_request:
@@ -8,7 +8,11 @@ on:
 jobs:
   build-wasm:
     runs-on: atc-ubuntu-latest-xlarge
-
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/action/build_wasm
+  build-native:
+    runs-on: atc-ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/action/unit_test

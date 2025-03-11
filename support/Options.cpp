@@ -1,5 +1,4 @@
-#include <format>
-#include <iostream>
+#include <fmt/format.h>
 #include <map>
 #include <span>
 #include <string>
@@ -13,12 +12,12 @@ bool detail::parseImpl(std::map<std::string, OptBasic *> const &map, std::span<c
     auto arg = args[i];
     auto it = map.find(arg);
     if (it == map.end()) {
-      std::cerr << std::format("ERROR: unknown arg {}\n", arg);
+      fmt::println("ERROR: unknown arg {}\n", arg);
       return true;
     }
     ++i;
     if (i >= args.size()) {
-      std::cerr << std::format("ERROR: invalid arg {}\n", arg);
+      fmt::println("ERROR: invalid arg {}\n", arg);
       return true;
     }
     OptBasic &opt = *it->second;
