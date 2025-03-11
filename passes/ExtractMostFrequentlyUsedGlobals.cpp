@@ -90,10 +90,17 @@ struct ExtractMostFrequentlyUsedGlobalsAnalyzer : public wasm::Pass {
         std::find_if(m->globals.begin(), m->globals.end(),
                      [&](std::unique_ptr<wasm::Global> &global) -> bool { return maxGlobalName == global->name; });
     assert(it != m->globals.end());
-    std::unique_ptr<wasm::Global> mostFrequentlyUsedGlobal = std::move(*it);
-    m->globals.erase(it);
-    m->globals.insert(m->globals.begin(), std::move(mostFrequentlyUsedGlobal));
-    m->updateMaps();
+    if (it != m->globals.begin()) {
+      std::unique_ptr<wasm::Global> mostFrequentlyUsedGlobal = std::move(*it);
+      m->globals.erase(it);
+      m->globals.insert(m->globals.begin(), std::move(mostFrequentlyUsedGlobal));
+      m->updateMaps();
+    } else {
+      if (support::isDebug()) {
+        std::clog << std::format(DEBUG_PREFIX "Most frequently used global: {} is already at index 0\n",
+                                 maxGlobalName.str);
+      }
+    }
   }
 };
 

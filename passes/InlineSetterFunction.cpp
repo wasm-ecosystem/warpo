@@ -101,7 +101,7 @@ void InlineSetterFunction::run(wasm::Module *m) {
   Scanner scanner{inlinableFunction};
   scanner.run(getPassRunner(), m);
   if (support::isDebug())
-    std::clog << std::format(DEBUG_PREFIX " function '{}' can be inlined\n", inlinableFunction.size());
+    std::clog << std::format(DEBUG_PREFIX "{} functions can be inlined\n", inlinableFunction.size());
   Replacer replacer{inlinableFunction};
   replacer.run(getPassRunner(), m);
   clean(m, inlinableFunction);
