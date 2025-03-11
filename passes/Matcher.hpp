@@ -31,10 +31,17 @@ static inline M<wasm::Store> hasPtr(M<wasm::Expression> const &m) {
 static inline M<wasm::Store> hasValue(M<wasm::Expression> const &m) {
   return M<wasm::Store>([m](wasm::Store const &expr) -> bool { return m(*expr.value); });
 }
+static inline M<wasm::Store> hasOffset(wasm::Address const &offset) {
+  return M<wasm::Store>([offset](wasm::Store const &expr) -> bool { return expr.offset == offset; });
+}
 
 constexpr IsMatcherImpl<wasm::LocalGet, wasm::Expression> isLocalGet;
 static inline M<wasm::LocalGet> hasIndex(wasm::Index index) {
   return M<wasm::LocalGet>([index](wasm::LocalGet const &expr) -> bool { return index == expr.index; });
+}
+constexpr IsMatcherImpl<wasm::Const, wasm::Expression> isConst;
+static inline M<wasm::Const> hasValue(wasm::Literal value) {
+  return M<wasm::Const>([value](wasm::Const const &expr) -> bool { return value == expr.value; });
 }
 
 } // namespace warpo::passes::matcher

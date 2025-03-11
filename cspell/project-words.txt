@@ -4,4 +4,5 @@ ccache
 emcmake
 emscripten
 emsdk
+unittests
 warpo

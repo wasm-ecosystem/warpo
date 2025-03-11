@@ -15,6 +15,7 @@
 
 #include "InlineSetterFunction.hpp"
 #include "Matcher.hpp"
+#include "literal.h"
 #include "pass.h"
 #include "support/Debug.hpp"
 #include "support/name.h"
@@ -43,13 +44,15 @@ void Scanner::visitFunction(wasm::Function *curr) {
   if (curr->body == nullptr)
     return;
   using namespace matcher;
+  if (curr->getNumParams() != 2)
+    return;
   auto const matcher = isStore(hasPtr(isLocalGet(hasIndex(0))), hasValue(isLocalGet(hasIndex(1))));
   if (!matcher(*curr->body))
     return;
   bool success = setterFunction_.insert_or_assign(curr->name, curr).second;
   assert(success);
   if (support::isDebug())
-    std::clog << std::format(DEBUG_PREFIX " function '{}' can be inlined\n", curr->name.str);
+    std::clog << std::format(DEBUG_PREFIX "function '{}' can be inlined\n", curr->name.str);
 }
 
 struct Replacer : wasm::WalkerPass<wasm::PostWalker<Replacer>> {
@@ -57,7 +60,7 @@ struct Replacer : wasm::WalkerPass<wasm::PostWalker<Replacer>> {
       : wasm::WalkerPass<wasm::PostWalker<Replacer>>{}, inlinableFunction_(inlinableFunction) {}
 
   bool modifiesBinaryenIR() override { return true; }
-  bool isFunctionParallel() override { return false; }
+  bool isFunctionParallel() override { return true; }
   std::unique_ptr<Pass> create() override { return std::make_unique<Replacer>(inlinableFunction_); }
 
   void visitCall(wasm::Call *curr) {
@@ -114,3 +117,163 @@ namespace warpo {
 wasm::Pass *passes::createInlineSetterFunctionPass() { return new passes::InlineSetterFunction(); }
 
 } // namespace warpo
+
+#ifdef WARPO_ENABLE_UNIT_TESTS
+
+#include <gtest/gtest.h>
+
+#include "pass.h"
+#include "unittests/Helper.hpp"
+
+namespace warpo::passes::ut {
+
+TEST(InlineSetterFunctionTest, ScannerI32Store) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (func (param i32 i32)
+          (i32.store offset=1
+            (local.get 0)
+            (local.get 1)
+          )
+        )
+      )
+    )");
+
+  InlinableFunctionMap map{};
+  Scanner scanner{map};
+  wasm::PassRunner runner{m.get()};
+  scanner.run(&runner, m.get());
+
+  EXPECT_EQ(map.size(), 1);
+}
+
+TEST(InlineSetterFunctionTest, ScannerF64Store) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (func (param i32 f64)
+          (f64.store offset=1
+            (local.get 0)
+            (local.get 1)
+          )
+        )
+      )
+    )");
+
+  InlinableFunctionMap map{};
+  Scanner scanner{map};
+  wasm::PassRunner runner{m.get()};
+  scanner.run(&runner, m.get());
+
+  EXPECT_EQ(map.size(), 1);
+}
+
+TEST(InlineSetterFunctionTest, ScannerNotThreeArgs) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (func (param i32 i32 i32)
+          (i32.store offset=1
+            (local.get 0)
+            (local.get 1)
+          )
+        )
+      )
+    )");
+
+  InlinableFunctionMap map{};
+  Scanner scanner{map};
+  wasm::PassRunner runner{m.get()};
+  scanner.run(&runner, m.get());
+
+  EXPECT_EQ(map.size(), 0);
+}
+
+TEST(InlineSetterFunctionTest, ScannerNotOneArgs) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (func (param i32) (local i32)
+          (i32.store offset=1
+            (local.get 0)
+            (local.get 1)
+          )
+        )
+      )
+    )");
+
+  InlinableFunctionMap map{};
+  Scanner scanner{map};
+  wasm::PassRunner runner{m.get()};
+  scanner.run(&runner, m.get());
+
+  EXPECT_EQ(map.size(), 0);
+}
+
+constexpr const char *replacedFunc = "replaced_func";
+constexpr const char *targetFunc = "target_func";
+
+TEST(InlineSetterFunctionTest, Replace) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (func $replaced_func (param i32) (param i32)
+          (i32.store offset=3
+            (local.get 0)
+            (local.get 1)
+          )
+        )
+        (func $target_func
+          (call 0
+            (i32.const 0)
+            (i32.const 1)
+          )
+        )
+      )
+    )");
+
+  InlinableFunctionMap const map{
+      {replacedFunc, m->getFunction(replacedFunc)},
+  };
+  Replacer replacer{map};
+  wasm::PassRunner runner{m.get()};
+  replacer.run(&runner, m.get());
+  wasm::Expression *expr = m->getFunction(targetFunc)->body;
+  using namespace matcher;
+  M<wasm::Expression> matcher =
+      isStore(hasPtr(isConst(hasValue(wasm::Literal{static_cast<int32_t>(0)}))),
+              hasValue(isConst(hasValue(wasm::Literal{static_cast<int32_t>(1)}))), hasOffset(3));
+  EXPECT_MATCHER(matcher, expr);
+}
+
+TEST(InlineSetterFunctionTest, Pass) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (func (param i32) (param i32)
+          (i32.store offset=3
+            (local.get 0)
+            (local.get 1)
+          )
+        )
+        (func $target_func
+          (call 0
+            (i32.const 0)
+            (i32.const 1)
+          )
+        )
+      )
+    )");
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>(createInlineSetterFunctionPass()));
+  runner.run();
+
+  ASSERT_EQ(m->functions.size(), 1);
+  ASSERT_EQ(m->functions[0]->name, wasm::Name{targetFunc});
+  ASSERT_TRUE(m->functions[0]->body->is<wasm::Store>());
+}
+
+} // namespace warpo::passes::ut
+
+#endif
