@@ -4,6 +4,9 @@
 
 namespace warpo {
 
-bool support::isDebug() { return getenv("WARPO_DBBUG") != nullptr; }
+bool support::isDebug() {
+  static bool enableDebugFromEnv = getenv("WARPO_DBBUG") != nullptr;
+  return enableDebugFromEnv;
+}
 
 } // namespace warpo

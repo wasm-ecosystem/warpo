@@ -15,6 +15,7 @@
 #include "support/Debug.hpp"
 #include "support/index.h"
 #include "wasm-traversal.h"
+#include "wasm-validator.h"
 #include "wasm.h"
 
 #define DEBUG_PREFIX "[ExtractMostFrequentlyUsedGlobals] "
@@ -80,6 +81,28 @@ static wasm::Name findMostFrequentlyUsed(Counter const &counter) {
   return maxGlobalName;
 }
 
+static void extractGlobal(wasm::Module &m, wasm::Name const name) {
+  std::vector<std::unique_ptr<wasm::Global>>::iterator const eraseIt =
+      std::find_if(m.globals.begin(), m.globals.end(),
+                   [&](std::unique_ptr<wasm::Global> &global) -> bool { return name == global->name; });
+  assert(eraseIt != m.globals.end());
+  if (eraseIt != m.globals.begin()) {
+    if (support::isDebug())
+      fmt::println(DEBUG_PREFIX "move frequently used global '{}' to index 0", name.str);
+    std::unique_ptr<wasm::Global> mostFrequentlyUsedGlobal = std::move(*eraseIt);
+    m.globals.erase(eraseIt);
+    // we don't need to consider imported global, binaryen will ignore imported global during emitting.
+    // see ExtractMostFrequentlyUsedGlobalsTest.ExtractWithImportGlobal
+    auto const insertIt = m.globals.begin();
+    m.globals.insert(insertIt, std::move(mostFrequentlyUsedGlobal));
+    m.updateMaps();
+  } else {
+    if (support::isDebug()) {
+      fmt::println(DEBUG_PREFIX " most frequently used global '{}' is already at index 0", name.str);
+    }
+  }
+}
+
 struct ExtractMostFrequentlyUsedGlobalsAnalyzer : public wasm::Pass {
   void run(wasm::Module *m) override {
     Counter counter = createCounter(m->globals);
@@ -87,25 +110,8 @@ struct ExtractMostFrequentlyUsedGlobalsAnalyzer : public wasm::Pass {
     scanner.run(getPassRunner(), m);
     scanner.runOnModuleCode(getPassRunner(), m);
 
-    wasm::Name maxGlobalName = findMostFrequentlyUsed(counter);
-
-    std::vector<std::unique_ptr<wasm::Global>>::iterator const it =
-        std::find_if(m->globals.begin(), m->globals.end(),
-                     [&](std::unique_ptr<wasm::Global> &global) -> bool { return maxGlobalName == global->name; });
-    assert(it != m->globals.end());
-    if (it != m->globals.begin()) {
-      if (support::isDebug())
-        fmt::println(DEBUG_PREFIX "move frequently used global '{}' to index 0", maxGlobalName.str);
-
-      std::unique_ptr<wasm::Global> mostFrequentlyUsedGlobal = std::move(*it);
-      m->globals.erase(it);
-      m->globals.insert(m->globals.begin(), std::move(mostFrequentlyUsedGlobal));
-      m->updateMaps();
-    } else {
-      if (support::isDebug()) {
-        fmt::println(DEBUG_PREFIX " most frequently used global '{}' is already at index 0", maxGlobalName.str);
-      }
-    }
+    wasm::Name const maxGlobalName = findMostFrequentlyUsed(counter);
+    extractGlobal(*m, maxGlobalName);
   }
 };
 
@@ -225,6 +231,38 @@ TEST(ExtractMostFrequentlyUsedGlobalsTest, ScannerIgnoreNonExist) {
   scanner.run(&runner, m.get());
 
   EXPECT_EQ(counter.size(), 1);
+}
+
+TEST(ExtractMostFrequentlyUsedGlobalsTest, ExtractNoChange) {
+  auto m = loadWat(R"(
+    (module
+      (global $g0 (mut i32) (i32.const 0))
+      (global $g1 (mut i32) (i32.const 0))
+    )
+  )");
+  extractGlobal(*m, "g0");
+  EXPECT_EQ(m->globals[0]->name, "g0");
+}
+TEST(ExtractMostFrequentlyUsedGlobalsTest, ExtractChange) {
+  auto m = loadWat(R"(
+    (module
+      (global $g0 (mut i32) (i32.const 0))
+      (global $g1 (mut i32) (i32.const 0))
+    )
+  )");
+  extractGlobal(*m, "g1");
+  EXPECT_EQ(m->globals[0]->name, "g1");
+}
+TEST(ExtractMostFrequentlyUsedGlobalsTest, ExtractWithImportGlobal) {
+  auto m = loadWat(R"(
+    (module
+      (import "env" "g" (global $g0 (mut i32)))
+      (global $g1 (mut i32) (i32.const 0))
+    )
+  )");
+  extractGlobal(*m, "g1");
+  EXPECT_EQ(m->globals[0]->name, "g1");
+  EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
 }
 
 TEST(ExtractMostFrequentlyUsedGlobalsTest, Pass) {
