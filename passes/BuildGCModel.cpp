@@ -92,9 +92,9 @@ ShadowStackInfoMap BuildGCModel::createShadowStackInfoMap(wasm::Module const &m)
 }
 
 void BuildGCModel::runOnFunction(wasm::Module *m, wasm::Function *f) {
-  if (m->globals.empty())
+  if (m->getGlobalOrNull(stackPointerName) == nullptr)
     return;
-  ShadowStackInfoScanner scanner{infoMap_, "~lib/memory/__stack_pointer"};
+  ShadowStackInfoScanner scanner{infoMap_, stackPointerName};
   scanner.setPassRunner(getPassRunner());
   scanner.runOnFunction(m, f);
 }
@@ -158,6 +158,25 @@ TEST(BuildGCModelTest, ScannerStoreToShadowStack) {
   EXPECT_EQ(storeToShadownStack.size(), 2);
   EXPECT_TRUE(storeToShadownStack.contains(body[0]->cast<wasm::Store>()));
   EXPECT_TRUE(storeToShadownStack.contains(body[1]->cast<wasm::Store>()));
+}
+
+TEST(BuildGCModelTest, NoStackPointer) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (global $a (mut i32) (i32.const 0))
+        (func $f (local i32)
+        )
+      )
+    )");
+
+  ShadowStackInfoMap map = BuildGCModel::createShadowStackInfoMap(*m);
+  ShadowStackInfoScanner scanner{map, m->globals.at(0)->name};
+  wasm::PassRunner runner{m.get()};
+  scanner.run(&runner, m.get());
+
+  auto const &storeToShadownStack = map.at("f").storeToShadownStack_;
+  EXPECT_EQ(storeToShadownStack.size(), 0);
 }
 
 } // namespace warpo::passes::ut

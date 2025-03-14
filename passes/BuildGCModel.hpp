@@ -10,6 +10,8 @@
 
 namespace warpo::passes::as_gc {
 
+constexpr const char *stackPointerName = "~lib/memory/__stack_pointer";
+
 struct UpdateOperator {
   int64_t size_;
 };
