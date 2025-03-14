@@ -45,7 +45,7 @@ void Scanner::visitFunction(wasm::Function *curr) {
   using namespace matcher;
   if (curr->getNumParams() != 2)
     return;
-  auto const matcher = isStore(hasPtr(isLocalGet(hasIndex(0))), hasValue(isLocalGet(hasIndex(1))));
+  auto const matcher = isStore(store::ptr(isLocalGet(local_get::index(0))), store::v(isLocalGet(local_get::index(1))));
   if (!matcher(*curr->body))
     return;
   bool success = setterFunction_.insert_or_assign(curr->name, curr).second;
@@ -89,6 +89,9 @@ private:
 };
 
 void clean(wasm::Module *m, InlinableFunctionMap const &inlinableFunction) {
+  if (support::isDebug())
+    for (auto const &[name, _] : inlinableFunction)
+      fmt::println(DEBUG_PREFIX "remove function '{}'", name.str);
   m->removeFunctions([&inlinableFunction](wasm::Function *f) -> bool { return inlinableFunction.contains(f->name); });
 }
 
@@ -241,8 +244,8 @@ TEST(InlineSetterFunctionTest, Replace) {
   wasm::Expression *expr = m->getFunction(targetFunc)->body;
   using namespace matcher;
   M<wasm::Expression> matcher =
-      isStore(hasPtr(isConst(hasValue(wasm::Literal{static_cast<int32_t>(0)}))),
-              hasValue(isConst(hasValue(wasm::Literal{static_cast<int32_t>(1)}))), hasOffset(3));
+      isStore(store::ptr(isConst(const_::v(wasm::Literal{static_cast<int32_t>(0)}))),
+              store::v(isConst(const_::v(wasm::Literal{static_cast<int32_t>(1)}))), store::offset(3));
   EXPECT_MATCHER(matcher, expr);
 }
 

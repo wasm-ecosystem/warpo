@@ -3,6 +3,7 @@ add_library(warpo_unittests_helper ${unittests_helper_sources})
 target_link_libraries(warpo_unittests_helper PUBLIC
   binaryen
   gtest_main
+  gmock
 )
 target_include_directories(warpo_unittests_helper PUBLIC
   ${PROJECT_SOURCE_DIR}/third_party/binaryen/src
