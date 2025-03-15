@@ -154,8 +154,8 @@ wasm::Pass *warpo::passes::as_gc::createRemoveDuplicateStoreLocalInGCPass() {
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "Runner.hpp"
 #include "pass.h"
-#include "unittests/Helper.hpp"
 
 namespace warpo::passes::ut {
 using namespace as_gc;

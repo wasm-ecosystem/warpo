@@ -1,11 +1,11 @@
 
-if(NOT EMSCRIPTEN)
+if(NOT WARPO_RELEASE)
   add_subdirectory(unittests)
 endif()
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} warpo_passes_sources)
 
-if(NOT EMSCRIPTEN)
+if(NOT WARPO_RELEASE)
   add_executable(warpo_passes_test ${warpo_passes_sources})
   target_compile_definitions(warpo_passes_test PRIVATE
     WARPO_ENABLE_UNIT_TESTS

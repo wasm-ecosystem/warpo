@@ -105,8 +105,8 @@ void BuildGCModel::runOnFunction(wasm::Module *m, wasm::Function *f) {
 
 #include <gtest/gtest.h>
 
+#include "Runner.hpp"
 #include "pass.h"
-#include "unittests/Helper.hpp"
 
 namespace warpo::passes::ut {
 using namespace as_gc;

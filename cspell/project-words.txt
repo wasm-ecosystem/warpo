@@ -1,8 +1,7 @@
 Binaryen
 bmwgroup
+cawe
 ccache
-emcmake
-emscripten
-emsdk
+DWARPO
 unittests
 warpo

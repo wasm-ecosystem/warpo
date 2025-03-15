@@ -1,41 +1,48 @@
-name: build-native-and-run-unittest
-description: build native version of WARPO then run unittest
+name: build
+description: build with cache
 inputs:
   CMAKE_ARGS:
-    description: "Arguments to pass to CMake"
+    description: "CMake Arguments"
     required: false
     default: ""
+outputs:
+  BUILD_DIR:
+    description: "Build Directory"
+    value: "build"
+
 runs:
   using: "composite"
   steps:
-    - name: install dependencies
+    - if: runner.os == 'Linux'
       shell: bash
       run: |
         set -ex
         sudo rm /var/lib/man-db/auto-update
         sudo apt-get update
         sudo apt-get install -y ccache cmake ninja-build
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18.x
-        cache: "npm"
-
+    - if: runner.os == 'macOs'
+      shell: bash
+      run: |
+        set -ex
+        brew update
+        brew install ccache cmake ninja
     - shell: bash
       run: |
         set -ex
-        echo "CCACHE_DIR=$(pwd)/build_native_cache" >> $GITHUB_ENV
-        mkdir -p build_native_cache
+        echo "CCACHE_DIR=$(pwd)/build_cache" >> $GITHUB_ENV
+        mkdir -p build_cache
     - shell: bash
       run: |
         ccache --max-size=512M
     - uses: actions/cache@v3
       with:
-        path: build_native_cache
-        key: ${{ runner.os }}-ccache-native-build-${{ hashFiles('**/CMakeLists.txt') }}
+        path: build_cache
+        key: ccache-${{ runner.os }}-${{ inputs.CMAKE_ARGS }}-${{ hashFiles('**/CMakeLists.txt') }}
         restore-keys: |
-          ${{ runner.os }}-ccache-native-build-
+          ccache-${{ runner.os }}-${{ inputs.CMAKE_ARGS }}-
+          ccache-${{ runner.os }}-
 
-    - name: build native
+    - name: build
       run: |
         set -ex
         cmake -B build -S . ${{ inputs.CMAKE_ARGS }}
@@ -45,6 +52,3 @@ runs:
         CMAKE_GENERATOR: Ninja
         CMAKE_C_COMPILER_LAUNCHER: ccache
         CMAKE_CXX_COMPILER_LAUNCHER: ccache
-    - name: run unittest
-      run: ./build/passes/warpo_passes_test
-      shell: bash

@@ -124,6 +124,7 @@ wasm::Pass *passes::createInlineSetterFunctionPass() { return new passes::Inline
 
 #include <gtest/gtest.h>
 
+#include "Runner.hpp"
 #include "pass.h"
 #include "unittests/Helper.hpp"
 
