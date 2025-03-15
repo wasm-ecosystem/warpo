@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "wasm optimizer designed for warp",
   "bin": {
-    "warpo": "build_wasm/tools/optimizer/warpo.js"
+    "warpo": "bin/warpo.js"
   },
   "scripts": {},
   "publishConfig": {
@@ -13,7 +13,6 @@
   "keywords": [],
   "author": "congcong.cai@bmw.com",
   "files": [
-    "tools",
     "bin"
   ]
 }

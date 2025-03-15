@@ -18,7 +18,7 @@ jobs:
           CMAKE_ARGS: "-DWARPO_RELEASE=ON"
       - uses: actions/upload-artifact@v3
         with:
-          name: tools-${{ runner.os }}
+          name: bin-${{ runner.os }}
           path: ${{ steps.build.outputs.BUILD_DIR }}/tools/optimizer/warpo
 
   publish:
@@ -28,13 +28,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v3
         with:
-          name: tools-Linux
-          path: tools/linux
+          name: bin-Linux
+          path: bin/linux
       - uses: actions/download-artifact@v3
         with:
-          name: tools-macOs
-          path: tools/macos
-      - run: ls -l tools-linux tools-macos
+          name: bin-macOS
+          path: bin/macos
       - id: get_tag
         run: |
           echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT

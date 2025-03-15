@@ -20,7 +20,7 @@ runs:
         sudo rm /var/lib/man-db/auto-update
         sudo apt-get update
         sudo apt-get install -y ccache cmake ninja-build
-    - if: runner.os == 'macOs'
+    - if: runner.os == 'macOS'
       shell: bash
       run: |
         set -ex
