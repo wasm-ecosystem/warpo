@@ -18,14 +18,13 @@
 #include <set>
 
 #include "BuildGCModel.hpp"
+#include "Cleaner.hpp"
 #include "RemoveDuplicateStoreLocalInGC.hpp"
 #include "analysis/cfg.h"
 #include "analysis/liveness-transfer-function.h"
 #include "analysis/monotone-analyzer.h"
 #include "fmt/base.h"
 #include "support/Debug.hpp"
-#include "wasm-builder.h"
-#include "wasm-traversal.h"
 #include "wasm.h"
 
 #define DEBUG_PREFIX "[RemoveDuplicateStoreLocalInGC] "
@@ -112,19 +111,6 @@ static std::set<wasm::Store *> findDuplicateStoreLocal(ShadowStackInfo const &in
   return transfer.storeCanBeRemoved_;
 }
 
-struct Cleaner : public wasm::WalkerPass<wasm::PostWalker<Cleaner>> {
-  std::set<wasm::Store *> storeCanBeRemoved_;
-  explicit Cleaner(std::set<wasm::Store *> const &storeCanBeRemoved) : storeCanBeRemoved_(storeCanBeRemoved) {}
-  void visitStore(wasm::Store *expr) {
-    if (storeCanBeRemoved_.contains(expr)) {
-      if (support::isDebug())
-        fmt::println(DEBUG_PREFIX "remove store ({}) to shadow stack", static_cast<void *>(expr));
-      wasm::Builder builder{*getModule()};
-      replaceCurrent(builder.makeNop());
-    }
-  }
-};
-
 void RemoveDuplicateStoreLocalInGCImpl::runOnFunction(wasm::Module *m, wasm::Function *f) {
   if (f->imported())
     return;
@@ -132,7 +118,9 @@ void RemoveDuplicateStoreLocalInGCImpl::runOnFunction(wasm::Module *m, wasm::Fun
   if (info.storeToShadownStack_.empty())
     return;
   std::set<wasm::Store *> const duplicateStoreLocal = findDuplicateStoreLocal(info, f);
-  Cleaner cleaner{duplicateStoreLocal};
+  Cleaner cleaner{[&duplicateStoreLocal](wasm::Expression &expr) -> bool {
+    return duplicateStoreLocal.contains(expr.dynCast<wasm::Store>());
+  }};
   cleaner.setPassRunner(getPassRunner());
   cleaner.runOnFunction(m, f);
 }
@@ -172,41 +160,38 @@ wasm::Pass *warpo::passes::as_gc::createRemoveDuplicateStoreLocalInGCPass() {
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "Matcher.hpp"
 #include "Runner.hpp"
 #include "pass.h"
+#include "unittests/Helper.hpp"
 
 namespace warpo::passes::ut {
 using namespace as_gc;
 
-TEST(RemoveDuplicateStoreLocalInGC, Clean) {
+TEST(RemoveDuplicateStoreLocalInGC, Pass) {
   auto m = loadWat(R"(
-    (module
-      (memory 1)
-      (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
-      (func $f (local i32) (local i32)
-        (nop)
-        (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
-        (nop)
+      (module
+        (memory 1)
+        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
+        (func $f (local i32) (local i32)
+          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
+          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 1))
+          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
+        )
       )
-    )
-  )");
+    )");
   wasm::Function *const f = m->getFunction("f");
-  wasm::ExpressionList const &body = f->body->cast<wasm::Block>()->list;
+  wasm::ExpressionList &body = f->body->cast<wasm::Block>()->list;
+  std::vector<wasm::Expression *> const oldBody{body.begin(), body.end()};
 
-  std::set<wasm::Store *> const duplicate{
-      body[1]->cast<wasm::Store>(),
-  };
-  wasm::Expression *const e0 = body[0];
-  wasm::Expression *const e2 = body[2];
-  Cleaner cleaner{duplicate};
   wasm::PassRunner runner{m.get()};
-  cleaner.setPassRunner(&runner);
-  cleaner.runOnFunction(m.get(), f);
-
-  EXPECT_EQ(body.size(), 3);
-  EXPECT_EQ(body[0], e0);
-  EXPECT_TRUE(body[1]->is<wasm::Nop>()); // removed as NOP
-  EXPECT_EQ(body[2], e2);
+  runner.add(std::unique_ptr<wasm::Pass>{createRemoveDuplicateStoreLocalInGCPass()});
+  runner.run();
+  EXPECT_EQ(oldBody[0], body[0]);
+  EXPECT_EQ(oldBody[1], body[1]);
+  EXPECT_NE(oldBody[2], body[2]);
+  using namespace matcher;
+  EXPECT_MATCHER(isNop(), body[2]);
 }
 
 TEST(RemoveDuplicateStoreLocalInGC, FindDuplicateStoreLocalBase) {

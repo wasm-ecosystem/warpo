@@ -60,6 +60,8 @@ template <class T> M<T> anyOf(std::initializer_list<M<T>> ms) {
   });
 }
 
+constexpr IsMatcherImpl<wasm::Nop, wasm::Expression> isNop;
+
 constexpr IsMatcherImpl<wasm::Store, wasm::Expression> isStore;
 namespace store {
 static inline M<wasm::Store> ptr(M<wasm::Expression> const &m) {
