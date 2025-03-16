@@ -18,11 +18,10 @@ namespace warpo::passes::as_gc {
 namespace {
 
 struct ShadowStackInfoScanner : public wasm::WalkerPass<wasm::PostWalker<ShadowStackInfoScanner>> {
-  explicit ShadowStackInfoScanner(ShadowStackInfoMap &info, wasm::Name const &stackPointerName)
-      : info_(info), stackPointerName_(stackPointerName) {}
+  explicit ShadowStackInfoScanner(ShadowStackInfoMap &info) : info_(info) {}
   bool modifiesBinaryenIR() override { return false; }
   bool isFunctionParallel() override { return true; }
-  std::unique_ptr<Pass> create() override { return std::make_unique<ShadowStackInfoScanner>(info_, stackPointerName_); }
+  std::unique_ptr<Pass> create() override { return std::make_unique<ShadowStackInfoScanner>(info_); }
 
   void visitGlobalSet(wasm::GlobalSet *expr);
   void visitStore(wasm::Store *expr);
@@ -30,7 +29,6 @@ struct ShadowStackInfoScanner : public wasm::WalkerPass<wasm::PostWalker<ShadowS
 
 private:
   ShadowStackInfoMap &info_;
-  wasm::Name const &stackPointerName_;
 };
 
 void ShadowStackInfoScanner::visitGlobalSet(wasm::GlobalSet *expr) {
@@ -39,10 +37,10 @@ void ShadowStackInfoScanner::visitGlobalSet(wasm::GlobalSet *expr) {
     return;
   using namespace matcher;
   auto const match =
-      isGlobalSet(global_set::name(stackPointerName_),
+      isGlobalSet(global_set::name(stackPointerName),
                   global_set::value(isBinary(binary::op({wasm::BinaryOp::AddInt32, wasm::BinaryOp::SubInt32}),
                                              binary::each(isConst().bind("const"),
-                                                          isGlobalGet(global_get::name(stackPointerName_)).bind("get")))
+                                                          isGlobalGet(global_get::name(stackPointerName)).bind("get")))
                                         .bind("bop")));
   Context ctx{};
   if (!match(*expr, ctx))
@@ -58,8 +56,7 @@ void ShadowStackInfoScanner::visitStore(wasm::Store *expr) {
   wasm::Function *currentFunction = getFunction();
   assert(currentFunction != nullptr);
   using namespace matcher;
-  auto const globalGet = isGlobalGet(global_get::name(stackPointerName_)).bind("get");
-  auto const match = isStore(store::ptr(globalGet));
+  auto const match = isStore(store::ptr(isGlobalGet(global_get::name(stackPointerName))));
   Context ctx{};
   if (!match(*expr, ctx))
     return;
@@ -94,7 +91,7 @@ ShadowStackInfoMap BuildGCModel::createShadowStackInfoMap(wasm::Module const &m)
 void BuildGCModel::runOnFunction(wasm::Module *m, wasm::Function *f) {
   if (m->getGlobalOrNull(stackPointerName) == nullptr)
     return;
-  ShadowStackInfoScanner scanner{infoMap_, stackPointerName};
+  ShadowStackInfoScanner scanner{infoMap_};
   scanner.setPassRunner(getPassRunner());
   scanner.runOnFunction(m, f);
 }
@@ -124,7 +121,7 @@ TEST(BuildGCModelTest, ScannerStackPointerUpdate) {
     )");
 
   ShadowStackInfoMap map = BuildGCModel::createShadowStackInfoMap(*m);
-  ShadowStackInfoScanner scanner{map, m->globals.at(0)->name};
+  ShadowStackInfoScanner scanner{map};
   wasm::PassRunner runner{m.get()};
   scanner.run(&runner, m.get());
 
@@ -149,7 +146,7 @@ TEST(BuildGCModelTest, ScannerStoreToShadowStack) {
     )");
 
   ShadowStackInfoMap map = BuildGCModel::createShadowStackInfoMap(*m);
-  ShadowStackInfoScanner scanner{map, m->globals.at(0)->name};
+  ShadowStackInfoScanner scanner{map};
   wasm::PassRunner runner{m.get()};
   scanner.run(&runner, m.get());
 
@@ -164,14 +161,14 @@ TEST(BuildGCModelTest, NoStackPointer) {
   auto m = loadWat(R"(
       (module
         (memory 1)
-        (global $a (mut i32) (i32.const 0))
+        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
         (func $f (local i32)
         )
       )
     )");
 
   ShadowStackInfoMap map = BuildGCModel::createShadowStackInfoMap(*m);
-  ShadowStackInfoScanner scanner{map, m->globals.at(0)->name};
+  ShadowStackInfoScanner scanner{map};
   wasm::PassRunner runner{m.get()};
   scanner.run(&runner, m.get());
 

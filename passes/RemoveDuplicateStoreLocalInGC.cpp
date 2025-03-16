@@ -134,12 +134,17 @@ struct RemoveDuplicateStoreLocalInGC : public wasm::Pass {
 };
 
 void RemoveDuplicateStoreLocalInGC::runOnFunction(wasm::Module *m, wasm::Function *f) {
+  if (m->getGlobalOrNull(stackPointerName) == nullptr) {
+    fmt::println(DEBUG_PREFIX "skipped because symbol '{}' cannot be found", stackPointerName);
+    return;
+  }
   auto infoMap = BuildGCModel::createShadowStackInfoMap(*m);
   BuildGCModel buildGCModel{infoMap};
-  RemoveDuplicateStoreLocalInGCImpl removeDuplicateStoreLocalInGC{infoMap};
   buildGCModel.setPassRunner(getPassRunner());
-  removeDuplicateStoreLocalInGC.setPassRunner(getPassRunner());
   buildGCModel.runOnFunction(m, f);
+
+  RemoveDuplicateStoreLocalInGCImpl removeDuplicateStoreLocalInGC{infoMap};
+  removeDuplicateStoreLocalInGC.setPassRunner(getPassRunner());
   removeDuplicateStoreLocalInGC.runOnFunction(m, f);
 }
 

@@ -1,4 +1,4 @@
-const { spawnSync } = require("child_process");
+const { execSync, execFileSync } = require("child_process");
 const { join } = require("path");
 const { exit, env, argv } = require("process");
 const platform = require("os").platform();
