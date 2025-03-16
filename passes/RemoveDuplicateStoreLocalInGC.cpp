@@ -135,7 +135,8 @@ struct RemoveDuplicateStoreLocalInGC : public wasm::Pass {
 
 void RemoveDuplicateStoreLocalInGC::runOnFunction(wasm::Module *m, wasm::Function *f) {
   if (m->getGlobalOrNull(stackPointerName) == nullptr) {
-    fmt::println(DEBUG_PREFIX "skipped because symbol '{}' cannot be found", stackPointerName);
+    if (support::isDebug())
+      fmt::println(DEBUG_PREFIX "skipped because symbol '{}' cannot be found", stackPointerName);
     return;
   }
   auto infoMap = BuildGCModel::createShadowStackInfoMap(*m);
