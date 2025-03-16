@@ -1,4 +1,16 @@
-/// @brief pass to recover GC model of AssemblyScript
+/// @brief remove the duplicated (i32.store (global.get offset={} $~lib/memory/__stack_pointer) (local.get {}))
+///
+/// @details
+/// AS need to store object pointer in ShadowStack. Then during GC, runtime can know which object is still used by
+/// local.
+/// If this local is already stored in ShadowStack, if yes, then we don't need to store it again.
+/// It is "forward" "must analyzer".
+/// Lattice is used to track the liveness of local in ShadowStack. The bottom is 0b000...000, which means all locals are
+/// in ShadowStack. The join operator is OR.
+/// The transfer function is:
+///  - local.set kill the local in ShadowStack
+///  - i32.store (global.get $~lib/memory/__stack_pointer) (local.get {}) set the local in ShadowStack
+///  - other instructions don't change the liveness of local in ShadowStack
 
 #include <cassert>
 #include <fmt/format.h>
