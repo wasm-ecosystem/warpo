@@ -19,6 +19,7 @@
 
 #include "BuildGCModel.hpp"
 #include "Cleaner.hpp"
+#include "Matcher.hpp"
 #include "RemoveDuplicateStoreLocalInGC.hpp"
 #include "analysis/cfg.h"
 #include "analysis/liveness-transfer-function.h"
@@ -28,6 +29,11 @@
 #include "wasm.h"
 
 #define DEBUG_PREFIX "[RemoveDuplicateStoreLocalInGC] "
+
+namespace warpo::passes::matcher {
+M<wasm::Expression> const isStoreLocalToStackPointer = isStore(
+    store::ptr(isGlobalGet(global_get::name(as_gc::stackPointerName))), store::v(isLocalGet().bind("local.get")));
+};
 
 namespace warpo::passes::as_gc {
 
@@ -43,9 +49,8 @@ struct ShadowStackLivenessTransferFunction
   static constexpr bool MayNotInShadowStack = true;
   static constexpr bool MustInShadowStack = false; // join is OR
 
-  ShadowStackInfo const &info_;
   std::set<wasm::Store *> storeCanBeRemoved_{};
-  explicit ShadowStackLivenessTransferFunction(ShadowStackInfo const &info) : Super{}, info_(info) {}
+  explicit ShadowStackLivenessTransferFunction() : Super{} {}
 
   void evaluateFunctionEntry(wasm::Function *func, wasm::analysis::FiniteIntPowersetLattice::Element &element) {
     size_t numParams = func->getNumParams();
@@ -68,11 +73,11 @@ struct ShadowStackLivenessTransferFunction
   }
   void visitStore(wasm::Store *expr) {
     assert(currState);
-    if (!info_.storeToShadownStack_.contains(expr))
+    matcher::Context ctx{};
+    if (!matcher::isStoreLocalToStackPointer(*expr, ctx))
       return;
-    auto const *localGet = expr->value->dynCast<wasm::LocalGet>();
-    if (localGet == nullptr)
-      return;
+    auto const *localGet = ctx.getBinding<wasm::LocalGet>("local.get");
+    assert(localGet != nullptr);
     if (support::isDebug())
       if (!collectingResults)
         fmt::println(DEBUG_PREFIX "local {} live in shadow shadow stack", localGet->index);
@@ -88,20 +93,10 @@ struct ShadowStackLivenessTransferFunction
   }
 };
 
-class RemoveDuplicateStoreLocalInGCImpl : public wasm::Pass {
-  ShadowStackInfoMap const &info_;
-
-public:
-  explicit RemoveDuplicateStoreLocalInGCImpl(ShadowStackInfoMap const &info) : info_(info) {}
-  std::unique_ptr<Pass> create() override { return std::make_unique<RemoveDuplicateStoreLocalInGCImpl>(info_); }
-  bool isFunctionParallel() override { return true; }
-  void runOnFunction(wasm::Module *m, wasm::Function *f) override;
-};
-
-static std::set<wasm::Store *> findDuplicateStoreLocal(ShadowStackInfo const &info, wasm::Function *f) {
+static std::set<wasm::Store *> findDuplicateStoreLocal(wasm::Function *f) {
   wasm::analysis::FiniteIntPowersetLattice lattice{f->getNumLocals()};
   wasm::analysis::CFG cfg = wasm::analysis::CFG::fromFunction(f);
-  ShadowStackLivenessTransferFunction transfer{info};
+  ShadowStackLivenessTransferFunction transfer{};
 
   using Analyzer = wasm::analysis::MonotoneCFGAnalyzer<wasm::analysis::FiniteIntPowersetLattice,
                                                        ShadowStackLivenessTransferFunction>;
@@ -109,20 +104,6 @@ static std::set<wasm::Store *> findDuplicateStoreLocal(ShadowStackInfo const &in
   analyzer.evaluateFunctionEntry(f);
   analyzer.evaluateAndCollectResults();
   return transfer.storeCanBeRemoved_;
-}
-
-void RemoveDuplicateStoreLocalInGCImpl::runOnFunction(wasm::Module *m, wasm::Function *f) {
-  if (f->imported())
-    return;
-  ShadowStackInfo const &info = info_.at(f->name);
-  if (info.storeToShadownStack_.empty())
-    return;
-  std::set<wasm::Store *> const duplicateStoreLocal = findDuplicateStoreLocal(info, f);
-  Cleaner cleaner{[&duplicateStoreLocal](wasm::Expression &expr) -> bool {
-    return duplicateStoreLocal.contains(expr.dynCast<wasm::Store>());
-  }};
-  cleaner.setPassRunner(getPassRunner());
-  cleaner.runOnFunction(m, f);
 }
 
 } // namespace
@@ -139,14 +120,12 @@ void RemoveDuplicateStoreLocalInGC::runOnFunction(wasm::Module *m, wasm::Functio
       fmt::println(DEBUG_PREFIX "skipped because symbol '{}' cannot be found", stackPointerName);
     return;
   }
-  auto infoMap = BuildGCModel::createShadowStackInfoMap(*m);
-  BuildGCModel buildGCModel{infoMap};
-  buildGCModel.setPassRunner(getPassRunner());
-  buildGCModel.runOnFunction(m, f);
-
-  RemoveDuplicateStoreLocalInGCImpl removeDuplicateStoreLocalInGC{infoMap};
-  removeDuplicateStoreLocalInGC.setPassRunner(getPassRunner());
-  removeDuplicateStoreLocalInGC.runOnFunction(m, f);
+  std::set<wasm::Store *> const duplicateStoreLocal = findDuplicateStoreLocal(f);
+  Cleaner cleaner{[&duplicateStoreLocal](wasm::Expression &expr) -> bool {
+    return duplicateStoreLocal.contains(expr.dynCast<wasm::Store>());
+  }};
+  cleaner.setPassRunner(getPassRunner());
+  cleaner.runOnFunction(m, f);
 }
 
 } // namespace warpo::passes::as_gc
@@ -167,6 +146,29 @@ wasm::Pass *warpo::passes::as_gc::createRemoveDuplicateStoreLocalInGCPass() {
 
 namespace warpo::passes::ut {
 using namespace as_gc;
+
+TEST(RemoveDuplicateStoreLocalInGC, MatchStoreToShadowStack) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
+        (func $f (local i32 i32 i32 i32)
+          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 3))
+          (i32.store offset=4 (global.get $~lib/memory/__stack_pointer) (i32.add (local.get 0) (i32.const 4)))
+        )
+      )
+    )");
+
+  wasm::ExpressionList const &body = m->getFunction("f")->body->cast<wasm::Block>()->list;
+  {
+    matcher::Context ctx{};
+    EXPECT_TRUE(matcher::isStoreLocalToStackPointer(*body[0], ctx));
+    EXPECT_EQ(ctx.getBinding<wasm::LocalGet>("local.get")->index, 3);
+  }
+  {
+    EXPECT_FALSE(matcher::isStoreLocalToStackPointer(*body[1]));
+  }
+}
 
 TEST(RemoveDuplicateStoreLocalInGC, Pass) {
   auto m = loadWat(R"(
@@ -209,12 +211,7 @@ TEST(RemoveDuplicateStoreLocalInGC, FindDuplicateStoreLocalBase) {
   wasm::Function *const f = m->getFunction("f");
   wasm::ExpressionList const &body = f->body->cast<wasm::Block>()->list;
 
-  auto infoMap = BuildGCModel::createShadowStackInfoMap(*m);
-  BuildGCModel buildGCModel{infoMap};
-  wasm::PassRunner runner{m.get()};
-  buildGCModel.setPassRunner(&runner);
-  buildGCModel.runOnFunction(m.get(), f);
-  std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(infoMap.at("f"), f);
+  std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(f);
   EXPECT_EQ(duplicate.size(), 1);
   EXPECT_THAT(duplicate, testing::Contains(body[2]->cast<wasm::Store>()));
 }
@@ -232,14 +229,7 @@ TEST(RemoveDuplicateStoreLocalInGC, FindDuplicateStoreLocalKill) {
       )
     )");
   wasm::Function *const f = m->getFunction("f");
-  wasm::ExpressionList const &body = f->body->cast<wasm::Block>()->list;
-
-  auto infoMap = BuildGCModel::createShadowStackInfoMap(*m);
-  BuildGCModel buildGCModel{infoMap};
-  wasm::PassRunner runner{m.get()};
-  buildGCModel.setPassRunner(&runner);
-  buildGCModel.runOnFunction(m.get(), f);
-  std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(infoMap.at("f"), f);
+  std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(f);
   EXPECT_EQ(duplicate.size(), 0);
 }
 
@@ -256,14 +246,7 @@ TEST(RemoveDuplicateStoreLocalInGC, FindDuplicateStoreLocalKillByTee) {
       )
     )");
   wasm::Function *const f = m->getFunction("f");
-  wasm::ExpressionList const &body = f->body->cast<wasm::Block>()->list;
-
-  auto infoMap = BuildGCModel::createShadowStackInfoMap(*m);
-  BuildGCModel buildGCModel{infoMap};
-  wasm::PassRunner runner{m.get()};
-  buildGCModel.setPassRunner(&runner);
-  buildGCModel.runOnFunction(m.get(), f);
-  std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(infoMap.at("f"), f);
+  std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(f);
   EXPECT_EQ(duplicate.size(), 0);
 }
 
@@ -288,14 +271,7 @@ TEST(RemoveDuplicateStoreLocalInGC, FindDuplicateStoreLocalWithIf) {
       )
     )");
   wasm::Function *const f = m->getFunction("f");
-  wasm::ExpressionList const &body = f->body->cast<wasm::Block>()->list;
-
-  auto infoMap = BuildGCModel::createShadowStackInfoMap(*m);
-  BuildGCModel buildGCModel{infoMap};
-  wasm::PassRunner runner{m.get()};
-  buildGCModel.setPassRunner(&runner);
-  buildGCModel.runOnFunction(m.get(), f);
-  std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(infoMap.at("f"), f);
+  std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(f);
   EXPECT_EQ(duplicate.size(), 0);
 }
 
@@ -318,14 +294,7 @@ TEST(RemoveDuplicateStoreLocalInGC, FindDuplicateStoreLocalWithIf2) {
     )
   )");
   wasm::Function *const f = m->getFunction("f");
-  wasm::ExpressionList const &body = f->body->cast<wasm::Block>()->list;
-
-  auto infoMap = BuildGCModel::createShadowStackInfoMap(*m);
-  BuildGCModel buildGCModel{infoMap};
-  wasm::PassRunner runner{m.get()};
-  buildGCModel.setPassRunner(&runner);
-  buildGCModel.runOnFunction(m.get(), f);
-  std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(infoMap.at("f"), f);
+  std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(f);
   EXPECT_EQ(duplicate.size(), 1);
 }
 
@@ -345,14 +314,7 @@ TEST(RemoveDuplicateStoreLocalInGC, FindDuplicateStoreLocalWithLoop) {
       )
     )");
   wasm::Function *const f = m->getFunction("f");
-  wasm::ExpressionList const &body = f->body->cast<wasm::Block>()->list;
-
-  auto infoMap = BuildGCModel::createShadowStackInfoMap(*m);
-  BuildGCModel buildGCModel{infoMap};
-  wasm::PassRunner runner{m.get()};
-  buildGCModel.setPassRunner(&runner);
-  buildGCModel.runOnFunction(m.get(), f);
-  std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(infoMap.at("f"), f);
+  std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(f);
   EXPECT_EQ(duplicate.size(), 0);
 }
 
