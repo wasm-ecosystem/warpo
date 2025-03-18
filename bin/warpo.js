@@ -4,7 +4,7 @@ const { exit, env, argv } = require("process");
 const platform = require("os").platform();
 
 if (platform === "linux") {
-  execSync("chmod +x " + join(__dirname, "macos/warpo"));
+  execSync("chmod +x " + join(__dirname, "linux/warpo"));
   execFileSync(join(__dirname, "linux/warpo"), argv.slice(2), { env, stdio: "inherit" });
 } else if (platform === "darwin") {
   execSync("chmod +x " + join(__dirname, "macos/warpo"));
