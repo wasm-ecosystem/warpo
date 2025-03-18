@@ -50,18 +50,24 @@ std::unique_ptr<wasm::Module> passes::loadWat(std::string_view wat) {
 }
 
 static passes::Output runImpl(std::unique_ptr<wasm::Module> &m, std::vector<const char *> const &passNames) {
-  wasm::PassRunner passRunner(m.get());
-  passRunner.setDebug(support::isDebug());
-  for (const char *passName : passNames) {
-    passRunner.add(passName);
+  {
+    wasm::PassRunner passRunner(m.get());
+    passRunner.setDebug(support::isDebug());
+    for (const char *passName : passNames) {
+      passRunner.add(passName);
+    }
+    passRunner.run();
+    ensureValidate(*m);
   }
-  passRunner.options.shrinkLevel = 2;
-  passRunner.options.optimizeLevel = 0;
-  passRunner.setDebug(false);
-  passRunner.addDefaultOptimizationPasses();
-
-  passRunner.run();
-  ensureValidate(*m);
+  {
+    wasm::PassRunner defaultOptRunner{m.get()};
+    defaultOptRunner.options.shrinkLevel = 2;
+    defaultOptRunner.options.optimizeLevel = 0;
+    defaultOptRunner.setDebug(false);
+    defaultOptRunner.addDefaultOptimizationPasses();
+    defaultOptRunner.run();
+    ensureValidate(*m);
+  }
 
   wasm::BufferWithRandomAccess buffer;
   wasm::WasmBinaryWriter writer(m.get(), buffer, wasm::PassOptions::getWithoutOptimization());

@@ -120,6 +120,8 @@ void RemoveDuplicateStoreLocalInGC::runOnFunction(wasm::Module *m, wasm::Functio
       fmt::println(DEBUG_PREFIX "skipped because symbol '{}' cannot be found", stackPointerName);
     return;
   }
+  if (support::isDebug())
+    fmt::println(DEBUG_PREFIX "finding duplicate store local in function '{}'", f->name.str);
   std::set<wasm::Store *> const duplicateStoreLocal = findDuplicateStoreLocal(f);
   Cleaner cleaner{[&duplicateStoreLocal](wasm::Expression &expr) -> bool {
     return duplicateStoreLocal.contains(expr.dynCast<wasm::Store>());
