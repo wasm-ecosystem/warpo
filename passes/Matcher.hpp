@@ -17,8 +17,8 @@ struct Context {
   template <class T> T const *getBinding(std::string const &name) const {
     static_assert(std::is_base_of_v<wasm::Expression, T>, "bind only support subclass of wasm::Expression");
     auto it = bindings.find(name);
-    assert(it != bindings.end());
-    assert(it->second->is<T>());
+    if (it == bindings.end())
+      return nullptr;
     return it->second->cast<T>();
   }
 };
@@ -55,8 +55,8 @@ template <class T, class P> struct IsMatcherImpl {
 };
 
 template <class T> M<T> anyOf(std::initializer_list<M<T>> ms) {
-  return M<T>([ms = std::vector<M<T>>{ms}](T const &expr) -> bool {
-    return std::any_of(ms.begin(), ms.end(), [&expr](M<T> const &m) { return m(expr); });
+  return M<T>([ms = std::vector<M<T>>{ms}](T const &expr, Context &ctx) -> bool {
+    return std::any_of(ms.begin(), ms.end(), [&expr, &ctx](M<T> const &m) { return m(expr, ctx); });
   });
 }
 
@@ -76,12 +76,24 @@ static inline M<wasm::Store> offset(wasm::Address const &offset) {
 } // namespace store
 
 constexpr IsMatcherImpl<wasm::LocalGet, wasm::Expression> isLocalGet;
-// FIXME: rename
 namespace local_get {
 static inline M<wasm::LocalGet> index(wasm::Index index) {
   return M<wasm::LocalGet>([index](wasm::LocalGet const &expr, Context &ctx) -> bool { return index == expr.index; });
 }
 } // namespace local_get
+
+constexpr IsMatcherImpl<wasm::LocalSet, wasm::Expression> isLocalSet;
+namespace local_set {
+static inline M<wasm::LocalSet> index(wasm::Index index) {
+  return M<wasm::LocalSet>([index](wasm::LocalSet const &expr, Context &ctx) -> bool { return index == expr.index; });
+}
+static inline M<wasm::LocalSet> v(M<wasm::Expression> const &m) {
+  return M<wasm::LocalSet>([m](wasm::LocalSet const &expr, Context &ctx) -> bool { return m(*expr.value, ctx); });
+}
+static inline M<wasm::LocalSet> tee() {
+  return M<wasm::LocalSet>([](wasm::LocalSet const &expr, Context &ctx) -> bool { return expr.isTee(); });
+}
+} // namespace local_set
 
 constexpr IsMatcherImpl<wasm::GlobalGet, wasm::Expression> isGlobalGet;
 namespace global_get {

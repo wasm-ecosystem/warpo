@@ -31,8 +31,9 @@
 #define DEBUG_PREFIX "[RemoveDuplicateStoreLocalInGC] "
 
 namespace warpo::passes::matcher {
-M<wasm::Expression> const isStoreLocalToStackPointer = isStore(
-    store::ptr(isGlobalGet(global_get::name(as_gc::stackPointerName))), store::v(isLocalGet().bind("local.get")));
+M<wasm::Expression> const isStoreLocalToStackPointer =
+    isStore(store::ptr(isGlobalGet(global_get::name(as_gc::stackPointerName))),
+            store::v(anyOf({isLocalGet().bind("local.get"), isLocalSet(local_set::tee()).bind("local.tee")})));
 };
 
 namespace warpo::passes::as_gc {
@@ -71,25 +72,28 @@ struct ShadowStackLivenessTransferFunction
         fmt::println(DEBUG_PREFIX "kill local {}", expr->index);
     currState->set(expr->index, MayNotInShadowStack);
   }
+  bool mustInShadowStack(wasm::LocalGet const *localGet) {
+    return localGet != nullptr && currState->get(localGet->index) == MustInShadowStack;
+  }
   void visitStore(wasm::Store *expr) {
     assert(currState);
     matcher::Context ctx{};
     if (!matcher::isStoreLocalToStackPointer(*expr, ctx))
       return;
     auto const *localGet = ctx.getBinding<wasm::LocalGet>("local.get");
-    assert(localGet != nullptr);
+    auto const *localTee = ctx.getBinding<wasm::LocalSet>("local.tee");
+    assert(localGet != nullptr || localTee != nullptr);
+    wasm::Index const localIndex = localGet != nullptr ? localGet->index : localTee->index;
     if (support::isDebug())
       if (!collectingResults)
-        fmt::println(DEBUG_PREFIX "local {} live in shadow shadow stack", localGet->index);
-    if (collectingResults) {
-      if (currState->get(localGet->index) == MustInShadowStack) {
-        if (support::isDebug())
-          fmt::println(DEBUG_PREFIX "store local {} ({}) to shadow stack when it is already in stack", localGet->index,
-                       static_cast<void *>(expr));
-        storeCanBeRemoved_.insert(expr);
-      }
+        fmt::println(DEBUG_PREFIX "local {} live in shadow shadow stack", localIndex);
+    if (collectingResults && mustInShadowStack(localGet)) {
+      if (support::isDebug())
+        fmt::println(DEBUG_PREFIX "store local {} ({}) to shadow stack when it is already in stack", localGet->index,
+                     static_cast<void *>(expr));
+      storeCanBeRemoved_.insert(expr);
     }
-    currState->set(localGet->index, MustInShadowStack);
+    currState->set(localIndex, MustInShadowStack);
   }
 };
 
@@ -154,21 +158,37 @@ TEST(RemoveDuplicateStoreLocalInGC, MatchStoreToShadowStack) {
       (module
         (memory 1)
         (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
-        (func $f (local i32 i32 i32 i32)
+        (func $expected (local i32 i32 i32 i32)
           (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 3))
+          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.tee 3 (i32.const 0x20)))
+        )
+        (func $unexpected (local i32 i32 i32 i32)
           (i32.store offset=4 (global.get $~lib/memory/__stack_pointer) (i32.add (local.get 0) (i32.const 4)))
+          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (global.get $~lib/memory/__stack_pointer))
         )
       )
     )");
 
-  wasm::ExpressionList const &body = m->getFunction("f")->body->cast<wasm::Block>()->list;
+  wasm::ExpressionList const &expected = m->getFunction("expected")->body->cast<wasm::Block>()->list;
   {
     matcher::Context ctx{};
-    EXPECT_TRUE(matcher::isStoreLocalToStackPointer(*body[0], ctx));
-    EXPECT_EQ(ctx.getBinding<wasm::LocalGet>("local.get")->index, 3);
+    EXPECT_TRUE(matcher::isStoreLocalToStackPointer(*expected[0], ctx));
+    auto get = ctx.getBinding<wasm::LocalGet>("local.get");
+    ASSERT_NE(get, nullptr);
+    EXPECT_EQ(get->index, 3);
   }
   {
-    EXPECT_FALSE(matcher::isStoreLocalToStackPointer(*body[1]));
+    matcher::Context ctx{};
+    EXPECT_TRUE(matcher::isStoreLocalToStackPointer(*expected[1], ctx));
+    auto tee = ctx.getBinding<wasm::LocalSet>("local.tee");
+    ASSERT_NE(tee, nullptr);
+    EXPECT_EQ(tee->index, 3);
+    EXPECT_TRUE(tee->isTee());
+  }
+  wasm::ExpressionList const &unexpected = m->getFunction("unexpected")->body->cast<wasm::Block>()->list;
+  {
+    EXPECT_FALSE(matcher::isStoreLocalToStackPointer(*unexpected[0]));
+    EXPECT_FALSE(matcher::isStoreLocalToStackPointer(*unexpected[1]));
   }
 }
 
@@ -216,6 +236,25 @@ TEST(RemoveDuplicateStoreLocalInGC, FindDuplicateStoreLocalBase) {
   std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(f);
   EXPECT_EQ(duplicate.size(), 1);
   EXPECT_THAT(duplicate, testing::Contains(body[2]->cast<wasm::Store>()));
+}
+
+TEST(RemoveDuplicateStoreLocalInGC, FindDuplicateStoreLocalTee) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
+        (func $f (local i32) (local i32)
+          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.tee 0 (i32.const 4)))
+          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
+        )
+      )
+    )");
+  wasm::Function *const f = m->getFunction("f");
+  wasm::ExpressionList const &body = f->body->cast<wasm::Block>()->list;
+
+  std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(f);
+  EXPECT_EQ(duplicate.size(), 1);
+  EXPECT_THAT(duplicate, testing::Contains(body[1]->cast<wasm::Store>()));
 }
 
 TEST(RemoveDuplicateStoreLocalInGC, FindDuplicateStoreLocalKill) {
