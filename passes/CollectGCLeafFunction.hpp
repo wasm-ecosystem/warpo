@@ -1,9 +1,9 @@
 #pragma once
 
 #include <map>
+#include <memory>
 #include <set>
 
-#include "ir/module-utils.h"
 #include "pass.h"
 #include "support/name.h"
 #include "wasm.h"
@@ -12,12 +12,7 @@ namespace warpo::passes::as_gc {
 
 using CallGraph = std::map<wasm::Name, std::set<wasm::Name>>;
 struct CallCollector : public wasm::WalkerPass<wasm::PostWalker<CallCollector>> {
-  static CallGraph createCallGraph(wasm::Module &m) {
-    CallGraph ret{};
-    wasm::ModuleUtils::iterDefinedFunctions(
-        m, [&ret](wasm::Function *curr) { ret.insert_or_assign(curr->name, std::set<wasm::Name>{}); });
-    return ret;
-  }
+  static CallGraph createCallGraph(wasm::Module &m);
 
   explicit CallCollector(CallGraph &target) : cg_(target) {}
   bool isFunctionParallel() override { return true; }

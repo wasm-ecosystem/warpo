@@ -1,14 +1,25 @@
 /// @brief There are some function
 
+#include <set>
+
 #include "CollectGCLeafFunction.hpp"
 #include "fmt/base.h"
-#include "support/Container.hpp"
 #include "support/Debug.hpp"
+#include "support/name.h"
 #include "wasm.h"
 
 #define DEBUG_PREFIX "[GCLeafFunction] "
 
 namespace warpo::passes::as_gc {
+
+CallGraph CallCollector::createCallGraph(wasm::Module &m) {
+  CallGraph ret{};
+  for (std::unique_ptr<wasm::Function> const &f : m.functions) {
+    // we treat imported function as leaf function because in cdc, nest wasm call is not allowed.
+    ret.insert_or_assign(f->name, std::set<wasm::Name>{});
+  }
+  return ret;
+}
 
 void CallCollector::visitCall(wasm::Call *expr) { cg_.at(getFunction()->name).insert(expr->target); }
 
@@ -25,28 +36,25 @@ void CallCollector::visitCallIndirect(wasm::CallIndirect *expr) {
 
 static std::set<wasm::Name> collectLeafFunctions(const CallGraph &cg, std::set<wasm::Name> const &taint) {
   std::set<wasm::Name> leaf{};
-  bool changed = true;
-  while (changed) {
-    changed = false;
-    for (auto const &[caller, callees] : cg) {
-      if (taint.contains(caller))
-        continue;
-      // to handle recursive call
-      // we put the current function into leaf and calculate subset.
-      // if the current function is not a leaf, roll back.
-      std::set<wasm::Name>::iterator it{};
-      bool isChange;
-      std::tie(it, isChange) = leaf.insert(caller);
-      if (!isChange)
-        continue;
-      if (subset(leaf, callees)) {
-        changed = true;
-      } else {
-        leaf.erase(it);
-      }
+  std::map<wasm::Name, std::set<wasm::Name>> reservedCallGraph{};
+
+  for (auto const &[caller, callees] : cg) {
+    leaf.insert(caller);
+    for (wasm::Name const &callee : callees) {
+      reservedCallGraph.try_emplace(callee, std::set<wasm::Name>{}).first->second.insert(caller);
     }
   }
-
+  std::set<wasm::Name> workList{taint.begin(), taint.end()};
+  while (!workList.empty()) {
+    auto it = workList.begin();
+    if (leaf.erase(*it) == 1) {
+      auto const reservedCallGraphIt = reservedCallGraph.find(*it);
+      if (reservedCallGraphIt != reservedCallGraph.end()) {
+        workList.insert(reservedCallGraphIt->second.begin(), reservedCallGraphIt->second.end());
+      }
+    }
+    workList.erase(it);
+  }
   return leaf;
 }
 
@@ -119,24 +127,6 @@ TEST(GCLeafFunctionTest, BuildCallGraph) {
 }
 
 TEST(GCLeafFunctionTest, LeafFunction) {
-  CallGraph CG{};
-  CG["leaf"] = {};
-  CG["parent_1"] = {"leaf"};
-  CG["recursive"] = {"recursive"};
-  CG["bad_1"] = {"imported"};
-  CG["bad_recursive"] = {"bad_recursive", "bad_1"};
-
-  std::set<wasm::Name> leaf = collectLeafFunctions(CG, {});
-
-  EXPECT_THAT(leaf, Contains("leaf"));
-  EXPECT_THAT(leaf, Contains("parent_1"));
-  EXPECT_THAT(leaf, Contains("recursive"));
-
-  EXPECT_THAT(leaf, Not(Contains("bad_1")));
-  EXPECT_THAT(leaf, Not(Contains("bad_recursive")));
-}
-
-TEST(GCLeafFunctionTest, LeafFunctionTaint) {
   CallGraph CG{};
   CG["poison"] = {};
   CG["leaf"] = {};
