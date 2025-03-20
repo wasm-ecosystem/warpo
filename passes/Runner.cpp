@@ -1,7 +1,10 @@
+#include <array>
 #include <memory>
 #include <sstream>
 #include <vector>
 
+#include "CleanDirectLocalUsesGC.hpp"
+#include "CleanLeafFunctionGC.hpp"
 #include "ExtractMostFrequentlyUsedGlobals.hpp"
 #include "InlineSetterFunction.hpp"
 #include "RemoveDuplicateStoreLocalInGC.hpp"
@@ -17,14 +20,6 @@
 #include "wasm.h"
 
 namespace warpo {
-
-void passes::init() {
-  wasm::PassRegistry::get()->registerPass("extract-most-frequently-used-global", "",
-                                          createExtractMostFrequentlyUsedGlobalsPass);
-  wasm::PassRegistry::get()->registerPass("inline-setter-function", "", createInlineSetterFunctionPass);
-  wasm::PassRegistry::get()->registerPass("remove-duplicate-store-local-in-shadow-stack", "",
-                                          as_gc::createRemoveDuplicateStoreLocalInGCPass);
-}
 
 static void ensureValidate(wasm::Module &m) {
   if (!wasm::WasmValidator{}.validate(m))
@@ -49,13 +44,17 @@ std::unique_ptr<wasm::Module> passes::loadWat(std::string_view wat) {
   return m;
 }
 
-static passes::Output runImpl(std::unique_ptr<wasm::Module> &m, std::vector<const char *> const &passNames) {
+static passes::Output runImpl(std::unique_ptr<wasm::Module> &m) {
   {
     wasm::PassRunner passRunner(m.get());
     passRunner.setDebug(support::isDebug());
-    for (const char *passName : passNames) {
-      passRunner.add(passName);
-    }
+
+    passRunner.add(std::unique_ptr<wasm::Pass>(passes::createExtractMostFrequentlyUsedGlobalsPass()));
+    passRunner.add(std::unique_ptr<wasm::Pass>(passes::createInlineSetterFunctionPass()));
+    passRunner.add(std::unique_ptr<wasm::Pass>(passes::as_gc::createRemoveDuplicateStoreLocalInGCPass()));
+    passRunner.add(std::unique_ptr<wasm::Pass>(passes::as_gc::createCleanLeafFunctionGC()));
+    passRunner.add(std::unique_ptr<wasm::Pass>(passes::as_gc::createCleanDirectLocalUsesGC()));
+
     passRunner.run();
     ensureValidate(*m);
   }
@@ -81,14 +80,14 @@ static passes::Output runImpl(std::unique_ptr<wasm::Module> &m, std::vector<cons
   return {.wat = std::move(ss).str(), .wasm = static_cast<std::vector<uint8_t>>(buffer)};
 }
 
-passes::Output passes::runOnWasm(const std::vector<char> &input, std::vector<const char *> const &passNames) {
+passes::Output passes::runOnWasm(const std::vector<char> &input) {
   std::unique_ptr<wasm::Module> m = loadWasm(input);
-  return runImpl(m, passNames);
+  return runImpl(m);
 }
 
-passes::Output passes::runOnWat(std::string const &input, std::vector<const char *> const &passNames) {
+passes::Output passes::runOnWat(std::string const &input) {
   std::unique_ptr<wasm::Module> m = loadWat(input);
-  return runImpl(m, passNames);
+  return runImpl(m);
 }
 
 } // namespace warpo

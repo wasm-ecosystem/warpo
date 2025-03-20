@@ -103,7 +103,7 @@ static inline M<wasm::GlobalGet> name(wasm::Name name) {
 } // namespace global_get
 constexpr IsMatcherImpl<wasm::GlobalSet, wasm::Expression> isGlobalSet;
 namespace global_set {
-static inline M<wasm::GlobalSet> value(M<wasm::Expression> const &m) {
+static inline M<wasm::GlobalSet> v(M<wasm::Expression> const &m) {
   return M<wasm::GlobalSet>([m](wasm::GlobalSet const &expr, Context &ctx) -> bool { return m(*expr.value, ctx); });
 }
 static inline M<wasm::GlobalSet> name(wasm::Name name) {
@@ -139,5 +139,32 @@ static inline M<wasm::Binary> each(M<wasm::Expression> const &m1, M<wasm::Expres
   });
 }
 } // namespace binary
+
+constexpr IsMatcherImpl<wasm::Drop, wasm::Expression> isDrop;
+namespace drop {
+static inline M<wasm::Drop> v(M<wasm::Expression> const &m) {
+  return M<wasm::Drop>([m](wasm::Drop const &expr, Context &ctx) -> bool { return m(*expr.value, ctx); });
+}
+} // namespace drop
+
+constexpr IsMatcherImpl<wasm::Call, wasm::Expression> isCall;
+namespace call {
+static inline M<wasm::Call> callee(wasm::Name name) {
+  return M<wasm::Call>([name](wasm::Call const &expr, Context &ctx) -> bool { return name == expr.target; });
+}
+} // namespace call
+
+constexpr IsMatcherImpl<wasm::MemoryFill, wasm::Expression> isMemoryFill;
+namespace memory_fill {
+static inline M<wasm::MemoryFill> dest(M<wasm::Expression> const &m) {
+  return M<wasm::MemoryFill>([m](wasm::MemoryFill const &expr, Context &ctx) -> bool { return m(*expr.dest, ctx); });
+}
+static inline M<wasm::MemoryFill> v(M<wasm::Expression> const &m) {
+  return M<wasm::MemoryFill>([m](wasm::MemoryFill const &expr, Context &ctx) -> bool { return m(*expr.value, ctx); });
+}
+static inline M<wasm::MemoryFill> size(M<wasm::Expression> const &m) {
+  return M<wasm::MemoryFill>([m](wasm::MemoryFill const &expr, Context &ctx) -> bool { return m(*expr.size, ctx); });
+}
+} // namespace memory_fill
 
 } // namespace warpo::passes::matcher

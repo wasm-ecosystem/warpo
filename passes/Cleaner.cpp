@@ -4,7 +4,7 @@
 #include "wasm-builder.h"
 #include "wasm.h"
 
-#define DEBUG_PREFIX "[Cleaner]"
+#define DEBUG_PREFIX "[Cleaner] "
 
 namespace warpo::passes {
 

@@ -24,14 +24,6 @@ int main(int argc, char const *argv[]) {
     return 1;
   }
 
-  std::vector<const char *> const passNames{
-      "extract-most-frequently-used-global",
-      "inline-setter-function",
-      "remove-duplicate-store-local-in-shadow-stack",
-  };
-
-  passes::init();
-
   passes::Output output;
   std::string const inputPathStr{static_cast<const char *>(inputPath)};
   if (inputPathStr.ends_with("wasm")) {
@@ -41,7 +33,7 @@ int main(int argc, char const *argv[]) {
       return 1;
     }
     std::vector<char> input{std::istreambuf_iterator<char>{ifstream}, {}};
-    output = passes::runOnWasm(input, passNames);
+    output = passes::runOnWasm(input);
   } else if (inputPathStr.ends_with("wat")) {
     std::ifstream ifstream{inputPathStr, std::ios::in};
     if (!ifstream.good()) {
@@ -49,7 +41,7 @@ int main(int argc, char const *argv[]) {
       return 1;
     }
     std::string input{std::istreambuf_iterator<char>{ifstream}, {}};
-    output = passes::runOnWat(input, passNames);
+    output = passes::runOnWat(input);
   } else {
     fmt::println("ERROR: invalid file extension: {}", inputPathStr);
     return 1;
@@ -73,11 +65,11 @@ int main(int argc, char const *argv[]) {
     fmt::println("ERROR: failed to open file: {}", outputPathStr);
     return 1;
   }
-  wasmOf.write(reinterpret_cast<char const *>(output.wasm.data()), output.wasm.size());
+  wasmOf.write(reinterpret_cast<char const *>(output.wasm.data()), static_cast<std::streamsize>(output.wasm.size()));
   std::ofstream watOf{watPathStr, std::ios::out};
   if (!watOf.good()) {
     fmt::println("ERROR: failed to open file: {}", outputPathStr);
     return 1;
   }
-  watOf.write(output.wat.data(), output.wat.size());
+  watOf.write(output.wat.data(), static_cast<std::streamsize>(output.wat.size()));
 }
