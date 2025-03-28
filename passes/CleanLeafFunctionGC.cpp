@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <fmt/base.h>
+#include <iostream>
 #include <memory>
 #include <set>
 
@@ -21,6 +22,57 @@
 namespace warpo::passes::as_gc {
 namespace {
 
+class LeafFunctionGCOperationVerifier : public wasm::PostWalker<LeafFunctionGCOperationVerifier> {
+  std::set<wasm::GlobalGet const *> globalGets_{};
+  bool hasInvalidGlobalSet_ = false;
+
+public:
+  bool ok() const { return !hasInvalidGlobalSet_ && globalGets_.empty(); }
+
+  void visitGlobalGet(wasm::GlobalGet *expr) {
+    if (!matcher::getSP(*expr))
+      return;
+    globalGets_.insert(expr);
+  }
+  void visitStore(wasm::Store *expr) {
+    matcher::Context ctx{};
+    if (!matcher::isGCStore(*expr, ctx))
+      return;
+    globalGets_.erase(ctx.getBinding<wasm::GlobalGet>("sp"));
+  }
+  void visitGlobalSet(wasm::GlobalSet *expr) {
+    matcher::Context ctx{};
+    if (!matcher::isGCUpdate(*expr)) {
+      // we has strange global update
+      hasInvalidGlobalSet_ |= expr->name == as_gc::stackPointerName;
+      return;
+    }
+    globalGets_.erase(ctx.getBinding<wasm::GlobalGet>("sp"));
+  }
+  void visitMemoryFill(wasm::MemoryFill *expr) {
+    matcher::Context ctx{};
+    if (!matcher::isGCFill(*expr))
+      return;
+    globalGets_.erase(ctx.getBinding<wasm::GlobalGet>("sp"));
+  }
+  void visitCall(wasm::Call *expr) {
+    matcher::Context ctx{};
+    if (!matcher::isCallStackCheck(*expr))
+      return;
+    if (auto const *sp = ctx.getBinding<wasm::GlobalGet>("sp"); sp != nullptr)
+      globalGets_.erase(sp);
+  }
+};
+
+bool verifyLeafFunctionGCOperation(wasm::Function *func) {
+  LeafFunctionGCOperationVerifier verifier{};
+  verifier.walk(func->body);
+  if (support::isDebug())
+    if (!verifier.ok())
+      fmt::print(DEBUG_PREFIX "invalid GC operation in '{}':\n", func->name.str);
+  return verifier.ok();
+}
+
 struct LeafFunctionGCOperationCleaner : public wasm::WalkerPass<wasm::PostWalker<LeafFunctionGCOperationCleaner>> {
   std::set<wasm::Name> const &leafFunctions_;
   explicit LeafFunctionGCOperationCleaner(std::set<wasm::Name> const &leafFunctions) : leafFunctions_(leafFunctions) {
@@ -33,11 +85,13 @@ struct LeafFunctionGCOperationCleaner : public wasm::WalkerPass<wasm::PostWalker
   bool modifiesBinaryenIR() override { return true; }
 
   void doWalkFunction(wasm::Function *func) {
-    if (leafFunctions_.contains(func->name)) {
-      if (support::isDebug())
-        fmt::println(DEBUG_PREFIX "clean GC operation in leaf function '{}'", getFunction()->name.str);
-      walk(func->body);
-    }
+    if (!leafFunctions_.contains(func->name))
+      return;
+    if (!verifyLeafFunctionGCOperation(func))
+      return;
+    if (support::isDebug())
+      fmt::println(DEBUG_PREFIX "clean GC operation in leaf function '{}'", getFunction()->name.str);
+    walk(func->body);
   }
   void visitStore(wasm::Store *expr) {
     if (!matcher::isGCStore(*expr))

@@ -33,7 +33,7 @@ template <class T> struct M {
   }
   bool operator()(T const &expr, Context &ctx) const { return m_matcher(expr, ctx); }
 
-  M bind(std::string const &name) {
+  M bind(std::string const &name) const {
     return M{[self = *this, name](T const &expr, Context &ctx) -> bool {
       bool const ret = self(expr, ctx);
       if (ret)
