@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <fmt/base.h>
-#include <iostream>
 #include <memory>
 #include <set>
 
@@ -42,7 +41,7 @@ public:
   }
   void visitGlobalSet(wasm::GlobalSet *expr) {
     matcher::Context ctx{};
-    if (!matcher::isGCUpdate(*expr)) {
+    if (!matcher::isGCUpdate(*expr, ctx)) {
       // we has strange global update
       hasInvalidGlobalSet_ |= expr->name == as_gc::stackPointerName;
       return;
@@ -163,6 +162,51 @@ wasm::Pass *warpo::passes::as_gc::createCleanLeafFunctionGC() { return new Clean
 namespace warpo::passes::ut {
 
 using namespace as_gc;
+
+TEST(CleanLeafFunctionGCTest, LeafFunctionGCOperationVerifierStore) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
+        (func $f (local i32) (local i32)
+          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
+          (nop)
+        )
+      )
+    )");
+  wasm::Function *const f = m->getFunction("f");
+  EXPECT_TRUE(verifyLeafFunctionGCOperation(f));
+}
+
+TEST(CleanLeafFunctionGCTest, LeafFunctionGCOperationVerifierSet) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
+        (func $f (local i32) (local i32)
+          (global.set $~lib/memory/__stack_pointer (i32.add (i32.const 4) (global.get $~lib/memory/__stack_pointer)))
+          (nop)
+        )
+      )
+    )");
+  wasm::Function *const f = m->getFunction("f");
+  EXPECT_TRUE(verifyLeafFunctionGCOperation(f));
+}
+
+TEST(CleanLeafFunctionGCTest, LeafFunctionGCOperationVerifierOther) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
+        (func $f (local i32) (local i32)
+          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
+          (local.set 0 (global.get $~lib/memory/__stack_pointer))
+        )
+      )
+    )");
+  wasm::Function *const f = m->getFunction("f");
+  EXPECT_FALSE(verifyLeafFunctionGCOperation(f));
+}
 
 TEST(CleanLeafFunctionGCTest, LeafFunctionGCOperationCleaner) {
   auto m = loadWat(R"(
