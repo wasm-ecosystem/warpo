@@ -34,7 +34,7 @@ int main(int argc, char const *argv[]) {
     }
     std::vector<char> input{std::istreambuf_iterator<char>{ifstream}, {}};
     output = passes::runOnWasm(input);
-  } else if (inputPathStr.ends_with("wat")) {
+  } else if (inputPathStr.ends_with("wat") || inputPathStr.ends_with("wast")) {
     std::ifstream ifstream{inputPathStr, std::ios::in};
     if (!ifstream.good()) {
       fmt::println("ERROR: failed to open file: {}", inputPathStr);

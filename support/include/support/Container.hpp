@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <concepts>
 #include <set>
+#include <utility>
 
 namespace warpo {
 
@@ -39,6 +40,15 @@ std::vector<E> transform(std::vector<T> const &v, Fn const &fn)
 
 template <class T, class Fn> bool all_of(T &&container, Fn &&fn) {
   return std::all_of(container.begin(), container.end(), std::forward<Fn>(fn));
+}
+
+template <class Runner, class GetIndicator> void runUntilImmutable(Runner &&runner, GetIndicator &&getIndicator) {
+  for (;;) {
+    auto indicator = std::forward<GetIndicator>(getIndicator)();
+    std::forward<Runner>(runner)();
+    if (indicator == std::forward<GetIndicator>(getIndicator)())
+      break;
+  }
 }
 
 } // namespace warpo

@@ -20,6 +20,7 @@
 #include <cstdint>
 #include <fmt/base.h>
 #include <fmt/ranges.h>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <set>
@@ -47,6 +48,105 @@
 
 namespace warpo::passes::as_gc {
 namespace {
+
+struct GetLikeExpr {
+  wasm::Expression *expr_ = nullptr;
+  wasm::Index getIndex() const {
+    if (auto *get = expr_->dynCast<wasm::LocalGet>())
+      return get->index;
+    if (auto *set = expr_->dynCast<wasm::LocalSet>())
+      return set->index;
+    __builtin_unreachable();
+  }
+  auto operator<=>(GetLikeExpr const &other) const { return expr_ <=> other.expr_; }
+};
+
+class GetUsagePoison
+    : public wasm::ExpressionStackWalker<GetUsagePoison, wasm::UnifiedExpressionVisitor<GetUsagePoison>> {
+  std::set<wasm::Name> const &leaf_;
+  std::set<GetLikeExpr> activeGets_{}; // when meet call, those get will be poisoned
+  struct OnMeetCtx {
+    GetLikeExpr expr_;
+    wasm::Expression *current_;
+  };
+  std::map<wasm::Expression *, std::vector<OnMeetCtx>>
+      onMeets_{}; // when meet target expression, update current node value
+
+  void addOnMeetCallback(wasm::Expression *target, OnMeetCtx ctx) {
+    onMeets_.try_emplace(target, std::vector<OnMeetCtx>{}).first->second.push_back(std::move(ctx));
+  }
+
+  enum class ParentKind {
+    Forward,  // LOOP BLOCK IF
+    Consume,  // NORMAL OPCode
+    Poisoned, // GC Call
+  };
+  ParentKind getParentKind(wasm::Expression *parent, wasm::Expression *current) {
+    if (parent->is<wasm::Loop>() || parent->is<wasm::Block>())
+      return ParentKind::Forward;
+    if (auto *ifExpr = parent->dynCast<wasm::If>()) {
+      if (ifExpr->condition != current)
+        return ParentKind::Forward;
+    }
+    if (auto *tee = parent->dynCast<wasm::LocalSet>()) {
+      if (tee->isTee())
+        return ParentKind::Forward;
+    }
+    if (auto *call = parent->dynCast<wasm::Call>()) {
+      if (!leaf_.contains(call->target))
+        return ParentKind::Poisoned;
+    }
+    return ParentKind::Consume;
+  }
+
+  void onMeetCallback(wasm::Expression *current, OnMeetCtx const &ctx) {
+    switch (getParentKind(current, ctx.current_)) {
+    case ParentKind::Forward:
+      addOnMeetCallback(getParent(), OnMeetCtx{ctx.expr_, current});
+      break;
+    case ParentKind::Consume:
+      activeGets_.erase(ctx.expr_);
+      break;
+    case ParentKind::Poisoned:
+      poisonedGets_.insert(ctx.expr_);
+      break;
+    default:
+      __builtin_unreachable();
+    }
+  }
+
+  void visitGetLikeImpl(GetLikeExpr expr) {
+    activeGets_.insert(expr);
+    addOnMeetCallback(getParent(), OnMeetCtx{expr, expr.expr_});
+  }
+
+  void visitCallImpl(wasm::Call *expr) {
+    if (leaf_.contains(expr->target))
+      return;
+    for (GetLikeExpr get : activeGets_) {
+      poisonedGets_.insert(get);
+    }
+    activeGets_.clear();
+  }
+
+public:
+  explicit GetUsagePoison(std::set<wasm::Name> const &leaf) : leaf_(leaf) {}
+  std::set<GetLikeExpr> poisonedGets_{};
+
+  void visitExpression(wasm::Expression *expr) {
+    if (auto it = onMeets_.find(expr); it != onMeets_.end())
+      for (OnMeetCtx const &ctx : it->second)
+        onMeetCallback(expr, ctx);
+    if (auto *e = expr->dynCast<wasm::LocalGet>()) {
+      visitGetLikeImpl({e});
+    } else if (auto *e = expr->dynCast<wasm::LocalSet>()) {
+      if (e->isTee())
+        visitGetLikeImpl({expr});
+    } else if (auto *e = expr->dynCast<wasm::Call>()) {
+      visitCallImpl(e);
+    }
+  }
+};
 
 class LocalsGetterLattice : public wasm::analysis::Vector<wasm::analysis::Integer<uint8_t>> {
   using Super = wasm::analysis::Vector<wasm::analysis::Integer<uint8_t>>;
@@ -101,23 +201,32 @@ public:
   }
 };
 
+std::set<GetLikeExpr> getPoisonedGetLikeExpr(wasm::Function *func, std::set<wasm::Name> const &leaf) {
+  GetUsagePoison finder{leaf};
+  finder.walkFunction(func);
+  if (support::isDebug()) {
+    fmt::println(DEBUG_PREFIX "poisoned get size: {}", finder.poisonedGets_.size());
+  }
+  return std::move(finder.poisonedGets_);
+}
+
 class LocalsGetterTransferFn : public wasm::analysis::VisitorTransferFunc<LocalsGetterTransferFn, LocalsGetterLattice,
                                                                           wasm::analysis::AnalysisDirection::Backward> {
+  using Super = wasm::analysis::VisitorTransferFunc<LocalsGetterTransferFn, LocalsGetterLattice,
+                                                    wasm::analysis::AnalysisDirection::Backward>;
+  std::set<wasm::Name> const &leaf_;
   static constexpr uint8_t MayHasGCCall = 2U; // TOP
   static constexpr uint8_t MayHasGet = 1U;
   static constexpr uint8_t InitialValue = 0U;
-
-  std::set<wasm::LocalGet *> callOperands_{};
+  std::set<GetLikeExpr> poisonedGets_{};
 
 public:
   std::set<wasm::LocalSet *> results_{};
   LocalsGetterLattice lattice_;
-  std::set<wasm::Name> const &leaf_;
 
   explicit LocalsGetterTransferFn(wasm::Function &f, std::set<wasm::Name> const &leaf)
-      : lattice_(LocalsGetterLattice::create(f)), leaf_(leaf) {}
-  explicit LocalsGetterTransferFn(wasm::Function &f, std::set<wasm::Name> &&leaf) = delete;
-
+      : Super{}, lattice_(LocalsGetterLattice::create(f)), leaf_(leaf),
+        poisonedGets_{getPoisonedGetLikeExpr(&f, leaf)} {}
   void visitCall(wasm::Call *expr) {
     // we force on GC call
     if (leaf_.contains(expr->target))
@@ -127,44 +236,61 @@ public:
         element = MayHasGCCall;
       }
     }
-    for (wasm::Expression *operand : expr->operands) {
-      if (wasm::LocalGet *get = operand->dynCast<wasm::LocalGet>()) {
-        callOperands_.insert(get);
-      }
-    }
   }
   void visitLocalGet(wasm::LocalGet *expr) {
-    // set
     uint8_t &element = currState->at(lattice_.getIndex(expr));
     // treat parameter of non leaf function call as HasGCCall also.
-    auto const it = callOperands_.find(expr);
-    if (it != callOperands_.end()) {
-      element = MayHasGCCall;
-      callOperands_.erase(it);
-      return;
-    }
     if (element == InitialValue)
       element = MayHasGet;
+    if (poisonedGets_.contains(GetLikeExpr{.expr_ = expr}))
+      element = MayHasGCCall;
   }
   void visitLocalSet(wasm::LocalSet *expr) {
     if (collectingResults) {
-      if (all_of(lattice_.getIndexRange(expr), [this](size_t i) -> bool { return currState->at(i) != MayHasGCCall; })) {
+      bool const notInfluencedByGCCall =
+          all_of(lattice_.getIndexRange(expr), [this](size_t i) -> bool { return currState->at(i) != MayHasGCCall; });
+      bool const teePoisoned = expr->isTee() && poisonedGets_.contains(GetLikeExpr{.expr_ = expr});
+      if (notInfluencedByGCCall && !teePoisoned) {
         results_.insert(expr);
       }
     }
-    // kill
-    for (size_t i : lattice_.getIndexRange(expr))
-      currState->at(i) = InitialValue;
+    for (size_t i : lattice_.getIndexRange(expr)) {
+      uint8_t &element = currState->at(i);
+      element = InitialValue;
+    }
   }
 };
 
-static std::set<wasm::LocalSet *> scanRemovableSet(wasm::Function *f, std::set<wasm::Name> const &leafFunctions_) {
-  LocalsGetterTransferFn transfer{*f, leafFunctions_};
+static std::set<wasm::LocalSet *> scanTemporaryObjectLocalSet(wasm::Function *f,
+                                                              std::set<wasm::Name> const &leafFunctions) {
+  LocalsGetterTransferFn transfer{*f, leafFunctions};
   wasm::analysis::CFG cfg = wasm::analysis::CFG::fromFunction(f);
   using Analyzer = wasm::analysis::MonotoneCFGAnalyzer<LocalsGetterLattice, LocalsGetterTransferFn>;
   Analyzer analyzer{transfer.lattice_, transfer, cfg};
   analyzer.evaluateAndCollectResults();
-  return std::move(transfer.results_);
+  std::set<wasm::LocalSet *> results = std::move(transfer.results_);
+  // temporary object may be leaked by (local.set 0 (local.get 1)). We should make sure leaked object is also temporary.
+  struct LeakAnalyzer : public wasm::PostWalker<LeakAnalyzer> {
+    std::set<wasm::LocalSet *> &temporaryObjectLocalSets_;
+    explicit LeakAnalyzer(std::set<wasm::LocalSet *> &temporaryObjectLocalSets)
+        : temporaryObjectLocalSets_(temporaryObjectLocalSets) {}
+    void visitLocalSet(wasm::LocalSet *expr) {
+      if (temporaryObjectLocalSets_.contains(expr))
+        return;
+      if (auto const *value = expr->value->dynCast<wasm::LocalGet>(); value != nullptr)
+        std::erase_if(temporaryObjectLocalSets_,
+                      [index = value->index](wasm::LocalSet *set) { return set->index == index; });
+      if (auto *value = expr->value->dynCast<wasm::LocalSet>(); value != nullptr)
+        temporaryObjectLocalSets_.erase(value);
+    }
+  };
+  runUntilImmutable(
+      [&results, f]() {
+        LeakAnalyzer leakAnalyzer{results};
+        leakAnalyzer.walkFunction(f);
+      },
+      [&results]() { return results.size(); });
+  return results;
 }
 
 struct StoreCleaner : public wasm::PostWalker<StoreCleaner> {
@@ -172,6 +298,8 @@ struct StoreCleaner : public wasm::PostWalker<StoreCleaner> {
   explicit StoreCleaner(std::set<wasm::LocalSet *> const &target) : target_{target} {}
   explicit StoreCleaner(std::set<wasm::LocalSet *> &&target) = delete;
   void visitStore(wasm::Store *expr) {
+    if (!matcher::isGCStore(*expr))
+      return;
     wasm::LocalSet *v = expr->value->dynCast<wasm::LocalSet>();
     if (v == nullptr || !target_.contains(v))
       return;
@@ -199,7 +327,7 @@ struct DirectLocalUsedGCCleaner : public wasm::WalkerPass<wasm::PostWalker<Direc
       return;
     if (support::isDebug())
       fmt::println(DEBUG_PREFIX "analysis local uses in '{}' ", f->name.str);
-    std::set<wasm::LocalSet *> const target = scanRemovableSet(f, leafFunctions_);
+    std::set<wasm::LocalSet *> const target = scanTemporaryObjectLocalSet(f, leafFunctions_);
     StoreCleaner cleaner{target};
     cleaner.walkFunctionInModule(f, m);
   }
@@ -241,9 +369,10 @@ namespace warpo::passes::ut {
 
 using namespace as_gc;
 using testing::Contains;
+using testing::IsEmpty;
 using testing::Not;
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetBase) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectSetBase) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -259,11 +388,11 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetBase) {
   wasm::ExpressionList &body = f->body->cast<wasm::Block>()->list;
 
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
   EXPECT_THAT(targets, Contains(body[0]->cast<wasm::LocalSet>()));
 }
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCallLeaf) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectSetCallLeaf) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -281,11 +410,11 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCallLeaf) {
   wasm::ExpressionList &body = f->body->cast<wasm::Block>()->list;
 
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
   EXPECT_THAT(targets, Contains(body[0]->cast<wasm::LocalSet>()));
 }
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCallNonLeaf) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectSetCallNonLeaf) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -303,11 +432,11 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCallNonLeaf) {
   wasm::ExpressionList &body = f->body->cast<wasm::Block>()->list;
 
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
   EXPECT_THAT(targets, Not(Contains(body[0]->cast<wasm::LocalSet>())));
 }
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCallAfterGet) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectSetCallAfterGet) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -325,11 +454,11 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCallAfterGet) {
   wasm::ExpressionList &body = f->body->cast<wasm::Block>()->list;
 
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
   EXPECT_THAT(targets, Contains(body[0]->cast<wasm::LocalSet>()));
 }
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCallAsLeafParameters) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectSetCallAsLeafParameters) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -346,11 +475,11 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCallAsLeafParameters) {
   wasm::ExpressionList &body = f->body->cast<wasm::Block>()->list;
 
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
   EXPECT_THAT(targets, Contains(body[0]->cast<wasm::LocalSet>()));
 }
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCallAsNonLeafParameters) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectSetCallAsNonLeafParameters) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -367,11 +496,11 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCallAsNonLeafParameters) {
   wasm::ExpressionList &body = f->body->cast<wasm::Block>()->list;
 
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
   EXPECT_THAT(targets, Not(Contains(body[0]->cast<wasm::LocalSet>())));
 }
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalMultipleSet) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectMultipleSet) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -395,13 +524,13 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalMultipleSet) {
   wasm::ExpressionList &body = f->body->cast<wasm::Block>()->list;
 
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
   EXPECT_THAT(targets, Not(Contains(body[0]->cast<wasm::LocalSet>())));
   EXPECT_THAT(targets, Contains(body[3]->cast<wasm::LocalSet>()));
   EXPECT_THAT(targets, Contains(body[5]->cast<wasm::LocalSet>()));
 }
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalMultipleLocal) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectMultipleLocal) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -422,12 +551,12 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalMultipleLocal) {
   wasm::ExpressionList &body = f->body->cast<wasm::Block>()->list;
 
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
   EXPECT_THAT(targets, Not(Contains(body[0]->cast<wasm::LocalSet>())));
   EXPECT_THAT(targets, Contains(body[3]->cast<wasm::LocalSet>()));
 }
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCondition) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectSetCondition) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -447,11 +576,11 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCondition) {
     )");
   wasm::Function *const f = m->getFunction("f");
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
-  EXPECT_EQ(targets.size(), 0);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
+  EXPECT_THAT(targets, IsEmpty());
 }
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCondition2) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectSetCondition2) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -470,11 +599,11 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetCondition2) {
     )");
   wasm::Function *const f = m->getFunction("f");
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
   EXPECT_EQ(targets.size(), 1);
 }
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetConditionGet) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectSetConditionGet) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -493,11 +622,11 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetConditionGet) {
     )");
   wasm::Function *const f = m->getFunction("f");
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
   EXPECT_EQ(targets.size(), 1);
 }
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetConditionMultipleGet) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectSetConditionMultipleGet) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -519,11 +648,11 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetConditionMultipleGet) {
     )");
   wasm::Function *const f = m->getFunction("f");
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
-  EXPECT_EQ(targets.size(), 0);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
+  EXPECT_THAT(targets, IsEmpty());
 }
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetLoop) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectSetLoop) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -543,11 +672,11 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetLoop) {
   wasm::Function *const f = m->getFunction("f");
 
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
   EXPECT_EQ(targets.size(), 1);
 }
 
-TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetLoop2) {
+TEST(CleanDirectLocalUsesGC, TemporaryObjectSetLoop2) {
   auto m = loadWat(R"(
       (module
         (memory 1)
@@ -568,8 +697,139 @@ TEST(CleanDirectLocalUsesGC, ScanRemovableLocalSetLoop2) {
   wasm::Function *const f = m->getFunction("f");
 
   std::set<wasm::Name> const leaf{"leaf"};
-  std::set<wasm::LocalSet *> const targets = scanRemovableSet(f, leaf);
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
   EXPECT_EQ(targets.size(), 2);
+}
+
+TEST(CleanDirectLocalUsesGC, TemporaryObjectUseLazy) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
+        (func $leaf)
+        (func $nonleaf)
+        (func $f (result i32)
+          (local i32 i32)
+          (local.set 0 (i32.const 100))
+            local.get 0   ;; get to operand stack
+            call $nonleaf
+          drop          ;; lazy use
+            local.get 0   ;; get to operand stack
+            call $nonleaf
+          return          ;; lazy use
+        )
+      )
+    )");
+  wasm::Function *const f = m->getFunction("f");
+
+  std::set<wasm::Name> const leaf{"leaf"};
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
+  EXPECT_THAT(targets, IsEmpty());
+}
+
+TEST(CleanDirectLocalUsesGC, TemporaryObjectLazyCrossBasicBlock) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
+        (func $leaf)
+        (func $nonleaf)
+        (func $f (result i32)
+          (local i32 i32)
+          (local.set 0 (i32.const 100))
+              local.get 1
+            if (result i32)
+              local.get 0   ;; get to operand stack
+              call $nonleaf
+            else
+              i32.const 0
+            end
+          return            ;; lazy use
+        )
+      )
+    )");
+  wasm::Function *const f = m->getFunction("f");
+
+  std::set<wasm::Name> const leaf{"leaf"};
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
+  EXPECT_THAT(targets, IsEmpty());
+}
+
+TEST(CleanDirectLocalUsesGC, TemporaryObjectLazyCrossBasicBlock2) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
+        (func $leaf)
+        (func $nonleaf)
+        (func $f (result i32)
+          (local i32 i32)
+          (local.set 0 (i32.const 100))
+              local.get 1
+            if (result i32)
+              local.get 0   ;; get to operand stack
+            else
+              i32.const 0
+              call $nonleaf
+            end
+          return            ;; lazy use
+        )
+      )
+    )");
+  wasm::Function *const f = m->getFunction("f");
+
+  std::set<wasm::Name> const leaf{"leaf"};
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
+  EXPECT_THAT(targets, IsEmpty()); // FIXME: should be detect.
+}
+
+TEST(CleanDirectLocalUsesGC, TemporaryObjectLazyTee) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
+        (func $leaf)
+        (func $nonleaf)
+        (func $f (result i32)
+          (local i32 i32)
+              i32.const 100
+            local.tee 0
+            i32.const 0
+            call $nonleaf
+          i32.add            ;; lazy use
+        )
+      )
+    )");
+  wasm::Function *const f = m->getFunction("f");
+
+  std::set<wasm::Name> const leaf{"leaf"};
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
+  EXPECT_THAT(targets, IsEmpty());
+}
+
+TEST(CleanDirectLocalUsesGC, TemporaryObjectLazyCrossSet) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
+        (func $leaf)
+        (func $nonleaf)
+        (func $f (result i32)
+          (local i32 i32)
+              i32.const 100
+            local.tee 0
+              i32.const 200
+            local.tee 0
+            call $nonleaf
+          i32.add            ;; lazy use
+        )
+      )
+    )");
+  wasm::Function *const f = m->getFunction("f");
+
+  std::set<wasm::Name> const leaf{"leaf"};
+  std::set<wasm::LocalSet *> const targets = scanTemporaryObjectLocalSet(f, leaf);
+  EXPECT_THAT(targets, IsEmpty());
 }
 
 } // namespace warpo::passes::ut
