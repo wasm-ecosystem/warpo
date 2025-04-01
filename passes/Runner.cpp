@@ -44,6 +44,8 @@ std::unique_ptr<wasm::Module> passes::loadWat(std::string_view wat) {
 }
 
 static passes::Output runImpl(std::unique_ptr<wasm::Module> &m) {
+  Colors::setEnabled(false);
+
   {
     wasm::PassRunner passRunner(m.get());
     passRunner.setDebug(support::isDebug());
@@ -54,8 +56,6 @@ static passes::Output runImpl(std::unique_ptr<wasm::Module> &m) {
     passRunner.add(std::unique_ptr<wasm::Pass>(passes::as_gc::createCleanLeafFunctionGC()));
     passRunner.add("vacuum"); // add vacuum to remove dead code
     passRunner.add(std::unique_ptr<wasm::Pass>(passes::as_gc::createCleanDirectLocalUsesGC()));
-    passRunner.add("vacuum");
-    passRunner.add(std::unique_ptr<wasm::Pass>(passes::as_gc::createRemoveDuplicateStoreLocalInGCPass()));
     passRunner.add("vacuum");
 
     passRunner.run();
@@ -77,7 +77,6 @@ static passes::Output runImpl(std::unique_ptr<wasm::Module> &m) {
   writer.setEmitModuleName(false);
   writer.write();
 
-  Colors::setEnabled(false);
   std::stringstream ss{};
   wasm::printStackIR(ss, m.get(), wasm::PassOptions::getWithoutOptimization());
   return {.wat = std::move(ss).str(), .wasm = static_cast<std::vector<uint8_t>>(buffer)};

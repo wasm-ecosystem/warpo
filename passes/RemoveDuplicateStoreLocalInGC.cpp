@@ -13,13 +13,17 @@
 ///  - other instructions don't change the liveness of local in ShadowStack
 
 #include <cassert>
+#include <cstdint>
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
+#include <utility>
 
+#include "BuildCFG.hpp"
 #include "BuildGCModel.hpp"
 #include "Cleaner.hpp"
 #include "Matcher.hpp"
@@ -27,7 +31,9 @@
 #include "analysis/cfg.h"
 #include "analysis/liveness-transfer-function.h"
 #include "analysis/monotone-analyzer.h"
+#include "support/Container.hpp"
 #include "support/Debug.hpp"
+#include "support/Err.hpp"
 #include "support/index.h"
 #include "wasm.h"
 
@@ -35,59 +41,167 @@
 
 namespace warpo::passes::matcher {
 M<wasm::Expression> const isStoreLocalToStackPointer =
-    isStore(store::ptr(isGlobalGet(global_get::name(as_gc::stackPointerName))),
-            store::v(anyOf({isLocalGet().bind("get"), isLocalSet(local_set::tee()).bind("tee")})));
+    isStore(store::ptr(getSP), store::v(anyOf({isLocalGet().bind("get"), isLocalSet(local_set::tee()).bind("tee")})));
 };
 
 namespace warpo::passes::as_gc {
-
 namespace {
 
-struct LocalFilter : public wasm::PostWalker<LocalFilter> {
-  std::set<wasm::Index> invalidLocals_{};
-  std::map<wasm::Index, wasm::Address> localToOffsets_{};
-  void visitStore(wasm::Store *expr) {
-    matcher::Context ctx{};
-    if (!matcher::isStoreLocalToStackPointer(*expr, ctx))
-      return;
-    auto const *localGet = ctx.getBinding<wasm::LocalGet>("get");
-    auto const *localTee = ctx.getBinding<wasm::LocalSet>("tee");
-    assert(localGet != nullptr || localTee != nullptr);
-    wasm::Index const localIndex = localGet != nullptr ? localGet->index : localTee->index;
-    if (localToOffsets_.contains(localIndex)) {
-      if (expr->offset != localToOffsets_.at(localIndex)) {
-        invalidLocals_.insert(localIndex);
+/// @return nullopt when meeting invalid function
+Result<std::optional<int64_t>> getBlockStartOffset(wasm::Function *const f, BasicBlock const &block,
+                                                   std::map<BasicBlock const *, int64_t> const &blockEndOffset) {
+  if (block.preds().empty()) {
+    return succeed(std::optional<int64_t>{0U});
+  }
+  std::optional<int64_t> offset = std::nullopt;
+  for (BasicBlock const *pred : block.preds()) {
+    if (blockEndOffset.contains(pred)) {
+      int64_t const &predOffset = blockEndOffset.at(pred);
+      if (offset.has_value()) {
+        if (offset.value() != predOffset) {
+          fmt::println(DEBUG_PREFIX "skipped because SP not same ({} vs {}) in pred basic block '{}'", offset.value(),
+                       predOffset, f->name.str);
+          if (support::isDebug())
+            fmt::println(DEBUG_PREFIX "skipped because SP not same ({} vs {}) in pred basic block '{}'", offset.value(),
+                         predOffset, f->name.str);
+          return failed();
+        }
+      } else {
+        offset = predOffset;
       }
-    } else {
-      localToOffsets_.insert_or_assign(localIndex, expr->offset);
     }
+  }
+  return succeed(offset);
+}
+
+bool hasUnresolvedPreds(BasicBlock const &block, std::map<BasicBlock const *, int64_t> const &blockEndOffset) {
+  return any_of(block.preds(),
+                [&blockEndOffset](BasicBlock const *pred) -> bool { return !blockEndOffset.contains(pred); });
+}
+
+struct StoreToSpOffset : private std::map<wasm::Store *, int64_t> {
+  using std::map<wasm::Store *, int64_t>::insert_or_assign;
+
+  template <class Fn> void forEach(Fn &&fn) const {
+    for (auto const &[store, offset] : *this) {
+      std::forward<Fn>(fn)(store, offset + store->offset.addr);
+    }
+  }
+
+  std::optional<int64_t> getSpOffset(wasm::Store *store) const {
+    auto it = this->find(store);
+    if (it == this->end())
+      return std::nullopt;
+    return it->second + store->offset.addr;
   }
 };
 
-struct ShadowStackLivenessTransferFunction
+/// @brief get mapping of store to current SP position
+std::optional<StoreToSpOffset> getStoreToCurrentSPOffset(wasm::Function *f) {
+  bool finished = false;
+  StoreToSpOffset ret{};
+  std::map<BasicBlock const *, int64_t> blockEndOffset{};
+  CFG cfg = CFG::fromFunction(f);
+  while (!finished) {
+    finished = true;
+    for (BasicBlock const &block : cfg) {
+      if (hasUnresolvedPreds(block, blockEndOffset))
+        finished = false;
+      Result<std::optional<int64_t>> offset = getBlockStartOffset(f, block, blockEndOffset);
+      if (offset.nok())
+        return std::nullopt;
+      // no available pred basic block
+      if (!offset.value().has_value())
+        continue;
+
+      int64_t currentOffset = offset.value().value();
+      for (wasm::Expression *expr : block) {
+        matcher::Context ctx{};
+        if (matcher::isGCUpdate(*expr, ctx)) {
+          int64_t v = ctx.getBinding<wasm::Const>("value")->value.getInteger();
+          if (ctx.getBinding<wasm::Binary>("op")->op == wasm::BinaryOp::SubInt32)
+            v = -v;
+          currentOffset += v;
+        } else {
+          if (auto *set = expr->dynCast<wasm::GlobalSet>()) {
+            // unknown global.set SP
+            if (set->name == stackPointerName) {
+              if (support::isDebug())
+                fmt::println(DEBUG_PREFIX "skipped because set SP by unknown way in '{}'", f->name.str);
+              return std::nullopt;
+            }
+          }
+        }
+        if (matcher::isStoreLocalToStackPointer(*expr, ctx)) {
+          ret.insert_or_assign(expr->cast<wasm::Store>(), currentOffset);
+        }
+      }
+      blockEndOffset.insert_or_assign(&block, currentOffset);
+    }
+  }
+  return ret;
+}
+
+/// @brief get mapping of SP offset to local index
+std::map<int64_t, wasm::Index> getSpOffsetToIndex(StoreToSpOffset const &storeSpOffset) {
+  std::map<int64_t, wasm::Index> ret{};
+  std::set<int64_t> blackLists{};
+  storeSpOffset.forEach([&](wasm::Store *store, int64_t offset) -> void {
+    if (blackLists.contains(offset))
+      return;
+    matcher::Context ctx{};
+    if (!matcher::isStoreLocalToStackPointer(*store, ctx))
+      assert(false);
+    auto *localGet = ctx.getBinding<wasm::LocalGet>("get");
+    auto *localTee = ctx.getBinding<wasm::LocalSet>("tee");
+    assert(localGet != nullptr || localTee != nullptr);
+    wasm::Index const localIndex = localGet != nullptr ? localGet->index : localTee->index;
+    auto it = ret.find(offset);
+    if (it == ret.end()) {
+      ret.insert_or_assign(offset, localIndex);
+      return;
+    }
+    if (it->second != localIndex) {
+      if (support::isDebug())
+        fmt::println(DEBUG_PREFIX "skip offset={} which mapped to multiple local ({} and {})", offset, it->second,
+                     localIndex);
+      blackLists.insert(offset);
+      ret.erase(it);
+    }
+  });
+  return ret;
+};
+
+class ShadowStackLivenessTransferFunction
     : public wasm::analysis::VisitorTransferFunc<ShadowStackLivenessTransferFunction,
                                                  wasm::analysis::FiniteIntPowersetLattice,
                                                  wasm::analysis::AnalysisDirection::Forward> {
-  using Super =
-      wasm::analysis::VisitorTransferFunc<ShadowStackLivenessTransferFunction, wasm::analysis::FiniteIntPowersetLattice,
-                                          wasm::analysis::AnalysisDirection::Forward>;
   static constexpr bool MayNotInShadowStack = true;
   static constexpr bool MustInShadowStack = false; // join is OR
 
-  std::set<wasm::Index> participatedLocal_{};
+  StoreToSpOffset storeToSpOffset_{};
+  std::map<int64_t, wasm::Index> spOffsetToIndex_{};
+
+  std::optional<wasm::Index> getLocalIndexOfStoreToExclusiveSpOffset(wasm::Store *store) {
+    auto const address = storeToSpOffset_.getSpOffset(store);
+    if (!address.has_value())
+      return std::nullopt;
+    auto const indexIt = spOffsetToIndex_.find(address.value());
+    if (indexIt == spOffsetToIndex_.end())
+      return std::nullopt;
+    return indexIt->second;
+  }
+
+public:
   std::set<wasm::Store *> storeCanBeRemoved_{};
-  explicit ShadowStackLivenessTransferFunction(wasm::Function &f) : Super{} {
-    LocalFilter filter{};
-    filter.walkFunction(&f);
-    for (wasm::Index i = 0; i < f.getNumLocals(); ++i) {
-      if (f.getLocalType(i) != wasm::Type::i32)
-        continue;
-      if (filter.invalidLocals_.contains(i))
-        continue;
-      participatedLocal_.insert(i);
-    }
+  explicit ShadowStackLivenessTransferFunction(wasm::Function &f) {
+    std::optional<StoreToSpOffset> storeToSpOffset = getStoreToCurrentSPOffset(&f);
+    if (!storeToSpOffset.has_value())
+      return;
+    storeToSpOffset_ = std::move(storeToSpOffset.value());
+    spOffsetToIndex_ = getSpOffsetToIndex(storeToSpOffset_);
     if (support::isDebug())
-      fmt::println(DEBUG_PREFIX "participated locals in {}: {}", f.getNumLocals(), fmt::join(participatedLocal_, ", "));
+      fmt::println(DEBUG_PREFIX "participated locals in {}: [{}]", f.getNumLocals(), fmt::join(spOffsetToIndex_, ", "));
   }
 
   void evaluateFunctionEntry(wasm::Function *func, wasm::analysis::FiniteIntPowersetLattice::Element &element) {
@@ -103,34 +217,25 @@ struct ShadowStackLivenessTransferFunction
     }
   }
   void visitLocalSet(wasm::LocalSet *expr) {
-    assert(currState);
-    if (!participatedLocal_.contains(expr->index))
-      return;
     if (support::isDebug())
       if (!collectingResults)
         fmt::println(DEBUG_PREFIX "kill local {}", expr->index);
     currState->set(expr->index, MayNotInShadowStack);
   }
-  bool mustInShadowStack(wasm::LocalGet const *localGet) {
-    return localGet != nullptr && currState->get(localGet->index) == MustInShadowStack;
+  bool mustInShadowStack(wasm::Expression const *value) {
+    return value->is<wasm::LocalGet>() && currState->get(value->cast<wasm::LocalGet>()->index) == MustInShadowStack;
   }
   void visitStore(wasm::Store *expr) {
-    assert(currState);
-    matcher::Context ctx{};
-    if (!matcher::isStoreLocalToStackPointer(*expr, ctx))
+    std::optional<wasm::Index> const localIndexOpt = getLocalIndexOfStoreToExclusiveSpOffset(expr);
+    if (!localIndexOpt.has_value())
       return;
-    auto const *localGet = ctx.getBinding<wasm::LocalGet>("get");
-    auto const *localTee = ctx.getBinding<wasm::LocalSet>("tee");
-    assert(localGet != nullptr || localTee != nullptr);
-    wasm::Index const localIndex = localGet != nullptr ? localGet->index : localTee->index;
-    if (!participatedLocal_.contains(localIndex))
-      return;
+    wasm::Index const localIndex = localIndexOpt.value();
     if (support::isDebug())
       if (!collectingResults)
         fmt::println(DEBUG_PREFIX "local {} live in shadow shadow stack", localIndex);
-    if (collectingResults && mustInShadowStack(localGet)) {
+    if (collectingResults && mustInShadowStack(expr->value)) {
       if (support::isDebug())
-        fmt::println(DEBUG_PREFIX "store local {} ({}) to shadow stack when it is already in stack", localGet->index,
+        fmt::println(DEBUG_PREFIX "store local {} ({}) to shadow stack when it is already in stack", localIndex,
                      static_cast<void *>(expr));
       storeCanBeRemoved_.insert(expr);
     }
@@ -193,8 +298,6 @@ wasm::Pass *warpo::passes::as_gc::createRemoveDuplicateStoreLocalInGCPass() {
 
 namespace warpo::passes::ut {
 using namespace as_gc;
-using ::testing::Contains;
-using ::testing::Not;
 
 TEST(RemoveDuplicateStoreLocalInGC, MatchStoreToShadowStack) {
   auto m = loadWat(R"(
@@ -242,7 +345,7 @@ TEST(RemoveDuplicateStoreLocalInGC, Pass) {
         (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
         (func $f (local i32) (local i32)
           (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
-          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 1))
+          (i32.store offset=4 (global.get $~lib/memory/__stack_pointer) (local.get 1))
           (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
         )
       )
@@ -261,27 +364,6 @@ TEST(RemoveDuplicateStoreLocalInGC, Pass) {
   EXPECT_MATCHER(isNop(), body[2]);
 }
 
-TEST(RemoveDuplicateStoreLocalInGC, LocalFilter) {
-  auto m = loadWat(R"(
-      (module
-        (memory 1)
-        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
-        (func $f (local i32) (local i32)
-          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
-          (i32.store offset=4 (global.get $~lib/memory/__stack_pointer) (local.get 0))
-          (i32.store offset=8 (global.get $~lib/memory/__stack_pointer) (local.get 1))
-        )
-      )
-    )");
-  wasm::Function *const f = m->getFunction("f");
-  wasm::ExpressionList const &body = f->body->cast<wasm::Block>()->list;
-
-  LocalFilter filter{};
-  filter.walkFunction(f);
-  EXPECT_THAT(filter.invalidLocals_, Contains(0));
-  EXPECT_THAT(filter.invalidLocals_, Not(Contains(1)));
-}
-
 TEST(RemoveDuplicateStoreLocalInGC, FindDuplicateStoreLocalBase) {
   auto m = loadWat(R"(
       (module
@@ -289,7 +371,7 @@ TEST(RemoveDuplicateStoreLocalInGC, FindDuplicateStoreLocalBase) {
         (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
         (func $f (local i32) (local i32)
           (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
-          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 1))
+          (i32.store offset=4 (global.get $~lib/memory/__stack_pointer) (local.get 1))
           (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
         )
       )
@@ -421,6 +503,76 @@ TEST(RemoveDuplicateStoreLocalInGC, FindDuplicateStoreLocalWithLoop) {
   wasm::Function *const f = m->getFunction("f");
   std::set<wasm::Store *> const duplicate = findDuplicateStoreLocal(f);
   EXPECT_EQ(duplicate.size(), 0);
+}
+
+TEST(RemoveDuplicateStoreLocalInGC, GetStoreToCurrentSPOffset) {
+  auto m = loadWat(R"(
+      (module
+        (memory 1)
+        (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
+        (func $f (local i32) (local i32)
+          (global.set $~lib/memory/__stack_pointer (i32.sub (i32.const 20) (global.get $~lib/memory/__stack_pointer)))
+          ;; outBody[1]
+          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
+          ;; outBody[2]
+          (i32.store offset=4 (global.get $~lib/memory/__stack_pointer) (local.get 1))
+          (block
+            (global.set $~lib/memory/__stack_pointer (i32.sub (i32.const 20) (global.get $~lib/memory/__stack_pointer)))
+            ;; inBody[1]
+            (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
+            ;; inBody[2]
+            (i32.store offset=4 (global.get $~lib/memory/__stack_pointer) (local.get 1))
+            (global.set $~lib/memory/__stack_pointer (i32.add (i32.const 20) (global.get $~lib/memory/__stack_pointer)))
+          )
+          ;; outBody[4]
+          (i32.store offset=4 (global.get $~lib/memory/__stack_pointer) (local.get 0))
+          ;; outBody[5]
+          (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 1))
+          (global.set $~lib/memory/__stack_pointer (i32.add (i32.const 20) (global.get $~lib/memory/__stack_pointer)))
+        )
+      )
+    )");
+
+  wasm::Function *const f = m->getFunction("f");
+  auto out = getStoreToCurrentSPOffset(f);
+  ASSERT_TRUE(out.has_value());
+  auto const &storeToSpOffset = out.value();
+  wasm::ExpressionList &outBody = f->body->cast<wasm::Block>()->list;
+  wasm::ExpressionList &inBody = outBody[3]->cast<wasm::Block>()->list;
+
+  EXPECT_EQ(storeToSpOffset.getSpOffset(outBody[1]->cast<wasm::Store>()), -20);
+  EXPECT_EQ(storeToSpOffset.getSpOffset(outBody[2]->cast<wasm::Store>()), -16);
+  EXPECT_EQ(storeToSpOffset.getSpOffset(outBody[4]->cast<wasm::Store>()), -16);
+  EXPECT_EQ(storeToSpOffset.getSpOffset(outBody[5]->cast<wasm::Store>()), -20);
+
+  EXPECT_EQ(storeToSpOffset.getSpOffset(inBody[1]->cast<wasm::Store>()), -40);
+  EXPECT_EQ(storeToSpOffset.getSpOffset(inBody[2]->cast<wasm::Store>()), -36);
+}
+
+TEST(RemoveDuplicateStoreLocalInGC, GetSpOffsetToIndex) {
+  auto m = loadWat(R"(
+    (module
+      (memory 1)
+      (global $~lib/memory/__stack_pointer (mut i32) (i32.const 0))
+      (func $f (local i32) (local i32)
+        ;; outBody[1]
+        (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
+        ;; outBody[2]
+        (i32.store offset=4 (global.get $~lib/memory/__stack_pointer) (local.get 1))
+        ;; outBody[3]
+        (i32.store offset=0 (global.get $~lib/memory/__stack_pointer) (local.get 0))
+      )
+    )
+  )");
+  wasm::Function *const f = m->getFunction("f");
+  auto out = getStoreToCurrentSPOffset(f);
+  ASSERT_TRUE(out.has_value());
+  auto const &storeToSpOffset = out.value();
+  wasm::ExpressionList &body = f->body->cast<wasm::Block>()->list;
+
+  auto spOffsetToIndex = getSpOffsetToIndex(storeToSpOffset);
+  EXPECT_EQ(spOffsetToIndex[0], 0);
+  EXPECT_EQ(spOffsetToIndex[4], 1);
 }
 
 } // namespace warpo::passes::ut

@@ -23,7 +23,8 @@ M<wasm::Expression> const isGCFill =
 M<wasm::Expression> const isGCUpdate =
     isGlobalSet(global_set::name(as_gc::stackPointerName),
                 global_set::v(isBinary(binary::op({wasm::BinaryOp::AddInt32, wasm::BinaryOp::SubInt32}),
-                                       binary::each(getSP.bind("sp"), isConst()))));
+                                       binary::each(getSP.bind("sp"), isConst().bind("value")))
+                                  .bind("op")));
 M<wasm::Expression> const isCallStackCheck = isCall(call::callee(as_gc::stackCheckFunctionName));
 
 } // namespace warpo::passes::matcher

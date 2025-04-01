@@ -41,6 +41,9 @@ std::vector<E> transform(std::vector<T> const &v, Fn const &fn)
 template <class T, class Fn> bool all_of(T &&container, Fn &&fn) {
   return std::all_of(container.begin(), container.end(), std::forward<Fn>(fn));
 }
+template <class T, class Fn> bool any_of(T &&container, Fn &&fn) {
+  return std::any_of(container.begin(), container.end(), std::forward<Fn>(fn));
+}
 
 template <class Runner, class GetIndicator> void runUntilImmutable(Runner &&runner, GetIndicator &&getIndicator) {
   for (;;) {
