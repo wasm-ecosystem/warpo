@@ -1,8 +1,12 @@
 /// copy and modify from third_party/binaryen/src/analysis/cfg.cpp
 
+#include <optional>
+#include <string>
+
 #include "BuildCFG.hpp"
 #include "cfg/cfg-traversal.h"
 #include "wasm-traversal.h"
+#include "wasm.h"
 
 namespace warpo::passes {
 
@@ -55,6 +59,52 @@ CFG CFG::fromFunction(wasm::Function *func) {
   // Move-construct a new CFG to get mandatory copy elision, preserving basic
   // block addresses through the return.
   return CFG(std::move(cfg));
+}
+
+void CFG::print(std::ostream &os, wasm::Module *wasm, IInfoPrinter &infoPrinter) const {
+  size_t start = 0;
+  for (auto &block : *this) {
+    if (&block != &*begin()) {
+      os << '\n';
+    }
+    block.print(os, wasm, start, infoPrinter);
+    start += block.size();
+  }
+}
+
+void BasicBlock::print(std::ostream &os, wasm::Module *wasm, size_t start, IInfoPrinter &infoPrinter) const {
+  os << ";; preds: [";
+  for (const auto *pred : preds()) {
+    if (pred != *preds().begin()) {
+      os << ", ";
+    }
+    os << "BB" << pred->index;
+  }
+  os << "], succs: [";
+
+  for (const auto *succ : succs()) {
+    if (succ != *succs().begin()) {
+      os << ", ";
+    }
+    os << "BB" << succ->index;
+  }
+  os << "]\n";
+
+  os << "BB" << index << ": ;;";
+  if (isEntry())
+    os << "entry ";
+  if (isExit())
+    os << "exit ";
+  os << '\n';
+
+  size_t instIndex = start;
+  for (auto *inst : *this) {
+    os << "  " << instIndex++ << ": " << wasm::ShallowExpression{inst, wasm};
+    std::optional<std::string> label = infoPrinter.onExpr(inst);
+    if (label.has_value())
+      os << " ;; " << label.value();
+    os << '\n';
+  }
 }
 
 } // namespace warpo::passes

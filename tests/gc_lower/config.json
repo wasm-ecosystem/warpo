@@ -1,0 +1,4 @@
+{
+  "optPass": "AS_GC_LOWER",
+  "basePass": "AS_GC_LOWER_TEST_BASE"
+}

@@ -6,10 +6,7 @@
 
 namespace warpo::passes {
 
-inline std::string toString(wasm::Expression *expr) {
-  std::stringstream ss{};
-  ss << wasm::ShallowExpression{expr, nullptr};
-  return ss.str();
-}
+std::string toString(wasm::Expression *expr);
+std::string toString(wasm::Function *f);
 
 } // namespace warpo::passes

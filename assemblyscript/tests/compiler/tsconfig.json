@@ -1,0 +1,14 @@
+{
+  "extends": "../../std/assembly.json",
+  "compilerOptions": {
+    "module": "ES6",
+    "moduleDetection": "force"
+  },
+  "include": [
+    "./**/*.ts"
+  ],
+  "exclude": [
+    "./**/*.d.ts",
+    "./**/_*.ts"
+  ]
+}

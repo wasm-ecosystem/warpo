@@ -2,11 +2,20 @@
 
 #pragma once
 
+#include <optional>
+#include <string>
+
 #include "wasm.h"
 
 namespace warpo::passes {
 
+struct BasicBlock;
 struct CFG;
+
+struct IInfoPrinter {
+  virtual ~IInfoPrinter() = default;
+  virtual std::optional<std::string> onExpr(wasm::Expression *expr) = 0;
+};
 
 struct BasicBlock {
   using iterator = std::vector<wasm::Expression *>::const_iterator;
@@ -26,6 +35,8 @@ struct BasicBlock {
 
   bool isEntry() const { return entry; }
   bool isExit() const { return exit; }
+
+  void print(std::ostream &os, wasm::Module *wasm, size_t start, IInfoPrinter &infoPrinter) const;
 
 private:
   wasm::Index index;
@@ -52,6 +63,8 @@ struct CFG {
   const BasicBlock &operator[](size_t i) const { return *(begin() + i); }
 
   static CFG fromFunction(wasm::Function *func);
+
+  void print(std::ostream &os, wasm::Module *wasm, IInfoPrinter &infoPrinter) const;
 
 private:
   std::vector<BasicBlock> blocks;

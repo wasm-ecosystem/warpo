@@ -2,6 +2,7 @@ Binaryen
 bmwgroup
 cawe
 ccache
+currp
 DWARPO
 unittests
 warpo

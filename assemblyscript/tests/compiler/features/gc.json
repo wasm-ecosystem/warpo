@@ -1,0 +1,10 @@
+{
+  "features": [
+    "gc"
+  ],
+  "asc_flags": [
+    "--exportStart", "_start",
+    "--noValidate"
+  ],
+  "skipInstantiate": true
+}

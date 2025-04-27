@@ -4,6 +4,7 @@
 #include <concepts>
 #include <set>
 #include <utility>
+#include <vector>
 
 namespace warpo {
 

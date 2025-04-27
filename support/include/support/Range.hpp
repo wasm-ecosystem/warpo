@@ -1,11 +1,12 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <iterator>
 
 namespace warpo {
 
-class Range {
+template <int32_t Step = 1> class Range {
   std::size_t m_begin;
   std::size_t m_end;
 
@@ -21,7 +22,7 @@ public:
 
     size_t &operator*() { return m_cnt; }
     RangeIterator &operator++() {
-      ++m_cnt;
+      m_cnt += static_cast<size_t>(Step);
       return *this;
     }
 

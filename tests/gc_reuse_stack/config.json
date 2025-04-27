@@ -1,0 +1,4 @@
+{
+  "optPass": "AS_GC_LOWER_WITH_OPTIMIZED_STACK_POSITION_ASSIGNER",
+  "basePass": "AS_GC_LOWER"
+}

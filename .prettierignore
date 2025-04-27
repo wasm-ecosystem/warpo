@@ -1,0 +1,6 @@
+# AssemblyScript Repo don't use any format, to make port change easier, please use vscode builtin formatter with following configuration
+# "[typescript]": {
+#   "editor.formatOnSaveMode": "modifications",
+#   "editor.defaultFormatter": "vscode.typescript-language-features"
+# }
+assemblyscript

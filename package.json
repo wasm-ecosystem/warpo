@@ -5,7 +5,9 @@
   "bin": {
     "warpo": "bin/warpo.js"
   },
-  "scripts": {},
+  "scripts": {
+    "test:snapshot": "cmake --build build --target warpo_test_runner && node tests/snapshot.mjs "
+  },
   "publishConfig": {
     "registry": "https://packages.orbit.bmwgroup.net/artifactory/api/npm/cdc-npm-local/"
   },
@@ -14,5 +16,8 @@
   "author": "congcong.cai@bmw.com",
   "files": [
     "bin"
-  ]
+  ],
+  "devDependencies": {
+    "diff": "^7.0.0"
+  }
 }
