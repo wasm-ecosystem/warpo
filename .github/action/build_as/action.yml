@@ -1,0 +1,13 @@
+name: assemblyscript
+description: build assemblyscript
+
+runs:
+  using: "composite"
+  steps:
+    - name: assemblyscript build
+      run: |
+        set -ex
+        cd assemblyscript
+        npm install
+        npm run build
+      shell: bash

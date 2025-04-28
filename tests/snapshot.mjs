@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 let isDebugMode = argv.includes("--debug");
 let isCreateMode = argv.includes("--create");
 let caseRegex = argv.includes("--case") ? argv[argv.indexOf("--case") + 1] : null;
+let buildDir = argv.includes("--build-dir") ? argv[argv.indexOf("--build-dir") + 1] : "build";
 
 function cmd(program, args) {
   if (isDebugMode) console.log(`${program} ${args.map((arg) => `'${arg}'`).join(" ")}`);
@@ -58,8 +59,8 @@ export async function run(currentFolder) {
     const functionFilter = fileConfig.func ? ["--func", fileConfig.func] : [];
 
     cmd("node", ["assemblyscript/bin/asc.js", file, "-t", originalWatPath]);
-    cmd("build/tools/test_runner/warpo_test_runner", [...inputArgs, ...optArgs, ...functionFilter]);
-    cmd("build/tools/test_runner/warpo_test_runner", [...inputArgs, ...baseArgs, ...functionFilter]);
+    cmd(`${buildDir}/tools/test_runner/warpo_test_runner`, [...inputArgs, ...optArgs, ...functionFilter]);
+    cmd(`${buildDir}/tools/test_runner/warpo_test_runner`, [...inputArgs, ...baseArgs, ...functionFilter]);
 
     originalWatPath;
     const commentLine = (l) => (l.startsWith("  ") ? `;;${l.slice(2)}` : l.length > 0 ? `;;${l}` : l);

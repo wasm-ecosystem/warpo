@@ -12,6 +12,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+      - run: npm ci
       - uses: ./.github/action/build
         id: build
         with:
@@ -34,6 +38,13 @@ jobs:
         with:
           name: bin-macOS
           path: bin/macos
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+      - run: npm ci
+      - uses: ./.github/action/build_as
+      - name: prepare assemblyscript
+        run: node tools/releases/index.mjs
       - id: get_tag
         run: |
           echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT

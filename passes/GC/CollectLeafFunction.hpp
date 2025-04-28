@@ -13,7 +13,9 @@ struct LeafFunc : public std::set<wasm::Name> {};
 struct LeafFunctionCollector : public wasm::Pass {
   CallGraph const &cg_;
   LeafFunc &result_;
-  LeafFunctionCollector(CallGraph &cg, LeafFunc &result) : cg_(cg), result_(result) { name = "LeafFunctionCollector"; }
+  LeafFunctionCollector(CallGraph const &cg, LeafFunc &result) : cg_(cg), result_(result) {
+    name = "LeafFunctionCollector";
+  }
   bool modifiesBinaryenIR() override { return false; }
   void run(wasm::Module *m) override;
 };

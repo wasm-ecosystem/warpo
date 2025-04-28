@@ -188,12 +188,13 @@ void GCLowering::run(wasm::Module *m) {
 
   gc::ModuleLevelSSAMap const moduleLevelSSAMap = gc::ModuleLevelSSAMap::create(m);
   CallGraph cg = CallGraphBuilder::createResults(*m);
+
   runner.add(std::unique_ptr<wasm::Pass>{new CallGraphBuilder(cg)});
   gc::ObjLivenessInfo livenessInfo = gc::ObjLivenessAnalyzer::createResults(m);
   runner.add(std::unique_ptr<wasm::Pass>{new gc::ObjLivenessAnalyzer(moduleLevelSSAMap, livenessInfo)});
 
+  gc::LeafFunc leafFunc{};
   if (opt_.LeafFunctionFilter) {
-    gc::LeafFunc leafFunc{};
     runner.add(std::unique_ptr<wasm::Pass>{new gc::LeafFunctionCollector(cg, leafFunc)});
     runner.add(std::unique_ptr<wasm::Pass>(new gc::LeafFunctionFilter(leafFunc, livenessInfo)));
   }

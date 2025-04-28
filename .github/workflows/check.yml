@@ -14,7 +14,14 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+      - run: npm ci
+      - uses: ./.github/action/build_as
       - uses: ./.github/action/build
         id: build
       - run: ${{ steps.build.outputs.BUILD_DIR }}/passes/warpo_passes_test
         id: unittest
+      - run: node tests/snapshot.mjs --build-dir ${{ steps.build.outputs.BUILD_DIR }} --debug
+        id: snapshot
