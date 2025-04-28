@@ -8,6 +8,6 @@ runs:
       run: |
         set -ex
         cd assemblyscript
-        npm install
+        npm ci
         npm run build
       shell: bash

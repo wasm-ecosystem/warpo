@@ -1,7 +1,7 @@
-const { execSync, execFileSync } = require("child_process");
-const { join } = require("path");
-const { exit, env, argv } = require("process");
-const platform = require("os").platform();
+import { execSync, execFileSync } from "child_process";
+import { join } from "path";
+import { exit, env, argv } from "process";
+import { platform } from "os";
 
 if (platform === "linux") {
   execSync("chmod +x " + join(__dirname, "linux/warpo"));

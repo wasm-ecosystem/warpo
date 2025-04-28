@@ -2,6 +2,7 @@
   "name": "@cdc/warpo",
   "version": "0.0.0",
   "description": "wasm optimizer designed for warp",
+  "type": "module",
   "bin": {
     "warpo": "bin/warpo.js"
   },
