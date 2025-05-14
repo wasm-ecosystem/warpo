@@ -4,16 +4,13 @@
 ;; =========add========
   (local i32)
   block ;;i32
-      i32.const 8
+      i32.const 4
     call $~lib/rt/__decrease_sp
 ;; ====================
       block ;;unreachable
-            i32.const 0
+          i32.const 0
 ;; ======remove=======
 ;;    call $~lib/rt/__localtostack
-;; =========add========
-            i32.const 0
-          call $~lib/rt/__tostack
 ;; ====================
         local.set $0
               i32.const 0
@@ -21,7 +18,7 @@
 ;; ======remove=======
 ;;    call $~lib/rt/__localtostack
 ;; =========add========
-            i32.const 4
+            i32.const 0
           call $~lib/rt/__tostack
 ;; ====================
         local.set $0
@@ -31,7 +28,7 @@
             local.get $0
 ;; =========add========
           local.set $1
-            i32.const 8
+            i32.const 4
           call $~lib/rt/__increase_sp
             local.get $1
 ;; ====================
@@ -40,7 +37,7 @@
 ;; =========add========
       end
     local.tee $1
-      i32.const 8
+      i32.const 4
     call $~lib/rt/__increase_sp
     local.get $1
   end

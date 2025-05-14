@@ -34,6 +34,9 @@ struct LivenessMap {
   void set(size_t base, Pos pos, size_t index, bool isLive) {
     storage_.set((2 * base + (pos == Pos::Before ? 0 : 1)) * dimension_ + index, isLive);
   }
+  void set(wasm::Expression *expr, Pos pos, size_t index, bool isLive) {
+    set(getIndexBase(expr).value(), pos, index, isLive);
+  }
   bool get(ssize_t base, Pos pos, size_t index) const {
     return storage_.get((2 * base + (pos == Pos::Before ? 0 : 1)) * dimension_ + index);
   }
@@ -54,15 +57,16 @@ struct LivenessMap {
 
   void setInvalid(DynBitset invalid) { invalid_ |= invalid; }
 
-  void dump(wasm::Module *m, wasm::Function *func) const;
+  void dump(wasm::Function *func) const;
 
   enum class MergeOperator { OR };
   void mergeByColumns(size_t targetColumn, size_t sourceColumn, MergeOperator op);
 
   IncMap<wasm::Expression *> const &getExprMap() const { return map_; }
 
-private:
   DynBitset storage_;
+
+private:
   IncMap<wasm::Expression *> map_;
   size_t dimension_;
   DynBitset invalid_;

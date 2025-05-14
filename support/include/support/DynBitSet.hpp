@@ -50,6 +50,14 @@ public:
     return ((data_[block_index] >> bit_index) & 1U) == 1U;
   }
 
+  size_t count() const {
+    size_t count = 0;
+    for (size_t i = 0; i < data_.size(); ++i) {
+      count += __builtin_popcount(data_[i]);
+    }
+    return count;
+  }
+
   std::string toString() const {
     std::stringstream ss{};
     ss << (*this);
@@ -97,6 +105,14 @@ public:
     DynBitset ret{bitSize_};
     for (size_t i = 0; i < data_.size(); ++i) {
       ret.data_[i] = data_[i] & b.data_[i];
+    }
+    return ret;
+  }
+  DynBitset operator^(DynBitset const &b) const {
+    assert(bitSize_ == b.bitSize_);
+    DynBitset ret{bitSize_};
+    for (size_t i = 0; i < data_.size(); ++i) {
+      ret.data_[i] = data_[i] ^ b.data_[i];
     }
     return ret;
   }

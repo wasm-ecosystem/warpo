@@ -25,3 +25,5 @@ jobs:
         id: unittest
       - run: node tests/snapshot.mjs --build-dir ${{ steps.build.outputs.BUILD_DIR }} --debug
         id: snapshot
+      - run: tests/e2e/bootstrap/test.sh
+        id: bootstrap

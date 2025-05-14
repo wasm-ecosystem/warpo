@@ -104,10 +104,8 @@ static void calStackPositionWithGreedyConflictGraphAlgorithm(wasm::Function *fun
   if (support::isDebug()) {
     fmt::println("=========ConflictGraph=========");
     fmt::println("{}", func->name.str);
-    if (support::isDebug()) {
-      conflictGraph.dump();
-      color.dump();
-    }
+    conflictGraph.dump();
+    color.dump();
     fmt::println("===============================");
   }
   GreedyAssigner assigner{color};

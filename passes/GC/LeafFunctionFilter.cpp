@@ -40,12 +40,13 @@ void LeafFunctionFilter::runOnFunction(wasm::Module *m, wasm::Function *func) {
   LivenessMap &livenessMap = info_.at(func);
   Collector collector{livenessMap, leaf_};
   collector.walkFunctionInModule(func, m);
+  // TODO: mark parameters SSA valid
   livenessMap.setInvalid(~collector.validSSAValue_);
 
   if (support::isDebug()) {
     std::cout << "=================================\n";
     std::cout << func->name << " liveness leaf filter\n";
-    livenessMap.dump(m, func);
+    livenessMap.dump(func);
     std::cout << "=================================\n";
   }
 }

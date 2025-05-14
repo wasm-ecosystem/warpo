@@ -43,30 +43,47 @@ void MergeSSA::runOnFunction(wasm::Module *m, wasm::Function *func) {
   SSAMap const &ssaMap = moduleLevelSSAMap_.at(func);
   LivenessMap &livenessMap = info_.at(func);
   size_t const ssaCount = ssaMap.size();
-
   LocalIndexToSSA const localIndexToSSA = LocalIndexToSSA::create(ssaMap);
   DynBitset invalidSSA{ssaCount};
 
   for (auto const &[ssa, tmpSSAIndex] : ssaMap) {
     if (ssa.kind_ != SSAValue::Kind::Tmp)
       continue;
-    wasm::Call *const call = ssa.value_.tmp;
+    wasm::Call *const callExpr = ssa.value_.tmp;
 
-    if (auto *const actuallySSAValueExpr = call->operands[0]->dynCast<wasm::LocalGet>()) {
+    if (auto *const getExpr = callExpr->operands[0]->dynCast<wasm::LocalGet>()) {
       // this tmp ssa is reference of local
-      wasm::Index const localIndex = actuallySSAValueExpr->index;
-      std::optional<Liveness> const currentLiveness = livenessMap.getLiveness(actuallySSAValueExpr);
-      assert(currentLiveness.has_value() && "local.get must have liveness");
-      DynBitset const localMappedLivedSSAIndexes = localIndexToSSA.get(localIndex) & currentLiveness.value().after();
-      // we extend the tmp ssa to the local ssa
-      for (size_t i : Range{ssaCount}) {
-        if (localMappedLivedSSAIndexes.get(i))
-          livenessMap.mergeByColumns(i, tmpSSAIndex, LivenessMap::MergeOperator::OR);
-      }
-      invalidSSA.set(tmpSSAIndex, true);
-    }
-  }
-  livenessMap.setInvalid(invalidSSA);
-}
+      wasm::Index const localIndex = getExpr->index;
+      Liveness const localgetLiveness = livenessMap.getLiveness(getExpr).value();
 
+      DynBitset const localMappedSSA = localIndexToSSA.get(localIndex);
+      DynBitset const livenessBeforeLocalGet = localgetLiveness.before() & localMappedSSA;
+      DynBitset const livenessAfterLocalGet = localgetLiveness.after() & localMappedSSA;
+
+      assert(livenessBeforeLocalGet >= livenessAfterLocalGet && "local.get should kill liveness");
+
+      // ;; 1_0 => 1_0 livenessBeforeLocalGet
+      // local.get
+      // ;; 0_0 => 1_0 livenessAfterLocalGet
+      // call $tostack
+      // ;; 0_1 => 1_1(invalid)
+      bool hasTarget = false;
+      // we extend the tmp ssa to the local ssa
+      for (size_t const target : Range{ssaCount}) {
+        if (livenessBeforeLocalGet.get(target)) {
+          hasTarget = true;
+          // because liveness for tmp will be active in call opcode. we should manually set the liveness
+          livenessMap.set(getExpr, LivenessMap::Pos::After, target, true);
+          livenessMap.set(callExpr, LivenessMap::Pos::Before, target, true);
+          livenessMap.mergeByColumns(target, tmpSSAIndex, LivenessMap::MergeOperator::OR);
+        }
+      }
+      // local call be invalidate before local.get when enabling other optimization
+      if (hasTarget) {
+        invalidSSA.set(tmpSSAIndex, true);
+      }
+    }
+    livenessMap.setInvalid(invalidSSA);
+  }
+}
 } // namespace warpo::passes::gc

@@ -20,5 +20,8 @@
   ],
   "devDependencies": {
     "diff": "^7.0.0"
+  },
+  "dependencies": {
+    "glob": "^11.0.2"
   }
 }

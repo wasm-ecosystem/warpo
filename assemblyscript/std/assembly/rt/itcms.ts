@@ -245,6 +245,7 @@ function free(obj: Object): void {
     obj.nextWithColor = 0; // may become linked again
     obj.prev = changetype<Object>(0);
   } else {
+    if (isDefined(ASC_GC_TESTING)) memory.fill(changetype<usize>(obj) + TOTAL_OVERHEAD, 0xDE, obj.rtSize);
     total -= obj.size;
     if (isDefined(__finalize)) {
       __finalize(changetype<usize>(obj) + TOTAL_OVERHEAD);

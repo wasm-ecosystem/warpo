@@ -42,10 +42,10 @@ std::optional<std::string> LivenessPrinter::onExpr(wasm::Expression *expr) {
 }
 } // namespace
 
-void LivenessMap::dump(wasm::Module *m, wasm::Function *func) const {
+void LivenessMap::dump(wasm::Function *func) const {
   CFG const cfg = CFG::fromFunction(func);
   LivenessPrinter infoPrinter{*this};
-  cfg.print(std::cout, m, infoPrinter);
+  cfg.print(std::cout, nullptr, infoPrinter);
 }
 
 std::optional<Liveness> LivenessMap::getLiveness(wasm::Expression *expr) const {

@@ -1,8 +1,11 @@
 #include <algorithm>
 #include <cassert>
+#include <iostream>
 #include <map>
 #include <memory>
+#include <sstream>
 
+#include "../ToString.hpp"
 #include "CollectLeafFunction.hpp"
 #include "GCInfo.hpp"
 #include "LeafFunctionFilter.hpp"
@@ -40,9 +43,10 @@ struct ToStackCallLowering : public wasm::Pass {
 void ToStackCallLowering::runOnFunction(wasm::Module *m, wasm::Function *func) {
   StackPosition const &stackPosition = stackPositions_.at(func);
   struct CallReplacer : public wasm::PostWalker<CallReplacer> {
+    wasm::Function *func;
     StackPosition const &stackPosition_;
     uint32_t maxShadowStackOffset_ = 0;
-    explicit CallReplacer(StackPosition const &input) : stackPosition_(input) {}
+    explicit CallReplacer(StackPosition const &input, wasm::Function *func) : stackPosition_(input), func(func) {}
     void visitCall(wasm::Call *expr) {
       if (expr->target != FnLocalToStack && expr->target != FnTmpToStack)
         return;
@@ -61,7 +65,7 @@ void ToStackCallLowering::runOnFunction(wasm::Module *m, wasm::Function *func) {
       }
     }
   };
-  CallReplacer callReplacer{stackPosition};
+  CallReplacer callReplacer{stackPosition, func};
   callReplacer.walkFunctionInModule(func, m);
 
   if (callReplacer.maxShadowStackOffset_ == 0)
@@ -193,13 +197,17 @@ void GCLowering::run(wasm::Module *m) {
   gc::ObjLivenessInfo livenessInfo = gc::ObjLivenessAnalyzer::createResults(m);
   runner.add(std::unique_ptr<wasm::Pass>{new gc::ObjLivenessAnalyzer(moduleLevelSSAMap, livenessInfo)});
 
+  if (opt_.MergeSSA) {
+    // now merge ssa should be done firstly, it is depends on liveness info as local's possible values.
+    // After LeafFunctionFilter, liveness info is not correct anymore.
+    // TODO: use def-uses chain instead of liveness info
+    runner.add(std::unique_ptr<wasm::Pass>(new gc::MergeSSA(moduleLevelSSAMap, livenessInfo)));
+  }
+
   gc::LeafFunc leafFunc{};
   if (opt_.LeafFunctionFilter) {
     runner.add(std::unique_ptr<wasm::Pass>{new gc::LeafFunctionCollector(cg, leafFunc)});
     runner.add(std::unique_ptr<wasm::Pass>(new gc::LeafFunctionFilter(leafFunc, livenessInfo)));
-  }
-  if (opt_.MergeSSA) {
-    runner.add(std::unique_ptr<wasm::Pass>(new gc::MergeSSA(moduleLevelSSAMap, livenessInfo)));
   }
 
   gc::StackPositions stackPositions = gc::StackAssigner::createResults(m);

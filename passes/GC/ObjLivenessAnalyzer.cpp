@@ -15,10 +15,12 @@
 #include "GCInfo.hpp"
 #include "ObjLivenessAnalyzer.hpp"
 #include "SSAObj.hpp"
+#include "analysis/cfg.h"
 #include "analysis/lattices/inverted.h"
 #include "analysis/monotone-analyzer.h"
 #include "analysis/visitor-transfer-function.h"
 #include "support/Debug.hpp"
+#include "support/DynBitSet.hpp"
 #include "support/MultipleMap.hpp"
 #include "support/Range.hpp"
 #include "support/index.h"
@@ -117,74 +119,6 @@ LocalsUses LocalsUses::create(wasm::Function *func, SSAMap const &ssaMap, wasm::
   return uses;
 }
 
-// after this LocalGet, corresponding SSA value is not used anymore
-struct LocalsLastUses : private MultipleMap<wasm::LocalGet *, size_t> {
-  static LocalsLastUses create(wasm::Function *func, SSAMap const &ssaMap, wasm::analysis::CFG &cfg);
-  using S = MultipleMap<wasm::LocalGet *, size_t>;
-  using S::at;
-  using S::begin;
-  using S::contains;
-  using S::end;
-  using S::insert_or_assign;
-};
-
-/// @brief backward analysis to find the last use of each SSA
-class LocalsLastUsesTransferFn
-    : public wasm::analysis::VisitorTransferFunc<LocalsLastUsesTransferFn,
-                                                 wasm::analysis::Inverted<FiniteIntPowersetLattice>,
-                                                 wasm::analysis::AnalysisDirection::Backward> {
-  using S =
-      wasm::analysis::VisitorTransferFunc<LocalsLastUsesTransferFn, wasm::analysis::Inverted<FiniteIntPowersetLattice>,
-                                          wasm::analysis::AnalysisDirection::Backward>;
-  LocalsUses const &localUses_;
-  SSAMap const &ssaMap_;
-  LocalsLastUses &localsLastUses_;
-
-  bool isActive(size_t index) const { return currState->get(index) == true; }
-  bool isInactive(size_t index) const { return currState->get(index) == false; }
-  void setActive(size_t index) { currState->set(index, true); }
-  void setInactive(size_t index) { currState->set(index, false); }
-
-public:
-  FiniteIntPowersetLattice lattice_;
-  explicit LocalsLastUsesTransferFn(LocalsUses const &localUses, SSAMap const &ssaMap, LocalsLastUses &localsLastUses)
-      : localUses_(localUses), ssaMap_(ssaMap), localsLastUses_(localsLastUses), lattice_(ssaMap.size()) {}
-
-  void visitLocalGet(wasm::LocalGet *expr) {
-    if (!localUses_.contains(expr))
-      return;
-    if (collectingResults) {
-      for (size_t const &index : localUses_.at(expr)) {
-        // inactive -> active => last use
-        if (isInactive(index))
-          localsLastUses_.insert_or_assign(expr, index);
-      }
-    }
-    for (size_t const &index : localUses_.at(expr))
-      setActive(index);
-  }
-  void visitLocalSet(wasm::LocalSet *expr) {
-    if (!ssaMap_.contains(SSAValue{expr}))
-      return;
-    setInactive(ssaMap_.getIndex(SSAValue{expr}));
-  }
-  void visitCall(wasm::Call *expr) {
-    if (!ssaMap_.contains(SSAValue{expr}))
-      return;
-    setInactive(ssaMap_.getIndex(SSAValue{expr}));
-  }
-};
-
-LocalsLastUses LocalsLastUses::create(wasm::Function *func, SSAMap const &ssaMap, wasm::analysis::CFG &cfg) {
-  LocalsUses localsUses = LocalsUses::create(func, ssaMap, cfg);
-  LocalsLastUses uses;
-  LocalsLastUsesTransferFn transfer{localsUses, ssaMap, uses};
-  using Analyzer = wasm::analysis::MonotoneCFGAnalyzer<FiniteIntPowersetLattice, LocalsLastUsesTransferFn>;
-  Analyzer analyzer{transfer.lattice_, transfer, cfg};
-  analyzer.evaluateAndCollectResults();
-  return uses;
-}
-
 // uses of temporary SSA values
 struct TmpUses : private std::map<wasm::Expression *, std::vector<size_t>> {
   static TmpUses create(wasm::Function *func, SSAMap const &ssaMap);
@@ -231,109 +165,150 @@ TmpUses TmpUses::create(wasm::Function *func, SSAMap const &ssaMap) {
   return tmpUses;
 }
 
-class SSALivenessTransferFn
-    : public wasm::analysis::VisitorTransferFunc<SSALivenessTransferFn, FiniteIntPowersetLattice,
+class SSALivenessForwardTFn
+    : public wasm::analysis::VisitorTransferFunc<SSALivenessForwardTFn, FiniteIntPowersetLattice,
                                                  wasm::analysis::AnalysisDirection::Forward> {
-  using S = wasm::analysis::VisitorTransferFunc<SSALivenessTransferFn, FiniteIntPowersetLattice,
+  using S = wasm::analysis::VisitorTransferFunc<SSALivenessForwardTFn, FiniteIntPowersetLattice,
                                                 wasm::analysis::AnalysisDirection::Forward>;
-  LocalsLastUses const &localsLastUses_;
-  TmpUses const &tmpUses_;
   SSAMap const &ssaMap_;
   LivenessMap &livenessMap_;
-  LocalToSSALookupTable localToSSA_;
 
   bool isActive(size_t index) { return currState->get(index) == true; }
   void setActive(size_t index) { currState->set(index, true); }
-  void setInactive(size_t index) { currState->set(index, false); }
-
-  void handleTmpUses(wasm::Expression *expr) {
-    if (tmpUses_.contains(expr)) {
-      for (size_t const index : tmpUses_.at(expr)) {
-        setInactive(index);
-      }
-    }
-  }
 
 public:
   FiniteIntPowersetLattice lattice_;
-  explicit SSALivenessTransferFn(LocalsLastUses const &localUses, TmpUses const &tmpUses, SSAMap const &ssaMap,
-                                 LivenessMap &livenessMap)
-      : localsLastUses_(localUses), tmpUses_(tmpUses), ssaMap_(ssaMap), livenessMap_(livenessMap),
-        localToSSA_(LocalToSSALookupTable::create(ssaMap)), lattice_(ssaMap.size()) {}
+  explicit SSALivenessForwardTFn(SSAMap const &ssaMap, LivenessMap &livenessMap)
+      : ssaMap_(ssaMap), livenessMap_(livenessMap), lattice_(ssaMap.size()) {}
 
   void evaluateFunctionEntry(wasm::Function *func, FiniteIntPowersetLattice::Element &element) {
     currState = &element;
     for (wasm::Index paramIndex : Range{func->getNumParams()}) {
       if (func->getParams()[paramIndex] == wasm::Type::i32) {
+        // parameters
         setActive(ssaMap_.getIndex(SSAValue{paramIndex}));
       }
     }
     currState = nullptr;
   }
 
-  void visitLocalGet(wasm::LocalGet *expr) {
-    if (localsLastUses_.contains(expr)) {
-      for (size_t const &index : localsLastUses_.at(expr))
-        setInactive(index);
-    }
-  }
   void visitLocalSet(wasm::LocalSet *expr) {
+    // local
     if (ssaMap_.contains(SSAValue{expr}))
       setActive(ssaMap_.getIndex(SSAValue{expr}));
   }
   void visitCall(wasm::Call *expr) {
+    // tmp
     if (ssaMap_.contains(SSAValue{expr}))
       setActive(ssaMap_.getIndex(SSAValue{expr}));
   }
+
+  void visit(wasm::Expression *expr) {
+    if (collectingResults && livenessMap_.getExprMap().contains(expr)) {
+      size_t const base = livenessMap_.getIndexBase(expr).value();
+      for (size_t index : Range{ssaMap_.size()})
+        livenessMap_.set(base, LivenessMap::Pos::Before, index, isActive(index));
+      S::visit(expr);
+      for (size_t index : Range{ssaMap_.size()})
+        livenessMap_.set(base, LivenessMap::Pos::After, index, isActive(index));
+    } else {
+      S::visit(expr);
+    }
+  }
+};
+
+class SSALivenessBackwardTFn
+    : public wasm::analysis::VisitorTransferFunc<SSALivenessBackwardTFn, FiniteIntPowersetLattice,
+                                                 wasm::analysis::AnalysisDirection::Backward> {
+  using S = wasm::analysis::VisitorTransferFunc<SSALivenessBackwardTFn, FiniteIntPowersetLattice,
+                                                wasm::analysis::AnalysisDirection::Backward>;
+  SSAMap const &ssaMap_;
+  LocalsUses const &localUses_;
+  TmpUses const &tmpUses_;
+  LivenessMap &livenessMap_;
+
+  bool isActive(size_t index) const { return currState->get(index) == true; }
+  void setActive(size_t index) { currState->set(index, true); }
+  void setInactive(size_t index) { currState->set(index, false); }
+
   void visitImpl(wasm::Expression *expr) {
     handleTmpUses(expr);
     S::visit(expr);
   }
-  bool isTarget(wasm::Expression *expr) const {
-    if (expr->is<wasm::Call>())
-      return true;
-    if (expr->is<wasm::CallIndirect>())
-      return true;
-    if (expr->is<wasm::LocalGet>())
-      return true;
-    if (expr->is<wasm::LocalSet>())
-      return true;
+  void handleTmpUses(wasm::Expression *expr) {
     if (tmpUses_.contains(expr))
-      return true;
-    return false;
+      for (size_t const index : tmpUses_.at(expr))
+        setActive(index);
+  }
+
+public:
+  FiniteIntPowersetLattice lattice_;
+  explicit SSALivenessBackwardTFn(SSAMap const &ssaMap, LocalsUses const &localUses, TmpUses const &tmpUses,
+                                  LivenessMap &livenessMap)
+      : ssaMap_(ssaMap), localUses_(localUses), tmpUses_(tmpUses), livenessMap_(livenessMap), lattice_(ssaMap.size()) {}
+
+  void evaluateFunctionExit(wasm::Function *func, FiniteIntPowersetLattice::Element &element) {
+    currState = &element;
+    handleTmpUses(nullptr);
+    currState = nullptr;
+  }
+
+  void visitLocalGet(wasm::LocalGet *expr) {
+    if (localUses_.contains(expr))
+      for (size_t const &index : localUses_.at(expr))
+        setActive(index);
+  }
+  void visitLocalSet(wasm::LocalSet *expr) {
+    // local
+    if (ssaMap_.contains(SSAValue{expr}))
+      setInactive(ssaMap_.getIndex(SSAValue{expr}));
+  }
+  void visitCall(wasm::Call *expr) {
+    // tmp
+    if (ssaMap_.contains(SSAValue{expr}))
+      setInactive(ssaMap_.getIndex(SSAValue{expr}));
   }
 
   void visit(wasm::Expression *expr) {
-    if (collectingResults && isTarget(expr)) {
-      livenessMap_.ensureExpression(expr);
+    if (collectingResults && livenessMap_.getExprMap().contains(expr)) {
       size_t const base = livenessMap_.getIndexBase(expr).value();
       for (size_t index : Range{ssaMap_.size()})
-        livenessMap_.set(base, LivenessMap::Pos::Before, index, isActive(index));
+        livenessMap_.set(base, LivenessMap::Pos::After, index, isActive(index));
       visitImpl(expr);
       for (size_t index : Range{ssaMap_.size()})
-        livenessMap_.set(base, LivenessMap::Pos::After, index, isActive(index));
+        livenessMap_.set(base, LivenessMap::Pos::Before, index, isActive(index));
     } else {
       visitImpl(expr);
     }
   }
 };
+static void updateLivenessInfo(wasm::Function *func, LivenessMap &livenessMap, LocalsUses const &localUses,
+                               TmpUses const &tmpUses, SSAMap const &ssaMap, wasm::analysis::CFG &cfg) {
+  SSALivenessForwardTFn forwardFn{ssaMap, livenessMap};
+  using ForwardAnalyzer = wasm::analysis::MonotoneCFGAnalyzer<FiniteIntPowersetLattice, SSALivenessForwardTFn>;
+  ForwardAnalyzer forwardAnalyzer{forwardFn.lattice_, forwardFn, cfg};
+  forwardAnalyzer.evaluateFunctionEntry(func);
+  forwardAnalyzer.evaluateAndCollectResults();
+  // reset liveness map
+  DynBitset const forwardBitSet = std::move(livenessMap.storage_);
+  livenessMap.storage_ = DynBitset{forwardBitSet.size()};
 
-void updateLivenessInfo(LivenessMap &liveness, LocalsLastUses const &localUses, TmpUses const &tmpUses,
-                        SSAMap const &ssaMap, wasm::analysis::CFG &cfg) {
-  SSALivenessTransferFn fn{localUses, tmpUses, ssaMap, liveness};
-  using Analyzer = wasm::analysis::MonotoneCFGAnalyzer<FiniteIntPowersetLattice, SSALivenessTransferFn>;
-  Analyzer analyzer{fn.lattice_, fn, cfg};
-  analyzer.evaluateAndCollectResults();
+  SSALivenessBackwardTFn backwardFn{ssaMap, localUses, tmpUses, livenessMap};
+  using BackwardAnalyzer = wasm::analysis::MonotoneCFGAnalyzer<FiniteIntPowersetLattice, SSALivenessBackwardTFn>;
+  BackwardAnalyzer backwardAnalyzer{backwardFn.lattice_, backwardFn, cfg};
+  backwardAnalyzer.evaluateFunctionExit(func);
+  backwardAnalyzer.evaluateAndCollectResults();
+
+  livenessMap.storage_ &= forwardBitSet; // overlap of forward and backward is the real liveness
 }
 
 struct InfoPrinter : public IInfoPrinter {
-  // TODO: merge same code
-  LocalsLastUses const &localsLastUses_;
+  LocalsUses const &localsUses_;
   TmpUses const &tmpUses_;
   SSAMap const &ssaMap_;
 
-  explicit InfoPrinter(LocalsLastUses const &localsLastUses, TmpUses const &tmpUses, SSAMap const &ssaMap)
-      : localsLastUses_(localsLastUses), tmpUses_(tmpUses), ssaMap_(ssaMap) {}
+  explicit InfoPrinter(LocalsUses const &localsUses, TmpUses const &tmpUses, SSAMap const &ssaMap)
+      : localsUses_(localsUses), tmpUses_(tmpUses), ssaMap_(ssaMap) {}
 
   std::optional<std::string> onExpr(wasm::Expression *expr) override {
     std::stringstream ss;
@@ -344,9 +319,9 @@ struct InfoPrinter : public IInfoPrinter {
     }
     // use
     if (auto get = expr->dynCast<wasm::LocalGet>()) {
-      if (localsLastUses_.contains(get)) {
-        ss << "[local last use: ";
-        for (size_t const &index : localsLastUses_.at(get)) {
+      if (localsUses_.contains(get)) {
+        ss << "[local use: ";
+        for (size_t const &index : localsUses_.at(get)) {
           ss << index << " ";
         }
         ss << "] ";
@@ -366,11 +341,11 @@ struct InfoPrinter : public IInfoPrinter {
   }
 };
 
-void dumpInfo(wasm::Module *m, wasm::Function *func, LocalsLastUses const &localsLastUses, TmpUses const &tmpUses,
+void dumpInfo(wasm::Module *m, wasm::Function *func, LocalsUses const &localsUses, TmpUses const &tmpUses,
               SSAMap const &ssaMap) {
   CFG const cfg = CFG::fromFunction(func);
-  InfoPrinter infoPrinter{localsLastUses, tmpUses, ssaMap};
-  cfg.print(std::cout, m, infoPrinter);
+  InfoPrinter infoPrinter{localsUses, tmpUses, ssaMap};
+  cfg.print(std::cout, nullptr, infoPrinter);
 }
 
 } // namespace
@@ -379,19 +354,28 @@ void ObjLivenessAnalyzer::runOnFunction(wasm::Module *m, wasm::Function *func) {
   SSAMap const &ssaMap = moduleLevelSSAMap_.at(func);
   wasm::analysis::CFG cfg = wasm::analysis::CFG::fromFunction(func);
 
-  LocalsLastUses const localsLastUses = LocalsLastUses::create(func, ssaMap, cfg);
+  LocalsUses const localsUses = LocalsUses::create(func, ssaMap, cfg);
   TmpUses const tmpUses = TmpUses::create(func, ssaMap);
 
   LivenessMap &livenessMap = info_.at(func);
   livenessMap = LivenessMap{ssaMap};
 
-  updateLivenessInfo(livenessMap, localsLastUses, tmpUses, ssaMap, cfg);
+  for (wasm::analysis::BasicBlock const &bb : cfg) {
+    for (wasm::Expression *expr : bb) {
+      if (expr->is<wasm::Call>() || expr->is<wasm::CallIndirect>() || expr->is<wasm::LocalGet>() ||
+          expr->is<wasm::LocalSet>() || tmpUses.contains(expr)) {
+        livenessMap.ensureExpression(expr);
+      }
+    }
+  }
+
+  updateLivenessInfo(func, livenessMap, localsUses, tmpUses, ssaMap, cfg);
 
   if (support::isDebug()) {
     std::cout << "================== " << func->name << " liveness analysis ===============\n";
-    dumpInfo(m, func, localsLastUses, tmpUses, ssaMap);
+    dumpInfo(m, func, localsUses, tmpUses, ssaMap);
     std::cout << "\n============\n";
-    livenessMap.dump(m, func);
+    livenessMap.dump(func);
     std::cout << "=================================\n";
   }
 }

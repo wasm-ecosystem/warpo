@@ -490,7 +490,7 @@ struct CFGWalker : public PostWalker<SubType, VisitorType> {
           auto* module = self->getModule();
           if (!module || module->features.hasExceptionHandling()) {
             // This call might throw, so run the code to handle that.
-            self->pushTask(SubType::doEndCall, currp);
+            // self->pushTask(SubType::doEndCall, currp);
           }
         }
         break;

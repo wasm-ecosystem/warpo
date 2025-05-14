@@ -64,40 +64,56 @@
 )
 (func $tests/gc_leaf_filter/lifetime_with_condition_collect/foo_other_branch (type $func.0 (func (result i32)))
   (local i32)
-  (local i32)
-  block ;;i32
-      i32.const 4
-    call $~lib/rt/__decrease_sp
-      block ;;unreachable
-              i32.const 0
-            call $tests/common_lib/normal/Normal#constructor
-            i32.const 0
-          call $~lib/rt/__tostack
-        local.set $0
-        if ;;none
-          global.get $tests/gc_leaf_filter/lifetime_with_condition_collect/v
-          block ;;unreachable
-              local.get $0
-            local.set $1
-              i32.const 4
-            call $~lib/rt/__increase_sp
-              local.get $1
-            return
-          end
-          call $~lib/rt/itcms/__collect
-        end
-        block ;;unreachable
-            i32.const 0
-          local.set $1
-            i32.const 4
-          call $~lib/rt/__increase_sp
-            local.get $1
-          return
-        end
-      end
-    local.tee $1
-      i32.const 4
-    call $~lib/rt/__increase_sp
-    local.get $1
+;; ======remove=======
+;;(local i32)
+;;block ;;i32
+;;    i32.const 4
+;;  call $~lib/rt/__decrease_sp
+;; ====================
+  block ;;unreachable
+        i32.const 0
+      call $tests/common_lib/normal/Normal#constructor
+;; ======remove=======
+;;          i32.const 0
+;;        call $~lib/rt/__tostack
+;; ====================
+    local.set $0
+    if ;;none
+      global.get $tests/gc_leaf_filter/lifetime_with_condition_collect/v
+;; ======remove=======
+;;        block ;;unreachable
+;; ====================
+        local.get $0
+;; ======remove=======
+;;          local.set $1
+;;            i32.const 4
+;;          call $~lib/rt/__increase_sp
+;;            local.get $1
+;; ====================
+      return
+;; ======remove=======
+;;        end
+;; ====================
+      call $~lib/rt/itcms/__collect
+    end
+;; ======remove=======
+;;      block ;;unreachable
+;; ====================
+      i32.const 0
+;; ======remove=======
+;;        local.set $1
+;;          i32.const 4
+;;        call $~lib/rt/__increase_sp
+;;          local.get $1
+;; ====================
+    return
   end
+;; ======remove=======
+;;    end
+;;  local.tee $1
+;;    i32.const 4
+;;  call $~lib/rt/__increase_sp
+;;  local.get $1
+;;end
+;; ====================
 )
