@@ -71,8 +71,45 @@ void ToStackCallLowering::runOnFunction(wasm::Module *m, wasm::Function *func) {
   if (callReplacer.maxShadowStackOffset_ == 0)
     return;
 
+  struct ReturnWithResultReplacer : public wasm::PostWalker<ReturnWithResultReplacer> {
+    wasm::Index const scratchReturnValueLocalIndex_;
+    uint32_t const maxShadowStackOffset_;
+    wasm::Type const &resultType_;
+    explicit ReturnWithResultReplacer(wasm::Index const scratchReturnValueLocalIndex,
+                                      uint32_t const maxShadowStackOffset, wasm::Type const &returnType)
+        : scratchReturnValueLocalIndex_(scratchReturnValueLocalIndex), maxShadowStackOffset_(maxShadowStackOffset),
+          resultType_(returnType) {}
+    void visitReturn(wasm::Return *expr) {
+      wasm::Builder b{*getModule()};
+      assert(expr->value);
+      replaceCurrent(b.makeBlock(
+          {
+              b.makeLocalSet(scratchReturnValueLocalIndex_, expr->value),
+              b.makeCall("~lib/rt/__increase_sp", {b.makeConst(wasm::Literal(maxShadowStackOffset_))},
+                         wasm::Type::none),
+              expr,
+          },
+          wasm::Type::unreachable));
+      expr->value = b.makeLocalGet(scratchReturnValueLocalIndex_, resultType_);
+    }
+  };
+  struct ReturnWithoutResultReplacer : public wasm::PostWalker<ReturnWithoutResultReplacer> {
+    uint32_t const maxShadowStackOffset_;
+    explicit ReturnWithoutResultReplacer(uint32_t const maxShadowStackOffset)
+        : maxShadowStackOffset_(maxShadowStackOffset) {}
+    void visitReturn(wasm::Return *expr) {
+      wasm::Builder b{*getModule()};
+      replaceCurrent(b.makeBlock(
+          {
+              b.makeCall("~lib/rt/__increase_sp", {b.makeConst(wasm::Literal(maxShadowStackOffset_))},
+                         wasm::Type::none),
+              expr,
+          },
+          wasm::Type::unreachable));
+    }
+  };
+
   wasm::Type const resultType = func->getResults();
-  wasm::Index scratchReturnValueLocalIndex;
   wasm::Builder b{*m};
   if (resultType == wasm::Type::none) {
     func->body = b.makeBlock(
@@ -84,8 +121,10 @@ void ToStackCallLowering::runOnFunction(wasm::Module *m, wasm::Function *func) {
                        wasm::Type::none),
         },
         resultType);
+    ReturnWithoutResultReplacer returnReplacer{callReplacer.maxShadowStackOffset_};
+    returnReplacer.walkFunctionInModule(func, m);
   } else {
-    scratchReturnValueLocalIndex = wasm::Builder::addVar(func, resultType);
+    wasm::Index const scratchReturnValueLocalIndex = wasm::Builder::addVar(func, resultType);
     func->body = b.makeBlock(
         {
             b.makeCall("~lib/rt/__decrease_sp", {b.makeConst(wasm::Literal(callReplacer.maxShadowStackOffset_))},
@@ -96,42 +135,10 @@ void ToStackCallLowering::runOnFunction(wasm::Module *m, wasm::Function *func) {
             b.makeLocalGet(scratchReturnValueLocalIndex, resultType),
         },
         resultType);
+    ReturnWithResultReplacer returnReplacer{scratchReturnValueLocalIndex, callReplacer.maxShadowStackOffset_,
+                                            resultType};
+    returnReplacer.walkFunctionInModule(func, m);
   }
-
-  struct ReturnReplacer : public wasm::PostWalker<ReturnReplacer> {
-    wasm::Index const scratchReturnValueLocalIndex_;
-    uint32_t const maxShadowStackOffset_;
-    wasm::Type const &resultType_;
-    explicit ReturnReplacer(wasm::Index const scratchReturnValueLocalIndex, uint32_t const maxShadowStackOffset,
-                            wasm::Type const &returnType)
-        : scratchReturnValueLocalIndex_(scratchReturnValueLocalIndex), maxShadowStackOffset_(maxShadowStackOffset),
-          resultType_(returnType) {}
-    void visitReturn(wasm::Return *expr) {
-      wasm::Builder b{*getModule()};
-      if (resultType_ == wasm::Type::none) {
-        replaceCurrent(b.makeBlock(
-            {
-                b.makeCall("~lib/rt/__increase_sp", {b.makeConst(wasm::Literal(maxShadowStackOffset_))},
-                           wasm::Type::none),
-                expr,
-            },
-            wasm::Type::unreachable));
-      } else {
-        assert(expr->value);
-        replaceCurrent(b.makeBlock(
-            {
-                b.makeLocalSet(scratchReturnValueLocalIndex_, expr->value),
-                b.makeCall("~lib/rt/__increase_sp", {b.makeConst(wasm::Literal(maxShadowStackOffset_))},
-                           wasm::Type::none),
-                expr,
-            },
-            wasm::Type::unreachable));
-        expr->value = b.makeLocalGet(scratchReturnValueLocalIndex_, resultType_);
-      }
-    }
-  };
-  ReturnReplacer returnReplacer{scratchReturnValueLocalIndex, callReplacer.maxShadowStackOffset_, resultType};
-  returnReplacer.walkFunctionInModule(func, m);
 }
 
 struct PostLowering : public wasm::Pass {
