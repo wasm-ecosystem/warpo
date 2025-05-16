@@ -74,34 +74,34 @@ passes::Output passes::runOnWat(std::string const &input) {
     passRunner.run();
     ensureValidate(*m);
   }
-  // {
-  //   wasm::PassRunner defaultOptRunner{m.get()};
-  //   defaultOptRunner.options.shrinkLevel = 2;
-  //   defaultOptRunner.options.optimizeLevel = 0;
-  //   defaultOptRunner.setDebug(false);
-  //   defaultOptRunner.addDefaultOptimizationPasses();
-  //   defaultOptRunner.run();
-  //   ensureValidate(*m);
-  // }
-  // {
-  //   wasm::PassRunner passRunner(m.get());
-  //   passRunner.setDebug(support::isDebug());
+  {
+    wasm::PassRunner defaultOptRunner{m.get()};
+    defaultOptRunner.options.shrinkLevel = 2;
+    defaultOptRunner.options.optimizeLevel = 0;
+    defaultOptRunner.setDebug(false);
+    defaultOptRunner.addDefaultOptimizationPasses();
+    defaultOptRunner.run();
+    ensureValidate(*m);
+  }
+  {
+    wasm::PassRunner passRunner(m.get());
+    passRunner.setDebug(support::isDebug());
 
-  //   passRunner.add(std::unique_ptr<wasm::Pass>{passes::createExtractMostFrequentlyUsedGlobalsPass()});
-  //   passRunner.add(std::unique_ptr<wasm::Pass>{passes::createInlineSetterFunctionPass()});
+    passRunner.add(std::unique_ptr<wasm::Pass>{passes::createExtractMostFrequentlyUsedGlobalsPass()});
+    passRunner.add(std::unique_ptr<wasm::Pass>{passes::createInlineSetterFunctionPass()});
 
-  //   passRunner.run();
-  //   ensureValidate(*m);
-  // }
-  // {
-  //   wasm::PassRunner defaultOptRunner{m.get()};
-  //   defaultOptRunner.options.shrinkLevel = 2;
-  //   defaultOptRunner.options.optimizeLevel = 0;
-  //   defaultOptRunner.setDebug(false);
-  //   defaultOptRunner.addDefaultOptimizationPasses();
-  //   defaultOptRunner.run();
-  //   ensureValidate(*m);
-  // }
+    passRunner.run();
+    ensureValidate(*m);
+  }
+  {
+    wasm::PassRunner defaultOptRunner{m.get()};
+    defaultOptRunner.options.shrinkLevel = 2;
+    defaultOptRunner.options.optimizeLevel = 0;
+    defaultOptRunner.setDebug(false);
+    defaultOptRunner.addDefaultOptimizationPasses();
+    defaultOptRunner.run();
+    ensureValidate(*m);
+  }
   return {.wat = outputWat(m.get()), .wasm = outputWasm(m.get())};
 }
 
