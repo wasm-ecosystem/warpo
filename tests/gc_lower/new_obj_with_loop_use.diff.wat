@@ -16,6 +16,9 @@
         call $~lib/rt/__tostack
 ;; ====================
       local.set $0
+;; ======remove=======
+;;  block ;;none
+;; ====================
       loop ;;none
         if ;;none
           global.get $tests/gc_lower/new_obj_with_loop_use/v
@@ -27,7 +30,7 @@
                   i32.const 0
                 call $tests/common_lib/normal/Normal#constructor
 ;; ======remove=======
-;;          call $~lib/rt/__localtostack
+;;            call $~lib/rt/__localtostack
 ;; =========add========
                 i32.const 4
               call $~lib/rt/__tostack
@@ -41,6 +44,6 @@
 ;; =========add========
       i32.const 8
     call $~lib/rt/__increase_sp
-  end
 ;; ====================
+  end
 )

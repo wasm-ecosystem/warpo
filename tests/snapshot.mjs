@@ -23,7 +23,9 @@ function cmd(program, args) {
     process.exit(1);
   }
   if (isDebugMode && spawnResult.stdout.length > 0) {
+    console.log("=================== stdout ===================");
     console.log(spawnResult.stdout);
+    console.log("==============================================");
   }
   return;
 }
@@ -53,8 +55,8 @@ export async function run(currentFolder) {
     const lowerOutputPath = `${filePathWithoutExt}.opt.wat`;
 
     const inputArgs = ["-i", originalWatPath];
-    const optArgs = ["--pass", folderConfig.optPass, "-o", lowerOutputPath];
-    const baseArgs = ["--pass", folderConfig.basePass, "-o", baseOutputPath];
+    const optArgs = [...folderConfig.optPass, "-o", lowerOutputPath];
+    const baseArgs = [...folderConfig.basePass, "-o", baseOutputPath];
 
     const functionFilter = fileConfig.func ? ["--func", fileConfig.func] : [];
 

@@ -1,4 +1,4 @@
 {
-  "optPass": "AS_GC_LOWER",
-  "basePass": "AS_GC_LOWER_TEST_BASE"
+  "optPass": ["--no-gc-leaf-function-filter", "--no-gc-merge-ssa", "--no-gc-optimized-stack-position-assigner"],
+  "basePass": ["--gc-test-only-control-group"]
 }

@@ -5,11 +5,26 @@
 #include <fmt/format.h>
 #include <fstream>
 #include <ios>
-#include <optional>
 #include <regex>
 #include <string>
 
 #include "passes/Runner.hpp"
+#include "support/Opt.hpp"
+
+static warpo::cli::Opt<std::string> inputPath{
+    "-i",
+    "--input",
+    [](argparse::Argument &arg) -> void { arg.help("input file").required(); },
+};
+static warpo::cli::Opt<std::string> outputPath{
+    "-o",
+    "--output",
+    [](argparse::Argument &arg) -> void { arg.help("output file").required(); },
+};
+static warpo::cli::Opt<std::string> functionRegex{
+    "--func",
+    [](argparse::Argument &arg) -> void { arg.help("function name").required(); },
+};
 
 int main(int argc, char const *argv[]) {
   using namespace warpo;
@@ -17,38 +32,24 @@ int main(int argc, char const *argv[]) {
   passes::init();
 
   argparse::ArgumentParser program("warpo_test_runner");
-  program.add_argument("-i", "--input").help("input file").required();
-  program.add_argument("-o", "--output").help("output file").required();
-  program.add_argument("--pass").help("pass name").required();
-  program.add_argument("--func").help("function name");
-  program.parse_args(argc, argv);
-  auto const inputPath = program.get<std::string>("--input");
-  auto const outputPath = program.get<std::string>("--output");
-  auto const presetOptName = program.get<std::string>("--pass");
-  auto const functionRegex = program.present<std::string>("--func");
-
-  passes::PresetOpt presetOpt;
   try {
-    presetOpt = passes::getPresetOpt(presetOptName);
-  } catch (std::exception const &e) {
-    fmt::println("ERROR: {}", e.what());
+    cli::init(program, argc, argv);
+  } catch (const std::exception &e) {
+    fmt::print(stderr, "ERROR: {}\n", e.what());
     return 1;
   }
-
-  std::ifstream ifstream{inputPath, std::ios::in};
+  std::ifstream ifstream{inputPath.get(), std::ios::in};
   if (!ifstream.good()) {
-    fmt::println("ERROR: failed to open file: {}", inputPath);
+    fmt::println("ERROR: failed to open file: {}", inputPath.get());
     return 1;
   }
   std::string input{std::istreambuf_iterator<char>{ifstream}, {}};
 
-  std::string wat = passes::runOnWat(input, presetOpt,
-                                     functionRegex.has_value() ? std::make_optional<std::regex>(functionRegex.value())
-                                                               : std::nullopt);
+  std::string wat = passes::runOnWat(input, std::regex{functionRegex.get()});
 
-  std::ofstream watOf{outputPath, std::ios::out};
+  std::ofstream watOf{outputPath.get(), std::ios::out};
   if (!watOf.good()) {
-    fmt::println("ERROR: failed to open file: {}", outputPath);
+    fmt::println("ERROR: failed to open file: {}", outputPath.get());
     return 1;
   }
   watOf.write(wat.data(), static_cast<std::streamsize>(wat.size()));

@@ -3,11 +3,13 @@
   (local i32)
 ;; =========add========
   (local i32)
+;; ====================
   block ;;i32
+;; =========add========
       i32.const 4
     call $~lib/rt/__decrease_sp
-;; ====================
       block ;;unreachable
+;; ====================
               i32.const 0
             call $tests/common_lib/normal/Normal#constructor
 ;; ======remove=======

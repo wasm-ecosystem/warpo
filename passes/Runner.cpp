@@ -1,7 +1,6 @@
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <memory>
-#include <optional>
 #include <regex>
 #include <sstream>
 #include <string>
@@ -105,49 +104,20 @@ passes::Output passes::runOnWat(std::string const &input) {
   return {.wat = outputWat(m.get()), .wasm = outputWasm(m.get())};
 }
 
-std::string passes::runOnWat(std::string const &input, PresetOpt presetOpt,
-                             std::optional<std::regex> const &targetFunctionRegex) {
+std::string passes::runOnWat(std::string const &input, std::regex const &targetFunctionRegex) {
   std::unique_ptr<wasm::Module> m = passes::loadWat(input);
   wasm::PassRunner passRunner(m.get());
   passRunner.setDebug(support::isDebug());
-
-  passes::GCLowering::Opt baseGCLoweringOpt{
-      .LeafFunctionFilter = false,
-      .MergeSSA = false,
-      .OptimizedStackPositionAssigner = false,
-  };
-  switch (presetOpt) {
-  case PresetOpt::AS_GC_LOWER_TEST_BASE:
-    passes::GCLowering::preprocess(passRunner);
-    break;
-  case PresetOpt::AS_GC_LOWER:
-    passRunner.add(std::unique_ptr<wasm::Pass>{new passes::GCLowering(baseGCLoweringOpt)});
-    break;
-  case PresetOpt::AS_GC_LOWER_WITH_LEAF_FUNCTION_FILTER:
-    baseGCLoweringOpt.LeafFunctionFilter = true;
-    passRunner.add(std::unique_ptr<wasm::Pass>{new passes::GCLowering(baseGCLoweringOpt)});
-    break;
-  case PresetOpt::AS_GC_LOWER_WITH_SSA_MERGE:
-    baseGCLoweringOpt.MergeSSA = true;
-    passRunner.add(std::unique_ptr<wasm::Pass>{new passes::GCLowering(baseGCLoweringOpt)});
-    break;
-  case PresetOpt::AS_GC_LOWER_WITH_OPTIMIZED_STACK_POSITION_ASSIGNER:
-    baseGCLoweringOpt.OptimizedStackPositionAssigner = true;
-    passRunner.add(std::unique_ptr<wasm::Pass>{new passes::GCLowering(baseGCLoweringOpt)});
-    break;
-  }
+  passRunner.add(std::unique_ptr<wasm::Pass>{new passes::GCLowering()});
   passRunner.run();
   ensureValidate(*m);
 
-  if (targetFunctionRegex.has_value()) {
-    std::stringstream ss{};
-    for (std::unique_ptr<wasm::Function> &f : m->functions) {
-      if (std::regex_match(f->name.toString(), targetFunctionRegex.value()))
-        ss << toString(f.get());
-    }
-    return std::move(ss).str();
+  std::stringstream ss{};
+  for (std::unique_ptr<wasm::Function> &f : m->functions) {
+    if (std::regex_match(f->name.toString(), targetFunctionRegex))
+      ss << toString(f.get());
   }
-  return outputWat(m.get());
+  return std::move(ss).str();
 }
 
 } // namespace warpo

@@ -6,5 +6,6 @@ target_link_libraries(warpo_support
 )
 target_include_directories(warpo_support
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
-  PUBLIC "${PROJECT_SOURCE_DIR}/third_party/binaryen/third_party/llvm-project/include"
+  SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party/binaryen/third_party/llvm-project/include"
+  SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party"
 )

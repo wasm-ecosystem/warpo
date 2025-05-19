@@ -3,11 +3,13 @@
   (local i32)
 ;; =========add========
   (local i32)
+;; ====================
   block ;;i32
+;; =========add========
       i32.const 8
     call $~lib/rt/__decrease_sp
-;; ====================
       block ;;unreachable
+;; ====================
         if ;;none
           global.get $tests/gc_lower/use_from_condition/v
                 i32.const 0

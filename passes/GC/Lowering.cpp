@@ -3,9 +3,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
-#include <sstream>
 
-#include "../ToString.hpp"
 #include "CollectLeafFunction.hpp"
 #include "GCInfo.hpp"
 #include "LeafFunctionFilter.hpp"
@@ -14,9 +12,11 @@
 #include "ObjLivenessAnalyzer.hpp"
 #include "SSAObj.hpp"
 #include "StackAssigner.hpp"
+#include "argparse/argparse.hpp"
 #include "literal.h"
 #include "pass.h"
 #include "passes/passes.h"
+#include "support/Opt.hpp"
 #include "support/index.h"
 #include "wasm-builder.h"
 #include "wasm-traversal.h"
@@ -24,6 +24,24 @@
 #include "wasm.h"
 
 namespace warpo::passes {
+
+static cli::Opt<bool> NoLeafFunctionFilter{
+    "--no-gc-leaf-function-filter",
+    [](argparse::Argument &arg) { arg.help("Disable leaf function filter during GC lowering").flag(); },
+};
+static cli::Opt<bool> NoMergeSSA{
+    "--no-gc-merge-ssa",
+    [](argparse::Argument &arg) { arg.help("Disable SSA merging during GC lowering").flag(); },
+};
+static cli::Opt<bool> NoOptimizedStackPositionAssigner{
+    "--no-gc-optimized-stack-position-assigner",
+    [](argparse::Argument &arg) { arg.help("Disable optimized stack position assigner during GC lowering").flag(); },
+};
+
+static cli::Opt<bool> TestOnlyControlGroup{
+    "--gc-test-only-control-group",
+    [](argparse::Argument &arg) { arg.flag().hidden(); },
+};
 
 namespace gc {
 
@@ -197,6 +215,11 @@ void GCLowering::run(wasm::Module *m) {
 
   preprocess(runner);
 
+  if (TestOnlyControlGroup.get()) {
+    // only for test purpose
+    return;
+  }
+
   gc::ModuleLevelSSAMap const moduleLevelSSAMap = gc::ModuleLevelSSAMap::create(m);
   CallGraph cg = CallGraphBuilder::createResults(*m);
 
@@ -204,7 +227,7 @@ void GCLowering::run(wasm::Module *m) {
   gc::ObjLivenessInfo livenessInfo = gc::ObjLivenessAnalyzer::createResults(m);
   runner.add(std::unique_ptr<wasm::Pass>{new gc::ObjLivenessAnalyzer(moduleLevelSSAMap, livenessInfo)});
 
-  if (opt_.MergeSSA) {
+  if (!NoMergeSSA.get()) {
     // now merge ssa should be done firstly, it is depends on liveness info as local's possible values.
     // After LeafFunctionFilter, liveness info is not correct anymore.
     // TODO: use def-uses chain instead of liveness info
@@ -212,14 +235,14 @@ void GCLowering::run(wasm::Module *m) {
   }
 
   gc::LeafFunc leafFunc{};
-  if (opt_.LeafFunctionFilter) {
+  if (!NoLeafFunctionFilter.get()) {
     runner.add(std::unique_ptr<wasm::Pass>{new gc::LeafFunctionCollector(cg, leafFunc)});
     runner.add(std::unique_ptr<wasm::Pass>(new gc::LeafFunctionFilter(leafFunc, livenessInfo)));
   }
 
   gc::StackPositions stackPositions = gc::StackAssigner::createResults(m);
 
-  if (opt_.OptimizedStackPositionAssigner) {
+  if (!NoOptimizedStackPositionAssigner.get()) {
     runner.add(std::unique_ptr<wasm::Pass>(
         new gc::StackAssigner(gc::StackAssigner::Mode::GreedyConflictGraph, stackPositions, livenessInfo)));
   } else {

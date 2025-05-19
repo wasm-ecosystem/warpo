@@ -17,7 +17,9 @@ std::string warpo::passes::toString(wasm::Function *f) {
       for (auto &local : func->vars) {
         ss << "  (local " << local << ")\n";
       }
-      Supper::walkFunction(func);
+      if (func->body != nullptr) {
+        Supper::walkFunction(func);
+      }
       ss << ")\n";
     }
     static void doPreVisit(Printer *self, wasm::Expression **currp) {
