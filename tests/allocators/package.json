@@ -1,0 +1,9 @@
+{
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "node ./index",
+    "test:forever": "node ./forever",
+    "test:all": "npm run test default && npm run test stub"
+  }
+}

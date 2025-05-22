@@ -1,0 +1,47 @@
+{
+  "threads": {
+    "asc_flags": [
+      "--enable threads"
+    ],
+    "v8_flags": [
+      "--experimental-wasm-threads"
+    ]
+  },
+  "reference-types": {
+    "asc_flags": [
+      "--enable reference-types"
+    ],
+    "v8_flags": [
+    ]
+  },
+  "gc": {
+    "asc_flags": [
+      "--enable gc"
+    ],
+    "v8_flags": [
+      "--experimental-wasm-gc"
+    ]
+  },
+  "exception-handling": {
+    "asc_flags": [
+      "--enable exception-handling"
+    ],
+    "v8_flags": [
+    ]
+  },
+  "simd": {
+    "asc_flags": [
+      "--enable simd"
+    ],
+    "v8_flags": [
+    ]
+  },
+  "relaxed-simd": {
+    "asc_flags": [
+      "--enable relaxed-simd"
+    ],
+    "v8_flags": [
+      "--experimental-wasm-relaxed-simd"
+    ]
+  }
+}
