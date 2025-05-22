@@ -115,6 +115,8 @@ import {
 
 /** Internal names of various compiler built-ins. */
 export namespace BuiltinNames {
+  // external name
+  export const externalFuncName = "as-builtin-fn";
 
   // compiler-generated
   export const start = "~start";
@@ -721,7 +723,8 @@ export namespace BuiltinNames {
   export const rtti_base = "~lib/rt/__rtti_base";
   export const visit_globals = "~lib/rt/__visit_globals";
   export const visit_members = "~lib/rt/__visit_members";
-  export const tostack = "~lib/rt/__tostack";
+  export const localToStack = "~lib/rt/__localtostack";
+  export const tmpToStack = "~lib/rt/__tmptostack";
 
   // std/number.ts
   export const NaN = "~lib/number/NaN";

@@ -9,7 +9,13 @@
     "initialMemory": 768,
     "runtime": "incremental",
     "bindings": [ "esm" ],
-    "stats": true
+    "stats": true,
+    "use": [
+      "ASC_GC_TESTING=1",
+      "ASC_GC_IDLEFACTOR=0",
+      "ASC_GC_GRANULARITY=64",
+      "ASC_GC_SWEEPFACTOR=1000"
+    ]
   },
   "targets": {
     "debug": {

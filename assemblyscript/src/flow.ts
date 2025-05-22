@@ -1080,7 +1080,7 @@ export class Flow {
         } else if (name == BuiltinNames.String_not) {
           assert(getCallOperandCount(expr) == 1);
           this.inheritNonnullIfFalse(getCallOperandAt(expr, 0), iff); // !value -> value must have been false
-        } else if (name == BuiltinNames.tostack) {
+        } else if (name == BuiltinNames.localToStack || name == BuiltinNames.tmpToStack) {
           assert(getCallOperandCount(expr) == 1);
           this.inheritNonnullIfTrue(getCallOperandAt(expr, 0), iff);
         }
@@ -1171,7 +1171,7 @@ export class Flow {
         } else if (name == BuiltinNames.String_not) {
           assert(getCallOperandCount(expr) == 1);
           this.inheritNonnullIfTrue(getCallOperandAt(expr, 0), iff); // !(!value) -> value must have been true
-        } else if (name == BuiltinNames.tostack) {
+        } else if (name == BuiltinNames.localToStack || name == BuiltinNames.tmpToStack) {
           assert(getCallOperandCount(expr) == 1);
           this.inheritNonnullIfFalse(getCallOperandAt(expr, 0), iff);
         }

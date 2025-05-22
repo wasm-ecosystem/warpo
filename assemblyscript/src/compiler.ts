@@ -216,10 +216,6 @@ import {
 } from "./passes/rtrace";
 
 import {
-  ShadowStackPass
-} from "./passes/shadowstack";
-
-import {
   liftRequiresExportRuntime,
   lowerRequiresExportRuntime
 } from "./bindings/js";
@@ -469,10 +465,6 @@ export class Compiler extends DiagnosticEmitter {
   pendingElements: Set<Element> = new Set();
   /** Elements, that are module exports, already processed */
   doneModuleExports: Set<Element> = new Set();
-  /** Shadow stack reference. */
-  shadowStack!: ShadowStackPass;
-  /** Whether the module has custom function exports. */
-  hasCustomFunctionExports: bool = false;
   /** Whether the module would use the exported runtime to lift/lower. */
   desiresExportRuntime: bool = false;
 
@@ -522,7 +514,6 @@ export class Compiler extends DiagnosticEmitter {
     startFunctionInstance.internalName = BuiltinNames.start;
     this.currentFlow = startFunctionInstance.flow;
     this.currentBody = new Array<ExpressionRef>();
-    this.shadowStack = new ShadowStackPass(this);
   }
 
   /** Performs compilation of the underlying {@link Program} to a {@link Module}. */
@@ -744,9 +735,9 @@ export class Compiler extends DiagnosticEmitter {
       }
     }
 
-    // Run custom passes
     if (hasShadowStack) {
-      this.shadowStack.walkModule();
+      this.module.addFunctionImport(BuiltinNames.localToStack, BuiltinNames.externalFuncName, BuiltinNames.localToStack, TypeRef.I32, TypeRef.I32);
+      this.module.addFunctionImport(BuiltinNames.tmpToStack, BuiltinNames.externalFuncName, BuiltinNames.tmpToStack, TypeRef.I32, TypeRef.I32);
     }
     if (program.lookup("ASC_RTRACE") != null) {
       new RtraceMemory(this).walkModule();
@@ -955,11 +946,6 @@ export class Compiler extends DiagnosticEmitter {
             let exportName = prefix + name;
             if (!module.hasExport(exportName)) {
               module.addFunctionExport(functionInstance.internalName, exportName);
-              this.hasCustomFunctionExports = true;
-              let hasManagedOperands = signature.hasManagedOperands;
-              if (hasManagedOperands) {
-                this.shadowStack.noteExport(exportName, signature.getManagedOperandIndices());
-              }
               if (!this.desiresExportRuntime) {
                 let thisType = signature.thisType;
                 if (
@@ -6726,7 +6712,7 @@ export class Compiler extends DiagnosticEmitter {
         let operand = operands[0];
         let precomp = module.runExpression(operand, ExpressionRunnerFlags.Default);
         if (!isConstZero(precomp)) { // otherwise unnecessary
-          operands[operandIndex] = module.tostack(operand);
+          operands[operandIndex] = module.tmp_to_stack(operand);
         }
       }
       ++operandIndex;
@@ -6740,7 +6726,7 @@ export class Compiler extends DiagnosticEmitter {
         let operand = operands[operandIndex];
         let precomp = module.runExpression(operand, ExpressionRunnerFlags.Default);
         if (!isConstZero(precomp)) { // otherwise unnecessary
-          operands[operandIndex] = module.tostack(operand);
+          operands[operandIndex] = module.tmp_to_stack(operand);
         }
       }
       ++operandIndex;

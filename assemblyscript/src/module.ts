@@ -1569,11 +1569,19 @@ export class Module {
     return binaryen._BinaryenLocalGet(this.ref, index, type);
   }
 
-  tostack(value: ExpressionRef): ExpressionRef {
+  local_to_stack(value: ExpressionRef): ExpressionRef {
     if (this.useShadowStack) {
       let type = binaryen._BinaryenExpressionGetType(value);
       assert(type == TypeRef.I32 || type == TypeRef.Unreachable);
-      return this.call(BuiltinNames.tostack, [ value ], type);
+      return this.call(BuiltinNames.localToStack, [value], type);
+    }
+    return value;
+  }
+  tmp_to_stack(value: ExpressionRef): ExpressionRef {
+    if (this.useShadowStack) {
+      let type = binaryen._BinaryenExpressionGetType(value);
+      assert(type == TypeRef.I32 || type == TypeRef.Unreachable);
+      return this.call(BuiltinNames.tmpToStack, [value], type);
     }
     return value;
   }
@@ -1586,7 +1594,7 @@ export class Module {
   ): ExpressionRef {
     if (type == -1) type = binaryen._BinaryenExpressionGetType(value);
     if (isManaged && this.useShadowStack) {
-      value = this.tostack(value);
+      value = this.local_to_stack(value);
     }
     return binaryen._BinaryenLocalTee(this.ref, index, value, type);
   }
@@ -1716,7 +1724,7 @@ export class Module {
     isManaged: bool
   ): ExpressionRef {
     if (isManaged && this.useShadowStack) {
-      value = this.tostack(value);
+      value = this.local_to_stack(value);
     }
     return binaryen._BinaryenLocalSet(this.ref, index, value);
   }
@@ -2628,6 +2636,8 @@ export class Module {
     debugInfo: bool = false,
     zeroFilledMemory: bool = false
   ): void {
+    // disable as opt to avoid influence GC opt
+    return;
     // Implicitly run costly non-LLVM optimizations on -O3 or -Oz
     if (optimizeLevel >= 3 || shrinkLevel >= 2) optimizeLevel = 4;
 
