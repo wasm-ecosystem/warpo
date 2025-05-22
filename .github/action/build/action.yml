@@ -24,6 +24,7 @@ runs:
       shell: bash
       run: |
         set -ex
+        export HOMEBREW_NO_AUTO_UPDATE=1
         brew update
         brew install ccache cmake ninja
     - shell: bash
