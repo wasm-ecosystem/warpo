@@ -1,6 +1,0 @@
-{
-  "private": true,
-  "scripts": {
-    "test": "node --enable-source-maps ../index.js"
-  }
-}

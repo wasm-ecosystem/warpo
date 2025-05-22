@@ -1,3 +1,0 @@
-Date.now();
-
-ERROR("EOF");

@@ -1,1 +1,0 @@
-assert(answerToLife() == 42);

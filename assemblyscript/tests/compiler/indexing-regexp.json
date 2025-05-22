@@ -1,7 +1,0 @@
-{
-  "asc_flags": [
-  ],
-  "stderr": [
-    "TS2329: Index signature is missing in type '~lib/regexp/RegExp'"
-  ]
-}

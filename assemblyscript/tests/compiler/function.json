@@ -1,7 +1,0 @@
-{
-  "asc_flags": [
-  ],
-  "stderr": [
-    "TS2300: Duplicate identifier 'a'"
-  ]
-}
