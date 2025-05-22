@@ -20,13 +20,26 @@ wasm optimizer designed for warp
 ```bash
 git remote add binaryen-origin https://github.com/WebAssembly/binaryen.git
 git config --local remote.binaryen-origin.fetch +refs/heads/main:refs/remotes/binaryen-origin/main
-git remote add binaryen-fork https://github.com/<fork_org>/binaryen.git
+git config remote.binaryen-origin.tagopt --no-tags
+
+# git remote add binaryen-fork https://github.com/<fork_org>/binaryen.git
+# git config remote.binaryen-fork.tagopt --no-tags
+
+git remote add assemblyscript-origin https://github.com/AssemblyScript/assemblyscript.git
+git config --local remote.assemblyscript-origin.fetch +refs/heads/main:refs/remotes/assemblyscript-origin/main
+git config remote.assemblyscript-origin.tagopt --no-tags
+
+# git remote add binaryen-fork https://github.com/<fork_org>/assemblyscript.git
+# git config remote.assemblyscript-fork.tagopt --no-tags
+
 git fetch -p --all
 ```
 
 ### update
 
-TODO
+```bash
+git subtree pull --prefix assemblyscript https://github.com/AssemblyScript/assemblyscript.git main --squash
+```
 
 ### backport
 
