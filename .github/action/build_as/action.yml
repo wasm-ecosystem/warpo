@@ -7,7 +7,13 @@ runs:
     - name: assemblyscript build
       run: |
         set -ex
-        cd assemblyscript
+        npm ci
+        npm run build
+      shell: bash
+      working-directory: assemblyscript
+    - name: bundle
+      run: |
+        set -ex
         npm ci
         npm run build
       shell: bash

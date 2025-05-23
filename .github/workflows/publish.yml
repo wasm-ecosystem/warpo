@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: "22"
       - run: npm ci
-      - uses: ./.github/action/build
+      - uses: ./.github/action/build_cpp
         id: build
         with:
           CMAKE_ARGS: "-DWARPO_RELEASE=ON"
@@ -41,10 +41,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "22"
-      - run: npm ci
       - uses: ./.github/action/build_as
-      - name: prepare assemblyscript
-        run: node tools/releases/index.mjs
       - id: get_tag
         run: |
           echo "TAG_NAME=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT

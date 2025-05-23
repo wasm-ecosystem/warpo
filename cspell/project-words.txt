@@ -1,3 +1,4 @@
+assemblyscript
 Binaryen
 bmwgroup
 cawe

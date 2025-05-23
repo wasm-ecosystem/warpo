@@ -53,3 +53,5 @@ runs:
         CMAKE_GENERATOR: Ninja
         CMAKE_C_COMPILER_LAUNCHER: ccache
         CMAKE_CXX_COMPILER_LAUNCHER: ccache
+    - shell: bash
+      run: ccache  --show-stats

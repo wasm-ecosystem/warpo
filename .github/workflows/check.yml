@@ -19,7 +19,7 @@ jobs:
           node-version: "22"
       - run: npm ci
       - uses: ./.github/action/build_as
-      - uses: ./.github/action/build
+      - uses: ./.github/action/build_cpp
         id: build
       - run: ${{ steps.build.outputs.BUILD_DIR }}/passes/warpo_passes_test
         id: unittest

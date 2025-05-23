@@ -1,6 +1,5 @@
 /build*
 /.cache
 /.vscode
-/bin/linux
-/bin/macos
+/bin
 /node_modules

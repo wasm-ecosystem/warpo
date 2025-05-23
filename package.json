@@ -4,9 +4,11 @@
   "description": "wasm optimizer designed for warp",
   "type": "module",
   "bin": {
-    "warpo": "bin/warpo.js"
+    "warpo": "bin/asc.js"
   },
   "scripts": {
+    "build": "node tools/asc/esbuild.js",
+    "watch": "node tools/asc/esbuild.js --watch",
     "test:snapshot": "cmake --build build --target warpo_test_runner && node tests/snapshot.mjs "
   },
   "publishConfig": {
@@ -19,9 +21,10 @@
     "bin"
   ],
   "devDependencies": {
-    "diff": "^7.0.0"
+    "@types/node": "^22.15.21",
+    "diff": "^7.0.0",
+    "esbuild": "^0.25.4",
+    "typescript": "^5.8.3"
   },
-  "dependencies": {
-    "glob": "^11.0.2"
-  }
+  "dependencies": {}
 }
