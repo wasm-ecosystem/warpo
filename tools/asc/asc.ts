@@ -27,6 +27,6 @@ for (let i = 2; i < argv.length; i++) {
 
 if (output == undefined) exitWithMessage("Please specify the output file with --outFile or -o");
 
-const outputWast = output.endsWith("wasm") ? output.slice(0, -4) + ".wast" : output + ".wast";
+const outputWast = output.endsWith("wasm") ? output.slice(0, -4) + "wast" : output + ".wast";
 await runPreAsc(outputWast, restArgv);
 runWarpo(outputWast, output);
