@@ -30,30 +30,6 @@ void CallGraphBuilder::visitCallIndirect(wasm::CallIndirect *expr) {
   }
 }
 
-static std::set<wasm::Name> collectLeafFunctions(const CallGraph &cg, std::set<wasm::Name> const &taint) {
-  std::set<wasm::Name> leaf{};
-  std::map<wasm::Name, std::set<wasm::Name>> reservedCallGraph{};
-
-  for (auto const &[caller, callees] : cg) {
-    leaf.insert(caller);
-    for (wasm::Name const &callee : callees) {
-      reservedCallGraph.try_emplace(callee, std::set<wasm::Name>{}).first->second.insert(caller);
-    }
-  }
-  std::set<wasm::Name> workList{taint.begin(), taint.end()};
-  while (!workList.empty()) {
-    auto it = workList.begin();
-    if (leaf.erase(*it) == 1) {
-      auto const reservedCallGraphIt = reservedCallGraph.find(*it);
-      if (reservedCallGraphIt != reservedCallGraph.end()) {
-        workList.insert(reservedCallGraphIt->second.begin(), reservedCallGraphIt->second.end());
-      }
-    }
-    workList.erase(it);
-  }
-  return leaf;
-}
-
 } // namespace warpo::passes
 
 #ifdef WARPO_ENABLE_UNIT_TESTS
