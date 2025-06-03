@@ -5,6 +5,7 @@
 
 namespace warpo::passes {
 
+/// @brief lowering tostack function
 struct GCLowering : public wasm::Pass {
   explicit GCLowering() { name = "GCLowering"; }
   void run(wasm::Module *m) override;

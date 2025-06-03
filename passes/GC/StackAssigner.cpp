@@ -9,7 +9,6 @@
 #include "../ToString.hpp"
 #include "GCInfo.hpp"
 #include "Liveness.hpp"
-#include "ObjLivenessAnalyzer.hpp"
 #include "StackAssigner.hpp"
 #include "support/Debug.hpp"
 #include "support/Err.hpp"
@@ -116,8 +115,8 @@ static void calStackPositionWithGreedyConflictGraphAlgorithm(wasm::Function *fun
 }
 
 void StackAssigner::runOnFunction(wasm::Module *m, wasm::Function *func) {
-  StackPosition &stackPosition = stackPositions_.at(func);
-  LivenessMap const &livenessMap = livenessInfo_.at(func);
+  StackPosition &stackPosition = stackPositions_->at(func);
+  LivenessMap const &livenessMap = livenessInfo_->at(func);
 
   switch (mode_) {
   case Mode::Vanilla:

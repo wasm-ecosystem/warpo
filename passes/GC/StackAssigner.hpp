@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 
 #include "ObjLivenessAnalyzer.hpp"
 #include "pass.h"
@@ -28,9 +29,10 @@ struct StackAssigner : public wasm::Pass {
     return ret;
   }
   Mode mode_;
-  StackPositions &stackPositions_;
-  ObjLivenessInfo const &livenessInfo_;
-  explicit StackAssigner(Mode mode, StackPositions &stackPositions, ObjLivenessInfo const &livenessInfo)
+  std::shared_ptr<StackPositions> stackPositions_;
+  std::shared_ptr<ObjLivenessInfo const> livenessInfo_;
+  explicit StackAssigner(Mode mode, std::shared_ptr<StackPositions> const &stackPositions,
+                         std::shared_ptr<ObjLivenessInfo const> const &livenessInfo)
       : mode_(mode), stackPositions_(stackPositions), livenessInfo_(livenessInfo) {
     name = "StackAssigner";
   }
@@ -41,6 +43,13 @@ struct StackAssigner : public wasm::Pass {
   bool modifiesBinaryenIR() override { return false; }
 
   void runOnFunction(wasm::Module *m, wasm::Function *func) override;
+
+  static std::shared_ptr<StackPositions> addToPass(wasm::PassRunner &runner, Mode mode,
+                                                   std::shared_ptr<ObjLivenessInfo const> const &livenessInfo) {
+    auto stackPositions = std::make_shared<StackPositions>(StackAssigner::createResults(runner.wasm));
+    runner.add(std::unique_ptr<wasm::Pass>(new gc::StackAssigner(mode, stackPositions, livenessInfo)));
+    return stackPositions;
+  }
 };
 
 } // namespace warpo::passes::gc

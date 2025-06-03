@@ -22,6 +22,12 @@ struct CallGraphBuilder : public wasm::WalkerPass<wasm::PostWalker<CallGraphBuil
   void visitCall(wasm::Call *expr);
   void visitCallIndirect(wasm::CallIndirect *expr);
 
+  static std::shared_ptr<CallGraph> addToPass(wasm::PassRunner &runner) {
+    auto cg = std::make_shared<CallGraph>(createResults(*runner.wasm));
+    runner.add(std::unique_ptr<wasm::Pass>(new CallGraphBuilder(*cg)));
+    return cg;
+  }
+
 private:
   CallGraph &cg_;
 };

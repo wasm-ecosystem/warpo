@@ -37,9 +37,9 @@ static LeafFunc collectLeafFunctions(const CallGraph &cg) {
 }
 
 void LeafFunctionCollector::run(wasm::Module *m) {
-  result_ = collectLeafFunctions(cg_);
+  *result_ = collectLeafFunctions(*cg_);
   if (support::isDebug(PASS_NAME)) {
-    for (wasm::Name const &name : result_) {
+    for (wasm::Name const &name : *result_) {
       if (support::isDebug(PASS_NAME, name.str))
         fmt::println(DEBUG_PREFIX "leaf function: '{}'", name.str);
     }

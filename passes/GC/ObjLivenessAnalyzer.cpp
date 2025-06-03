@@ -357,7 +357,7 @@ void ObjLivenessAnalyzer::runOnFunction(wasm::Module *m, wasm::Function *func) {
   LocalsUses const localsUses = LocalsUses::create(func, ssaMap, cfg);
   TmpUses const tmpUses = TmpUses::create(func, ssaMap);
 
-  LivenessMap &livenessMap = info_.at(func);
+  LivenessMap &livenessMap = info_->at(func);
   livenessMap = LivenessMap{ssaMap};
 
   for (wasm::analysis::BasicBlock const &bb : cfg) {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 
 #include "Liveness.hpp"
 #include "SSAObj.hpp"
@@ -10,6 +11,8 @@
 namespace warpo::passes::gc {
 
 using ObjLivenessInfo = std::map<wasm::Function *, LivenessMap>;
+
+/// @brief analyze the liveness of SSAified GC objects in a function
 struct ObjLivenessAnalyzer : public wasm::Pass {
   static ObjLivenessInfo createResults(wasm::Module *m) {
     ObjLivenessInfo ret{};
@@ -18,9 +21,9 @@ struct ObjLivenessAnalyzer : public wasm::Pass {
     }
     return ret;
   }
-  ObjLivenessInfo &info_;
+  std::shared_ptr<ObjLivenessInfo> info_;
   ModuleLevelSSAMap const &moduleLevelSSAMap_;
-  explicit ObjLivenessAnalyzer(ModuleLevelSSAMap const &moduleLevelSSAMap, ObjLivenessInfo &info)
+  explicit ObjLivenessAnalyzer(ModuleLevelSSAMap const &moduleLevelSSAMap, std::shared_ptr<ObjLivenessInfo> const &info)
       : moduleLevelSSAMap_(moduleLevelSSAMap), info_(info) {
     name = "ObjLivenessAnalyzer";
   }
@@ -29,6 +32,13 @@ struct ObjLivenessAnalyzer : public wasm::Pass {
   bool modifiesBinaryenIR() override { return false; }
 
   void runOnFunction(wasm::Module *m, wasm::Function *func) override;
+
+  static std::shared_ptr<ObjLivenessInfo> addToPass(wasm::PassRunner &runner,
+                                                    ModuleLevelSSAMap const &moduleLevelSSAMap) {
+    auto info = std::make_shared<ObjLivenessInfo>(createResults(runner.wasm));
+    runner.add(std::unique_ptr<wasm::Pass>(new ObjLivenessAnalyzer(moduleLevelSSAMap, info)));
+    return info;
+  }
 };
 
 } // namespace warpo::passes::gc

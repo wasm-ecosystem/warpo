@@ -39,8 +39,8 @@ void LeafFunctionFilter::runOnFunction(wasm::Module *m, wasm::Function *func) {
     }
   };
 
-  LivenessMap &livenessMap = info_.at(func);
-  Collector collector{livenessMap, leaf_};
+  LivenessMap &livenessMap = info_->at(func);
+  Collector collector{livenessMap, *leaf_};
   collector.walkFunctionInModule(func, m);
   // TODO: mark parameters SSA valid
   livenessMap.setInvalid(~collector.validSSAValue_);

@@ -3,7 +3,6 @@
 #include <map>
 
 #include "MergeSSA.hpp"
-#include "ObjLivenessAnalyzer.hpp"
 #include "SSAObj.hpp"
 #include "support/DynBitSet.hpp"
 #include "support/Range.hpp"
@@ -41,7 +40,7 @@ public:
 
 void MergeSSA::runOnFunction(wasm::Module *m, wasm::Function *func) {
   SSAMap const &ssaMap = moduleLevelSSAMap_.at(func);
-  LivenessMap &livenessMap = info_.at(func);
+  LivenessMap &livenessMap = info_->at(func);
   size_t const ssaCount = ssaMap.size();
   LocalIndexToSSA const localIndexToSSA = LocalIndexToSSA::create(ssaMap);
   DynBitset invalidSSA{ssaCount};

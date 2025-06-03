@@ -9,6 +9,7 @@
 
 namespace warpo::passes::gc {
 
+/// @brief SSA value liveness information at a specific expr in the function.
 class Liveness {
   DynBitset before_;
   DynBitset after_;
@@ -72,6 +73,7 @@ private:
   DynBitset invalid_;
 };
 
+/// @brief colored vector for SSA values
 class ColorVec : private std::vector<size_t> {
   static constexpr size_t InvalidColor = -1;
 
@@ -82,6 +84,8 @@ public:
   bool hasColor(size_t ssaIndex) const { return getColor(ssaIndex) != InvalidColor; }
   void dump() const;
 };
+
+/// @brief conflict graph for SSA values
 class ConflictGraph {
   DynBitset conflictAdjacencyMatrix_;
   size_t dim_;
