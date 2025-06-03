@@ -22,6 +22,7 @@
 #include "wasm-traversal.h"
 #include "wasm.h"
 
+#define PASS_NAME "InlineSetterFunction"
 #define DEBUG_PREFIX "[InlineSetterFunction] "
 
 namespace warpo::passes {
@@ -50,7 +51,7 @@ void Scanner::visitFunction(wasm::Function *curr) {
     return;
   bool success = setterFunction_.insert_or_assign(curr->name, curr).second;
   assert(success);
-  if (support::isDebug())
+  if (support::isDebug(PASS_NAME, curr->name.str))
     fmt::println(DEBUG_PREFIX "function '{}' can be inlined", curr->name.str);
 }
 
@@ -77,7 +78,7 @@ struct Replacer : wasm::WalkerPass<wasm::PostWalker<Replacer>> {
     wasm::Expression *value = curr->operands[1];
     wasm::Store *replace =
         builder.makeStore(store->bytes, store->offset, store->align, ptr, value, store->valueType, store->memory);
-    if (support::isDebug()) {
+    if (support::isDebug(PASS_NAME, getFunction()->name.str)) {
       fmt::println(DEBUG_PREFIX "replace 'call {}' with '{}.store offset={}'", curr->target.str,
                    replace->valueType.toString(), replace->offset.addr);
     }
@@ -89,9 +90,12 @@ private:
 };
 
 void clean(wasm::Module *m, InlinableFunctionMap const &inlinableFunction) {
-  if (support::isDebug())
-    for (auto const &[name, _] : inlinableFunction)
-      fmt::println(DEBUG_PREFIX "remove function '{}'", name.str);
+  if (support::isDebug(PASS_NAME)) {
+    for (auto const &[name, _] : inlinableFunction) {
+      if (support::isDebug(PASS_NAME, name.str))
+        fmt::println(DEBUG_PREFIX "remove function '{}'", name.str);
+    }
+  }
   m->removeFunctions([&inlinableFunction](wasm::Function *f) -> bool { return inlinableFunction.contains(f->name); });
 }
 
@@ -105,7 +109,7 @@ void InlineSetterFunction::run(wasm::Module *m) {
   InlinableFunctionMap inlinableFunction{};
   Scanner scanner{inlinableFunction};
   scanner.run(getPassRunner(), m);
-  if (support::isDebug())
+  if (support::isDebug(PASS_NAME))
     fmt::println(DEBUG_PREFIX "can be inlined functions count: {}", inlinableFunction.size());
   Replacer replacer{inlinableFunction};
   replacer.run(getPassRunner(), m);

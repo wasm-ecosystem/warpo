@@ -7,6 +7,8 @@
 #include "wasm-traversal.h"
 #include "wasm.h"
 
+#define PASS_NAME "LeafFunctionFilter"
+
 namespace warpo::passes::gc {
 
 void LeafFunctionFilter::runOnFunction(wasm::Module *m, wasm::Function *func) {
@@ -43,7 +45,7 @@ void LeafFunctionFilter::runOnFunction(wasm::Module *m, wasm::Function *func) {
   // TODO: mark parameters SSA valid
   livenessMap.setInvalid(~collector.validSSAValue_);
 
-  if (support::isDebug()) {
+  if (support::isDebug(PASS_NAME, func->name.str)) {
     std::cout << "=================================\n";
     std::cout << func->name << " liveness leaf filter\n";
     livenessMap.dump(func);

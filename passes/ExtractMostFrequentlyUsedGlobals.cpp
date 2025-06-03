@@ -18,6 +18,7 @@
 #include "wasm-validator.h"
 #include "wasm.h"
 
+#define PASS_NAME "ExtractMostFrequentlyUsedGlobals"
 #define DEBUG_PREFIX "[ExtractMostFrequentlyUsedGlobals] "
 
 namespace warpo::passes {
@@ -71,7 +72,7 @@ static wasm::Name findMostFrequentlyUsed(Counter const &counter) {
   wasm::Name maxGlobalName;
   wasm::Index maxCount = 0;
   for (auto const &[name, count] : counter) {
-    if (support::isDebug())
+    if (support::isDebug(PASS_NAME))
       fmt::println(DEBUG_PREFIX "'{}' used {} times", name.str, count.load());
     if (count.load() >= maxCount) {
       maxCount = count.load();
@@ -87,7 +88,7 @@ static void extractGlobal(wasm::Module &m, wasm::Name const name) {
                    [&](std::unique_ptr<wasm::Global> &global) -> bool { return name == global->name; });
   assert(eraseIt != m.globals.end());
   if (eraseIt != m.globals.begin()) {
-    if (support::isDebug())
+    if (support::isDebug(PASS_NAME))
       fmt::println(DEBUG_PREFIX "move frequently used global '{}' to index 0", name.str);
     std::unique_ptr<wasm::Global> mostFrequentlyUsedGlobal = std::move(*eraseIt);
     m.globals.erase(eraseIt);
@@ -97,7 +98,7 @@ static void extractGlobal(wasm::Module &m, wasm::Name const name) {
     m.globals.insert(insertIt, std::move(mostFrequentlyUsedGlobal));
     m.updateMaps();
   } else {
-    if (support::isDebug()) {
+    if (support::isDebug(PASS_NAME)) {
       fmt::println(DEBUG_PREFIX " most frequently used global '{}' is already at index 0", name.str);
     }
   }

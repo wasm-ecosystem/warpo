@@ -16,7 +16,6 @@
 #include "ObjLivenessAnalyzer.hpp"
 #include "SSAObj.hpp"
 #include "analysis/cfg.h"
-#include "analysis/lattices/inverted.h"
 #include "analysis/monotone-analyzer.h"
 #include "analysis/visitor-transfer-function.h"
 #include "support/Debug.hpp"
@@ -28,6 +27,7 @@
 #include "wasm-type.h"
 #include "wasm.h"
 
+#define PASS_NAME "ObjLivenessAnalyzer"
 #define DEBUG_PREFIX "[ObjLivenessAnalyzer] "
 
 namespace warpo::passes::gc {
@@ -371,7 +371,7 @@ void ObjLivenessAnalyzer::runOnFunction(wasm::Module *m, wasm::Function *func) {
 
   updateLivenessInfo(func, livenessMap, localsUses, tmpUses, ssaMap, cfg);
 
-  if (support::isDebug()) {
+  if (support::isDebug(PASS_NAME, func->name.str)) {
     std::cout << "================== " << func->name << " liveness analysis ===============\n";
     dumpInfo(m, func, localsUses, tmpUses, ssaMap);
     std::cout << "\n============\n";

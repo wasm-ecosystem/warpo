@@ -1,31 +1,30 @@
-
-if(NOT WARPO_RELEASE)
-  add_subdirectory(unittests)
-endif()
+set(LIB_NAME warpo_passes)
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} warpo_passes_sources)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/GC warpo_passes_sources)
 
 if(NOT WARPO_RELEASE)
-  add_executable(warpo_passes_test ${warpo_passes_sources})
-  target_compile_definitions(warpo_passes_test PRIVATE
+  add_subdirectory(unittests)
+
+  add_executable(${LIB_NAME}_test ${warpo_passes_sources})
+  target_compile_definitions(${LIB_NAME}_test PRIVATE
     WARPO_ENABLE_UNIT_TESTS
   )
-  target_link_libraries(warpo_passes_test
+  target_link_libraries(${LIB_NAME}_test
     PUBLIC warpo_support warpo_unittests_helper
   )
-  target_include_directories(warpo_passes_test PUBLIC
+  target_include_directories(${LIB_NAME}_test PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
   )
 endif()
 
-add_library(warpo_passes ${warpo_passes_sources})
-target_link_libraries(warpo_passes
+add_library(${LIB_NAME} ${warpo_passes_sources})
+target_link_libraries(${LIB_NAME}
   PUBLIC binaryen fmt::fmt warpo_support
 )
-target_include_directories(warpo_passes
+target_include_directories(${LIB_NAME}
   PRIVATE "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"
 )
-target_include_directories(warpo_passes
+target_include_directories(${LIB_NAME}
   PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )

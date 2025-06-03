@@ -17,6 +17,8 @@
 #include "wasm-traversal.h"
 #include "wasm.h"
 
+#define PASS_NAME "STACK_ASSIGNER"
+
 namespace warpo::passes::gc {
 
 namespace {
@@ -101,7 +103,7 @@ static void calStackPositionWithGreedyConflictGraphAlgorithm(wasm::Function *fun
                                                              LivenessMap const &livenessMap) {
   ConflictGraph const conflictGraph = ConflictGraph::create(livenessMap);
   ColorVec const color = conflictGraph.color();
-  if (support::isDebug()) {
+  if (support::isDebug(PASS_NAME, func->name.str)) {
     fmt::println("=========ConflictGraph=========");
     fmt::println("{}", func->name.str);
     conflictGraph.dump();

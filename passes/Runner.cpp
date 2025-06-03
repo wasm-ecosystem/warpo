@@ -15,7 +15,6 @@
 #include "parser/wat-parser.h"
 #include "pass.h"
 #include "passes/Runner.hpp"
-#include "support/Debug.hpp"
 #include "wasm-binary.h"
 #include "wasm-features.h"
 #include "wasm-stack.h"
@@ -66,10 +65,7 @@ passes::Output passes::runOnWat(std::string const &input) {
   std::unique_ptr<wasm::Module> m = passes::loadWat(input);
   {
     wasm::PassRunner passRunner(m.get());
-    passRunner.setDebug(support::isDebug());
-
     passRunner.add(std::unique_ptr<wasm::Pass>{new passes::GCLowering()});
-
     passRunner.run();
     ensureValidate(*m);
   }
@@ -84,11 +80,8 @@ passes::Output passes::runOnWat(std::string const &input) {
   }
   {
     wasm::PassRunner passRunner(m.get());
-    passRunner.setDebug(support::isDebug());
-
     passRunner.add(std::unique_ptr<wasm::Pass>{passes::createExtractMostFrequentlyUsedGlobalsPass()});
     passRunner.add(std::unique_ptr<wasm::Pass>{passes::createInlineSetterFunctionPass()});
-
     passRunner.run();
     ensureValidate(*m);
   }
@@ -107,7 +100,6 @@ passes::Output passes::runOnWat(std::string const &input) {
 std::string passes::runOnWat(std::string const &input, std::regex const &targetFunctionRegex) {
   std::unique_ptr<wasm::Module> m = passes::loadWat(input);
   wasm::PassRunner passRunner(m.get());
-  passRunner.setDebug(support::isDebug());
   passRunner.add(std::unique_ptr<wasm::Pass>{new passes::GCLowering()});
   passRunner.run();
   ensureValidate(*m);
