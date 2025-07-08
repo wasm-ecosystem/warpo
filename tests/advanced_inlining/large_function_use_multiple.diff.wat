@@ -1,0 +1,44 @@
+;; ====================
+(func $tests/advanced_inlining/large_function_use_multiple/_start (type $func.0 (func))
+  block ;;none
+      i32.const 1
+      i32.const 2
+    call $tests/advanced_inlining/large_function_use_multiple/bigFunc
+      i32.const 1
+      i32.const 2
+    call $tests/advanced_inlining/large_function_use_multiple/bigFunc
+      i32.const 1
+      i32.const 2
+    call $tests/advanced_inlining/large_function_use_multiple/bigFunc
+      i32.const 1
+      i32.const 2
+    call $tests/advanced_inlining/large_function_use_multiple/bigFunc
+      i32.const 1
+      i32.const 2
+    call $tests/advanced_inlining/large_function_use_multiple/bigFunc
+      i32.const 1
+      i32.const 2
+    call $tests/advanced_inlining/large_function_use_multiple/bigFunc
+      i32.const 1
+      i32.const 2
+    call $tests/advanced_inlining/large_function_use_multiple/bigFunc
+      i32.const 1
+      i32.const 2
+    call $tests/advanced_inlining/large_function_use_multiple/bigFunc
+      i32.const 1
+      i32.const 2
+    call $tests/advanced_inlining/large_function_use_multiple/bigFunc
+      i32.const 1
+      i32.const 2
+    call $tests/advanced_inlining/large_function_use_multiple/bigFunc
+      i32.const 1
+      i32.const 2
+    call $tests/advanced_inlining/large_function_use_multiple/bigFunc
+      i32.const 1
+      i32.const 2
+    call $tests/advanced_inlining/large_function_use_multiple/bigFunc
+      i32.const 1
+      i32.const 2
+    call $tests/advanced_inlining/large_function_use_multiple/bigFunc
+  end
+)

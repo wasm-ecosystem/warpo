@@ -1,4 +1,16 @@
-import { defineConfig } from "vitepress";
+import { readdirSync } from "node:fs";
+import { DefaultTheme, defineConfig } from "vitepress";
+import path from "node:path";
+
+function listItems(root: string, folder: string): DefaultTheme.SidebarItem[] {
+  return readdirSync(path.join(root, folder))
+    .filter((file) => file.endsWith(".md") && file !== "index.md")
+    .map((file) => file.replace(/\.md$/, ""))
+    .map((name) => ({
+      text: name.replace(/_/g, " "),
+      link: `/${folder}/${name}`,
+    }));
+}
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -16,14 +28,19 @@ export default defineConfig({
         text: "Document",
         items: [
           {
-            text: "Lowering Pass",
-            link: "/lower/overview",
-            items: [{ text: "gc lowering", link: "/lower/gc_lowering" }],
+            text: "Lowering Passes",
+            link: "/lower/index",
+            items: listItems("docs", "lower"),
           },
           {
-            text: "Optimization Pass",
-            link: "/opt/overview",
-            items: [{ text: "reorder global", link: "/opt/extract_most_frequently_used_globals" }],
+            text: "Optimization Passes",
+            link: "/opt/index",
+            items: listItems("docs", "opt"),
+          },
+          {
+            text: "Infrastructure",
+            link: "/infra/index",
+            items: listItems("docs", "infra"),
           },
         ],
       },

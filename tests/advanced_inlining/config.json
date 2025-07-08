@@ -1,0 +1,4 @@
+{
+  "optPass": ["--enable-advanced-inlining-pass-for-testing"],
+  "basePass": []
+}

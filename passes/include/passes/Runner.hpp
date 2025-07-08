@@ -15,6 +15,6 @@ struct Output {
 void init();
 Output runOnWat(std::string const &input);
 
-std::string runOnWat(std::string const &input, std::regex const &targetFunctionRegex);
+std::string runOnWatForTesting(std::string const &input, std::regex const &targetFunctionRegex);
 
 } // namespace warpo::passes

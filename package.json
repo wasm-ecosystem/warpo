@@ -20,7 +20,8 @@
   "keywords": [],
   "author": "congcong.cai@bmw.com",
   "files": [
-    "bin"
+    "bin",
+    "model"
   ],
   "devDependencies": {
     "@types/node": "^22.15.21",

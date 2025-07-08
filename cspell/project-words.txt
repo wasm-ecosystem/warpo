@@ -6,5 +6,6 @@ cawe
 ccache
 currp
 DWARPO
+tricore
 unittests
 warpo

@@ -8,8 +8,11 @@ hero:
   actions:
     - theme: brand
       text: Lowering Pass
-      link: /lower/overview.md
+      link: /lower/index.md
     - theme: brand
       text: Optimization Pass
-      link: /opt/overview.md
+      link: /opt/index.md
+    - theme: alt
+      text: Infrastructure
+      link: /infra/index.md
 ---

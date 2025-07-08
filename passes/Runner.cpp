@@ -6,21 +6,31 @@
 #include <string>
 #include <vector>
 
+#include "AdvancedInlining.hpp"
 #include "ExtractMostFrequentlyUsedGlobals.hpp"
 #include "GC/Lowering.hpp"
-#include "InlineSetterFunction.hpp"
 #include "Runner.hpp"
 #include "ToString.hpp"
 #include "binaryen-c.h"
 #include "parser/wat-parser.h"
 #include "pass.h"
 #include "passes/Runner.hpp"
+#include "support/Opt.hpp"
 #include "wasm-binary.h"
 #include "wasm-features.h"
 #include "wasm-stack.h"
 #include "wasm.h"
 
 namespace warpo {
+
+static const cli::Opt<bool> EnableGCLoweringPassForTesting{
+    "--enable-gc-lowering-pass-for-testing",
+    [](argparse::Argument &arg) { arg.help("Enable advanced inlining pass").flag().hidden(); },
+};
+static const cli::Opt<bool> EnableAdvancedInliningPassForTesting{
+    "--enable-advanced-inlining-pass-for-testing",
+    [](argparse::Argument &arg) { arg.help("Enable advanced inlining pass").flag().hidden(); },
+};
 
 static void ensureValidate(wasm::Module &m) {
   if (!wasm::WasmValidator{}.validate(m))
@@ -75,13 +85,13 @@ passes::Output passes::runOnWat(std::string const &input) {
     defaultOptRunner.options.optimizeLevel = 0;
     defaultOptRunner.setDebug(false);
     defaultOptRunner.addDefaultOptimizationPasses();
+    defaultOptRunner.add(std::unique_ptr<wasm::Pass>{passes::createAdvancedInliningPass()});
     defaultOptRunner.run();
     ensureValidate(*m);
   }
   {
     wasm::PassRunner passRunner(m.get());
     passRunner.add(std::unique_ptr<wasm::Pass>{passes::createExtractMostFrequentlyUsedGlobalsPass()});
-    passRunner.add(std::unique_ptr<wasm::Pass>{passes::createInlineSetterFunctionPass()});
     passRunner.run();
     ensureValidate(*m);
   }
@@ -97,10 +107,13 @@ passes::Output passes::runOnWat(std::string const &input) {
   return {.wat = outputWat(m.get()), .wasm = outputWasm(m.get())};
 }
 
-std::string passes::runOnWat(std::string const &input, std::regex const &targetFunctionRegex) {
+std::string passes::runOnWatForTesting(std::string const &input, std::regex const &targetFunctionRegex) {
   std::unique_ptr<wasm::Module> m = passes::loadWat(input);
   wasm::PassRunner passRunner(m.get());
-  passRunner.add(std::unique_ptr<wasm::Pass>{new passes::GCLowering()});
+  if (EnableGCLoweringPassForTesting.get())
+    passRunner.add(std::unique_ptr<wasm::Pass>{new passes::GCLowering()});
+  if (EnableAdvancedInliningPassForTesting.get())
+    passRunner.add(std::unique_ptr<wasm::Pass>{passes::createAdvancedInliningPass()});
   passRunner.run();
   ensureValidate(*m);
 

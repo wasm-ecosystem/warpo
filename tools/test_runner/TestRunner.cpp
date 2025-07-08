@@ -45,7 +45,7 @@ int main(int argc, char const *argv[]) {
   }
   std::string input{std::istreambuf_iterator<char>{ifstream}, {}};
 
-  std::string wat = passes::runOnWat(input, std::regex{functionRegex.get()});
+  std::string wat = passes::runOnWatForTesting(input, std::regex{functionRegex.get()});
 
   std::ofstream watOf{outputPath.get(), std::ios::out};
   if (!watOf.good()) {
