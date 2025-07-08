@@ -3,3 +3,6 @@
 /.vscode
 /bin
 /node_modules
+
+/docs/.vitepress/dist
+/docs/.vitepress/cache

@@ -9,7 +9,9 @@
   "scripts": {
     "build": "node tools/asc/esbuild.js",
     "watch": "node tools/asc/esbuild.js --watch",
-    "test:snapshot": "cmake --build build --target warpo_test_runner && node tests/snapshot.mjs "
+    "test:snapshot": "cmake --build build --target warpo_test_runner && node tests/snapshot.mjs",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs"
   },
   "publishConfig": {
     "registry": "https://packages.orbit.bmwgroup.net/artifactory/api/npm/cdc-npm-local/"
@@ -24,7 +26,7 @@
     "@types/node": "^22.15.21",
     "diff": "^7.0.0",
     "esbuild": "^0.25.4",
-    "typescript": "^5.8.3"
-  },
-  "dependencies": {}
+    "typescript": "^5.8.3",
+    "vitepress": "^1.6.3"
+  }
 }
