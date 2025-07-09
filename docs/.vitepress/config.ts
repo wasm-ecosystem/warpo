@@ -22,7 +22,14 @@ export default defineConfig({
     search: {
       provider: "local",
     },
-    nav: [{ text: "Home", link: "/" }],
+    nav: [
+      { text: "Home", link: "/" },
+      { text: "GitHub", link: "https://atc-github.azure.cloud.bmw/CDCFW/warpo" },
+      {
+        text: "Packages",
+        link: "https://packages.orbit.bmwgroup.net/ui/packages/npm:%2F%2F@cdc%2Fwarpo?name=%40cdc&type=packages",
+      },
+    ],
     sidebar: [
       {
         text: "Document",
