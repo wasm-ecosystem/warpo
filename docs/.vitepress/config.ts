@@ -16,7 +16,7 @@ function listItems(root: string, folder: string): DefaultTheme.SidebarItem[] {
 export default defineConfig({
   title: "warpo document",
   description: "wasm optimizer designed for AssemblyScript and WARP",
-  base: "/warpo/",
+  base: "/CDCFW/warpo/",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     search: {
