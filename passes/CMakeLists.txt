@@ -18,6 +18,12 @@ if(NOT WARPO_RELEASE)
   )
 endif()
 
+if(WARPO_RELEASE)
+  add_compile_definitions(
+    -DWARPO_RELEASE_BUILD
+  )
+endif()
+
 add_library(${LIB_NAME} ${warpo_passes_sources})
 target_link_libraries(${LIB_NAME}
   PUBLIC binaryen fmt::fmt warpo_support

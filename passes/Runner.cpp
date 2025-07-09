@@ -77,8 +77,10 @@ passes::Output passes::runOnWat(std::string const &input) {
     wasm::PassRunner passRunner(m.get());
     passRunner.add(std::unique_ptr<wasm::Pass>{new passes::GCLowering()});
     passRunner.run();
-    ensureValidate(*m);
   }
+#ifndef WARPO_RELEASE_BUILD
+  ensureValidate(*m);
+#endif
   {
     wasm::PassRunner defaultOptRunner{m.get()};
     defaultOptRunner.options.shrinkLevel = 2;
@@ -87,14 +89,18 @@ passes::Output passes::runOnWat(std::string const &input) {
     defaultOptRunner.addDefaultOptimizationPasses();
     defaultOptRunner.add(std::unique_ptr<wasm::Pass>{passes::createAdvancedInliningPass()});
     defaultOptRunner.run();
-    ensureValidate(*m);
   }
+#ifndef WARPO_RELEASE_BUILD
+  ensureValidate(*m);
+#endif
   {
     wasm::PassRunner passRunner(m.get());
     passRunner.add(std::unique_ptr<wasm::Pass>{passes::createExtractMostFrequentlyUsedGlobalsPass()});
     passRunner.run();
-    ensureValidate(*m);
   }
+#ifndef WARPO_RELEASE_BUILD
+  ensureValidate(*m);
+#endif
   {
     wasm::PassRunner defaultOptRunner{m.get()};
     defaultOptRunner.options.shrinkLevel = 2;
@@ -102,8 +108,8 @@ passes::Output passes::runOnWat(std::string const &input) {
     defaultOptRunner.setDebug(false);
     defaultOptRunner.addDefaultOptimizationPasses();
     defaultOptRunner.run();
-    ensureValidate(*m);
   }
+  ensureValidate(*m);
   return {.wat = outputWat(m.get()), .wasm = outputWasm(m.get())};
 }
 
