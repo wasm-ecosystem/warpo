@@ -21,16 +21,30 @@ static cli::Opt<std::string> CostModelFile{
 };
 
 static Opcode getOpcodeByName(std::string const &name) {
-#define OPCODE(str, code)                                                                                              \
+#define OPCODE(str, code, cost)                                                                                        \
   if (name == str) {                                                                                                   \
     return Opcode::code;                                                                                               \
   }
-#define SPECIAL_OPCODE(str, code)                                                                                      \
+#define SPECIAL_OPCODE(str, code, cost)                                                                                \
   if (name == str) {                                                                                                   \
     return Opcode::code;                                                                                               \
   }
 #include "CostModel.inc"
   return Opcode::INVALID;
+}
+
+static float getDefaultCostByOpcode(Opcode opcode) {
+#define OPCODE(str, code, cost)                                                                                        \
+  if (Opcode::code == opcode) {                                                                                        \
+    return static_cast<float>(cost);                                                                                   \
+  }
+#define SPECIAL_OPCODE(str, code, cost)                                                                                \
+  if (Opcode::code == opcode) {                                                                                        \
+    return static_cast<float>(cost);                                                                                   \
+  }
+#include "CostModel.inc"
+  std::cerr << "cost model does not contain cost for opcode: " << static_cast<uint16_t>(opcode) << "\n";
+  return 1.0f;
 }
 
 namespace {
@@ -466,26 +480,8 @@ float CostModel::getCostByExpr(wasm::Expression *expr) const {
 
 float CostModel::getCostByOpcode(Opcode opcode) const {
   auto it = cost_.find(opcode);
-  if (it == cost_.end()) {
-    switch (opcode) {
-    case Opcode::LOCAL_GET:
-    case Opcode::GLOBAL_GET:
-    case Opcode::I32_CONST:
-    case Opcode::I64_CONST:
-    case Opcode::F32_CONST:
-    case Opcode::F64_CONST:
-    case Opcode::NOP:
-    case Opcode::DROP:
-      // by design, these opcodes have zero cost.
-      return 0.0f;
-    default:
-      if (hasCostModel_) {
-        std::cerr << "Cost model does not contain cost for opcode: " << static_cast<uint16_t>(opcode) << "\n";
-      }
-      // default cost for an unknown opcode.
-      return 1.0f;
-    }
-  }
+  if (it == cost_.end())
+    return getDefaultCostByOpcode(opcode);
   return it->second;
 }
 
