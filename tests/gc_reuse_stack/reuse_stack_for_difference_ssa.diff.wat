@@ -12,33 +12,29 @@
     block ;;none
             i32.const 0
           call $tests/common_lib/normal/Normal#constructor
-          i32.const 0
-        call $~lib/rt/__tostack
+        call $~lib/rt/__tostack<0>
       local.set $0
           local.get $0
 ;; ======remove=======
-;;        i32.const 4
+;;      call $~lib/rt/__tostack<4>
 ;; =========add========
-          i32.const 0
+        call $~lib/rt/__tostack<0>
 ;; ====================
-        call $~lib/rt/__tostack
       call $tests/gc_reuse_stack/reuse_stack_for_difference_ssa/foo
             i32.const 0
           call $tests/common_lib/normal/Normal#constructor
 ;; ======remove=======
-;;        i32.const 8
+;;      call $~lib/rt/__tostack<8>
 ;; =========add========
-          i32.const 0
+        call $~lib/rt/__tostack<0>
 ;; ====================
-        call $~lib/rt/__tostack
       local.set $1
           local.get $1
 ;; ======remove=======
-;;        i32.const 12
+;;      call $~lib/rt/__tostack<12>
 ;; =========add========
-          i32.const 0
+        call $~lib/rt/__tostack<0>
 ;; ====================
-        call $~lib/rt/__tostack
       call $tests/gc_reuse_stack/reuse_stack_for_difference_ssa/foo
     end
 ;; ======remove=======

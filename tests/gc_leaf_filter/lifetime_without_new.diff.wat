@@ -11,8 +11,7 @@
         i32.const 0
       call $tests/common_lib/normal/Normal#constructor
 ;; ======remove=======
-;;          i32.const 0
-;;        call $~lib/rt/__tostack
+;;        call $~lib/rt/__tostack<0>
 ;; ====================
     local.set $0
 ;; ======remove=======

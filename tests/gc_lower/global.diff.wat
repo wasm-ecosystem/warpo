@@ -33,11 +33,9 @@
 ;; ====================
 )
 ;; =========add========
-(func $~lib/rt/__tostack (type $func.0 (func (param i32 i32) (result i32)))
+(func $~lib/rt/__tostack<0> (type $func.0 (func (param i32) (result i32)))
   block ;;i32
-        global.get $~lib/memory/__stack_pointer
-        local.get $1
-      i32.add
+      global.get $~lib/memory/__stack_pointer
       local.get $0
     i32.store $0 align=1
     local.get $0

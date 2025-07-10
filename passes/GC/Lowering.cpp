@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <cassert>
+#include <cstddef>
 #include <map>
 #include <memory>
+#include <string>
 
 #include "CollectLeafFunction.hpp"
 #include "GCInfo.hpp"
@@ -12,11 +14,13 @@
 #include "SSAObj.hpp"
 #include "StackAssigner.hpp"
 #include "argparse/argparse.hpp"
+#include "fmt/format.h"
 #include "literal.h"
 #include "pass.h"
 #include "passes/passes.h"
 #include "support/Opt.hpp"
 #include "support/index.h"
+#include "support/name.h"
 #include "wasm-builder.h"
 #include "wasm-traversal.h"
 #include "wasm-type.h"
@@ -43,6 +47,10 @@ static cli::Opt<bool> TestOnlyControlGroup{
 };
 
 namespace gc {
+
+static wasm::Name getToStackFunctionName(uint32_t offset) {
+  return wasm::Name{fmt::format("~lib/rt/__tostack<{}>", offset)};
+}
 
 // localtostack/tmptostack => tostack(v, i32.const offset)
 // insert to begin => decrease SP
@@ -78,8 +86,7 @@ void ToStackCallLowering::runOnFunction(wasm::Module *m, wasm::Function *func) {
         uint32_t const offset = it->second;
         maxShadowStackOffset_ = std::max(offset + 4U, maxShadowStackOffset_);
         wasm::Builder builder{*getModule()};
-        expr->operands.push_back(builder.makeConst(wasm::Literal(offset)));
-        expr->target = "~lib/rt/__tostack";
+        expr->target = getToStackFunctionName(offset);
       }
     }
   };
@@ -160,7 +167,10 @@ void ToStackCallLowering::runOnFunction(wasm::Module *m, wasm::Function *func) {
 }
 
 struct PostLowering : public wasm::Pass {
-  explicit PostLowering() { name = "PostLowering"; }
+  std::shared_ptr<gc::StackPositions> stackPosition_;
+  explicit PostLowering(std::shared_ptr<gc::StackPositions> stackPosition) : stackPosition_(stackPosition) {
+    name = "PostLowering";
+  }
   bool modifiesBinaryenIR() override { return true; }
   void run(wasm::Module *m) override {
     wasm::Builder b{*m};
@@ -187,17 +197,29 @@ struct PostLowering : public wasm::Pass {
                                                         b.makeLocalGet(0, i32))),
 
                        })));
-    m->addFunction(
-        b.makeFunction("~lib/rt/__tostack", wasm::Signature(std::vector<wasm::Type>{i32, i32}, i32), {},
-                       b.makeBlock({
-                           b.makeStore(4, 0, 1,
-                                       b.makeBinary(wasm::BinaryOp::AddInt32, b.makeGlobalGet(VarStackPointer, i32),
-                                                    b.makeLocalGet(1, i32)),
-                                       b.makeLocalGet(0, i32), i32, memoryName),
-                           b.makeLocalGet(0, i32),
-                       })));
+    uint32_t const maxShadowStackOffset = getMaxShadowStackOffset();
+    for (size_t offset = 0U; offset <= maxShadowStackOffset; offset += 4U) {
+      m->addFunction(b.makeFunction(
+          getToStackFunctionName(offset), wasm::Signature(i32, i32), {},
+          b.makeBlock({
+              b.makeStore(4, offset, 1, b.makeGlobalGet(VarStackPointer, i32), b.makeLocalGet(0, i32), i32, memoryName),
+              b.makeLocalGet(0, i32),
+          })));
+    }
+
     m->removeFunction(FnLocalToStack);
     m->removeFunction(FnTmpToStack);
+  }
+
+private:
+  uint32_t getMaxShadowStackOffset() const {
+    uint32_t maxOffset = 0;
+    for (auto const &[_, offsets] : *stackPosition_) {
+      for (auto const &offset : offsets) {
+        maxOffset = std::max(maxOffset, offset.second);
+      }
+    }
+    return maxOffset;
   }
 };
 
@@ -250,8 +272,7 @@ void GCLowering::run(wasm::Module *m) {
       gc::StackAssigner::addToPass(runner, stackAssignerMode, livenessInfo);
 
   runner.add(std::unique_ptr<wasm::Pass>(new gc::ToStackCallLowering(stackPositions)));
-
-  runner.add(std::unique_ptr<wasm::Pass>(new gc::PostLowering()));
+  runner.add(std::unique_ptr<wasm::Pass>(new gc::PostLowering(stackPositions)));
 
   runner.run();
 }

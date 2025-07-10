@@ -6,6 +6,9 @@ cawe
 ccache
 currp
 DWARPO
+localtostack
+tmptostack
+tostack
 tricore
 unittests
 warpo

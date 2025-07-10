@@ -17,8 +17,7 @@
 ;; ======remove=======
 ;;      call $~lib/rt/__localtostack
 ;; =========add========
-              i32.const 0
-            call $~lib/rt/__tostack
+            call $~lib/rt/__tostack<0>
 ;; ====================
           local.set $0
                 i32.const 0
@@ -26,8 +25,7 @@
 ;; ======remove=======
 ;;      call $~lib/rt/__localtostack
 ;; =========add========
-              i32.const 4
-            call $~lib/rt/__tostack
+            call $~lib/rt/__tostack<4>
 ;; ====================
           local.set $0
         end

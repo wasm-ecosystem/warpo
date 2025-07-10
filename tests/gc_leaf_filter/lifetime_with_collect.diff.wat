@@ -8,8 +8,7 @@
       block ;;unreachable
               i32.const 0
             call $tests/common_lib/normal/Normal#constructor
-            i32.const 0
-          call $~lib/rt/__tostack
+          call $~lib/rt/__tostack<0>
         local.set $0
         call $~lib/rt/itcms/__collect
         block ;;unreachable

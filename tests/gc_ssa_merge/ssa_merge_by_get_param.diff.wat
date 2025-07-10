@@ -7,8 +7,7 @@
 ;; ====================
     local.get $0
 ;; ======remove=======
-;;      i32.const 0
-;;    call $~lib/rt/__tostack
+;;    call $~lib/rt/__tostack<0>
 ;; ====================
   call $tests/gc_ssa_merge/ssa_merge_by_get_param/foo
 ;; ======remove=======

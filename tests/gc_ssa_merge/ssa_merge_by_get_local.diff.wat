@@ -11,13 +11,11 @@
     block ;;none
             i32.const 0
           call $tests/common_lib/normal/Normal#constructor
-          i32.const 0
-        call $~lib/rt/__tostack
+        call $~lib/rt/__tostack<0>
       local.set $0
         local.get $0
 ;; ======remove=======
-;;        i32.const 4
-;;      call $~lib/rt/__tostack
+;;      call $~lib/rt/__tostack<4>
 ;; ====================
       call $tests/gc_ssa_merge/ssa_merge_by_get_local/foo
     end

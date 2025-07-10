@@ -5,8 +5,7 @@
     call $~lib/rt/__decrease_sp
           i32.const 0
         call $tests/common_lib/normal/Normal#constructor
-        i32.const 0
-      call $~lib/rt/__tostack
+      call $~lib/rt/__tostack<0>
     call $tests/gc_ssa_merge/ssa_not_merge/foo
       i32.const 4
     call $~lib/rt/__increase_sp
