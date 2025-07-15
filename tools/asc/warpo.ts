@@ -15,9 +15,8 @@ export function runWarpo(inputWast: string, outputWasm: string): void {
     throw new Error("Unsupported platform");
   }
   const warpoPath = join(projectRoot, "bin", platformPath, "warpo");
-  const commonCostModel = join(projectRoot, "model", "instruction_cost_common.txt");
   execSync("chmod +x " + warpoPath);
-  execFileSync(warpoPath, ["-i", inputWast, "-o", outputWasm, "--cost-model-file", commonCostModel], {
+  execFileSync(warpoPath, ["-i", inputWast, "-o", outputWasm], {
     env,
     stdio: "inherit",
   });
