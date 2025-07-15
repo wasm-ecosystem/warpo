@@ -4189,12 +4189,8 @@
   call $~lib/object/Object~visit
   local.get $0
   i32.load
-  local.tee $2
-  if
-   local.get $2
-   local.get $1
-   call $~lib/rt/itcms/__visit
-  end
+  local.get $1
+  call $~lib/rt/itcms/__visit
  )
  (func $~lib/object/Object~visit (param $0 i32) (param $1 i32)
  )
@@ -4964,8 +4960,6 @@
   (local $0 i32)
   (local $1 i32)
   (local $2 i32)
-  (local $3 i32)
-  (local $4 i32)
   global.get $~lib/memory/__stack_pointer
   i32.const 16
   i32.sub
@@ -4997,17 +4991,17 @@
   f32.const 1.100000023841858
   i32.const 0
   call $~lib/number/F32#toString
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store
-  local.get $4
+  local.get $2
   i32.const 1968
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store offset=4
-  local.get $4
+  local.get $2
   call $~lib/string/String.__eq
   i32.eqz
   if
@@ -5021,17 +5015,17 @@
   f64.const 1.1
   i32.const 0
   call $~lib/number/F64#toString
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store
-  local.get $4
+  local.get $2
   i32.const 1968
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store offset=4
-  local.get $4
+  local.get $2
   call $~lib/string/String.__eq
   i32.eqz
   if
@@ -5043,29 +5037,29 @@
    unreachable
   end
   global.get $issues/2873/f32arr
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store offset=8
-  local.get $4
+  local.get $2
   i32.const 2160
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store offset=12
-  local.get $4
+  local.get $2
   call $~lib/array/Array<f32>#join
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store
-  local.get $4
+  local.get $2
   i32.const 2192
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store offset=4
-  local.get $4
+  local.get $2
   call $~lib/string/String.__eq
   i32.eqz
   if
@@ -5077,29 +5071,29 @@
    unreachable
   end
   global.get $issues/2873/f64arr
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store offset=8
-  local.get $4
+  local.get $2
   i32.const 2160
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store offset=12
-  local.get $4
+  local.get $2
   call $~lib/array/Array<f64>#join
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store
-  local.get $4
+  local.get $2
   i32.const 2192
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store offset=4
-  local.get $4
+  local.get $2
   call $~lib/string/String.__eq
   i32.eqz
   if

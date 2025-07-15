@@ -1068,7 +1068,6 @@
        call $~lib/rt/tlsf/initialize
       end
       global.get $~lib/rt/tlsf/ROOT
-      local.set $1
       local.get $0
       i32.const 4
       i32.sub
@@ -1101,7 +1100,6 @@
       i32.const 1
       i32.or
       i32.store
-      local.get $1
       local.get $2
       call $~lib/rt/tlsf/insertBlock
      end
@@ -1675,11 +1673,7 @@
    end
    local.get $0
    i32.load
-   local.tee $0
-   if
-    local.get $0
-    call $~lib/rt/itcms/__visit
-   end
+   call $~lib/rt/itcms/__visit
    return
   end
   unreachable
@@ -2218,7 +2212,6 @@
    i32.const 0
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
-   local.set $0
    global.get $~lib/memory/__stack_pointer
    i32.const 1904
    i32.store offset=4
@@ -2230,7 +2223,6 @@
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store
-   local.get $0
    local.get $1
    i32.const 0
    call $~lib/string/String.UTF8.decode
@@ -2255,7 +2247,6 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   local.set $0
    global.get $~lib/memory/__stack_pointer
    i32.const 1904
    i32.store offset=4
@@ -2267,7 +2258,6 @@
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store
-   local.get $0
    local.get $1
    i32.const 0
    call $~lib/string/String.UTF8.decode
@@ -2292,7 +2282,6 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   local.set $0
    global.get $~lib/memory/__stack_pointer
    i32.const 1968
    i32.store offset=4
@@ -2304,7 +2293,6 @@
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store
-   local.get $0
    local.get $1
    i32.const 0
    call $~lib/string/String.UTF8.decode
@@ -2329,7 +2317,6 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   local.set $0
    global.get $~lib/memory/__stack_pointer
    i32.const 1968
    i32.store offset=4
@@ -2341,7 +2328,6 @@
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store
-   local.get $0
    local.get $1
    i32.const 0
    call $~lib/string/String.UTF8.decode
@@ -2737,12 +2723,10 @@
   i32.sub
   i32.load offset=16
   call $~lib/string/String.UTF16.decodeUnsafe
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/string/String.__eq (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -3396,12 +3380,10 @@
   local.get $1
   i32.const 0
   call $~lib/string/String.UTF8.encode
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $std/string-encoding/testUTF8EncodeNullTerminated
   (local $0 i32)
@@ -3656,12 +3638,10 @@
   i32.load offset=16
   local.get $1
   call $~lib/string/String.UTF8.decodeUnsafe
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $std/string-encoding/testUTF8DecodeUnsafe
   (local $0 i32)

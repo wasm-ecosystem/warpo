@@ -106,7 +106,7 @@
    local.get $1
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$115
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$117
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -130,7 +130,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$115
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$117
    end
    local.get $0
    i32.load offset=8
@@ -1035,7 +1035,6 @@
        call $~lib/rt/tlsf/initialize
       end
       global.get $~lib/rt/tlsf/ROOT
-      local.set $1
       local.get $0
       i32.const 4
       i32.sub
@@ -1068,7 +1067,6 @@
       i32.const 1
       i32.or
       i32.store
-      local.get $1
       local.get $2
       call $~lib/rt/tlsf/insertBlock
      end
@@ -1588,32 +1586,35 @@
   end
  )
  (func $~lib/rt/__visit_members (param $0 i32)
-  block $folding-inner0
-   block $invalid
-    block $~lib/string/String
-     block $~lib/arraybuffer/ArrayBuffer
-      block $~lib/object/Object
-       local.get $0
-       i32.const 8
-       i32.sub
-       i32.load
-       br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $invalid
+  block $invalid
+   block $issues/1095/Foo
+    block $~lib/arraybuffer/ArrayBufferView
+     block $~lib/string/String
+      block $~lib/arraybuffer/ArrayBuffer
+       block $~lib/object/Object
+        local.get $0
+        i32.const 8
+        i32.sub
+        i32.load
+        br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $issues/1095/Foo $invalid
+       end
+       return
       end
       return
      end
      return
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
-   unreachable
-  end
-  local.get $0
-  i32.load
-  local.tee $0
-  if
    local.get $0
+   i32.load
    call $~lib/rt/itcms/__visit
+   return
   end
+  unreachable
  )
  (func $~start
   (local $0 i32)
@@ -1683,7 +1684,6 @@
    local.tee $0
    i32.store
    global.get $~lib/memory/__stack_pointer
-   local.set $1
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store offset=4
@@ -1712,7 +1712,6 @@
    i32.const 4
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $1
    local.get $0
    i32.store
    global.get $~lib/memory/__stack_pointer

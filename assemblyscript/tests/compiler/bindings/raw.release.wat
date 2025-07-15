@@ -1152,7 +1152,6 @@
        call $~lib/rt/tlsf/initialize
       end
       global.get $~lib/rt/tlsf/ROOT
-      local.set $1
       local.get $0
       i32.const 4
       i32.sub
@@ -1185,7 +1184,6 @@
       i32.const 1
       i32.or
       i32.store
-      local.get $1
       local.get $2
       call $~lib/rt/tlsf/insertBlock
      end
@@ -2008,25 +2006,13 @@
        end
        local.get $0
        i32.load offset=56
-       local.tee $1
-       if
-        local.get $1
-        call $~lib/rt/itcms/__visit
-       end
+       call $~lib/rt/itcms/__visit
        local.get $0
        i32.load offset=60
-       local.tee $1
-       if
-        local.get $1
-        call $~lib/rt/itcms/__visit
-       end
+       call $~lib/rt/itcms/__visit
        local.get $0
        i32.load offset=64
-       local.tee $0
-       if
-        local.get $0
-        call $~lib/rt/itcms/__visit
-       end
+       call $~lib/rt/itcms/__visit
        return
       end
       return
@@ -2042,11 +2028,7 @@
    end
    local.get $0
    i32.load
-   local.tee $0
-   if
-    local.get $0
-    call $~lib/rt/itcms/__visit
-   end
+   call $~lib/rt/itcms/__visit
    return
   end
   global.get $~lib/memory/__stack_pointer
@@ -2210,7 +2192,7 @@
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store
-   block $__inlined_func$~lib/string/String#concat$281
+   block $__inlined_func$~lib/string/String#concat$286
     local.get $1
     i32.const 20
     i32.sub
@@ -2229,7 +2211,7 @@
      global.set $~lib/memory/__stack_pointer
      i32.const 1760
      local.set $2
-     br $__inlined_func$~lib/string/String#concat$281
+     br $__inlined_func$~lib/string/String#concat$286
     end
     global.get $~lib/memory/__stack_pointer
     local.get $2
@@ -2296,12 +2278,10 @@
   i32.load offset=8
   i32.const 1
   i32.shr_u
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/typedarray/Float32Array#get:length (param $0 i32) (result i32)
   global.get $~lib/memory/__stack_pointer
@@ -2329,12 +2309,10 @@
   i32.load offset=8
   i32.const 2
   i32.shr_u
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/typedarray/Uint64Array#__set (param $0 i32) (param $1 i32) (param $2 i64)
   global.get $~lib/memory/__stack_pointer
@@ -2414,15 +2392,13 @@
    local.get $0
    i32.store
    global.get $~lib/memory/__stack_pointer
-   local.set $2
    local.get $0
    call $~lib/typedarray/Int16Array#get:length
    local.set $5
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store
-   local.get $2
-   block $__inlined_func$~lib/typedarray/Uint64Array#constructor$1 (result i32)
+   block $__inlined_func$~lib/typedarray/Uint64Array#constructor (result i32)
     local.get $1
     call $~lib/typedarray/Float32Array#get:length
     local.get $5
@@ -2447,7 +2423,6 @@
      local.tee $2
      i32.store
      global.get $~lib/memory/__stack_pointer
-     local.set $6
      global.get $~lib/memory/__stack_pointer
      local.get $2
      i32.store offset=4
@@ -2546,7 +2521,6 @@
      i32.const 16
      i32.add
      global.set $~lib/memory/__stack_pointer
-     local.get $6
      local.get $2
      i32.store
      global.get $~lib/memory/__stack_pointer
@@ -2554,7 +2528,7 @@
      i32.add
      global.set $~lib/memory/__stack_pointer
      local.get $2
-     br $__inlined_func$~lib/typedarray/Uint64Array#constructor$1
+     br $__inlined_func$~lib/typedarray/Uint64Array#constructor
     end
     br $folding-inner1
    end
@@ -2768,12 +2742,10 @@
   i32.shl
   i32.add
   i32.load
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/staticarray/StaticArray<i32>#__set (param $0 i32) (param $1 i32) (param $2 i32)
   global.get $~lib/memory/__stack_pointer
@@ -2852,12 +2824,10 @@
   i32.store
   local.get $0
   i32.load offset=12
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/array/Array<i32>#__get (param $0 i32) (param $1 i32) (result i32)
   global.get $~lib/memory/__stack_pointer
@@ -2903,12 +2873,10 @@
   i32.shl
   i32.add
   i32.load
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/array/ensureCapacity (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -2957,7 +2925,7 @@
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   block $__inlined_func$~lib/rt/itcms/__renew$265
+   block $__inlined_func$~lib/rt/itcms/__renew$270
     i32.const 1073741820
     local.get $2
     i32.const 1
@@ -3000,7 +2968,7 @@
      i32.store offset=16
      local.get $2
      local.set $1
-     br $__inlined_func$~lib/rt/itcms/__renew$265
+     br $__inlined_func$~lib/rt/itcms/__renew$270
     end
     local.get $3
     local.get $4
@@ -3277,7 +3245,6 @@
    i64.const 0
    i64.store
    global.get $~lib/memory/__stack_pointer
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
@@ -3329,7 +3296,6 @@
    i32.const 4
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $3
    local.get $5
    i32.store offset=4
    local.get $5
@@ -3385,12 +3351,10 @@
   local.get $0
   local.get $1
   call $bindings/esm/stringFunction
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $export:bindings/esm/stringFunctionOptional@varargs (param $0 i32) (param $1 i32) (result i32)
   global.get $~lib/memory/__stack_pointer
@@ -3447,7 +3411,6 @@
    local.get $0
    local.get $1
    call $bindings/esm/stringFunction
-   local.set $0
    global.get $~lib/memory/__stack_pointer
    i32.const 12
    i32.add
@@ -3456,7 +3419,6 @@
    i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $0
    return
   end
   i32.const 35072
@@ -3491,12 +3453,10 @@
   local.get $0
   local.get $1
   call $bindings/esm/typedarrayFunction
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $export:bindings/esm/staticarrayFunction (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -3517,7 +3477,7 @@
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store offset=4
-   block $__inlined_func$bindings/esm/staticarrayFunction$2 (result i32)
+   block $__inlined_func$bindings/esm/staticarrayFunction$1 (result i32)
     global.get $~lib/memory/__stack_pointer
     i32.const 12
     i32.sub
@@ -3534,7 +3494,6 @@
      i32.const 0
      i32.store offset=8
      global.get $~lib/memory/__stack_pointer
-     local.set $3
      global.get $~lib/memory/__stack_pointer
      local.get $0
      i32.store
@@ -3544,11 +3503,9 @@
      i32.load offset=16
      i32.const 2
      i32.shr_u
-     local.set $4
      global.get $~lib/memory/__stack_pointer
      local.get $1
      i32.store
-     local.get $4
      local.get $1
      i32.const 20
      i32.sub
@@ -3591,7 +3548,6 @@
      i32.const 4
      i32.add
      global.set $~lib/memory/__stack_pointer
-     local.get $3
      local.get $4
      i32.store offset=4
      loop $for-loop|0
@@ -3677,16 +3633,14 @@
      i32.add
      global.set $~lib/memory/__stack_pointer
      local.get $4
-     br $__inlined_func$bindings/esm/staticarrayFunction$2
+     br $__inlined_func$bindings/esm/staticarrayFunction$1
     end
     br $folding-inner1
    end
-   local.set $0
    global.get $~lib/memory/__stack_pointer
    i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $0
    return
   end
   i32.const 35072
@@ -3760,14 +3714,12 @@
    local.get $0
    i32.store
    global.get $~lib/memory/__stack_pointer
-   local.set $3
    local.get $0
    call $~lib/array/Array<i32>#get:length
    local.set $4
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store
-   local.get $3
    local.get $1
    call $~lib/array/Array<i32>#get:length
    local.get $4
@@ -4006,14 +3958,12 @@
    local.get $0
    i32.store
    global.get $~lib/memory/__stack_pointer
-   local.set $3
    local.get $0
    call $~lib/array/Array<i32>#get:length
    local.set $4
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store
-   local.get $3
    local.get $1
    call $~lib/array/Array<i32>#get:length
    local.get $4
@@ -4256,7 +4206,7 @@
    i32.const 0
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
-   block $__inlined_func$bindings/esm/PlainObject#constructor$5 (result i32)
+   block $__inlined_func$bindings/esm/PlainObject#constructor$4 (result i32)
     global.get $~lib/memory/__stack_pointer
     i32.const 8
     i32.sub
@@ -4276,7 +4226,6 @@
      local.tee $2
      i32.store
      global.get $~lib/memory/__stack_pointer
-     local.set $3
      global.get $~lib/memory/__stack_pointer
      local.get $2
      i32.store offset=4
@@ -4305,7 +4254,6 @@
      i32.const 4
      i32.add
      global.set $~lib/memory/__stack_pointer
-     local.get $3
      local.get $2
      i32.store
      global.get $~lib/memory/__stack_pointer
@@ -4421,7 +4369,7 @@
      i32.add
      global.set $~lib/memory/__stack_pointer
      local.get $2
-     br $__inlined_func$bindings/esm/PlainObject#constructor$5
+     br $__inlined_func$bindings/esm/PlainObject#constructor$4
     end
     br $folding-inner1
    end

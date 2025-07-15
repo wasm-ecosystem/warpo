@@ -6811,12 +6811,8 @@
   call $~lib/object/Object~visit
   local.get $0
   i32.load
-  local.tee $2
-  if
-   local.get $2
-   local.get $1
-   call $~lib/rt/itcms/__visit
-  end
+  local.get $1
+  call $~lib/rt/itcms/__visit
  )
  (func $~lib/object/Object~visit (param $0 i32) (param $1 i32)
  )
@@ -6954,7 +6950,6 @@
   (local $0 i32)
   (local $1 i32)
   (local $2 i32)
-  (local $3 i32)
   global.get $~lib/memory/__stack_pointer
   i32.const 8
   i32.sub
@@ -6986,14 +6981,14 @@
   i32.const 4
   i32.const 32
   call $~lib/rt/__newArray
-  local.tee $2
+  local.tee $1
   i32.store
-  local.get $2
-  local.set $3
+  local.get $1
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $3
+  local.get $2
   i32.store offset=4
-  local.get $3
+  local.get $2
   i32.const 0
   call $~lib/array/Array<v128>#__get
   i32x4.extract_lane 0

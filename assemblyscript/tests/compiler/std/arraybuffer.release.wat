@@ -113,7 +113,7 @@
    local.get $1
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$172
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$185
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -137,7 +137,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$172
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$185
    end
    local.get $0
    i32.load offset=8
@@ -1042,7 +1042,6 @@
        call $~lib/rt/tlsf/initialize
       end
       global.get $~lib/rt/tlsf/ROOT
-      local.set $1
       local.get $0
       i32.const 4
       i32.sub
@@ -1075,7 +1074,6 @@
       i32.const 1
       i32.or
       i32.store
-      local.get $1
       local.get $2
       call $~lib/rt/tlsf/insertBlock
      end
@@ -1646,11 +1644,7 @@
   end
   local.get $0
   i32.load
-  local.tee $0
-  if
-   local.get $0
-   call $~lib/rt/itcms/__visit
-  end
+  call $~lib/rt/itcms/__visit
  )
  (func $~start
   call $start:std/arraybuffer
@@ -1907,7 +1901,6 @@
    i32.const 1456
    global.set $~lib/rt/itcms/fromSpace
    global.get $~lib/memory/__stack_pointer
-   local.set $0
    global.get $~lib/memory/__stack_pointer
    i32.const 4
    i32.sub
@@ -1929,7 +1922,6 @@
    i32.const 4
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $0
    local.get $1
    i32.store
    global.get $~lib/memory/__stack_pointer
@@ -2185,7 +2177,6 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   local.set $0
    global.get $~lib/memory/__stack_pointer
    i32.const 8
    i32.sub
@@ -2216,7 +2207,6 @@
    i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $0
    local.get $1
    i32.store offset=12
    global.get $~lib/memory/__stack_pointer
@@ -2231,7 +2221,6 @@
    i32.const 0
    i32.store
    global.get $~lib/memory/__stack_pointer
-   local.set $0
    i32.const 8
    i32.const 1
    call $~lib/rt/itcms/__new
@@ -2239,7 +2228,6 @@
    i32.const 1632
    i64.load align=1
    i64.store align=1
-   local.get $0
    local.get $2
    i32.store
    i32.const 16
@@ -2311,7 +2299,7 @@
    i32.load
    local.tee $0
    i32.store offset=16
-   block $__inlined_func$~lib/dataview/DataView#constructor@varargs$1 (result i32)
+   block $__inlined_func$~lib/dataview/DataView#constructor@varargs (result i32)
     global.get $~lib/memory/__stack_pointer
     i32.const 8
     i32.sub
@@ -2433,7 +2421,7 @@
      i32.add
      global.set $~lib/memory/__stack_pointer
      local.get $2
-     br $__inlined_func$~lib/dataview/DataView#constructor@varargs$1
+     br $__inlined_func$~lib/dataview/DataView#constructor@varargs
     end
     br $folding-inner1
    end

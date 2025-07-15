@@ -1054,7 +1054,6 @@
        call $~lib/rt/tlsf/initialize
       end
       global.get $~lib/rt/tlsf/ROOT
-      local.set $1
       local.get $0
       i32.const 4
       i32.sub
@@ -1087,7 +1086,6 @@
       i32.const 1
       i32.or
       i32.store
-      local.get $1
       local.get $2
       call $~lib/rt/tlsf/insertBlock
      end
@@ -1628,11 +1626,7 @@
       end
       local.get $0
       i32.load
-      local.tee $0
-      if
-       local.get $0
-       call $~lib/rt/itcms/__visit
-      end
+      call $~lib/rt/itcms/__visit
       return
      end
      unreachable
@@ -1888,11 +1882,9 @@
   i32.store
   local.get $0
   i32.load
-  local.set $3
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store
-  local.get $3
   local.get $2
   local.get $0
   i32.load offset=4
@@ -1997,12 +1989,10 @@
   call $~lib/set/Set<i8>#find
   i32.const 0
   i32.ne
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<i8>#rehash (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -2093,7 +2083,6 @@
      local.get $5
      local.get $1
      local.get $8
-     i32.extend8_s
      i32.const -1028477379
      i32.mul
      i32.const 374761394
@@ -2259,11 +2248,9 @@
    i32.store
    local.get $0
    i32.load offset=16
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $2
    local.get $0
    i32.load offset=12
    i32.eq
@@ -2313,7 +2300,6 @@
    i32.store
    local.get $0
    i32.load offset=8
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
@@ -2327,7 +2313,6 @@
    i32.const 1
    i32.add
    i32.store offset=16
-   local.get $2
    local.get $4
    i32.const 3
    i32.shl
@@ -2401,12 +2386,10 @@
   i32.store
   local.get $0
   i32.load offset=20
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/array/ensureCapacity (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32)
   (local $4 i32)
@@ -2673,12 +2656,10 @@
   i32.store
   local.get $0
   i32.load offset=12
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/array/Array<i8>#__get (param $0 i32) (param $1 i32) (result i32)
   global.get $~lib/memory/__stack_pointer
@@ -2722,12 +2703,10 @@
   i32.load offset=4
   i32.add
   i32.load8_s
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<i8>#delete (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -2840,11 +2819,9 @@
    i32.store
    local.get $0
    i32.load offset=20
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $2
    local.get $0
    i32.load offset=12
    i32.const 3
@@ -3101,7 +3078,6 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store offset=4
@@ -3283,7 +3259,6 @@
    i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $3
    local.get $6
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
@@ -3686,12 +3661,10 @@
   call $~lib/set/Set<i8>#find
   i32.const 0
   i32.ne
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<u8>#rehash (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -3948,11 +3921,9 @@
    i32.store
    local.get $0
    i32.load offset=16
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $2
    local.get $0
    i32.load offset=12
    i32.eq
@@ -4002,7 +3973,6 @@
    i32.store
    local.get $0
    i32.load offset=8
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
@@ -4016,7 +3986,6 @@
    i32.const 1
    i32.add
    i32.store offset=16
-   local.get $2
    local.get $4
    i32.const 3
    i32.shl
@@ -4108,12 +4077,10 @@
   i32.load offset=4
   i32.add
   i32.load8_u
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<u8>#delete (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -4227,11 +4194,9 @@
    i32.store
    local.get $0
    i32.load offset=20
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $2
    local.get $0
    i32.load offset=12
    i32.const 3
@@ -4409,7 +4374,6 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store offset=4
@@ -4591,7 +4555,6 @@
    i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $3
    local.get $6
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
@@ -4962,11 +4925,9 @@
   i32.store
   local.get $0
   i32.load
-  local.set $3
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store
-  local.get $3
   local.get $2
   local.get $0
   i32.load offset=4
@@ -5071,12 +5032,10 @@
   call $~lib/set/Set<i16>#find
   i32.const 0
   i32.ne
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<i16>#rehash (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -5167,7 +5126,6 @@
      local.get $5
      local.get $1
      local.get $8
-     i32.extend16_s
      i32.const -1028477379
      i32.mul
      i32.const 374761395
@@ -5333,11 +5291,9 @@
    i32.store
    local.get $0
    i32.load offset=16
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $2
    local.get $0
    i32.load offset=12
    i32.eq
@@ -5387,7 +5343,6 @@
    i32.store
    local.get $0
    i32.load offset=8
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
@@ -5401,7 +5356,6 @@
    i32.const 1
    i32.add
    i32.store offset=16
-   local.get $2
    local.get $4
    i32.const 3
    i32.shl
@@ -5600,12 +5554,10 @@
   i32.shl
   i32.add
   i32.load16_s
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<i16>#delete (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -5718,11 +5670,9 @@
    i32.store
    local.get $0
    i32.load offset=20
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $2
    local.get $0
    i32.load offset=12
    i32.const 3
@@ -5900,7 +5850,6 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store offset=4
@@ -6084,7 +6033,6 @@
    i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $3
    local.get $6
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
@@ -6487,12 +6435,10 @@
   call $~lib/set/Set<i16>#find
   i32.const 0
   i32.ne
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<u16>#rehash (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -6749,11 +6695,9 @@
    i32.store
    local.get $0
    i32.load offset=16
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $2
    local.get $0
    i32.load offset=12
    i32.eq
@@ -6803,7 +6747,6 @@
    i32.store
    local.get $0
    i32.load offset=8
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
@@ -6817,7 +6760,6 @@
    i32.const 1
    i32.add
    i32.store offset=16
-   local.get $2
    local.get $4
    i32.const 3
    i32.shl
@@ -6911,12 +6853,10 @@
   i32.shl
   i32.add
   i32.load16_u
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<u16>#delete (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -7030,11 +6970,9 @@
    i32.store
    local.get $0
    i32.load offset=20
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $2
    local.get $0
    i32.load offset=12
    i32.const 3
@@ -7212,7 +7150,6 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store offset=4
@@ -7396,7 +7333,6 @@
    i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $3
    local.get $6
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
@@ -7767,11 +7703,9 @@
   i32.store
   local.get $0
   i32.load
-  local.set $3
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store
-  local.get $3
   local.get $2
   local.get $0
   i32.load offset=4
@@ -7873,12 +7807,10 @@
   call $~lib/set/Set<i32>#find
   i32.const 0
   i32.ne
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<i32>#rehash (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -8133,11 +8065,9 @@
    i32.store
    local.get $0
    i32.load offset=16
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $2
    local.get $0
    i32.load offset=12
    i32.eq
@@ -8187,7 +8117,6 @@
    i32.store
    local.get $0
    i32.load offset=8
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
@@ -8201,7 +8130,6 @@
    i32.const 1
    i32.add
    i32.store offset=16
-   local.get $2
    local.get $4
    i32.const 3
    i32.shl
@@ -8400,12 +8328,10 @@
   i32.shl
   i32.add
   i32.load
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<i32>#delete (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -8517,11 +8443,9 @@
    i32.store
    local.get $0
    i32.load offset=20
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $2
    local.get $0
    i32.load offset=12
    i32.const 3
@@ -8699,7 +8623,6 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store offset=4
@@ -8883,7 +8806,6 @@
    i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $3
    local.get $6
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
@@ -9254,11 +9176,9 @@
   i32.store
   local.get $0
   i32.load
-  local.set $3
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store
-  local.get $3
   local.get $2
   local.get $0
   i32.load offset=4
@@ -9360,12 +9280,10 @@
   call $~lib/set/Set<u32>#find
   i32.const 0
   i32.ne
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<u32>#rehash (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -9620,11 +9538,9 @@
    i32.store
    local.get $0
    i32.load offset=16
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $2
    local.get $0
    i32.load offset=12
    i32.eq
@@ -9674,7 +9590,6 @@
    i32.store
    local.get $0
    i32.load offset=8
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
@@ -9688,7 +9603,6 @@
    i32.const 1
    i32.add
    i32.store offset=16
-   local.get $2
    local.get $4
    i32.const 3
    i32.shl
@@ -9782,12 +9696,10 @@
   i32.shl
   i32.add
   i32.load
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<u32>#delete (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -9899,11 +9811,9 @@
    i32.store
    local.get $0
    i32.load offset=20
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $2
    local.get $0
    i32.load offset=12
    i32.const 3
@@ -10081,7 +9991,6 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store offset=4
@@ -10265,7 +10174,6 @@
    i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $3
    local.get $6
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
@@ -10636,11 +10544,9 @@
   i32.store
   local.get $0
   i32.load
-  local.set $3
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store
-  local.get $3
   local.get $2
   local.get $0
   i32.load offset=4
@@ -10754,12 +10660,10 @@
   call $~lib/set/Set<i64>#find
   i32.const 0
   i32.ne
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<i64>#rehash (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -11039,11 +10943,9 @@
    i32.store
    local.get $0
    i32.load offset=16
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $3
    local.get $0
    i32.load offset=12
    i32.eq
@@ -11093,7 +10995,6 @@
    i32.store
    local.get $0
    i32.load offset=8
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
@@ -11107,7 +11008,6 @@
    i32.const 1
    i32.add
    i32.store offset=16
-   local.get $3
    local.get $4
    i32.const 4
    i32.shl
@@ -11307,12 +11207,10 @@
   i32.shl
   i32.add
   i64.load
-  local.set $2
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $2
  )
  (func $~lib/set/Set<i64>#delete (param $0 i32) (param $1 i64)
   (local $2 i32)
@@ -11437,11 +11335,9 @@
    i32.store
    local.get $0
    i32.load offset=20
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $3
    local.get $0
    i32.load offset=12
    i32.const 3
@@ -11700,7 +11596,6 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   local.set $4
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store offset=4
@@ -11882,7 +11777,6 @@
    i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $4
    local.get $8
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
@@ -12253,11 +12147,9 @@
   i32.store
   local.get $0
   i32.load
-  local.set $3
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store
-  local.get $3
   local.get $2
   local.get $0
   i32.load offset=4
@@ -12371,12 +12263,10 @@
   call $~lib/set/Set<u64>#find
   i32.const 0
   i32.ne
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<u64>#rehash (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -12656,11 +12546,9 @@
    i32.store
    local.get $0
    i32.load offset=16
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $3
    local.get $0
    i32.load offset=12
    i32.eq
@@ -12710,7 +12598,6 @@
    i32.store
    local.get $0
    i32.load offset=8
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
@@ -12724,7 +12611,6 @@
    i32.const 1
    i32.add
    i32.store offset=16
-   local.get $3
    local.get $4
    i32.const 4
    i32.shl
@@ -12819,12 +12705,10 @@
   i32.shl
   i32.add
   i64.load
-  local.set $2
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $2
  )
  (func $~lib/set/Set<u64>#delete (param $0 i32) (param $1 i64)
   (local $2 i32)
@@ -12949,11 +12833,9 @@
    i32.store
    local.get $0
    i32.load offset=20
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $3
    local.get $0
    i32.load offset=12
    i32.const 3
@@ -13133,7 +13015,6 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   local.set $4
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store offset=4
@@ -13315,7 +13196,6 @@
    i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $4
    local.get $8
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
@@ -13686,11 +13566,9 @@
   i32.store
   local.get $0
   i32.load
-  local.set $3
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store
-  local.get $3
   local.get $2
   local.get $0
   i32.load offset=4
@@ -13793,12 +13671,10 @@
   call $~lib/set/Set<f32>#find
   i32.const 0
   i32.ne
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<f32>#rehash (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -14056,11 +13932,9 @@
    i32.store
    local.get $0
    i32.load offset=16
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $3
    local.get $0
    i32.load offset=12
    i32.eq
@@ -14110,7 +13984,6 @@
    i32.store
    local.get $0
    i32.load offset=8
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
@@ -14124,7 +13997,6 @@
    i32.const 1
    i32.add
    i32.store offset=16
-   local.get $3
    local.get $4
    i32.const 3
    i32.shl
@@ -14475,12 +14347,10 @@
   i32.shl
   i32.add
   f32.load
-  local.set $2
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $2
  )
  (func $~lib/set/Set<f32>#delete (param $0 i32) (param $1 f32)
   (local $2 i32)
@@ -14594,11 +14464,9 @@
    i32.store
    local.get $0
    i32.load offset=20
-   local.set $3
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $3
    local.get $0
    i32.load offset=12
    i32.const 3
@@ -15144,11 +15012,9 @@
   i32.store
   local.get $0
   i32.load
-  local.set $3
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store
-  local.get $3
   local.get $2
   local.get $0
   i32.load offset=4
@@ -15265,12 +15131,10 @@
   call $~lib/set/Set<f64>#find
   i32.const 0
   i32.ne
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/set/Set<f64>#rehash (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -15556,11 +15420,9 @@
    i32.store
    local.get $0
    i32.load offset=16
-   local.set $4
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $4
    local.get $0
    i32.load offset=12
    i32.eq
@@ -15610,7 +15472,6 @@
    i32.store
    local.get $0
    i32.load offset=8
-   local.set $4
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
@@ -15624,7 +15485,6 @@
    i32.const 1
    i32.add
    i32.store offset=16
-   local.get $4
    local.get $5
    i32.const 4
    i32.shl
@@ -15975,12 +15835,10 @@
   i32.shl
   i32.add
   f64.load
-  local.set $2
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $2
  )
  (func $~lib/set/Set<f64>#delete (param $0 i32) (param $1 f64)
   (local $2 i64)
@@ -16108,11 +15966,9 @@
    i32.store
    local.get $0
    i32.load offset=20
-   local.set $4
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   local.get $4
    local.get $0
    i32.load offset=12
    i32.const 3

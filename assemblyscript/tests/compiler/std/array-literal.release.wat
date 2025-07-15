@@ -1092,7 +1092,6 @@
        call $~lib/rt/tlsf/initialize
       end
       global.get $~lib/rt/tlsf/ROOT
-      local.set $1
       local.get $0
       i32.const 4
       i32.sub
@@ -1125,7 +1124,6 @@
       i32.const 1
       i32.or
       i32.store
-      local.get $1
       local.get $2
       call $~lib/rt/tlsf/insertBlock
      end
@@ -1772,11 +1770,7 @@
          end
          local.get $0
          i32.load
-         local.tee $0
-         if
-          local.get $0
-          call $~lib/rt/itcms/__visit
-         end
+         call $~lib/rt/itcms/__visit
          return
         end
         local.get $0
@@ -1828,12 +1822,10 @@
   i32.store
   local.get $0
   i32.load offset=12
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/array/Array<i8>#__get (param $0 i32) (param $1 i32) (result i32)
   global.get $~lib/memory/__stack_pointer
@@ -1877,12 +1869,10 @@
   i32.load offset=4
   i32.add
   i32.load8_s
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/array/Array<i32>#__get (param $0 i32) (param $1 i32) (result i32)
   global.get $~lib/memory/__stack_pointer
@@ -1928,12 +1918,10 @@
   i32.shl
   i32.add
   i32.load
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/array/ensureCapacity (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
@@ -2226,7 +2214,6 @@
    local.tee $0
    i32.store
    global.get $~lib/memory/__stack_pointer
-   local.set $1
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store offset=4
@@ -2255,7 +2242,6 @@
    i32.const 4
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $1
    local.get $0
    i32.store
    global.get $~lib/memory/__stack_pointer
@@ -2348,7 +2334,7 @@
  (func $start:std/array-literal
   (local $0 i32)
   global.get $~lib/memory/__stack_pointer
-  i32.const 44
+  i32.const 24
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
@@ -2364,7 +2350,7 @@
   end
   global.get $~lib/memory/__stack_pointer
   i32.const 0
-  i32.const 44
+  i32.const 24
   memory.fill
   global.get $~lib/memory/__stack_pointer
   i32.const 1088
@@ -2541,10 +2527,6 @@
   call $~lib/rt/__newArray
   local.tee $0
   i32.store offset=4
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.load offset=4
-  i32.store offset=8
   local.get $0
   i32.const 0
   global.get $std/array-literal/i
@@ -2640,11 +2622,7 @@
   i32.const 5
   call $~lib/rt/__newArray
   local.tee $0
-  i32.store offset=12
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.load offset=4
-  i32.store offset=16
+  i32.store offset=8
   local.get $0
   i32.const 0
   global.get $std/array-literal/i
@@ -2738,11 +2716,7 @@
   i32.const 7
   call $~lib/rt/__newArray
   local.tee $0
-  i32.store offset=20
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.load offset=4
-  i32.store offset=24
+  i32.store offset=12
   local.get $0
   i32.const 0
   call $std/array-literal/Ref#constructor
@@ -2779,11 +2753,7 @@
   i32.const 9
   call $~lib/rt/__newArray
   local.tee $0
-  i32.store offset=28
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.load offset=4
-  i32.store offset=32
+  i32.store offset=16
   local.get $0
   i32.const 0
   call $std/array-literal/RefWithCtor#constructor
@@ -2830,11 +2800,7 @@
   i32.const 7
   call $~lib/rt/__newArray
   local.tee $0
-  i32.store offset=36
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.load offset=4
-  i32.store offset=40
+  i32.store offset=20
   local.get $0
   i32.const 0
   call $std/array-literal/Ref#constructor
@@ -2878,7 +2844,7 @@
   i32.add
   global.set $~lib/rt/itcms/threshold
   global.get $~lib/memory/__stack_pointer
-  i32.const 44
+  i32.const 24
   i32.add
   global.set $~lib/memory/__stack_pointer
  )
