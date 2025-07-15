@@ -15,6 +15,28 @@ wasm optimizer designed for warp
 
 ## Manage GIT subtree
 
+WARPO use git subtree to manage major dependencies `AssemblyScript` and `binaryen` because we need to modify the code in these repo and third party will increase the complexity when working cross multiple repo.
+
+### about upstream
+
+WARPO could be the first step to develop some interesting optimizations based on AssemblyScript and binaryen. But I still prefer to upstream changing to open source communities instead of creating PR for WARPO.
+
+when not to create PR and to upstream:
+
+- It is positive in most cases and is applicable to most scenarios.
+
+when to create PR and not to upstream:
+
+- For binaryen optimization, the change is limited in AS frontend.
+- For binaryen optimization, the change is limited in WARP backend.
+- For AS, the change is depended on WARPO to lower.
+- The change is aimed to special case in CDC.
+- The change is based on special assumptions in CDC.
+
+when to create PR and upstream:
+
+- The benefit of changing is big enough and expected significant review time during upstream.
+
 ### initialize
 
 ```bash
@@ -38,7 +60,10 @@ git fetch -p --all
 ### update
 
 ```bash
+# update the whole subtree
 git subtree pull --prefix assemblyscript https://github.com/AssemblyScript/assemblyscript.git main --squash
+# update special PR
+git -C ../assemblyscript diff main ./src | git am -3 --directory=assemblyscript
 ```
 
 ### backport
