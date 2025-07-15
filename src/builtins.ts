@@ -1654,8 +1654,7 @@ function builtin_max(ctx: BuiltinFunctionContext): ExpressionRef {
         module.binary(op,
           module.local_get(temp1.index, typeRef),
           module.local_get(temp2.index, typeRef)
-        ),
-        typeRef
+        )
       );
       return ret;
     }
@@ -1723,8 +1722,7 @@ function builtin_min(ctx: BuiltinFunctionContext): ExpressionRef {
         module.binary(op,
           module.local_get(temp1.index, typeRef),
           module.local_get(temp2.index, typeRef)
-        ),
-        typeRef
+        )
       );
       return ret;
     }
@@ -3133,7 +3131,7 @@ function builtin_select(ctx: BuiltinFunctionContext): ExpressionRef {
     operands[2]
   );
   compiler.currentType = type;
-  return module.select(arg0, arg1, arg2, type.toRef());
+  return module.select(arg0, arg1, arg2);
 }
 builtinFunctions.set(BuiltinNames.select, builtin_select);
 
@@ -3653,6 +3651,9 @@ function builtin_call_indirect(ctx: BuiltinFunctionContext): ExpressionRef {
   let paramTypeRefs = new Array<TypeRef>(numOperands);
   for (let i = 0; i < numOperands; ++i) {
     operandExprs[i] = compiler.compileExpression(operands[1 + i], Type.auto);
+    if (compiler.currentType.isManaged) {
+      operandExprs[i] = module.tostack(operandExprs[i]);
+    }
     paramTypeRefs[i] = compiler.currentType.toRef();
   }
   compiler.currentType = returnType;
@@ -10807,20 +10808,14 @@ function ensureVisitMembersOf(compiler: Compiler, instance: Class): void {
         assert(fieldOffset >= 0);
         needsTempValue = true;
         body.push(
-          // if ($2 = value) __visit($2, $1)
-          module.if(
-            module.local_tee(2,
-              module.load(sizeTypeSize, false,
-                module.local_get(0, sizeTypeRef),
-                sizeTypeRef, fieldOffset
-              ),
-              false // internal
-            ),
-            module.call(visitInstance.internalName, [
-              module.local_get(2, sizeTypeRef), // value
-              module.local_get(1, TypeRef.I32)  // cookie
-            ], TypeRef.None)
-          )
+          // __visit(load<usize>($this, fieldOffset), $cookie)
+          module.call(visitInstance.internalName, [
+            module.load(sizeTypeSize, false,
+              module.local_get(0, sizeTypeRef),
+              sizeTypeRef, fieldOffset
+            ), // value
+            module.local_get(1, TypeRef.I32)  // cookie
+          ], TypeRef.None)
         );
       }
     }

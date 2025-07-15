@@ -1045,7 +1045,6 @@
        call $~lib/rt/tlsf/initialize
       end
       global.get $~lib/rt/tlsf/ROOT
-      local.set $1
       local.get $0
       i32.const 4
       i32.sub
@@ -1078,7 +1077,6 @@
       i32.const 1
       i32.or
       i32.store
-      local.get $1
       local.get $2
       call $~lib/rt/tlsf/insertBlock
      end
@@ -1408,11 +1406,7 @@
     end
     local.get $0
     i32.load
-    local.tee $0
-    if
-     local.get $0
-     call $~lib/rt/itcms/__visit
-    end
+    call $~lib/rt/itcms/__visit
     return
    end
    return
@@ -1479,7 +1473,6 @@
     local.tee $0
     i32.store
     global.get $~lib/memory/__stack_pointer
-    local.set $1
     global.get $~lib/memory/__stack_pointer
     local.get $0
     i32.store offset=4
@@ -1507,7 +1500,6 @@
     i32.const 4
     i32.add
     global.set $~lib/memory/__stack_pointer
-    local.get $1
     local.get $0
     i32.store
     global.get $~lib/memory/__stack_pointer

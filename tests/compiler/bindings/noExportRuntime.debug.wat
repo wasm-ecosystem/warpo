@@ -2361,8 +2361,6 @@
  (func $start:bindings/noExportRuntime
   (local $0 i32)
   (local $1 i32)
-  (local $2 i32)
-  (local $3 i32)
   memory.size
   i32.const 16
   i32.shl
@@ -2471,12 +2469,8 @@
   call $~lib/object/Object~visit
   local.get $0
   i32.load
-  local.tee $2
-  if
-   local.get $2
-   local.get $1
-   call $~lib/rt/itcms/__visit
-  end
+  local.get $1
+  call $~lib/rt/itcms/__visit
  )
  (func $~lib/object/Object~visit (param $0 i32) (param $1 i32)
  )

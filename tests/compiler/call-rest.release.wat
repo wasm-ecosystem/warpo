@@ -147,7 +147,7 @@
    local.get $1
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$158
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$160
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -171,7 +171,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$158
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$160
    end
    local.get $0
    i32.load offset=8
@@ -1076,7 +1076,6 @@
        call $~lib/rt/tlsf/initialize
       end
       global.get $~lib/rt/tlsf/ROOT
-      local.set $1
       local.get $0
       i32.const 4
       i32.sub
@@ -1109,7 +1108,6 @@
       i32.const 1
       i32.or
       i32.store
-      local.get $1
       local.get $2
       call $~lib/rt/tlsf/insertBlock
      end
@@ -1661,26 +1659,32 @@
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
-  block $folding-inner1
-   block $folding-inner0
-    block $invalid
-     block $~lib/array/Array<~lib/string/String>
+  block $folding-inner0
+   block $invalid
+    block $~lib/array/Array<~lib/string/String>
+     block $call-rest/Foo
       block $~lib/function/Function<%28i32%2Ci32?%2C...~lib/array/Array<i32>%29=>i32>
        block $~lib/array/Array<usize>
         block $~lib/array/Array<i32>
-         block $~lib/string/String
-          block $~lib/arraybuffer/ArrayBuffer
-           block $~lib/object/Object
-            local.get $0
-            i32.const 8
-            i32.sub
-            i32.load
-            br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner1 $~lib/array/Array<i32> $~lib/array/Array<usize> $~lib/function/Function<%28i32%2Ci32?%2C...~lib/array/Array<i32>%29=>i32> $folding-inner1 $~lib/array/Array<~lib/string/String> $invalid
+         block $~lib/arraybuffer/ArrayBufferView
+          block $~lib/string/String
+           block $~lib/arraybuffer/ArrayBuffer
+            block $~lib/object/Object
+             local.get $0
+             i32.const 8
+             i32.sub
+             i32.load
+             br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/array/Array<usize> $~lib/function/Function<%28i32%2Ci32?%2C...~lib/array/Array<i32>%29=>i32> $call-rest/Foo $~lib/array/Array<~lib/string/String> $invalid
+            end
+            return
            end
            return
           end
           return
          end
+         local.get $0
+         i32.load
+         call $~lib/rt/itcms/__visit
          return
         end
         local.get $0
@@ -1714,80 +1718,77 @@
       global.set $~lib/memory/__stack_pointer
       return
      end
-     global.get $~lib/memory/__stack_pointer
-     i32.const 4
-     i32.sub
-     global.set $~lib/memory/__stack_pointer
-     global.get $~lib/memory/__stack_pointer
-     i32.const 2136
-     i32.lt_s
-     br_if $folding-inner0
-     global.get $~lib/memory/__stack_pointer
-     i32.const 0
-     i32.store
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store
-     local.get $0
-     i32.load offset=4
-     local.set $1
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store
-     local.get $1
-     local.get $0
-     i32.load offset=12
-     i32.const 2
-     i32.shl
-     i32.add
-     local.set $2
-     loop $while-continue|0
-      local.get $1
-      local.get $2
-      i32.lt_u
-      if
-       local.get $1
-       i32.load
-       local.tee $3
-       if
-        local.get $3
-        call $~lib/rt/itcms/__visit
-       end
-       local.get $1
-       i32.const 4
-       i32.add
-       local.set $1
-       br $while-continue|0
-      end
-     end
-     global.get $~lib/memory/__stack_pointer
-     local.get $0
-     i32.store
      local.get $0
      i32.load
      call $~lib/rt/itcms/__visit
-     global.get $~lib/memory/__stack_pointer
-     i32.const 4
-     i32.add
-     global.set $~lib/memory/__stack_pointer
      return
     end
-    unreachable
+    global.get $~lib/memory/__stack_pointer
+    i32.const 4
+    i32.sub
+    global.set $~lib/memory/__stack_pointer
+    global.get $~lib/memory/__stack_pointer
+    i32.const 2136
+    i32.lt_s
+    br_if $folding-inner0
+    global.get $~lib/memory/__stack_pointer
+    i32.const 0
+    i32.store
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store
+    local.get $0
+    i32.load offset=4
+    local.set $1
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store
+    local.get $1
+    local.get $0
+    i32.load offset=12
+    i32.const 2
+    i32.shl
+    i32.add
+    local.set $2
+    loop $while-continue|0
+     local.get $1
+     local.get $2
+     i32.lt_u
+     if
+      local.get $1
+      i32.load
+      local.tee $3
+      if
+       local.get $3
+       call $~lib/rt/itcms/__visit
+      end
+      local.get $1
+      i32.const 4
+      i32.add
+      local.set $1
+      br $while-continue|0
+     end
+    end
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
+    global.get $~lib/memory/__stack_pointer
+    i32.const 4
+    i32.add
+    global.set $~lib/memory/__stack_pointer
+    return
    end
-   i32.const 34928
-   i32.const 34976
-   i32.const 1
-   i32.const 1
-   call $~lib/builtins/abort
    unreachable
   end
-  local.get $0
-  i32.load
-  local.tee $0
-  if
-   local.get $0
-   call $~lib/rt/itcms/__visit
-  end
+  i32.const 34928
+  i32.const 34976
+  i32.const 1
+  i32.const 1
+  call $~lib/builtins/abort
+  unreachable
  )
  (func $~start
   call $start:call-rest
@@ -1816,12 +1817,10 @@
   i32.store
   local.get $0
   i32.load offset=12
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/array/Array<i32>#__get (param $0 i32) (param $1 i32) (result i32)
   global.get $~lib/memory/__stack_pointer
@@ -1867,12 +1866,10 @@
   i32.shl
   i32.add
   i32.load
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $call-rest/fn (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -1979,12 +1976,10 @@
   local.get $1
   local.get $2
   call $call-rest/fn
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/array/ensureCapacity (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -2033,7 +2028,7 @@
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store
-   block $__inlined_func$~lib/rt/itcms/__renew$152
+   block $__inlined_func$~lib/rt/itcms/__renew$154
     i32.const 1073741820
     local.get $2
     i32.const 1
@@ -2076,7 +2071,7 @@
      i32.store offset=16
      local.get $2
      local.set $1
-     br $__inlined_func$~lib/rt/itcms/__renew$152
+     br $__inlined_func$~lib/rt/itcms/__renew$154
     end
     local.get $3
     local.get $4
@@ -2193,7 +2188,7 @@
   (local $6 i32)
   (local $7 i32)
   global.get $~lib/memory/__stack_pointer
-  i32.const 20
+  i32.const 16
   i32.sub
   global.set $~lib/memory/__stack_pointer
   block $folding-inner0
@@ -2202,9 +2197,11 @@
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
-   i32.const 0
-   i32.const 20
-   memory.fill
+   i64.const 0
+   i64.store
+   global.get $~lib/memory/__stack_pointer
+   i64.const 0
+   i64.store offset=8
    global.get $~lib/memory/__stack_pointer
    i32.const 4
    i32.const 7
@@ -2230,10 +2227,6 @@
    call $~lib/rt/__newArray
    local.tee $3
    i32.store offset=12
-   global.get $~lib/memory/__stack_pointer
-   local.get $3
-   i32.load offset=4
-   i32.store offset=16
    local.get $3
    i32.const 0
    i32.const 1
@@ -2330,7 +2323,7 @@
     end
    end
    global.get $~lib/memory/__stack_pointer
-   i32.const 20
+   i32.const 16
    i32.add
    global.set $~lib/memory/__stack_pointer
    local.get $2
@@ -2397,12 +2390,10 @@
   local.get $0
   local.get $1
   call $call-rest/Foo#constructor
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 12
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $call-rest/Foo#sum (param $0 i32) (result i32)
   (local $1 i32)
@@ -2494,12 +2485,10 @@
   i32.store
   local.get $0
   call $~lib/array/Array<i32>#get:length
-  local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $start:call-rest
   (local $0 i32)
@@ -2828,12 +2817,10 @@
    i32.store offset=4
    local.get $0
    call $call-rest/count<i32>
-   local.set $0
    global.get $~lib/memory/__stack_pointer
    i32.const 8
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $0
    if
     i32.const 0
     i32.const 1536
@@ -2938,7 +2925,6 @@
   i32.const 0
   i32.store
   global.get $~lib/memory/__stack_pointer
-  local.set $5
   local.get $0
   i32.const 2
   i32.shl
@@ -2953,7 +2939,6 @@
    local.get $4
    memory.copy
   end
-  local.get $5
   local.get $3
   i32.store
   i32.const 16

@@ -2442,12 +2442,8 @@
   call $~lib/object/Object~visit
   local.get $0
   i32.load
-  local.tee $2
-  if
-   local.get $2
-   local.get $1
-   call $~lib/rt/itcms/__visit
-  end
+  local.get $1
+  call $~lib/rt/itcms/__visit
  )
  (func $~lib/object/Object~visit (param $0 i32) (param $1 i32)
  )
@@ -2458,12 +2454,8 @@
   call $~lib/object/Object~visit
   local.get $0
   i32.load
-  local.tee $2
-  if
-   local.get $2
-   local.get $1
-   call $~lib/rt/itcms/__visit
-  end
+  local.get $1
+  call $~lib/rt/itcms/__visit
  )
  (func $extends-baseaggregate/A1~visit (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -2472,12 +2464,8 @@
   call $~lib/object/Object~visit
   local.get $0
   i32.load offset=16
-  local.tee $2
-  if
-   local.get $2
-   local.get $1
-   call $~lib/rt/itcms/__visit
-  end
+  local.get $1
+  call $~lib/rt/itcms/__visit
  )
  (func $extends-baseaggregate/C1~visit (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -2486,12 +2474,8 @@
   call $~lib/object/Object~visit
   local.get $0
   i32.load
-  local.tee $2
-  if
-   local.get $2
-   local.get $1
-   call $~lib/rt/itcms/__visit
-  end
+  local.get $1
+  call $~lib/rt/itcms/__visit
  )
  (func $extends-baseaggregate/A2~visit (param $0 i32) (param $1 i32)
   local.get $0
@@ -2895,8 +2879,6 @@
   (local $0 i32)
   (local $1 i32)
   (local $2 i32)
-  (local $3 i32)
-  (local $4 i32)
   global.get $~lib/memory/__stack_pointer
   i32.const 8
   i32.sub
@@ -2923,18 +2905,18 @@
   call $~lib/rt/itcms/initLazy
   global.set $~lib/rt/itcms/fromSpace
   global.get $extends-baseaggregate/poolA
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store
-  local.get $4
+  local.get $2
   i32.const 0
   call $extends-baseaggregate/A2#constructor
-  local.set $4
+  local.set $2
   global.get $~lib/memory/__stack_pointer
-  local.get $4
+  local.get $2
   i32.store offset=4
-  local.get $4
+  local.get $2
   call $~lib/array/Array<extends-baseaggregate/A2>#push
   drop
   global.get $~lib/memory/__stack_pointer

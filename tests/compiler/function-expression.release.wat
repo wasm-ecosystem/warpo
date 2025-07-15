@@ -166,7 +166,7 @@
    local.get $1
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$131
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$133
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -190,7 +190,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$131
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$133
    end
    local.get $0
    i32.load offset=8
@@ -1095,7 +1095,6 @@
        call $~lib/rt/tlsf/initialize
       end
       global.get $~lib/rt/tlsf/ROOT
-      local.set $1
       local.get $0
       i32.const 4
       i32.sub
@@ -1128,7 +1127,6 @@
       i32.const 1
       i32.or
       i32.store
-      local.get $1
       local.get $2
       call $~lib/rt/tlsf/insertBlock
      end
@@ -1464,63 +1462,65 @@
   global.set $~lib/memory/__stack_pointer
  )
  (func $~lib/rt/__visit_members (param $0 i32)
-  block $folding-inner1
-   block $folding-inner0
-    block $invalid
-     block $~lib/string/String
-      block $~lib/arraybuffer/ArrayBuffer
-       block $~lib/object/Object
-        local.get $0
-        i32.const 8
-        i32.sub
-        i32.load
-        br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner1 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner1 $invalid
+  block $folding-inner0
+   block $invalid
+    block $function-expression/FieldClass
+     block $~lib/arraybuffer/ArrayBufferView
+      block $~lib/string/String
+       block $~lib/arraybuffer/ArrayBuffer
+        block $~lib/object/Object
+         local.get $0
+         i32.const 8
+         i32.sub
+         i32.load
+         br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $function-expression/FieldClass $invalid
+        end
+        return
        end
        return
       end
       return
      end
+     local.get $0
+     i32.load
+     call $~lib/rt/itcms/__visit
      return
     end
-    unreachable
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
+    return
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4
-   i32.sub
-   global.set $~lib/memory/__stack_pointer
-   global.get $~lib/memory/__stack_pointer
-   i32.const 2156
-   i32.lt_s
-   if
-    i32.const 34944
-    i32.const 34992
-    i32.const 1
-    i32.const 1
-    call $~lib/builtins/abort
-    unreachable
-   end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 0
-   i32.store
-   global.get $~lib/memory/__stack_pointer
-   local.get $0
-   i32.store
-   local.get $0
-   i32.load offset=4
-   call $~lib/rt/itcms/__visit
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4
-   i32.add
-   global.set $~lib/memory/__stack_pointer
-   return
+   unreachable
   end
-  local.get $0
-  i32.load
-  local.tee $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 2156
+  i32.lt_s
   if
-   local.get $0
-   call $~lib/rt/itcms/__visit
+   i32.const 34944
+   i32.const 34992
+   i32.const 1
+   i32.const 1
+   call $~lib/builtins/abort
+   unreachable
   end
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store
+  local.get $0
+  i32.load offset=4
+  call $~lib/rt/itcms/__visit
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
  )
  (func $~start
   call $start:function-expression
@@ -1804,7 +1804,6 @@
    i32.const 0
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
-   local.set $2
    global.get $~lib/memory/__stack_pointer
    i32.const 2032
    i32.store
@@ -1883,7 +1882,6 @@
    i32.const 12
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $2
    local.get $1
    i32.store offset=4
    global.get $~lib/memory/__stack_pointer

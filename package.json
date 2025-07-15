@@ -20,18 +20,19 @@
     "url": "https://github.com/AssemblyScript/assemblyscript/issues"
   },
   "engines": {
-    "node": ">=18",
+    "node": ">=20",
     "npm": ">=10"
   },
   "engineStrict": true,
   "dependencies": {
-    "binaryen": "116.0.0-nightly.20240114",
+    "binaryen": "123.0.0-nightly.20250530",
     "long": "^5.2.4"
   },
   "devDependencies": {
     "@types/node": "^18.19.75",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
+    "as-float": "^1.0.1",
     "diff": "^7.0.0",
     "esbuild": "^0.25.0",
     "eslint": "^8.57.1",
