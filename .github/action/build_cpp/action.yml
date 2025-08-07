@@ -38,7 +38,7 @@ runs:
     - shell: bash
       run: |
         ccache --max-size=512M
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       with:
         path: build_cache
         key: ccache-${{ runner.os }}-${{ inputs.CMAKE_ARGS }}-${{ hashFiles('**/CMakeLists.txt') }}

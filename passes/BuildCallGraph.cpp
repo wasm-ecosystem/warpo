@@ -11,7 +11,7 @@ namespace warpo::passes {
 CallGraph CallGraphBuilder::createResults(wasm::Module &m) {
   CallGraph ret{};
   for (std::unique_ptr<wasm::Function> const &f : m.functions) {
-    // we treat imported function as leaf function because in cdc, nest wasm call is not allowed.
+    // we treat imported function as leaf function because in wasm-compiler, nest wasm call is not allowed.
     ret.insert_or_assign(f->name, std::set<wasm::Name>{});
   }
   return ret;

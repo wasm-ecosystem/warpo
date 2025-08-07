@@ -10,11 +10,11 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, cawe-macos-arm64]
+        os: [ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
       - run: npm ci

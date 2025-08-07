@@ -16,7 +16,7 @@ function listItems(root: string, folder: string): DefaultTheme.SidebarItem[] {
 export default defineConfig({
   title: "warpo document",
   description: "wasm optimizer designed for AssemblyScript and WARP",
-  base: "/CDCFW/warpo/",
+  base: "/warpo/",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     search: {
@@ -24,11 +24,7 @@ export default defineConfig({
     },
     nav: [
       { text: "Home", link: "/" },
-      { text: "GitHub", link: "https://atc-github.azure.cloud.bmw/CDCFW/warpo" },
-      {
-        text: "Packages",
-        link: "https://packages.orbit.bmwgroup.net/ui/packages/npm:%2F%2F@cdc%2Fwarpo?name=%40cdc&type=packages",
-      },
+      { text: "GitHub", link: "https://github.com/wasm-ecosystem/warpo" },
     ],
     sidebar: [
       {
@@ -52,6 +48,6 @@ export default defineConfig({
         ],
       },
     ],
-    socialLinks: [{ icon: "github", link: "https://atc-github.azure.cloud.bmw/CDCFW/warpo" }],
+    socialLinks: [{ icon: "github", link: "https://github.com/wasm-ecosystem/warpo" }],
   },
 });

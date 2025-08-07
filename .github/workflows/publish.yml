@@ -8,11 +8,11 @@ jobs:
   build_and_upload:
     strategy:
       matrix:
-        os: [ubuntu-latest, cawe-macos-arm64]
+        os: [ubuntu-latest, macos-arm64]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
       - run: npm ci
@@ -20,7 +20,7 @@ jobs:
         id: build
         with:
           CMAKE_ARGS: "-DWARPO_RELEASE=ON"
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: bin-${{ runner.os }}
           path: ${{ steps.build.outputs.BUILD_DIR }}/tools/optimizer/warpo
@@ -30,15 +30,15 @@ jobs:
     needs: build_and_upload
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v5
         with:
           name: bin-Linux
           path: bin/linux
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v5
         with:
           name: bin-macOS
           path: bin/macos
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "22"
       - uses: ./.github/action/build_as

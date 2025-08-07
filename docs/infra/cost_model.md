@@ -9,7 +9,6 @@ A special op code `func` is added to identify additional costs for each function
 
 preset cost models for 5 backend:
 
-- model/instruction_cost_common.txt
 - model/instruction_cost_aarch64_active_vb_warp.txt
 - model/instruction_cost_aarch64_vb_warp.txt
 - model/instruction_cost_tricore_vb_warp.txt
