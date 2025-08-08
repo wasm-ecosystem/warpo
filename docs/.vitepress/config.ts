@@ -17,6 +17,10 @@ export default defineConfig({
   title: "warpo document",
   description: "wasm optimizer designed for AssemblyScript and WARP",
   base: "/warpo/",
+  head: [["meta", { name: "google-site-verification", content: "762vxla4bLoGKFlH_iYkk7TVUhrwwpMFS2r7idty0_Y" }]],
+  sitemap: {
+    hostname: "https://wasm-ecosystem.github.io/warpo/",
+  },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     search: {
