@@ -6,7 +6,7 @@ on:
 
 jobs:
   check-title:
-    runs-on: atc-ubuntu-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Check PR Title Prefix
         id: title-check
