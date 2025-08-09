@@ -8,14 +8,10 @@
     "exportRuntime": true,
     "initialMemory": 768,
     "runtime": "incremental",
-    "bindings": [ "esm" ],
-    "stats": true,
-    "use": [
-      "ASC_GC_TESTING=1",
-      "ASC_GC_IDLEFACTOR=0",
-      "ASC_GC_GRANULARITY=64",
-      "ASC_GC_SWEEPFACTOR=1000"
-    ]
+    "bindings": [
+      "esm"
+    ],
+    "stats": true
   },
   "targets": {
     "debug": {
@@ -48,6 +44,30 @@
       "textFile": "../build/assemblyscript.release-bootstrap.wast",
       "optimizeLevel": 3,
       "shrinkLevel": 0
+    },
+    "warpo-test": {
+      "outFile": "../build/assemblyscript.warpo-test.wasm",
+      "textFile": "../build/assemblyscript.warpo-test.wast",
+      "debug": true,
+      "sourceMap": true,
+      "use": [
+        "ASC_GC_TESTING=1",
+        "ASC_GC_IDLEFACTOR=0",
+        "ASC_GC_GRANULARITY=64",
+        "ASC_GC_SWEEPFACTOR=1000"
+      ]
+    },
+    "warpo-test-bootstrap": {
+      "outFile": "../build/assemblyscript.warpo-test-bootstrap.wasm",
+      "textFile": "../build/assemblyscript.warpo-test-bootstrap.wast",
+      "debug": true,
+      "sourceMap": true,
+      "use": [
+        "ASC_GC_TESTING=1",
+        "ASC_GC_IDLEFACTOR=0",
+        "ASC_GC_GRANULARITY=64",
+        "ASC_GC_SWEEPFACTOR=1000"
+      ]
     }
   }
 }
