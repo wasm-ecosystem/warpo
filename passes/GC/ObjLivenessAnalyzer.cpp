@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "../BuildCFG.hpp"
-#include "../Powerset.hpp"
+#include "../helper/BuildCFG.hpp"
+#include "../helper/Powerset.hpp"
 #include "GCInfo.hpp"
 #include "ObjLivenessAnalyzer.hpp"
 #include "SSAObj.hpp"

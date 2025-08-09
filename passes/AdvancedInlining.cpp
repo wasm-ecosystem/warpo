@@ -21,8 +21,8 @@
 #include <memory>
 
 #include "AdvancedInlining.hpp"
-#include "CostModel.hpp"
 #include "fmt/base.h"
+#include "helper/CostModel.hpp"
 #include "ir/branch-utils.h"
 #include "ir/debuginfo.h"
 #include "ir/drop.h"

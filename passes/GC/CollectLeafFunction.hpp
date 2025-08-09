@@ -3,7 +3,7 @@
 #include <memory>
 #include <set>
 
-#include "../BuildCallGraph.hpp"
+#include "../helper/BuildCallGraph.hpp"
 #include "pass.h"
 #include "support/name.h"
 #include "wasm.h"
