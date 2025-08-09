@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "../BuildCFG.hpp"
+#include "../helper/BuildCFG.hpp"
 #include "Liveness.hpp"
 #include "support/DynBitSet.hpp"
 #include "support/Range.hpp"
