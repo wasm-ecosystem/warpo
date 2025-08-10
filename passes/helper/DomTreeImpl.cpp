@@ -19,6 +19,7 @@ concept IsHandler = requires(Handler h, BasicBlock const *bb) {
 } // namespace
 
 template <IsHandler Handler> ImmediateDomTree createDomTreeImpl(Handler h, std::vector<BasicBlock const *> const &bbs) {
+  // http://www.hipersoft.rice.edu/grads/publications/dom14.pdf
   auto const isStartNode = [&h](BasicBlock const *bb) { return h.preds(bb).empty(); };
 
   const size_t n = bbs.size();
