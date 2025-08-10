@@ -1,10 +1,9 @@
 #include <cassert>
 #include <memory>
 
-#include "BuildCFG.hpp"
+#include "CFG.hpp"
 #include "DomTree.hpp"
 #include "DomTreeImpl.hpp"
-#include "support/Container.hpp"
 
 namespace warpo::passes {
 
@@ -17,14 +16,19 @@ struct DomTree::Storage {
 namespace {
 
 struct BB {
+  using reference_type = BB const *;
   BasicBlock const *bb_;
-  std::vector<size_t> in_;
-  std::vector<size_t> out_;
-  std::vector<size_t> const &preds() const { return in_; }
-  std::vector<size_t> const &succs() const { return out_; }
+  std::vector<reference_type> in_;
+  std::vector<reference_type> out_;
+  std::vector<reference_type> const &preds() const { return in_; }
+  std::vector<reference_type> const &succs() const { return out_; }
   bool isEntry() const { return bb_->isEntry(); }
   bool isExit() const { return bb_->isExit(); }
+  size_t getId() const { return bb_->getIndex(); }
 };
+
+static_assert(dom_tree_impl::IsDomTreeBB<BB>, "");
+static_assert(dom_tree_impl::IsPostDomTreeBB<BB>, "");
 
 } // namespace
 
@@ -32,16 +36,14 @@ DomTree::~DomTree() { delete storage_; }
 
 DomTree DomTree::create(std::shared_ptr<CFG> cfg) {
   std::vector<BB> bbs{};
-  auto getIndex = [&](BasicBlock const *bb) -> size_t {
-    assert(bb->getIndex() == (bb - &*cfg->begin()));
-    return bb->getIndex();
-  };
   for (BasicBlock const &bb : *cfg) {
-    bbs.push_back(BB{
-        .bb_ = &bb,
-        .in_ = transform<size_t>(bb.preds(), getIndex),
-        .out_ = transform<size_t>(bb.succs(), getIndex),
-    });
+    bbs.push_back(BB{.bb_ = &bb, .in_ = {}, .out_ = {}});
+  }
+  for (BasicBlock const &bb : *cfg) {
+    for (BasicBlock const *pred : bb.preds()) {
+      bbs[pred->getIndex()].out_.push_back(&bbs[bb.getIndex()]);
+      bbs[bb.getIndex()].in_.push_back(&bbs[pred->getIndex()]);
+    }
   }
   std::unique_ptr<Storage> storage{new Storage{
       .cfg_ = std::move(cfg),

@@ -3,6 +3,7 @@
 #pragma once
 
 #include <cassert>
+#include <concepts>
 #include <cstddef>
 #include <iostream>
 #include <ostream>
@@ -24,34 +25,43 @@ struct DomTree : public std::vector<DynBitset> {
 };
 
 template <class T>
+concept IsBB = requires(T const block) {
+  { block.getId() } -> std::same_as<size_t>;
+};
+template <class T>
 concept IsDomTreeBB = requires(T const block) {
-  { block.preds() } -> std::same_as<std::vector<size_t> const &>;
+  requires IsBB<T>;
+  typename T::reference_type;
+  { block.preds() } -> std::same_as<std::vector<typename T::reference_type> const &>;
+  { *std::declval<typename T::reference_type>() } -> IsBB;
   { block.isEntry() } -> std::same_as<bool>;
 };
 
 template <class T>
 concept IsPostDomTreeBB = requires(T const block) {
-  { block.succs() } -> std::same_as<std::vector<size_t> const &>;
+  requires IsBB<T>;
+  { block.succs() } -> std::same_as<std::vector<T const *> const &>;
   { block.isExit() } -> std::same_as<bool>;
 };
 
 template <IsPostDomTreeBB BB> struct PostDomTreeBB {
+  using reference_type = BB const *;
   BB const &bb_;
   PostDomTreeBB(BB const &bb) : bb_(bb) {}
-  std::vector<size_t> const &preds() const { return bb_.succs(); }
+  std::vector<BB const *> const &preds() const { return bb_.succs(); }
   bool isEntry() const { return bb_.isExit(); }
+  size_t getId() const { return bb_.getId(); }
 };
 
-template <IsDomTreeBB BB> DomTree createDomTreeImpl(bool isReverse, std::vector<BB> const &bbs) {
+template <IsDomTreeBB BB> DomTree createDomTreeImpl(std::vector<BB> const &bbs) {
   // TODO: optimize with IDOM
   const size_t n = bbs.size();
   DomTree doms{};
   doms.reserve(n);
-  for (size_t i = 0; i < n; i++) {
-    BB const &bb = bbs[i];
+  for (BB const &bb : bbs) {
     if (bb.isEntry()) {
       DynBitset dom{n};
-      dom.set(i, true);
+      dom.set(bb.getId(), true);
       doms.emplace_back(std::move(dom));
     } else {
       doms.emplace_back(~DynBitset{n});
@@ -64,16 +74,15 @@ template <IsDomTreeBB BB> DomTree createDomTreeImpl(bool isReverse, std::vector<
     std::cerr << doms << "\n";
 #endif
     isChanged = false;
-    for (size_t i = 0; i < n; i++) {
-      size_t const index = isReverse ? n - 1 - i : i;
-      BB const &bb = bbs[index];
+    for (BB const &bb : bbs) {
       DynBitset newDom{n};
       if (!bb.preds().empty()) {
         newDom = ~newDom;
       }
-      for (size_t predIndex : bb.preds()) {
-        newDom &= doms[predIndex];
+      for (typename BB::reference_type pred : bb.preds()) {
+        newDom &= doms[pred->getId()];
       }
+      size_t const index = bb.getId();
       newDom.set(index, true);
       if (newDom != doms[index]) {
         doms[index] = std::move(newDom);
@@ -84,9 +93,9 @@ template <IsDomTreeBB BB> DomTree createDomTreeImpl(bool isReverse, std::vector<
   return doms;
 }
 
-template <IsDomTreeBB BB> DomTree createDomTree(std::vector<BB> const &bbs) { return createDomTreeImpl(false, bbs); }
+template <IsDomTreeBB BB> DomTree createDomTree(std::vector<BB> const &bbs) { return createDomTreeImpl(bbs); }
 template <IsDomTreeBB BB> DomTree createPostDomTree(std::vector<BB> const &bbs) {
-  return createDomTreeImpl(true, transform<PostDomTreeBB<BB>>(bbs, [](BB const &bb) { return PostDomTreeBB<BB>{bb}; }));
+  return createDomTreeImpl(transform<PostDomTreeBB<BB>>(bbs, [](BB const &bb) { return PostDomTreeBB<BB>{bb}; }));
 }
 
 } // namespace warpo::passes::dom_tree_impl

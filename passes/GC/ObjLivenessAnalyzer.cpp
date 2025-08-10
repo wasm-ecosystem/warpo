@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "../helper/BuildCFG.hpp"
+#include "../helper/CFG.hpp"
 #include "../helper/Powerset.hpp"
 #include "GCInfo.hpp"
 #include "ObjLivenessAnalyzer.hpp"

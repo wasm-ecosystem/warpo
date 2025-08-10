@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "BuildCFG.hpp"
+#include "CFG.hpp"
 
 namespace warpo::passes {
 

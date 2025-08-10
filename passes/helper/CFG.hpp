@@ -70,6 +70,8 @@ struct CFG {
 
   void print(std::ostream &os, wasm::Module *wasm, IInfoPrinter const &infoPrinter) const;
 
+  std::vector<BasicBlock> getRPO() const;
+
 private:
   std::vector<BasicBlock> blocks;
 

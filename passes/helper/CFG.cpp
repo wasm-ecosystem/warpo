@@ -3,12 +3,47 @@
 #include <optional>
 #include <string>
 
-#include "BuildCFG.hpp"
+#include "CFG.hpp"
 #include "cfg/cfg-traversal.h"
 #include "wasm-traversal.h"
 #include "wasm.h"
 
 namespace warpo::passes {
+
+void BasicBlock::print(std::ostream &os, wasm::Module *wasm, size_t start, IInfoPrinter const &infoPrinter) const {
+  os << ";; preds: [";
+  for (const auto *pred : preds()) {
+    if (pred != *preds().begin()) {
+      os << ", ";
+    }
+    os << "BB" << pred->index;
+  }
+  os << "], succs: [";
+
+  for (const auto *succ : succs()) {
+    if (succ != *succs().begin()) {
+      os << ", ";
+    }
+    os << "BB" << succ->index;
+  }
+  os << "]\n";
+
+  os << "BB" << index << ": ;;";
+  if (isEntry())
+    os << "entry ";
+  if (isExit())
+    os << "exit ";
+  os << '\n';
+
+  size_t instIndex = start;
+  for (auto *inst : *this) {
+    os << "  " << instIndex++ << ": " << wasm::ShallowExpression{inst, wasm};
+    std::optional<std::string> label = infoPrinter.onExpr(inst);
+    if (label.has_value())
+      os << " ;; " << label.value();
+    os << '\n';
+  }
+}
 
 CFG CFG::fromFunction(wasm::Function *func) {
   struct CFGBuilder
@@ -71,40 +106,6 @@ void CFG::print(std::ostream &os, wasm::Module *wasm, IInfoPrinter const &infoPr
     start += block.size();
   }
 }
-
-void BasicBlock::print(std::ostream &os, wasm::Module *wasm, size_t start, IInfoPrinter const &infoPrinter) const {
-  os << ";; preds: [";
-  for (const auto *pred : preds()) {
-    if (pred != *preds().begin()) {
-      os << ", ";
-    }
-    os << "BB" << pred->index;
-  }
-  os << "], succs: [";
-
-  for (const auto *succ : succs()) {
-    if (succ != *succs().begin()) {
-      os << ", ";
-    }
-    os << "BB" << succ->index;
-  }
-  os << "]\n";
-
-  os << "BB" << index << ": ;;";
-  if (isEntry())
-    os << "entry ";
-  if (isExit())
-    os << "exit ";
-  os << '\n';
-
-  size_t instIndex = start;
-  for (auto *inst : *this) {
-    os << "  " << instIndex++ << ": " << wasm::ShallowExpression{inst, wasm};
-    std::optional<std::string> label = infoPrinter.onExpr(inst);
-    if (label.has_value())
-      os << " ;; " << label.value();
-    os << '\n';
-  }
-}
+std::vector<BasicBlock> CFG::getRPO() const {}
 
 } // namespace warpo::passes

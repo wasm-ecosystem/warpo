@@ -13,14 +13,17 @@
 namespace warpo::passes::dom_tree_impl::ut {
 namespace {
 struct TestBB {
-  std::vector<size_t> in_;
-  std::vector<size_t> out_;
+  using reference_type = TestBB const *;
+  size_t id_;
+  std::vector<reference_type> in_;
+  std::vector<reference_type> out_;
   bool isEntry_ = false;
   bool isExit_ = false;
-  std::vector<size_t> const &preds() const { return in_; }
-  std::vector<size_t> const &succs() const { return out_; }
+  std::vector<reference_type> const &preds() const { return in_; }
+  std::vector<reference_type> const &succs() const { return out_; }
   bool isEntry() const { return isEntry_; }
   bool isExit() const { return isExit_; }
+  size_t getId() const { return id_; }
 };
 
 static_assert(IsDomTreeBB<TestBB>, "");
@@ -32,24 +35,24 @@ struct DomTreeImplTest : public ::testing::Test {
 
   size_t addBB() {
     size_t const index = bbs_.size();
-    bbs_.emplace_back(TestBB{{}, {}, false, false});
+    bbs_.emplace_back(TestBB{.id_ = index, .in_ = {}, .out_ = {}, .isEntry_ = false, .isExit_ = false});
     return index;
   }
   size_t addEntryBB() {
     size_t const index = bbs_.size();
-    bbs_.emplace_back(TestBB{{}, {}, true, false});
+    bbs_.emplace_back(TestBB{.id_ = index, .in_ = {}, .out_ = {}, .isEntry_ = true, .isExit_ = false});
     return index;
   }
   size_t addExitBB() {
     size_t const index = bbs_.size();
-    bbs_.emplace_back(TestBB{{}, {}, false, true});
+    bbs_.emplace_back(TestBB{.id_ = index, .in_ = {}, .out_ = {}, .isEntry_ = false, .isExit_ = true});
     return index;
   }
 
   void linkBBs(size_t from, size_t to) {
     assert(from < bbs_.size() && to < bbs_.size());
-    bbs_[from].out_.push_back(to);
-    bbs_[to].in_.push_back(from);
+    bbs_[from].out_.push_back(&bbs_[to]);
+    bbs_[to].in_.push_back(&bbs_[from]);
   }
 
   DynBitset createExpectDom(std::initializer_list<size_t> domIndexes) {
