@@ -7,6 +7,7 @@ ccache
 currp
 DWARPO
 localtostack
+succs
 tmptostack
 tostack
 tricore

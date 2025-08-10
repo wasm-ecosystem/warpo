@@ -61,7 +61,7 @@ CFG CFG::fromFunction(wasm::Function *func) {
   return CFG(std::move(cfg));
 }
 
-void CFG::print(std::ostream &os, wasm::Module *wasm, IInfoPrinter &infoPrinter) const {
+void CFG::print(std::ostream &os, wasm::Module *wasm, IInfoPrinter const &infoPrinter) const {
   size_t start = 0;
   for (auto &block : *this) {
     if (&block != &*begin()) {
@@ -72,7 +72,7 @@ void CFG::print(std::ostream &os, wasm::Module *wasm, IInfoPrinter &infoPrinter)
   }
 }
 
-void BasicBlock::print(std::ostream &os, wasm::Module *wasm, size_t start, IInfoPrinter &infoPrinter) const {
+void BasicBlock::print(std::ostream &os, wasm::Module *wasm, size_t start, IInfoPrinter const &infoPrinter) const {
   os << ";; preds: [";
   for (const auto *pred : preds()) {
     if (pred != *preds().begin()) {

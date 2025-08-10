@@ -14,7 +14,11 @@ struct CFG;
 
 struct IInfoPrinter {
   virtual ~IInfoPrinter() = default;
-  virtual std::optional<std::string> onExpr(wasm::Expression *expr) = 0;
+  virtual std::optional<std::string> onExpr(wasm::Expression *expr) const = 0;
+};
+
+struct EmptyInfoPrinter : public IInfoPrinter {
+  std::optional<std::string> onExpr(wasm::Expression *) const override { return std::nullopt; }
 };
 
 struct BasicBlock {
@@ -36,7 +40,7 @@ struct BasicBlock {
   bool isEntry() const { return entry; }
   bool isExit() const { return exit; }
 
-  void print(std::ostream &os, wasm::Module *wasm, size_t start, IInfoPrinter &infoPrinter) const;
+  void print(std::ostream &os, wasm::Module *wasm, size_t start, IInfoPrinter const &infoPrinter) const;
 
 private:
   wasm::Index index;
@@ -50,6 +54,8 @@ private:
 };
 
 struct CFG {
+  static CFG fromFunction(wasm::Function *func);
+
   // Iterate through basic blocks.
   using iterator = std::vector<BasicBlock>::const_iterator;
   iterator begin() const { return blocks.cbegin(); }
@@ -62,9 +68,7 @@ struct CFG {
 
   const BasicBlock &operator[](size_t i) const { return *(begin() + i); }
 
-  static CFG fromFunction(wasm::Function *func);
-
-  void print(std::ostream &os, wasm::Module *wasm, IInfoPrinter &infoPrinter) const;
+  void print(std::ostream &os, wasm::Module *wasm, IInfoPrinter const &infoPrinter) const;
 
 private:
   std::vector<BasicBlock> blocks;
