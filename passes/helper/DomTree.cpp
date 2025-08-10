@@ -1,7 +1,6 @@
 #include <cassert>
 #include <iostream>
 #include <memory>
-#include <utility>
 
 #include "CFG.hpp"
 #include "DomTree.hpp"
@@ -11,19 +10,20 @@ namespace warpo::passes {
 
 struct DomTree::Storage {
   std::shared_ptr<CFG> cfg_;
-  dom_tree_impl::DomTree const domTree;
-  dom_tree_impl::DomTree const postDomTree;
+  dom_tree_impl::ImmediateDomTree idomTree;
+  dom_tree_impl::ImmediateDomTree postIdomTree;
+  dom_tree_impl::DomTree domTree;
+  dom_tree_impl::DomTree postDomTree;
+
+  explicit Storage(std::shared_ptr<CFG> const &cfg)
+      : cfg_(cfg), idomTree(dom_tree_impl::createDomTree(*cfg)), postIdomTree(dom_tree_impl::createPostDomTree(*cfg)),
+        domTree(idomTree.toDomTree()), postDomTree(postIdomTree.toDomTree()) {}
 };
 
 DomTree::~DomTree() { delete storage_; }
 
-DomTree DomTree::create(std::shared_ptr<CFG> cfg) {
-  CFG const &rawCfg = *cfg;
-  std::unique_ptr<Storage> storage{new Storage{
-      .cfg_ = std::move(cfg),
-      .domTree = dom_tree_impl::createDomTree(rawCfg),
-      .postDomTree = dom_tree_impl::createPostDomTree(rawCfg),
-  }};
+DomTree DomTree::create(std::shared_ptr<CFG> const &cfg) {
+  std::unique_ptr<Storage> storage{new Storage(cfg)};
   return DomTree{storage.release()};
 }
 

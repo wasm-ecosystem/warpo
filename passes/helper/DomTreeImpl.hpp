@@ -22,8 +22,12 @@ struct DomTree : public std::vector<DynBitset> {
   }
 };
 
-DomTree createDomTree(CFG const &cfg);
+struct ImmediateDomTree : public std::vector<size_t> {
+  DomTree toDomTree() const;
+};
 
-DomTree createPostDomTree(CFG const &bbs);
+ImmediateDomTree createDomTree(CFG const &cfg);
+
+ImmediateDomTree createPostDomTree(CFG const &bbs);
 
 } // namespace warpo::passes::dom_tree_impl

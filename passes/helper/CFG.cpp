@@ -148,7 +148,7 @@ std::vector<BasicBlock const *> CFG::getReversePostOrder() const {
 
   PostOrderActor actor{n};
   for (BasicBlock const &bb : *this) {
-    if (bb.isEntry()) {
+    if (bb.preds().empty()) {
       actor.action(bb);
     }
   }

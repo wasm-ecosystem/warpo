@@ -78,6 +78,23 @@ private:
   std::vector<BasicBlock> blocks;
 
   friend BasicBlock;
+  friend struct CFGForTest;
 };
 
 } // namespace warpo::passes
+
+#ifdef WARPO_ENABLE_UNIT_TESTS
+
+struct warpo::passes::BasicBlockForTest {
+  static auto &index(BasicBlock &bb) { return bb.index; }
+  static auto &entry(BasicBlock &bb) { return bb.entry; }
+  static auto &exit(BasicBlock &bb) { return bb.exit; }
+  static auto &predecessors(BasicBlock &bb) { return bb.predecessors; }
+  static auto &successors(BasicBlock &bb) { return bb.successors; }
+};
+
+struct warpo::passes::CFGForTest {
+  static auto &blocks(CFG &cfg) { return cfg.blocks; }
+};
+
+#endif
