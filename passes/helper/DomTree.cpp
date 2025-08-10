@@ -1,5 +1,7 @@
 #include <cassert>
+#include <iostream>
 #include <memory>
+#include <utility>
 
 #include "CFG.hpp"
 #include "DomTree.hpp"
@@ -8,47 +10,19 @@
 namespace warpo::passes {
 
 struct DomTree::Storage {
-  std::shared_ptr<CFG> cfg_; // cfg which own real bb
+  std::shared_ptr<CFG> cfg_;
   dom_tree_impl::DomTree const domTree;
   dom_tree_impl::DomTree const postDomTree;
 };
 
-namespace {
-
-struct BB {
-  using reference_type = BB const *;
-  BasicBlock const *bb_;
-  std::vector<reference_type> in_;
-  std::vector<reference_type> out_;
-  std::vector<reference_type> const &preds() const { return in_; }
-  std::vector<reference_type> const &succs() const { return out_; }
-  bool isEntry() const { return bb_->isEntry(); }
-  bool isExit() const { return bb_->isExit(); }
-  size_t getId() const { return bb_->getIndex(); }
-};
-
-static_assert(dom_tree_impl::IsDomTreeBB<BB>, "");
-static_assert(dom_tree_impl::IsPostDomTreeBB<BB>, "");
-
-} // namespace
-
 DomTree::~DomTree() { delete storage_; }
 
 DomTree DomTree::create(std::shared_ptr<CFG> cfg) {
-  std::vector<BB> bbs{};
-  for (BasicBlock const &bb : *cfg) {
-    bbs.push_back(BB{.bb_ = &bb, .in_ = {}, .out_ = {}});
-  }
-  for (BasicBlock const &bb : *cfg) {
-    for (BasicBlock const *pred : bb.preds()) {
-      bbs[pred->getIndex()].out_.push_back(&bbs[bb.getIndex()]);
-      bbs[bb.getIndex()].in_.push_back(&bbs[pred->getIndex()]);
-    }
-  }
+  CFG const &rawCfg = *cfg;
   std::unique_ptr<Storage> storage{new Storage{
       .cfg_ = std::move(cfg),
-      .domTree = dom_tree_impl::createDomTree(bbs),
-      .postDomTree = dom_tree_impl::createPostDomTree(bbs),
+      .domTree = dom_tree_impl::createDomTree(rawCfg),
+      .postDomTree = dom_tree_impl::createPostDomTree(rawCfg),
   }};
   return DomTree{storage.release()};
 }
@@ -94,6 +68,7 @@ TEST_F(DomTreeTest, Base) {
     )");
 
   std::shared_ptr<CFG> const cfg{new CFG{CFG::fromFunction(m->getFunction("f"))}};
+  cfg->print(std::cout, m.get(), EmptyInfoPrinter{});
   DomTree const domTree = DomTree::create(cfg);
 
   EXPECT_TRUE(domTree.isDom(&(*cfg)[0], &(*cfg)[1]));

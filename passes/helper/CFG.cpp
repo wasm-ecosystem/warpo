@@ -1,10 +1,14 @@
 /// copy and modify from third_party/binaryen/src/analysis/cfg.cpp
 
+#include <algorithm>
+#include <iterator>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "CFG.hpp"
 #include "cfg/cfg-traversal.h"
+#include "support/DynBitSet.hpp"
 #include "wasm-traversal.h"
 #include "wasm.h"
 
@@ -106,6 +110,68 @@ void CFG::print(std::ostream &os, wasm::Module *wasm, IInfoPrinter const &infoPr
     start += block.size();
   }
 }
-std::vector<BasicBlock> CFG::getRPO() const {}
+
+template <class Parent> class PostOrderActorBase {
+  DynBitset visited_;
+  std::vector<BasicBlock const *> postOrder_;
+
+public:
+  explicit PostOrderActorBase(size_t n) : visited_(n), postOrder_{} { postOrder_.reserve(n); }
+  void action(BasicBlock const &bb) {
+    size_t const index = bb.getIndex();
+    if (visited_.get(index))
+      return;
+    visited_.set(index, true);
+    for (BasicBlock const *succ : Parent::getSuccs(bb)) {
+      action(*succ);
+    }
+    postOrder_.push_back(&bb);
+  }
+
+  std::vector<BasicBlock const *> getReserverPostOrder() const {
+    std::vector<BasicBlock const *> ret{};
+    ret.reserve(postOrder_.size());
+    std::reverse_copy(postOrder_.begin(), postOrder_.end(), std::back_inserter(ret));
+    return ret;
+  }
+};
+
+std::vector<BasicBlock const *> CFG::getReversePostOrder() const {
+  size_t const n = size();
+  std::vector<BasicBlock> postOrder{};
+  postOrder.reserve(n);
+
+  struct PostOrderActor : public PostOrderActorBase<PostOrderActor> {
+    static std::vector<BasicBlock const *> const &getSuccs(BasicBlock const &bb) { return bb.succs(); }
+    using PostOrderActorBase::PostOrderActorBase;
+  };
+
+  PostOrderActor actor{n};
+  for (BasicBlock const &bb : *this) {
+    if (bb.isEntry()) {
+      actor.action(bb);
+    }
+  }
+  return actor.getReserverPostOrder();
+}
+
+std::vector<BasicBlock const *> CFG::getReversePostOrderOnReverseGraph() const {
+  size_t const n = size();
+  std::vector<BasicBlock> postOrder{};
+  postOrder.reserve(n);
+
+  struct PostOrderActor : public PostOrderActorBase<PostOrderActor> {
+    static std::vector<BasicBlock const *> const &getSuccs(BasicBlock const &bb) { return bb.preds(); }
+    using PostOrderActorBase::PostOrderActorBase;
+  };
+
+  PostOrderActor actor{n};
+  for (BasicBlock const &bb : *this) {
+    if (bb.succs().empty()) {
+      actor.action(bb);
+    }
+  }
+  return actor.getReserverPostOrder();
+}
 
 } // namespace warpo::passes

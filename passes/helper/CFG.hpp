@@ -51,6 +51,7 @@ private:
   std::vector<const BasicBlock *> successors;
 
   friend CFG;
+  friend struct BasicBlockForTest;
 };
 
 struct CFG {
@@ -70,7 +71,8 @@ struct CFG {
 
   void print(std::ostream &os, wasm::Module *wasm, IInfoPrinter const &infoPrinter) const;
 
-  std::vector<BasicBlock> getRPO() const;
+  std::vector<BasicBlock const *> getReversePostOrder() const;
+  std::vector<BasicBlock const *> getReversePostOrderOnReverseGraph() const;
 
 private:
   std::vector<BasicBlock> blocks;
