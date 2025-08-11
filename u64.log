@@ -1,0 +1,46 @@
+forwardBitSet 111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+backwardBitSet 111111111111111111111111111111111110110110110110110110110110110110110110110110110100100000000000
+================== ~lib/rt/itcms/Object#linkTo liveness analysis ===============
+;; preds: [], succs: []
+BB0: ;;entry exit 
+  0: local.get $1 ;; [local use: 1 ] 
+  1: call $~lib/rt/itcms/Object#get:prev
+  2: local.set $3
+  3: local.get $0 ;; [local use: 0 ] 
+  4: local.get $1 ;; [local use: 1 ] 
+  5: local.get $2 ;; [local use: 2 ] 
+  6: i32.or
+  7: call $~lib/rt/itcms/Object#set:nextWithColor
+  8: local.get $0 ;; [local use: 0 ] 
+  9: local.get $3
+  10: call $~lib/rt/itcms/Object#set:prev
+  11: local.get $3
+  12: local.get $0 ;; [local use: 0 ] 
+  13: call $~lib/rt/itcms/Object#set:next
+  14: local.get $1 ;; [local use: 1 ] 
+  15: local.get $0 ;; [local use: 0 ] 
+  16: call $~lib/rt/itcms/Object#set:prev
+  17: block
+
+============
+;; preds: [], succs: []
+BB0: ;;entry exit 
+  0: local.get $1 ;; [liveness: 111] 
+  1: call $~lib/rt/itcms/Object#get:prev ;; [liveness: 111] 
+  2: local.set $3 ;; [liveness: 111] 
+  3: local.get $0 ;; [liveness: 111] 
+  4: local.get $1 ;; [liveness: 111] 
+  5: local.get $2 ;; [liveness: 111 -> 110] 
+  6: i32.or
+  7: call $~lib/rt/itcms/Object#set:nextWithColor ;; [liveness: 110] 
+  8: local.get $0 ;; [liveness: 110] 
+  9: local.get $3 ;; [liveness: 110] 
+  10: call $~lib/rt/itcms/Object#set:prev ;; [liveness: 110] 
+  11: local.get $3 ;; [liveness: 110] 
+  12: local.get $0 ;; [liveness: 110] 
+  13: call $~lib/rt/itcms/Object#set:next ;; [liveness: 110] 
+  14: local.get $1 ;; [liveness: 110 -> 100] 
+  15: local.get $0 ;; [liveness: 100 -> 000] 
+  16: call $~lib/rt/itcms/Object#set:prev ;; [liveness: 000] 
+  17: block
+=================================

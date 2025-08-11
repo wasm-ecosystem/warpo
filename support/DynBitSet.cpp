@@ -30,18 +30,18 @@ void DynBitset::set(size_t index, bool value) {
   size_t block_index = index / block_size;
   size_t bit_index = index % block_size;
   if (value) {
-    data_[block_index] |= (1U << bit_index);
+    data_[block_index] |= (static_cast<Element>(1U) << static_cast<Element>(bit_index));
   } else {
-    data_[block_index] &= ~(1U << bit_index);
+    data_[block_index] &= ~(static_cast<Element>(1U) << static_cast<Element>(bit_index));
   }
 }
 bool DynBitset::get(size_t index) const {
   if (index >= bitSize_) {
     throw std::out_of_range("Index out of range");
   }
-  size_t block_index = index / block_size;
-  size_t bit_index = index % block_size;
-  return ((data_[block_index] >> bit_index) & 1U) == 1U;
+  size_t const block_index = index / block_size;
+  size_t const bit_index = index % block_size;
+  return ((data_[block_index] >> static_cast<Element>(bit_index)) & 1U) == 1U;
 }
 
 std::strong_ordering DynBitset::operator<=>(DynBitset const &other) const {
@@ -97,7 +97,7 @@ DynBitset DynBitset::operator~() const {
     ret.data_[i] = ~data_[i];
   }
   if (bitSize_ % block_size != 0) {
-    ret.data_.back() &= (static_cast<uint64_t>(1) << (bitSize_ % block_size)) - 1U;
+    ret.data_.back() &= (static_cast<Element>(1) << (bitSize_ % block_size)) - 1U;
   }
   return ret;
 }
