@@ -46,11 +46,12 @@ struct VanillaAssigner : public IAssigner {
 };
 
 struct Process : public wasm::PostWalker<Process, wasm::UnifiedExpressionVisitor<Process>> {
+  wasm::Function const &func_;
   IAssigner &assigner_;
   LivenessMap const &livenessMap_;
   StackPosition &stackPosition_;
-  Process(IAssigner &assigner, LivenessMap const &livenessMap, StackPosition &stackPosition)
-      : assigner_(assigner), livenessMap_(livenessMap), stackPosition_(stackPosition) {}
+  Process(wasm::Function const &func, IAssigner &assigner, LivenessMap const &livenessMap, StackPosition &stackPosition)
+      : func_(func), assigner_(assigner), livenessMap_(livenessMap), stackPosition_(stackPosition) {}
 
   Result<wasm::Call *> extractCall(wasm::Expression *expr, Liveness const &l) {
     if (auto set = expr->dynCast<wasm::LocalSet>()) {
@@ -64,12 +65,14 @@ struct Process : public wasm::PostWalker<Process, wasm::UnifiedExpressionVisitor
     if (auto call = expr->dynCast<wasm::Call>()) {
       // tmptostack
       if (call->target != FnTmpToStack && call->target != FnLocalToStack) {
-        fmt::println("unknown {}: {} -> {}", toString(expr), l.before().toString(), l.after().toString());
+        fmt::println("in '{}', unknown {}: {} -> {}", func_.name.str, toString(expr), l.before().toString(),
+                     l.after().toString());
         std::abort();
       }
       return succeed(call);
     }
-    fmt::println("unknown {}: {} -> {}", toString(expr), l.before().toString(), l.after().toString());
+    fmt::println("in '{}', unknown {}: {} -> {}", func_.name.str, toString(expr), l.before().toString(),
+                 l.after().toString());
     std::abort();
   };
 
@@ -94,7 +97,7 @@ struct Process : public wasm::PostWalker<Process, wasm::UnifiedExpressionVisitor
 static void calStackPositionWithVanillaAlgorithm(wasm::Function *func, StackPosition &stackPosition,
                                                  LivenessMap const &livenessMap) {
   VanillaAssigner assigner{};
-  Process process{assigner, livenessMap, stackPosition};
+  Process process{*func, assigner, livenessMap, stackPosition};
   process.walkFunction(func);
 }
 
@@ -110,7 +113,7 @@ static void calStackPositionWithGreedyConflictGraphAlgorithm(wasm::Function *fun
     fmt::println("===============================");
   }
   GreedyAssigner assigner{color};
-  Process process{assigner, livenessMap, stackPosition};
+  Process process{*func, assigner, livenessMap, stackPosition};
   process.walkFunction(func);
 }
 
