@@ -167,7 +167,7 @@ std::vector<BasicBlock const *> CFG::getReversePostOrderOnReverseGraph() const {
 
   PostOrderActor actor{n};
   for (BasicBlock const &bb : *this) {
-    if (bb.succs().empty()) {
+    if (bb.isExit()) {
       actor.action(bb);
     }
   }
