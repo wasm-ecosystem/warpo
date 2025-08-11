@@ -85,7 +85,9 @@ private:
 
 #ifdef WARPO_ENABLE_UNIT_TESTS
 
-struct warpo::passes::BasicBlockForTest {
+namespace warpo::passes {
+
+struct BasicBlockForTest {
   static auto &index(BasicBlock &bb) { return bb.index; }
   static auto &entry(BasicBlock &bb) { return bb.entry; }
   static auto &exit(BasicBlock &bb) { return bb.exit; }
@@ -93,8 +95,10 @@ struct warpo::passes::BasicBlockForTest {
   static auto &successors(BasicBlock &bb) { return bb.successors; }
 };
 
-struct warpo::passes::CFGForTest {
+struct CFGForTest {
   static auto &blocks(CFG &cfg) { return cfg.blocks; }
 };
+
+} // namespace warpo::passes
 
 #endif
