@@ -1,4 +1,5 @@
 #include <cassert>
+#include <iostream>
 
 #include "CollectLeafFunction.hpp"
 #include "LeafFunctionFilter.hpp"
@@ -43,6 +44,10 @@ void LeafFunctionFilter::runOnFunction(wasm::Module *m, wasm::Function *func) {
   Collector collector{livenessMap, *leaf_};
   collector.walkFunctionInModule(func, m);
   // TODO: mark parameters SSA valid
+  if (support::isDebug(PASS_NAME, func->name.str)) {
+    std::cout << "valid SSA value: " << collector.validSSAValue_ << "\n";
+    std::cout << "invalid SSA value: " << ~collector.validSSAValue_ << "\n";
+  }
   livenessMap.setInvalid(~collector.validSSAValue_);
 
   if (support::isDebug(PASS_NAME, func->name.str)) {

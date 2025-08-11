@@ -293,12 +293,18 @@ static void updateLivenessInfo(wasm::Function *func, LivenessMap &livenessMap, L
   DynBitset const forwardBitSet = std::move(livenessMap.storage_);
   livenessMap.storage_ = DynBitset{forwardBitSet.size()};
 
+  if (support::isDebug(PASS_NAME, func->name.str)) {
+    std::cout << "forwardBitSet " << forwardBitSet << "\n";
+  }
   SSALivenessBackwardTFn backwardFn{ssaMap, localUses, tmpUses, livenessMap};
   using BackwardAnalyzer = wasm::analysis::MonotoneCFGAnalyzer<FiniteIntPowersetLattice, SSALivenessBackwardTFn>;
   BackwardAnalyzer backwardAnalyzer{backwardFn.lattice_, backwardFn, cfg};
   backwardAnalyzer.evaluateFunctionExit(func);
   backwardAnalyzer.evaluateAndCollectResults();
 
+  if (support::isDebug(PASS_NAME, func->name.str)) {
+    std::cout << "backwardBitSet " << livenessMap.storage_ << "\n";
+  }
   livenessMap.storage_ &= forwardBitSet; // overlap of forward and backward is the real liveness
 }
 
