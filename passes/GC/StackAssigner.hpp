@@ -13,6 +13,7 @@ struct StackPosition : private std::map<wasm::Call *, uint32_t> {
   using Super = std::map<wasm::Call *, uint32_t>;
   using Super::begin;
   using Super::contains;
+  using Super::empty;
   using Super::end;
   using Super::find;
   using Super::insert_or_assign;

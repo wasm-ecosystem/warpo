@@ -12,6 +12,7 @@
 #include "MergeSSA.hpp"
 #include "ObjLivenessAnalyzer.hpp"
 #include "SSAObj.hpp"
+#include "ShrinkWrap.hpp"
 #include "StackAssigner.hpp"
 #include "argparse/argparse.hpp"
 #include "fmt/format.h"
@@ -272,6 +273,7 @@ void GCLowering::run(wasm::Module *m) {
       gc::StackAssigner::addToPass(runner, stackAssignerMode, livenessInfo);
 
   runner.add(std::unique_ptr<wasm::Pass>(new gc::ToStackCallLowering(stackPositions)));
+  runner.add(std::unique_ptr<wasm::Pass>(new gc::ShrinkWrapAnalysis(*stackPositions)));
   runner.add(std::unique_ptr<wasm::Pass>(new gc::PostLowering(stackPositions)));
 
   runner.run();

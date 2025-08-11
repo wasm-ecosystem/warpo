@@ -27,15 +27,16 @@ DomTree DomTree::create(std::shared_ptr<CFG> const &cfg) {
   return DomTree{storage.release()};
 }
 
-/// @brief return true if node dominates dominator
-bool DomTree::isDom(BasicBlock const *node, BasicBlock const *dominator) const {
-  return storage_->domTree[dominator->getIndex()].get(node->getIndex());
+bool DomTree::isDom(BasicBlock const *dominatorNode, BasicBlock const *dominatedNode) const {
+  return storage_->domTree[dominatedNode->getIndex()].get(dominatorNode->getIndex());
 }
 
-/// @brief return true if node post dominates dominator
-bool DomTree::isPostDom(BasicBlock const *node, BasicBlock const *dominator) const {
-  return storage_->postDomTree[dominator->getIndex()].get(node->getIndex());
+bool DomTree::isPostDom(BasicBlock const *dominatorNode, BasicBlock const *dominatedNode) const {
+  return storage_->postDomTree[dominatedNode->getIndex()].get(dominatorNode->getIndex());
 }
+
+DynBitset DomTree::getDominators(BasicBlock const *node) const { return storage_->domTree[node->getIndex()]; }
+DynBitset DomTree::getPostDominators(BasicBlock const *node) const { return storage_->postDomTree[node->getIndex()]; }
 
 } // namespace warpo::passes
 
