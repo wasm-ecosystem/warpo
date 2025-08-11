@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cassert>
 #include <compare>
 #include <cstdint>
@@ -20,7 +21,12 @@ class DynBitset {
   static constexpr size_t block_size = sizeof(Element) * 8U;
 
 public:
-  DynBitset(size_t size) : bitSize_(size) { data_.resize((size + (block_size - 1U)) / block_size, 0); }
+  template <size_t N> explicit DynBitset(std::array<bool, N> init) : DynBitset(N) {
+    for (size_t i = 0; i < N; i++) {
+      set(i, init[i]);
+    }
+  }
+  explicit DynBitset(size_t size) : bitSize_(size) { data_.resize((size + (block_size - 1U)) / block_size, 0); }
 
   size_t size() const { return bitSize_; }
 

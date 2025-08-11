@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "../helper/BuildCFG.hpp"
+#include "../helper/CFG.hpp"
 #include "../helper/Powerset.hpp"
 #include "GCInfo.hpp"
 #include "ObjLivenessAnalyzer.hpp"
@@ -310,7 +310,7 @@ struct InfoPrinter : public IInfoPrinter {
   explicit InfoPrinter(LocalsUses const &localsUses, TmpUses const &tmpUses, SSAMap const &ssaMap)
       : localsUses_(localsUses), tmpUses_(tmpUses), ssaMap_(ssaMap) {}
 
-  std::optional<std::string> onExpr(wasm::Expression *expr) override {
+  std::optional<std::string> onExpr(wasm::Expression *expr) const override {
     std::stringstream ss;
     // ssa
     std::optional<size_t> const index = ssaMap_.tryGetIndexFromExpr(expr);

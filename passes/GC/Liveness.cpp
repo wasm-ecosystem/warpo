@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "../helper/BuildCFG.hpp"
+#include "../helper/CFG.hpp"
 #include "Liveness.hpp"
 #include "support/DynBitSet.hpp"
 #include "support/Range.hpp"
@@ -23,10 +23,10 @@ namespace {
 struct LivenessPrinter : public IInfoPrinter {
   LivenessMap const &livenessMap_;
   explicit LivenessPrinter(LivenessMap const &livenessMap) : livenessMap_(livenessMap) {}
-  std::optional<std::string> onExpr(wasm::Expression *expr) override;
+  std::optional<std::string> onExpr(wasm::Expression *expr) const override;
 };
 
-std::optional<std::string> LivenessPrinter::onExpr(wasm::Expression *expr) {
+std::optional<std::string> LivenessPrinter::onExpr(wasm::Expression *expr) const {
   std::stringstream ss;
   std::optional<Liveness> const l = livenessMap_.getLiveness(expr);
   if (!l.has_value())

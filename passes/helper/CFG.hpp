@@ -14,7 +14,11 @@ struct CFG;
 
 struct IInfoPrinter {
   virtual ~IInfoPrinter() = default;
-  virtual std::optional<std::string> onExpr(wasm::Expression *expr) = 0;
+  virtual std::optional<std::string> onExpr(wasm::Expression *expr) const = 0;
+};
+
+struct EmptyInfoPrinter : public IInfoPrinter {
+  std::optional<std::string> onExpr(wasm::Expression *) const override { return std::nullopt; }
 };
 
 struct BasicBlock {
@@ -36,7 +40,7 @@ struct BasicBlock {
   bool isEntry() const { return entry; }
   bool isExit() const { return exit; }
 
-  void print(std::ostream &os, wasm::Module *wasm, size_t start, IInfoPrinter &infoPrinter) const;
+  void print(std::ostream &os, wasm::Module *wasm, size_t start, IInfoPrinter const &infoPrinter) const;
 
 private:
   wasm::Index index;
@@ -47,9 +51,12 @@ private:
   std::vector<const BasicBlock *> successors;
 
   friend CFG;
+  friend struct BasicBlockForTest;
 };
 
 struct CFG {
+  static CFG fromFunction(wasm::Function *func);
+
   // Iterate through basic blocks.
   using iterator = std::vector<BasicBlock>::const_iterator;
   iterator begin() const { return blocks.cbegin(); }
@@ -62,14 +69,36 @@ struct CFG {
 
   const BasicBlock &operator[](size_t i) const { return *(begin() + i); }
 
-  static CFG fromFunction(wasm::Function *func);
+  void print(std::ostream &os, wasm::Module *wasm, IInfoPrinter const &infoPrinter) const;
 
-  void print(std::ostream &os, wasm::Module *wasm, IInfoPrinter &infoPrinter) const;
+  std::vector<BasicBlock const *> getReversePostOrder() const;
+  std::vector<BasicBlock const *> getReversePostOrderOnReverseGraph() const;
 
 private:
   std::vector<BasicBlock> blocks;
 
   friend BasicBlock;
+  friend struct CFGForTest;
 };
 
 } // namespace warpo::passes
+
+#ifdef WARPO_ENABLE_UNIT_TESTS
+
+namespace warpo::passes {
+
+struct BasicBlockForTest {
+  static auto &index(BasicBlock &bb) { return bb.index; }
+  static auto &entry(BasicBlock &bb) { return bb.entry; }
+  static auto &exit(BasicBlock &bb) { return bb.exit; }
+  static auto &predecessors(BasicBlock &bb) { return bb.predecessors; }
+  static auto &successors(BasicBlock &bb) { return bb.successors; }
+};
+
+struct CFGForTest {
+  static auto &blocks(CFG &cfg) { return cfg.blocks; }
+};
+
+} // namespace warpo::passes
+
+#endif
