@@ -1,6 +1,6 @@
 #include <cassert>
 #include <compare>
-#include <cstdint>
+#include <cstddef>
 #include <iostream>
 #include <ostream>
 #include <sstream>
@@ -127,6 +127,16 @@ TEST(DynBitSetTest, NorFull) {
   DynBitset nor_v = ~DynBitset{DynBitset::block_size};
   std::string expected(DynBitset::block_size, '1');
   EXPECT_EQ(nor_v.toString(), expected);
+}
+
+TEST(DynBitSetTest, Set) {
+  DynBitset v{DynBitset::block_size};
+  v.set(10, true);
+  v.set(60, true);
+  std::string expected(DynBitset::block_size, '0');
+  expected[10] = '1';
+  expected[60] = '1';
+  EXPECT_EQ(v.toString(), expected);
 }
 
 } // namespace warpo::ut
