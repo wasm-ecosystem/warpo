@@ -134,9 +134,6 @@ public:
     for (size_t i = 0; i < data_.size(); ++i) {
       ret.data_[i] = ~data_[i];
     }
-    if (data_.size() > 0) {
-      ret.data_.back() &= (1U << (bitSize_ % block_size)) - 1U;
-    }
     return ret;
   }
 };
