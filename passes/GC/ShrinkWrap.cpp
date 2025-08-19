@@ -35,12 +35,18 @@ void ShrinkWrapAnalysis::runOnFunction(wasm::Module *m, wasm::Function *func) {
     for (wasm::Expression *expr : bb) {
       if (auto *call = expr->dynCast<wasm::Call>()) {
         if (stackPosition.contains(call)) {
+          // prologue should dominate all stack usage
           validPrologue &= domTree.getDominators(&bb);
+          // epilogue should post dominate all stack usage
           validEpilogue &= domTree.getPostDominators(&bb);
         }
       }
     }
   }
+  // remove basic block inside loop
+
+  // shrink for entry and exit
+
   if (support::isDebug(PASS_NAME, func->name.str)) {
     fmt::print("ShrinkWrapperAnalysis: Function {}:\n - validPrologue: {}\n - validEpilogue: {}\n", func->name.str,
                validPrologue.toString(), validEpilogue.toString());
