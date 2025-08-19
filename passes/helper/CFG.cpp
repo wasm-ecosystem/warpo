@@ -207,8 +207,7 @@ DynBitset CFG::getBlockInsideLoop() const {
     }
   };
   BasicBlockDeepFirstVisitor visitor{size()};
-  assert(blocks[0].isEntry());
-  visitor.visit(&blocks[0]);
+  visitor.visit(getEntry());
 
   return visitor.insideLoop_;
 }

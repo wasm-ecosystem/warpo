@@ -12,6 +12,13 @@
 
 namespace warpo::passes::gc {
 
+struct ShadowStackInsertPoint {
+  wasm::Expression *prologue = nullptr; ///< nullable
+  wasm::Expression *epilogue = nullptr;
+};
+
+using ShadowStackInsertPoints = std::map<wasm::Function *, ShadowStackInsertPoint>;
+
 struct ShrinkWrapAnalysis : public wasm::Pass {
   StackPositions const &stackPositions_;
   explicit ShrinkWrapAnalysis(StackPositions const &stackPositions) : stackPositions_{stackPositions} {

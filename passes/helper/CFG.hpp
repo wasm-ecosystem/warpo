@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <cassert>
 #include <optional>
 #include <string>
 
@@ -76,6 +77,19 @@ struct CFG {
   std::vector<BasicBlock const *> getReversePostOrderOnReverseGraph() const;
 
   DynBitset getBlockInsideLoop() const;
+
+  BasicBlock const *getEntry() const {
+    assert(!blocks.empty());
+    assert(blocks.front().isEntry() && "First block must be entry");
+    return &blocks.front();
+  }
+  BasicBlock const *getExit() const {
+    for (auto it = blocks.rbegin(); it != blocks.rend(); ++it) {
+      if (it->isExit())
+        return &(*it);
+    }
+    return nullptr;
+  }
 
 private:
   std::vector<BasicBlock> blocks;
