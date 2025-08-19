@@ -182,10 +182,11 @@ DynBitset CFG::getBlockInsideLoop() const {
 
   struct BasicBlockDeepFirstVisitor {
     DynBitset active_;
+    DynBitset visited_;
     std::vector<BasicBlock const *> stack_;
     DynBitset insideLoop_;
 
-    explicit BasicBlockDeepFirstVisitor(size_t size) : active_(size), insideLoop_(size) {}
+    explicit BasicBlockDeepFirstVisitor(size_t size) : active_{size}, visited_{size}, insideLoop_{size} {}
     void visit(BasicBlock const *bb) {
       uint32_t const index = bb->getIndex();
       // if the BB is already in loop, skip it
@@ -194,8 +195,12 @@ DynBitset CFG::getBlockInsideLoop() const {
       active_.set(index, true);
       stack_.push_back(bb);
       for (BasicBlock const *succ : bb->succs()) {
+        size_t const succIndex = succ->getIndex();
+        // in wasm, only natural loop supportted
+        if (visited_.get(succIndex))
+          continue;
         // back edge means loop, back edge targeted bb is loop entry
-        if (active_.get(succ->getIndex())) {
+        if (active_.get(succIndex)) {
           markLoop(succ);
         } else {
           visit(succ);
@@ -203,6 +208,7 @@ DynBitset CFG::getBlockInsideLoop() const {
       }
       stack_.pop_back();
       active_.set(index, false);
+      visited_.set(index, true);
     }
 
   private:

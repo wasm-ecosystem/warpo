@@ -14,7 +14,7 @@ namespace warpo::passes::gc {
 
 struct StackInsertPoint {
   wasm::Expression *prologue = nullptr; ///< nullable
-  wasm::Expression *epilogue = nullptr;
+  wasm::Expression *epilogue = nullptr; ///< nullable
 };
 
 using StackInsertPoints = std::map<wasm::Function *, StackInsertPoint>;
