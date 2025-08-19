@@ -12,24 +12,24 @@
 
 namespace warpo::passes::gc {
 
-struct ShadowStackInsertPoint {
+struct StackInsertPoint {
   wasm::Expression *prologue = nullptr; ///< nullable
   wasm::Expression *epilogue = nullptr;
 };
 
-using ShadowStackInsertPoints = std::map<wasm::Function *, ShadowStackInsertPoint>;
+using StackInsertPoints = std::map<wasm::Function *, StackInsertPoint>;
 
 struct ShrinkWrapAnalysis : public wasm::Pass {
-  static ShadowStackInsertPoints createResults(wasm::Module *m) {
-    ShadowStackInsertPoints ret{};
+  static StackInsertPoints createResults(wasm::Module *m) {
+    StackInsertPoints ret{};
     for (std::unique_ptr<wasm::Function> const &f : m->functions) {
-      ret.insert_or_assign(f.get(), ShadowStackInsertPoint{});
+      ret.insert_or_assign(f.get(), StackInsertPoint{});
     }
     return ret;
   }
-  std::shared_ptr<ShadowStackInsertPoints> shadowStackPoints_;
+  std::shared_ptr<StackInsertPoints> shadowStackPoints_;
   std::shared_ptr<StackPositions const> stackPositions_;
-  explicit ShrinkWrapAnalysis(std::shared_ptr<ShadowStackInsertPoints> const &shadowStackPoints,
+  explicit ShrinkWrapAnalysis(std::shared_ptr<StackInsertPoints> const &shadowStackPoints,
                               std::shared_ptr<StackPositions const> const &stackPositions)
       : shadowStackPoints_{shadowStackPoints}, stackPositions_{stackPositions} {
     name = "ShrinkWrapperAnalysis";
@@ -42,9 +42,9 @@ struct ShrinkWrapAnalysis : public wasm::Pass {
 
   void runOnFunction(wasm::Module *m, wasm::Function *func) override;
 
-  static std::shared_ptr<ShadowStackInsertPoints>
-  addToPass(wasm::PassRunner &runner, std::shared_ptr<StackPositions const> const &stackPositions) {
-    auto shadowStackPoints = std::make_shared<ShadowStackInsertPoints>(createResults(runner.wasm));
+  static std::shared_ptr<StackInsertPoints> addToPass(wasm::PassRunner &runner,
+                                                      std::shared_ptr<StackPositions const> const &stackPositions) {
+    auto shadowStackPoints = std::make_shared<StackInsertPoints>(createResults(runner.wasm));
     runner.add(std::unique_ptr<wasm::Pass>(new ShrinkWrapAnalysis(shadowStackPoints, stackPositions)));
     return shadowStackPoints;
   }

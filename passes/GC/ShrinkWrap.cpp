@@ -18,9 +18,8 @@
 
 namespace warpo::passes::gc {
 
-static ShadowStackInsertPoint getShadowStackInsertPoint(std::string_view const funcName,
-                                                        StackPosition const &stackPosition,
-                                                        std::shared_ptr<CFG> const &cfg) {
+static StackInsertPoint getShadowStackInsertPoint(std::string_view const funcName, StackPosition const &stackPosition,
+                                                  std::shared_ptr<CFG> const &cfg) {
   // FIXME: we do not handle noreturn function at this moment to simply implementation
   if (cfg->getExit() == nullptr)
     return {.prologue = nullptr, .epilogue = nullptr};
@@ -97,6 +96,10 @@ static ShadowStackInsertPoint getShadowStackInsertPoint(std::string_view const f
       }
     }
   });
+  if (prologueInsertBB == cfg->getEntry()) {
+    return {.prologue = nullptr, .epilogue = nullptr};
+  }
+  assert(prologueInsertBB->size() > 0);
   return {.prologue = *prologueInsertBB->begin(), .epilogue = epilogueInsertExpr};
 }
 
@@ -109,7 +112,8 @@ void ShrinkWrapAnalysis::runOnFunction(wasm::Module *m, wasm::Function *func) {
 
   // FIXME: design framework to avoid duplicate calculate CFG
   std::shared_ptr<CFG> const cfg = std::make_shared<CFG>(CFG::fromFunction(func));
-  ShadowStackInsertPoint shadowStackPoint = getShadowStackInsertPoint(func->name.str, stackPosition, cfg);
+  StackInsertPoint const stackInsertPoint = getShadowStackInsertPoint(func->name.str, stackPosition, cfg);
+  shadowStackPoints_->insert_or_assign(func, stackInsertPoint);
 }
 
 } // namespace warpo::passes::gc
@@ -164,7 +168,7 @@ TEST_F(ShrinkWrapTest, SingleBB) {
   applyWasmCallForEachBB();
   stackPosition.insert_or_assign(callMap[c][0], 0U);
 
-  ShadowStackInsertPoint const shadowStackInsertPoint =
+  StackInsertPoint const shadowStackInsertPoint =
       getShadowStackInsertPoint("test", stackPosition, std::make_shared<CFG>(cfg.raw_));
 
   EXPECT_EQ(shadowStackInsertPoint.prologue, callMap.at(c)[0]);
@@ -196,7 +200,7 @@ TEST_F(ShrinkWrapTest, SequenceBB) {
   stackPosition.insert_or_assign(callMap[b][0], 0U);
   stackPosition.insert_or_assign(callMap[c][0], 0U);
 
-  ShadowStackInsertPoint const shadowStackInsertPoint =
+  StackInsertPoint const shadowStackInsertPoint =
       getShadowStackInsertPoint("test", stackPosition, std::make_shared<CFG>(cfg.raw_));
 
   EXPECT_EQ(shadowStackInsertPoint.prologue, callMap.at(b)[0]);
@@ -230,7 +234,7 @@ TEST_F(ShrinkWrapTest, DifferentBranch) {
   stackPosition.insert_or_assign(callMap[c][0], 0U);
   stackPosition.insert_or_assign(callMap[d][0], 0U);
 
-  ShadowStackInsertPoint const shadowStackInsertPoint =
+  StackInsertPoint const shadowStackInsertPoint =
       getShadowStackInsertPoint("test", stackPosition, std::make_shared<CFG>(cfg.raw_));
 
   EXPECT_EQ(shadowStackInsertPoint.prologue, callMap.at(cfg.entry_)[0]);
@@ -266,7 +270,7 @@ TEST_F(ShrinkWrapTest, Loop) {
   applyWasmCallForEachBB();
   stackPosition.insert_or_assign(callMap[c][0], 0U);
 
-  ShadowStackInsertPoint const shadowStackInsertPoint =
+  StackInsertPoint const shadowStackInsertPoint =
       getShadowStackInsertPoint("test", stackPosition, std::make_shared<CFG>(cfg.raw_));
 
   EXPECT_EQ(shadowStackInsertPoint.prologue, callMap.at(e)[0]);

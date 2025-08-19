@@ -187,24 +187,29 @@ DynBitset CFG::getBlockInsideLoop() const {
 
     explicit BasicBlockDeepFirstVisitor(size_t size) : active_(size), insideLoop_(size) {}
     void visit(BasicBlock const *bb) {
-      active_.set(bb->getIndex(), true);
+      uint32_t const index = bb->getIndex();
+      // if the BB is already in loop, skip it
+      if (insideLoop_.get(index))
+        return;
+      active_.set(index, true);
       stack_.push_back(bb);
       for (BasicBlock const *succ : bb->succs()) {
         // back edge means loop, back edge targeted bb is loop entry
-        if (active_.get(succ->getIndex()))
+        if (active_.get(succ->getIndex())) {
           markLoop(succ);
-        else
+        } else {
           visit(succ);
+        }
       }
       stack_.pop_back();
-      active_.set(bb->getIndex(), false);
+      active_.set(index, false);
     }
 
   private:
     void markLoop(BasicBlock const *loopEntry) {
-      auto it = std::find(stack_.begin(), stack_.end(), loopEntry);
-      assert(it != stack_.end());
-      for (; it != stack_.end(); ++it)
+      auto const loopEntryIt = std::find(stack_.rbegin(), stack_.rend(), loopEntry);
+      assert(loopEntryIt != stack_.rend());
+      for (auto it = stack_.rbegin(); it != loopEntryIt; ++it)
         insideLoop_.set((*it)->getIndex(), true);
     }
   };

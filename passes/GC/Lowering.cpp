@@ -57,18 +57,41 @@ static wasm::Name getToStackFunctionName(uint32_t offset) {
 // insert to begin => decrease SP
 // insert to end => increase SP
 struct ToStackCallLowering : public wasm::Pass {
+  std::shared_ptr<gc::StackInsertPoints const> stackInsertPositions_;
   std::shared_ptr<StackPositions const> stackPositions_;
-  explicit ToStackCallLowering(std::shared_ptr<StackPositions const> const &stackPositions)
-      : stackPositions_(stackPositions) {
+  explicit ToStackCallLowering(std::shared_ptr<gc::StackInsertPoints const> stackInsertPositions,
+                               std::shared_ptr<StackPositions const> const &stackPositions)
+      : stackInsertPositions_(stackInsertPositions), stackPositions_(stackPositions) {
     name = "LowerToStackCall";
   }
   bool isFunctionParallel() override { return true; }
-  std::unique_ptr<Pass> create() override { return std::make_unique<ToStackCallLowering>(stackPositions_); }
+  std::unique_ptr<Pass> create() override {
+    return std::make_unique<ToStackCallLowering>(stackInsertPositions_, stackPositions_);
+  }
   bool modifiesBinaryenIR() override { return true; }
   void runOnFunction(wasm::Module *m, wasm::Function *func) override;
+
+private:
+  uint32_t replaceCallExprrunOnFunction(wasm::Module *m, wasm::Function *func, StackPosition const &stackPosition);
+  void replaceReturnExpr(wasm::Module *m, wasm::Function *func, uint32_t maxShadowStackOffset);
 };
+
 void ToStackCallLowering::runOnFunction(wasm::Module *m, wasm::Function *func) {
   StackPosition const &stackPosition = stackPositions_->at(func);
+  StackInsertPoint const &insertPoint = stackInsertPositions_->at(func);
+  uint32_t const maxShadowStackOffset = replaceCallExprrunOnFunction(m, func, stackPosition);
+  if (maxShadowStackOffset == 0)
+    return;
+  if (insertPoint.prologue == nullptr && insertPoint.epilogue == nullptr) {
+    replaceReturnExpr(m, func, maxShadowStackOffset);
+    return;
+  }
+  // FIXME
+  replaceReturnExpr(m, func, maxShadowStackOffset);
+}
+
+uint32_t ToStackCallLowering::replaceCallExprrunOnFunction(wasm::Module *m, wasm::Function *func,
+                                                           StackPosition const &stackPosition) {
   struct CallReplacer : public wasm::PostWalker<CallReplacer> {
     wasm::Function *func;
     StackPosition const &stackPosition_;
@@ -93,10 +116,9 @@ void ToStackCallLowering::runOnFunction(wasm::Module *m, wasm::Function *func) {
   };
   CallReplacer callReplacer{stackPosition, func};
   callReplacer.walkFunctionInModule(func, m);
-
-  if (callReplacer.maxShadowStackOffset_ == 0)
-    return;
-
+  return callReplacer.maxShadowStackOffset_;
+}
+void ToStackCallLowering::replaceReturnExpr(wasm::Module *m, wasm::Function *func, uint32_t maxShadowStackOffset) {
   struct ReturnWithResultReplacer : public wasm::PostWalker<ReturnWithResultReplacer> {
     wasm::Index const scratchReturnValueLocalIndex_;
     uint32_t const maxShadowStackOffset_;
@@ -134,35 +156,29 @@ void ToStackCallLowering::runOnFunction(wasm::Module *m, wasm::Function *func) {
           wasm::Type::unreachable));
     }
   };
-
   wasm::Type const resultType = func->getResults();
   wasm::Builder b{*m};
   if (resultType == wasm::Type::none) {
     func->body = b.makeBlock(
         {
-            b.makeCall("~lib/rt/__decrease_sp", {b.makeConst(wasm::Literal(callReplacer.maxShadowStackOffset_))},
-                       wasm::Type::none),
+            b.makeCall("~lib/rt/__decrease_sp", {b.makeConst(wasm::Literal(maxShadowStackOffset))}, wasm::Type::none),
             func->body,
-            b.makeCall("~lib/rt/__increase_sp", {b.makeConst(wasm::Literal(callReplacer.maxShadowStackOffset_))},
-                       wasm::Type::none),
+            b.makeCall("~lib/rt/__increase_sp", {b.makeConst(wasm::Literal(maxShadowStackOffset))}, wasm::Type::none),
         },
         resultType);
-    ReturnWithoutResultReplacer returnReplacer{callReplacer.maxShadowStackOffset_};
+    ReturnWithoutResultReplacer returnReplacer{maxShadowStackOffset};
     returnReplacer.walkFunctionInModule(func, m);
   } else {
     wasm::Index const scratchReturnValueLocalIndex = wasm::Builder::addVar(func, resultType);
     func->body = b.makeBlock(
         {
-            b.makeCall("~lib/rt/__decrease_sp", {b.makeConst(wasm::Literal(callReplacer.maxShadowStackOffset_))},
-                       wasm::Type::none),
+            b.makeCall("~lib/rt/__decrease_sp", {b.makeConst(wasm::Literal(maxShadowStackOffset))}, wasm::Type::none),
             b.makeLocalSet(scratchReturnValueLocalIndex, func->body),
-            b.makeCall("~lib/rt/__increase_sp", {b.makeConst(wasm::Literal(callReplacer.maxShadowStackOffset_))},
-                       wasm::Type::none),
+            b.makeCall("~lib/rt/__increase_sp", {b.makeConst(wasm::Literal(maxShadowStackOffset))}, wasm::Type::none),
             b.makeLocalGet(scratchReturnValueLocalIndex, resultType),
         },
         resultType);
-    ReturnWithResultReplacer returnReplacer{scratchReturnValueLocalIndex, callReplacer.maxShadowStackOffset_,
-                                            resultType};
+    ReturnWithResultReplacer returnReplacer{scratchReturnValueLocalIndex, maxShadowStackOffset, resultType};
     returnReplacer.walkFunctionInModule(func, m);
   }
 }
@@ -172,7 +188,6 @@ struct PostLowering : public wasm::Pass {
   explicit PostLowering(std::shared_ptr<gc::StackPositions> stackPosition) : stackPosition_(stackPosition) {
     name = "PostLowering";
   }
-  bool modifiesBinaryenIR() override { return true; }
   void run(wasm::Module *m) override {
     wasm::Builder b{*m};
     wasm::Name const memoryName = m->memories.front()->name;
@@ -271,9 +286,9 @@ void GCLowering::run(wasm::Module *m) {
                                                         : gc::StackAssigner::Mode::GreedyConflictGraph;
   std::shared_ptr<gc::StackPositions> stackPositions =
       gc::StackAssigner::addToPass(runner, stackAssignerMode, livenessInfo);
-
-  runner.add(std::unique_ptr<wasm::Pass>(new gc::ToStackCallLowering(stackPositions)));
-  gc::ShrinkWrapAnalysis::addToPass(runner, stackPositions);
+  std::shared_ptr<gc::StackInsertPoints> stackInsertPositions =
+      gc::ShrinkWrapAnalysis::addToPass(runner, stackPositions);
+  runner.add(std::unique_ptr<wasm::Pass>(new gc::ToStackCallLowering(stackInsertPositions, stackPositions)));
   runner.add(std::unique_ptr<wasm::Pass>(new gc::PostLowering(stackPositions)));
 
   runner.run();
