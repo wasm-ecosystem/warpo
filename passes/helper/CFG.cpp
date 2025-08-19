@@ -1,10 +1,12 @@
 /// copy and modify from third_party/binaryen/src/analysis/cfg.cpp
 
 #include <algorithm>
+#include <cassert>
 #include <iterator>
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "CFG.hpp"
 #include "cfg/cfg-traversal.h"
@@ -174,4 +176,84 @@ std::vector<BasicBlock const *> CFG::getReversePostOrderOnReverseGraph() const {
   return actor.getReserverPostOrder();
 }
 
+DynBitset CFG::getBlockInsideLoop() const {
+  if (blocks.empty())
+    return DynBitset{0U};
+
+  struct BasicBlockDeepFirstVisitor {
+    DynBitset active_;
+    std::vector<BasicBlock const *> stack_;
+    DynBitset insideLoop_;
+
+    explicit BasicBlockDeepFirstVisitor(size_t size) : active_(size), insideLoop_(size) {}
+    void visit(BasicBlock const *bb) {
+      active_.set(bb->getIndex(), true);
+      stack_.push_back(bb);
+      for (BasicBlock const *succ : bb->succs()) {
+        // back edge means loop, back edge targeted bb is loop entry
+        if (active_.get(succ->getIndex()))
+          markLoop(succ);
+        else
+          visit(succ);
+      }
+    }
+
+  private:
+    void markLoop(BasicBlock const *loopEntry) {
+      auto it = std::find(stack_.begin(), stack_.end(), loopEntry);
+      assert(it != stack_.end());
+      for (; it != stack_.end(); ++it)
+        insideLoop_.set((*it)->getIndex(), true);
+    }
+  };
+  BasicBlockDeepFirstVisitor visitor{size()};
+  assert(blocks[0].isEntry());
+  visitor.visit(&blocks[0]);
+
+  return visitor.insideLoop_;
+}
+
 } // namespace warpo::passes
+
+#ifdef WARPO_ENABLE_UNIT_TESTS
+
+#include <gtest/gtest.h>
+
+namespace warpo::passes::ut {
+
+TEST(CFGTest, getBlockInsideLoop) {
+  CFGTestWrapper cfg{};
+  /*
+        entry
+        /   \
+       a    b<--|
+       |    |   e
+       c    d---|
+  */
+  size_t a = cfg.addBB();
+  size_t b = cfg.addBB();
+  size_t c = cfg.addBB();
+  size_t d = cfg.addBB();
+  size_t e = cfg.addBB();
+
+  cfg.linkBBs(cfg.entry_, a);
+  cfg.linkBBs(a, c);
+  cfg.linkBBs(cfg.entry_, b);
+  cfg.linkBBs(b, d);
+  cfg.linkBBs(d, e);
+  cfg.linkBBs(e, b);
+
+  DynBitset const insideLoop = cfg.raw_.getBlockInsideLoop();
+  ASSERT_EQ(insideLoop.size(), cfg.size());
+
+  EXPECT_FALSE(insideLoop.get(a));
+  EXPECT_FALSE(insideLoop.get(c));
+
+  EXPECT_TRUE(insideLoop.get(b));
+  EXPECT_TRUE(insideLoop.get(d));
+  EXPECT_TRUE(insideLoop.get(e));
+}
+
+} // namespace warpo::passes::ut
+
+#endif // WARPO_ENABLE_UNIT_TESTS

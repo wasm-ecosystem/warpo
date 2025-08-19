@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 
+#include "support/DynBitSet.hpp"
 #include "wasm.h"
 
 namespace warpo::passes {
@@ -74,6 +75,8 @@ struct CFG {
   std::vector<BasicBlock const *> getReversePostOrder() const;
   std::vector<BasicBlock const *> getReversePostOrderOnReverseGraph() const;
 
+  DynBitset getBlockInsideLoop() const;
+
 private:
   std::vector<BasicBlock> blocks;
 
@@ -97,6 +100,36 @@ struct BasicBlockForTest {
 
 struct CFGForTest {
   static auto &blocks(CFG &cfg) { return cfg.blocks; }
+};
+
+struct CFGTestWrapper {
+  CFG raw_{};
+  size_t entry_;
+
+  size_t size() { return CFGForTest::blocks(raw_).size(); }
+
+  size_t addBB() {
+    size_t const index = size();
+    CFGForTest::blocks(raw_).emplace_back();
+    BasicBlockForTest::index(CFGForTest::blocks(raw_).back()) = index;
+    return index;
+  }
+
+  size_t addExitBB() {
+    size_t const index = addBB();
+    BasicBlockForTest::exit(CFGForTest::blocks(raw_).back()) = true;
+    return index;
+  }
+
+  void linkBBs(size_t from, size_t to) {
+    BasicBlockForTest::successors(CFGForTest::blocks(raw_)[from]).push_back(&CFGForTest::blocks(raw_)[to]);
+    BasicBlockForTest::predecessors(CFGForTest::blocks(raw_)[to]).push_back(&CFGForTest::blocks(raw_)[from]);
+  }
+
+  CFGTestWrapper() {
+    entry_ = addBB();
+    BasicBlockForTest::entry(CFGForTest::blocks(raw_).front()) = true;
+  }
 };
 
 } // namespace warpo::passes
