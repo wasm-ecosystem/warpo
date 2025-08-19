@@ -18,17 +18,18 @@ concept IsHandler = requires(Handler h, BasicBlock const *bb) {
 
 } // namespace
 
-template <IsHandler Handler> ImmediateDomTree createDomTreeImpl(Handler h, std::vector<BasicBlock const *> const &bbs) {
+static constexpr size_t undef = -1;
+
+template <IsHandler Handler>
+ImmediateDomTree createDomTreeImpl(Handler h, size_t const n, std::vector<BasicBlock const *> const &bbs) {
   // http://www.hipersoft.rice.edu/grads/publications/dom14.pdf
   auto const isStartNode = [&h](BasicBlock const *bb) { return h.preds(bb).empty(); };
 
-  const size_t n = bbs.size();
-  constexpr size_t undef = -1;
   ImmediateDomTree idoms{}; // index is BasicBlock::getIndex()
 
   std::vector<size_t> indexToSequenceIndex{}; // index is BasicBlock::getIndex()
   indexToSequenceIndex.resize(n, 0);
-  for (size_t i = 0; i < n; i++)
+  for (size_t i = 0; i < bbs.size(); i++)
     indexToSequenceIndex[bbs[i]->getIndex()] = i;
 #ifdef WARPO_ENABLE_UNIT_TESTS
   std::cerr << "indexToSequenceIndex: ";
@@ -111,6 +112,9 @@ DomTree ImmediateDomTree::toDomTree() const {
   for (size_t index = 0; index < n; ++index) {
     size_t idomIndex = index;
     while (true) {
+      // no idom, skip
+      if (idomIndex == undef)
+        break;
       doms[index].set(idomIndex, true);
       // stop loop when idom is itself (start node)
       if (idomIndex == (*this)[idomIndex])
@@ -137,14 +141,14 @@ warpo::passes::dom_tree_impl::ImmediateDomTree warpo::passes::dom_tree_impl::cre
   std::cerr << __PRETTY_FUNCTION__ << "\n";
 #endif
   std::vector<BasicBlock const *> bbs = cfg.getReversePostOrder();
-  return createDomTreeImpl(NormalHandler{}, bbs);
+  return createDomTreeImpl(NormalHandler{}, cfg.size(), bbs);
 }
 warpo::passes::dom_tree_impl::ImmediateDomTree warpo::passes::dom_tree_impl::createPostDomTree(CFG const &cfg) {
 #ifdef WARPO_ENABLE_UNIT_TESTS
   std::cerr << __PRETTY_FUNCTION__ << "\n";
 #endif
   std::vector<BasicBlock const *> bbs = cfg.getReversePostOrderOnReverseGraph();
-  return createDomTreeImpl(ReverseHandler{}, bbs);
+  return createDomTreeImpl(ReverseHandler{}, cfg.size(), bbs);
 }
 
 #ifdef WARPO_ENABLE_UNIT_TESTS
@@ -165,6 +169,12 @@ struct DomTreeImplTest : public ::testing::Test {
     return index;
   }
 
+  size_t addExitBB() {
+    size_t const index = addBB();
+    BasicBlockForTest::exit(CFGForTest::blocks(cfg_).back()) = true;
+    return index;
+  }
+
   void linkBBs(size_t from, size_t to) {
     BasicBlockForTest::successors(CFGForTest::blocks(cfg_)[from]).push_back(&CFGForTest::blocks(cfg_)[to]);
     BasicBlockForTest::predecessors(CFGForTest::blocks(cfg_)[to]).push_back(&CFGForTest::blocks(cfg_)[from]);
@@ -181,7 +191,7 @@ struct DomTreeImplTest : public ::testing::Test {
 
 TEST_F(DomTreeImplTest, Base) {
   size_t const entry = addBB();
-  size_t const exit = addBB();
+  size_t const exit = addExitBB();
   linkBBs(entry, exit);
 
   DomTree const domTree = createDomTree(cfg_).toDomTree();
@@ -217,7 +227,7 @@ TEST_F(DomTreeImplTest, Complex) {
   size_t const e = addBB();
   size_t const f = addBB();
   size_t const g = addBB();
-  size_t const exit = addBB();
+  size_t const exit = addExitBB();
   linkBBs(entry, a);
   linkBBs(entry, b);
   linkBBs(a, c);
@@ -278,7 +288,7 @@ TEST_F(DomTreeImplTest, Loop) {
   size_t const e = addBB();
   size_t const f = addBB();
   size_t const g = addBB();
-  size_t const exit = addBB();
+  size_t const exit = addExitBB();
   linkBBs(entry, a);
   linkBBs(a, b);
   linkBBs(a, c);
@@ -314,6 +324,39 @@ TEST_F(DomTreeImplTest, Loop) {
   EXPECT_EQ(postDomTree[e], createExpectDom({exit, g, e}));
   EXPECT_EQ(postDomTree[f], createExpectDom({exit, c, e, g, f}));
   EXPECT_EQ(postDomTree[g], createExpectDom({exit, g}));
+  EXPECT_EQ(postDomTree[exit], createExpectDom({exit}));
+}
+
+TEST_F(DomTreeImplTest, Unreachable) {
+  /*
+        Entry
+        /   \
+        A    B <- unreachable
+        \
+         Exit
+   */
+  size_t const entry = addBB();
+  size_t const exit = addExitBB();
+  size_t const a = addBB();
+  size_t const b = addBB();
+  linkBBs(entry, a);
+  linkBBs(entry, b);
+  linkBBs(a, exit);
+
+  DomTree const domTree = createDomTree(cfg_).toDomTree();
+  ASSERT_EQ(domTree.size(), size());
+
+  EXPECT_EQ(domTree[entry], createExpectDom({entry}));
+  EXPECT_EQ(domTree[a], createExpectDom({entry, a}));
+  EXPECT_EQ(domTree[b], createExpectDom({entry, b}));
+  EXPECT_EQ(domTree[exit], createExpectDom({entry, a, exit}));
+
+  DomTree const postDomTree = createPostDomTree(cfg_).toDomTree();
+  ASSERT_EQ(postDomTree.size(), size());
+
+  EXPECT_EQ(postDomTree[entry], createExpectDom({exit, a, entry}));
+  EXPECT_EQ(postDomTree[a], createExpectDom({exit, a}));
+  EXPECT_EQ(postDomTree[b], createExpectDom({b}));
   EXPECT_EQ(postDomTree[exit], createExpectDom({exit}));
 }
 
