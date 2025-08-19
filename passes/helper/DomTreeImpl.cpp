@@ -158,30 +158,9 @@ warpo::passes::dom_tree_impl::ImmediateDomTree warpo::passes::dom_tree_impl::cre
 namespace warpo::passes::dom_tree_impl::ut {
 
 struct DomTreeImplTest : public ::testing::Test {
-  CFG cfg_{};
-
-  size_t size() { return CFGForTest::blocks(cfg_).size(); }
-
-  size_t addBB() {
-    size_t const index = size();
-    CFGForTest::blocks(cfg_).emplace_back();
-    BasicBlockForTest::index(CFGForTest::blocks(cfg_).back()) = index;
-    return index;
-  }
-
-  size_t addExitBB() {
-    size_t const index = addBB();
-    BasicBlockForTest::exit(CFGForTest::blocks(cfg_).back()) = true;
-    return index;
-  }
-
-  void linkBBs(size_t from, size_t to) {
-    BasicBlockForTest::successors(CFGForTest::blocks(cfg_)[from]).push_back(&CFGForTest::blocks(cfg_)[to]);
-    BasicBlockForTest::predecessors(CFGForTest::blocks(cfg_)[to]).push_back(&CFGForTest::blocks(cfg_)[from]);
-  }
-
+  CFGTestWrapper cfg_;
   DynBitset createExpectDom(std::initializer_list<size_t> domIndexes) {
-    DynBitset expectDom{CFGForTest::blocks(cfg_).size()};
+    DynBitset expectDom{CFGForTest::blocks(cfg_.raw_).size()};
     for (size_t domIndex : domIndexes) {
       expectDom.set(domIndex, true);
     }
@@ -190,18 +169,18 @@ struct DomTreeImplTest : public ::testing::Test {
 };
 
 TEST_F(DomTreeImplTest, Base) {
-  size_t const entry = addBB();
-  size_t const exit = addExitBB();
-  linkBBs(entry, exit);
+  size_t const entry = cfg_.addBB();
+  size_t const exit = cfg_.addExitBB();
+  cfg_.linkBBs(entry, exit);
 
-  DomTree const domTree = createDomTree(cfg_).toDomTree();
-  ASSERT_EQ(domTree.size(), size());
+  DomTree const domTree = createDomTree(cfg_.raw_).toDomTree();
+  ASSERT_EQ(domTree.size(), cfg_.size());
 
   EXPECT_EQ(domTree[entry], createExpectDom({entry}));
   EXPECT_EQ(domTree[exit], createExpectDom({entry, exit}));
 
-  DomTree const postDomTree = createPostDomTree(cfg_).toDomTree();
-  ASSERT_EQ(postDomTree.size(), size());
+  DomTree const postDomTree = createPostDomTree(cfg_.raw_).toDomTree();
+  ASSERT_EQ(postDomTree.size(), cfg_.size());
 
   EXPECT_EQ(postDomTree[entry], createExpectDom({entry, exit}));
   EXPECT_EQ(postDomTree[exit], createExpectDom({exit}));
@@ -219,28 +198,28 @@ TEST_F(DomTreeImplTest, Complex) {
        \   /
          Exit
   */
-  size_t const entry = addBB();
-  size_t const a = addBB();
-  size_t const b = addBB();
-  size_t const c = addBB();
-  size_t const d = addBB();
-  size_t const e = addBB();
-  size_t const f = addBB();
-  size_t const g = addBB();
-  size_t const exit = addExitBB();
-  linkBBs(entry, a);
-  linkBBs(entry, b);
-  linkBBs(a, c);
-  linkBBs(a, d);
-  linkBBs(b, e);
-  linkBBs(c, f);
-  linkBBs(d, g);
-  linkBBs(e, g);
-  linkBBs(f, exit);
-  linkBBs(g, exit);
+  size_t const entry = cfg_.addBB();
+  size_t const a = cfg_.addBB();
+  size_t const b = cfg_.addBB();
+  size_t const c = cfg_.addBB();
+  size_t const d = cfg_.addBB();
+  size_t const e = cfg_.addBB();
+  size_t const f = cfg_.addBB();
+  size_t const g = cfg_.addBB();
+  size_t const exit = cfg_.addExitBB();
+  cfg_.linkBBs(entry, a);
+  cfg_.linkBBs(entry, b);
+  cfg_.linkBBs(a, c);
+  cfg_.linkBBs(a, d);
+  cfg_.linkBBs(b, e);
+  cfg_.linkBBs(c, f);
+  cfg_.linkBBs(d, g);
+  cfg_.linkBBs(e, g);
+  cfg_.linkBBs(f, exit);
+  cfg_.linkBBs(g, exit);
 
-  DomTree const domTree = createDomTree(cfg_).toDomTree();
-  ASSERT_EQ(domTree.size(), size());
+  DomTree const domTree = createDomTree(cfg_.raw_).toDomTree();
+  ASSERT_EQ(domTree.size(), cfg_.size());
 
   EXPECT_EQ(domTree[entry], createExpectDom({entry}));
   EXPECT_EQ(domTree[a], createExpectDom({entry, a}));
@@ -252,8 +231,8 @@ TEST_F(DomTreeImplTest, Complex) {
   EXPECT_EQ(domTree[g], createExpectDom({entry, g}));
   EXPECT_EQ(domTree[exit], createExpectDom({entry, exit}));
 
-  DomTree const postDomTree = createPostDomTree(cfg_).toDomTree();
-  ASSERT_EQ(postDomTree.size(), size());
+  DomTree const postDomTree = createPostDomTree(cfg_.raw_).toDomTree();
+  ASSERT_EQ(postDomTree.size(), cfg_.size());
 
   EXPECT_EQ(postDomTree[entry], createExpectDom({exit, entry}));
   EXPECT_EQ(postDomTree[a], createExpectDom({exit, a}));
@@ -280,28 +259,28 @@ TEST_F(DomTreeImplTest, Loop) {
         |
        exit
   */
-  size_t const entry = addBB();
-  size_t const a = addBB();
-  size_t const b = addBB();
-  size_t const c = addBB();
-  size_t const d = addBB();
-  size_t const e = addBB();
-  size_t const f = addBB();
-  size_t const g = addBB();
-  size_t const exit = addExitBB();
-  linkBBs(entry, a);
-  linkBBs(a, b);
-  linkBBs(a, c);
-  linkBBs(b, d);
-  linkBBs(c, e);
-  linkBBs(d, g);
-  linkBBs(e, f);
-  linkBBs(e, g);
-  linkBBs(f, c);
-  linkBBs(g, exit);
+  size_t const entry = cfg_.addBB();
+  size_t const a = cfg_.addBB();
+  size_t const b = cfg_.addBB();
+  size_t const c = cfg_.addBB();
+  size_t const d = cfg_.addBB();
+  size_t const e = cfg_.addBB();
+  size_t const f = cfg_.addBB();
+  size_t const g = cfg_.addBB();
+  size_t const exit = cfg_.addExitBB();
+  cfg_.linkBBs(entry, a);
+  cfg_.linkBBs(a, b);
+  cfg_.linkBBs(a, c);
+  cfg_.linkBBs(b, d);
+  cfg_.linkBBs(c, e);
+  cfg_.linkBBs(d, g);
+  cfg_.linkBBs(e, f);
+  cfg_.linkBBs(e, g);
+  cfg_.linkBBs(f, c);
+  cfg_.linkBBs(g, exit);
 
-  DomTree const domTree = createDomTree(cfg_).toDomTree();
-  ASSERT_EQ(domTree.size(), size());
+  DomTree const domTree = createDomTree(cfg_.raw_).toDomTree();
+  ASSERT_EQ(domTree.size(), cfg_.size());
 
   EXPECT_EQ(domTree[entry], createExpectDom({entry}));
   EXPECT_EQ(domTree[a], createExpectDom({entry, a}));
@@ -313,8 +292,8 @@ TEST_F(DomTreeImplTest, Loop) {
   EXPECT_EQ(domTree[g], createExpectDom({entry, a, g}));
   EXPECT_EQ(domTree[exit], createExpectDom({entry, a, g, exit}));
 
-  DomTree const postDomTree = createPostDomTree(cfg_).toDomTree();
-  ASSERT_EQ(postDomTree.size(), size());
+  DomTree const postDomTree = createPostDomTree(cfg_.raw_).toDomTree();
+  ASSERT_EQ(postDomTree.size(), cfg_.size());
 
   EXPECT_EQ(postDomTree[entry], createExpectDom({exit, g, a, entry}));
   EXPECT_EQ(postDomTree[a], createExpectDom({exit, g, a}));
@@ -335,24 +314,24 @@ TEST_F(DomTreeImplTest, Unreachable) {
         \
          Exit
    */
-  size_t const entry = addBB();
-  size_t const exit = addExitBB();
-  size_t const a = addBB();
-  size_t const b = addBB();
-  linkBBs(entry, a);
-  linkBBs(entry, b);
-  linkBBs(a, exit);
+  size_t const entry = cfg_.addBB();
+  size_t const exit = cfg_.addExitBB();
+  size_t const a = cfg_.addBB();
+  size_t const b = cfg_.addBB();
+  cfg_.linkBBs(entry, a);
+  cfg_.linkBBs(entry, b);
+  cfg_.linkBBs(a, exit);
 
-  DomTree const domTree = createDomTree(cfg_).toDomTree();
-  ASSERT_EQ(domTree.size(), size());
+  DomTree const domTree = createDomTree(cfg_.raw_).toDomTree();
+  ASSERT_EQ(domTree.size(), cfg_.size());
 
   EXPECT_EQ(domTree[entry], createExpectDom({entry}));
   EXPECT_EQ(domTree[a], createExpectDom({entry, a}));
   EXPECT_EQ(domTree[b], createExpectDom({entry, b}));
   EXPECT_EQ(domTree[exit], createExpectDom({entry, a, exit}));
 
-  DomTree const postDomTree = createPostDomTree(cfg_).toDomTree();
-  ASSERT_EQ(postDomTree.size(), size());
+  DomTree const postDomTree = createPostDomTree(cfg_.raw_).toDomTree();
+  ASSERT_EQ(postDomTree.size(), cfg_.size());
 
   EXPECT_EQ(postDomTree[entry], createExpectDom({exit, a, entry}));
   EXPECT_EQ(postDomTree[a], createExpectDom({exit, a}));
