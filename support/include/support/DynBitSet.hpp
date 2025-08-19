@@ -38,6 +38,7 @@ public:
 
   void set(size_t index, bool value);
   bool get(size_t index) const;
+  size_t count() const;
 
   template <class Fn> void forEachTrue(Fn &&fn) {
     for (size_t i = 0; i < bitSize_; i++) {

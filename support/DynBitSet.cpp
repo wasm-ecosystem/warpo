@@ -44,6 +44,14 @@ bool DynBitset::get(size_t index) const {
   return ((data_[block_index] >> static_cast<Element>(bit_index)) & 1U) == 1U;
 }
 
+size_t DynBitset::count() const {
+  size_t count = 0;
+  for (size_t i = 0; i < data_.size(); ++i) {
+    count += __builtin_popcountll(data_[i]);
+  }
+  return count;
+}
+
 std::strong_ordering DynBitset::operator<=>(DynBitset const &other) const {
   assert(bitSize_ == other.bitSize_);
   for (size_t i = 0; i < data_.size(); ++i) {

@@ -3,13 +3,14 @@
 #include <cstddef>
 #include <cstdlib>
 #include <fmt/base.h>
+#include <functional>
 #include <map>
 #include <memory>
+#include <set>
 
 #include "../helper/CFG.hpp"
 #include "../helper/DomTree.hpp"
 #include "ShrinkWrap.hpp"
-#include "StackAssigner.hpp"
 #include "support/Debug.hpp"
 #include "support/DynBitSet.hpp"
 #include "wasm.h"
@@ -18,7 +19,8 @@
 
 namespace warpo::passes::gc {
 
-static StackInsertPoint getShadowStackInsertPoint(std::string_view const funcName, StackPosition const &stackPosition,
+static StackInsertPoint getShadowStackInsertPoint(std::string_view const funcName,
+                                                  std::function<bool(wasm::Expression *)> const &shouldStackActive,
                                                   std::shared_ptr<CFG> const &cfg) {
   // FIXME: we do not handle noreturn function at this moment to simply implementation
   if (cfg->getExit() == nullptr)
@@ -34,13 +36,11 @@ static StackInsertPoint getShadowStackInsertPoint(std::string_view const funcNam
   // collect stack positions' bb
   for (BasicBlock const &bb : *cfg) {
     for (wasm::Expression *expr : bb) {
-      if (auto *call = expr->dynCast<wasm::Call>()) {
-        if (stackPosition.contains(call)) {
-          // prologue should dominate all stack usage
-          validPrologue &= domTree.getDominators(&bb);
-          // epilogue should post dominate all stack usage
-          validEpilogue &= domTree.getPostDominators(&bb);
-        }
+      if (shouldStackActive(expr)) {
+        // prologue should dominate all stack usage
+        validPrologue &= domTree.getDominators(&bb);
+        // epilogue should post dominate all stack usage
+        validEpilogue &= domTree.getPostDominators(&bb);
       }
     }
   }
@@ -104,15 +104,24 @@ static StackInsertPoint getShadowStackInsertPoint(std::string_view const funcNam
 }
 
 void ShrinkWrapAnalysis::runOnFunction(wasm::Module *m, wasm::Function *func) {
-  StackPosition const &stackPosition = stackPositions_->at(func);
+  LivenessMap const &livenessMap = livenessInfo_->at(func);
 
-  // no stack position, nothing to do
-  if (stackPosition.empty())
+  if (0U == livenessMap.getValidDimension())
     return;
 
   // FIXME: design framework to avoid duplicate calculate CFG
   std::shared_ptr<CFG> const cfg = std::make_shared<CFG>(CFG::fromFunction(func));
-  StackInsertPoint const stackInsertPoint = getShadowStackInsertPoint(func->name.str, stackPosition, cfg);
+  StackInsertPoint const stackInsertPoint = getShadowStackInsertPoint(
+      func->name.str,
+      [&](wasm::Expression *expr) -> bool {
+        std::optional<Liveness> const liveness = livenessMap.getLiveness(expr);
+        if (!liveness.has_value())
+          return false;
+        if (liveness.value().before().count() + liveness.value().after().count() == 0)
+          return false;
+        return true;
+      },
+      cfg);
   shadowStackPoints_->insert_or_assign(func, stackInsertPoint);
 }
 
@@ -127,7 +136,7 @@ namespace warpo::passes::gc::ut {
 
 struct ShrinkWrapTest : public ::testing::Test {
   CFGTestWrapper cfg{};
-  StackPosition stackPosition{};
+  std::set<wasm::Expression *> stackShouldActiveInHere{};
   MixedArena arena{};
   std::map<size_t, std::array<wasm::Call *, 2U>> callMap;
 
@@ -142,6 +151,9 @@ struct ShrinkWrapTest : public ::testing::Test {
                    static_cast<void *>(endCall));
     }
   }
+  std::function<bool(wasm::Expression *)> shouldStackActive = [&](wasm::Expression *expr) -> bool {
+    return stackShouldActiveInHere.contains(expr);
+  };
 };
 
 TEST_F(ShrinkWrapTest, SingleBB) {
@@ -166,10 +178,10 @@ TEST_F(ShrinkWrapTest, SingleBB) {
   cfg.linkBBs(c, exit);
 
   applyWasmCallForEachBB();
-  stackPosition.insert_or_assign(callMap[c][0], 0U);
+  stackShouldActiveInHere.insert(callMap[c][0]);
 
   StackInsertPoint const shadowStackInsertPoint =
-      getShadowStackInsertPoint("test", stackPosition, std::make_shared<CFG>(cfg.raw_));
+      getShadowStackInsertPoint("test", shouldStackActive, std::make_shared<CFG>(cfg.raw_));
 
   EXPECT_EQ(shadowStackInsertPoint.prologue, callMap.at(c)[0]);
   EXPECT_EQ(shadowStackInsertPoint.epilogue, callMap.at(c)[1]);
@@ -197,11 +209,11 @@ TEST_F(ShrinkWrapTest, SequenceBB) {
   cfg.linkBBs(c, exit);
 
   applyWasmCallForEachBB();
-  stackPosition.insert_or_assign(callMap[b][0], 0U);
-  stackPosition.insert_or_assign(callMap[c][0], 0U);
+  stackShouldActiveInHere.insert(callMap[b][0]);
+  stackShouldActiveInHere.insert(callMap[c][0]);
 
   StackInsertPoint const shadowStackInsertPoint =
-      getShadowStackInsertPoint("test", stackPosition, std::make_shared<CFG>(cfg.raw_));
+      getShadowStackInsertPoint("test", shouldStackActive, std::make_shared<CFG>(cfg.raw_));
 
   EXPECT_EQ(shadowStackInsertPoint.prologue, callMap.at(b)[0]);
   EXPECT_EQ(shadowStackInsertPoint.epilogue, callMap.at(c)[1]);
@@ -231,11 +243,11 @@ TEST_F(ShrinkWrapTest, DifferentBranch) {
   cfg.linkBBs(d, exit);
 
   applyWasmCallForEachBB();
-  stackPosition.insert_or_assign(callMap[c][0], 0U);
-  stackPosition.insert_or_assign(callMap[d][0], 0U);
+  stackShouldActiveInHere.insert(callMap[c][0]);
+  stackShouldActiveInHere.insert(callMap[d][0]);
 
   StackInsertPoint const shadowStackInsertPoint =
-      getShadowStackInsertPoint("test", stackPosition, std::make_shared<CFG>(cfg.raw_));
+      getShadowStackInsertPoint("test", shouldStackActive, std::make_shared<CFG>(cfg.raw_));
 
   EXPECT_EQ(shadowStackInsertPoint.prologue, callMap.at(cfg.entry_)[0]);
   EXPECT_EQ(shadowStackInsertPoint.epilogue, nullptr);
@@ -268,10 +280,10 @@ TEST_F(ShrinkWrapTest, Loop) {
   cfg.linkBBs(c, exit);
 
   applyWasmCallForEachBB();
-  stackPosition.insert_or_assign(callMap[c][0], 0U);
+  stackShouldActiveInHere.insert(callMap[c][0]);
 
   StackInsertPoint const shadowStackInsertPoint =
-      getShadowStackInsertPoint("test", stackPosition, std::make_shared<CFG>(cfg.raw_));
+      getShadowStackInsertPoint("test", shouldStackActive, std::make_shared<CFG>(cfg.raw_));
 
   EXPECT_EQ(shadowStackInsertPoint.prologue, callMap.at(e)[0]);
   EXPECT_EQ(shadowStackInsertPoint.epilogue, nullptr);

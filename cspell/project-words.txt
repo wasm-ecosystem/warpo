@@ -8,6 +8,7 @@ currp
 DWARPO
 insts
 localtostack
+popcountll
 succs
 tmptostack
 tostack

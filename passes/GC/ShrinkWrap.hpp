@@ -6,7 +6,7 @@
 #include <fmt/base.h>
 #include <memory>
 
-#include "StackAssigner.hpp"
+#include "ObjLivenessAnalyzer.hpp"
 #include "pass.h"
 #include "wasm.h"
 
@@ -28,24 +28,24 @@ struct ShrinkWrapAnalysis : public wasm::Pass {
     return ret;
   }
   std::shared_ptr<StackInsertPoints> shadowStackPoints_;
-  std::shared_ptr<StackPositions const> stackPositions_;
+  std::shared_ptr<ObjLivenessInfo const> livenessInfo_;
   explicit ShrinkWrapAnalysis(std::shared_ptr<StackInsertPoints> const &shadowStackPoints,
-                              std::shared_ptr<StackPositions const> const &stackPositions)
-      : shadowStackPoints_{shadowStackPoints}, stackPositions_{stackPositions} {
+                              std::shared_ptr<ObjLivenessInfo const> const &livenessInfo)
+      : shadowStackPoints_{shadowStackPoints}, livenessInfo_{livenessInfo} {
     name = "ShrinkWrapperAnalysis";
   }
   bool isFunctionParallel() override { return true; }
   std::unique_ptr<Pass> create() override {
-    return std::make_unique<ShrinkWrapAnalysis>(shadowStackPoints_, stackPositions_);
+    return std::make_unique<ShrinkWrapAnalysis>(shadowStackPoints_, livenessInfo_);
   }
   bool modifiesBinaryenIR() override { return false; }
 
   void runOnFunction(wasm::Module *m, wasm::Function *func) override;
 
   static std::shared_ptr<StackInsertPoints> addToPass(wasm::PassRunner &runner,
-                                                      std::shared_ptr<StackPositions const> const &stackPositions) {
+                                                      std::shared_ptr<ObjLivenessInfo const> const &livenessInfo) {
     auto shadowStackPoints = std::make_shared<StackInsertPoints>(createResults(runner.wasm));
-    runner.add(std::unique_ptr<wasm::Pass>(new ShrinkWrapAnalysis(shadowStackPoints, stackPositions)));
+    runner.add(std::unique_ptr<wasm::Pass>(new ShrinkWrapAnalysis(shadowStackPoints, livenessInfo)));
     return shadowStackPoints;
   }
 };
