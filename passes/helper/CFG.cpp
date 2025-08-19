@@ -196,6 +196,8 @@ DynBitset CFG::getBlockInsideLoop() const {
         else
           visit(succ);
       }
+      stack_.pop_back();
+      active_.set(bb->getIndex(), false);
     }
 
   private:
@@ -220,7 +222,7 @@ DynBitset CFG::getBlockInsideLoop() const {
 
 namespace warpo::passes::ut {
 
-TEST(CFGTest, getBlockInsideLoop) {
+TEST(CFGTestGetBlockInsideLoop, Loop) {
   CFGTestWrapper cfg{};
   /*
         entry
@@ -251,6 +253,40 @@ TEST(CFGTest, getBlockInsideLoop) {
   EXPECT_TRUE(insideLoop.get(b));
   EXPECT_TRUE(insideLoop.get(d));
   EXPECT_TRUE(insideLoop.get(e));
+}
+
+TEST(CFGTestGetBlockInsideLoop, Branch) {
+  CFGTestWrapper cfg{};
+  /*
+        entry
+        /   \
+       a    b
+       |    |
+       c    d
+        \  /
+         e
+  */
+  size_t a = cfg.addBB();
+  size_t b = cfg.addBB();
+  size_t c = cfg.addBB();
+  size_t d = cfg.addBB();
+  size_t e = cfg.addBB();
+
+  cfg.linkBBs(cfg.entry_, a);
+  cfg.linkBBs(a, c);
+  cfg.linkBBs(cfg.entry_, b);
+  cfg.linkBBs(b, d);
+  cfg.linkBBs(c, e);
+  cfg.linkBBs(d, e);
+
+  DynBitset const insideLoop = cfg.raw_.getBlockInsideLoop();
+  ASSERT_EQ(insideLoop.size(), cfg.size());
+
+  EXPECT_FALSE(insideLoop.get(a));
+  EXPECT_FALSE(insideLoop.get(b));
+  EXPECT_FALSE(insideLoop.get(c));
+  EXPECT_FALSE(insideLoop.get(d));
+  EXPECT_FALSE(insideLoop.get(e));
 }
 
 } // namespace warpo::passes::ut

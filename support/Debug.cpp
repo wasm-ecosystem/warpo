@@ -40,6 +40,12 @@ struct DebugHelper {
                                                                                : MatchResult::NotMatched;
   }
 
+  bool forceEnable(bool newValue) {
+    bool const old = enabledAll;
+    enabledAll = newValue;
+    return old;
+  }
+
 private:
   bool enabledAll;
   std::set<std::string> enabledPassName;
@@ -73,5 +79,7 @@ bool support::isDebug(const char *passName, std::string_view functionName) {
   return combineMatchResult(DebugHelper::ins().isEnablePass(passName),
                             DebugHelper::ins().isEnableFunction(functionName)) == MatchResult::Matched;
 }
+
+bool support::forceEnable(bool newValue) { return DebugHelper::ins().forceEnable(newValue); }
 
 } // namespace warpo

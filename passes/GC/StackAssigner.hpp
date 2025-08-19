@@ -47,8 +47,8 @@ struct StackAssigner : public wasm::Pass {
 
   static std::shared_ptr<StackPositions> addToPass(wasm::PassRunner &runner, Mode mode,
                                                    std::shared_ptr<ObjLivenessInfo const> const &livenessInfo) {
-    auto stackPositions = std::make_shared<StackPositions>(StackAssigner::createResults(runner.wasm));
-    runner.add(std::unique_ptr<wasm::Pass>(new gc::StackAssigner(mode, stackPositions, livenessInfo)));
+    auto stackPositions = std::make_shared<StackPositions>(createResults(runner.wasm));
+    runner.add(std::unique_ptr<wasm::Pass>(new StackAssigner(mode, stackPositions, livenessInfo)));
     return stackPositions;
   }
 };

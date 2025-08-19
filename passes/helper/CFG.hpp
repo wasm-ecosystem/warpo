@@ -110,6 +110,7 @@ struct BasicBlockForTest {
   static auto &exit(BasicBlock &bb) { return bb.exit; }
   static auto &predecessors(BasicBlock &bb) { return bb.predecessors; }
   static auto &successors(BasicBlock &bb) { return bb.successors; }
+  static auto &insts(BasicBlock &bb) { return bb.insts; }
 };
 
 struct CFGForTest {
@@ -138,6 +139,10 @@ struct CFGTestWrapper {
   void linkBBs(size_t from, size_t to) {
     BasicBlockForTest::successors(CFGForTest::blocks(raw_)[from]).push_back(&CFGForTest::blocks(raw_)[to]);
     BasicBlockForTest::predecessors(CFGForTest::blocks(raw_)[to]).push_back(&CFGForTest::blocks(raw_)[from]);
+  }
+
+  void addExpr(wasm::Expression *expr, size_t bbIndex) {
+    BasicBlockForTest::insts(CFGForTest::blocks(raw_)[bbIndex]).push_back(expr);
   }
 
   CFGTestWrapper() {
