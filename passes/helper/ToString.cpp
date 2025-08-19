@@ -3,6 +3,8 @@
 #include "wasm.h"
 
 std::string warpo::passes::toString(wasm::Expression *expr) {
+  if (expr == nullptr)
+    return "<<NULL>>";
   std::stringstream ss{};
   ss << wasm::ShallowExpression{expr, nullptr};
   return std::move(ss).str();

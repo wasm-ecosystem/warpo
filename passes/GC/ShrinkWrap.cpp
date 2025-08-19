@@ -10,6 +10,7 @@
 
 #include "../helper/CFG.hpp"
 #include "../helper/DomTree.hpp"
+#include "../helper/ToString.hpp"
 #include "ShrinkWrap.hpp"
 #include "support/Debug.hpp"
 #include "support/DynBitSet.hpp"
@@ -45,7 +46,7 @@ static StackInsertPoint getShadowStackInsertPoint(std::string_view const funcNam
     }
   }
   if (support::isDebug(PASS_NAME, funcName)) {
-    fmt::print("[" PASS_NAME "] fn {}:\n - validPrologue: {}\n - validEpilogue: {}\n", funcName,
+    fmt::print("[" PASS_NAME "] fn '{}':\n - validPrologue: {}\n - validEpilogue: {}\n", funcName,
                validPrologue.toString(), validEpilogue.toString());
   }
 
@@ -54,7 +55,7 @@ static StackInsertPoint getShadowStackInsertPoint(std::string_view const funcNam
   validPrologue &= outsideLoop;
   validEpilogue &= outsideLoop;
   if (support::isDebug(PASS_NAME, funcName)) {
-    fmt::println("[" PASS_NAME "] After skip BB inside loop, fn {}:", funcName);
+    fmt::println("[" PASS_NAME "] after skip BB inside loop, fn '{}':", funcName);
     fmt::println(" - validPrologue: {}", validPrologue.toString());
     fmt::println(" - validEpilogue: {}", validEpilogue.toString());
   }
@@ -100,7 +101,12 @@ static StackInsertPoint getShadowStackInsertPoint(std::string_view const funcNam
     return {.prologue = nullptr, .epilogue = nullptr};
   }
   assert(prologueInsertBB->size() > 0);
-  return {.prologue = *prologueInsertBB->begin(), .epilogue = epilogueInsertExpr};
+  wasm::Expression *prologue = *prologueInsertBB->begin();
+  if (support::isDebug(PASS_NAME, funcName)) {
+    fmt::println("[" PASS_NAME "] fn '{}': prologue = {}, epilogue = {}", funcName, toString(prologue),
+                 toString(epilogueInsertExpr));
+  }
+  return {.prologue = prologue, .epilogue = epilogueInsertExpr};
 }
 
 void ShrinkWrapAnalysis::runOnFunction(wasm::Module *m, wasm::Function *func) {

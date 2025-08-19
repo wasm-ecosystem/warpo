@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cstddef>
 #include <functional>
+#include <iostream>
 #include <map>
 #include <memory>
 #include <optional>
@@ -129,6 +130,9 @@ void ToStackCallLowering::runOnFunction(wasm::Module *m, wasm::Function *func) {
     break;
   case OptInsertState::PrologueAndEpilogue:
     break;
+  }
+  if (optState == OptInsertState::PrologueOnly) {
+    std::cout << toString(func) << "\n";
   }
 }
 
@@ -275,7 +279,7 @@ bool ToStackCallLowering::tryInsertPrologue(wasm::Module *m, wasm::Function *fun
   bool const isInsertedPrologue = canInsertBefore(func, prologue);
   wasm::Builder b{*m};
   if (isInsertedPrologue) {
-    fmt::println("[" PASS_NAME "] insert prologue to function '{}'", func->name.str);
+    fmt::println("[" PASS_NAME "] insert prologue to function '{}' before {}", func->name.str, toString(prologue));
     insertBefore(
         func, prologue, b,
         b.makeCall("~lib/rt/__decrease_sp", {b.makeConst(wasm::Literal(maxShadowStackOffset))}, wasm::Type::none));
