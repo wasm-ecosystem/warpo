@@ -67,6 +67,8 @@ struct LivenessMap {
 
   DynBitset storage_;
 
+  size_t getValidDimension() const { return dimension_ - invalid_.count(); }
+
 private:
   IncMap<wasm::Expression *> map_;
   size_t dimension_;

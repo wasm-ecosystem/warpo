@@ -2,6 +2,7 @@
 #pragma once
 
 #include "CFG.hpp"
+#include "support/DynBitSet.hpp"
 
 namespace warpo::passes {
 
@@ -14,8 +15,14 @@ public:
   ~DomTree();
 
   static DomTree create(std::shared_ptr<CFG> const &cfg);
-  bool isDom(BasicBlock const *node, BasicBlock const *dominator) const;
-  bool isPostDom(BasicBlock const *node, BasicBlock const *dominator) const;
+
+  /// @brief return true if node dominates dominator
+  bool isDom(BasicBlock const *dominatorNode, BasicBlock const *dominatedNode) const;
+  bool isPostDom(BasicBlock const *dominatorNode, BasicBlock const *dominatedNode) const;
+
+  /// @brief get all dominators of @param node
+  DynBitset getDominators(BasicBlock const *node) const;
+  DynBitset getPostDominators(BasicBlock const *node) const;
 };
 
 } // namespace warpo::passes
