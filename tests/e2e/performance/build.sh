@@ -4,7 +4,6 @@ set -e
 
 echo "build HIR"
 node assemblyscript/bin/asc.js --config assemblyscript/src/asconfig.json --target debug
-ls -l assemblyscript/build/assemblyscript.debug.wasm
 
 echo ""
 echo ""
