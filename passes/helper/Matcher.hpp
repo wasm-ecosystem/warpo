@@ -33,8 +33,12 @@ template <class T> struct M {
   }
   bool operator()(T const &expr, Context &ctx) const { return m_matcher(expr, ctx); }
 
-  M bind(std::string const &name) const {
-    return M{[self = *this, name](T const &expr, Context &ctx) -> bool {
+  M operator!() && {
+    return M{[self = std::move(*this)](T const &expr, Context &ctx) -> bool { return !self(expr, ctx); }};
+  }
+
+  M bind(std::string const &name) && {
+    return M{[self = std::move(*this), name](T const &expr, Context &ctx) -> bool {
       bool const ret = self(expr, ctx);
       if (ret)
         ctx.bindings.insert_or_assign(name, &expr);
@@ -166,5 +170,31 @@ static inline M<wasm::MemoryFill> size(M<wasm::Expression> const &m) {
   return M<wasm::MemoryFill>([m](wasm::MemoryFill const &expr, Context &ctx) -> bool { return m(*expr.size, ctx); });
 }
 } // namespace memory_fill
+
+constexpr IsMatcherImpl<wasm::If, wasm::Expression> isIf;
+namespace _if {
+static inline M<wasm::If> condition(M<wasm::Expression> const &m) {
+  return M<wasm::If>([m](wasm::If const &expr, Context &ctx) -> bool { return m(*expr.condition, ctx); });
+}
+static inline M<wasm::If> ifTrue(M<wasm::Expression> const &m) {
+  return M<wasm::If>([m](wasm::If const &expr, Context &ctx) -> bool {
+    if (expr.ifTrue == nullptr)
+      return false;
+    return m(*expr.ifTrue, ctx);
+  });
+}
+static inline M<wasm::If> ifFalse(M<wasm::Expression> const &m) {
+  return M<wasm::If>([m](wasm::If const &expr, Context &ctx) -> bool {
+    if (expr.ifFalse == nullptr)
+      return false;
+    return m(*expr.ifFalse, ctx);
+  });
+}
+static inline M<wasm::If> hasFalse() {
+  return M<wasm::If>([](wasm::If const &expr, Context &ctx) -> bool { return expr.ifFalse != nullptr; });
+}
+} // namespace _if
+
+constexpr IsMatcherImpl<wasm::Return, wasm::Expression> isReturn;
 
 } // namespace warpo::passes::matcher
