@@ -12,9 +12,30 @@ TODO
 
 TODO
 
+## Shrink Wrap
+
+Shrink wrapping is an optimization technique that moves stack frame setup and teardown operations closer to where they are actually needed, rather than placing them at function entry and exit points.
+
+### Benefits
+
+- Reduces overhead for early function returns that don't use stack
+- Improves performance for functions with multiple exit paths
+
+### Algorithm
+
+WARPO will calculate prologue and epilogue following those rules
+
+- prologue dominate all shadow stack usages.
+- epilogue post-dominate all shadow stack usages.
+- prologue and epilogue are not inside loop. (avoid cpu cost in high frequency loop)
+- prologue dominate epilogue (before execute to epilogue, prologue must be executed).
+- epilogue post-dominate prologue (after executed prologue, epilogue must be executed).
+- prologue are not entry basic block. (make no sense)
+- epilogue are not exit basic block. (make no sense)
+
 ## Lowering
 
-It is where WARPO actually do the optimization.
+It is where WARPO actually lower the HIR to wasm bytecode
 
 There are 2 passes to finish final lowering. One is the function level pass to replace tostack call with real function and insert prologue and epilogue. The other is module level pass to insert needed functions.
 
@@ -22,7 +43,7 @@ The subsequent passes will determine whether to inline these functions.
 
 One for replacing `__tmptostack` and `__localtostack` with function call `~lib/rt/__tostack<{offset}>`.
 
-### ToStackCallLowering
+### ToStackLower
 
 accept each call mapped stack offset as inputs.
 
