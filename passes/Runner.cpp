@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "AdvancedInlining.hpp"
-#include "ConditionalReturn.cpp"
+#include "ConditionalReturn.hpp"
 #include "ExtractMostFrequentlyUsedGlobals.hpp"
 #include "GC/Lowering.hpp"
 #include "Runner.hpp"
