@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
-#include <iostream>
 #include <map>
 #include <memory>
 #include <optional>
@@ -12,7 +11,9 @@
 #include "ShrinkWrap.hpp"
 #include "StackAssigner.hpp"
 #include "ToStackLower.hpp"
+#include "fmt/base.h"
 #include "literal.h"
+#include "support/Debug.hpp"
 #include "support/index.h"
 #include "support/name.h"
 #include "wasm-builder.h"
@@ -20,7 +21,7 @@
 #include "wasm-type.h"
 #include "wasm.h"
 
-#define PASS_NAME "ToStackLower"
+#define PASS_NAME "TO_STACK_LOWER"
 
 namespace warpo::passes::gc {
 
@@ -43,7 +44,7 @@ void ToStackCallLower::runOnFunction(wasm::Module *m, wasm::Function *func) {
       optState = OptInsertState::PrologueAndEpilogue;
   }
   if (insertPoint.prologue != nullptr && insertPoint.epilogue == nullptr) {
-    // BUG
+    // when inserting prologue, we should make sure epilogue is in the exit BB.
     bool const success =
         tryInsertPrologue(m, func, maxShadowStackOffset, scratchReturnValueLocalIndex, insertPoint.prologue);
     if (success)
@@ -51,18 +52,24 @@ void ToStackCallLower::runOnFunction(wasm::Module *m, wasm::Function *func) {
   }
   switch (optState) {
   case OptInsertState::None:
+    if (support::isDebug(PASS_NAME, func->name.str)) {
+      fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}, epilogue in {}", func->name.str, "entry", "exit");
+    }
     replaceReturnExprWithEpilogue(m, func, maxShadowStackOffset, scratchReturnValueLocalIndex);
     insertDefaultPrologueAndEpilogue(m, func, maxShadowStackOffset, scratchReturnValueLocalIndex);
     break;
   case OptInsertState::PrologueOnly:
+    if (support::isDebug(PASS_NAME, func->name.str)) {
+      fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}, epilogue in {}", func->name.str, "opt", "exit");
+    }
     replaceReturnExprWithEpilogue(m, func, maxShadowStackOffset, scratchReturnValueLocalIndex);
     insertDefaultEpilogue(m, func, maxShadowStackOffset, scratchReturnValueLocalIndex);
     break;
   case OptInsertState::PrologueAndEpilogue:
+    if (support::isDebug(PASS_NAME, func->name.str)) {
+      fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}, epilogue in {}", func->name.str, "opt", "opt");
+    }
     break;
-  }
-  if (optState == OptInsertState::PrologueOnly) {
-    std::cout << toString(func) << "\n";
   }
 }
 
@@ -140,7 +147,6 @@ void ToStackCallLower::replaceReturnExprWithEpilogue(wasm::Module *m, wasm::Func
     ReturnWithoutResultReplacer returnReplacer{maxShadowStackOffset};
     returnReplacer.walkFunctionInModule(func, m);
   } else {
-
     ReturnWithResultReplacer returnReplacer{scratchReturnValueLocalIndex.value(), maxShadowStackOffset, resultType};
     returnReplacer.walkFunctionInModule(func, m);
   }
@@ -149,7 +155,7 @@ void ToStackCallLower::replaceReturnExprWithEpilogue(wasm::Module *m, wasm::Func
 static bool canInsertBefore(wasm::Function *func, wasm::Expression *targetExpr) {
   if (targetExpr->is<wasm::GlobalGet>() || targetExpr->is<wasm::LocalGet>() || targetExpr->is<wasm::Const>())
     return true;
-  fmt::println("[" PASS_NAME "] in fn '{}', insert before {}", func->name.str, toString(targetExpr));
+  fmt::println("[" PASS_NAME "] fn '{}', insert before {}", func->name.str, toString(targetExpr));
   return false;
 }
 static void insertBefore(wasm::Function *func, wasm::Expression *targetExpr, wasm::Builder &b,
@@ -169,15 +175,28 @@ static void insertBefore(wasm::Function *func, wasm::Expression *targetExpr, was
 static bool canInsertAfter(wasm::Function *func, wasm::Expression *targetExpr) {
   if (targetExpr->type == wasm::Type::none)
     return true;
-  fmt::println("[" PASS_NAME "] in fn '{}', insert after {}", func->name.str, toString(targetExpr));
+  if (targetExpr->is<wasm::Return>())
+    return true;
+  fmt::println("[" PASS_NAME "] fn '{}', insert after {}", func->name.str, toString(targetExpr));
   return false;
 }
 static void insertAfter(wasm::Function *func, wasm::Expression *targetExpr, wasm::Builder &b,
                         wasm::Expression *insertedExpr) {
   assert(insertedExpr->type == wasm::Type::none);
-  wasm::Expression **ptr = findExpressionPointer(targetExpr, func);
   if (targetExpr->type == wasm::Type::none) {
+    wasm::Expression **ptr = findExpressionPointer(targetExpr, func);
     *ptr = b.makeBlock({*ptr, insertedExpr}, wasm::Type::none);
+    return;
+  }
+  if (auto *const returnExpr = targetExpr->dynCast<wasm::Return>()) {
+    if (returnExpr->value == nullptr) {
+      returnExpr->value = insertedExpr;
+    } else {
+      wasm::Type const localType = returnExpr->value->type;
+      wasm::Index const tmpLocal = b.addVar(func, localType);
+      returnExpr->value = b.makeBlock(
+          {b.makeLocalSet(tmpLocal, returnExpr->value), insertedExpr, b.makeLocalGet(tmpLocal, localType)}, localType);
+    }
     return;
   }
 }
