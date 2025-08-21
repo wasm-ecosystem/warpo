@@ -215,6 +215,7 @@ DynBitset CFG::getBlockInsideLoop() const {
     void markLoop(BasicBlock const *loopEntry) {
       auto const loopEntryIt = std::find(stack_.rbegin(), stack_.rend(), loopEntry);
       assert(loopEntryIt != stack_.rend());
+      insideLoop_.set(loopEntry->getIndex(), true);
       for (auto it = stack_.rbegin(); it != loopEntryIt; ++it)
         insideLoop_.set((*it)->getIndex(), true);
     }

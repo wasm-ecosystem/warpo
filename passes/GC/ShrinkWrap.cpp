@@ -52,9 +52,13 @@ static StackInsertPoint getShadowStackInsertPoint(std::string_view const funcNam
 
   // remove basic block inside loop
   DynBitset const outsideLoop = ~cfg->getBlockInsideLoop();
+  if (support::isDebug(PASS_NAME, funcName)) {
+    fmt::println("[" PASS_NAME "] fn '{}' outside loop BB: {}", funcName, outsideLoop.toString());
+  }
   validPrologue &= outsideLoop;
   validEpilogue &= outsideLoop;
   if (support::isDebug(PASS_NAME, funcName)) {
+    fmt::println("[" PASS_NAME "] after skip BB inside loop, fn '{}':", funcName);
     fmt::println("[" PASS_NAME "] after skip BB inside loop, fn '{}':", funcName);
     fmt::println(" - validPrologue: {}", validPrologue.toString());
     fmt::println(" - validEpilogue: {}", validEpilogue.toString());
@@ -149,7 +153,9 @@ struct ShrinkWrapTest : public ::testing::Test {
   void applyWasmCallForEachBB() {
     for (size_t i = 0; i < cfg.raw_.size(); i++) {
       wasm::Call *const beginCall = new wasm::Call{arena};
+      beginCall->target = "b";
       wasm::Call *const endCall = new wasm::Call{arena};
+      endCall->target = "e";
       cfg.addExpr(beginCall, i);
       cfg.addExpr(endCall, i);
       callMap.insert_or_assign(i, std::array<wasm::Call *, 2U>{beginCall, endCall});
@@ -228,7 +234,9 @@ TEST_F(ShrinkWrapTest, SequenceBB) {
 TEST_F(ShrinkWrapTest, DifferentBranch) {
   support::ForceEnableRAII const forceEnableRAII{true};
   /*
-                     Entry
+                      Entry
+                       |
+                       e
                      /   \
                     a     b
                     |     |
@@ -236,14 +244,16 @@ TEST_F(ShrinkWrapTest, DifferentBranch) {
                     |    /
                     Exit
   */
+  size_t const e = cfg.addBB();
   size_t const a = cfg.addBB();
   size_t const b = cfg.addBB();
   size_t const c = cfg.addBB();
   size_t const d = cfg.addBB();
   size_t const exit = cfg.addExitBB();
-  cfg.linkBBs(cfg.entry_, a);
+  cfg.linkBBs(cfg.entry_, e);
+  cfg.linkBBs(e, a);
   cfg.linkBBs(a, c);
-  cfg.linkBBs(cfg.entry_, b);
+  cfg.linkBBs(e, b);
   cfg.linkBBs(b, d);
   cfg.linkBBs(c, exit);
   cfg.linkBBs(d, exit);
@@ -255,7 +265,7 @@ TEST_F(ShrinkWrapTest, DifferentBranch) {
   StackInsertPoint const shadowStackInsertPoint =
       getShadowStackInsertPoint("test", shouldStackActive, std::make_shared<CFG>(cfg.raw_));
 
-  EXPECT_EQ(shadowStackInsertPoint.prologue, callMap.at(cfg.entry_)[0]);
+  EXPECT_EQ(shadowStackInsertPoint.prologue, callMap.at(e)[0]);
   EXPECT_EQ(shadowStackInsertPoint.epilogue, nullptr);
 }
 
