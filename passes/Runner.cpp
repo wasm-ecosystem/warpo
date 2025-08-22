@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "AdvancedInlining.hpp"
+#include "ConditionalReturn.hpp"
 #include "ExtractMostFrequentlyUsedGlobals.hpp"
 #include "GC/Lowering.hpp"
 #include "Runner.hpp"
@@ -96,6 +97,7 @@ passes::Output passes::runOnWat(std::string const &input) {
   {
     wasm::PassRunner passRunner(m.get());
     passRunner.add(std::unique_ptr<wasm::Pass>{passes::createExtractMostFrequentlyUsedGlobalsPass()});
+    passRunner.add(std::unique_ptr<wasm::Pass>{passes::createConditionalReturnPass()});
     passRunner.run();
   }
 #ifndef WARPO_RELEASE_BUILD
