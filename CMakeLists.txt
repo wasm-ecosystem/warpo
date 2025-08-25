@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.20)
 project(warpo)
 
 option(WARPO_RELEASE "build for release" OFF)
@@ -23,6 +23,7 @@ endif()
 
 add_subdirectory(third_party EXCLUDE_FROM_ALL)
 
+add_subdirectory(frontend)
 add_subdirectory(passes)
 add_subdirectory(support)
 add_subdirectory(tools)

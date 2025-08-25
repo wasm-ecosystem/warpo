@@ -1,0 +1,24 @@
+{
+  "entries": ["./assemblyscript/src/glue/wasm/index.ts", "./assemblyscript/src/index-wasm.ts"],
+  "options": {
+    "exportStart": "_initialize",
+    "exportRuntime": true,
+    "initialMemory": 768,
+    "runtime": "incremental",
+    "disable": ["nontrapping-f2i"]
+  },
+  "targets": {
+    "debug": {
+      "outFile": "build-as/assemblyscript.debug.wasm",
+      "textFile": "build-as/assemblyscript.debug.wast",
+      "debug": true,
+      "sourceMap": true
+    },
+    "release": {
+      "outFile": "build-as/assemblyscript.release.wasm",
+      "textFile": "build-as/assemblyscript.release.wast",
+      "optimizeLevel": 3,
+      "shrinkLevel": 0
+    }
+  }
+}
