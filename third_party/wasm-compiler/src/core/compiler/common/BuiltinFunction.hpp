@@ -1,0 +1,43 @@
+///
+/// @file BuiltinFunction.hpp
+/// @copyright Copyright (C) 2021 BMW Group
+///
+
+#ifndef BUILTINFUNCTION_HPP
+#define BUILTINFUNCTION_HPP
+
+#include <cstdint>
+
+namespace vb {
+
+///
+/// @brief Available builtin functions the compiler provides and inlines
+///
+enum class BuiltinFunction : uint8_t {
+  TRAP,
+
+  GETLENGTHOFLINKEDMEMORY,
+
+  GETU8FROMLINKEDMEMORY,
+  GETI8FROMLINKEDMEMORY,
+  GETU16FROMLINKEDMEMORY,
+  GETI16FROMLINKEDMEMORY,
+  GETU32FROMLINKEDMEMORY,
+  GETI32FROMLINKEDMEMORY,
+  GETU64FROMLINKEDMEMORY,
+  GETI64FROMLINKEDMEMORY,
+  GETF32FROMLINKEDMEMORY,
+  GETF64FROMLINKEDMEMORY,
+
+  COPYFROMLINKEDMEMORY,
+
+  ISFUNCTIONLINKED,
+
+  TRACE_POINT,
+
+  UNDEFINED
+};
+
+} // namespace vb
+
+#endif
