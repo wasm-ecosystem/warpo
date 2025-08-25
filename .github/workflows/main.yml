@@ -1,0 +1,648 @@
+name: CMake
+
+on:
+  pull_request:
+  merge_group:
+
+concurrency:
+  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  small_checks:
+    uses: CDCFW/wasm-common-ci/.github/workflows/small_checks_linux_x86_64.yml@main
+    secrets: inherit
+    with:
+      doxygen: true
+      clang-format: true
+      clang-format-dirs: "src;fuzz;demo;tests;disassembler;binding"
+      cspell: true
+      cspell-dirs: "src;tests"
+      cspell-config: "./cspell.json"
+
+  tricore_coverity:
+    uses: CDCFW/wasm-common-ci/.github/workflows/coverityCheck.yml@main
+    secrets: inherit
+    with:
+      build-parameters: "-DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_ADVANCED_APIS=ON -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -DBACKEND=tricore"
+      exclude-files: "(wasm-compiler/thirdparty/.*|/usr/.*)"
+      coding-standard-config: "../autosarcpp14-wasm.config"
+
+  x86_64_coverity:
+    uses: CDCFW/wasm-common-ci/.github/workflows/coverityCheck.yml@main
+    secrets: inherit
+    with:
+      build-parameters: "-DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_ADVANCED_APIS=ON -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -DBACKEND=x86_64"
+      exclude-files: "/usr/*"
+      coding-standard-config: "../autosarcpp14-wasm.config"
+
+  aarch64_coverity:
+    uses: CDCFW/wasm-common-ci/.github/workflows/coverityCheck.yml@main
+    secrets: inherit
+    with:
+      build-parameters: "-DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_ADVANCED_APIS=ON -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -DBACKEND=aarch64"
+      exclude-files: "/usr/*"
+      coding-standard-config: "../autosarcpp14-wasm.config"
+
+  codegen_test:
+    runs-on: ubuntu-latest
+    container:
+      image: containers.atc-github.azure.cloud.bmw/cdcfw/wasm-common-ci-cdc-generic-x86_64:main
+      credentials:
+        username: ${{ secrets.TECH_USER_QNUMBER }}
+        password: ${{ secrets.TECH_USER_ATC_GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.TECH_USER_ATC_GITHUB_TOKEN }}
+      - run: sudo cp $(which FileCheck-18) /usr/bin/FileCheck
+      - name: setup wasm-tools
+        shell: bash
+        run: |
+          ./.github/scripts/install_wasm_tools.sh
+          echo "$(pwd)/wasm-tools" >> $GITHUB_PATH
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: activate virtual environment
+        shell: bash
+        run: |
+          set -ex
+          python3 -m venv ${GITHUB_WORKSPACE}/venv
+          source ${GITHUB_WORKSPACE}/venv/bin/activate
+          echo "VIRTUAL_ENV=${VIRTUAL_ENV}" >> $GITHUB_ENV
+          echo "${VIRTUAL_ENV}/bin" >> $GITHUB_PATH
+      - name: python deps
+        run: pip3 install wasmtime
+      - name: binding
+        shell: bash
+        run: python3 binding/binding_all.py --venv-dir ${GITHUB_WORKSPACE}/venv
+      - name: file check test
+        shell: bash
+        run: python3 scripts/test.py --no-color
+
+  unix-fuzz:
+    strategy:
+      fail-fast: false
+      matrix:
+        flags:
+          [
+            "",
+            "-DACTIVE_STACK_OVERFLOW_CHECK=1 -DLINEAR_MEMORY_BOUNDS_CHECKS=1 -DACTIVE_DIV_CHECK=1",
+          ]
+        runner: [ubuntu-latest, cawe-linux-arm64-compute-small]
+        include:
+          - runner: ubuntu-latest
+            image: wasm-common-ci-cdc-generic-x86_64
+          - runner: cawe-linux-arm64-compute-small
+            image: wasm-common-ci-cdc-generic-aarch64
+    runs-on: ${{ matrix.runner }}
+    container:
+      image: containers.atc-github.azure.cloud.bmw/cdcfw/${{ matrix.image }}:main
+      credentials:
+        username: ${{ secrets.TECH_USER_QNUMBER }}
+        password: ${{ secrets.TECH_USER_ATC_GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/fuzz-assets
+        with:
+          cmake_flags: -DCMAKE_BUILD_TYPE=Debug
+          cpp_flags: ${{ matrix.flags }}
+      - uses: ./.github/actions/fuzz-unix
+        with:
+          timeout: 600
+          cmake_flags: -DCMAKE_BUILD_TYPE=Debug
+          cpp_flags: ${{ matrix.flags }}
+
+  qemu-fuzz:
+    runs-on: ubuntu-latest
+    container:
+      image: containers.atc-github.azure.cloud.bmw/cdcfw/wasm-common-ci-cdc-tricore-qemu:main
+      credentials:
+        username: ${{ secrets.TECH_USER_QNUMBER }}
+        password: ${{ secrets.TECH_USER_ATC_GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: ./.github/actions/fuzz-qemu
+        with:
+          timeout: 600
+
+  x86-64_linux_cmake_build_test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - buildType: "gccDebug"
+            buildArgs: "-DENABLE_WERROR=1 -DENABLE_SANITIZE=1 -DENABLE_COVERAGE=1 -DENABLE_DIS=1 -DCMAKE_BUILD_TYPE:STRING=Debug -DENABLE_CLANG_TIDY=1"
+          - buildType: "gccRelease"
+            buildArgs: "-DENABLE_WERROR=1  -DENABLE_COVERAGE=1 -DCMAKE_BUILD_TYPE:STRING=Release"
+          - buildType: "clangDebug"
+            buildArgs: "-DENABLE_WERROR=1  -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_C_COMPILER=clang -DENABLE_COVERAGE=1 -DENABLE_CLANG_TIDY=1"
+          - buildType: "clangRelease"
+            buildArgs: "-DENABLE_WERROR=1 -DCMAKE_C_COMPILER=clang -DENABLE_COVERAGE=1 -DCMAKE_BUILD_TYPE:STRING=Release"
+    uses: CDCFW/wasm-common-ci/.github/workflows/execute.yml@main
+    secrets: inherit
+    with:
+      arch: "x86_64"
+      os: "linux"
+      run: |
+        set -ex
+        mkdir -p build
+        cd build && cmake .. ${{ matrix.buildArgs }}
+        make -j $(nproc)
+        make coverage
+        ./bin/vb_demo ../wasm_examples/log.wasm
+
+  x86-64_linux_bazel_build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - buildType: "bazelx86_64"
+            buildArgs: "//demo:vb_demo --platforms=//bazel/platforms:x86_64_linux"
+          - buildType: "bazelaarch64"
+            buildArgs: "//demo:vb_demo --platforms=//bazel/platforms:aarch64_linux"
+    uses: CDCFW/wasm-common-ci/.github/workflows/execute.yml@main
+    secrets: inherit
+    with:
+      arch: "x86_64"
+      os: "linux"
+      run: |
+        bazel clean --expunge
+        bazel build ${{ matrix.buildArgs }}
+
+  aarch64_linux_cmake_build_test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - buildType: "Debug"
+            buildArgs: "-DENABLE_WERROR=1 -DENABLE_FUZZ=1 -DENABLE_COVERAGE=1 -DCMAKE_BUILD_TYPE:STRING=Debug -DENABLE_CLANG_TIDY=1"
+          - buildType: "Release"
+            buildArgs: "-DENABLE_WERROR=1 -DENABLE_FUZZ=1 -DENABLE_COVERAGE=1 -DCMAKE_BUILD_TYPE:STRING=Release"
+    uses: CDCFW/wasm-common-ci/.github/workflows/execute.yml@main
+    secrets: inherit
+    with:
+      arch: "aarch64"
+      os: "linux"
+      run: |
+        set -ex
+        mkdir -p build
+        cd build && cmake .. ${{ matrix.buildArgs }}
+        make -j $(nproc)
+        make coverage
+        ./bin/vb_demo ../wasm_examples/log.wasm
+
+  aarch64_extra:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - buildType: "Analytics"
+            buildArgs: "-DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_WERROR=1 -DENABLE_ANALYTICS=1 -DCMAKE_BUILD_TYPE=RELEASE -DENABLE_CLANG_TIDY=1"
+            cppFlags: ""
+          - buildType: "Bench"
+            buildArgs: "-DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_WERROR=1 -DENABLE_BENCH=1 -DCMAKE_BUILD_TYPE=RELEASE -DENABLE_CLANG_TIDY=1"
+            cppFlags: "-DINTERRUPTION_REQUEST=0 -DEAGER_ALLOCATION=1"
+    uses: CDCFW/wasm-common-ci/.github/workflows/execute.yml@main
+    secrets: inherit
+    with:
+      arch: "aarch64"
+      os: "linux"
+      run: |
+        set -ex
+        mkdir -p build
+        cd build && cmake .. ${{ matrix.buildArgs }} -DCMAKE_CXX_FLAGS="${{ matrix.cppFlags }}"
+        make -j $(nproc)
+
+  x86-64_extra:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - buildType: "Analytics"
+            buildArgs: "-DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_WERROR=1 -DENABLE_ANALYTICS=1 -DCMAKE_BUILD_TYPE=RELEASE -DENABLE_CLANG_TIDY=1"
+            cppFlags: ""
+          - buildType: "Bench"
+            buildArgs: "-DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_WERROR=1 -DENABLE_BENCH=1 -DCMAKE_BUILD_TYPE=RELEASE -DENABLE_CLANG_TIDY=1"
+            cppFlags: "-DINTERRUPTION_REQUEST=0 -DEAGER_ALLOCATION=1"
+    uses: CDCFW/wasm-common-ci/.github/workflows/execute.yml@main
+    secrets: inherit
+    with:
+      arch: "x86_64"
+      os: "linux"
+      run: |
+        set -ex
+        mkdir -p build
+        cd build && cmake .. ${{ matrix.buildArgs }} -DCMAKE_CXX_FLAGS="${{ matrix.cppFlags }}"
+        make -j $(nproc)
+
+  tricore_linux_cmake_build_test:
+    uses: CDCFW/wasm-common-ci/.github/workflows/tricore_execute.yml@main
+    secrets: inherit
+    with:
+      run: |
+        set -ex
+        python3 ./tests/spectest.py -f
+
+        cmake . -B build_tricore -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$TRICORE_GCC_PATH/tricore-elf-gcc -DVB_ENABLE_DEV_FEATURE=OFF -DCMAKE_CXX_COMPILER=$TRICORE_GCC_PATH/tricore-elf-g++ -DENABLE_SPECTEST=1 -DENABLE_DEMO=1 -DTEST_VARIANTS=1 -DDISABLE_SPECTEST_WAST=1 -DDISABLE_SPECTEST_JSON=1 -DENABLE_STANDALONE_TEST=1
+        cmake --build build_tricore --parallel
+        python3 scripts/tricore_qemu_execute.py qemu-system-tricore -semihosting -display none -M tricore_tsim162 -kernel build_tricore/bin/vb_spectest_binary_standalone_0
+        python3 scripts/tricore_qemu_execute.py qemu-system-tricore -semihosting -display none -M tricore_tsim162 -kernel build_tricore/bin/vb_spectest_binary_standalone_1
+        qemu-system-tricore -semihosting -display none -M tricore_tsim162 -kernel build_tricore/bin/vb_demo
+
+  tricore_linux_cmake_build_unittest:
+    uses: CDCFW/wasm-common-ci/.github/workflows/execute.yml@main
+    secrets: inherit
+    with:
+      arch: "x86_64"
+      os: "linux"
+      run: |
+        set -ex
+        cmake . -B build_tricore_unittest -DCMAKE_BUILD_TYPE=Debug -DBACKEND=tricore -DENABLE_UNITTEST=1 -DVB_ENABLE_DEV_FEATURE=OFF 
+        cmake --build build_tricore_unittest --parallel
+        ./build_tricore_unittest/tests/unittests/Unittests
+
+  x86-64_qnx_cmake_build_test:
+    runs-on: [atc-ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.TECH_USER_ATC_GITHUB_TOKEN }}
+
+      - name: install packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install qemu-system-x86-64 python3-pip python3-scp python3-paramiko python-is-python3 -y --no-install-recommends
+
+      - name: qcc build
+        uses: CDCFW/wasm-common-ci@main
+        with:
+          docker_username: ${{ secrets.TECH_USER_QNUMBER }}
+          docker_password: ${{ secrets.TECH_USER_ATC_GITHUB_TOKEN }}
+          run: |
+            set -ex
+            python3 tests/spectest.py
+            mkdir -p build_qnx
+            cd  build_qnx && cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/QNXx86_64Toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=qcc -DCMAKE_C_COMPILER=qcc -DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_WERROR=1 -DENABLE_SPECTEST=1 -DENABLE_DEMO=1 -DTEST_VARIANTS=1 -DDISABLE_SPECTEST_WAST=1 -DENABLE_FUZZ=1 && \
+            cmake --build . --parallel
+            cd ..
+            cat ./build_qnx/compile_commands.json | jq -r '.[].file' | xargs -P $(nproc) -I{} clang-tidy -p $(pwd)/build_qnx {}
+
+      - name: setup network
+        run: ${{github.workspace}}/scripts/qnx_sh/manage_tap_network.sh
+
+      - name: download qemu image
+        uses: robinraju/release-downloader@v1.9
+        with:
+          repository: "CDCFW/wasm-compiler-ci-resources"
+          tag: "v1"
+          fileName: "qnxX64-*"
+          github-api-url: "https://atc-github.azure.cloud.bmw/api/v3"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: move qemu image
+        run: |
+          mv qnxX64-downloaded ${{github.workspace}}/scripts/qnx_sh/downloaded
+          mv qnxX64-disk.img ${{github.workspace}}/scripts/qnx_sh/disk.img
+      - name: run spectest
+        working-directory: ${{github.workspace}}/scripts/qnx_sh
+        run: python3 ssh_to_qemu.py --arch x64
+
+  aarch64_qnx_cmake_build_test:
+    runs-on: [cawe-linux-x64-compute-large]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.TECH_USER_ATC_GITHUB_TOKEN }}
+
+      - name: install packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install libsdl2-2.0-0  libvirglrenderer1 libpixman-1-0 libgtk-3-0 python3-pip python3-scp python3-paramiko python-is-python3 -y --no-install-recommends
+
+      - name: qcc build
+        uses: CDCFW/wasm-common-ci@main
+        with:
+          docker_username: ${{ secrets.TECH_USER_QNUMBER }}
+          docker_password: ${{ secrets.TECH_USER_ATC_GITHUB_TOKEN }}
+          run: |
+            set -ex
+            python3 tests/spectest.py
+            mkdir -p build_qnx
+            cd  build_qnx && cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/QNXArm64Toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=qcc -DCMAKE_C_COMPILER=qcc -DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_WERROR=1 -DENABLE_SPECTEST=1 -DENABLE_DEMO=1 -DTEST_VARIANTS=0 -DDISABLE_SPECTEST_WAST=1 -DENABLE_FUZZ=1 && \
+            cmake --build . --parallel
+
+      - name: download qemu image
+        run: |
+          wget --user ${{ secrets.TECH_USER_CODECRAFT_ACCOUNT }} --password ${{ secrets.TECH_USER_DDAD_ARTIFACTORY_TOKEN }}  https://ddad.artifactory.cc.bmwgroup.net/artifactory/swh-cdc-releases-local/qnx_qemu_image_arm64/qnx_arm64.tar.gz
+          tar -xvzf qnx_arm64.tar.gz
+
+      - name: setup network
+        run: ${{github.workspace}}/qqvp_linux_amd64/manage_tap_network.sh
+
+      - name: run spectest
+        working-directory: ${{github.workspace}}/qqvp_linux_amd64/
+        run: python3 ../scripts/qnx_sh/ssh_to_qemu.py --arch arm64
+
+  x86-64_windows_cmake_build_test:
+    strategy:
+      fail-fast: false
+      matrix:
+        Compiler_type: [x86_64_msvc, x86_64_mingw]
+        Build_type: [Debug, Release]
+        include:
+          - cmake_arguments: -DENABLE_MSVC_PARALLEL=0 -DCMAKE_BUILD_TYPE:STRING=Debug -DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_WERROR=1 -A x64 -DENABLE_CLANG_TIDY=1 -DENABLE_SPECTEST=1 -DENABLE_DEMO=1 -DTEST_VARIANTS=1 -DENABLE_UNITTEST=1
+            Compiler_type: x86_64_msvc
+          - cmake_arguments: -DENABLE_MSVC_PARALLEL=0 -DCMAKE_BUILD_TYPE:STRING=Debug -DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_WERROR=1 -A x64 -DENABLE_CLANG_TIDY=1 -DENABLE_SPECTEST=1 -DENABLE_DEMO=1 -DTEST_VARIANTS=1 -DCMAKE_CXX_FLAGS="-DACTIVE_STACK_OVERFLOW_CHECK=1 -DLINEAR_MEMORY_BOUNDS_CHECKS=1 -DACTIVE_DIV_CHECK=1 -DNO_PASSIVE_PROTECTION_WARNING=1"
+            Compiler_type: x86_64_msvc
+          - cmake_arguments: -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE:STRING=Debug -DVB_ENABLE_DEV_FEATURE=OFF -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DENABLE_SPECTEST=1 -DENABLE_DEMO=1 -DTEST_VARIANTS=1
+            Compiler_type: x86_64_mingw
+            Build_type: Debug
+          - cmake_arguments: -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE:STRING=Release -DVB_ENABLE_DEV_FEATURE=OFF -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DENABLE_SPECTEST=1 -DENABLE_DEMO=1 -DTEST_VARIANTS=1
+            Compiler_type: x86_64_mingw
+            Build_type: Release
+    uses: CDCFW/wasm-common-ci/.github/workflows/execute.yml@main
+    secrets: inherit
+    with:
+      arch: "x86_64"
+      os: "win"
+      run: |
+        mkdir build
+        cd build
+        cmake -E env GTest_ROOT=C:\\Googletest_${{ matrix.Build_type }} cmake .. ${{ matrix.cmake_arguments }}
+        cmake --build . --config ${{ matrix.Build_type }}
+        ctest --verbose -C ${{ matrix.Build_type }}
+
+  aarch64_windows_cmake_build:
+    strategy:
+      fail-fast: false
+      matrix:
+        Compiler_type: [aarch64_debug_clangcl, aarch64_release_msvc]
+        include:
+          - Compiler_type: aarch64_debug_clangcl
+            cmake_arguments: -DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_WERROR=1 -T clangcl -A ARM64 -DENABLE_SPECTEST=1 -DENABLE_DEMO=1 -DCMAKE_CXX_FLAGS='/DWIN32 /D_WINDOWS /GR /EHsc' -DENABLE_UNITTEST=1
+            Build_type: Debug
+          - Compiler_type: aarch64_release_msvc
+            cmake_arguments: -DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_MSVC_PARALLEL=0 -DENABLE_WERROR=1 -A ARM64 -DENABLE_SPECTEST=1 -DENABLE_DEMO=1 -DENABLE_UNITTEST=1
+            Build_type: Release
+    uses: CDCFW/wasm-common-ci/.github/workflows/execute.yml@main
+    secrets: inherit
+    with:
+      arch: "x86_64"
+      os: "win"
+      run: |
+        mkdir build
+        cd build
+        cmake -E env GTest_ROOT=C:\\Googletest_ARM_${{ matrix.Build_type }} cmake .. ${{ matrix.cmake_arguments }}
+        cmake --build . --config ${{ matrix.Build_type }}
+
+  tricore_windows_bazel_build:
+    runs-on: [windows-latest]
+    env:
+      TSK_LICENSE_KEY_SW260800: f18f-52a3-c70c-54d8
+      TSK_LICENSE_SERVER: wlic01s1.muc:1890
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: tasking compiler
+        uses: robinraju/release-downloader@v1.9
+        with:
+          repository: "CDCFW/wasm-compiler-ci-resources"
+          tag: "v1"
+          fileName: "Smartcode_v10.1r1.zip"
+          github-api-url: "https://atc-github.azure.cloud.bmw/api/v3"
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Smartcode
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Expand-Archive -Path Smartcode_v10.1r1.zip -DestinationPath ./Smartcode
+          echo "${{ github.workspace }}\Smartcode\ctc\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Install wabt
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Invoke-WebRequest -Uri "https://github.com/WebAssembly/wabt/releases/download/1.0.36/wabt-1.0.36-windows.tar.gz" -OutFile "wabt.tar.gz"
+          tar -xzf wabt.tar.gz
+          echo "${{ github.workspace }}\wabt-1.0.36\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Install Bazel
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Invoke-WebRequest -Uri "https://github.com/bazelbuild/bazel/releases/download/7.5.0/bazel-7.5.0-windows-x86_64.exe" -OutFile "bazel.exe"
+          Move-Item -Path "bazel.exe" -Destination "$HOME/bazel.exe"
+          echo "$HOME" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: gen testcase
+        run: python ./tests/spectest.py -f
+
+      - name: bazel build
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          bazel build //demo:vb_demo --config=Tasking_warning_as_error --platforms=//bazel/platforms:tricore_tasking --action_env=TSK_LICENSE_SERVER=${{ env.TSK_LICENSE_SERVER }} --action_env=TSK_LICENSE_KEY_SW260800=${{ env.TSK_LICENSE_KEY_SW260800 }}
+
+  aarch64_mac_cmake_build_test:
+    uses: CDCFW/wasm-common-ci/.github/workflows/execute.yml@main
+    secrets: inherit
+    with:
+      arch: "aarch64"
+      os: "mac"
+      run: |
+        export HOMEBREW_NO_AUTO_UPDATE=1
+        brew install cmake googletest wabt
+        export PATH="/opt/homebrew/opt/llvm/bin:$PATH" >> ~/.zshrc
+        mkdir build
+        cd build
+        cmake .. -DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_CLANG_TIDY=1 -DENABLE_WERROR=1 -DENABLE_SPECTEST=1 -DTEST_VARIANTS=1 -DCMAKE_BUILD_TYPE:STRING=Debug -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DENABLE_UNITTEST=1 -DENABLE_DIS=1
+        make -j $(sysctl -n hw.physicalcpu)
+        make test
+        rm -rf *
+        cmake .. -DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_WERROR=1 -DENABLE_SPECTEST=1 -DTEST_VARIANTS=1 -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DENABLE_UNITTEST=1
+        make -j $(sysctl -n hw.physicalcpu)
+        make test
+
+  x86-64_android_cmake_build_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.TECH_USER_ATC_GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget cmake make unzip tree
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: install wabt
+        run: |
+          set -ex
+          wget https://github.com/WebAssembly/wabt/releases/download/1.0.36/wabt-1.0.36-ubuntu-20.04.tar.gz
+          tar -xzf wabt-1.0.36-ubuntu-20.04.tar.gz
+          echo "$PWD/wabt-1.0.36/bin" >> $GITHUB_PATH
+
+      - name: Setup Android NDK
+        run: |
+          set -ex
+          wget https://dl.google.com/android/repository/android-ndk-r27c-linux.zip
+          sudo unzip -q android-ndk-r27c-linux.zip -d /opt
+          sudo mv /opt/android-ndk-r27c /opt/android-ndk
+          sudo chown -R $USER:$USER /opt/android-ndk
+
+      - name: Setup Android SDK
+        run: |
+          set -ex
+          wget https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip
+          sudo unzip -q commandlinetools-linux-*.zip -d /opt/android-sdk
+          sudo mkdir -p /opt/android-sdk/cmdline-tools/latest
+          sudo cp -r /opt/android-sdk/cmdline-tools/bin /opt/android-sdk/cmdline-tools/latest/bin
+          sudo cp -r /opt/android-sdk/cmdline-tools/lib /opt/android-sdk/cmdline-tools/latest/lib
+          sudo chown -R $USER:$USER /opt/android-sdk
+          echo "ANDROID_SDK_ROOT=/opt/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_HOME=/opt/android-sdk" >> $GITHUB_ENV
+
+      - name: Fix KVM permissions
+        run: |
+          set -ex
+          sudo usermod -a -G kvm $USER
+          sudo chmod 666 /dev/kvm
+          ls -la /dev/kvm
+          sudo chown root:kvm /dev/kvm
+          groups
+          # Apply new group membership without logging out
+          sudo -E su $USER -c "newgrp kvm << EOF
+          groups
+          EOF"
+
+      - name: Accept Android SDK licenses
+        run: |
+          yes | /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses
+
+      - name: Install Android emulator and platform tools
+        run: |
+          /opt/android-sdk/cmdline-tools/latest/bin/sdkmanager --install "emulator" "platform-tools" "system-images;android-35;google_apis;x86_64"
+
+      - name: Create Android virtual device
+        run: |
+          /opt/android-sdk/cmdline-tools/latest/bin/avdmanager create avd -n x86_64_emulator -k "system-images;android-35;google_apis;x86_64" -d "pixel_6"
+
+      - name: Create Android AVD symlink
+        run: |
+          ln -s /home/runner/.config/.android $HOME/.android
+
+      - name: gen testcase
+        run: python3 tests/spectest.py
+
+      - name: Build for Android
+        run: |
+          cmake -DVB_ENABLE_DEV_FEATURE=OFF -DENABLE_SPECTEST=1 -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=/opt/android-ndk/build/cmake/android.toolchain.cmake -DANDROID_ABI=x86_64 -DANDROID_PLATFORM=android-35 -B build_android
+          cmake --build build_android --parallel
+
+      - name: Run Android tests
+        run: |
+          python3 ./scripts/android/android_test.py
+
+  format:
+    runs-on: [atc-ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v3
+
+      # bazel format
+      - name: Install wget
+        run: sudo apt-get update && sudo apt-get install -y wget
+      - name: Download and install buildifier
+        run: |
+          wget https://github.com/bazelbuild/buildtools/releases/download/v7.3.1/buildifier-linux-amd64 -O buildifier
+          chmod +x buildifier
+          sudo mv buildifier /usr/local/bin/
+      - if: always()
+        run: |
+          echo bazel-format: >> format-report.txt
+          echo \`\`\`diff >> format-report.txt
+      - name: format check
+        run: |
+          buildifier -mode=diff -r . >> format-report.txt
+      - if: always()
+        run: |
+          echo \`\`\` >> format-report.txt
+      - name: lint check
+        run: |
+          echo bazel-lint: >> format-report.txt
+          buildifier --lint=warn -r . 2>> format-report.txt
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+      - run: pip install black==24.4.2
+      - if: always()
+        run: |
+          echo python-format: >> format-report.txt
+          echo \`\`\`diff >> format-report.txt
+      - run: |
+          python -m black --check --diff . --extend-exclude thirdparty >> format-report.txt
+      - if: always()
+        run: |
+          echo \`\`\` >> format-report.txt
+
+      - uses: CDCFW/actions-comment-pull-request@v2
+        if: failure()
+        with:
+          filePath: format-report.txt
+          comment_tag: format
+      - uses: CDCFW/actions-comment-pull-request@v2
+        if: success() && github.event_name == 'pull_request'
+        with:
+          message: |
+            :white_check_mark: format check passed.
+          comment_tag: format
+
+  all-green:
+    runs-on: [atc-ubuntu-latest]
+    if: always()
+
+    needs:
+      - small_checks
+      - tricore_coverity
+      - x86_64_coverity
+      - aarch64_coverity
+      - unix-fuzz
+      - qemu-fuzz
+      - x86-64_linux_cmake_build_test
+      - x86-64_linux_bazel_build
+      - aarch64_linux_cmake_build_test
+      - tricore_linux_cmake_build_test
+      - tricore_linux_cmake_build_unittest
+      - x86-64_qnx_cmake_build_test
+      - aarch64_qnx_cmake_build_test
+      - x86-64_windows_cmake_build_test
+      - aarch64_windows_cmake_build
+      - tricore_windows_bazel_build
+      - aarch64_mac_cmake_build_test
+      - x86-64_android_cmake_build_test
+      - format
+      - codegen_test
+
+    steps:
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
