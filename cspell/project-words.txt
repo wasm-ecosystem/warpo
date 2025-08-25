@@ -6,6 +6,7 @@ cawe
 ccache
 currp
 DWARPO
+Eqref
 insts
 localtostack
 popcountll
