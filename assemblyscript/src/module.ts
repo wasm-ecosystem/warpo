@@ -1653,8 +1653,7 @@ export class Module {
   }
 
   atomic_fence(name: string | null = null): ExpressionRef {
-    let cStr = this.allocStringCached(name);
-    return binaryen._BinaryenAtomicFence(this.ref, cStr);
+    return binaryen._BinaryenAtomicFence(this.ref);
   }
 
   // statements

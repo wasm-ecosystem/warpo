@@ -336,7 +336,7 @@ export declare function _BinaryenAtomicNotifySetPtr(expr: ExpressionRef, ptrExpr
 export declare function _BinaryenAtomicNotifyGetNotifyCount(expr: ExpressionRef): ExpressionRef;
 export declare function _BinaryenAtomicNotifySetNotifyCount(expr: ExpressionRef, notifyCountExpr: ExpressionRef): void;
 
-export declare function _BinaryenAtomicFence(module: ModuleRef, memoryName: StringRef): ExpressionRef;
+export declare function _BinaryenAtomicFence(module: ModuleRef): ExpressionRef;
 export declare function _BinaryenAtomicFenceGetOrder(expr: ExpressionRef): u8; // unused
 export declare function _BinaryenAtomicFenceSetOrder(expr: ExpressionRef, order: u8): void; // unused
 
