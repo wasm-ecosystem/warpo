@@ -7,8 +7,6 @@
     "warpo": "bin/asc.js"
   },
   "scripts": {
-    "build": "node tools/asc/esbuild.js",
-    "watch": "node tools/asc/esbuild.js --watch",
     "test:snapshot": "cmake --build build --target warpo_test_runner && node tests/snapshot.mjs",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs"

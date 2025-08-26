@@ -15,8 +15,8 @@
 #include "helper/ToString.hpp"
 #include "parser/wat-parser.h"
 #include "pass.h"
-#include "passes/Runner.hpp"
 #include "support/Opt.hpp"
+#include "warpo/passes/Runner.hpp"
 #include "wasm-binary.h"
 #include "wasm-features.h"
 #include "wasm-stack.h"
@@ -72,10 +72,9 @@ static std::string outputWat(wasm::Module *m) {
   return std::move(ss).str();
 }
 
-passes::Output passes::runOnWat(std::string const &input) {
-  std::unique_ptr<wasm::Module> m = passes::loadWat(input);
+passes::Output passes::runOnModule(BinaryenModuleRef const m) {
   {
-    wasm::PassRunner passRunner(m.get());
+    wasm::PassRunner passRunner{m};
     passRunner.add(std::unique_ptr<wasm::Pass>{new passes::GCLowering()});
     passRunner.run();
   }
@@ -83,7 +82,7 @@ passes::Output passes::runOnWat(std::string const &input) {
   ensureValidate(*m);
 #endif
   {
-    wasm::PassRunner defaultOptRunner{m.get()};
+    wasm::PassRunner defaultOptRunner{m};
     defaultOptRunner.options.shrinkLevel = 2;
     defaultOptRunner.options.optimizeLevel = 0;
     defaultOptRunner.setDebug(false);
@@ -95,7 +94,7 @@ passes::Output passes::runOnWat(std::string const &input) {
   ensureValidate(*m);
 #endif
   {
-    wasm::PassRunner passRunner(m.get());
+    wasm::PassRunner passRunner{m};
     passRunner.add(std::unique_ptr<wasm::Pass>{passes::createExtractMostFrequentlyUsedGlobalsPass()});
     passRunner.add(std::unique_ptr<wasm::Pass>{passes::createConditionalReturnPass()});
     passRunner.run();
@@ -104,7 +103,7 @@ passes::Output passes::runOnWat(std::string const &input) {
   ensureValidate(*m);
 #endif
   {
-    wasm::PassRunner defaultOptRunner{m.get()};
+    wasm::PassRunner defaultOptRunner{m};
     defaultOptRunner.options.shrinkLevel = 2;
     defaultOptRunner.options.optimizeLevel = 0;
     defaultOptRunner.setDebug(false);
@@ -112,7 +111,12 @@ passes::Output passes::runOnWat(std::string const &input) {
     defaultOptRunner.run();
   }
   ensureValidate(*m);
-  return {.wat = outputWat(m.get()), .wasm = outputWasm(m.get())};
+  return {.wat = outputWat(m), .wasm = outputWasm(m)};
+}
+
+passes::Output passes::runOnWat(std::string const &input) {
+  std::unique_ptr<wasm::Module> m = passes::loadWat(input);
+  return runOnModule(m.get());
 }
 
 std::string passes::runOnWatForTesting(std::string const &input, std::regex const &targetFunctionRegex) {

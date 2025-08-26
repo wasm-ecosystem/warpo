@@ -1,18 +1,15 @@
 #include <argparse/argparse.hpp>
-#include <cstddef>
+#include <binaryen/src/binaryen-c.h>
+#include <cstdlib>
+#include <cstring>
+#include <fmt/base.h>
 #include <fmt/format.h>
 #include <fstream>
-#include <ios>
+#include <vector>
 
-#include "fmt/base.h"
 #include "support/Opt.hpp"
+#include "warpo/frontend/Compiler.hpp"
 #include "warpo/passes/Runner.hpp"
-
-static warpo::cli::Opt<std::string> inputPath{
-    "-i",
-    "--input",
-    [](argparse::Argument &arg) -> void { arg.help("input file").required(); },
-};
 
 static warpo::cli::Opt<std::string> outputPath{
     "-o",
@@ -20,25 +17,24 @@ static warpo::cli::Opt<std::string> outputPath{
     [](argparse::Argument &arg) -> void { arg.help("output file").required(); },
 };
 
-int main(int argc, char const *argv[]) {
+static warpo::cli::Opt<std::vector<std::string>> entryPaths{
+    "entries",
+    [](argparse::Argument &arg) -> void {
+      arg.help("entry files").required().nargs(argparse::nargs_pattern::at_least_one);
+    },
+};
+
+int main(int argc, const char *argv[]) {
   using namespace warpo;
 
+  frontend::init();
   passes::init();
 
-  argparse::ArgumentParser program("warpo");
+  argparse::ArgumentParser program("asc (next generation)");
   cli::init(program, argc, argv);
 
-  if (!inputPath.get().ends_with("wat") && !inputPath.get().ends_with("wast")) {
-    fmt::println("ERROR: invalid file extension: {}, expected 'wat' or 'wast'", inputPath.get());
-    return 1;
-  }
-  std::ifstream ifstream{inputPath.get(), std::ios::in};
-  if (!ifstream.good()) {
-    fmt::println("ERROR: failed to open file: {}", inputPath.get());
-    return 1;
-  }
-  std::string input{std::istreambuf_iterator<char>{ifstream}, {}};
-  passes::Output output = passes::runOnWat(input);
+  BinaryenModuleRef const m = frontend::compile(entryPaths.get());
+  passes::Output const output = passes::runOnModule(m);
 
   std::string watPathStr{};
   std::string wasmPathStr{};

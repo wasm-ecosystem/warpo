@@ -1,5 +1,6 @@
 #pragma once
 
+#include <binaryen/src/binaryen-c.h>
 #include <cstdint>
 #include <regex>
 #include <string>
@@ -14,6 +15,7 @@ struct Output {
 
 void init();
 Output runOnWat(std::string const &input);
+Output runOnModule(BinaryenModuleRef const module);
 
 std::string runOnWatForTesting(std::string const &input, std::regex const &targetFunctionRegex);
 
