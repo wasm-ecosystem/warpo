@@ -15,22 +15,159 @@
 #include "wasm-compiler/src/core/common/function_traits.hpp"
 
 namespace export_to_asc {
-
 namespace {
 
+uint64_t BinaryenCallGetOperandAtForLink(uint64_t expr, uint32_t index, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenCallGetOperandAt(reinterpret_cast<BinaryenExpressionRef>(expr), index));
+}
+uint64_t BinaryenReturnCallForLink(uint64_t module, uint64_t name, uint64_t operands, uint32_t numOperands,
+                                   uint64_t returnType, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenReturnCall(
+      reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name),
+      reinterpret_cast<BinaryenExpressionRef *>(operands), numOperands, static_cast<BinaryenType>(returnType)));
+}
+uint64_t BinaryenCallForLink(uint64_t module, uint64_t name, uint64_t operands, uint32_t numOperands,
+                             uint64_t returnType, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenCall(
+      reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name),
+      reinterpret_cast<BinaryenExpressionRef *>(operands), numOperands, static_cast<BinaryenType>(returnType)));
+}
+uint32_t BinaryenLoadGetBytesForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenLoadGetBytes(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+uint64_t BinaryenBlockGetNameForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenBlockGetName(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint32_t BinaryenBlockGetNumChildrenForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenBlockGetNumChildren(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+uint64_t BinaryenBlockGetChildAtForLink(uint64_t expr, uint32_t index, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenBlockGetChildAt(reinterpret_cast<BinaryenExpressionRef>(expr), index));
+}
+uint64_t BinaryenIfGetIfTrueForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenIfGetIfTrue(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenIfGetIfFalseForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenIfGetIfFalse(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenSelectGetIfTrueForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenSelectGetIfTrue(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenSelectGetIfFalseForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenSelectGetIfFalse(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenCallGetTargetForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenCallGetTarget(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenConstForLink(uint64_t module, uint64_t literal, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenConst(reinterpret_cast<BinaryenModuleRef>(module), *reinterpret_cast<BinaryenLiteral *>(literal)));
+}
+uint64_t BinaryenNopForLink(uint64_t module, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenNop(reinterpret_cast<BinaryenModuleRef>(module)));
+}
+uint64_t BinaryenBlockForLink(uint64_t module, uint64_t name, uint64_t children, uint32_t numChildren, uint64_t type,
+                              [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenBlock(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name),
+                    reinterpret_cast<BinaryenExpressionRef *>(children), numChildren, type));
+}
+uint64_t BinaryenBinaryForLink(uint64_t module, uint32_t op, uint64_t left, uint64_t right,
+                               [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenBinary(reinterpret_cast<BinaryenModuleRef>(module), op,
+                                                   reinterpret_cast<BinaryenExpressionRef>(left),
+                                                   reinterpret_cast<BinaryenExpressionRef>(right)));
+}
+uint64_t BinaryenUnaryForLink(uint64_t module, uint32_t op, uint64_t value, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenUnary(reinterpret_cast<BinaryenModuleRef>(module), op, reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t BinaryenRefIsNullForLink(uint64_t module, uint64_t value, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenRefIsNull(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t ExpressionRunnerCreateForLink(uint64_t module, uint32_t flags, uint32_t maxDepth, uint32_t maxLoopIterations,
+                                       [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      ExpressionRunnerCreate(reinterpret_cast<BinaryenModuleRef>(module), flags, maxDepth, maxLoopIterations));
+}
+uint64_t ExpressionRunnerRunAndDisposeForLink(uint64_t runner, uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(ExpressionRunnerRunAndDispose(reinterpret_cast<ExpressionRunnerRef>(runner),
+                                                                  reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenTypeExternrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeExternref(); }
+uint64_t BinaryenTypeAnyrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeAnyref(); }
+uint64_t BinaryenTypeEqrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeEqref(); }
+uint64_t BinaryenTypeStructrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeStructref(); }
+uint64_t BinaryenTypeArrayrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeArrayref(); }
+uint64_t BinaryenTypeI31refForLink([[maybe_unused]] void *ctx) { return BinaryenTypeI31ref(); }
+uint64_t BinaryenTypeStringrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeStringref(); }
+uint64_t BinaryenTypeNullrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeNullref(); }
+uint64_t BinaryenTypeNullFuncrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeNullFuncref(); }
+uint64_t BinaryenTypeNullExternrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeNullExternref(); }
+uint64_t BinaryenUnreachableForLink(uint64_t module, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenUnreachable(reinterpret_cast<BinaryenModuleRef>(module)));
+}
+uint32_t BinaryenExpressionGetIdForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint32_t>(BinaryenExpressionGetId(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint32_t BinaryenLocalSetIsTeeForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(BinaryenLocalSetIsTee(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint32_t BinaryenLocalSetGetIndexForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(BinaryenLocalSetGetIndex(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint32_t BinaryenLocalGetGetIndexForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(BinaryenLocalGetGetIndex(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenLocalSetGetValueForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenLocalSetGetValue(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenGlobalGetGetNameForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenGlobalGetGetName(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+int32_t BinaryenBinaryGetOpForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<int32_t>(BinaryenBinaryGetOp(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenBinaryGetLeftForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenBinaryGetLeft(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenBinaryGetRightForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenBinaryGetRight(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+int32_t BinaryenConstGetValueI32ForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenConstGetValueI32(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+int32_t BinaryenUnaryGetOpForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<int32_t>(BinaryenUnaryGetOp(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenExpressionGetTypeForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<uint64_t>(BinaryenExpressionGetType(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+int32_t BinaryenConstGetValueI64LowForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenConstGetValueI64Low(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+int32_t BinaryenConstGetValueI64HighForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenConstGetValueI64High(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+float BinaryenConstGetValueF32ForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenConstGetValueF32(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+double BinaryenConstGetValueF64ForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenConstGetValueF64(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+uint32_t BinaryenLoadIsSignedForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(BinaryenLoadIsSigned(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
 uint64_t BinaryenTypeFuncrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeFuncref(); }
-
-uint32_t getSizeOfLiteral([[maybe_unused]] void *ctx) { return sizeof(wasm::Literal); }
-
+uint32_t BinaryenSizeofLiteralForLink([[maybe_unused]] void *ctx) { return sizeof(wasm::Literal); }
 void BinaryenLiteralInt32ForLink(uint64_t ptr, int32_t x, [[maybe_unused]] void *ctx) {
   *reinterpret_cast<BinaryenLiteral *>(ptr) = BinaryenLiteralInt32(x);
 }
-
 void BinaryenLiteralInt64ForLink(uint64_t ptr, int32_t x, int32_t y, [[maybe_unused]] void *ctx) {
   int64_t const v = (static_cast<int64_t>(y) << 32) | (static_cast<uint32_t>(x));
   *reinterpret_cast<BinaryenLiteral *>(ptr) = BinaryenLiteralInt64(v);
 }
-
 void BinaryenSetMemoryForLink(uint64_t module, uint32_t initial, uint32_t maximum, uint64_t exportName,
                               uint64_t segmentNames, uint64_t segmentDatas, uint64_t segmentPassives,
                               uint64_t segmentOffsets, uint64_t segmentSizes, uint32_t numSegments, uint32_t shared,
@@ -42,6 +179,51 @@ void BinaryenSetMemoryForLink(uint64_t module, uint32_t initial, uint32_t maximu
                     reinterpret_cast<BinaryenIndex *>(segmentSizes), numSegments, shared != 0, memory64 != 0,
                     reinterpret_cast<const char *>(name));
 }
+uint32_t BinaryenModuleGetFeaturesForLink(uint64_t module, [[maybe_unused]] void *ctx) {
+  return BinaryenModuleGetFeatures(reinterpret_cast<BinaryenModuleRef>(module));
+}
+uint64_t BinaryenIfGetConditionForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenIfGetCondition(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenUnaryGetValueForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenUnaryGetValue(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint32_t BinaryenCallGetNumOperandsForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(BinaryenCallGetNumOperands(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenDropForLink(uint64_t module, uint64_t value, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenDrop(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t BinaryenIfForLink(uint64_t module, uint64_t condition, uint64_t ifTrue, uint64_t ifFalse,
+                           [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenIf(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(condition),
+                 reinterpret_cast<BinaryenExpressionRef>(ifTrue), reinterpret_cast<BinaryenExpressionRef>(ifFalse)));
+}
+uint64_t BinaryenLoopForLink(uint64_t module, uint64_t in, uint64_t body, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenLoop(reinterpret_cast<BinaryenModuleRef>(module),
+                                                 reinterpret_cast<const char *>(in),
+                                                 reinterpret_cast<BinaryenExpressionRef>(body)));
+}
+uint64_t BinaryenBreakForLink(uint64_t module, uint64_t name, uint64_t condition, uint64_t value,
+                              [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenBreak(
+      reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name),
+      reinterpret_cast<BinaryenExpressionRef>(condition), reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t BinaryenReturnForLink(uint64_t module, uint64_t value, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenReturn(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t BinaryenLocalSetForLink(uint64_t module, uint32_t index, uint64_t value, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenLocalSet(reinterpret_cast<BinaryenModuleRef>(module), index,
+                                                     reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+
+} // namespace
+
+namespace {
 
 uint32_t loadU8(uint64_t ptr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint8_t *>(ptr)[0]; }
 
@@ -111,7 +293,6 @@ const std::vector<vb::NativeSymbol> warpo::frontend ::linkedAPI{
     STATIC_LINK("env", "abort", export_to_asc::abort),
     STATIC_LINK("env", "trace", export_to_asc::trace),
 
-    STATIC_LINK("binaryen", "_BinaryenSizeofLiteral", export_to_asc::getSizeOfLiteral),
     STATIC_LINK("binaryen", "__i32_load8_u", export_to_asc::loadU8),
     STATIC_LINK("binaryen", "__i32_store8", export_to_asc::store8),
     STATIC_LINK("binaryen", "__i32_store", export_to_asc::store32),
@@ -119,127 +300,69 @@ const std::vector<vb::NativeSymbol> warpo::frontend ::linkedAPI{
     STATIC_LINK("binaryen", "_malloc", export_to_asc::malloc),
     STATIC_LINK("binaryen", "_free", export_to_asc::free),
 
+    STATIC_LINK("binaryen", "_BinaryenTypeFuncref", export_to_asc::BinaryenTypeFuncrefForLink),
+    STATIC_LINK("binaryen", "_BinaryenSizeofLiteral", export_to_asc::BinaryenSizeofLiteralForLink),
+    STATIC_LINK("binaryen", "_BinaryenCallGetOperandAt", export_to_asc::BinaryenCallGetOperandAtForLink),
+    STATIC_LINK("binaryen", "_BinaryenReturnCall", export_to_asc::BinaryenReturnCallForLink),
+    STATIC_LINK("binaryen", "_BinaryenCall", export_to_asc::BinaryenCallForLink),
+    STATIC_LINK("binaryen", "_BinaryenTypeExternref", export_to_asc::BinaryenTypeExternrefForLink),
+    STATIC_LINK("binaryen", "_BinaryenTypeAnyref", export_to_asc::BinaryenTypeAnyrefForLink),
+    STATIC_LINK("binaryen", "_BinaryenTypeEqref", export_to_asc::BinaryenTypeEqrefForLink),
+    STATIC_LINK("binaryen", "_BinaryenTypeStructref", export_to_asc::BinaryenTypeStructrefForLink),
+    STATIC_LINK("binaryen", "_BinaryenTypeArrayref", export_to_asc::BinaryenTypeArrayrefForLink),
+    STATIC_LINK("binaryen", "_BinaryenTypeI31ref", export_to_asc::BinaryenTypeI31refForLink),
+    STATIC_LINK("binaryen", "_BinaryenTypeStringref", export_to_asc::BinaryenTypeStringrefForLink),
+    STATIC_LINK("binaryen", "_BinaryenTypeNullref", export_to_asc::BinaryenTypeNullrefForLink),
+    STATIC_LINK("binaryen", "_BinaryenTypeNullFuncref", export_to_asc::BinaryenTypeNullFuncrefForLink),
+    STATIC_LINK("binaryen", "_BinaryenTypeNullExternref", export_to_asc::BinaryenTypeNullExternrefForLink),
+    STATIC_LINK("binaryen", "_BinaryenUnreachable", export_to_asc::BinaryenUnreachableForLink),
+    STATIC_LINK("binaryen", "_BinaryenExpressionGetId", export_to_asc::BinaryenExpressionGetIdForLink),
+    STATIC_LINK("binaryen", "_BinaryenLocalSetIsTee", export_to_asc::BinaryenLocalSetIsTeeForLink),
+    STATIC_LINK("binaryen", "_BinaryenLocalSetGetIndex", export_to_asc::BinaryenLocalSetGetIndexForLink),
+    STATIC_LINK("binaryen", "_BinaryenLocalGetGetIndex", export_to_asc::BinaryenLocalGetGetIndexForLink),
+    STATIC_LINK("binaryen", "_BinaryenLocalSetGetValue", export_to_asc::BinaryenLocalSetGetValueForLink),
+    STATIC_LINK("binaryen", "_BinaryenGlobalGetGetName", export_to_asc::BinaryenGlobalGetGetNameForLink),
+    STATIC_LINK("binaryen", "_BinaryenBinaryGetOp", export_to_asc::BinaryenBinaryGetOpForLink),
+    STATIC_LINK("binaryen", "_BinaryenBinaryGetLeft", export_to_asc::BinaryenBinaryGetLeftForLink),
+    STATIC_LINK("binaryen", "_BinaryenConstGetValueI32", export_to_asc::BinaryenConstGetValueI32ForLink),
+    STATIC_LINK("binaryen", "_BinaryenBinaryGetRight", export_to_asc::BinaryenBinaryGetRightForLink),
+    STATIC_LINK("binaryen", "_BinaryenUnaryGetOp", export_to_asc::BinaryenUnaryGetOpForLink),
+    STATIC_LINK("binaryen", "_BinaryenExpressionGetType", export_to_asc::BinaryenExpressionGetTypeForLink),
+    STATIC_LINK("binaryen", "_BinaryenConstGetValueI64Low", export_to_asc::BinaryenConstGetValueI64LowForLink),
+    STATIC_LINK("binaryen", "_BinaryenConstGetValueF32", export_to_asc::BinaryenConstGetValueF32ForLink),
+    STATIC_LINK("binaryen", "_BinaryenConstGetValueF64", export_to_asc::BinaryenConstGetValueF64ForLink),
+    STATIC_LINK("binaryen", "_BinaryenLoadIsSigned", export_to_asc::BinaryenLoadIsSignedForLink),
+    STATIC_LINK("binaryen", "_BinaryenLoadGetBytes", export_to_asc::BinaryenLoadGetBytesForLink),
+    STATIC_LINK("binaryen", "_BinaryenBlockGetName", export_to_asc::BinaryenBlockGetNameForLink),
+    STATIC_LINK("binaryen", "_BinaryenBlockGetNumChildren", export_to_asc::BinaryenBlockGetNumChildrenForLink),
+    STATIC_LINK("binaryen", "_BinaryenBlockGetChildAt", export_to_asc::BinaryenBlockGetChildAtForLink),
+    STATIC_LINK("binaryen", "_BinaryenIfGetIfTrue", export_to_asc::BinaryenIfGetIfTrueForLink),
+    STATIC_LINK("binaryen", "_BinaryenIfGetIfFalse", export_to_asc::BinaryenIfGetIfFalseForLink),
+    STATIC_LINK("binaryen", "_BinaryenSelectGetIfTrue", export_to_asc::BinaryenSelectGetIfTrueForLink),
+    STATIC_LINK("binaryen", "_BinaryenSelectGetIfFalse", export_to_asc::BinaryenSelectGetIfFalseForLink),
+    STATIC_LINK("binaryen", "_BinaryenCallGetTarget", export_to_asc::BinaryenCallGetTargetForLink),
+    STATIC_LINK("binaryen", "_BinaryenConst", export_to_asc::BinaryenConstForLink),
+    STATIC_LINK("binaryen", "_BinaryenNop", export_to_asc::BinaryenNopForLink),
+    STATIC_LINK("binaryen", "_BinaryenBlock", export_to_asc::BinaryenBlockForLink),
+    STATIC_LINK("binaryen", "_BinaryenBreak", export_to_asc::BinaryenBreakForLink),
+    STATIC_LINK("binaryen", "_BinaryenBinary", export_to_asc::BinaryenBinaryForLink),
+    STATIC_LINK("binaryen", "_BinaryenUnary", export_to_asc::BinaryenUnaryForLink),
+    STATIC_LINK("binaryen", "_BinaryenRefIsNull", export_to_asc::BinaryenRefIsNullForLink),
+    STATIC_LINK("binaryen", "_ExpressionRunnerCreate", export_to_asc::ExpressionRunnerCreateForLink),
+    STATIC_LINK("binaryen", "_ExpressionRunnerRunAndDispose", export_to_asc::ExpressionRunnerRunAndDisposeForLink),
     STATIC_LINK("binaryen", "_BinaryenLiteralInt32", export_to_asc::BinaryenLiteralInt32ForLink),
     STATIC_LINK("binaryen", "_BinaryenLiteralInt64", export_to_asc::BinaryenLiteralInt64ForLink),
     STATIC_LINK("binaryen", "_BinaryenSetMemory", export_to_asc::BinaryenSetMemoryForLink),
-    STATIC_LINK("binaryen", "_BinaryenTypeFuncref", export_to_asc::BinaryenTypeFuncrefForLink),
-
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeExternref", "()I",
-                     reinterpret_cast<void *>(&BinaryenTypeExternref)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeAnyref", "()I",
-                     reinterpret_cast<void *>(&BinaryenTypeAnyref)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeEqref", "()I",
-                     reinterpret_cast<void *>(&BinaryenTypeEqref)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeStructref", "()I",
-                     reinterpret_cast<void *>(&BinaryenTypeStructref)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeArrayref", "()I",
-                     reinterpret_cast<void *>(&BinaryenTypeArrayref)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeI31ref", "()I",
-                     reinterpret_cast<void *>(&BinaryenTypeI31ref)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeStringref", "()I",
-                     reinterpret_cast<void *>(&BinaryenTypeStringref)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeNullref", "()I",
-                     reinterpret_cast<void *>(&BinaryenTypeNullref)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeNullFuncref", "()I",
-                     reinterpret_cast<void *>(&BinaryenTypeNullFuncref)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeNullExternref", "()I",
-                     reinterpret_cast<void *>(&BinaryenTypeNullExternref)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenUnreachable", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenUnreachable)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenExpressionGetId", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenExpressionGetId)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenLocalSetIsTee", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenLocalSetIsTee)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenLocalSetGetIndex", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenLocalSetGetIndex)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenLocalGetGetIndex", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenLocalGetGetIndex)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenLocalSetGetValue", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenLocalSetGetValue)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenGlobalGetGetName", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenGlobalGetGetName)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenBinaryGetOp", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenBinaryGetOp)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenBinaryGetLeft", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenBinaryGetLeft)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenConstGetValueI32", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenConstGetValueI32)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenBinaryGetRight", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenBinaryGetRight)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenUnaryGetOp", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenUnaryGetOp)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenExpressionGetType", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenExpressionGetType)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenConstGetValueI64Low", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenConstGetValueI64Low)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenConstGetValueF32", "(I)f",
-                     reinterpret_cast<void *>(&BinaryenConstGetValueF32)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenConstGetValueF64", "(I)F",
-                     reinterpret_cast<void *>(&BinaryenConstGetValueF64)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenLoadIsSigned", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenLoadIsSigned)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenLoadGetBytes", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenLoadGetBytes)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenBlockGetName", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenBlockGetName)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenBlockGetNumChildren", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenBlockGetNumChildren)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenBlockGetChildAt", "(Ii)I",
-                     reinterpret_cast<void *>(&BinaryenBlockGetChildAt)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenIfGetIfTrue", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenIfGetIfTrue)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenIfGetIfFalse", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenIfGetIfFalse)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenSelectGetIfTrue", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenSelectGetIfTrue)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenSelectGetIfFalse", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenSelectGetIfFalse)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenCallGetTarget", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenCallGetTarget)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenConst", "(II)I",
-                     reinterpret_cast<void *>(&BinaryenConst)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenNop", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenNop)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenBlock", "(IIIiI)I",
-                     reinterpret_cast<void *>(&BinaryenBlock)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenBreak", "(IIII)I",
-                     reinterpret_cast<void *>(&BinaryenBreak)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenBinary", "(IiII)I",
-                     reinterpret_cast<void *>(&BinaryenBinary)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenUnary", "(IiI)I",
-                     reinterpret_cast<void *>(&BinaryenUnary)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenRefIsNull", "(II)I",
-                     reinterpret_cast<void *>(&BinaryenRefIsNull)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_ExpressionRunnerCreate", "(Iiii)I",
-                     reinterpret_cast<void *>(&ExpressionRunnerCreate)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_ExpressionRunnerRunAndDispose", "(II)I",
-                     reinterpret_cast<void *>(&ExpressionRunnerRunAndDispose)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenModuleGetFeatures", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenModuleGetFeatures)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenConstGetValueI64High", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenConstGetValueI64High)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenIfGetCondition", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenIfGetCondition)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenUnaryGetValue", "(I)I",
-                     reinterpret_cast<void *>(&BinaryenUnaryGetValue)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenCallGetNumOperands", "(I)i",
-                     reinterpret_cast<void *>(&BinaryenCallGetNumOperands)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenCallGetOperandAt", "(Ii)I",
-                     reinterpret_cast<void *>(&BinaryenCallGetOperandAt)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenLoop", "(III)I",
-                     reinterpret_cast<void *>(&BinaryenLoop)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenDrop", "(II)I",
-                     reinterpret_cast<void *>(&BinaryenDrop)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenIf", "(IIII)I",
-                     reinterpret_cast<void *>(&BinaryenIf)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenReturn", "(II)I",
-                     reinterpret_cast<void *>(&BinaryenReturn)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenReturnCall", "(IIIiI)I",
-                     reinterpret_cast<void *>(&BinaryenReturnCall)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenCall", "(IIIiI)I",
-                     reinterpret_cast<void *>(&BinaryenCall)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenLocalSet", "(IiI)I",
-                     reinterpret_cast<void *>(&BinaryenLocalSet)},
+    STATIC_LINK("binaryen", "_BinaryenModuleGetFeatures", export_to_asc::BinaryenModuleGetFeaturesForLink),
+    STATIC_LINK("binaryen", "_BinaryenConstGetValueI64High", export_to_asc::BinaryenConstGetValueI64HighForLink),
+    STATIC_LINK("binaryen", "_BinaryenIfGetCondition", export_to_asc::BinaryenIfGetConditionForLink),
+    STATIC_LINK("binaryen", "_BinaryenUnaryGetValue", export_to_asc::BinaryenUnaryGetValueForLink),
+    STATIC_LINK("binaryen", "_BinaryenCallGetNumOperands", export_to_asc::BinaryenCallGetNumOperandsForLink),
+    STATIC_LINK("binaryen", "_BinaryenLoop", export_to_asc::BinaryenLoopForLink),
+    STATIC_LINK("binaryen", "_BinaryenDrop", export_to_asc::BinaryenDropForLink),
+    STATIC_LINK("binaryen", "_BinaryenIf", export_to_asc::BinaryenIfForLink),
+    STATIC_LINK("binaryen", "_BinaryenReturn", export_to_asc::BinaryenReturnForLink),
+    STATIC_LINK("binaryen", "_BinaryenLocalSet", export_to_asc::BinaryenLocalSetForLink),
     vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeFromHeapType", "(Ii)I",
                      reinterpret_cast<void *>(&BinaryenTypeFromHeapType)},
     vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeGetHeapType", "(I)I",
