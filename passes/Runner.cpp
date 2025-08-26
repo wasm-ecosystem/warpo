@@ -60,7 +60,8 @@ void passes::init() { Colors::setEnabled(false); }
 
 static std::vector<uint8_t> outputWasm(wasm::Module *m) {
   wasm::BufferWithRandomAccess buffer;
-  wasm::WasmBinaryWriter writer(m, buffer, wasm::PassOptions::getWithoutOptimization());
+  wasm::PassOptions options = wasm::PassOptions::getWithoutOptimization();
+  wasm::WasmBinaryWriter writer(m, buffer, options);
   writer.setNamesSection(false);
   writer.setEmitModuleName(false);
   writer.write();
@@ -73,6 +74,9 @@ static std::string outputWat(wasm::Module *m) {
 }
 
 passes::Output passes::runOnModule(BinaryenModuleRef const m) {
+#ifndef WARPO_RELEASE_BUILD
+  ensureValidate(*m);
+#endif
   {
     wasm::PassRunner passRunner{m};
     passRunner.add(std::unique_ptr<wasm::Pass>{new passes::GCLowering()});

@@ -238,8 +238,11 @@ wasm::Module *FrontendCompiler::compile(std::vector<std::string> const &entryFil
     m.callExportedFunctionWithName<0>(stackTop, "_initialize");
 
     int32_t const option = m.callExportedFunctionWithName<1>(stackTop, "newOptions")[0].i32;
+
     enum class RuntimeKind : uint32_t { Incremental = 2 };
-    m.callExportedFunctionWithName<0>(stackTop, "setRuntime", RuntimeKind::Incremental);
+    constexpr uint32_t stackSize = 32768U;
+    m.callExportedFunctionWithName<0>(stackTop, "setRuntime", option, RuntimeKind::Incremental);
+    m.callExportedFunctionWithName<0>(stackTop, "setStackSize", option, stackSize);
 
     int32_t const program = m.callExportedFunctionWithName<1>(stackTop, "newProgram", option)[0].i32;
 

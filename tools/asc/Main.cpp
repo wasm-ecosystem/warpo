@@ -5,6 +5,7 @@
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <fstream>
+#include <iostream>
 #include <vector>
 
 #include "support/Opt.hpp"
@@ -34,6 +35,8 @@ int main(int argc, const char *argv[]) {
   cli::init(program, argc, argv);
 
   BinaryenModuleRef const m = frontend::compile(entryPaths.get());
+  if (m == nullptr)
+    return -1;
   passes::Output const output = passes::runOnModule(m);
 
   std::string watPathStr{};
