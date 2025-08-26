@@ -34,6 +34,8 @@ void store8(uint64_t ptr, uint32_t value, [[maybe_unused]] void *ctx) { reinterp
 
 void store32(uint64_t ptr, uint32_t value, [[maybe_unused]] void *ctx) { reinterpret_cast<uint32_t *>(ptr)[0] = value; }
 
+void store64(uint64_t ptr, uint64_t value, [[maybe_unused]] void *ctx) { reinterpret_cast<uint64_t *>(ptr)[0] = value; }
+
 uint64_t malloc(uint32_t size, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(std::malloc(size)); }
 
 void free(uint64_t ptr, [[maybe_unused]] void *ctx) { std::free(reinterpret_cast<void *>(ptr)); }
@@ -98,6 +100,7 @@ const std::vector<vb::NativeSymbol> warpo::frontend ::linkedAPI{
     STATIC_LINK("binaryen", "__i32_load8_u", export_to_asc::loadU8),
     STATIC_LINK("binaryen", "__i32_store8", export_to_asc::store8),
     STATIC_LINK("binaryen", "__i32_store", export_to_asc::store32),
+    STATIC_LINK("binaryen", "__i64_store", export_to_asc::store64),
     STATIC_LINK("binaryen", "_malloc", export_to_asc::malloc),
     STATIC_LINK("binaryen", "_free", export_to_asc::free),
 

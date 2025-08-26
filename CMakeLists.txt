@@ -13,8 +13,8 @@ add_definitions("-DACTIVE_STACK_OVERFLOW_CHECK=1")
 add_definitions("-DNO_PASSIVE_PROTECTION_WARNING=1")
 
 if(NOT WARPO_RELEASE)
-  # keep assert during development
-  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+  add_compile_options(-fsanitize=address)
+  add_link_options(-fsanitize=address)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)

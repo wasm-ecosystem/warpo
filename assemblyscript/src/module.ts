@@ -3563,12 +3563,12 @@ export function allocPtrArray(ptrs: binaryen.Ref[] | null): binaryen.ArrayRef<bi
   // TODO: WASM64
   assert(ASC_TARGET != Target.Wasm64);
   let len = ptrs.length;
-  let ptr = binaryen._malloc(len << 2);
+  let ptr = binaryen._malloc(len << 3);
   let idx = ptr;
   for (let i = 0, k = len; i < k; ++i) {
     let val = unchecked(ptrs[i]);
-    binaryen.__i32_store(idx, <i32>val);
-    idx += 4;
+    binaryen.__i64_store(idx, <i64>val);
+    idx += 8;
   }
   return ptr;
 }
