@@ -1,10 +1,12 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <exception>
 #include <fmt/base.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <string_view>
 #include <vector>
 
@@ -21,7 +23,7 @@
 constexpr std::string libraryPrefix = "~lib/";
 constexpr std::string extension = ".ts";
 
-int main() {
+int main(int argc, const char *argv[]) {
   vb::WasmModule::initEnvironment(&malloc, &realloc, &free);
 
   vb::STDCompilerLogger logger{};
@@ -92,11 +94,11 @@ int main() {
           dependencies.push_back(
               {warpo::frontend::embed_library_sources.at(indexName), libraryPrefix + indexName + extension});
         } else {
-          throw "TODO: node_module deps resolution";
+          throw std::runtime_error{"TODO: node_module deps resolution: " + nextFileInternalPath};
           int32_t dependee = m.callExportedFunctionWithName<1>(stackTop, "getDependee", program, nextFile)[0].i32;
         }
       } else {
-        throw "TODO: deps resolution";
+        throw std::runtime_error{"TODO: deps resolution: " + nextFileInternalPath};
       }
     }
     return dependencies;
@@ -132,17 +134,17 @@ int main() {
     parseFile(program, warpo::frontend::embed_library_sources.at("rt/index-incremental"),
               libraryPrefix + "rt/index-incremental" + extension, IsEntry::NO);
 
-    parseFile(program, R"(
-      class A {
-        v: i32 = 0
+    for (int i = 1; i < argc; i++) {
+      std::ifstream ifs{argv[i], std::ios::in};
+      if (!ifs.is_open()) {
+        std::cout << "cannot open file: " << argv[i] << "\n";
+        return -1;
       }
-      export function foo():void {
-        let v = new A();
-      }
+      std::stringstream buffer;
+      buffer << ifs.rdbuf();
+      parseFile(program, std::move(buffer).str(), argv[i], IsEntry::YES);
+    }
 
-      
-      )",
-              "demo.ts", IsEntry::YES);
     while (true) {
       std::vector<Dependencies> const deps = getAllDependencies(program);
       if (deps.empty())

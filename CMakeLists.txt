@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 project(warpo)
 
 option(WARPO_RELEASE "build for release" OFF)
+option(WARPO_SANITIZE "enable address sanitizer" OFF)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -12,7 +13,7 @@ add_definitions("-DLINEAR_MEMORY_BOUNDS_CHECKS=1")
 add_definitions("-DACTIVE_STACK_OVERFLOW_CHECK=1")
 add_definitions("-DNO_PASSIVE_PROTECTION_WARNING=1")
 
-if(NOT WARPO_RELEASE)
+if(WARPO_SANITIZE)
   add_compile_options(-fsanitize=address)
   add_link_options(-fsanitize=address)
 endif()
