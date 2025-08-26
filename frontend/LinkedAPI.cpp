@@ -15,7 +15,10 @@
 #include "wasm-compiler/src/core/common/function_traits.hpp"
 
 namespace export_to_asc {
+
 namespace {
+
+uint64_t BinaryenTypeFuncrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeFuncref(); }
 
 uint32_t getSizeOfLiteral([[maybe_unused]] void *ctx) { return sizeof(wasm::Literal); }
 
@@ -26,6 +29,18 @@ void BinaryenLiteralInt32ForLink(uint64_t ptr, int32_t x, [[maybe_unused]] void 
 void BinaryenLiteralInt64ForLink(uint64_t ptr, int32_t x, int32_t y, [[maybe_unused]] void *ctx) {
   int64_t const v = (static_cast<int64_t>(y) << 32) | (static_cast<uint32_t>(x));
   *reinterpret_cast<BinaryenLiteral *>(ptr) = BinaryenLiteralInt64(v);
+}
+
+void BinaryenSetMemoryForLink(uint64_t module, uint32_t initial, uint32_t maximum, uint64_t exportName,
+                              uint64_t segmentNames, uint64_t segmentDatas, uint64_t segmentPassives,
+                              uint64_t segmentOffsets, uint64_t segmentSizes, uint32_t numSegments, uint32_t shared,
+                              uint32_t memory64, uint64_t name, [[maybe_unused]] void *ctx) {
+  BinaryenSetMemory(reinterpret_cast<BinaryenModuleRef>(module), initial, maximum,
+                    reinterpret_cast<const char *>(exportName), reinterpret_cast<const char **>(segmentNames),
+                    reinterpret_cast<const char **>(segmentDatas), reinterpret_cast<bool *>(segmentPassives),
+                    reinterpret_cast<BinaryenExpressionRef *>(segmentOffsets),
+                    reinterpret_cast<BinaryenIndex *>(segmentSizes), numSegments, shared != 0, memory64 != 0,
+                    reinterpret_cast<const char *>(name));
 }
 
 uint32_t loadU8(uint64_t ptr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint8_t *>(ptr)[0]; }
@@ -106,9 +121,9 @@ const std::vector<vb::NativeSymbol> warpo::frontend ::linkedAPI{
 
     STATIC_LINK("binaryen", "_BinaryenLiteralInt32", export_to_asc::BinaryenLiteralInt32ForLink),
     STATIC_LINK("binaryen", "_BinaryenLiteralInt64", export_to_asc::BinaryenLiteralInt64ForLink),
+    STATIC_LINK("binaryen", "_BinaryenSetMemory", export_to_asc::BinaryenSetMemoryForLink),
+    STATIC_LINK("binaryen", "_BinaryenTypeFuncref", export_to_asc::BinaryenTypeFuncrefForLink),
 
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeFuncref", "()I",
-                     reinterpret_cast<void *>(&BinaryenTypeFuncref)},
     vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeExternref", "()I",
                      reinterpret_cast<void *>(&BinaryenTypeExternref)},
     vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenTypeAnyref", "()I",
@@ -379,8 +394,6 @@ const std::vector<vb::NativeSymbol> warpo::frontend ::linkedAPI{
                      reinterpret_cast<void *>(&BinaryenRemoveFunction)},
     vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenRemoveGlobal", "(II)",
                      reinterpret_cast<void *>(&BinaryenRemoveGlobal)},
-    vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenSetMemory", "(IiiIIIIIIiiiI)",
-                     reinterpret_cast<void *>(&BinaryenSetMemory)},
     vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenAddMemoryImport", "(IIIIi)",
                      reinterpret_cast<void *>(&BinaryenAddMemoryImport)},
     vb::NativeSymbol{vb::NativeSymbol::Linkage::STATIC, "binaryen", "_BinaryenAddTableImport", "(IIII)",

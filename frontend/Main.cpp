@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <fmt/base.h>
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string_view>
@@ -9,14 +10,13 @@
 
 #include "ASC/ASC.hpp"
 #include "LinkedAPI.hpp"
+#include "support/colors.h"
 #include "wasm-compiler/src/WasmModule/WasmModule.hpp"
+#include "wasm-compiler/src/core/common/ILogger.hpp"
 #include "wasm-compiler/src/core/common/NativeSymbol.hpp"
 #include "wasm-compiler/src/utils/STDCompilerLogger.hpp"
 #include "wasm-compiler/src/utils/StackTop.hpp"
 #include "wasm.h"
-
-#include "src/core/common/ILogger.hpp"
-#include "src/core/runtime/TrapException.hpp"
 
 constexpr std::string libraryPrefix = "~lib/";
 constexpr std::string extension = ".ts";
@@ -161,7 +161,10 @@ int main() {
         m.callExportedFunctionWithName<1>(stackTop, "getBinaryenModuleRef", compiled)[0].i64);
     if (binaryen_module == nullptr)
       return -1;
-    std::cout << *binaryen_module << "\n";
+
+    Colors::setEnabled(false);
+    std::ofstream ofs{"out.wat"};
+    ofs << *binaryen_module << "\n";
 
   } catch (std::exception const &e) {
     logger << "Error: " << e.what() << vb::endStatement;
