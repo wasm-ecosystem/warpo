@@ -17,26 +17,84 @@
 namespace export_to_asc {
 namespace {
 
-uint64_t BinaryenCallGetOperandAtForLink(uint64_t expr, uint32_t index, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenCallGetOperandAt(reinterpret_cast<BinaryenExpressionRef>(expr), index)); }
-uint64_t BinaryenReturnCallForLink(uint64_t module, uint64_t name, uint64_t operands, uint32_t numOperands, uint64_t returnType, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenReturnCall(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name), reinterpret_cast<BinaryenExpressionRef *>(operands), numOperands, static_cast<BinaryenType>(returnType))); }
-uint64_t BinaryenCallForLink(uint64_t module, uint64_t name, uint64_t operands, uint32_t numOperands, uint64_t returnType, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenCall(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name), reinterpret_cast<BinaryenExpressionRef *>(operands), numOperands, static_cast<BinaryenType>(returnType))); }
-uint32_t BinaryenLoadGetBytesForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return BinaryenLoadGetBytes(reinterpret_cast<BinaryenExpressionRef>(expr)); }
-uint64_t BinaryenBlockGetNameForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenBlockGetName(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint32_t BinaryenBlockGetNumChildrenForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return BinaryenBlockGetNumChildren(reinterpret_cast<BinaryenExpressionRef>(expr)); }
-uint64_t BinaryenBlockGetChildAtForLink(uint64_t expr, uint32_t index, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenBlockGetChildAt(reinterpret_cast<BinaryenExpressionRef>(expr), index)); }
-uint64_t BinaryenIfGetIfTrueForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenIfGetIfTrue(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint64_t BinaryenIfGetIfFalseForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenIfGetIfFalse(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint64_t BinaryenSelectGetIfTrueForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenSelectGetIfTrue(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint64_t BinaryenSelectGetIfFalseForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenSelectGetIfFalse(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint64_t BinaryenCallGetTargetForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenCallGetTarget(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint64_t BinaryenConstForLink(uint64_t module, uint64_t literal, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenConst(reinterpret_cast<BinaryenModuleRef>(module), *reinterpret_cast<BinaryenLiteral *>(literal))); }
-uint64_t BinaryenNopForLink(uint64_t module, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenNop(reinterpret_cast<BinaryenModuleRef>(module))); }
-uint64_t BinaryenBlockForLink(uint64_t module, uint64_t name, uint64_t children, uint32_t numChildren, uint64_t type, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenBlock(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name), reinterpret_cast<BinaryenExpressionRef *>(children), numChildren, type)); }
-uint64_t BinaryenBinaryForLink(uint64_t module, uint32_t op, uint64_t left, uint64_t right, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenBinary(reinterpret_cast<BinaryenModuleRef>(module), op, reinterpret_cast<BinaryenExpressionRef>(left), reinterpret_cast<BinaryenExpressionRef>(right))); }
-uint64_t BinaryenUnaryForLink(uint64_t module, uint32_t op, uint64_t value, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenUnary(reinterpret_cast<BinaryenModuleRef>(module), op, reinterpret_cast<BinaryenExpressionRef>(value))); }
-uint64_t BinaryenRefIsNullForLink(uint64_t module, uint64_t value, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenRefIsNull(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(value))); }
-uint64_t ExpressionRunnerCreateForLink(uint64_t module, uint32_t flags, uint32_t maxDepth, uint32_t maxLoopIterations, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(ExpressionRunnerCreate(reinterpret_cast<BinaryenModuleRef>(module), flags, maxDepth, maxLoopIterations)); }
-uint64_t ExpressionRunnerRunAndDisposeForLink(uint64_t runner, uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(ExpressionRunnerRunAndDispose(reinterpret_cast<ExpressionRunnerRef>(runner), reinterpret_cast<BinaryenExpressionRef>(expr))); }
+uint64_t BinaryenCallGetOperandAtForLink(uint64_t expr, uint32_t index, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenCallGetOperandAt(reinterpret_cast<BinaryenExpressionRef>(expr), index));
+}
+uint64_t BinaryenReturnCallForLink(uint64_t module, uint64_t name, uint64_t operands, uint32_t numOperands,
+                                   uint64_t returnType, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenReturnCall(
+      reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name),
+      reinterpret_cast<BinaryenExpressionRef *>(operands), numOperands, static_cast<BinaryenType>(returnType)));
+}
+uint64_t BinaryenCallForLink(uint64_t module, uint64_t name, uint64_t operands, uint32_t numOperands,
+                             uint64_t returnType, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenCall(
+      reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name),
+      reinterpret_cast<BinaryenExpressionRef *>(operands), numOperands, static_cast<BinaryenType>(returnType)));
+}
+uint32_t BinaryenLoadGetBytesForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenLoadGetBytes(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+uint64_t BinaryenBlockGetNameForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenBlockGetName(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint32_t BinaryenBlockGetNumChildrenForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenBlockGetNumChildren(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+uint64_t BinaryenBlockGetChildAtForLink(uint64_t expr, uint32_t index, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenBlockGetChildAt(reinterpret_cast<BinaryenExpressionRef>(expr), index));
+}
+uint64_t BinaryenIfGetIfTrueForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenIfGetIfTrue(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenIfGetIfFalseForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenIfGetIfFalse(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenSelectGetIfTrueForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenSelectGetIfTrue(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenSelectGetIfFalseForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenSelectGetIfFalse(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenCallGetTargetForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenCallGetTarget(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenConstForLink(uint64_t module, uint64_t literal, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenConst(reinterpret_cast<BinaryenModuleRef>(module), *reinterpret_cast<BinaryenLiteral *>(literal)));
+}
+uint64_t BinaryenNopForLink(uint64_t module, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenNop(reinterpret_cast<BinaryenModuleRef>(module)));
+}
+uint64_t BinaryenBlockForLink(uint64_t module, uint64_t name, uint64_t children, uint32_t numChildren, uint64_t type,
+                              [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenBlock(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name),
+                    reinterpret_cast<BinaryenExpressionRef *>(children), numChildren, type));
+}
+uint64_t BinaryenBinaryForLink(uint64_t module, uint32_t op, uint64_t left, uint64_t right,
+                               [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenBinary(reinterpret_cast<BinaryenModuleRef>(module), op,
+                                                   reinterpret_cast<BinaryenExpressionRef>(left),
+                                                   reinterpret_cast<BinaryenExpressionRef>(right)));
+}
+uint64_t BinaryenUnaryForLink(uint64_t module, uint32_t op, uint64_t value, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenUnary(reinterpret_cast<BinaryenModuleRef>(module), op, reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t BinaryenRefIsNullForLink(uint64_t module, uint64_t value, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenRefIsNull(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t ExpressionRunnerCreateForLink(uint64_t module, uint32_t flags, uint32_t maxDepth, uint32_t maxLoopIterations,
+                                       [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      ExpressionRunnerCreate(reinterpret_cast<BinaryenModuleRef>(module), flags, maxDepth, maxLoopIterations));
+}
+uint64_t ExpressionRunnerRunAndDisposeForLink(uint64_t runner, uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(ExpressionRunnerRunAndDispose(reinterpret_cast<ExpressionRunnerRef>(runner),
+                                                                  reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
 uint64_t BinaryenTypeExternrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeExternref(); }
 uint64_t BinaryenTypeAnyrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeAnyref(); }
 uint64_t BinaryenTypeEqrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeEqref(); }
@@ -47,63 +105,454 @@ uint64_t BinaryenTypeStringrefForLink([[maybe_unused]] void *ctx) { return Binar
 uint64_t BinaryenTypeNullrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeNullref(); }
 uint64_t BinaryenTypeNullFuncrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeNullFuncref(); }
 uint64_t BinaryenTypeNullExternrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeNullExternref(); }
-uint64_t BinaryenUnreachableForLink(uint64_t module, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenUnreachable(reinterpret_cast<BinaryenModuleRef>(module))); }
-uint32_t BinaryenExpressionGetIdForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint32_t>(BinaryenExpressionGetId(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint32_t BinaryenLocalSetIsTeeForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return static_cast<uint32_t>(BinaryenLocalSetIsTee(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint32_t BinaryenLocalSetGetIndexForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return static_cast<uint32_t>(BinaryenLocalSetGetIndex(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint32_t BinaryenLocalGetGetIndexForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return static_cast<uint32_t>(BinaryenLocalGetGetIndex(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint64_t BinaryenLocalSetGetValueForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenLocalSetGetValue(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint64_t BinaryenGlobalGetGetNameForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenGlobalGetGetName(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-int32_t BinaryenBinaryGetOpForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return static_cast<int32_t>(BinaryenBinaryGetOp(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint64_t BinaryenBinaryGetLeftForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenBinaryGetLeft(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint64_t BinaryenBinaryGetRightForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenBinaryGetRight(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-int32_t BinaryenConstGetValueI32ForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return BinaryenConstGetValueI32(reinterpret_cast<BinaryenExpressionRef>(expr)); }
-int32_t BinaryenUnaryGetOpForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return static_cast<int32_t>(BinaryenUnaryGetOp(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint64_t BinaryenExpressionGetTypeForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return static_cast<uint64_t>(BinaryenExpressionGetType(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-int32_t BinaryenConstGetValueI64LowForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return BinaryenConstGetValueI64Low(reinterpret_cast<BinaryenExpressionRef>(expr)); }
-int32_t BinaryenConstGetValueI64HighForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return BinaryenConstGetValueI64High(reinterpret_cast<BinaryenExpressionRef>(expr)); }
-float BinaryenConstGetValueF32ForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return BinaryenConstGetValueF32(reinterpret_cast<BinaryenExpressionRef>(expr)); }
-double BinaryenConstGetValueF64ForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return BinaryenConstGetValueF64(reinterpret_cast<BinaryenExpressionRef>(expr)); }
-uint32_t BinaryenLoadIsSignedForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return static_cast<uint32_t>(BinaryenLoadIsSigned(reinterpret_cast<BinaryenExpressionRef>(expr))); }
+uint64_t BinaryenUnreachableForLink(uint64_t module, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenUnreachable(reinterpret_cast<BinaryenModuleRef>(module)));
+}
+uint32_t BinaryenExpressionGetIdForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint32_t>(BinaryenExpressionGetId(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint32_t BinaryenLocalSetIsTeeForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(BinaryenLocalSetIsTee(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint32_t BinaryenLocalSetGetIndexForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(BinaryenLocalSetGetIndex(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint32_t BinaryenLocalGetGetIndexForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(BinaryenLocalGetGetIndex(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenLocalSetGetValueForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenLocalSetGetValue(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenGlobalGetGetNameForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenGlobalGetGetName(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+int32_t BinaryenBinaryGetOpForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<int32_t>(BinaryenBinaryGetOp(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenBinaryGetLeftForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenBinaryGetLeft(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenBinaryGetRightForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenBinaryGetRight(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+int32_t BinaryenConstGetValueI32ForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenConstGetValueI32(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+int32_t BinaryenUnaryGetOpForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<int32_t>(BinaryenUnaryGetOp(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenExpressionGetTypeForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<uint64_t>(BinaryenExpressionGetType(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+int32_t BinaryenConstGetValueI64LowForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenConstGetValueI64Low(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+int32_t BinaryenConstGetValueI64HighForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenConstGetValueI64High(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+float BinaryenConstGetValueF32ForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenConstGetValueF32(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+double BinaryenConstGetValueF64ForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return BinaryenConstGetValueF64(reinterpret_cast<BinaryenExpressionRef>(expr));
+}
+uint32_t BinaryenLoadIsSignedForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(BinaryenLoadIsSigned(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
 uint64_t BinaryenTypeFuncrefForLink([[maybe_unused]] void *ctx) { return BinaryenTypeFuncref(); }
 uint32_t BinaryenSizeofLiteralForLink([[maybe_unused]] void *ctx) { return sizeof(wasm::Literal); }
-void BinaryenLiteralInt32ForLink(uint64_t ptr, int32_t x, [[maybe_unused]] void *ctx) { *reinterpret_cast<BinaryenLiteral *>(ptr) = BinaryenLiteralInt32(x); }
-void BinaryenLiteralInt64ForLink(uint64_t ptr, int32_t x, int32_t y, [[maybe_unused]] void *ctx) { *reinterpret_cast<BinaryenLiteral *>(ptr) = BinaryenLiteralInt64((static_cast<int64_t>(y) << 32) | (static_cast<uint32_t>(x))); }
-void BinaryenSetMemoryForLink(uint64_t module, uint32_t initial, uint32_t maximum, uint64_t exportName, uint64_t segmentNames, uint64_t segmentDatas, uint64_t segmentPassives, uint64_t segmentOffsets, uint64_t segmentSizes, uint32_t numSegments, uint32_t shared, uint32_t memory64, uint64_t name, [[maybe_unused]] void *ctx) { BinaryenSetMemory(reinterpret_cast<BinaryenModuleRef>(module), initial, maximum, reinterpret_cast<const char *>(exportName), reinterpret_cast<const char **>(segmentNames), reinterpret_cast<const char **>(segmentDatas), reinterpret_cast<bool *>(segmentPassives), reinterpret_cast<BinaryenExpressionRef *>(segmentOffsets), reinterpret_cast<BinaryenIndex *>(segmentSizes), numSegments, shared != 0, memory64 != 0, reinterpret_cast<const char *>(name)); }
-uint32_t BinaryenModuleGetFeaturesForLink(uint64_t module, [[maybe_unused]] void *ctx) { return BinaryenModuleGetFeatures(reinterpret_cast<BinaryenModuleRef>(module)); }
-uint64_t BinaryenIfGetConditionForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenIfGetCondition(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint64_t BinaryenUnaryGetValueForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenUnaryGetValue(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint32_t BinaryenCallGetNumOperandsForLink(uint64_t expr, [[maybe_unused]] void *ctx) { return static_cast<uint32_t>(BinaryenCallGetNumOperands(reinterpret_cast<BinaryenExpressionRef>(expr))); }
-uint64_t BinaryenDropForLink(uint64_t module, uint64_t value, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenDrop(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(value))); }
-uint64_t BinaryenIfForLink(uint64_t module, uint64_t condition, uint64_t ifTrue, uint64_t ifFalse, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenIf(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(condition), reinterpret_cast<BinaryenExpressionRef>(ifTrue), reinterpret_cast<BinaryenExpressionRef>(ifFalse))); }
-uint64_t BinaryenLoopForLink(uint64_t module, uint64_t in, uint64_t body, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenLoop(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(in), reinterpret_cast<BinaryenExpressionRef>(body))); }
-uint64_t BinaryenBreakForLink(uint64_t module, uint64_t name, uint64_t condition, uint64_t value, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenBreak(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name), reinterpret_cast<BinaryenExpressionRef>(condition), reinterpret_cast<BinaryenExpressionRef>(value))); }
-uint64_t BinaryenReturnForLink(uint64_t module, uint64_t value, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenReturn(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(value))); }
-uint64_t BinaryenLocalSetForLink(uint64_t module, uint32_t index, uint64_t value, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenLocalSet(reinterpret_cast<BinaryenModuleRef>(module), index, reinterpret_cast<BinaryenExpressionRef>(value))); }
-uint64_t BinaryenTypeFromHeapTypeForLink(uint64_t heapType, uint32_t nullable, [[maybe_unused]] void *ctx) { return BinaryenTypeFromHeapType(static_cast<BinaryenHeapType>(heapType), nullable != 0); }
-uint64_t BinaryenTypeGetHeapTypeForLink(uint64_t type, [[maybe_unused]] void *ctx) { return BinaryenTypeGetHeapType(static_cast<BinaryenType>(type)); }
-uint64_t TypeBuilderCreateForLink(uint32_t size, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(TypeBuilderCreate(size)); }
-uint32_t TypeBuilderGetSizeForLink(uint64_t builder, [[maybe_unused]] void *ctx) { return TypeBuilderGetSize(reinterpret_cast<TypeBuilderRef>(builder)); }
-void TypeBuilderGrowForLink(uint64_t builder, uint32_t count, [[maybe_unused]] void *ctx) { TypeBuilderGrow(reinterpret_cast<TypeBuilderRef>(builder), count); }
-uint64_t TypeBuilderGetTempHeapTypeForLink(uint64_t builder, uint32_t index, [[maybe_unused]] void *ctx) { return TypeBuilderGetTempHeapType(reinterpret_cast<TypeBuilderRef>(builder), index); }
-uint64_t TypeBuilderGetTempRefTypeForLink(uint64_t builder, uint32_t index, uint32_t nullable, [[maybe_unused]] void *ctx) { return TypeBuilderGetTempRefType(reinterpret_cast<TypeBuilderRef>(builder), index, nullable != 0); }
-void TypeBuilderSetStructTypeForLink(uint64_t builder, uint32_t index, uint64_t fieldTypes, uint64_t fieldPackedTypes, uint64_t fieldMutables, uint32_t numFields, [[maybe_unused]] void *ctx) { TypeBuilderSetStructType(reinterpret_cast<TypeBuilderRef>(builder), index, reinterpret_cast<BinaryenType *>(fieldTypes), reinterpret_cast<BinaryenPackedType *>(fieldPackedTypes), reinterpret_cast<bool *>(fieldMutables), numFields); }
-void TypeBuilderSetSubTypeForLink(uint64_t builder, uint32_t index, uint64_t superType, [[maybe_unused]] void *ctx) { TypeBuilderSetSubType(reinterpret_cast<TypeBuilderRef>(builder), index, static_cast<BinaryenHeapType>(superType)); }
-uint64_t TypeBuilderGetTempTupleTypeForLink(uint64_t builder, uint64_t types, uint32_t numTypes, [[maybe_unused]] void *ctx) { return TypeBuilderGetTempTupleType(reinterpret_cast<TypeBuilderRef>(builder), reinterpret_cast<BinaryenType *>(types), numTypes); }
-void TypeBuilderSetSignatureTypeForLink(uint64_t builder, uint32_t index, uint64_t paramTypes, uint32_t numParams, uint64_t resultTypes, uint32_t numResults, [[maybe_unused]] void *ctx) { TypeBuilderSetSignatureType(reinterpret_cast<TypeBuilderRef>(builder), index, static_cast<BinaryenType>(paramTypes), static_cast<BinaryenType>(resultTypes)); }
-uint32_t TypeBuilderBuildAndDisposeForLink(uint64_t builder, uint64_t heapTypes, uint64_t errorIndex, uint64_t errorReason, [[maybe_unused]] void *ctx) { return static_cast<uint32_t>(TypeBuilderBuildAndDispose(reinterpret_cast<TypeBuilderRef>(builder), reinterpret_cast<BinaryenHeapType *>(heapTypes), reinterpret_cast<BinaryenIndex *>(errorIndex), reinterpret_cast<TypeBuilderErrorReason *>(errorReason))); }
-uint32_t BinaryenModuleSetTypeNameForLink(uint64_t ptr, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint32_t *>(ptr)[0]; }
-uint32_t BinaryenStructTypeGetNumFieldsForLink(uint64_t heapType, [[maybe_unused]] void *ctx) { return BinaryenStructTypeGetNumFields(static_cast<BinaryenHeapType>(heapType)); }
-void BinaryenModuleSetFieldNameForLink(uint64_t module, uint64_t heapType, uint32_t index, uint64_t name, [[maybe_unused]] void *ctx) { BinaryenModuleSetFieldName(reinterpret_cast<BinaryenModuleRef>(module), static_cast<BinaryenHeapType>(heapType), index, reinterpret_cast<const char *>(name)); }
-uint64_t BinaryenLocalGetForLink(uint64_t module, uint32_t index, uint64_t type, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenLocalGet(reinterpret_cast<BinaryenModuleRef>(module), index, static_cast<BinaryenType>(type))); }
-uint64_t BinaryenAddFunctionForLink(uint64_t module, uint64_t name, uint64_t params, uint64_t results, uint64_t varTypes, uint32_t numVarTypes, uint64_t body, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenAddFunction(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name), static_cast<BinaryenType>(params), static_cast<BinaryenType>(results), reinterpret_cast<BinaryenType *>(varTypes), numVarTypes, reinterpret_cast<BinaryenExpressionRef>(body))); }
-uint64_t BinaryenLocalTeeForLink(uint64_t module, uint32_t index, uint64_t value, uint64_t type, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenLocalTee(reinterpret_cast<BinaryenModuleRef>(module), index, reinterpret_cast<BinaryenExpressionRef>(value), static_cast<BinaryenType>(type))); }
-void BinaryenAddGlobalImportForLink(uint64_t module, uint64_t internalName, uint64_t externalModuleName, uint64_t externalBaseName, uint64_t globalType, uint32_t mutable_, [[maybe_unused]] void *ctx) { BinaryenAddGlobalImport(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(internalName), reinterpret_cast<const char *>(externalModuleName), reinterpret_cast<const char *>(externalBaseName), static_cast<BinaryenType>(globalType), mutable_ != 0); }
-uint64_t BinaryenGetGlobalForLink(uint64_t module, uint64_t name, [[maybe_unused]] void *ctx) { return reinterpret_cast<uint64_t>(BinaryenGetGlobal(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name))); }
-uint32_t BinaryenGlobalIsMutableForLink(uint64_t global, [[maybe_unused]] void *ctx) { return static_cast<uint32_t>(BinaryenGlobalIsMutable(reinterpret_cast<BinaryenGlobalRef>(global))); }
-void BinaryenLiteralFloat64ForLink(uint64_t ptr, double x, [[maybe_unused]] void *ctx) { *reinterpret_cast<BinaryenLiteral *>(ptr) = BinaryenLiteralFloat64(x); }
-void BinaryenLiteralFloat32ForLink(uint64_t ptr, float x, [[maybe_unused]] void *ctx) { *reinterpret_cast<BinaryenLiteral *>(ptr) = BinaryenLiteralFloat32(x); }
-
+void BinaryenLiteralInt32ForLink(uint64_t ptr, int32_t x, [[maybe_unused]] void *ctx) {
+  *reinterpret_cast<BinaryenLiteral *>(ptr) = BinaryenLiteralInt32(x);
+}
+void BinaryenLiteralInt64ForLink(uint64_t ptr, int32_t x, int32_t y, [[maybe_unused]] void *ctx) {
+  *reinterpret_cast<BinaryenLiteral *>(ptr) =
+      BinaryenLiteralInt64((static_cast<int64_t>(y) << 32) | (static_cast<uint32_t>(x)));
+}
+void BinaryenSetMemoryForLink(uint64_t module, uint32_t initial, uint32_t maximum, uint64_t exportName,
+                              uint64_t segmentNames, uint64_t segmentDatas, uint64_t segmentPassives,
+                              uint64_t segmentOffsets, uint64_t segmentSizes, uint32_t numSegments, uint32_t shared,
+                              uint32_t memory64, uint64_t name, [[maybe_unused]] void *ctx) {
+  BinaryenSetMemory(reinterpret_cast<BinaryenModuleRef>(module), initial, maximum,
+                    reinterpret_cast<const char *>(exportName), reinterpret_cast<const char **>(segmentNames),
+                    reinterpret_cast<const char **>(segmentDatas), reinterpret_cast<bool *>(segmentPassives),
+                    reinterpret_cast<BinaryenExpressionRef *>(segmentOffsets),
+                    reinterpret_cast<BinaryenIndex *>(segmentSizes), numSegments, shared != 0, memory64 != 0,
+                    reinterpret_cast<const char *>(name));
+}
+uint32_t BinaryenModuleGetFeaturesForLink(uint64_t module, [[maybe_unused]] void *ctx) {
+  return BinaryenModuleGetFeatures(reinterpret_cast<BinaryenModuleRef>(module));
+}
+uint64_t BinaryenIfGetConditionForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenIfGetCondition(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenUnaryGetValueForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenUnaryGetValue(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint32_t BinaryenCallGetNumOperandsForLink(uint64_t expr, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(BinaryenCallGetNumOperands(reinterpret_cast<BinaryenExpressionRef>(expr)));
+}
+uint64_t BinaryenDropForLink(uint64_t module, uint64_t value, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenDrop(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t BinaryenIfForLink(uint64_t module, uint64_t condition, uint64_t ifTrue, uint64_t ifFalse,
+                           [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenIf(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(condition),
+                 reinterpret_cast<BinaryenExpressionRef>(ifTrue), reinterpret_cast<BinaryenExpressionRef>(ifFalse)));
+}
+uint64_t BinaryenLoopForLink(uint64_t module, uint64_t in, uint64_t body, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenLoop(reinterpret_cast<BinaryenModuleRef>(module),
+                                                 reinterpret_cast<const char *>(in),
+                                                 reinterpret_cast<BinaryenExpressionRef>(body)));
+}
+uint64_t BinaryenBreakForLink(uint64_t module, uint64_t name, uint64_t condition, uint64_t value,
+                              [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenBreak(
+      reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name),
+      reinterpret_cast<BinaryenExpressionRef>(condition), reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t BinaryenReturnForLink(uint64_t module, uint64_t value, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenReturn(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t BinaryenLocalSetForLink(uint64_t module, uint32_t index, uint64_t value, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenLocalSet(reinterpret_cast<BinaryenModuleRef>(module), index,
+                                                     reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t BinaryenTypeFromHeapTypeForLink(uint64_t heapType, uint32_t nullable, [[maybe_unused]] void *ctx) {
+  return BinaryenTypeFromHeapType(static_cast<BinaryenHeapType>(heapType), nullable != 0);
+}
+uint64_t BinaryenTypeGetHeapTypeForLink(uint64_t type, [[maybe_unused]] void *ctx) {
+  return BinaryenTypeGetHeapType(static_cast<BinaryenType>(type));
+}
+uint64_t TypeBuilderCreateForLink(uint32_t size, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(TypeBuilderCreate(size));
+}
+uint32_t TypeBuilderGetSizeForLink(uint64_t builder, [[maybe_unused]] void *ctx) {
+  return TypeBuilderGetSize(reinterpret_cast<TypeBuilderRef>(builder));
+}
+void TypeBuilderGrowForLink(uint64_t builder, uint32_t count, [[maybe_unused]] void *ctx) {
+  TypeBuilderGrow(reinterpret_cast<TypeBuilderRef>(builder), count);
+}
+uint64_t TypeBuilderGetTempHeapTypeForLink(uint64_t builder, uint32_t index, [[maybe_unused]] void *ctx) {
+  return TypeBuilderGetTempHeapType(reinterpret_cast<TypeBuilderRef>(builder), index);
+}
+uint64_t TypeBuilderGetTempRefTypeForLink(uint64_t builder, uint32_t index, uint32_t nullable,
+                                          [[maybe_unused]] void *ctx) {
+  return TypeBuilderGetTempRefType(reinterpret_cast<TypeBuilderRef>(builder), index, nullable != 0);
+}
+void TypeBuilderSetStructTypeForLink(uint64_t builder, uint32_t index, uint64_t fieldTypes, uint64_t fieldPackedTypes,
+                                     uint64_t fieldMutables, uint32_t numFields, [[maybe_unused]] void *ctx) {
+  TypeBuilderSetStructType(
+      reinterpret_cast<TypeBuilderRef>(builder), index, reinterpret_cast<BinaryenType *>(fieldTypes),
+      reinterpret_cast<BinaryenPackedType *>(fieldPackedTypes), reinterpret_cast<bool *>(fieldMutables), numFields);
+}
+void TypeBuilderSetSubTypeForLink(uint64_t builder, uint32_t index, uint64_t superType, [[maybe_unused]] void *ctx) {
+  TypeBuilderSetSubType(reinterpret_cast<TypeBuilderRef>(builder), index, static_cast<BinaryenHeapType>(superType));
+}
+uint64_t TypeBuilderGetTempTupleTypeForLink(uint64_t builder, uint64_t types, uint32_t numTypes,
+                                            [[maybe_unused]] void *ctx) {
+  return TypeBuilderGetTempTupleType(reinterpret_cast<TypeBuilderRef>(builder), reinterpret_cast<BinaryenType *>(types),
+                                     numTypes);
+}
+void TypeBuilderSetSignatureTypeForLink(uint64_t builder, uint32_t index, uint64_t paramTypes, uint32_t numParams,
+                                        uint64_t resultTypes, uint32_t numResults, [[maybe_unused]] void *ctx) {
+  TypeBuilderSetSignatureType(reinterpret_cast<TypeBuilderRef>(builder), index, static_cast<BinaryenType>(paramTypes),
+                              static_cast<BinaryenType>(resultTypes));
+}
+uint32_t TypeBuilderBuildAndDisposeForLink(uint64_t builder, uint64_t heapTypes, uint64_t errorIndex,
+                                           uint64_t errorReason, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(TypeBuilderBuildAndDispose(
+      reinterpret_cast<TypeBuilderRef>(builder), reinterpret_cast<BinaryenHeapType *>(heapTypes),
+      reinterpret_cast<BinaryenIndex *>(errorIndex), reinterpret_cast<TypeBuilderErrorReason *>(errorReason)));
+}
+uint32_t BinaryenModuleSetTypeNameForLink(uint64_t ptr, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint32_t *>(ptr)[0];
+}
+uint32_t BinaryenStructTypeGetNumFieldsForLink(uint64_t heapType, [[maybe_unused]] void *ctx) {
+  return BinaryenStructTypeGetNumFields(static_cast<BinaryenHeapType>(heapType));
+}
+void BinaryenModuleSetFieldNameForLink(uint64_t module, uint64_t heapType, uint32_t index, uint64_t name,
+                                       [[maybe_unused]] void *ctx) {
+  BinaryenModuleSetFieldName(reinterpret_cast<BinaryenModuleRef>(module), static_cast<BinaryenHeapType>(heapType),
+                             index, reinterpret_cast<const char *>(name));
+}
+uint64_t BinaryenLocalGetForLink(uint64_t module, uint32_t index, uint64_t type, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenLocalGet(reinterpret_cast<BinaryenModuleRef>(module), index, static_cast<BinaryenType>(type)));
+}
+uint64_t BinaryenAddFunctionForLink(uint64_t module, uint64_t name, uint64_t params, uint64_t results,
+                                    uint64_t varTypes, uint32_t numVarTypes, uint64_t body,
+                                    [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenAddFunction(
+      reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name),
+      static_cast<BinaryenType>(params), static_cast<BinaryenType>(results), reinterpret_cast<BinaryenType *>(varTypes),
+      numVarTypes, reinterpret_cast<BinaryenExpressionRef>(body)));
+}
+uint64_t BinaryenLocalTeeForLink(uint64_t module, uint32_t index, uint64_t value, uint64_t type,
+                                 [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenLocalTee(reinterpret_cast<BinaryenModuleRef>(module), index,
+                                                     reinterpret_cast<BinaryenExpressionRef>(value),
+                                                     static_cast<BinaryenType>(type)));
+}
+void BinaryenAddGlobalImportForLink(uint64_t module, uint64_t internalName, uint64_t externalModuleName,
+                                    uint64_t externalBaseName, uint64_t globalType, uint32_t mutable_,
+                                    [[maybe_unused]] void *ctx) {
+  BinaryenAddGlobalImport(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(internalName),
+                          reinterpret_cast<const char *>(externalModuleName),
+                          reinterpret_cast<const char *>(externalBaseName), static_cast<BinaryenType>(globalType),
+                          mutable_ != 0);
+}
+uint64_t BinaryenGetGlobalForLink(uint64_t module, uint64_t name, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenGetGlobal(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name)));
+}
+uint32_t BinaryenGlobalIsMutableForLink(uint64_t global, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(BinaryenGlobalIsMutable(reinterpret_cast<BinaryenGlobalRef>(global)));
+}
+void BinaryenLiteralFloat64ForLink(uint64_t ptr, double x, [[maybe_unused]] void *ctx) {
+  *reinterpret_cast<BinaryenLiteral *>(ptr) = BinaryenLiteralFloat64(x);
+}
+void BinaryenLiteralFloat32ForLink(uint64_t ptr, float x, [[maybe_unused]] void *ctx) {
+  *reinterpret_cast<BinaryenLiteral *>(ptr) = BinaryenLiteralFloat32(x);
+}
+void BinaryenLiteralVec128ForLink(uint64_t ptr, uint64_t bytes, [[maybe_unused]] void *ctx) {
+  *reinterpret_cast<BinaryenLiteral *>(ptr) = BinaryenLiteralVec128(reinterpret_cast<const uint8_t *>(bytes));
+}
+uint64_t BinaryenRefNullForLink(uint64_t module, uint64_t type, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenRefNull(reinterpret_cast<BinaryenModuleRef>(module), static_cast<BinaryenType>(type)));
+}
+uint64_t BinaryenRefI31ForLink(uint64_t module, uint64_t value, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenRefI31(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t BinaryenAddGlobalForLink(uint64_t module, uint64_t name, uint64_t type, uint32_t mutable_, uint64_t init,
+                                  [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenAddGlobal(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name),
+                        static_cast<BinaryenType>(type), mutable_ != 0, reinterpret_cast<BinaryenExpressionRef>(init)));
+}
+uint64_t BinaryenGlobalSetForLink(uint64_t module, uint64_t name, uint64_t value, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenGlobalSet(reinterpret_cast<BinaryenModuleRef>(module),
+                                                      reinterpret_cast<const char *>(name),
+                                                      reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t BinaryenGlobalGetForLink(uint64_t module, uint64_t name, uint64_t type, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenGlobalGet(reinterpret_cast<BinaryenModuleRef>(module),
+                                                      reinterpret_cast<const char *>(name),
+                                                      static_cast<BinaryenType>(type)));
+}
+uint64_t BinaryenSwitchForLink(uint64_t module, uint64_t names, uint32_t numNames, uint64_t defaultName,
+                               uint64_t condition, uint64_t value, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenSwitch(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char **>(names), numNames,
+                     reinterpret_cast<const char *>(defaultName), reinterpret_cast<BinaryenExpressionRef>(condition),
+                     reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+void BinaryenConstGetValueV128ForLink(uint64_t expr, uint64_t out, [[maybe_unused]] void *ctx) {
+  BinaryenConstGetValueV128(reinterpret_cast<BinaryenExpressionRef>(expr), reinterpret_cast<uint8_t *>(out));
+}
+uint64_t BinaryenTypeCreateForLink(uint64_t types, uint32_t numTypes, [[maybe_unused]] void *ctx) {
+  return BinaryenTypeCreate(reinterpret_cast<BinaryenType *>(types), numTypes);
+}
+void BinaryenFunctionSetDebugLocationForLink(uint64_t func, uint64_t expr, uint32_t fileIndex, uint32_t lineNumber,
+                                             uint32_t columnNumber, [[maybe_unused]] void *ctx) {
+  BinaryenFunctionSetDebugLocation(reinterpret_cast<BinaryenFunctionRef>(func),
+                                   reinterpret_cast<BinaryenExpressionRef>(expr), fileIndex, lineNumber, columnNumber);
+}
+void BinaryenFunctionSetLocalNameForLink(uint64_t func, uint32_t index, uint64_t name, [[maybe_unused]] void *ctx) {
+  BinaryenFunctionSetLocalName(reinterpret_cast<BinaryenFunctionRef>(func), index,
+                               reinterpret_cast<const char *>(name));
+}
+uint32_t BinaryenExpressionGetSideEffectsForLink(uint64_t expr, uint64_t module, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(BinaryenExpressionGetSideEffects(reinterpret_cast<BinaryenExpressionRef>(expr),
+                                                                reinterpret_cast<BinaryenModuleRef>(module)));
+}
+uint64_t BinaryenRefEqForLink(uint64_t module, uint64_t left, uint64_t right, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenRefEq(reinterpret_cast<BinaryenModuleRef>(module),
+                                                  reinterpret_cast<BinaryenExpressionRef>(left),
+                                                  reinterpret_cast<BinaryenExpressionRef>(right)));
+}
+uint64_t BinaryenStringEqForLink(uint64_t module, int32_t op, uint64_t left, uint64_t right,
+                                 [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenStringEq(reinterpret_cast<BinaryenModuleRef>(module), op,
+                                                     reinterpret_cast<BinaryenExpressionRef>(left),
+                                                     reinterpret_cast<BinaryenExpressionRef>(right)));
+}
+uint32_t BinaryenModuleAddDebugInfoFileNameForLink(uint64_t module, uint64_t filename, [[maybe_unused]] void *ctx) {
+  return BinaryenModuleAddDebugInfoFileName(reinterpret_cast<BinaryenModuleRef>(module),
+                                            reinterpret_cast<const char *>(filename));
+}
+void BinaryenAddFunctionImportForLink(uint64_t module, uint64_t internalName, uint64_t externalModuleName,
+                                      uint64_t externalBaseName, uint64_t params, uint64_t results,
+                                      [[maybe_unused]] void *ctx) {
+  BinaryenAddFunctionImport(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(internalName),
+                            reinterpret_cast<const char *>(externalModuleName),
+                            reinterpret_cast<const char *>(externalBaseName), static_cast<BinaryenType>(params),
+                            static_cast<BinaryenType>(results));
+}
+uint64_t BinaryenGetFunctionForLink(uint64_t module, uint64_t name, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenGetFunction(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(name)));
+}
+uint64_t BinaryenLoadForLink(uint64_t module, uint32_t bytes, uint32_t signed_, uint32_t offset, uint32_t align,
+                             uint64_t type, uint64_t ptr, uint64_t memoryName, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenLoad(
+      reinterpret_cast<BinaryenModuleRef>(module), bytes, signed_ != 0, offset, align, static_cast<BinaryenType>(type),
+      reinterpret_cast<BinaryenExpressionRef>(ptr), reinterpret_cast<const char *>(memoryName)));
+}
+uint64_t BinaryenStoreForLink(uint64_t module, uint32_t bytes, uint32_t offset, uint32_t align, uint64_t ptr,
+                              uint64_t value, uint64_t type, uint64_t memoryName, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenStore(reinterpret_cast<BinaryenModuleRef>(module), bytes, offset, align,
+                    reinterpret_cast<BinaryenExpressionRef>(ptr), reinterpret_cast<BinaryenExpressionRef>(value),
+                    static_cast<BinaryenType>(type), reinterpret_cast<const char *>(memoryName)));
+}
+uint32_t BinaryenTypeIsNullableForLink(uint64_t type, [[maybe_unused]] void *ctx) {
+  return static_cast<uint32_t>(BinaryenTypeIsNullable(static_cast<BinaryenType>(type)));
+}
+uint64_t BinaryenRefAsForLink(uint64_t module, uint32_t op, uint64_t ref, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenRefAs(reinterpret_cast<BinaryenModuleRef>(module),
+                                                  static_cast<BinaryenOp>(op),
+                                                  reinterpret_cast<BinaryenExpressionRef>(ref)));
+}
+uint64_t BinaryenSelectForLink(uint64_t module, uint64_t condition, uint64_t ifTrue, uint64_t ifFalse,
+                               [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenSelect(
+      reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(condition),
+      reinterpret_cast<BinaryenExpressionRef>(ifTrue), reinterpret_cast<BinaryenExpressionRef>(ifFalse)));
+}
+uint64_t BinaryenExpressionCopyForLink(uint64_t expr, uint64_t module, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenExpressionCopy(reinterpret_cast<BinaryenExpressionRef>(expr),
+                                                           reinterpret_cast<BinaryenModuleRef>(module)));
+}
+uint64_t BinaryenReturnCallIndirectForLink(uint64_t module, uint64_t table, uint64_t target, uint64_t operands,
+                                           uint32_t numOperands, uint64_t params, uint64_t results,
+                                           [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenReturnCallIndirect(
+      reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(table),
+      reinterpret_cast<BinaryenExpressionRef>(target), reinterpret_cast<BinaryenExpressionRef *>(operands), numOperands,
+      static_cast<BinaryenType>(params), static_cast<BinaryenType>(results)));
+}
+uint64_t BinaryenCallIndirectForLink(uint64_t module, uint64_t table, uint64_t target, uint64_t operands,
+                                     uint32_t numOperands, uint64_t params, uint64_t results,
+                                     [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenCallIndirect(
+      reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<const char *>(table),
+      reinterpret_cast<BinaryenExpressionRef>(target), reinterpret_cast<BinaryenExpressionRef *>(operands), numOperands,
+      static_cast<BinaryenType>(params), static_cast<BinaryenType>(results)));
+}
+uint64_t BinaryenRefFuncForLink(uint64_t module, uint64_t func, uint64_t type, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenRefFunc(reinterpret_cast<BinaryenModuleRef>(module),
+                                                    reinterpret_cast<const char *>(func),
+                                                    static_cast<BinaryenType>(type)));
+}
+uint64_t BinaryenAtomicLoadForLink(uint64_t module, uint32_t bytes, uint32_t offset, uint64_t type, uint64_t ptr,
+                                   uint64_t memoryName, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenAtomicLoad(reinterpret_cast<BinaryenModuleRef>(module), bytes, offset, static_cast<BinaryenType>(type),
+                         reinterpret_cast<BinaryenExpressionRef>(ptr), reinterpret_cast<const char *>(memoryName)));
+}
+uint64_t BinaryenAtomicStoreForLink(uint64_t module, uint32_t bytes, uint32_t offset, uint64_t ptr, uint64_t value,
+                                    uint64_t type, uint64_t memoryName, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenAtomicStore(reinterpret_cast<BinaryenModuleRef>(module), bytes, offset,
+                          reinterpret_cast<BinaryenExpressionRef>(ptr), reinterpret_cast<BinaryenExpressionRef>(value),
+                          static_cast<BinaryenType>(type), reinterpret_cast<const char *>(memoryName)));
+}
+uint64_t BinaryenAtomicRMWForLink(uint64_t module, uint32_t op, uint32_t bytes, uint32_t offset, uint64_t ptr,
+                                  uint64_t value, uint64_t type, uint64_t memoryName, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenAtomicRMW(reinterpret_cast<BinaryenModuleRef>(module), static_cast<BinaryenOp>(op), bytes, offset,
+                        reinterpret_cast<BinaryenExpressionRef>(ptr), reinterpret_cast<BinaryenExpressionRef>(value),
+                        static_cast<BinaryenType>(type), reinterpret_cast<const char *>(memoryName)));
+}
+uint64_t BinaryenAtomicCmpxchgForLink(uint64_t module, uint32_t bytes, uint32_t offset, uint64_t ptr, uint64_t expected,
+                                      uint64_t replacement, uint64_t type, uint64_t memoryName,
+                                      [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenAtomicCmpxchg(
+      reinterpret_cast<BinaryenModuleRef>(module), bytes, offset, reinterpret_cast<BinaryenExpressionRef>(ptr),
+      reinterpret_cast<BinaryenExpressionRef>(expected), reinterpret_cast<BinaryenExpressionRef>(replacement),
+      static_cast<BinaryenType>(type), reinterpret_cast<const char *>(memoryName)));
+}
+uint64_t BinaryenAtomicWaitForLink(uint64_t module, uint64_t ptr, uint64_t expected, uint64_t timeout, uint64_t type,
+                                   uint64_t memoryName, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenAtomicWait(
+      reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(ptr),
+      reinterpret_cast<BinaryenExpressionRef>(expected), reinterpret_cast<BinaryenExpressionRef>(timeout),
+      static_cast<BinaryenType>(type), reinterpret_cast<const char *>(memoryName)));
+}
+uint64_t BinaryenAtomicNotifyForLink(uint64_t module, uint64_t ptr, uint64_t notifyCount, uint64_t memoryName,
+                                     [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenAtomicNotify(
+      reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(ptr),
+      reinterpret_cast<BinaryenExpressionRef>(notifyCount), reinterpret_cast<const char *>(memoryName)));
+}
+uint64_t BinaryenAtomicFenceForLink(uint64_t module, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenAtomicFence(reinterpret_cast<BinaryenModuleRef>(module)));
+}
+uint64_t BinaryenMemorySizeForLink(uint64_t module, uint64_t memoryName, uint32_t memoryIs64,
+                                   [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenMemorySize(reinterpret_cast<BinaryenModuleRef>(module),
+                                                       reinterpret_cast<const char *>(memoryName), memoryIs64 != 0));
+}
+uint64_t BinaryenMemoryGrowForLink(uint64_t module, uint64_t delta, uint64_t memoryName, uint32_t memoryIs64,
+                                   [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenMemoryGrow(reinterpret_cast<BinaryenModuleRef>(module),
+                                                       reinterpret_cast<BinaryenExpressionRef>(delta),
+                                                       reinterpret_cast<const char *>(memoryName), memoryIs64 != 0));
+}
+uint64_t BinaryenMemoryCopyForLink(uint64_t module, uint64_t dest, uint64_t source, uint64_t size,
+                                   uint64_t destMemoryName, uint64_t sourceMemoryName, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenMemoryCopy(
+      reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(dest),
+      reinterpret_cast<BinaryenExpressionRef>(source), reinterpret_cast<BinaryenExpressionRef>(size),
+      reinterpret_cast<const char *>(destMemoryName), reinterpret_cast<const char *>(sourceMemoryName)));
+}
+uint64_t BinaryenMemoryFillForLink(uint64_t module, uint64_t dest, uint64_t value, uint64_t size, uint64_t memoryName,
+                                   [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenMemoryFill(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(dest),
+                         reinterpret_cast<BinaryenExpressionRef>(value), reinterpret_cast<BinaryenExpressionRef>(size),
+                         reinterpret_cast<const char *>(memoryName)));
+}
+uint64_t BinaryenI31GetForLink(uint64_t module, uint64_t i31, uint32_t signed_, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenI31Get(reinterpret_cast<BinaryenModuleRef>(module),
+                                                   reinterpret_cast<BinaryenExpressionRef>(i31), signed_ != 0));
+}
+uint64_t BinaryenSIMDReplaceForLink(uint64_t module, uint32_t op, uint64_t vec, uint32_t index, uint64_t value,
+                                    [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenSIMDReplace(
+      reinterpret_cast<BinaryenModuleRef>(module), static_cast<BinaryenOp>(op),
+      reinterpret_cast<BinaryenExpressionRef>(vec), index, reinterpret_cast<BinaryenExpressionRef>(value)));
+}
+uint64_t BinaryenSIMDExtractForLink(uint64_t module, uint32_t op, uint64_t vec, uint32_t index,
+                                    [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenSIMDExtract(reinterpret_cast<BinaryenModuleRef>(module),
+                                                        static_cast<BinaryenOp>(op),
+                                                        reinterpret_cast<BinaryenExpressionRef>(vec), index));
+}
+uint64_t BinaryenSIMDShuffleForLink(uint64_t module, uint64_t left, uint64_t right, uint64_t mask,
+                                    [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenSIMDShuffle(reinterpret_cast<BinaryenModuleRef>(module), reinterpret_cast<BinaryenExpressionRef>(left),
+                          reinterpret_cast<BinaryenExpressionRef>(right), reinterpret_cast<const uint8_t *>(mask)));
+}
+uint64_t BinaryenSIMDLoadForLink(uint64_t module, uint32_t op, uint32_t offset, uint32_t align, uint64_t ptr,
+                                 uint64_t memoryName, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(
+      BinaryenSIMDLoad(reinterpret_cast<BinaryenModuleRef>(module), static_cast<BinaryenOp>(op), offset, align,
+                       reinterpret_cast<BinaryenExpressionRef>(ptr), reinterpret_cast<const char *>(memoryName)));
+}
+uint64_t BinaryenSIMDLoadStoreLaneForLink(uint64_t module, uint32_t op, uint32_t offset, uint32_t align, uint32_t index,
+                                          uint64_t ptr, uint64_t vec, uint64_t memoryName, [[maybe_unused]] void *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenSIMDLoadStoreLane(
+      reinterpret_cast<BinaryenModuleRef>(module), static_cast<BinaryenOp>(op), offset, align, index,
+      reinterpret_cast<BinaryenExpressionRef>(ptr), reinterpret_cast<BinaryenExpressionRef>(vec),
+      reinterpret_cast<const char *>(memoryName)));
+}
 } // namespace
 
 namespace {
@@ -138,7 +587,8 @@ std::string getAsString(uint32_t ptr, vb::WasmModule *ctx) {
 
 void abort(uint32_t messagePtr, uint32_t fileNamePtr, uint32_t lineNumber, uint32_t columnNumber, vb::WasmModule *ctx) {
   std::stringstream ss{};
-  ss << "abort: " << getAsString(messagePtr, ctx) << " in " << getAsString(fileNamePtr, ctx) << ":" << lineNumber << ":" << columnNumber;
+  ss << "abort: " << getAsString(messagePtr, ctx) << " in " << getAsString(fileNamePtr, ctx) << ":" << lineNumber << ":"
+     << columnNumber;
   std::cerr << std::move(ss).str() << std::endl;
   // ctx->requestInterruption(vb::TrapCode::BUILTIN_TRAP);
 }
@@ -277,12 +727,15 @@ const std::vector<vb::NativeSymbol> warpo::frontend ::linkedAPI{
     STATIC_LINK("binaryen", "_BinaryenSwitch", export_to_asc::BinaryenSwitchForLink),
     STATIC_LINK("binaryen", "_BinaryenConstGetValueV128", export_to_asc::BinaryenConstGetValueV128ForLink),
     STATIC_LINK("binaryen", "_BinaryenTypeCreate", export_to_asc::BinaryenTypeCreateForLink),
-    STATIC_LINK("binaryen", "_BinaryenFunctionSetDebugLocation", export_to_asc::BinaryenFunctionSetDebugLocationForLink),
+    STATIC_LINK("binaryen", "_BinaryenFunctionSetDebugLocation",
+                export_to_asc::BinaryenFunctionSetDebugLocationForLink),
     STATIC_LINK("binaryen", "_BinaryenFunctionSetLocalName", export_to_asc::BinaryenFunctionSetLocalNameForLink),
-    STATIC_LINK("binaryen", "_BinaryenExpressionGetSideEffects", export_to_asc::BinaryenExpressionGetSideEffectsForLink),
+    STATIC_LINK("binaryen", "_BinaryenExpressionGetSideEffects",
+                export_to_asc::BinaryenExpressionGetSideEffectsForLink),
     STATIC_LINK("binaryen", "_BinaryenRefEq", export_to_asc::BinaryenRefEqForLink),
     STATIC_LINK("binaryen", "_BinaryenStringEq", export_to_asc::BinaryenStringEqForLink),
-    STATIC_LINK("binaryen", "_BinaryenModuleAddDebugInfoFileName", export_to_asc::BinaryenModuleAddDebugInfoFileNameForLink),
+    STATIC_LINK("binaryen", "_BinaryenModuleAddDebugInfoFileName",
+                export_to_asc::BinaryenModuleAddDebugInfoFileNameForLink),
     STATIC_LINK("binaryen", "_BinaryenAddFunctionImport", export_to_asc::BinaryenAddFunctionImportForLink),
     STATIC_LINK("binaryen", "_BinaryenGetFunction", export_to_asc::BinaryenGetFunctionForLink),
     STATIC_LINK("binaryen", "_BinaryenLoad", export_to_asc::BinaryenLoadForLink),
@@ -346,8 +799,10 @@ const std::vector<vb::NativeSymbol> warpo::frontend ::linkedAPI{
     STATIC_LINK("binaryen", "_BinaryenSwitchGetCondition", export_to_asc::BinaryenSwitchGetConditionForLink),
     STATIC_LINK("binaryen", "_BinaryenSwitchGetValue", export_to_asc::BinaryenSwitchGetValueForLink),
     STATIC_LINK("binaryen", "_BinaryenCallIndirectGetTarget", export_to_asc::BinaryenCallIndirectGetTargetForLink),
-    STATIC_LINK("binaryen", "_BinaryenCallIndirectGetNumOperands", export_to_asc::BinaryenCallIndirectGetNumOperandsForLink),
-    STATIC_LINK("binaryen", "_BinaryenCallIndirectGetOperandAt", export_to_asc::BinaryenCallIndirectGetOperandAtForLink),
+    STATIC_LINK("binaryen", "_BinaryenCallIndirectGetNumOperands",
+                export_to_asc::BinaryenCallIndirectGetNumOperandsForLink),
+    STATIC_LINK("binaryen", "_BinaryenCallIndirectGetOperandAt",
+                export_to_asc::BinaryenCallIndirectGetOperandAtForLink),
     STATIC_LINK("binaryen", "_BinaryenGlobalSetGetName", export_to_asc::BinaryenGlobalSetGetNameForLink),
     STATIC_LINK("binaryen", "_BinaryenGlobalSetGetValue", export_to_asc::BinaryenGlobalSetGetValueForLink),
     STATIC_LINK("binaryen", "_BinaryenLoadGetPtr", export_to_asc::BinaryenLoadGetPtrForLink),
@@ -360,13 +815,16 @@ const std::vector<vb::NativeSymbol> warpo::frontend ::linkedAPI{
     STATIC_LINK("binaryen", "_BinaryenAtomicRMWGetPtr", export_to_asc::BinaryenAtomicRMWGetPtrForLink),
     STATIC_LINK("binaryen", "_BinaryenAtomicRMWGetValue", export_to_asc::BinaryenAtomicRMWGetValueForLink),
     STATIC_LINK("binaryen", "_BinaryenAtomicCmpxchgGetPtr", export_to_asc::BinaryenAtomicCmpxchgGetPtrForLink),
-    STATIC_LINK("binaryen", "_BinaryenAtomicCmpxchgGetExpected", export_to_asc::BinaryenAtomicCmpxchgGetExpectedForLink),
-    STATIC_LINK("binaryen", "_BinaryenAtomicCmpxchgGetReplacement", export_to_asc::BinaryenAtomicCmpxchgGetReplacementForLink),
+    STATIC_LINK("binaryen", "_BinaryenAtomicCmpxchgGetExpected",
+                export_to_asc::BinaryenAtomicCmpxchgGetExpectedForLink),
+    STATIC_LINK("binaryen", "_BinaryenAtomicCmpxchgGetReplacement",
+                export_to_asc::BinaryenAtomicCmpxchgGetReplacementForLink),
     STATIC_LINK("binaryen", "_BinaryenAtomicWaitGetPtr", export_to_asc::BinaryenAtomicWaitGetPtrForLink),
     STATIC_LINK("binaryen", "_BinaryenAtomicWaitGetExpected", export_to_asc::BinaryenAtomicWaitGetExpectedForLink),
     STATIC_LINK("binaryen", "_BinaryenAtomicWaitGetTimeout", export_to_asc::BinaryenAtomicWaitGetTimeoutForLink),
     STATIC_LINK("binaryen", "_BinaryenAtomicNotifyGetPtr", export_to_asc::BinaryenAtomicNotifyGetPtrForLink),
-    STATIC_LINK("binaryen", "_BinaryenAtomicNotifyGetNotifyCount", export_to_asc::BinaryenAtomicNotifyGetNotifyCountForLink),
+    STATIC_LINK("binaryen", "_BinaryenAtomicNotifyGetNotifyCount",
+                export_to_asc::BinaryenAtomicNotifyGetNotifyCountForLink),
     STATIC_LINK("binaryen", "_BinaryenSIMDExtractGetVec", export_to_asc::BinaryenSIMDExtractGetVecForLink),
     STATIC_LINK("binaryen", "_BinaryenSIMDReplaceGetVec", export_to_asc::BinaryenSIMDReplaceGetVecForLink),
     STATIC_LINK("binaryen", "_BinaryenSIMDReplaceGetValue", export_to_asc::BinaryenSIMDReplaceGetValueForLink),
@@ -420,7 +878,8 @@ const std::vector<vb::NativeSymbol> warpo::frontend ::linkedAPI{
     STATIC_LINK("binaryen", "_BinaryenStructSetGetValue", export_to_asc::BinaryenStructSetGetValueForLink),
     STATIC_LINK("binaryen", "_BinaryenArrayNewGetSize", export_to_asc::BinaryenArrayNewGetSizeForLink),
     STATIC_LINK("binaryen", "_BinaryenArrayNewGetInit", export_to_asc::BinaryenArrayNewGetInitForLink),
-    STATIC_LINK("binaryen", "_BinaryenArrayNewFixedGetNumValues", export_to_asc::BinaryenArrayNewFixedGetNumValuesForLink),
+    STATIC_LINK("binaryen", "_BinaryenArrayNewFixedGetNumValues",
+                export_to_asc::BinaryenArrayNewFixedGetNumValuesForLink),
     STATIC_LINK("binaryen", "_BinaryenArrayNewFixedGetValueAt", export_to_asc::BinaryenArrayNewFixedGetValueAtForLink),
     STATIC_LINK("binaryen", "_BinaryenArrayGetGetRef", export_to_asc::BinaryenArrayGetGetRefForLink),
     STATIC_LINK("binaryen", "_BinaryenArrayGetGetIndex", export_to_asc::BinaryenArrayGetGetIndexForLink),
