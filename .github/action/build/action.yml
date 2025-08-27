@@ -1,0 +1,65 @@
+name: build
+description: build with cache
+inputs:
+  CMAKE_ARGS:
+    description: "CMake Arguments"
+    required: false
+    default: ""
+outputs:
+  BUILD_DIR:
+    description: "Build Directory"
+    value: "build"
+
+runs:
+  using: "composite"
+  steps:
+    - if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        set -ex
+        sudo rm /var/lib/man-db/auto-update
+        sudo apt-get update
+        sudo apt-get install -y ccache cmake ninja-build
+    - if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        set -ex
+        brew update
+        brew install ccache cmake ninja
+      env:
+        HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+        HOMEBREW_NO_AUTO_UPDATE: 1
+        HOMEBREW_NO_INSTALL_CLEANUP: 1
+    - shell: bash
+      run: |
+        set -ex
+        echo "CCACHE_DIR=$(pwd)/build_cache" >> $GITHUB_ENV
+        mkdir -p build_cache
+    - shell: bash
+      run: |
+        ccache --max-size=512M
+    - uses: actions/cache@v4
+      with:
+        path: build_cache
+        key: ccache-${{ runner.os }}-${{ inputs.CMAKE_ARGS }}-${{ hashFiles('**/CMakeLists.txt') }}
+        restore-keys: |
+          ccache-${{ runner.os }}-${{ inputs.CMAKE_ARGS }}-
+          ccache-${{ runner.os }}-
+
+    - name: install assemblyscript deps
+      run: npm ci
+      shell: bash
+      working-directory: assemblyscript
+
+    - name: build
+      run: |
+        set -ex
+        cmake -B build -S . ${{ inputs.CMAKE_ARGS }}
+        cmake --build build --parallel
+      shell: bash
+      env:
+        CMAKE_GENERATOR: Ninja
+        CMAKE_C_COMPILER_LAUNCHER: ccache
+        CMAKE_CXX_COMPILER_LAUNCHER: ccache
+    - shell: bash
+      run: ccache  --show-stats
