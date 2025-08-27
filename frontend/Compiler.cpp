@@ -18,6 +18,7 @@
 
 #include "ASC/ASC.hpp"
 #include "LinkedAPI.hpp"
+#include "support/Debug.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "wasm-compiler/src/WasmModule/WasmModule.hpp"
 #include "wasm-compiler/src/core/common/ILogger.hpp"
@@ -129,7 +130,8 @@ std::optional<std::filesystem::path> FrontendCompiler::findPackageRoot(std::file
     std::filesystem::path const target = current / "node_modules" / packageName;
     if (std::filesystem::exists(target) && std::filesystem::is_directory(target)) {
       packageRootMap_[packageName] = target;
-      fmt::println("[module resolve] resolve library '{}' in '{}'", packageName, target.c_str());
+      if (support::isDebug("ModuleResolve"))
+        fmt::println("[module resolve] resolve library '{}' in '{}'", packageName, target.c_str());
       return target;
     }
     current = current.parent_path();
@@ -139,7 +141,8 @@ std::optional<std::filesystem::path> FrontendCompiler::findPackageRoot(std::file
 
 FrontendCompiler::Dependency FrontendCompiler::getDependencyForNodeModules(std::string const &nextFileInternalPath,
                                                                            int32_t program, int32_t nextFile) {
-  fmt::println("[module resolve] get dependency for '{}'", nextFileInternalPath);
+  if (support::isDebug("ModuleResolve"))
+    fmt::println("[module resolve] get dependency for '{}'", nextFileInternalPath);
   int32_t const dependee = m.callExportedFunctionWithName<1>(stackTop, "getDependee", program, nextFile)[0].i32;
   std::string const dependeePath = getAsString(dependee);
   std::regex const libRegex{R"(^~lib/((?:@[^/]+/)?[^/]+)(?:/(.*?))?$)"};
@@ -150,25 +153,29 @@ FrontendCompiler::Dependency FrontendCompiler::getDependencyForNodeModules(std::
         (match.size() > 2 && match[2].matched) ? std::optional<std::string>{match[2].str()} : std::nullopt;
     std::optional<std::filesystem::path> const packageRoot = findPackageRoot(dependeePath, packageName);
     if (!packageRoot) {
-      fmt::println("[module resolve] cannot find node_modules for package '{}'", packageName);
+      if (support::isDebug("ModuleResolve"))
+        fmt::println("[module resolve] cannot find node_modules for package '{}'", packageName);
       return {std::nullopt, nextFileInternalPath + extension};
     }
     std::filesystem::path const plainPath = filePath.has_value() ? (*packageRoot / *filePath) : (*packageRoot);
     const std::string filePathWithExt = plainPath.string() + extension;
     if (std::filesystem::exists(filePathWithExt) && std::filesystem::is_regular_file(filePathWithExt)) {
       std::string const internalPath = libraryPrefix + packageName + "/" + *filePath + extension;
-      fmt::println("[module resolve] resolve '{}' to '{}'", nextFileInternalPath, internalPath);
+      if (support::isDebug("ModuleResolve"))
+        fmt::println("[module resolve] resolve '{}' to '{}'", nextFileInternalPath, internalPath);
       return {readFile(filePathWithExt), internalPath};
     }
     const std::string indexPathWithExt = plainPath / ("index" + extension);
     if (std::filesystem::exists(indexPathWithExt) && std::filesystem::is_regular_file(indexPathWithExt)) {
       std::string const internalPath =
           libraryPrefix + packageName + (filePath.has_value() ? ("/" + *filePath) : "") + "/index" + extension;
-      fmt::println("[module resolve] resolve '{}' to '{}'", nextFileInternalPath, internalPath);
+      if (support::isDebug("ModuleResolve"))
+        fmt::println("[module resolve] resolve '{}' to '{}'", nextFileInternalPath, internalPath);
       return {readFile(indexPathWithExt), internalPath};
     }
   }
-  fmt::println("[module resolve] cannot find library '{}'", nextFileInternalPath);
+  if (support::isDebug("ModuleResolve"))
+    fmt::println("[module resolve] cannot find library '{}'", nextFileInternalPath);
   return {std::nullopt, nextFileInternalPath + extension};
 }
 FrontendCompiler::Dependency FrontendCompiler::getDependencyForUserCode(std::string const &nextFileInternalPath) {
@@ -180,7 +187,8 @@ FrontendCompiler::Dependency FrontendCompiler::getDependencyForUserCode(std::str
   if (std::filesystem::exists(indexPathWithExt) && std::filesystem::is_regular_file(indexPathWithExt)) {
     return {readFile(indexPathWithExt), indexPathWithExt};
   }
-  fmt::println("[module resolve] cannot find library '{}'", nextFileInternalPath);
+  if (support::isDebug("ModuleResolve"))
+    fmt::println("[module resolve] cannot find library '{}'", nextFileInternalPath);
   return {std::nullopt, nextFileInternalPath + extension};
 }
 FrontendCompiler::Dependency FrontendCompiler::getDependency(std::string const &nextFileInternalPath, int32_t program,
@@ -264,7 +272,8 @@ wasm::Module *FrontendCompiler::compile(std::vector<std::string> const &entryFil
       if (deps.empty())
         break;
       for (auto const &[text, path] : deps) {
-        fmt::println("[module parse] {}", path);
+        if (support::isDebug("ModuleResolve"))
+          fmt::println("[module resolve] parse '{}'", path);
         parseFile(program, text, path, IsEntry::NO);
       }
     }
