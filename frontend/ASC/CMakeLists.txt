@@ -6,7 +6,7 @@ else()
   set(AS_BUILD_TARGET debug)
 endif()
 
-message("build assemblyscript target: ${}")
+message("build assemblyscript target: ${AS_BUILD_TARGET}")
 
 file(GLOB asc_sources "${PROJECT_SOURCE_DIR}/assemblyscript/**/*")
 add_custom_command(
