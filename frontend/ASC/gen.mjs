@@ -2,6 +2,10 @@ import { execSync } from "node:child_process";
 import { libraryFiles } from "../../assemblyscript/cli/index.generated.js";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import assert from "node:assert";
+
+const build_target = process.argv[2];
+assert(build_target === "debug" || build_target === "release", "invalid build target");
 
 const project_root = join("..", "..");
 
@@ -14,11 +18,9 @@ writeFileSync(
     .join("")
 );
 
-execSync("npx asc --config asconfig.json --target debug", { cwd: project_root });
+execSync(`npx asc --config asconfig.json --target ${build_target}`, { cwd: project_root });
 
-execSync("npx asc --config asconfig.json --target debug", { cwd: project_root });
-
-const wasmBuf = readFileSync(join(project_root, "build-as/assemblyscript.debug.wasm"));
+const wasmBuf = readFileSync(join(project_root, `build-as/assemblyscript.${build_target}.wasm`));
 const wasmBytes = Array.from(wasmBuf)
   .map((byte) => "0x" + byte.toString(16).padStart(2, "0"))
   .join(", ");
@@ -29,3 +31,5 @@ unsigned char asc_wasm[] = {${wasmBytes}};
 unsigned int asc_wasm_len = {${wasmBuf.length}};
   `
 );
+
+console.log(`AS wasm size: ${wasmBuf.length} bytes`);
