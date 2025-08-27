@@ -11,6 +11,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
 
 add_definitions("-DLINEAR_MEMORY_BOUNDS_CHECKS=1")
 add_definitions("-DACTIVE_STACK_OVERFLOW_CHECK=1")
+add_definitions("-DACTIVE_DIV_CHECK=1")
 add_definitions("-DNO_PASSIVE_PROTECTION_WARNING=1")
 
 if(WARPO_SANITIZE)
