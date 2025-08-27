@@ -1,7 +1,7 @@
 #include "../helper/Matcher.hpp"
 #include "GCInfo.hpp"
 #include "SSAObj.hpp"
-#include "support/Range.hpp"
+#include "warpo/support/Range.hpp"
 #include "wasm-traversal.h"
 
 namespace warpo::passes::gc {

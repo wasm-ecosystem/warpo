@@ -4,7 +4,7 @@
 #include <optional>
 
 #include "SSAObj.hpp"
-#include "support/DynBitSet.hpp"
+#include "warpo/support/DynBitSet.hpp"
 #include "wasm.h"
 
 namespace warpo::passes::gc {

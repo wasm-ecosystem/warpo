@@ -10,7 +10,7 @@
 
 #include "CFG.hpp"
 #include "cfg/cfg-traversal.h"
-#include "support/DynBitSet.hpp"
+#include "warpo/support/DynBitSet.hpp"
 #include "wasm-traversal.h"
 #include "wasm.h"
 

@@ -8,8 +8,8 @@
 #include <regex>
 #include <string>
 
-#include "support/Opt.hpp"
 #include "warpo/passes/Runner.hpp"
+#include "warpo/support/Opt.hpp"
 
 static warpo::cli::Opt<std::string> inputPath{
     "-i",

@@ -10,9 +10,9 @@
 #include "GCInfo.hpp"
 #include "Liveness.hpp"
 #include "StackAssigner.hpp"
-#include "support/Debug.hpp"
-#include "support/Err.hpp"
-#include "support/Range.hpp"
+#include "warpo/support/Debug.hpp"
+#include "warpo/support/Err.hpp"
+#include "warpo/support/Range.hpp"
 #include "wasm-traversal.h"
 #include "wasm.h"
 

@@ -3,8 +3,8 @@
 
 #include "CollectLeafFunction.hpp"
 #include "LeafFunctionFilter.hpp"
-#include "support/Debug.hpp"
-#include "support/DynBitSet.hpp"
+#include "warpo/support/Debug.hpp"
+#include "warpo/support/DynBitSet.hpp"
 #include "wasm-traversal.h"
 #include "wasm.h"
 

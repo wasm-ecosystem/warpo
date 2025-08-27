@@ -1,7 +1,7 @@
 #include <set>
 #include <string>
 
-#include "support/StringOperator.hpp"
+#include "warpo/support/StringOperator.hpp"
 
 std::set<std::string> warpo::splitString(const std::string &str, char delimiter) {
   std::set<std::string> result;

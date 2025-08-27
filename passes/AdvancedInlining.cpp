@@ -36,9 +36,9 @@
 #include "parsing.h"
 #include "pass.h"
 #include "passes/pass-utils.h"
-#include "support/Debug.hpp"
-#include "support/Opt.hpp"
 #include "support/name.h"
+#include "warpo/support/Debug.hpp"
+#include "warpo/support/Opt.hpp"
 #include "wasm-builder.h"
 #include "wasm.h"
 

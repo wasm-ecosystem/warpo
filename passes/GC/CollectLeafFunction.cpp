@@ -3,8 +3,8 @@
 #include "CollectLeafFunction.hpp"
 #include "GCInfo.hpp"
 #include "fmt/base.h"
-#include "support/Debug.hpp"
 #include "support/name.h"
+#include "warpo/support/Debug.hpp"
 #include "wasm.h"
 
 #define PASS_NAME "GCLeafFunction"

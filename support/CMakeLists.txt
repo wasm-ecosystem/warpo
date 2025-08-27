@@ -11,7 +11,7 @@ if(NOT WARPO_RELEASE)
     PUBLIC fmt::fmt
   )
   target_include_directories(${LIB_NAME}_test
-    PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    PUBLIC "${PROJECT_SOURCE_DIR}/include"
     SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party/binaryen/third_party/llvm-project/include"
     SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party"
   )
@@ -26,7 +26,7 @@ target_link_libraries(${LIB_NAME}
   PUBLIC fmt::fmt
 )
 target_include_directories(${LIB_NAME}
-  PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
+  PUBLIC "${PROJECT_SOURCE_DIR}/include"
   SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party/binaryen/third_party/llvm-project/include"
   SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party"
 )

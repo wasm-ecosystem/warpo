@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "CFG.hpp"
-#include "support/DynBitSet.hpp"
+#include "warpo/support/DynBitSet.hpp"
 
 namespace warpo::passes::dom_tree_impl {
 

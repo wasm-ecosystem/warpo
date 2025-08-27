@@ -12,8 +12,8 @@
 #include "../helper/DomTree.hpp"
 #include "../helper/ToString.hpp"
 #include "ShrinkWrap.hpp"
-#include "support/Debug.hpp"
-#include "support/DynBitSet.hpp"
+#include "warpo/support/Debug.hpp"
+#include "warpo/support/DynBitSet.hpp"
 #include "wasm.h"
 
 #define PASS_NAME "SHRINK_WRAP"

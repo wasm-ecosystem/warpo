@@ -18,8 +18,8 @@
 
 #include "ASC/ASC.hpp"
 #include "LinkedAPI.hpp"
-#include "support/Debug.hpp"
 #include "warpo/frontend/Compiler.hpp"
+#include "warpo/support/Debug.hpp"
 #include "wasm-compiler/src/WasmModule/WasmModule.hpp"
 #include "wasm-compiler/src/core/common/ILogger.hpp"
 #include "wasm-compiler/src/core/common/NativeSymbol.hpp"

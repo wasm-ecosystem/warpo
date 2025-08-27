@@ -4,9 +4,9 @@
 
 #include "MergeSSA.hpp"
 #include "SSAObj.hpp"
-#include "support/DynBitSet.hpp"
-#include "support/Range.hpp"
 #include "support/index.h"
+#include "warpo/support/DynBitSet.hpp"
+#include "warpo/support/Range.hpp"
 #include "wasm.h"
 
 namespace warpo::passes::gc {

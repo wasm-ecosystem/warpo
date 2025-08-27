@@ -12,8 +12,8 @@
 #include <memory>
 
 #include "ExtractMostFrequentlyUsedGlobals.hpp"
-#include "support/Debug.hpp"
 #include "support/index.h"
+#include "warpo/support/Debug.hpp"
 #include "wasm-traversal.h"
 #include "wasm-validator.h"
 #include "wasm.h"

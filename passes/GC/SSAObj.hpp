@@ -2,7 +2,7 @@
 
 #include <map>
 
-#include "support/IncMap.hpp"
+#include "warpo/support/IncMap.hpp"
 #include "wasm.h"
 
 namespace warpo::passes::gc {

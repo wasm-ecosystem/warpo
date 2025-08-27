@@ -6,7 +6,7 @@
 #include <optional>
 #include <string>
 
-#include "support/DynBitSet.hpp"
+#include "warpo/support/DynBitSet.hpp"
 #include "wasm.h"
 
 namespace warpo::passes {

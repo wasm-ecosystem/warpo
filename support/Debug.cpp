@@ -3,8 +3,8 @@
 #include <set>
 #include <string>
 
-#include "support/Debug.hpp"
-#include "support/StringOperator.hpp"
+#include "warpo/support/Debug.hpp"
+#include "warpo/support/StringOperator.hpp"
 
 namespace warpo {
 

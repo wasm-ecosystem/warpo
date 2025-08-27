@@ -6,7 +6,7 @@
 
 #include "CFG.hpp"
 #include "DomTreeImpl.hpp"
-#include "support/DynBitSet.hpp"
+#include "warpo/support/DynBitSet.hpp"
 
 namespace warpo::passes::dom_tree_impl {
 

@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "support/DynBitSet.hpp"
+#include "warpo/support/DynBitSet.hpp"
 
 namespace warpo {
 

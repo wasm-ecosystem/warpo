@@ -6,8 +6,8 @@
 
 #include "CostModel.hpp"
 #include "ToString.hpp"
-#include "support/Container.hpp"
-#include "support/Opt.hpp"
+#include "warpo/support/Container.hpp"
+#include "warpo/support/Opt.hpp"
 #include "wasm-traversal.h"
 #include "wasm.h"
 

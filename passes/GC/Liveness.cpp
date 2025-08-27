@@ -13,8 +13,8 @@
 
 #include "../helper/CFG.hpp"
 #include "Liveness.hpp"
-#include "support/DynBitSet.hpp"
-#include "support/Range.hpp"
+#include "warpo/support/DynBitSet.hpp"
+#include "warpo/support/Range.hpp"
 #include "wasm.h"
 
 namespace warpo::passes::gc {

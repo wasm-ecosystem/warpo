@@ -2,7 +2,7 @@
 #pragma once
 
 #include "CFG.hpp"
-#include "support/DynBitSet.hpp"
+#include "warpo/support/DynBitSet.hpp"
 
 namespace warpo::passes {
 

@@ -8,9 +8,9 @@
 #include <iostream>
 #include <vector>
 
-#include "support/Opt.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/passes/Runner.hpp"
+#include "warpo/support/Opt.hpp"
 
 static warpo::cli::Opt<std::string> outputPath{
     "-o",
