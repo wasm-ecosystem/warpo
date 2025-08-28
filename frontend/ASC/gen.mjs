@@ -10,7 +10,7 @@ const project_root = join("..", "..");
 
 execSync("node scripts/build.js", { cwd: join(project_root, "assemblyscript") });
 
-const libraryFiles = await import("../../assemblyscript/cli/index.generated.js");
+const { libraryFiles } = await import("../../assemblyscript/cli/index.generated.js");
 writeFileSync(
   join(project_root, "build-as/library_sources.inc"),
   Object.keys(libraryFiles)

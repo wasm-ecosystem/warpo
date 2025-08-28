@@ -9,7 +9,6 @@
 
 #include "support/Opt.hpp"
 #include "warpo/frontend/Compiler.hpp"
-#include "warpo/passes/Runner.hpp"
 
 static warpo::cli::Opt<std::string> outputPath{
     "-t",
@@ -35,10 +34,9 @@ int main(int argc, const char *argv[]) {
   BinaryenModuleRef const m = frontend::compile(entryPaths.get());
   if (m == nullptr)
     return -1;
-  passes::Output const output = passes::runOnModule(m);
 
   char *const wasmText = BinaryenModuleAllocateAndWriteText(m);
   std::ofstream watOf{outputPath.get(), std::ios::out};
-  watOf.write(output.wat.data(), static_cast<std::streamsize>(output.wat.size()));
+  watOf << wasmText;
   std::free(wasmText);
 }

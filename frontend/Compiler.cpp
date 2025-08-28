@@ -181,6 +181,8 @@ FrontendCompiler::Dependency FrontendCompiler::getDependencyForNodeModules(std::
 FrontendCompiler::Dependency FrontendCompiler::getDependencyForUserCode(std::string const &nextFileInternalPath) {
   const std::string filePathWithExt = nextFileInternalPath + extension;
   if (std::filesystem::exists(filePathWithExt) && std::filesystem::is_regular_file(filePathWithExt)) {
+    if (support::isDebug("ModuleResolve"))
+      fmt::println("[module resolve] find user code '{}'", filePathWithExt);
     return {readFile(filePathWithExt), filePathWithExt};
   }
   const std::string indexPathWithExt = std::filesystem::path{nextFileInternalPath} / ("index" + extension);
@@ -264,16 +266,19 @@ wasm::Module *FrontendCompiler::compile(std::vector<std::string> const &entryFil
     parseFile(program, warpo::frontend::embed_library_sources.at("rt/index-incremental"),
               libraryPrefix + "rt/index-incremental" + extension, IsEntry::NO);
 
-    for (std::string const &filePath : entryFilePaths)
-      parseFile(program, readFile(filePath), filePath, IsEntry::YES);
-
+    for (std::string const &filePath : entryFilePaths) {
+      std::string const relativeFilePath = std::filesystem::relative(filePath).string();
+      parseFile(program, readFile(filePath), relativeFilePath, IsEntry::YES);
+    }
     while (true) {
       std::vector<Dependency> const deps = getAllDependencies(program);
       if (deps.empty())
         break;
       for (auto const &[text, path] : deps) {
-        if (support::isDebug("ModuleResolve"))
-          fmt::println("[module resolve] parse '{}'", path);
+        if (support::isDebug("ModuleResolve")) {
+          if (!embed_library_sources.contains(path))
+            fmt::println("[module resolve] parse '{}'", path);
+        }
         parseFile(program, text, path, IsEntry::NO);
       }
     }
