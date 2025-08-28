@@ -35,11 +35,6 @@ runs:
         set -ex
         echo "CCACHE_DIR=$(pwd)/build_cache" >> $GITHUB_ENV
         mkdir -p build_cache
-    - shell: bash
-      run: |
-        ccache --max-size=512M
-        ccache --zero-stats
-
     - uses: actions/cache@v4
       with:
         path: build_cache
@@ -47,7 +42,10 @@ runs:
         restore-keys: |
           ccache-${{ runner.os }}-${{ inputs.CMAKE_ARGS }}-
           ccache-${{ runner.os }}-
-
+    - shell: bash
+      run: |
+        ccache --max-size=512M
+        ccache --zero-stats
     - name: install assemblyscript deps
       run: npm ci
       shell: bash
