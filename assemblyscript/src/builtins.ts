@@ -3753,7 +3753,7 @@ function builtin_function_call(ctx: BuiltinFunctionContext): ExpressionRef {
   let functionArg = compiler.compileExpression(assert(ctx.thisOperand), ftype, Constraints.ConvImplicit);
   let thisOperand = assert(ctx.operands.shift());
   let thisType = signature.thisType;
-  let thisArg: usize = 0;
+  let thisArg: ExpressionRef = 0;
   if (thisType) {
     thisArg = compiler.compileExpression(thisOperand, thisType, Constraints.ConvImplicit);
   } else if (thisOperand.kind != NodeKind.Null) {

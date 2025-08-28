@@ -39,7 +39,7 @@ import {
   formatDiagnosticMessage
 } from "./diagnostics";
 
-import { Module } from "./module";
+import { Module, ModuleRef } from "./module";
 import { Program } from "./program";
 import { Source } from "./ast";
 
@@ -369,7 +369,7 @@ export function buildJS(program: Program, esm: bool): string {
 }
 
 /** Gets the Binaryen module reference of a module. */
-export function getBinaryenModuleRef(module: Module): usize {
+export function getBinaryenModuleRef(module: Module): ModuleRef {
   return module.ref;
 }
 

@@ -1326,7 +1326,7 @@ export class Module {
     this.lit = binaryen._malloc(binaryen._BinaryenSizeofLiteral());
   }
 
-  private lit: usize;
+  private lit: binaryen.Ref;
 
   static create(useShadowStack: bool, sizeType: TypeRef): Module {
     return new Module(binaryen._BinaryenModuleCreate(), useShadowStack, sizeType);
@@ -1653,8 +1653,7 @@ export class Module {
   }
 
   atomic_fence(name: string | null = null): ExpressionRef {
-    let cStr = this.allocStringCached(name);
-    return binaryen._BinaryenAtomicFence(this.ref, cStr);
+    return binaryen._BinaryenAtomicFence(this.ref);
   }
 
   // statements
@@ -2357,7 +2356,7 @@ export class Module {
     let cExportName = this.allocStringCached(exportName);
     let cName = this.allocStringCached(name);
     let k = segments.length;
-    let segs = new Array<usize>(k);
+    let segs = new Array<binaryen.ArrayRef<u8>>(k);
     let isPassive = new Uint8Array(k);
     let offsets = new Array<ExpressionRef>(k);
     let sizes = new Array<Index>(k);
@@ -2868,19 +2867,19 @@ export class Module {
     return text || "";
   }
 
-  private cachedStringsToPointers: Map<string,usize> = new Map();
-  private cachedPointersToStrings: Map<usize,string | null> = new Map();
+  private cachedStringsToPointers: Map<string,StringRef> = new Map();
+  private cachedPointersToStrings: Map<binaryen.Ref,string | null> = new Map();
 
-  allocStringCached(str: string | null): usize {
+  allocStringCached(str: string | null): StringRef {
     if (str == null) return 0;
     let cached = this.cachedStringsToPointers;
-    if (cached.has(str)) return changetype<usize>(cached.get(str));
+    if (cached.has(str)) return cached.get(str);
     let ptr = allocString(str);
     cached.set(str, ptr);
     return ptr;
   }
 
-  readStringCached(ptr: usize): string | null {
+  readStringCached(ptr: StringRef): string | null {
     // Binaryen internalizes names, so using this method where it's safe can
     // avoid quite a bit of unnecessary garbage.
     if (ptr == 0) return null;
@@ -3029,6 +3028,7 @@ export function isNullableType(type: TypeRef): bool {
 // expressions
 
 export function getExpressionId(expr: ExpressionRef): ExpressionId {
+  if (expr == 0) return ExpressionId.Invalid;
   return binaryen._BinaryenExpressionGetId(expr);
 }
 
@@ -3522,7 +3522,7 @@ export function mustPreserveSideEffects(expr: ExpressionRef, module: ModuleRef):
 // helpers
 // can't do stack allocation here: STACKTOP is a global in WASM but a hidden variable in asm.js
 
-function allocU8Array(u8s: Uint8Array | null): usize {
+function allocU8Array(u8s: Uint8Array | null): binaryen.ArrayRef<u8> {
   if (!u8s) return 0;
   let len = u8s.length;
   let ptr = binaryen._malloc(len);
@@ -3532,7 +3532,7 @@ function allocU8Array(u8s: Uint8Array | null): usize {
   return ptr;
 }
 
-function allocI32Array(i32s: i32[] | null): usize {
+function allocI32Array(i32s: i32[] | null): binaryen.ArrayRef<i32> {
   if (!i32s) return 0;
   let len = i32s.length;
   let ptr = binaryen._malloc(len << 2);
@@ -3545,7 +3545,7 @@ function allocI32Array(i32s: i32[] | null): usize {
   return ptr;
 }
 
-function allocU32Array(u32s: u32[] | null): usize {
+function allocU32Array(u32s: u32[] | null): binaryen.ArrayRef<u32> {
   if (!u32s) return 0;
   let len = u32s.length;
   let ptr = binaryen._malloc(len << 2);
@@ -3558,17 +3558,17 @@ function allocU32Array(u32s: u32[] | null): usize {
   return ptr;
 }
 
-export function allocPtrArray(ptrs: usize[] | null): usize {
+export function allocPtrArray(ptrs: binaryen.Ref[] | null): binaryen.ArrayRef<binaryen.Ref> {
   if (!ptrs) return 0;
   // TODO: WASM64
   assert(ASC_TARGET != Target.Wasm64);
   let len = ptrs.length;
-  let ptr = binaryen._malloc(len << 2);
+  let ptr = binaryen._malloc(len << 3);
   let idx = ptr;
   for (let i = 0, k = len; i < k; ++i) {
     let val = unchecked(ptrs[i]);
-    binaryen.__i32_store(idx, <i32>val);
-    idx += 4;
+    binaryen.__i64_store(idx, <i64>val);
+    idx += 8;
   }
   return ptr;
 }
@@ -3594,7 +3594,7 @@ function stringLengthUTF8(str: string): usize {
   return len;
 }
 
-function allocString(str: string | null): usize {
+function allocString(str: string | null): StringRef {
   if (str == null) return 0;
   let len = stringLengthUTF8(str);
   let ptr = binaryen._malloc(len + 1) >>> 0;
@@ -3634,15 +3634,15 @@ function allocString(str: string | null): usize {
   return ptr;
 }
 
-function readBuffer(ptr: usize, len: i32): Uint8Array {
+function readBuffer(ptr: binaryen.Ref, len: i32): Uint8Array {
   let ret = new Uint8Array(len);
   for (let i = 0; i < len; ++i) {
-    unchecked(ret[i] = binaryen.__i32_load8_u(ptr + <usize>i));
+    unchecked(ret[i] = binaryen.__i32_load8_u(ptr + i));
   }
   return ret;
 }
 
-export function readString(ptr: usize): string | null {
+export function readString(ptr: binaryen.Ref): string | null {
   if (!ptr) return null;
   let arr = new Array<i32>();
   // the following is based on Emscripten's UTF8ArrayToString

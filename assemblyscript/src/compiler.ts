@@ -6365,7 +6365,7 @@ export class Compiler extends DiagnosticEmitter {
     // Create a new inline flow and use it to compile the function as a block
     let previousFlow = this.currentFlow;
     let flow = Flow.createInline(previousFlow.targetFunction, instance);
-    let body = [];
+    let body: ExpressionRef[] = [];
 
     if (thisArg) {
       let parent = assert(instance.parent);
@@ -8066,7 +8066,7 @@ export class Compiler extends DiagnosticEmitter {
 
       // Compile to a `StaticArray<string>#join("") in the general case
       let expressionPositions = new Array<i32>(numExpressions);
-      let values = new Array<usize>();
+      let values = new Array<ExpressionRef>();
       if (parts[0].length > 0) values.push(this.ensureStaticString(parts[0]));
       for (let i = 1; i < numParts; ++i) {
         expressionPositions[i - 1] = values.length;

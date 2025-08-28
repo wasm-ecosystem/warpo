@@ -9,7 +9,7 @@
  */
 module "binaryen";
 
-type Ref = usize;
+export type Ref = u64;
 
 export type Index = u32;
 export type ExpressionId = i32;
@@ -336,7 +336,7 @@ export declare function _BinaryenAtomicNotifySetPtr(expr: ExpressionRef, ptrExpr
 export declare function _BinaryenAtomicNotifyGetNotifyCount(expr: ExpressionRef): ExpressionRef;
 export declare function _BinaryenAtomicNotifySetNotifyCount(expr: ExpressionRef, notifyCountExpr: ExpressionRef): void;
 
-export declare function _BinaryenAtomicFence(module: ModuleRef, memoryName: StringRef): ExpressionRef;
+export declare function _BinaryenAtomicFence(module: ModuleRef): ExpressionRef;
 export declare function _BinaryenAtomicFenceGetOrder(expr: ExpressionRef): u8; // unused
 export declare function _BinaryenAtomicFenceSetOrder(expr: ExpressionRef, order: u8): void; // unused
 
@@ -941,17 +941,18 @@ export declare function _BinaryenSetAllowInliningFunctionsWithLoops(enabled: boo
 
 // Helpers
 
-export declare function _malloc(size: usize): usize;
-export declare function _free(ptr: usize): void;
-export declare function __i32_store8(ptr: usize, value: number): void;
-export declare function __i32_store16(ptr: usize, value: number): void;
-export declare function __i32_store(ptr: usize, value: number): void;
-export declare function __f32_store(ptr: usize, value: number): void;
-export declare function __f64_store(ptr: usize, value: number): void;
-export declare function __i32_load8_s(ptr: usize): i8;
-export declare function __i32_load8_u(ptr: usize): u8;
-export declare function __i32_load16_s(ptr: usize): i16;
-export declare function __i32_load16_u(ptr: usize): u16;
-export declare function __i32_load(ptr: usize): i32;
-export declare function __f32_load(ptr: usize): f32;
-export declare function __f64_load(ptr: usize): f64;
+export declare function _malloc(size: usize): Ref;
+export declare function _free(ptr: Ref): void;
+export declare function __i32_store8(ptr: Ref, value: u8): void;
+export declare function __i32_store16(ptr: Ref, value: u16): void;
+export declare function __i32_store(ptr: Ref, value: u32): void;
+export declare function __i64_store(ptr: Ref, value: u64): void;
+export declare function __f32_store(ptr: Ref, value: f32): void;
+export declare function __f64_store(ptr: Ref, value: f64): void;
+export declare function __i32_load8_s(ptr: Ref): i8;
+export declare function __i32_load8_u(ptr: Ref): u8;
+export declare function __i32_load16_s(ptr: Ref): i16;
+export declare function __i32_load16_u(ptr: Ref): u16;
+export declare function __i32_load(ptr: Ref): i32;
+export declare function __f32_load(ptr: Ref): f32;
+export declare function __f64_load(ptr: Ref): f64;

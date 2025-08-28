@@ -60,7 +60,7 @@ export async function run(currentFolder) {
 
     const functionFilter = fileConfig.func ? ["--func", fileConfig.func] : [];
 
-    cmd("node", ["assemblyscript/bin/asc.js", file, "-t", originalWatPath]);
+    cmd("build/tools/compiler/warpo_compiler", [file, "-t", originalWatPath]);
     cmd(`${buildDir}/tools/test_runner/warpo_test_runner`, [...inputArgs, ...optArgs, ...functionFilter]);
     cmd(`${buildDir}/tools/test_runner/warpo_test_runner`, [...inputArgs, ...baseArgs, ...functionFilter]);
 

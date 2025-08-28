@@ -5,7 +5,9 @@ bmwgroup
 cawe
 ccache
 currp
+Dependee
 DWARPO
+Eqref
 insts
 localtostack
 popcountll

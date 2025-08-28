@@ -14,8 +14,9 @@ if(NOT WARPO_RELEASE)
   target_link_libraries(${LIB_NAME}_test
     PUBLIC warpo_support warpo_unittests_helper
   )
-  target_include_directories(${LIB_NAME}_test PUBLIC
-    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+  target_include_directories(${LIB_NAME}_test
+    PRIVATE "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"
+    PUBLIC "${PROJECT_SOURCE_DIR}/include"
   )
 endif()
 
@@ -33,5 +34,5 @@ target_include_directories(${LIB_NAME}
   PRIVATE "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"
 )
 target_include_directories(${LIB_NAME}
-  PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include"
+  PUBLIC "${PROJECT_SOURCE_DIR}/include"
 )

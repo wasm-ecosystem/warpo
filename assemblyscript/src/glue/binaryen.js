@@ -906,6 +906,7 @@ export const {
   __i32_store8,
   __i32_store16,
   __i32_store,
+  __i64_store,
   __f32_store,
   __f64_store,
   __i32_load8_s,
