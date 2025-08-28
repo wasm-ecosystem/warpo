@@ -38,6 +38,8 @@ runs:
     - shell: bash
       run: |
         ccache --max-size=512M
+        ccache --zero-stats
+
     - uses: actions/cache@v4
       with:
         path: build_cache
