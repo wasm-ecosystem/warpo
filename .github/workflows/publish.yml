@@ -26,20 +26,15 @@ jobs:
         id: set_artifact_name
         run: |
           if [ "${{ runner.os }}" == "macOS" ]; then
-            echo "filename=app-macos" >> $GITHUB_OUTPUT
+            echo "OS=macos" >> $GITHUB_OUTPUT
           elif [ "${{ runner.os }}" == "Linux" ]; then
-            echo "filename=app-linux" >> $GITHUB_OUTPUT
+            echo "OS=linux" >> $GITHUB_OUTPUT
           fi
       - name: Pack build/warpo directory
         run: |
-          if [ "${{ runner.os }}" == "macOS" ]; then
-            echo "filename=app-macos" >> $GITHUB_OUTPUT
-          elif [ "${{ runner.os }}" == "Linux" ]; then
-            echo "filename=app-linux" >> $GITHUB_OUTPUT
-          fi
-          tar -czvf build/warpo-${{ github.event.release.tag }}-${{ steps.set_artifact_name.outputs.filename }}.tar.gz -C build warpo
+          tar -czvf build/warpo-${{ github.ref_name }}-${{ steps.set_artifact_name.outputs.OS }}.tar.gz -C build warpo
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            build/warpo-${{ github.event.release.tag }}-${{ steps.set_artifact_name.outputs.filename }}.tar.gz
+            build/warpo-${{ github.ref_name }}-${{ steps.set_artifact_name.outputs.OS }}.tar.gz
