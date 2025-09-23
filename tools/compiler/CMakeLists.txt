@@ -9,3 +9,6 @@ target_include_directories(
     warpo_compiler
     SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party"
 )
+set_target_properties(warpo_compiler PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/warpo"
+)

@@ -1,0 +1,28 @@
+name: publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build_and_upload:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci
+      - uses: ./.github/action/build
+        with:
+          CMAKE_ARGS: "-DWARPO_RELEASE=ON"
+      - name: Pack build/warpo directory
+        run: tar -czvf build/warpo.tar.gz -C build warpo
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            build/warpo.tar.gz

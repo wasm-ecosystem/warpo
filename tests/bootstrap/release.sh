@@ -3,7 +3,7 @@ rm -rf tests/bootstrap/tmp/release
 set -e
 
 echo "first build"
-./build/tools/asc/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
+./build/warpo/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
   --stats \
   --optimizeLevel 3 --shrinkLevel 2 \
   --disable-feature nontrapping-f2i \
@@ -13,7 +13,7 @@ echo "first build"
   -o tests/bootstrap/tmp/release/assemblyscript.warpo-test.wasm
 
 echo "second build"
-./build/tools/asc/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
+./build/warpo/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
   --stats \
   --optimizeLevel 3 --shrinkLevel 2 \
   --disable-feature nontrapping-f2i \
@@ -24,7 +24,7 @@ echo "second build"
   -o tests/bootstrap/tmp/release/assemblyscript.warpo-test-bootstrap.wasm
   
 echo "third build"
-./build/tools/asc/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
+./build/warpo/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
   --stats \
   --optimizeLevel 3 --shrinkLevel 2 \
   --disable-feature nontrapping-f2i \

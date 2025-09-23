@@ -3,7 +3,7 @@ rm -rf tests/bootstrap/tmp/bench
 set -e
 
 echo "=============origin asc build============="
-./build/tools/asc/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
+./build/warpo/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
   --stats \
   --optimizeLevel 3 --shrinkLevel 2 \
   --disable-feature nontrapping-f2i \
@@ -13,7 +13,7 @@ echo "=============origin asc build============="
 echo "============================================"
 
 echo "\n=============optimized build============="
-./build/tools/asc/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
+./build/warpo/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
   --stats \
   --optimizeLevel 3 --shrinkLevel 2 \
   --disable-feature nontrapping-f2i \

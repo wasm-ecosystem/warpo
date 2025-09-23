@@ -70,7 +70,7 @@ class TestCase {
 
     const functionFilter = fileConfig.func ? ["--func", fileConfig.func] : [];
 
-    await cmd("build/tools/compiler/warpo_compiler", [this.file, "-t", originalWatPath]);
+    await cmd("build/warpo/warpo_compiler", [this.file, "-t", originalWatPath]);
     await cmd(`${buildDir}/tools/test_runner/warpo_test_runner`, [...inputArgs, ...optArgs, ...functionFilter]);
     await cmd(`${buildDir}/tools/test_runner/warpo_test_runner`, [...inputArgs, ...baseArgs, ...functionFilter]);
 
