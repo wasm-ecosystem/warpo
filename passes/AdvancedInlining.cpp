@@ -14,6 +14,7 @@
 
 // origin third_party/binaryen/src/passes/Inlining.cpp
 
+#include <algorithm>
 #include <atomic>
 #include <cassert>
 #include <cstdint>
@@ -98,8 +99,8 @@ struct FunctionInfo {
 
     float const optimizationLevel = static_cast<float>(common::getOptimizationLevel()) + 0.0001;
     float const shrinkLevel = static_cast<float>(common::getShrinkLevel()) + 0.0001;
-    float const optRatio = optimizationLevel / (optimizationLevel + shrinkLevel);
-    float const shrinkRatio = shrinkLevel / (optimizationLevel + shrinkLevel);
+    float const optRatio = 0.5f * optimizationLevel / (optimizationLevel + shrinkLevel);
+    float const shrinkRatio = 0.5f + 0.5f * shrinkLevel / (optimizationLevel + shrinkLevel);
     float const delta = performanceCostDelta * optRatio + sizeCostDelta * shrinkRatio;
 
     budget -= refs * delta;
