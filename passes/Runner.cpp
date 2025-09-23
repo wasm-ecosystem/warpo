@@ -174,12 +174,23 @@ struct OutputFiles {
 
   static OutputFiles create(std::filesystem::path const &path) {
     std::filesystem::path const extension = path.extension();
-    if (extension == ".wasm") {
+    if (extension == ".wasm")
       return OutputFiles{
-          .wat_ = replaceExtension(path, ".wat"), .wasm_ = path, .sourceMap_ = replaceExtension(path, ".wasm.map")};
-    }
+          .wat_ = replaceExtension(path, ".wat"),
+          .wasm_ = path,
+          .sourceMap_ = replaceExtension(path, ".wasm.map"),
+      };
+    if (extension == ".wat" || extension == ".wast")
+      return OutputFiles{
+          .wat_ = path,
+          .wasm_ = replaceExtension(path, ".wasm"),
+          .sourceMap_ = replaceExtension(path, ".wasm.map"),
+      };
     return OutputFiles{
-        .wat_ = path, .wasm_ = replaceExtension(path, ".wasm"), .sourceMap_ = replaceExtension(path, ".wasm.map")};
+        .wat_ = path,
+        .wasm_ = "",
+        .sourceMap_ = "",
+    };
   }
 };
 
@@ -189,17 +200,19 @@ void passes::runAndEmit(AsModule const &m, std::filesystem::path const &outputPa
 
   passes::Output const output = runOnModule(m, passes::Config{.sourceMapURL = getBaseName(outputFiles.sourceMap_)});
 
-  if (std::ofstream of{outputFiles.wasm_, std::ios::binary | std::ios::out}; of.good()) {
-    of.write(reinterpret_cast<char const *>(output.wasm.data()), static_cast<std::streamsize>(output.wasm.size()));
-  } else {
-    throw std::runtime_error{fmt::format("ERROR: failed to open file: {}", outputFiles.wasm_.c_str())};
-  }
   if (std::ofstream of{outputFiles.wat_, std::ios::out}; of.good()) {
     of.write(output.wat.data(), static_cast<std::streamsize>(output.wat.size()));
   } else {
     throw std::runtime_error{fmt::format("failed to open file: {}", outputFiles.wat_.c_str())};
   }
-  if (common::isEmitDebugLineInfo()) {
+  if (!outputFiles.wasm_.empty()) {
+    if (std::ofstream of{outputFiles.wasm_, std::ios::binary | std::ios::out}; of.good()) {
+      of.write(reinterpret_cast<char const *>(output.wasm.data()), static_cast<std::streamsize>(output.wasm.size()));
+    } else {
+      throw std::runtime_error{fmt::format("ERROR: failed to open file: {}", outputFiles.wasm_.c_str())};
+    }
+  }
+  if (!outputFiles.sourceMap_.empty() && common::isEmitDebugLineInfo()) {
     if (std::ofstream of{outputFiles.sourceMap_, std::ios::out}; of.good()) {
       of.write(output.sourceMap.data(), static_cast<std::streamsize>(output.sourceMap.size()));
     } else {
