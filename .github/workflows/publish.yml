@@ -30,11 +30,12 @@ jobs:
           elif [ "${{ runner.os }}" == "Linux" ]; then
             echo "OS=linux" >> $GITHUB_OUTPUT
           fi
+          echo "CPU=$(uname -m)" >> $GITHUB_OUTPUT
       - name: Pack build/warpo directory
         run: |
-          tar -czvf build/warpo-${{ github.ref_name }}-${{ steps.set_artifact_name.outputs.OS }}.tar.gz -C build warpo
+          tar -czvf build/warpo-${{ github.ref_name }}-${{ steps.set_artifact_name.outputs.OS }}-${{ steps.set_artifact_name.outputs.CPU }}.tar.gz -C build warpo
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            build/warpo-${{ github.ref_name }}-${{ steps.set_artifact_name.outputs.OS }}.tar.gz
+            build/warpo-${{ github.ref_name }}-${{ steps.set_artifact_name.outputs.OS }}-${{ steps.set_artifact_name.outputs.CPU }}.tar.gz
