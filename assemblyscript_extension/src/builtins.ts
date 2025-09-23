@@ -1,3 +1,7 @@
+// Copyright (C) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 import { LiteralKind, StringLiteralExpression } from "../../assemblyscript/src/ast";
 import { builtinFunctions, BuiltinFunctionContext } from "../../assemblyscript/src/builtins";
 import { DiagnosticCode } from "../../assemblyscript/src/diagnosticMessages.generated";
