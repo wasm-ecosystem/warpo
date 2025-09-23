@@ -6,6 +6,7 @@
 
 #include <binaryen/src/binaryen-c.h>
 #include <cstdint>
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -28,7 +29,7 @@ void init();
 Output runOnWat(std::string const &input, Config const &config);
 Output runOnModule(AsModule const &m, Config const &config);
 
-void runAndEmit(AsModule const &m, std::string const &outputPath);
-void runAndEmit(std::string const &inputPath, std::string const &outputPath);
+void runAndEmit(AsModule const &m, std::filesystem::path const &outputPath);
+void runAndEmit(std::string const &inputPath, std::filesystem::path const &outputPath);
 
 } // namespace warpo::passes

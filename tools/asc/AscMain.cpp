@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <exception>
+#include <filesystem>
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <string>
@@ -17,7 +18,7 @@
 
 namespace warpo {
 
-static cli::Opt<std::string> outputPath{
+static cli::Opt<std::filesystem::path> outputPath{
     cli::Category::All,
     "-o",
     "--output",

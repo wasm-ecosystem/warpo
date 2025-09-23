@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <cassert>
+#include <filesystem>
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <fstream>
@@ -166,46 +167,48 @@ passes::Output passes::runOnWat(std::string const &input, Config const &config) 
   return runOnModule(AsModule{m.release()}, config);
 }
 
-static std::string removeWasmExt(std::string const &path) {
-  if (path.ends_with(".wat")) {
-    return path.substr(0, path.size() - 4);
-  } else if (path.ends_with(".wasm")) {
-    return path.substr(0, path.size() - 5);
-  } else {
-    throw std::runtime_error{fmt::format("invalid file extension: {}", path)};
+struct OutputFiles {
+  std::filesystem::path wat_;
+  std::filesystem::path wasm_;
+  std::filesystem::path sourceMap_;
+
+  static OutputFiles create(std::filesystem::path const &path) {
+    std::filesystem::path const extension = path.extension();
+    if (extension == ".wasm") {
+      return OutputFiles{
+          .wat_ = replaceExtension(path, ".wat"), .wasm_ = path, .sourceMap_ = replaceExtension(path, ".wasm.map")};
+    }
+    return OutputFiles{
+        .wat_ = path, .wasm_ = replaceExtension(path, ".wasm"), .sourceMap_ = replaceExtension(path, ".wasm.map")};
   }
-}
+};
 
-void passes::runAndEmit(AsModule const &m, std::string const &outputPath) {
-  std::string const outputPathWithoutExt = removeWasmExt(outputPath);
-  ensureFileDirectory(outputPathWithoutExt);
+void passes::runAndEmit(AsModule const &m, std::filesystem::path const &outputPath) {
+  OutputFiles const outputFiles = OutputFiles::create(outputPath);
+  ensureFileDirectory(outputFiles.wasm_);
 
-  std::string const watPathStr = outputPathWithoutExt + ".wat";
-  std::string const wasmPathStr = outputPathWithoutExt + ".wasm";
-  std::string const sourceMapPathStr = outputPathWithoutExt + ".map";
+  passes::Output const output = runOnModule(m, passes::Config{.sourceMapURL = getBaseName(outputFiles.sourceMap_)});
 
-  passes::Output const output = runOnModule(m, passes::Config{.sourceMapURL = getBaseName(sourceMapPathStr)});
-
-  if (std::ofstream of{wasmPathStr, std::ios::binary | std::ios::out}; of.good()) {
+  if (std::ofstream of{outputFiles.wasm_, std::ios::binary | std::ios::out}; of.good()) {
     of.write(reinterpret_cast<char const *>(output.wasm.data()), static_cast<std::streamsize>(output.wasm.size()));
   } else {
-    throw std::runtime_error{fmt::format("ERROR: failed to open file: {}", outputPath)};
+    throw std::runtime_error{fmt::format("ERROR: failed to open file: {}", outputFiles.wasm_.c_str())};
   }
-  if (std::ofstream of{watPathStr, std::ios::out}; of.good()) {
+  if (std::ofstream of{outputFiles.wat_, std::ios::out}; of.good()) {
     of.write(output.wat.data(), static_cast<std::streamsize>(output.wat.size()));
   } else {
-    throw std::runtime_error{fmt::format("failed to open file: {}", outputPath)};
+    throw std::runtime_error{fmt::format("failed to open file: {}", outputFiles.wat_.c_str())};
   }
   if (common::isEmitDebugLineInfo()) {
-    if (std::ofstream of{sourceMapPathStr, std::ios::out}; of.good()) {
+    if (std::ofstream of{outputFiles.sourceMap_, std::ios::out}; of.good()) {
       of.write(output.sourceMap.data(), static_cast<std::streamsize>(output.sourceMap.size()));
     } else {
-      throw std::runtime_error{fmt::format("failed to open file: {}", outputPath)};
+      throw std::runtime_error{fmt::format("failed to open file: {}", outputFiles.sourceMap_.c_str())};
     }
   }
 }
 
-void passes::runAndEmit(std::string const &inputPath, std::string const &outputPath) {
+void passes::runAndEmit(std::string const &inputPath, std::filesystem::path const &outputPath) {
   if (!inputPath.ends_with("wat") && !inputPath.ends_with("wast"))
     throw std::runtime_error{fmt::format("invalid file extension: {}, expected 'wat' or 'wast'", inputPath)};
   std::ifstream ifstream{inputPath, std::ios::in};

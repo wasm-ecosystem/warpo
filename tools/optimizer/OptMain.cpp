@@ -4,6 +4,7 @@
 
 #include <argparse/argparse.hpp>
 #include <cstddef>
+#include <filesystem>
 #include <fmt/format.h>
 
 #include "fmt/base.h"
@@ -18,7 +19,7 @@ static cli::Opt<std::string> inputPath{
     [](argparse::Argument &arg) -> void { arg.help("input file").required(); },
 };
 
-static cli::Opt<std::string> outputPath{
+static cli::Opt<std::filesystem::path> outputPath{
     cli::Category::All,
     "-o",
     "--output",

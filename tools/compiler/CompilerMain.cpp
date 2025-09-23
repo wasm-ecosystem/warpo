@@ -6,16 +6,18 @@
 #include <binaryen/src/binaryen-c.h>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <fstream>
 
 #include "warpo/frontend/Compiler.hpp"
+#include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
 
 namespace warpo {
 
-static cli::Opt<std::string> outputPath{
+static cli::Opt<std::filesystem::path> outputPath{
     cli::Category::All,
     "-t",
     "--text",
@@ -34,6 +36,7 @@ void compilerMain(int argc, const char *argv[]) {
     throw std::runtime_error("compilation failed");
   }
   char *const wasmText = BinaryenModuleAllocateAndWriteText(result.m.get());
+  ensureFileDirectory(outputPath.get());
   std::ofstream watOf{outputPath.get(), std::ios::out};
   watOf << wasmText;
   std::free(wasmText);
