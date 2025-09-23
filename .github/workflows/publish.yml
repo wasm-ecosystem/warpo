@@ -4,6 +4,9 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write
+
 jobs:
   build_and_upload:
     strategy:
@@ -36,7 +39,7 @@ jobs:
           fi
           tar -czvf build/warpo-${{ github.event.release.tag }}-${{ steps.set_artifact_name.outputs.filename }}.tar.gz -C build warpo
       - name: Upload to GitHub Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             build/warpo-${{ github.event.release.tag }}-${{ steps.set_artifact_name.outputs.filename }}.tar.gz
