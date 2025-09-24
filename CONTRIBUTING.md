@@ -7,20 +7,13 @@
 ```bash
 git clone git@github.com:wasm-ecosystem/warpo.git
 cd warpo
-git submodule update --init --depth=1
-cmake -S . -B build
-cmake --build build --parallel
-```
 
-### AS
-
-```bash
-npm ci
 cd assemblyscript
 npm ci
-npm run build
-cd ..
-npm run watch
+cd -
+
+cmake -S . -B build
+cmake --build build --parallel
 ```
 
 ## Test
@@ -29,7 +22,8 @@ npm run watch
 npm run test:ut
 npm run test:opt:snapshot
 npm run test:as:snapshot
-npm run test:bootstrap
+npm run test:bootstrap:debug
+npm run test:bootstrap:release
 ```
 
 ## subtree management

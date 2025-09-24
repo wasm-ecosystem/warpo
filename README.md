@@ -2,6 +2,10 @@
 
 wasm optimizer designed for wasm-compiler
 
+## build
+
+see [CONTRIBUTING](./CONTRIBUTING.md)
+
 ## repo structure
 
 ### for dev
