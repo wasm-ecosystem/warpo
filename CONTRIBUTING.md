@@ -11,6 +11,7 @@ cd warpo
 cd assemblyscript
 npm ci
 cd -
+npm ci
 
 cmake -S . -B build
 cmake --build build --parallel
