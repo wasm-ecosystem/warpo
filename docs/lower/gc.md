@@ -73,13 +73,14 @@ accept each call mapped stack offset as inputs.
 replace
 
 ```wasm
-call __tmptostack
+(call $__tmptostack (...))
 ```
 
 with
 
 ```wasm
-call __tostack<{offset}>
+(i32.store offset=... (global.get $sp) (local.tee $tmp (...)))
+(local.get $tmp)
 ```
 
 ### PrologEpilogInserter
@@ -102,7 +103,6 @@ implement
 
 1. `~lib/rt/__decrease_sp`.
 2. `~lib/rt/__increase_sp`.
-3. `~lib/rt/__tostack<{offset}>`.
 
 ---
 
@@ -156,3 +156,14 @@ with function
 Then it is better than previous one since we can merge the add and store instruction.
 
 In wasm's world, `offset=` is not equal to `i32.add`. since when operate ptr with `i32.add`, we need to consider integer overflow but with `offset=` not.
+
+## Why we inline tostack?
+
+Even though `~lib/rt/__tostack<OFFSET>` is better then `~lib/rt/__tostack`. However, in the subsequent optimization process, if tostack cannot be inlined, it will interfere with the subsequent constant propagation optimization.
+
+for example, binaryen opt passes cannot propagate constant for below bytecode. Because most of opt passes is intra-procedural. It does not know the result of tostack is always same as the first parameter.
+
+```wasm
+(local.set $0 (call $tostack<0> (i32.const 10)))
+(local.set $1 (i32.add (local.get $0) (i32.const 10))) ;; cannot be optimized to (local.set (i32.const 20))
+```
