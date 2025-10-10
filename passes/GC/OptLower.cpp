@@ -89,7 +89,7 @@ void OptLower::run(wasm::Module *m) {
   if (!NoMergeSSA.get()) {
     // now merge ssa should be done firstly, it is depends on liveness info as local's possible values.
     // After LeafFunctionFilter, liveness info is not correct anymore.
-    // TODO(Congcong): use def-uses chain instead of liveness info
+    // TODO: use def-uses chain instead of liveness info
     MergeSSA::addToPass(runner, moduleLevelSSAMap, livenessInfo);
   }
 

@@ -105,8 +105,8 @@ struct FunctionInfo {
 
     budget -= static_cast<float>(refs) * delta;
 
-    // TODO(Congcong): how can we handle potential optimization? e.g. const parameters
-    // TODO(Congcong): handle recursive calls?
+    // TODO: how can we handle potential optimization? e.g. const parameters
+    // TODO: handle recursive calls?
 
     bool const shouldInline = budget >= 0.0F;
     if (support::isDebug(PASS_NAME, funcName.str)) {

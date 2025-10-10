@@ -170,8 +170,8 @@ void BinaryenLiteralInt32ForLink(uint64_t ptr, int32_t x, [[maybe_unused]] vb::W
   *reinterpret_cast<BinaryenLiteral *>(ptr) = BinaryenLiteralInt32(x);
 }
 void BinaryenLiteralInt64ForLink(uint64_t ptr, int32_t x, int32_t y, [[maybe_unused]] vb::WasmModule *ctx) {
-  *reinterpret_cast<BinaryenLiteral *>(ptr) =
-      BinaryenLiteralInt64((static_cast<int64_t>(y) << 32) | (static_cast<uint32_t>(x)));
+  *reinterpret_cast<BinaryenLiteral *>(ptr) = BinaryenLiteralInt64(static_cast<int64_t>(
+      (static_cast<uint64_t>(static_cast<uint32_t>(y)) << 32U) | static_cast<uint64_t>(static_cast<uint32_t>(x))));
 }
 void BinaryenSetMemoryForLink(uint64_t module, uint32_t initial, uint32_t maximum, uint64_t exportName,
                               uint64_t segmentNames, uint64_t segmentDatas, uint64_t segmentPassives,

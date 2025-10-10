@@ -74,7 +74,7 @@ class AsModule {
 
 public:
   std::shared_ptr<ImmutableDataElementRanges> immutableRanges_;
-  // TODO(Congcong): more information fields
+  // TODO: more information fields
 
   AsModule() = default;
   explicit AsModule(BinaryenModuleRef ref) : raw_{ref}, immutableRanges_{nullptr} {}

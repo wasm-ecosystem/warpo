@@ -77,7 +77,7 @@ struct ImmutableLoadEliminating : public wasm::WalkerPass<wasm::PostWalker<Immut
 private:
   std::shared_ptr<ImmutableDataElementRanges> immutableDataRanges_;
 
-  // TODO(Congcong): optimized
+  // TODO: optimized
   uint8_t getValueFromDataSegment(uint32_t const addr) {
     wasm::Module const *const m = getModule();
     for (std::unique_ptr<wasm::DataSegment> const &segment : m->dataSegments) {
