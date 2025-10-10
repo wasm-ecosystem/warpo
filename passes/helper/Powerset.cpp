@@ -37,7 +37,7 @@ FiniteIntPowersetLattice::compare(const FiniteIntPowersetLattice::Element &left,
   // True in right, false in left.
   bool rightNotLeft = false;
 
-  size_t size = left.bitvector.size();
+  size_t const size = left.bitvector.size();
 
   for (size_t i = 0; i < size; ++i) {
     leftNotRight |= (left.bitvector[i] && !right.bitvector[i]);
@@ -79,7 +79,7 @@ FiniteIntPowersetLattice::Element FiniteIntPowersetLattice::getTop() const noexc
 size_t FiniteIntPowersetLattice::Element::count() const {
   size_t count = 0;
   for (auto it : bitvector) {
-    count += it;
+    count += static_cast<size_t>(it);
   }
   return count;
 }

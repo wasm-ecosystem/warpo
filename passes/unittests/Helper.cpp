@@ -3,8 +3,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 namespace warpo::passes::ut {
-
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 extern int placeholder;
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 int placeholder = 0;
 
 } // namespace warpo::passes::ut

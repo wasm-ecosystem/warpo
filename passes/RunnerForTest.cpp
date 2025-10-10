@@ -45,7 +45,7 @@ static const cli::Opt<bool> EnableAdvancedInliningPassForTesting{
 std::string passes::runOnWatForTest(std::string const &input, std::regex const &targetFunctionRegex) {
   std::unique_ptr<wasm::Module> m = passes::loadWat(input);
   wasm::PassRunner passRunner(m.get());
-  if ((EnableGCFastLowerPassForTesting.get() == true && EnableGCOptLowerPassForTesting.get() == true)) {
+  if ((EnableGCFastLowerPassForTesting.get() && EnableGCOptLowerPassForTesting.get())) {
     fmt::println("Do not allow to enable FastLower and OptLower at the same time");
     std::terminate();
   }

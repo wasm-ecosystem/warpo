@@ -17,7 +17,7 @@
 namespace warpo::passes::matcher {
 
 struct Context {
-  std::map<std::string, wasm::Expression const *> bindings{};
+  std::map<std::string, wasm::Expression const *> bindings;
   template <class T> T const *getBinding(std::string const &name) const {
     static_assert(std::is_base_of_v<wasm::Expression, T>, "bind only support subclass of wasm::Expression");
     auto it = bindings.find(name);
@@ -73,8 +73,10 @@ template <class T> M<T> allOf(std::initializer_list<M<T>> ms) {
   });
 }
 static inline M<wasm::ExpressionList> has(size_t n) {
-  return M<wasm::ExpressionList>(
-      [n](wasm::ExpressionList const &expr, Context &ctx) -> bool { return expr.size() == n; });
+  return M<wasm::ExpressionList>([n](wasm::ExpressionList const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return expr.size() == n;
+  });
 }
 static inline M<wasm::ExpressionList> at(size_t n, M<wasm::Expression> const &m) {
   return M<wasm::ExpressionList>([n, m](wasm::ExpressionList const &list, Context &ctx) -> bool {
@@ -95,67 +97,102 @@ static inline M<wasm::Store> v(M<wasm::Expression> const &m) {
   return M<wasm::Store>([m](wasm::Store const &expr, Context &ctx) -> bool { return m(*expr.value, ctx); });
 }
 static inline M<wasm::Store> offset(wasm::Address const &offset) {
-  return M<wasm::Store>([offset](wasm::Store const &expr, Context &ctx) -> bool { return expr.offset == offset; });
+  return M<wasm::Store>([offset](wasm::Store const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return expr.offset == offset;
+  });
 }
 } // namespace store
 
 constexpr IsMatcherImpl<wasm::LocalGet, wasm::Expression> isLocalGet;
 namespace local_get {
 static inline M<wasm::LocalGet> index(wasm::Index index) {
-  return M<wasm::LocalGet>([index](wasm::LocalGet const &expr, Context &ctx) -> bool { return index == expr.index; });
+  return M<wasm::LocalGet>([index](wasm::LocalGet const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return index == expr.index;
+  });
 }
 } // namespace local_get
 
 constexpr IsMatcherImpl<wasm::LocalSet, wasm::Expression> isLocalSet;
 namespace local_set {
 static inline M<wasm::LocalSet> index(wasm::Index index) {
-  return M<wasm::LocalSet>([index](wasm::LocalSet const &expr, Context &ctx) -> bool { return index == expr.index; });
+  return M<wasm::LocalSet>([index](wasm::LocalSet const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return index == expr.index;
+  });
 }
 static inline M<wasm::LocalSet> v(M<wasm::Expression> const &m) {
   return M<wasm::LocalSet>([m](wasm::LocalSet const &expr, Context &ctx) -> bool { return m(*expr.value, ctx); });
 }
 static inline M<wasm::LocalSet> tee() {
-  return M<wasm::LocalSet>([](wasm::LocalSet const &expr, Context &ctx) -> bool { return expr.isTee(); });
+  return M<wasm::LocalSet>([](wasm::LocalSet const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return expr.isTee();
+  });
 }
 } // namespace local_set
 
 constexpr IsMatcherImpl<wasm::GlobalGet, wasm::Expression> isGlobalGet;
 namespace global_get {
 static inline M<wasm::GlobalGet> name(wasm::Name name) {
-  return M<wasm::GlobalGet>([name](wasm::GlobalGet const &expr, Context &ctx) -> bool { return name == expr.name; });
+  return M<wasm::GlobalGet>([name](wasm::GlobalGet const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return name == expr.name;
+  });
 }
 } // namespace global_get
 constexpr IsMatcherImpl<wasm::GlobalSet, wasm::Expression> isGlobalSet;
 namespace global_set {
 static inline M<wasm::GlobalSet> v(M<wasm::Expression> const &m) {
-  return M<wasm::GlobalSet>([m](wasm::GlobalSet const &expr, Context &ctx) -> bool { return m(*expr.value, ctx); });
+  return M<wasm::GlobalSet>([m](wasm::GlobalSet const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return m(*expr.value, ctx);
+  });
 }
 static inline M<wasm::GlobalSet> name(wasm::Name name) {
-  return M<wasm::GlobalSet>([name](wasm::GlobalSet const &expr, Context &ctx) -> bool { return name == expr.name; });
+  return M<wasm::GlobalSet>([name](wasm::GlobalSet const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return name == expr.name;
+  });
 }
 } // namespace global_set
 
 constexpr IsMatcherImpl<wasm::Const, wasm::Expression> isConst;
 namespace const_ {
 static inline M<wasm::Const> v(wasm::Literal value) {
-  return M<wasm::Const>([value](wasm::Const const &expr, Context &ctx) -> bool { return value == expr.value; });
+  return M<wasm::Const>([value](wasm::Const const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return value == expr.value;
+  });
 }
 } // namespace const_
 
 constexpr IsMatcherImpl<wasm::Binary, wasm::Expression> isBinary;
 namespace binary {
 static inline M<wasm::Binary> op(wasm::BinaryOp op) {
-  return M<wasm::Binary>([op](wasm::Binary const &expr, Context &ctx) -> bool { return op == expr.op; });
+  return M<wasm::Binary>([op](wasm::Binary const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return op == expr.op;
+  });
 }
 static inline M<wasm::Binary> op(std::vector<wasm::BinaryOp> ops) {
-  return M<wasm::Binary>(
-      [ops = std::move(ops)](wasm::Binary const &expr, Context &ctx) -> bool { return contains(ops, expr.op); });
+  return M<wasm::Binary>([ops = std::move(ops)](wasm::Binary const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return contains(ops, expr.op);
+  });
 }
 static inline M<wasm::Binary> lhs(M<wasm::Expression> const &m) {
-  return M<wasm::Binary>([m](wasm::Binary const &expr, Context &ctx) -> bool { return m(*expr.left, ctx); });
+  return M<wasm::Binary>([m](wasm::Binary const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return m(*expr.left, ctx);
+  });
 }
 static inline M<wasm::Binary> rhs(M<wasm::Expression> const &m) {
-  return M<wasm::Binary>([m](wasm::Binary const &expr, Context &ctx) -> bool { return m(*expr.right, ctx); });
+  return M<wasm::Binary>([m](wasm::Binary const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return m(*expr.right, ctx);
+  });
 }
 static inline M<wasm::Binary> each(M<wasm::Expression> const &m1, M<wasm::Expression> const &m2) {
   return M<wasm::Binary>([m1, m2](wasm::Binary const &expr, Context &ctx) -> bool {
@@ -174,7 +211,10 @@ static inline M<wasm::Drop> v(M<wasm::Expression> const &m) {
 constexpr IsMatcherImpl<wasm::Call, wasm::Expression> isCall;
 namespace call {
 static inline M<wasm::Call> callee(wasm::Name name) {
-  return M<wasm::Call>([name](wasm::Call const &expr, Context &ctx) -> bool { return name == expr.target; });
+  return M<wasm::Call>([name](wasm::Call const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return name == expr.target;
+  });
 }
 static inline M<wasm::Call> operands(M<wasm::ExpressionList> const &m) {
   return M<wasm::Call>([m](wasm::Call const &expr, Context &ctx) -> bool { return m(expr.operands, ctx); });
@@ -214,7 +254,10 @@ static inline M<wasm::If> ifFalse(M<wasm::Expression> const &m) {
   });
 }
 static inline M<wasm::If> hasFalse() {
-  return M<wasm::If>([](wasm::If const &expr, Context &ctx) -> bool { return expr.ifFalse != nullptr; });
+  return M<wasm::If>([](wasm::If const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return expr.ifFalse != nullptr;
+  });
 }
 } // namespace _if
 
@@ -226,7 +269,10 @@ static inline M<wasm::Block> list(M<wasm::ExpressionList> const &m) {
   return M<wasm::Block>([m](wasm::Block const &expr, Context &ctx) -> bool { return m(expr.list, ctx); });
 }
 static inline M<wasm::Block> has(size_t n) {
-  return M<wasm::Block>([n](wasm::Block const &expr, Context &ctx) -> bool { return expr.list.size() == n; });
+  return M<wasm::Block>([n](wasm::Block const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return expr.list.size() == n;
+  });
 }
 static inline M<wasm::Block> at(size_t n, M<wasm::Expression> const &m) {
   return M<wasm::Block>([n, m](wasm::Block const &expr, Context &ctx) -> bool {

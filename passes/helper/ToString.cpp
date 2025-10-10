@@ -17,7 +17,7 @@ std::string warpo::passes::toString(wasm::Expression *expr) {
 std::string warpo::passes::toString(wasm::Function *f) {
   struct Printer : wasm::ExpressionStackWalker<Printer, wasm::UnifiedExpressionVisitor<Printer>> {
     using Supper = wasm::ExpressionStackWalker<Printer, wasm::UnifiedExpressionVisitor<Printer>>;
-    std::stringstream ss{};
+    std::stringstream ss;
     void walkFunction(wasm::Function *func) {
       ss << "(func $" << func->name << " " << func->type << "\n";
       for (auto &local : func->vars) {
@@ -68,8 +68,10 @@ std::string warpo::passes::toString(wasm::Function *f) {
     // }
 
     void indent() {
-      for (wasm::Expression const *_ : expressionStack)
+      for (wasm::Expression const *const _ : expressionStack) {
+        static_cast<void>(_);
         ss << "  ";
+      }
     }
   };
   Printer printer{};

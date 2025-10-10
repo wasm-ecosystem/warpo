@@ -18,13 +18,13 @@
 
 namespace warpo {
 
-static cli::Opt<std::filesystem::path> outputPath{
+static cli::Opt<std::filesystem::path> const outputPath{
     cli::Category::All,
     "-o",
     "--output",
     [](argparse::Argument &arg) -> void { arg.help("output file").required(); },
 };
-
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
 void ascMain(int argc, const char *argv[]) {
   frontend::init();
   passes::init();

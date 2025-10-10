@@ -12,7 +12,7 @@
 #include "warpo/support/FileSystem.hpp"
 
 void warpo::ensureFileDirectory(const std::filesystem::path &filePath) {
-  std::filesystem::path dirPath = filePath.parent_path();
+  std::filesystem::path const dirPath = filePath.parent_path();
   ensureDirectory(dirPath);
 }
 
@@ -64,7 +64,7 @@ void warpo::writeBinaryFile(std::string const &path, std::string data) {
   std::ofstream out{path, std::ios::binary};
   if (!out.good())
     throw std::runtime_error("cannot open file " + path);
-  out << std::move(data);
+  out << data;
 }
 
 #ifdef WARPO_ENABLE_UNIT_TESTS

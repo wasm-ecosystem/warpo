@@ -25,7 +25,7 @@ void detail::registerCallback(Category cat, std::function<void(argparse::Argumen
 }
 
 } // namespace warpo::cli
-
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
 void warpo::cli::init(Category cat, argparse::ArgumentParser &program, int argc, char const *argv[]) {
   for (auto const &[optCat, fns] : LazyInitOptCallback::ins().registerCallback_) {
     if ((optCat & cat) == Category::None)

@@ -36,7 +36,7 @@ class FiniteIntPowersetLattice {
   size_t setSize;
 
 public:
-  FiniteIntPowersetLattice(size_t setSize) : setSize(setSize) {}
+  explicit FiniteIntPowersetLattice(size_t setSize) : setSize(setSize) {}
 
   // Returns the size of the set that the powerset lattices was created from.
   size_t getSetSize() const { return setSize; }
@@ -51,15 +51,9 @@ public:
 
     // This constructs a bottom element, given the lattice set size. Used by the
     // lattice's getBottom function.
-    Element(size_t latticeSetSize) : bitvector(latticeSetSize) {}
+    explicit Element(size_t latticeSetSize) : bitvector(latticeSetSize) {}
 
   public:
-    Element(Element &&source) = default;
-    Element(const Element &source) = default;
-
-    Element &operator=(Element &&source) = default;
-    Element &operator=(const Element &source) = default;
-
     // Counts the number of members present the element itself. For instance, if
     // we had {true, false, true}, the count would be 2. O(N) operation which
     // iterates through the bitvector.

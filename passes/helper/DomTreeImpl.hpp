@@ -32,6 +32,6 @@ struct ImmediateDomTree : public std::vector<size_t> {
 
 ImmediateDomTree createDomTree(CFG const &cfg);
 
-ImmediateDomTree createPostDomTree(CFG const &bbs);
+ImmediateDomTree createPostDomTree(CFG const &cfg);
 
 } // namespace warpo::passes::dom_tree_impl

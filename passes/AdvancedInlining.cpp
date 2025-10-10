@@ -95,15 +95,15 @@ struct FunctionInfo {
     }
     // calculate delta for each call
     float const sizeCostDelta = inlinedCost - getOpcodeSizeCost(Opcode::CALL);
-    float const performanceCostDelta = 0.0f - getOpcodePerformanceCost(Opcode::CALL) - getFunctionPerformanceCost();
+    float const performanceCostDelta = 0.0F - getOpcodePerformanceCost(Opcode::CALL) - getFunctionPerformanceCost();
 
-    float const optimizationLevel = static_cast<float>(common::getOptimizationLevel()) + 0.0001;
-    float const shrinkLevel = static_cast<float>(common::getShrinkLevel()) + 0.0001;
-    float const optRatio = 0.5f * optimizationLevel / (optimizationLevel + shrinkLevel);
-    float const shrinkRatio = 0.5f + 0.5f * shrinkLevel / (optimizationLevel + shrinkLevel);
+    float const optimizationLevel = static_cast<float>(common::getOptimizationLevel()) + 0.0001F;
+    float const shrinkLevel = static_cast<float>(common::getShrinkLevel()) + 0.0001F;
+    float const optRatio = 0.5F * optimizationLevel / (optimizationLevel + shrinkLevel);
+    float const shrinkRatio = 0.5F + 0.5F * shrinkLevel / (optimizationLevel + shrinkLevel);
     float const delta = performanceCostDelta * optRatio + sizeCostDelta * shrinkRatio;
 
-    budget -= refs * delta;
+    budget -= static_cast<float>(refs) * delta;
 
     // TODO(Congcong): how can we handle potential optimization? e.g. const parameters
     // TODO(Congcong): handle recursive calls?
@@ -117,7 +117,7 @@ struct FunctionInfo {
   }
 };
 
-static bool canHandleParams(Function *const func) {
+bool canHandleParams(Function *const func) {
   // We cannot inline a function if we cannot handle placing its params in a
   // locals, as all params become locals.
   for (auto param : func->getParams()) {
@@ -341,7 +341,7 @@ struct Inlining : public Pass {
       // avoid risk of races
       // note that we do not risk stalling progress, as each iteration() will
       // inline at least one call before hitting this
-      if (inlinedUses.count(func->name)) {
+      if (inlinedUses.count(func->name) != 0U) {
         continue;
       }
       for (auto &action : state.actionsForFunction[name]) {

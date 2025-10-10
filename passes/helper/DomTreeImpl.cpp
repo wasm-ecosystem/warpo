@@ -165,7 +165,7 @@ struct DomTreeImplTest : public ::testing::Test {
   CFGTestWrapper cfg_;
   DynBitset createExpectDom(std::initializer_list<size_t> domIndexes) {
     DynBitset expectDom{CFGForTest::blocks(cfg_.raw_).size()};
-    for (size_t domIndex : domIndexes) {
+    for (size_t const domIndex : domIndexes) {
       expectDom.set(domIndex, true);
     }
     return expectDom;

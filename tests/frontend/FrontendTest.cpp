@@ -40,7 +40,7 @@
 namespace warpo {
 namespace {
 
-cli::Opt<bool> updateFlag{
+cli::Opt<bool> const updateFlag{
     cli::Category::All,
     "-u",
     "--update",
@@ -136,7 +136,7 @@ frontend::CompilationResult compile(nlohmann::json const &configJson, std::files
   }
   std::stringstream ss;
   ss << *ret.m.get();
-  std::string const actual = std::move(ss).str();
+  std::string actual = std::move(ss).str();
   writeBinaryFile(expectedOutPath, std::move(actual));
   return TestResult::Success;
 }
@@ -162,7 +162,7 @@ frontend::CompilationResult compile(nlohmann::json const &configJson, std::files
   bool failed = false;
   for (auto const &expectedErrorMessageLineJson : configJson["stderr"].get<nlohmann::json::array_t>()) {
     std::string const expectedErrorMessageLine = expectedErrorMessageLineJson.get<std::string>();
-    size_t index = ret.errorMessage.find(expectedErrorMessageLine, lastIndex);
+    size_t const index = ret.errorMessage.find(expectedErrorMessageLine, lastIndex);
     if (index == std::string::npos) {
       fmt::println("\tmissing pattern '{}' in stderr.", expectedErrorMessageLine);
       failed = true;
@@ -202,7 +202,7 @@ frontend::CompilationResult compile(nlohmann::json const &configJson, std::files
 bool isAnyASCFlagsNotImplemented(nlohmann::json::array_t const &ascFlags, std::filesystem::path const &tsPath) {
   if (ascFlags.empty())
     return false;
-  constexpr const char *allowedASCFlags[] = {
+  constexpr std::array<const char *, 7> allowedASCFlags = {
       "--exportStart _start", "--runtime incremental", "--initialMemory 2",  "--exportRuntime",
       "--bindings raw",       "--use Date=",           "--enableExtensions",
   };
@@ -279,7 +279,7 @@ std::vector<std::filesystem::path> collectTestFiles(std::filesystem::path const 
   collectTestFilesImpl(testFiles, folder);
   return testFiles;
 }
-
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
 void frontendTestMain(int argc, const char *argv[]) {
   frontend::init();
   Colors::setEnabled(false);
@@ -319,8 +319,8 @@ void frontendTestMain(int argc, const char *argv[]) {
   for (size_t threadId = 0; threadId < numThreads; threadId++) {
     executeThread.emplace_back(executor, threadId);
   }
-  for (size_t threadId = 0; threadId < executeThread.size(); threadId++) {
-    executeThread[threadId].join();
+  for (auto &thread : executeThread) {
+    thread.join();
   }
 
   if (numFailed > 0U)

@@ -137,6 +137,7 @@ bool PrologEpilogInserter::tryInsertPrologueAndEpilogue(wasm::Module *m, wasm::F
                                                         uint32_t maxShadowStackOffset,
                                                         std::optional<wasm::Index> const &scratchReturnValueLocalIndex,
                                                         wasm::Expression *prologue, wasm::Expression *epilogue) {
+  static_cast<void>(scratchReturnValueLocalIndex);
   wasm::Builder b{*m};
 
   ExprInserter inserter{func};

@@ -17,11 +17,13 @@ struct Failed {};
 } // namespace result::detail
 template <typename T, typename E = result::detail::Void> class [[nodiscard]] Result final {
 private:
+  // NOLINTNEXTLINE(bugprone-sizeof-expression)
   static constexpr size_t max_size = sizeof(T) > sizeof(E) ? sizeof(T) : sizeof(E);
   alignas(alignof(T) > alignof(E) ? alignof(T) : alignof(E)) std::array<std::byte, max_size> data;
   bool success_;
 
   template <class U> Result(U const &u, bool success) : success_(success) {
+    // NOLINTNEXTLINE(bugprone-sizeof-expression)
     static_assert(sizeof(U) <= max_size, "value too large to store in shared memory.");
     new (data.data()) U(u);
   }
@@ -29,8 +31,8 @@ private:
 public:
   static Result succeed(T const &v) { return Result(v, true); }
   static Result failed(E const &e) { return Result(e, false); }
-
-  Result(result::detail::Failed) : Result(E{}, false) {}
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  Result(result::detail::Failed failed) : Result(E{}, false) { static_cast<void>(failed); }
 
   T const &value() const {
     assert(success_ && "Attempted to get value of type T when stored type is E");
@@ -43,6 +45,11 @@ public:
 
   bool ok() const { return success_; }
   bool nok() const { return !ok(); }
+
+  Result(Result const &) = delete;
+  Result(Result &&o) = delete;
+  Result &operator=(Result const &) = delete;
+  Result &operator=(Result &&o) = delete;
 
   ~Result() {
     if (success_) {

@@ -26,7 +26,8 @@ public:
   BinaryenModule &operator=(BinaryenModule &&o) noexcept {
     if (&o == this)
       return *this;
-    BinaryenModuleRef tmp = ref_;
+    // NOLINTNEXTLINE(misc-misplaced-const)
+    BinaryenModuleRef const tmp = ref_;
     ref_ = o.ref_;
     o.ref_ = tmp;
     return *this;

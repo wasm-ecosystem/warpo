@@ -24,7 +24,10 @@ struct IInfoPrinter {
 };
 
 struct EmptyInfoPrinter final : public IInfoPrinter {
-  std::optional<std::string> onExpr(wasm::Expression *) const override { return std::nullopt; }
+  std::optional<std::string> onExpr(wasm::Expression *expr) const override {
+    static_cast<void>(expr);
+    return std::nullopt;
+  }
 };
 
 struct BasicBlock final {
@@ -73,7 +76,7 @@ struct CFG {
   reverse_iterator rbegin() const { return blocks.rbegin(); }
   reverse_iterator rend() const { return blocks.rend(); }
 
-  const BasicBlock &operator[](size_t i) const { return *(begin() + i); }
+  const BasicBlock &operator[](size_t i) const { return blocks[i]; }
 
   void print(std::ostream &os, wasm::Module *wasm, IInfoPrinter const &infoPrinter) const;
 
@@ -84,13 +87,17 @@ struct CFG {
 
   BasicBlock const *getEntry() const {
     assert(!blocks.empty());
-    assert(blocks.front().isEntry() && "First block must be entry");
-    return &blocks.front();
+    for (const BasicBlock &block : blocks) {
+      if (block.isEntry()) {
+        return &block;
+      }
+    }
+    return nullptr;
   }
   BasicBlock const *getExit() const {
-    for (auto it = blocks.rbegin(); it != blocks.rend(); ++it) {
-      if (it->isExit())
-        return &(*it);
+    for (const BasicBlock &block : blocks) {
+      if (block.isExit())
+        return &block;
     }
     return nullptr;
   }

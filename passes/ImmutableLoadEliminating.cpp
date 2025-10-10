@@ -28,7 +28,7 @@ namespace warpo::passes {
 namespace {
 
 struct ImmutableLoadEliminating : public wasm::WalkerPass<wasm::PostWalker<ImmutableLoadEliminating>> {
-  ImmutableLoadEliminating(std::shared_ptr<ImmutableDataElementRanges> const &immutableDataRanges)
+  explicit ImmutableLoadEliminating(std::shared_ptr<ImmutableDataElementRanges> const &immutableDataRanges)
       : immutableDataRanges_(immutableDataRanges) {}
   bool isFunctionParallel() override { return true; }
   std::unique_ptr<Pass> create() override {
@@ -44,8 +44,8 @@ struct ImmutableLoadEliminating : public wasm::WalkerPass<wasm::PostWalker<Immut
   void visitLoad(wasm::Load *expr) {
     if (expr->type == wasm::Type::unreachable || expr->type == wasm::Type::v128)
       return;
-    wasm::Const *ptr = expr->ptr->dynCast<wasm::Const>();
-    if (!ptr)
+    wasm::Const const *const ptr = expr->ptr->dynCast<wasm::Const>();
+    if (ptr == nullptr)
       return;
     uint64_t const ptrValue = static_cast<uint64_t>(ptr->value.getInteger());
     uint64_t const offsetValue = static_cast<uint64_t>(expr->offset.addr);
@@ -77,11 +77,11 @@ struct ImmutableLoadEliminating : public wasm::WalkerPass<wasm::PostWalker<Immut
 private:
   std::shared_ptr<ImmutableDataElementRanges> immutableDataRanges_;
 
-  // TODO: optimized
+  // TODO(Congcong): optimized
   uint8_t getValueFromDataSegment(uint32_t const addr) {
-    wasm::Module *m = getModule();
+    wasm::Module const *const m = getModule();
     for (std::unique_ptr<wasm::DataSegment> const &segment : m->dataSegments) {
-      wasm::Const *segmentOffset = segment->offset->dynCast<wasm::Const>();
+      wasm::Const const *const segmentOffset = segment->offset->dynCast<wasm::Const>();
       assert(segmentOffset);
       uint64_t const segmentOffsetValue = static_cast<uint64_t>(segmentOffset->value.getInteger());
       uint64_t const segmentSize = static_cast<uint64_t>(segment->data.size());
@@ -93,7 +93,6 @@ private:
   }
 
   wasm::Literal getLoadResult(uint32_t start, wasm::Type type, uint32_t loadSize, bool isSigned) {
-    wasm::Module *m = getModule();
     switch (type.getBasic()) {
     case wasm::Type::i32: {
       switch (loadSize) {
@@ -224,13 +223,13 @@ TEST_P(ImmutableDataRangeTest, LoadImmutableData) {
       )
     )
   )");
-  wasm::Function *f = m->getFunction("load_immutable_data");
+  wasm::Function *const f = m->getFunction("load_immutable_data");
 
-  std::shared_ptr<ImmutableDataElementRanges> ranges{new ImmutableDataElementRanges()};
+  std::shared_ptr<ImmutableDataElementRanges> const ranges{new ImmutableDataElementRanges()};
   for (DataElementRange const &r : GetParam().ranges_) {
     ranges->insert(r);
   }
-  ImmutableLoadEliminating pass{ranges};
+  ImmutableLoadEliminating const pass{ranges};
 
   wasm::PassRunner runner{m.get()};
   runner.add(std::unique_ptr<wasm::Pass>{createImmutableLoadEliminatingPass(ranges)});
@@ -265,12 +264,12 @@ TEST(ImmutableLoadEliminatingTest, Offset) {
       )
     )
   )");
-  wasm::Function *f = m->getFunction("load_immutable_data");
+  wasm::Function *const f = m->getFunction("load_immutable_data");
 
-  std::shared_ptr<ImmutableDataElementRanges> ranges{new ImmutableDataElementRanges()};
+  std::shared_ptr<ImmutableDataElementRanges> const ranges{new ImmutableDataElementRanges()};
   ranges->insert({4, 8});
 
-  ImmutableLoadEliminating pass{ranges};
+  ImmutableLoadEliminating const pass{ranges};
 
   wasm::PassRunner runner{m.get()};
   runner.add(std::unique_ptr<wasm::Pass>{createImmutableLoadEliminatingPass(ranges)});
@@ -300,11 +299,11 @@ TEST_P(LoadKindTest, LoadImmutableData) {
     )
   )",
                                GetParam().loadInstruction_));
-  wasm::Function *f = m->getFunction("load_immutable_data");
+  wasm::Function *const f = m->getFunction("load_immutable_data");
 
-  std::shared_ptr<ImmutableDataElementRanges> ranges{new ImmutableDataElementRanges()};
+  std::shared_ptr<ImmutableDataElementRanges> const ranges{new ImmutableDataElementRanges()};
   ranges->insert({0, 8});
-  ImmutableLoadEliminating pass{ranges};
+  ImmutableLoadEliminating const pass{ranges};
 
   wasm::PassRunner runner{m.get()};
   runner.add(std::unique_ptr<wasm::Pass>{createImmutableLoadEliminatingPass(ranges)});

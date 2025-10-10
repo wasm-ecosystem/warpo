@@ -68,8 +68,8 @@ void passes::init() { Colors::setEnabled(false); }
 
 static std::unique_ptr<wasm::PassRunner> createPassRunner(wasm::Module *const m) {
   auto passRunner = std::make_unique<wasm::PassRunner>(m);
-  passRunner->options.shrinkLevel = common::getShrinkLevel();
-  passRunner->options.optimizeLevel = common::getOptimizationLevel();
+  passRunner->options.shrinkLevel = static_cast<int32_t>(common::getShrinkLevel());
+  passRunner->options.optimizeLevel = static_cast<int32_t>(common::getOptimizationLevel());
   return passRunner;
 }
 
@@ -140,7 +140,7 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
 
   // wasm and source map
   wasm::BufferWithRandomAccess buffer;
-  wasm::PassOptions options = wasm::PassOptions::getWithoutOptimization();
+  wasm::PassOptions const options = wasm::PassOptions::getWithoutOptimization();
   wasm::WasmBinaryWriter writer(m.get(), buffer, options);
   std::stringstream sourceMapStream;
   if (common::isEmitDebugLineInfo()) {

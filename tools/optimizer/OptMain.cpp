@@ -26,6 +26,7 @@ static cli::Opt<std::filesystem::path> const outputPath{
     [](argparse::Argument &arg) -> void { arg.help("output file").required(); },
 };
 
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
 void optMain(int argc, char const *argv[]) {
   passes::init();
   argparse::ArgumentParser program("warpo", "git@" GIT_COMMIT);

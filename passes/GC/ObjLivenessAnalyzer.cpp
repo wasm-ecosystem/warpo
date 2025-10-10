@@ -78,7 +78,7 @@ class LiveLocalTransferFn : public wasm::analysis::VisitorTransferFunc<LiveLocal
   LocalsUses &uses_;
   LocalToSSALookupTable localToSSA_;
 
-  static bool isActive(FiniteIntPowersetLattice::Element &s, size_t index) { return s.get(index) == true; }
+  static bool isActive(FiniteIntPowersetLattice::Element &s, size_t index) { return s.get(index); }
   static void setActive(FiniteIntPowersetLattice::Element &s, size_t index) { s.set(index, true); }
   static void setInactive(FiniteIntPowersetLattice::Element &s, size_t index) { s.set(index, false); }
 
@@ -359,7 +359,7 @@ void dumpInfo(wasm::Module *const m, wasm::Function *func, LocalsUses const &loc
               SSAMap const &ssaMap) {
   static_cast<void>(m);
   CFG const cfg = CFG::fromFunction(func);
-  InfoPrinter infoPrinter{localsUses, tmpUses, ssaMap};
+  InfoPrinter const infoPrinter{localsUses, tmpUses, ssaMap};
   cfg.print(std::cout, nullptr, infoPrinter);
 }
 

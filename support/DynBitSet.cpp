@@ -31,8 +31,8 @@ void DynBitset::set(size_t index, bool value) {
   if (index >= bitSize_) {
     throw std::out_of_range("Index out of range");
   }
-  size_t block_index = index / block_size;
-  size_t bit_index = index % block_size;
+  size_t const block_index = index / block_size;
+  size_t const bit_index = index % block_size;
   if (value) {
     data_[block_index] |= (static_cast<Element>(1U) << static_cast<Element>(bit_index));
   } else {
@@ -50,8 +50,8 @@ bool DynBitset::get(size_t index) const {
 
 size_t DynBitset::count() const {
   size_t count = 0;
-  for (size_t i = 0; i < data_.size(); ++i) {
-    count += __builtin_popcountll(data_[i]);
+  for (const auto data : data_) {
+    count += __builtin_popcountll(data);
   }
   return count;
 }
@@ -121,12 +121,12 @@ DynBitset DynBitset::operator~() const {
 namespace warpo::ut {
 
 TEST(DynBitSetTest, Nor) {
-  DynBitset nor_v = ~DynBitset{2};
+  DynBitset const nor_v = ~DynBitset{2};
   EXPECT_EQ(nor_v.toString(), "11");
 }
 
 TEST(DynBitSetTest, NorAndResize) {
-  DynBitset v{2};
+  DynBitset const v{2};
   DynBitset nor_v = ~v;
   nor_v.resize(2U * DynBitset::block_size);
   std::string expected = DynBitset{DynBitset::block_size}.toString() + DynBitset{DynBitset::block_size}.toString();
@@ -136,8 +136,8 @@ TEST(DynBitSetTest, NorAndResize) {
 }
 
 TEST(DynBitSetTest, NorFull) {
-  DynBitset nor_v = ~DynBitset{DynBitset::block_size};
-  std::string expected(DynBitset::block_size, '1');
+  DynBitset const nor_v = ~DynBitset{DynBitset::block_size};
+  std::string const expected(DynBitset::block_size, '1');
   EXPECT_EQ(nor_v.toString(), expected);
 }
 

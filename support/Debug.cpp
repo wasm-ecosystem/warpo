@@ -55,13 +55,13 @@ private:
   std::set<std::string> enabledPassName;
   std::set<std::string> enabledFunctionName;
 
-  explicit DebugHelper() : enabledAll{false}, enabledPassName{}, enabledFunctionName{} {
-    const char *warpoDebug = std::getenv("WARPO_DEBUG");
+  explicit DebugHelper() : enabledAll{false} {
+    const char *const warpoDebug = std::getenv("WARPO_DEBUG");
     enabledAll = warpoDebug != nullptr && std::string(warpoDebug) == "1";
-    const char *warpoDebugPasses = std::getenv("WARPO_DEBUG_PASSES");
+    const char *const warpoDebugPasses = std::getenv("WARPO_DEBUG_PASSES");
     if (warpoDebugPasses != nullptr)
       enabledPassName = splitString(warpoDebugPasses, ';');
-    const char *warpoDebugFunctionNames = std::getenv("WARPO_DEBUG_FUNCTIONS");
+    const char *const warpoDebugFunctionNames = std::getenv("WARPO_DEBUG_FUNCTIONS");
     if (warpoDebugFunctionNames != nullptr)
       enabledFunctionName = splitString(warpoDebugFunctionNames, ';');
   }

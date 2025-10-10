@@ -49,7 +49,7 @@ int main(int argc, char const *argv[]) {
     fmt::println("ERROR: failed to open file: {}", inputPath.get());
     return 1;
   }
-  std::string input{std::istreambuf_iterator<char>{ifstream}, {}};
+  std::string const input{std::istreambuf_iterator<char>{ifstream}, {}};
 
   std::string wat = passes::runOnWatForTest(input, std::regex{functionRegex.get()});
 

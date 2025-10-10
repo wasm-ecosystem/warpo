@@ -83,8 +83,9 @@ uint64_t BinaryenBinaryForLink(uint64_t module, uint32_t op, uint64_t left, uint
                      reinterpret_cast<BinaryenExpressionRef>(left), reinterpret_cast<BinaryenExpressionRef>(right)));
 }
 uint64_t BinaryenUnaryForLink(uint64_t module, uint32_t op, uint64_t value, [[maybe_unused]] vb::WasmModule *ctx) {
-  return reinterpret_cast<uint64_t>(
-      BinaryenUnary(reinterpret_cast<BinaryenModuleRef>(module), op, reinterpret_cast<BinaryenExpressionRef>(value)));
+  return reinterpret_cast<uint64_t>(BinaryenUnary(reinterpret_cast<BinaryenModuleRef>(module),
+                                                  static_cast<BinaryenOp>(op),
+                                                  reinterpret_cast<BinaryenExpressionRef>(value)));
 }
 uint64_t BinaryenRefIsNullForLink(uint64_t module, uint64_t value, [[maybe_unused]] vb::WasmModule *ctx) {
   return reinterpret_cast<uint64_t>(

@@ -17,9 +17,7 @@
 namespace warpo::passes {
 
 static bool isTerminator(wasm::Expression *expr) {
-  if (expr->is<wasm::Return>() || expr->is<wasm::Unreachable>() || expr->is<wasm::Break>())
-    return true;
-  return false;
+  return expr->is<wasm::Return>() || expr->is<wasm::Unreachable>() || expr->is<wasm::Break>();
 }
 
 bool ExprInserter::canInsertBefore(wasm::Expression *insertPosition) {
@@ -78,14 +76,15 @@ bool ExprInserter::canInsertAfter(wasm::Expression *insertPosition) {
     // special handler for terminator
     if (insertPosition->is<wasm::Unreachable>())
       return true;
-    if (wasm::Return *expr = insertPosition->dynCast<wasm::Return>(); expr != nullptr) {
+    if (wasm::Return const *const expr = insertPosition->dynCast<wasm::Return>(); expr != nullptr) {
       return true;
       if (expr->value == nullptr)
         return true;
       if (canInsertAfter(expr->value))
         return true;
     }
-    if (wasm::Break *expr = insertPosition->dynCast<wasm::Break>(); expr != nullptr && expr->condition == nullptr) {
+    if (wasm::Break const *const expr = insertPosition->dynCast<wasm::Break>();
+        expr != nullptr && expr->condition == nullptr) {
       return true;
       if (expr->value == nullptr)
         return true;
@@ -111,7 +110,7 @@ void ExprInserter::insertAfter(wasm::Builder &b, wasm::Expression *insertedExpr,
       *insertPositionPtr = b.makeBlock({insertedExpr, insertPosition}, wasm::Type::unreachable);
       return;
     }
-    if (wasm::Return *expr = insertPosition->dynCast<wasm::Return>(); expr != nullptr) {
+    if (wasm::Return *const expr = insertPosition->dynCast<wasm::Return>(); expr != nullptr) {
       if (expr->value == nullptr) {
         *insertPositionPtr = b.makeBlock({insertedExpr, insertPosition}, wasm::Type::unreachable);
         return;
@@ -119,7 +118,8 @@ void ExprInserter::insertAfter(wasm::Builder &b, wasm::Expression *insertedExpr,
       insertAfter(b, insertedExpr, &expr->value);
       return;
     }
-    if (wasm::Break *expr = insertPosition->dynCast<wasm::Break>(); expr != nullptr && expr->condition == nullptr) {
+    if (wasm::Break *const expr = insertPosition->dynCast<wasm::Break>();
+        expr != nullptr && expr->condition == nullptr) {
       if (expr->value == nullptr) {
         *insertPositionPtr = b.makeBlock({insertedExpr, insertPosition}, wasm::Type::unreachable);
         return;
@@ -134,7 +134,7 @@ void ExprInserter::insertAfter(wasm::Builder &b, wasm::Expression *insertedExpr,
       return;
     }
     if (exprType != wasm::Type::unreachable) {
-      wasm::Index const tmpLocal = b.addVar(func_, exprType);
+      wasm::Index const tmpLocal = wasm::Builder::addVar(func_, exprType);
       *insertPositionPtr = b.makeBlock(
           {
               b.makeLocalSet(tmpLocal, insertPosition),

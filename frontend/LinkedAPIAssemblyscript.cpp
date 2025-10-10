@@ -26,7 +26,7 @@ namespace {
 std::string getAsString(uint32_t ptr, vb::WasmModule *ctx) {
   if (ptr == 0U)
     return "<<NULL>>";
-  uint8_t const *header = ctx->getLinearMemoryRegion(ptr - 20U, 20);
+  uint8_t const *const header = ctx->getLinearMemoryRegion(ptr - 20U, 20);
   uint32_t size = 0;
   std::memcpy(&size, header + 16, sizeof(size));
   uint8_t const *const content = ctx->getLinearMemoryRegion(ptr, size);

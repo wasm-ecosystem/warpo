@@ -17,13 +17,13 @@
 
 namespace warpo {
 
-static cli::Opt<std::filesystem::path> outputPath{
+static cli::Opt<std::filesystem::path> const outputPath{
     cli::Category::All,
     "-t",
     "--text",
     [](argparse::Argument &arg) -> void { arg.help("output text file").required(); },
 };
-
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
 void compilerMain(int argc, const char *argv[]) {
   frontend::init();
   argparse::ArgumentParser program("warpo_compiler", "git@" GIT_COMMIT);

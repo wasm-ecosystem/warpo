@@ -55,7 +55,7 @@ struct Updater final : public wasm::TryDepthWalker<Updater> {
   // to the caller. The branch labels will be filled in at the end of the walk.
   std::vector<ReturnCallInfo> returnCallInfos;
 
-  explicit Updater(wasm::PassOptions &options) : options(options) {}
+  explicit Updater(wasm::PassOptions &options) : module(nullptr), isReturn(false), builder(nullptr), options(options) {}
 
   void visitReturn(wasm::Return *curr) { replaceCurrent(builder->makeBreak(returnName, curr->value)); }
 
