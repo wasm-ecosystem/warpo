@@ -13,8 +13,7 @@ FetchContent_Declare(
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 FetchContent_MakeAvailable(fmt)
-add_library(fmt_lib ALIAS fmt)
-set_target_properties(fmt PROPERTIES FOLDER "third_party")
+
 target_include_directories(fmt SYSTEM INTERFACE
   $<BUILD_INTERFACE:${fmt_SOURCE_DIR}/include>
 )
