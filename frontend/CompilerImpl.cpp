@@ -92,8 +92,10 @@ std::u16string FrontendCompiler::utf8ToUtf16(std::string const &utf8Str) {
 
   if (llvm::ConvertUTF8toUTF16(&src, srcEnd, &dst, dstEnd, llvm::strictConversion) != llvm::conversionOK)
     throw std::runtime_error("UTF8 to UTF16 conversion failed");
-  // Resize the string to the actual number of UTF-16 code units written
-  utf16Str.resize(dst - reinterpret_cast<llvm::UTF16 *>(utf16Str.data()));
+  // Resize the string to the actual number of UTF-16 code units written.
+  // The pointer subtraction yields a ptrdiff_t; it must be non-negative and fit into size_t.
+  ptrdiff_t const written16 = dst - reinterpret_cast<llvm::UTF16 *>(utf16Str.data());
+  utf16Str.resize(static_cast<std::u16string::size_type>(written16));
   return utf16Str;
 }
 
@@ -109,8 +111,9 @@ std::string FrontendCompiler::utf16ToUtf8(std::u16string const &utf16Str) {
 
   if (llvm::ConvertUTF16toUTF8(&src, srcEnd, &dst, dstEnd, llvm::strictConversion) != llvm::conversionOK)
     throw std::runtime_error("UTF16 to UTF8 conversion failed");
-  // Resize the string to the actual number of UTF-8 bytes written
-  utf8Str.resize(dst - reinterpret_cast<llvm::UTF8 *>(utf8Str.data()));
+  // Resize the string to the actual number of UTF-8 bytes written.
+  ptrdiff_t const written8 = dst - reinterpret_cast<llvm::UTF8 *>(utf8Str.data());
+  utf8Str.resize(static_cast<std::string::size_type>(written8));
   return utf8Str;
 }
 
@@ -161,7 +164,7 @@ FrontendCompiler::Dependency FrontendCompiler::getDependencyForNodeModules(std::
   if (support::isDebug("ModuleResolve"))
     fmt::println("[module resolve] get dependency for '{}'", nextFileInternalPath);
   int32_t const dependee = r->callExportedFunctionWithName<1>(r.getStackTop(), "getDependee", program, nextFile)[0].i32;
-  std::string const dependeePath = getAsString(dependee);
+  std::string const dependeePath = getAsString(static_cast<uint32_t>(dependee));
   if (PackageResolveResult const package = getPackageName(nextFileInternalPath); package.has_value()) {
     auto const [packageName, filePath] = *package;
     std::optional<std::filesystem::path> const packageRoot = findPackageRoot(dependeePath, packageName);
@@ -234,7 +237,7 @@ std::vector<FrontendCompiler::Dependency> FrontendCompiler::getAllDependencies(i
     if (nextFile == 0U) {
       break;
     }
-    std::string const nextFileInternalPath = getAsString(nextFile);
+    std::string const nextFileInternalPath = getAsString(static_cast<uint32_t>(nextFile));
     dependencies.push_back(getDependency(nextFileInternalPath, program, nextFile));
   }
   return dependencies;
@@ -255,7 +258,7 @@ bool FrontendCompiler::checkDiag(int32_t const program, bool useColorfulDiagMess
                                            useColorfulDiagMessage ? WasmFFIBool::WASM_TRUE : WasmFFIBool::WASM_FALSE,
                                            WasmFFIBool::WASM_TRUE)[0]
             .i32;
-    errorMessage_ += getAsString(diagStrOffset) + "\n\n";
+    errorMessage_ += getAsString(static_cast<uint32_t>(diagStrOffset)) + "\n\n";
   }
   errorCount_ += errorCount;
   return errorCount > 0;
