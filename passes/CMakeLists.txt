@@ -31,7 +31,7 @@ target_link_libraries(${LIB_NAME}
   PUBLIC binaryen fmt::fmt warpo_common
 )
 target_include_directories(${LIB_NAME}
-  PRIVATE "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"
+  SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"
 )
 target_include_directories(${LIB_NAME}
   PUBLIC "${PROJECT_SOURCE_DIR}/include"

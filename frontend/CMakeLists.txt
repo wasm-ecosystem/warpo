@@ -9,7 +9,7 @@ target_link_libraries(warpo_frontend
   PUBLIC binaryen fmt::fmt warpo_common
 )
 target_include_directories(warpo_frontend
-  PRIVATE "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"
+  SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"
 )
 target_include_directories(warpo_frontend
   PUBLIC "${PROJECT_SOURCE_DIR}/include"
