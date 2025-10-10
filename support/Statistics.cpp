@@ -44,12 +44,13 @@ const char *toString(PerfItemKind kind) {
   case PerfItemKind::parent##_##name:                                                                                  \
     return #parent "_" #name;
 #include "warpo/support/StatisticsKinds.def"
+  default:
+    return "Unknown";
   }
-  return "Unknown";
 }
 
 std::string toString(std::chrono::nanoseconds ns) {
-  uint64_t duration = ns.count();
+  uint64_t duration = static_cast<uint64_t>(ns.count());
   if (duration >= 1'000'000'000)
     return fmt::format("{:.3f}s", static_cast<double>(duration) / 1'000'000'000);
   if (duration >= 1'000'000)

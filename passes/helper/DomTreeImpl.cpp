@@ -21,7 +21,7 @@ concept IsHandler = requires(Handler h, BasicBlock const *bb) {
 
 } // namespace
 
-static constexpr size_t undef = -1;
+static constexpr size_t undef = SIZE_MAX;
 
 template <IsHandler Handler>
 ImmediateDomTree createDomTreeImpl(Handler h, size_t const n, std::vector<BasicBlock const *> const &bbs) {

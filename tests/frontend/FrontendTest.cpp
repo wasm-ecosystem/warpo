@@ -313,6 +313,8 @@ void frontendTestMain(int argc, const char *argv[]) {
       case TestResult::Skip:
         numSkipped++;
         break;
+      default:
+        break;
       }
     }
   };

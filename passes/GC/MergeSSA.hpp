@@ -13,8 +13,8 @@ namespace warpo::passes::gc {
 
 /// @brief remove item in liveness which does not involve GC non leaf function
 struct MergeSSA : public wasm::Pass {
-  std::shared_ptr<ObjLivenessInfo> info_;
   ModuleLevelSSAMap const &moduleLevelSSAMap_;
+  std::shared_ptr<ObjLivenessInfo> info_;
 
   explicit MergeSSA(ModuleLevelSSAMap const &moduleLevelSSAMap, std::shared_ptr<ObjLivenessInfo> const &info)
       : moduleLevelSSAMap_(moduleLevelSSAMap), info_(info) {

@@ -442,7 +442,7 @@ struct Inlining : public Pass {
   bool isUnderSizeLimit(Name target, Name source) {
     // Estimate the combined binary size from the number of instructions.
     auto combinedSize = infos[target].inlinedCost + infos[source].inlinedCost;
-    auto estimatedBinarySize = Measurer::BytesPerExpr * combinedSize;
+    auto estimatedBinarySize = Measurer::BytesPerExpr * static_cast<double>(combinedSize);
     // The limit is arbitrary, but based on the links above. It is a very high
     // value that should appear very rarely in practice (for example, it does
     // not occur on the Emscripten benchmark suite of real-world codebases).

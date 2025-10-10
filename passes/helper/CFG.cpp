@@ -84,7 +84,7 @@ CFG CFG::fromFunction(wasm::Function *func) {
   for (size_t i = 0; i < numBlocks; ++i) {
     auto &oldBlock = *builder.basicBlocks[i];
     auto &newBlock = cfg.blocks[i];
-    newBlock.index = i;
+    newBlock.index = static_cast<wasm::Index>(i);
     newBlock.insts = std::move(oldBlock.contents);
     newBlock.predecessors.reserve(oldBlock.in.size());
     for (auto *oldPred : oldBlock.in) {

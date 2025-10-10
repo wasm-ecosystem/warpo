@@ -44,7 +44,7 @@ struct LivenessMap {
     set(getIndexBase(expr).value(), pos, index, isLive);
   }
   bool get(ssize_t base, Pos pos, size_t index) const {
-    return storage_.get((2 * base + (pos == Pos::Before ? 0 : 1)) * dimension_ + index);
+    return storage_.get((2 * static_cast<size_t>(base) + (pos == Pos::Before ? 0U : 1U)) * dimension_ + index);
   }
   void ensureExpression(wasm::Expression *expr) {
     if (map_.contains(expr))
@@ -85,7 +85,7 @@ private:
 
 /// @brief colored vector for SSA values
 class ColorVec : private std::vector<size_t> {
-  static constexpr size_t InvalidColor = -1;
+  static constexpr size_t InvalidColor = SIZE_MAX;
 
 public:
   explicit ColorVec(size_t dim) { resize(dim, InvalidColor); }

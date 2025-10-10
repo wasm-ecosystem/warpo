@@ -86,7 +86,7 @@ public:
   FiniteIntPowersetLattice lattice_;
 
   explicit LiveLocalTransferFn(wasm::Function *const func, SSAMap const &ssaMap, LocalsUses &uses)
-      : S{}, lattice_(ssaMap.size()), ssaMap_(ssaMap), uses_(uses), localToSSA_(LocalToSSALookupTable::create(ssaMap)) {
+      : S{}, ssaMap_(ssaMap), uses_(uses), localToSSA_(LocalToSSALookupTable::create(ssaMap)), lattice_(ssaMap.size()) {
     static_cast<void>(func);
   }
 

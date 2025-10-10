@@ -86,7 +86,7 @@ private:
       uint64_t const segmentOffsetValue = static_cast<uint64_t>(segmentOffset->value.getInteger());
       uint64_t const segmentSize = static_cast<uint64_t>(segment->data.size());
       if (segmentOffsetValue <= addr && addr < (segmentOffsetValue + segmentSize)) {
-        return segment->data[addr - segmentOffsetValue];
+        return static_cast<uint8_t>(segment->data[addr - segmentOffsetValue]);
       }
     }
     return 0U;
@@ -319,22 +319,27 @@ TEST_P(LoadKindTest, LoadImmutableData) {
 INSTANTIATE_TEST_SUITE_P(
     ImmutableLoadEliminatingTest, LoadKindTest,
     ::testing::ValuesIn({
-        P1{.loadInstruction_ = "i32.load", .value_ = wasm::Literal{(uint32_t)0xF4F3F2F1}},
-        P1{.loadInstruction_ = "i32.load8_u", .value_ = wasm::Literal{(uint32_t)0xF1}},
-        P1{.loadInstruction_ = "i32.load8_s", .value_ = wasm::Literal{(int32_t)(int8_t)0xF1}},
-        P1{.loadInstruction_ = "i32.load16_u", .value_ = wasm::Literal{(uint32_t)0xF2F1}},
-        P1{.loadInstruction_ = "i32.load16_s", .value_ = wasm::Literal{(int32_t)(int16_t)0xF2F1}},
+        P1{.loadInstruction_ = "i32.load", .value_ = wasm::Literal{static_cast<uint32_t>(0xF4F3F2F1)}},
+        P1{.loadInstruction_ = "i32.load8_u", .value_ = wasm::Literal{static_cast<uint32_t>(0xF1)}},
+        P1{.loadInstruction_ = "i32.load8_s", .value_ = wasm::Literal{static_cast<int32_t>(static_cast<int8_t>(0xF1))}},
+        P1{.loadInstruction_ = "i32.load16_u", .value_ = wasm::Literal{static_cast<uint32_t>(0xF2F1)}},
+        P1{.loadInstruction_ = "i32.load16_s",
+           .value_ = wasm::Literal{static_cast<int32_t>(static_cast<int16_t>(0xF2F1))}},
 
-        P1{.loadInstruction_ = "i64.load", .value_ = wasm::Literal{(uint64_t)0xF8F7F6F5F4F3F2F1}},
-        P1{.loadInstruction_ = "i64.load8_u", .value_ = wasm::Literal{(uint64_t)0xF1}},
-        P1{.loadInstruction_ = "i64.load8_s", .value_ = wasm::Literal{(int64_t)(int8_t)0xF1}},
-        P1{.loadInstruction_ = "i64.load16_u", .value_ = wasm::Literal{(uint64_t)0xF2F1}},
-        P1{.loadInstruction_ = "i64.load16_s", .value_ = wasm::Literal{(int64_t)(int16_t)0xF2F1}},
-        P1{.loadInstruction_ = "i64.load32_u", .value_ = wasm::Literal{(uint64_t)0xF4F3F2F1}},
-        P1{.loadInstruction_ = "i64.load32_s", .value_ = wasm::Literal{(int64_t)(int32_t)0xF4F3F2F1}},
+        P1{.loadInstruction_ = "i64.load", .value_ = wasm::Literal{static_cast<uint64_t>(0xF8F7F6F5F4F3F2F1)}},
+        P1{.loadInstruction_ = "i64.load8_u", .value_ = wasm::Literal{static_cast<uint64_t>(0xF1)}},
+        P1{.loadInstruction_ = "i64.load8_s", .value_ = wasm::Literal{static_cast<int64_t>(static_cast<int8_t>(0xF1))}},
+        P1{.loadInstruction_ = "i64.load16_u", .value_ = wasm::Literal{static_cast<uint64_t>(0xF2F1)}},
+        P1{.loadInstruction_ = "i64.load16_s",
+           .value_ = wasm::Literal{static_cast<int64_t>(static_cast<int16_t>(0xF2F1))}},
+        P1{.loadInstruction_ = "i64.load32_u", .value_ = wasm::Literal{static_cast<uint64_t>(0xF4F3F2F1)}},
+        P1{.loadInstruction_ = "i64.load32_s",
+           .value_ = wasm::Literal{static_cast<int64_t>(static_cast<int32_t>(0xF4F3F2F1))}},
 
-        P1{.loadInstruction_ = "f32.load", .value_ = wasm::Literal{std::bit_cast<float>(0xF4F3F2F1)}},
-        P1{.loadInstruction_ = "f64.load", .value_ = wasm::Literal{std::bit_cast<double>(0xF8F7F6F5F4F3F2F1)}},
+        P1{.loadInstruction_ = "f32.load",
+           .value_ = wasm::Literal{std::bit_cast<float>(static_cast<uint32_t>(0xF4F3F2F1))}},
+        P1{.loadInstruction_ = "f64.load",
+           .value_ = wasm::Literal{std::bit_cast<double>(static_cast<uint64_t>(0xF8F7F6F5F4F3F2F1))}},
     }));
 
 } // namespace

@@ -30,8 +30,8 @@ void ToStackReplacer::runOnFunction(wasm::Module *m, wasm::Function *func) {
 void ToStackReplacer::replaceToStackCallExpr(wasm::Module *m, wasm::Function *func,
                                              StackPosition const &stackPosition) {
   struct CallReplacer : public wasm::PostWalker<CallReplacer> {
-    wasm::Function *func_;
     StackPosition const &stackPosition_;
+    wasm::Function *func_;
     std::optional<wasm::Index> tempLocalIndex_;
     explicit CallReplacer(StackPosition const &input, wasm::Function *func) : stackPosition_(input), func_(func) {}
     void visitCall(wasm::Call *expr) {

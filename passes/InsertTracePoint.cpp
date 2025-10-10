@@ -196,8 +196,8 @@ struct TracePointInserterPlaceHolder : public wasm::Pass {
   std::unique_ptr<wasm::Pass> create() override {
     return std::unique_ptr<wasm::Pass>{new TracePointInserterPlaceHolder()};
   }
-  void run(wasm::Module *m) override {}
-  void runOnFunction(wasm::Module *m, wasm::Function *func) override {}
+  void run([[maybe_unused]] wasm::Module *m) override {}
+  void runOnFunction([[maybe_unused]] wasm::Module *m, [[maybe_unused]] wasm::Function *func) override {}
 };
 
 } // namespace

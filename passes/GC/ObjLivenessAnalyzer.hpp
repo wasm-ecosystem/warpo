@@ -25,8 +25,9 @@ struct ObjLivenessAnalyzer : public wasm::Pass {
     }
     return ret;
   }
-  std::shared_ptr<ObjLivenessInfo> info_;
+
   ModuleLevelSSAMap const &moduleLevelSSAMap_;
+  std::shared_ptr<ObjLivenessInfo> info_;
   explicit ObjLivenessAnalyzer(ModuleLevelSSAMap const &moduleLevelSSAMap, std::shared_ptr<ObjLivenessInfo> const &info)
       : moduleLevelSSAMap_(moduleLevelSSAMap), info_(info) {
     name = "ObjLivenessAnalyzer";

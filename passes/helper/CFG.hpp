@@ -137,7 +137,7 @@ struct CFGTestWrapper {
   size_t addBB() {
     size_t const index = size();
     CFGForTest::blocks(raw_).emplace_back();
-    BasicBlockForTest::index(CFGForTest::blocks(raw_).back()) = index;
+    BasicBlockForTest::index(CFGForTest::blocks(raw_).back()) = static_cast<wasm::Index>(index);
     return index;
   }
 
