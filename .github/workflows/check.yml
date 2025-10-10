@@ -30,6 +30,18 @@ jobs:
       - run: npm run test:opt:snapshot -- --debug
       - run: npm run test:as:snapshot
 
+  clang-tidy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci
+      - uses: ./.github/action/build
+        with:
+          CMAKE_ARGS: "-DENABLE_CLANG_TIDY=ON -DENABLE_WERROR=ON"
+
   bootstrap:
     strategy:
       matrix:

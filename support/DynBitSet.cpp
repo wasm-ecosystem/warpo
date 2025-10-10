@@ -51,7 +51,7 @@ bool DynBitset::get(size_t index) const {
 size_t DynBitset::count() const {
   size_t count = 0;
   for (const auto data : data_) {
-    count += __builtin_popcountll(data);
+    count += static_cast<size_t>(__builtin_popcountll(data));
   }
   return count;
 }

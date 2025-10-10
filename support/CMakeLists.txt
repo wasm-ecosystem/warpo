@@ -30,8 +30,12 @@ if(NOT WARPO_RELEASE)
   )
   target_include_directories(${LIB_NAME}_test
     PUBLIC "${PROJECT_SOURCE_DIR}/include"
-    SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party/binaryen/third_party/llvm-project/include"
+  )
+  target_include_directories(${LIB_NAME}_test
     SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party"
+  )
+  target_include_directories(${LIB_NAME}_test
+    SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party/binaryen/third_party/llvm-project/include"
   )
   target_link_libraries(${LIB_NAME}_test PUBLIC
     gtest_main
@@ -47,7 +51,11 @@ target_link_libraries(${LIB_NAME}
 )
 target_include_directories(${LIB_NAME}
   PUBLIC "${PROJECT_SOURCE_DIR}/include"
+)
+target_include_directories(${LIB_NAME}
   SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party/binaryen/third_party/llvm-project/include"
+)
+target_include_directories(${LIB_NAME}
   SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party"
 )
 target_compile_definitions(${LIB_NAME}

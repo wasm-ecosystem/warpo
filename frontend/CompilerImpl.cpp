@@ -68,8 +68,8 @@ void FrontendCompiler::parseFile(int32_t const program, std::optional<std::strin
   }
 }
 
-std::string FrontendCompiler::getAsString(int32_t ptr) {
-  uint8_t const *const header = r->getLinearMemoryRegion(ptr - 20U, 20);
+std::string FrontendCompiler::getAsString(uint32_t ptr) {
+  uint8_t const *const header = r->getLinearMemoryRegion(ptr - 20U, 20U);
   uint32_t size = 0;
   std::memcpy(&size, header + 16, sizeof(size));
   uint8_t const *const content = r->getLinearMemoryRegion(ptr, size);

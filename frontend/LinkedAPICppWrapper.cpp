@@ -25,7 +25,7 @@ uint32_t loadU8ForLink(uint64_t ptr, [[maybe_unused]] vb::WasmModule *ctx) {
   return reinterpret_cast<uint8_t *>(ptr)[0];
 }
 uint32_t loadI32ForLink(uint64_t ptr, [[maybe_unused]] vb::WasmModule *ctx) {
-  return reinterpret_cast<int32_t *>(ptr)[0];
+  return reinterpret_cast<uint32_t *>(ptr)[0];
 }
 void store8ForLink(uint64_t ptr, uint32_t value, [[maybe_unused]] vb::WasmModule *ctx) {
   reinterpret_cast<uint8_t *>(ptr)[0] = value;

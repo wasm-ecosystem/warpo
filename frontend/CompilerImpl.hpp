@@ -40,7 +40,7 @@ class FrontendCompiler final {
 
   void parseFile(int32_t const program, std::optional<std::string> const &code, std::string_view path, IsEntry isEntry);
 
-  std::string getAsString(int32_t ptr);
+  std::string getAsString(uint32_t ptr);
 
   std::optional<std::filesystem::path> findPackageRoot(std::filesystem::path const &sourceInternalPath,
                                                        std::string const &packageName);

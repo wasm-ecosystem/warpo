@@ -4,11 +4,19 @@ project(warpo)
 option(WARPO_RELEASE "build for release" OFF)
 option(WARPO_SANITIZE "enable address sanitizer" OFF)
 option(ENABLE_CLANG_TIDY "Enable clang-tidy static analysis" OFF)
+option(ENABLE_WERROR "Enable warnings as errors" OFF)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+add_subdirectory(third_party EXCLUDE_FROM_ALL)
+
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+  add_compile_options(/W4 /EHsc)
+  if(ENABLE_WERROR)
+      add_compile_options(/WX)
+  endif()
 	set(CMAKE_SUPPRESS_REGENERATION ON)
   add_compile_options(/MP)
 else()
@@ -31,12 +39,34 @@ else()
     endif()
   endif()
 
+  add_compile_options(-Wall -Wextra -Wpedantic  -Wformat=2
+            -Wformat-security -Werror=format-security -Wcast-align -Wcast-qual -Wconversion
+            -Wdouble-promotion -Wfloat-equal -Wmissing-include-dirs 
+            -Wredundant-decls -Wsign-conversion -Wswitch -Wuninitialized
+            -Wunused-parameter -Walloca -Wunused-result -Wunused-local-typedefs
+            -Wwrite-strings -Wpointer-arith -Wfloat-conversion -Wnull-dereference -Wdiv-by-zero
+            -Wswitch-default -Wno-switch-bool -Wunknown-pragmas 
+  )
+
+  set(cxx_warning_flags -Wnon-virtual-dtor -Wold-style-cast)
+
+  add_compile_options(
+      "$<$<COMPILE_LANGUAGE:CXX>:${cxx_warning_flags}>"
+  )
+
+  if(ENABLE_WERROR)
+    add_compile_options(-Werror)
+  endif()
+
   if(ENABLE_CLANG_TIDY)
     set(CMAKE_CXX_CLANG_TIDY clang-tidy --config-file ${CMAKE_CURRENT_LIST_DIR}/.clang-tidy "--header-filter=${CMAKE_CURRENT_LIST_DIR}/(frontend|common|passes|support|tools|tests|include)/.*")
+    if(ENABLE_WERROR)
+			set(CMAKE_CXX_CLANG_TIDY ${CMAKE_CXX_CLANG_TIDY} -warnings-as-errors=*)
+		endif()
   endif()
 endif()
 
-add_subdirectory(third_party EXCLUDE_FROM_ALL)
+
 
 add_subdirectory(common)
 add_subdirectory(frontend)
