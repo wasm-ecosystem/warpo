@@ -31,7 +31,7 @@
 
 namespace warpo::passes {
 
-struct Updater : public wasm::TryDepthWalker<Updater> {
+struct Updater final : public wasm::TryDepthWalker<Updater> {
   wasm::Module *module;
   std::map<wasm::Index, wasm::Index> localMapping;
   wasm::Name returnName;
@@ -55,7 +55,7 @@ struct Updater : public wasm::TryDepthWalker<Updater> {
   // to the caller. The branch labels will be filled in at the end of the walk.
   std::vector<ReturnCallInfo> returnCallInfos;
 
-  Updater(wasm::PassOptions &options) : options(options) {}
+  explicit Updater(wasm::PassOptions &options) : options(options) {}
 
   void visitReturn(wasm::Return *curr) { replaceCurrent(builder->makeBreak(returnName, curr->value)); }
 
@@ -90,8 +90,9 @@ struct Updater : public wasm::TryDepthWalker<Updater> {
       // Set the children to locals as necessary, then add a branch out of the
       // inlined body. The branch label will be set later when we create branch
       // targets for the calls.
-      wasm::Block *childBlock = wasm::ChildLocalizer(curr, getFunction(), *module, options).getChildrenReplacement();
-      wasm::Break *branch = builder->makeBreak(wasm::Name());
+      wasm::Block *const childBlock =
+          wasm::ChildLocalizer(curr, getFunction(), *module, options).getChildrenReplacement();
+      wasm::Break *const branch = builder->makeBreak(wasm::Name());
       childBlock->list.push_back(branch);
       childBlock->type = wasm::Type::unreachable;
       replaceCurrent(childBlock);
@@ -107,7 +108,7 @@ struct Updater : public wasm::TryDepthWalker<Updater> {
   void visitCallIndirect(wasm::CallIndirect *curr) { handleReturnCall(curr, curr->heapType.getSignature()); }
 
   void visitCallRef(wasm::CallRef *curr) {
-    wasm::Type targetType = curr->target->type;
+    wasm::Type const targetType = curr->target->type;
     if (!targetType.isSignature()) {
       // We don't know what type the call should return, but it will also never
       // be reached, so we don't need to do anything here.
@@ -138,10 +139,10 @@ struct Updater : public wasm::TryDepthWalker<Updater> {
       // callsite to branch out of it then execute the call before returning to
       // the caller.
       auto name =
-          wasm::Names::getValidName("__return_call", [&](wasm::Name test) { return !blockNames.count(test); }, i);
+          wasm::Names::getValidName("__return_call", [&](wasm::Name test) { return blockNames.count(test) == 0U; }, i);
       blockNames.insert(name);
       info.branch->name = name;
-      wasm::Block *oldBody = builder->makeBlock(body->list, body->type);
+      wasm::Block *const oldBody = builder->makeBlock(body->list, body->type);
       body->list.clear();
 
       if (resultType.isConcrete()) {
@@ -172,7 +173,7 @@ static void doCodeInlining(wasm::Module *module, wasm::Function *into, const Inl
   wasm::Builder builder(*module);
   auto *block = builder.makeBlock();
   auto name = std::string("__inlined_func$") + from->name.toString();
-  if (action.nameHint) {
+  if (action.nameHint != 0U) {
     name += '$' + std::to_string(action.nameHint);
   }
   block->name = wasm::Name(name);
@@ -202,13 +203,13 @@ static void doCodeInlining(wasm::Module *module, wasm::Function *into, const Inl
   // situation.) The latter case does not apply if the call is a
   // return_call inside a try, because in that case the call's
   // children do not appear inside the same block as the inlined body.
-  bool hoistCall = call->isReturn && action.insideATry;
+  bool const hoistCall = call->isReturn && action.insideATry;
   if (wasm::BranchUtils::hasBranchTarget(from->body, block->name) ||
       (!hoistCall && wasm::BranchUtils::BranchSeeker::has(call, block->name))) {
     auto fromNames = wasm::BranchUtils::getBranchTargets(from->body);
     auto callNames = hoistCall ? wasm::BranchUtils::NameSet{} : wasm::BranchUtils::BranchAccumulator::get(call);
     block->name = wasm::Names::getValidName(
-        block->name, [&](wasm::Name test) { return !fromNames.count(test) && !callNames.count(test); });
+        block->name, [&](wasm::Name test) { return (fromNames.count(test) == 0U) && (callNames.count(test) == 0U); });
   }
 
   // Prepare to update the inlined code's locals and other things.
@@ -221,7 +222,7 @@ static void doCodeInlining(wasm::Module *module, wasm::Function *into, const Inl
   updater.builder = &builder;
   // Set up a locals mapping
   for (wasm::Index i = 0; i < from->getNumLocals(); i++) {
-    updater.localMapping[i] = builder.addVar(into, from->getLocalType(i));
+    updater.localMapping[i] = wasm::Builder::addVar(into, from->getLocalType(i));
   }
 
   if (hoistCall) {
@@ -230,7 +231,7 @@ static void doCodeInlining(wasm::Module *module, wasm::Function *into, const Inl
     // different from any other block name above the branch.
     auto intoNames = wasm::BranchUtils::BranchAccumulator::get(into->body);
     auto bodyName = wasm::Names::getValidName(wasm::Name("__original_body"),
-                                              [&](wasm::Name test) { return !intoNames.count(test); });
+                                              [&](wasm::Name test) { return (intoNames.count(test) == 0U); });
     if (retType.isConcrete()) {
       into->body = builder.makeBlock(bodyName, {builder.makeReturn(into->body)}, wasm::Type::none);
     } else {
@@ -243,7 +244,7 @@ static void doCodeInlining(wasm::Module *module, wasm::Function *into, const Inl
     // Replace the original callsite with an expression that assigns the
     // operands into the params and branches out of the original body.
     auto numParams = from->getParams().size();
-    if (numParams) {
+    if (numParams != 0U) {
       auto *branchBlock = builder.makeBlock();
       for (wasm::Index i = 0; i < numParams; i++) {
         branchBlock->list.push_back(builder.makeLocalSet(updater.localMapping[i], call->operands[i]));

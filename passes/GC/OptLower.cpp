@@ -31,30 +31,30 @@
 
 namespace warpo::passes::gc {
 
-static cli::Opt<bool> NoLeafFunctionFilter{
+static cli::Opt<bool> const NoLeafFunctionFilter{
     cli::Category::OnlyForTest,
     "--no-gc-leaf-function-filter",
     [](argparse::Argument &arg) { arg.help("Disable leaf function filter during GC lowering").flag().hidden(); },
 };
-static cli::Opt<bool> NoMergeSSA{
+static cli::Opt<bool> const NoMergeSSA{
     cli::Category::OnlyForTest,
     "--no-gc-merge-ssa",
     [](argparse::Argument &arg) { arg.help("Disable SSA merging during GC lowering").flag().hidden(); },
 };
-static cli::Opt<bool> NoOptimizedStackPositionAssigner{
+static cli::Opt<bool> const NoOptimizedStackPositionAssigner{
     cli::Category::OnlyForTest,
     "--no-gc-optimized-stack-position-assigner",
     [](argparse::Argument &arg) {
       arg.help("Disable optimized stack position assigner during GC lowering").flag().hidden();
     },
 };
-static cli::Opt<bool> NoShrinkWrap{
+static cli::Opt<bool> const NoShrinkWrap{
     cli::Category::OnlyForTest,
     "--no-gc-shrink-wrap",
     [](argparse::Argument &arg) { arg.help("Disable shrink wrap during GC lowering").flag().hidden(); },
 };
 
-static cli::Opt<bool> TestOnlyControlGroup{
+static cli::Opt<bool> const TestOnlyControlGroup{
     cli::Category::OnlyForTest,
     "--gc-test-only-control-group",
     [](argparse::Argument &arg) { arg.flag().hidden(); },
@@ -89,7 +89,7 @@ void OptLower::run(wasm::Module *m) {
   if (!NoMergeSSA.get()) {
     // now merge ssa should be done firstly, it is depends on liveness info as local's possible values.
     // After LeafFunctionFilter, liveness info is not correct anymore.
-    // TODO: use def-uses chain instead of liveness info
+    // TODO(Congcong): use def-uses chain instead of liveness info
     MergeSSA::addToPass(runner, moduleLevelSSAMap, livenessInfo);
   }
 

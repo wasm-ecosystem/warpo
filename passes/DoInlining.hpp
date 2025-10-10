@@ -18,7 +18,7 @@
 
 namespace warpo::passes {
 
-struct InliningAction {
+struct InliningAction final {
   wasm::Expression **callSite;
   wasm::Function *contents;
   bool insideATry;
@@ -27,7 +27,7 @@ struct InliningAction {
   // of the block we put the inlined code in. Using a unique name hint in each
   // inlining can reduce the risk of name overlaps (which cause fixup work in
   // UniqueNameMapper::uniquify).
-  wasm::Index nameHint = 0;
+  wasm::Index nameHint;
 
   InliningAction(wasm::Expression **callSite, wasm::Function *contents, bool insideATry, wasm::Index nameHint = 0)
       : callSite(callSite), contents(contents), insideATry(insideATry), nameHint(nameHint) {}
@@ -37,12 +37,12 @@ struct InliningAction {
 // perform in them.
 using ChosenActions = std::unordered_map<wasm::Name, std::vector<InliningAction>>;
 
-struct DoInlining : public wasm::Pass {
+struct DoInlining final : public wasm::Pass {
   bool isFunctionParallel() override { return true; }
 
   std::unique_ptr<Pass> create() override { return std::make_unique<DoInlining>(chosenActions); }
 
-  DoInlining(const ChosenActions &chosenActions) : chosenActions(chosenActions) {}
+  explicit DoInlining(const ChosenActions &chosenActions) : chosenActions(chosenActions) {}
 
   void runOnFunction(wasm::Module *module, wasm::Function *func) override;
 

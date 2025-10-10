@@ -15,6 +15,10 @@ class DomTree {
 
 public:
   explicit DomTree(Storage *storage) noexcept : storage_(storage) {}
+  DomTree(DomTree const &) = delete;
+  DomTree &operator=(DomTree const &) = delete;
+  DomTree(DomTree &&other) noexcept = delete;
+  DomTree &operator=(DomTree &&other) noexcept = delete;
   ~DomTree();
 
   static DomTree create(std::shared_ptr<CFG> const &cfg);

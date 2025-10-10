@@ -28,7 +28,7 @@ void CallGraphBuilder::visitCallIndirect(wasm::CallIndirect *expr) {
   std::set<wasm::Name> &call = cg_.at(getFunction()->name);
   std::vector<wasm::Expression *> const &potentialTargets = m->getElementSegment(expr->table)->data;
   for (wasm::Expression *target : potentialTargets) {
-    wasm::Name refFunc = target->cast<wasm::RefFunc>()->func;
+    wasm::Name const refFunc = target->cast<wasm::RefFunc>()->func;
     if (expr->heapType.getSignature() == m->getFunction(refFunc)->getSig())
       call.insert(refFunc);
   }

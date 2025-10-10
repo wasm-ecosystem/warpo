@@ -69,10 +69,10 @@ void FrontendCompiler::parseFile(int32_t const program, std::optional<std::strin
 }
 
 std::string FrontendCompiler::getAsString(int32_t ptr) {
-  uint8_t const *header = r->getLinearMemoryRegion(ptr - 20U, 20);
+  uint8_t const *const header = r->getLinearMemoryRegion(ptr - 20U, 20);
   uint32_t size = 0;
   std::memcpy(&size, header + 16, sizeof(size));
-  uint8_t const *content = r->getLinearMemoryRegion(ptr, size);
+  uint8_t const *const content = r->getLinearMemoryRegion(ptr, size);
 
   std::u16string utf16Str;
   utf16Str.resize(size / 2);
@@ -84,11 +84,11 @@ std::u16string FrontendCompiler::utf8ToUtf16(std::string const &utf8Str) {
   if (utf8Str.empty())
     return std::u16string();
   const llvm::UTF8 *src = reinterpret_cast<const llvm::UTF8 *>(utf8Str.data());
-  const llvm::UTF8 *srcEnd = src + utf8Str.size();
+  llvm::UTF8 const *const srcEnd = src + utf8Str.size();
   std::u16string utf16Str;
   utf16Str.resize(utf8Str.size());
   llvm::UTF16 *dst = reinterpret_cast<llvm::UTF16 *>(utf16Str.data());
-  llvm::UTF16 *dstEnd = dst + utf16Str.size();
+  llvm::UTF16 *const dstEnd = dst + utf16Str.size();
 
   if (llvm::ConvertUTF8toUTF16(&src, srcEnd, &dst, dstEnd, llvm::strictConversion) != llvm::conversionOK)
     throw std::runtime_error("UTF8 to UTF16 conversion failed");
@@ -101,11 +101,11 @@ std::string FrontendCompiler::utf16ToUtf8(std::u16string const &utf16Str) {
   if (utf16Str.empty())
     return std::string();
   const llvm::UTF16 *src = reinterpret_cast<const llvm::UTF16 *>(utf16Str.data());
-  const llvm::UTF16 *srcEnd = src + utf16Str.size();
+  llvm::UTF16 const *const srcEnd = src + utf16Str.size();
   std::string utf8Str;
   utf8Str.resize(utf16Str.size() * 4); // UTF-8 can be up to 4 bytes per Unicode code point
   llvm::UTF8 *dst = reinterpret_cast<llvm::UTF8 *>(utf8Str.data());
-  llvm::UTF8 *dstEnd = dst + utf8Str.size();
+  llvm::UTF8 *const dstEnd = dst + utf8Str.size();
 
   if (llvm::ConvertUTF16toUTF8(&src, srcEnd, &dst, dstEnd, llvm::strictConversion) != llvm::conversionOK)
     throw std::runtime_error("UTF16 to UTF8 conversion failed");
@@ -137,7 +137,7 @@ std::optional<std::filesystem::path> FrontendCompiler::findPackageRoot(std::file
   if (sourcePackage.has_value()) {
     std::string const sourcePackageName = (*sourcePackage).first;
     assert(packageRootMap_.contains(sourcePackageName));
-    std::filesystem::path packagePath = packageRootMap_.at(sourcePackageName);
+    std::filesystem::path const packagePath = packageRootMap_.at(sourcePackageName);
     current = packagePath;
   } else {
     current = std::filesystem::absolute(sourceInternalPath).parent_path();
@@ -262,7 +262,7 @@ bool FrontendCompiler::checkDiag(int32_t const program, bool useColorfulDiagMess
 }
 
 FrontendCompiler::~FrontendCompiler() {
-  for (void *p : allocedPtrs_) {
+  for (void *const p : allocedPtrs_) {
     std::free(p);
   }
 }
@@ -321,9 +321,10 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     if (config.initialMemory.has_value())
       r->callExportedFunctionWithName<0>(stackTop, "setInitialMemory", option, *config.initialMemory);
 
-    for (auto const &[useName, useValue] : config.uses)
+    for (auto const &[useName, useValue] : config.uses) {
       r->callExportedFunctionWithName<0>(stackTop, "addGlobalAlias", option, allocString(useName),
                                          allocString(useValue));
+    }
     r->callExportedFunctionWithName<0>(stackTop, "setOptimizeLevelHints", option, config.optimizationLevel,
                                        config.shrinkLevel);
 

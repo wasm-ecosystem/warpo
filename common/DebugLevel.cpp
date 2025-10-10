@@ -7,7 +7,7 @@
 
 namespace warpo::common {
 
-static cli::Opt<bool> optimizeLevelOption{
+static cli::Opt<bool> const optimizeLevelOption{
     cli::Category::Frontend | cli::Category::Optimization,
     "--debug",
     [](argparse::Argument &arg) -> void { arg.help("Enables debug information in emitted binaries.").flag(); },

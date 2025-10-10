@@ -14,7 +14,7 @@ void warpo::passes::gc::addStackStackOperationFunction(wasm::Module *m) {
   wasm::Name const memoryName = m->memories.front()->name;
   wasm::Type const i32 = wasm::Type::i32;
 
-  m->addFunction(b.makeFunction(
+  m->addFunction(wasm::Builder::makeFunction(
       FnDecreaseSP, wasm::Signature(i32, wasm::Type::none), {},
       b.makeBlock({
           b.makeGlobalSet(VarStackPointer, b.makeBinary(wasm::BinaryOp::SubInt32, b.makeGlobalGet(VarStackPointer, i32),
@@ -26,7 +26,7 @@ void warpo::passes::gc::addStackStackOperationFunction(wasm::Module *m) {
                    b.makeUnreachable()),
 
       })));
-  m->addFunction(b.makeFunction(
+  m->addFunction(wasm::Builder::makeFunction(
       FnIncreaseSP, wasm::Signature(i32, wasm::Type::none), {},
       b.makeBlock({
           b.makeGlobalSet(VarStackPointer, b.makeBinary(wasm::BinaryOp::AddInt32, b.makeGlobalGet(VarStackPointer, i32),

@@ -85,12 +85,13 @@ class LiveLocalTransferFn : public wasm::analysis::VisitorTransferFunc<LiveLocal
 public:
   FiniteIntPowersetLattice lattice_;
 
-  explicit LiveLocalTransferFn(wasm::Function *func, SSAMap const &ssaMap, LocalsUses &uses)
+  explicit LiveLocalTransferFn(wasm::Function *const func, SSAMap const &ssaMap, LocalsUses &uses)
       : S{}, lattice_(ssaMap.size()), ssaMap_(ssaMap), uses_(uses), localToSSA_(LocalToSSALookupTable::create(ssaMap)) {
+    static_cast<void>(func);
   }
 
   void evaluateFunctionEntry(wasm::Function *func, FiniteIntPowersetLattice::Element &element) {
-    for (wasm::Index paramIndex : Range{func->getNumParams()}) {
+    for (wasm::Index const paramIndex : Range{func->getNumParams()}) {
       if (func->getParams()[paramIndex] == wasm::Type::i32) {
         setActive(element, ssaMap_.getIndex(SSAValue{paramIndex}));
       }
@@ -139,7 +140,7 @@ TmpUses TmpUses::create(wasm::Function *func, SSAMap const &ssaMap) {
     void visitCall(wasm::Call *expr) {
       if (expr->target == FnTmpToStack) {
         assert(ssaMap_.contains(SSAValue{expr}));
-        for (size_t index : Range<-1>{expressionStack.size() - 1, 0}) {
+        for (size_t const index : Range<-1>{expressionStack.size() - 1U, 0U}) {
           wasm::Expression *const current = expressionStack[index];
           wasm::Expression *const parent = expressionStack[index - 1];
           if (parent->is<wasm::Block>() || parent->is<wasm::Loop>() ||
@@ -177,7 +178,7 @@ class SSALivenessForwardTFn
   SSAMap const &ssaMap_;
   LivenessMap &livenessMap_;
 
-  bool isActive(size_t index) { return currState->get(index) == true; }
+  bool isActive(size_t index) { return currState->get(index); }
   void setActive(size_t index) { currState->set(index, true); }
 
 public:
@@ -187,7 +188,7 @@ public:
 
   void evaluateFunctionEntry(wasm::Function *func, FiniteIntPowersetLattice::Element &element) {
     currState = &element;
-    for (wasm::Index paramIndex : Range{func->getNumParams()}) {
+    for (wasm::Index const paramIndex : Range{func->getNumParams()}) {
       if (func->getParams()[paramIndex] == wasm::Type::i32) {
         // parameters
         setActive(ssaMap_.getIndex(SSAValue{paramIndex}));
@@ -210,10 +211,10 @@ public:
   void visit(wasm::Expression *expr) {
     if (collectingResults && livenessMap_.getExprMap().contains(expr)) {
       size_t const base = livenessMap_.getIndexBase(expr).value();
-      for (size_t index : Range{ssaMap_.size()})
+      for (size_t const index : Range{ssaMap_.size()})
         livenessMap_.set(base, LivenessMap::Pos::Before, index, isActive(index));
       S::visit(expr);
-      for (size_t index : Range{ssaMap_.size()})
+      for (size_t const index : Range{ssaMap_.size()})
         livenessMap_.set(base, LivenessMap::Pos::After, index, isActive(index));
     } else {
       S::visit(expr);
@@ -231,7 +232,7 @@ class SSALivenessBackwardTFn
   TmpUses const &tmpUses_;
   LivenessMap &livenessMap_;
 
-  bool isActive(size_t index) const { return currState->get(index) == true; }
+  bool isActive(size_t index) const { return currState->get(index); }
   void setActive(size_t index) { currState->set(index, true); }
   void setInactive(size_t index) { currState->set(index, false); }
 
@@ -251,7 +252,8 @@ public:
                                   LivenessMap &livenessMap)
       : ssaMap_(ssaMap), localUses_(localUses), tmpUses_(tmpUses), livenessMap_(livenessMap), lattice_(ssaMap.size()) {}
 
-  void evaluateFunctionExit(wasm::Function *func, FiniteIntPowersetLattice::Element &element) {
+  void evaluateFunctionExit(wasm::Function *const func, FiniteIntPowersetLattice::Element &element) {
+    static_cast<void>(func);
     currState = &element;
     handleTmpUses(nullptr);
     currState = nullptr;
@@ -276,18 +278,20 @@ public:
   void visit(wasm::Expression *expr) {
     if (collectingResults && livenessMap_.getExprMap().contains(expr)) {
       size_t const base = livenessMap_.getIndexBase(expr).value();
-      for (size_t index : Range{ssaMap_.size()})
+      for (size_t const index : Range{ssaMap_.size()}) {
         livenessMap_.set(base, LivenessMap::Pos::After, index, isActive(index));
+      }
       visitImpl(expr);
-      for (size_t index : Range{ssaMap_.size()})
+      for (size_t const index : Range{ssaMap_.size()}) {
         livenessMap_.set(base, LivenessMap::Pos::Before, index, isActive(index));
+      }
     } else {
       visitImpl(expr);
     }
   }
 };
-static void updateLivenessInfo(wasm::Function *func, LivenessMap &livenessMap, LocalsUses const &localUses,
-                               TmpUses const &tmpUses, SSAMap const &ssaMap, wasm::analysis::CFG &cfg) {
+void updateLivenessInfo(wasm::Function *const func, LivenessMap &livenessMap, LocalsUses const &localUses,
+                        TmpUses const &tmpUses, SSAMap const &ssaMap, wasm::analysis::CFG &cfg) {
   SSALivenessForwardTFn forwardFn{ssaMap, livenessMap};
   using ForwardAnalyzer = wasm::analysis::MonotoneCFGAnalyzer<FiniteIntPowersetLattice, SSALivenessForwardTFn>;
   ForwardAnalyzer forwardAnalyzer{forwardFn.lattice_, forwardFn, cfg};
@@ -351,8 +355,9 @@ struct InfoPrinter : public IInfoPrinter {
   }
 };
 
-void dumpInfo(wasm::Module *m, wasm::Function *func, LocalsUses const &localsUses, TmpUses const &tmpUses,
+void dumpInfo(wasm::Module *const m, wasm::Function *func, LocalsUses const &localsUses, TmpUses const &tmpUses,
               SSAMap const &ssaMap) {
+  static_cast<void>(m);
   CFG const cfg = CFG::fromFunction(func);
   InfoPrinter infoPrinter{localsUses, tmpUses, ssaMap};
   cfg.print(std::cout, nullptr, infoPrinter);
@@ -371,7 +376,7 @@ void ObjLivenessAnalyzer::runOnFunction(wasm::Module *m, wasm::Function *func) {
   livenessMap = LivenessMap{ssaMap};
 
   for (wasm::analysis::BasicBlock const &bb : cfg) {
-    for (wasm::Expression *expr : bb) {
+    for (wasm::Expression *const expr : bb) {
       if (expr->is<wasm::Call>() || expr->is<wasm::CallIndirect>() || expr->is<wasm::LocalGet>() ||
           expr->is<wasm::LocalSet>() || tmpUses.contains(expr)) {
         livenessMap.ensureExpression(expr);

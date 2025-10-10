@@ -60,7 +60,7 @@ CFG CFG::fromFunction(wasm::Function *func) {
   struct CFGBuilder
       : wasm::CFGWalker<CFGBuilder, wasm::UnifiedExpressionVisitor<CFGBuilder>, std::vector<wasm::Expression *>> {
     void visitExpression(wasm::Expression *curr) {
-      if (currBasicBlock) {
+      if (currBasicBlock != nullptr) {
         currBasicBlock->contents.push_back(curr);
       }
     }
@@ -70,7 +70,7 @@ CFG CFG::fromFunction(wasm::Function *func) {
   builder.walkFunction(func);
   builder.unlinkDeadBlocks(builder.findLiveBlocks());
 
-  size_t numBlocks = builder.basicBlocks.size();
+  size_t const numBlocks = builder.basicBlocks.size();
 
   CFG cfg;
   cfg.blocks = std::vector<BasicBlock>(numBlocks);
@@ -98,7 +98,7 @@ CFG CFG::fromFunction(wasm::Function *func) {
 
   assert(!cfg.blocks.empty());
   cfg.blocks[0].entry = true;
-  if (builder.exit) {
+  if (builder.exit != nullptr) {
     oldToNewBlocks.at(builder.exit)->exit = true;
   }
 
@@ -123,13 +123,14 @@ template <class Parent> class PostOrderActorBase {
   std::vector<BasicBlock const *> postOrder_;
 
 public:
-  explicit PostOrderActorBase(size_t n) : visited_(n), postOrder_{} { postOrder_.reserve(n); }
+  explicit PostOrderActorBase(size_t n) : visited_(n) { postOrder_.reserve(n); }
   void action(BasicBlock const &bb) {
     size_t const index = bb.getIndex();
     if (visited_.get(index))
       return;
+
     visited_.set(index, true);
-    for (BasicBlock const *succ : Parent::getSuccs(bb)) {
+    for (BasicBlock const *const succ : Parent::getSuccs(bb)) {
       action(*succ);
     }
     postOrder_.push_back(&bb);
@@ -206,7 +207,7 @@ DynBitset CFG::getBlockInsideLoop() const {
 
       active_.set(index, true);
       stack_.push_back(bb);
-      for (BasicBlock const *succ : bb->succs()) {
+      for (BasicBlock const *const succ : bb->succs()) {
         size_t const succIndex = succ->getIndex();
         // back edge means loop, back edge targeted bb is loop entry
         if (active_.get(succIndex)) {
@@ -255,11 +256,11 @@ TEST(CFGTestGetBlockInsideLoop, Loop) {
        |    |   e
        c    d---|
   */
-  size_t a = cfg.addBB();
-  size_t b = cfg.addBB();
-  size_t c = cfg.addBB();
-  size_t d = cfg.addBB();
-  size_t e = cfg.addBB();
+  size_t const a = cfg.addBB();
+  size_t const b = cfg.addBB();
+  size_t const c = cfg.addBB();
+  size_t const d = cfg.addBB();
+  size_t const e = cfg.addBB();
 
   cfg.linkBBs(cfg.entry_, a);
   cfg.linkBBs(a, c);
@@ -290,11 +291,11 @@ TEST(CFGTestGetBlockInsideLoop, Branch) {
         \  /
          e
   */
-  size_t a = cfg.addBB();
-  size_t b = cfg.addBB();
-  size_t c = cfg.addBB();
-  size_t d = cfg.addBB();
-  size_t e = cfg.addBB();
+  size_t const a = cfg.addBB();
+  size_t const b = cfg.addBB();
+  size_t const c = cfg.addBB();
+  size_t const d = cfg.addBB();
+  size_t const e = cfg.addBB();
 
   cfg.linkBBs(cfg.entry_, a);
   cfg.linkBBs(a, c);
@@ -326,11 +327,11 @@ TEST(CFGTestGetBlockInsideLoop, BranchInLoop) {
           |
           exit
   */
-  size_t a = cfg.addBB();
-  size_t b = cfg.addBB();
-  size_t c = cfg.addBB();
-  size_t d = cfg.addBB();
-  size_t exit = cfg.addExitBB();
+  size_t const a = cfg.addBB();
+  size_t const b = cfg.addBB();
+  size_t const c = cfg.addBB();
+  size_t const d = cfg.addBB();
+  size_t const exit = cfg.addExitBB();
 
   cfg.linkBBs(cfg.entry_, a);
   cfg.linkBBs(a, b);

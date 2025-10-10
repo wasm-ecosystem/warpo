@@ -17,12 +17,12 @@
 
 namespace warpo::passes {
 
-static cli::Opt<std::string> sizeCostModelFile{
+static cli::Opt<std::string> const sizeCostModelFile{
     cli::Category::Optimization,
     "--size-cost-model-file",
     [](argparse::Argument &arg) { arg.help("Instruction cost model file for size").default_value("").hidden(); },
 };
-static cli::Opt<std::string> performanceCostModelFile{
+static cli::Opt<std::string> const performanceCostModelFile{
     cli::Category::Optimization,
     "--performance-cost-model-file",
     [](argparse::Argument &arg) { arg.help("Instruction cost model file for performance").default_value("").hidden(); },
@@ -42,8 +42,9 @@ static Opcode getOpcodeByName(std::string const &name) {
 }
 
 static float getDefaultSizeCostAverage(Opcode opcode) {
+  static_cast<void>(opcode);
   size_t cnt = 0;
-  float sum = 0.0f;
+  float sum = 0.0F;
 #define OPCODE(str, code, cost)                                                                                        \
   cnt++;                                                                                                               \
   sum += static_cast<float>(cost);
@@ -69,9 +70,10 @@ static float getDefaultSizeCostByOpcode(Opcode opcode) {
   }
 }
 
-static float getDefaultPerformanceCostAverage(Opcode opcode) {
+float getDefaultPerformanceCostAverage(Opcode opcode) {
+  static_cast<void>(opcode);
   size_t cnt = 0;
-  float sum = 0.0f;
+  float sum = 0.0F;
 #define OPCODE(str, code, cost)                                                                                        \
   cnt++;                                                                                                               \
   sum += static_cast<float>(cost);
@@ -101,7 +103,7 @@ namespace {
 
 struct CostModel {
   static CostModel const &ins() {
-    static CostModel costModelParser{};
+    static CostModel const costModelParser{};
     return costModelParser;
   }
 

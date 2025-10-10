@@ -31,13 +31,13 @@ struct IAssigner {
   virtual size_t getStackPosition(size_t ssaIndex) = 0;
 };
 
-struct GreedyAssigner : public IAssigner {
+struct GreedyAssigner final : public IAssigner {
   ColorVec const &color_;
-  GreedyAssigner(ColorVec const &color) : color_(color) {}
+  explicit GreedyAssigner(ColorVec const &color) : color_(color) {}
   size_t getStackPosition(size_t ssaIndex) override { return color_.getColor(ssaIndex) * ShadowStackElementSize; }
 };
 
-struct VanillaAssigner : public IAssigner {
+struct VanillaAssigner final : public IAssigner {
   std::map<size_t, size_t> map_;
   size_t getStackPosition(size_t ssaIndex) override {
     if (map_.contains(ssaIndex))
@@ -84,7 +84,7 @@ struct Process : public wasm::PostWalker<Process, wasm::UnifiedExpressionVisitor
     if (!currentLiveness.has_value())
       return;
     for (size_t const ssaIndex : Range{livenessMap_.getDimension()}) {
-      if (currentLiveness->before().get(ssaIndex) == false && currentLiveness->after().get(ssaIndex) == true) {
+      if (!currentLiveness->before().get(ssaIndex) && currentLiveness->after().get(ssaIndex)) {
         Result<wasm::Call *> const callExpr = extractCall(expr, currentLiveness.value());
         if (callExpr.ok()) {
           assert(!stackPosition_.contains(callExpr.value()) && "call -> store is 1 - 1 mapping");
@@ -120,7 +120,8 @@ static void calStackPositionWithGreedyConflictGraphAlgorithm(wasm::Function *fun
   process.walkFunction(func);
 }
 
-void StackAssigner::runOnFunction(wasm::Module *m, wasm::Function *func) {
+void StackAssigner::runOnFunction(wasm::Module *const m, wasm::Function *const func) {
+  static_cast<void>(m);
   StackPosition &stackPosition = stackPositions_->at(func);
   LivenessMap const &livenessMap = livenessInfo_->at(func);
 

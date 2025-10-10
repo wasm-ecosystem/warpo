@@ -26,7 +26,7 @@ struct IMaxShadowStackOffsets {
 class MaxShadowStackOffsetsFromStackPositions : public IMaxShadowStackOffsets {
   std::shared_ptr<StackPositions const> stackPositions_;
   uint32_t at(wasm::Function *func) const override;
-  MaxShadowStackOffsetsFromStackPositions(std::shared_ptr<StackPositions const> stackPositions)
+  explicit MaxShadowStackOffsetsFromStackPositions(std::shared_ptr<StackPositions const> stackPositions)
       : stackPositions_(std::move(stackPositions)) {}
 
 public:

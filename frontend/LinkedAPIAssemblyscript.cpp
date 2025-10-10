@@ -29,14 +29,14 @@ std::string getAsString(uint32_t ptr, vb::WasmModule *ctx) {
   uint8_t const *header = ctx->getLinearMemoryRegion(ptr - 20U, 20);
   uint32_t size = 0;
   std::memcpy(&size, header + 16, sizeof(size));
-  uint8_t const *content = ctx->getLinearMemoryRegion(ptr, size);
+  uint8_t const *const content = ctx->getLinearMemoryRegion(ptr, size);
   size /= 2U;
 
   std::stringstream ss{};
   for (uint32_t i = 0; i < size; ++i) {
     ss << content[i * 2U];
   }
-  return std::move(ss).str();
+  return ss.str();
 }
 
 void abortForLink(uint32_t messagePtr, uint32_t fileNamePtr, uint32_t lineNumber, uint32_t columnNumber,
@@ -68,6 +68,8 @@ void traceForLink(uint32_t ptr, uint32_t n, double d1, double d2, double d3, dou
       break;
     case 5:
       ss << " " << d5;
+      break;
+    default:
       break;
     }
   }

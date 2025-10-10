@@ -12,10 +12,10 @@ namespace warpo::cli {
 
 enum class Category : uint32_t {
   None = 0,
-  OnlyForTest = 1 << 1,
-  Frontend = 1 << 2,
-  Optimization = 1 << 3,
-  Transformation = 1 << 4,
+  OnlyForTest = 1U << 1U,
+  Frontend = 1U << 2U,
+  Optimization = 1U << 3U,
+  Transformation = 1U << 4U,
   All = static_cast<uint32_t>(-1),
 };
 
@@ -52,6 +52,7 @@ private:
 };
 
 /// @param cat Category of this program
+// NOLINTNEXTLINE(modernize-avoid-c-arrays)
 void init(Category cat, argparse::ArgumentParser &program, int argc, char const *argv[]);
 
 } // namespace warpo::cli

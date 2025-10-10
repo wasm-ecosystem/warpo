@@ -123,7 +123,7 @@ void PrologEpilogInserter::replaceReturnExprWithEpilogue(
     }
   };
   wasm::Type const resultType = func->getResults();
-  wasm::Builder b{*m};
+  wasm::Builder const b{*m};
   if (resultType == wasm::Type::none) {
     ReturnWithoutResultReplacer returnReplacer{maxShadowStackOffset};
     returnReplacer.walkFunctionInModule(func, m);
@@ -137,7 +137,6 @@ bool PrologEpilogInserter::tryInsertPrologueAndEpilogue(wasm::Module *m, wasm::F
                                                         uint32_t maxShadowStackOffset,
                                                         std::optional<wasm::Index> const &scratchReturnValueLocalIndex,
                                                         wasm::Expression *prologue, wasm::Expression *epilogue) {
-  wasm::Type const resultType = func->getResults();
   wasm::Builder b{*m};
 
   ExprInserter inserter{func};
@@ -164,7 +163,7 @@ bool PrologEpilogInserter::tryInsertPrologueAndEpilogue(wasm::Module *m, wasm::F
 bool PrologEpilogInserter::tryInsertPrologue(wasm::Module *m, wasm::Function *func, uint32_t maxShadowStackOffset,
                                              std::optional<wasm::Index> const &scratchReturnValueLocalIndex,
                                              wasm::Expression *prologue) {
-  wasm::Type const resultType = func->getResults();
+  static_cast<void>(scratchReturnValueLocalIndex);
   ExprInserter inserter{func};
   bool const isInsertedPrologue = inserter.canInsertBefore(prologue);
   wasm::Builder b{*m};

@@ -26,11 +26,11 @@
 
 namespace warpo::frontend {
 
-class FrontendCompiler {
+class FrontendCompiler final {
   enum class IsEntry : uint32_t { NO, YES };
 
   WarpRunner r;
-  std::map<std::string, std::filesystem::path> packageRootMap_{};
+  std::map<std::string, std::filesystem::path> packageRootMap_;
   size_t errorCount_ = 0;
   std::string errorMessage_;
 
@@ -42,10 +42,10 @@ class FrontendCompiler {
 
   std::string getAsString(int32_t ptr);
 
-  std::optional<std::filesystem::path> findPackageRoot(std::filesystem::path const &sourcePath,
+  std::optional<std::filesystem::path> findPackageRoot(std::filesystem::path const &sourceInternalPath,
                                                        std::string const &packageName);
 
-  struct Dependency {
+  struct Dependency final {
     std::optional<std::string> text;
     std::string path;
   };
@@ -63,7 +63,11 @@ public:
   static void init() { vb::WasmModule::initEnvironment(&malloc, &realloc, &free); }
   static void deinit() { vb::WasmModule::destroyEnvironment(); }
 
-  FrontendCompiler(Config const &config);
+  explicit FrontendCompiler(Config const &config);
+  FrontendCompiler(FrontendCompiler const &) = delete;
+  FrontendCompiler &operator=(FrontendCompiler const &) = delete;
+  FrontendCompiler(FrontendCompiler &&) = delete;
+  FrontendCompiler &operator=(FrontendCompiler &&) = delete;
   ~FrontendCompiler();
 
   CompilationResult compile(std::vector<std::string> const &entryFilePaths, Config const &config);

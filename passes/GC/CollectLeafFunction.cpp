@@ -41,6 +41,7 @@ static LeafFunc collectLeafFunctions(const CallGraph &cg) {
 }
 
 void LeafFunctionCollector::run(wasm::Module *m) {
+  static_cast<void>(m);
   *result_ = collectLeafFunctions(*cg_);
   if (support::isDebug(PASS_NAME)) {
     for (wasm::Name const &name : *result_) {
@@ -70,7 +71,7 @@ TEST(GCLeafFunctionTest, LeafFunction) {
   CG["parent_1"] = {"leaf"};
   CG["parent_poison"] = {"leaf", FnNew};
 
-  std::set<wasm::Name> leaf = collectLeafFunctions(CG);
+  std::set<wasm::Name> const leaf = collectLeafFunctions(CG);
 
   EXPECT_THAT(leaf, Contains("leaf"));
   EXPECT_THAT(leaf, Contains("parent_1"));

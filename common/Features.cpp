@@ -8,7 +8,7 @@
 
 namespace warpo::common {
 
-static cli::Opt<std::vector<std::string>> disableFeatureOptions{
+static cli::Opt<std::vector<std::string>> const disableFeatureOptions{
     cli::Category::Frontend | cli::Category::Optimization,
     "--disable-feature",
     [](argparse::Argument &arg) -> void {
@@ -41,11 +41,11 @@ namespace {
 // sync from assemblyscript/std/assembly/shared/feature.ts
 enum class ASFeatures : uint32_t {
   None = 0,
-  SignExtension = 1 << 0,  // see: https://github.com/WebAssembly/sign-extension-ops
-  MutableGlobals = 1 << 1, // see: https://github.com/WebAssembly/mutable-global
-  NontrappingF2I = 1 << 2, // see: https://github.com/WebAssembly/nontrapping-float-to-int-conversions
-  BulkMemory = 1 << 3,     // see: https://github.com/WebAssembly/bulk-memory-operations
-  All = (1 << 15) - 1
+  SignExtension = 1U << 0U,  // see: https://github.com/WebAssembly/sign-extension-ops
+  MutableGlobals = 1U << 1U, // see: https://github.com/WebAssembly/mutable-global
+  NontrappingF2I = 1U << 2U, // see: https://github.com/WebAssembly/nontrapping-float-to-int-conversions
+  BulkMemory = 1U << 3U,     // see: https://github.com/WebAssembly/bulk-memory-operations
+  All = (1U << 15U) - 1U
 };
 } // namespace
 

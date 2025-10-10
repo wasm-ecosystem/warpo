@@ -37,7 +37,7 @@ static InsertPositionHint getShadowStackInsertPoint(std::string_view const funcN
 
   // collect stack positions' bb
   for (BasicBlock const &bb : *cfg) {
-    for (wasm::Expression *expr : bb) {
+    for (wasm::Expression *const expr : bb) {
       if (shouldStackActive(expr)) {
         // prologue should dominate all stack usage
         validPrologue &= domTree.getDominators(&bb);
@@ -106,7 +106,7 @@ static InsertPositionHint getShadowStackInsertPoint(std::string_view const funcN
     return {.prologue = nullptr, .epilogue = nullptr};
   }
   assert(prologueInsertBB->size() > 0);
-  wasm::Expression *prologue = *prologueInsertBB->begin();
+  wasm::Expression *const prologue = *prologueInsertBB->begin();
   if (support::isDebug(PASS_NAME, funcName)) {
     fmt::println("[" PASS_NAME "] fn '{}': prologue = {}, epilogue = {}", funcName, toString(prologue),
                  toString(epilogueInsertExpr));
@@ -114,9 +114,9 @@ static InsertPositionHint getShadowStackInsertPoint(std::string_view const funcN
   return {.prologue = prologue, .epilogue = epilogueInsertExpr};
 }
 
-void ShrinkWrapAnalysis::runOnFunction(wasm::Module *m, wasm::Function *func) {
+void ShrinkWrapAnalysis::runOnFunction(wasm::Module *const m, wasm::Function *const func) {
   LivenessMap const &livenessMap = livenessInfo_->at(func);
-
+  static_cast<void>(m);
   if (0U == livenessMap.getValidDimension())
     return;
 
@@ -146,9 +146,9 @@ void ShrinkWrapAnalysis::runOnFunction(wasm::Module *m, wasm::Function *func) {
 namespace warpo::passes::gc::ut {
 
 struct ShrinkWrapTest : public ::testing::Test {
-  CFGTestWrapper cfg{};
-  std::set<wasm::Expression *> stackShouldActiveInHere{};
-  MixedArena arena{};
+  CFGTestWrapper cfg;
+  std::set<wasm::Expression *> stackShouldActiveInHere;
+  MixedArena arena;
   std::map<size_t, std::array<wasm::Call *, 2U>> callMap;
 
   void applyWasmCallForEachBB() {

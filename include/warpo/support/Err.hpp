@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <array>
 #include <cassert>
 #include <cstddef>
 #include <cstring>
@@ -14,15 +15,15 @@ namespace result::detail {
 struct Void {};
 struct Failed {};
 } // namespace result::detail
-template <typename T, typename E = result::detail::Void> class [[nodiscard]] Result {
+template <typename T, typename E = result::detail::Void> class [[nodiscard]] Result final {
 private:
   static constexpr size_t max_size = sizeof(T) > sizeof(E) ? sizeof(T) : sizeof(E);
-  alignas(alignof(T) > alignof(E) ? alignof(T) : alignof(E)) std::byte data[max_size];
+  alignas(alignof(T) > alignof(E) ? alignof(T) : alignof(E)) std::array<std::byte, max_size> data;
   bool success_;
 
   template <class U> Result(U const &u, bool success) : success_(success) {
     static_assert(sizeof(U) <= max_size, "value too large to store in shared memory.");
-    new (data) U(u);
+    new (data.data()) U(u);
   }
 
 public:
@@ -33,11 +34,11 @@ public:
 
   T const &value() const {
     assert(success_ && "Attempted to get value of type T when stored type is E");
-    return *reinterpret_cast<T const *>(data);
+    return *reinterpret_cast<T const *>(data.data());
   }
   E const &err() const {
     assert(!success_ && "Attempted to get value of type T when stored type is E");
-    return *reinterpret_cast<E const *>(data);
+    return *reinterpret_cast<E const *>(data.data());
   }
 
   bool ok() const { return success_; }
@@ -45,9 +46,9 @@ public:
 
   ~Result() {
     if (success_) {
-      reinterpret_cast<T *>(data)->~T();
+      reinterpret_cast<T *>(data.data())->~T();
     } else {
-      reinterpret_cast<E *>(data)->~E();
+      reinterpret_cast<E *>(data.data())->~E();
     }
   }
 };

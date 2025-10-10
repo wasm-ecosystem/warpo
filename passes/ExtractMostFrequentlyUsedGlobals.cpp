@@ -150,7 +150,7 @@ TEST(ExtractMostFrequentlyUsedGlobalsTest, CreateCounter) {
     )
   )");
 
-  Counter counter = createCounter(m->globals);
+  Counter const counter = createCounter(m->globals);
   EXPECT_EQ(counter.size(), 1);
   EXPECT_TRUE(counter.contains("g0"));
 }

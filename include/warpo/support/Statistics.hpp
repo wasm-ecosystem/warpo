@@ -21,6 +21,10 @@ class PerfRAII {
 
 public:
   explicit PerfRAII(PerfItemKind item);
+  PerfRAII(PerfRAII const &) = delete;
+  PerfRAII &operator=(PerfRAII const &) = delete;
+  PerfRAII(PerfRAII &&) = delete;
+  PerfRAII &operator=(PerfRAII &&) = delete;
   ~PerfRAII();
 
   void release();

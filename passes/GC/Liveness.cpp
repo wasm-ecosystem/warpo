@@ -48,7 +48,7 @@ std::optional<std::string> LivenessPrinter::onExpr(wasm::Expression *expr) const
 
 void LivenessMap::dump(wasm::Function *func) const {
   CFG const cfg = CFG::fromFunction(func);
-  LivenessPrinter infoPrinter{*this};
+  LivenessPrinter const infoPrinter{*this};
   cfg.print(std::cout, nullptr, infoPrinter);
 }
 
@@ -63,8 +63,8 @@ std::optional<Liveness> LivenessMap::getLiveness(wasm::Expression *expr) const {
 Liveness LivenessMap::getLiveness(size_t const exprIndex) const {
   Liveness ret{dimension_, invalid_};
   for (size_t const index : Range{dimension_}) {
-    ret.setBefore(index, get(exprIndex, Pos::Before, index));
-    ret.setAfter(index, get(exprIndex, Pos::After, index));
+    ret.setBefore(index, get(static_cast<ssize_t>(exprIndex), Pos::Before, index));
+    ret.setAfter(index, get(static_cast<ssize_t>(exprIndex), Pos::After, index));
   }
   ret.applyInvalid(invalid_);
   return ret;
@@ -93,14 +93,16 @@ ConflictGraph ConflictGraph::create(LivenessMap const &livenessMap) {
     std::set<size_t> visitedLivenessSSAsForBefore{};
     std::set<size_t> visitedLivenessSSAsForAfter{};
     for (size_t const ssaIndex : Range{dim}) {
-      if (liveness.before().get(ssaIndex) == true) {
-        for (size_t const oldSSAIndex : visitedLivenessSSAsForBefore)
+      if (liveness.before().get(ssaIndex)) {
+        for (size_t const oldSSAIndex : visitedLivenessSSAsForBefore) {
           graph.addEdge(oldSSAIndex, ssaIndex);
+        }
         visitedLivenessSSAsForBefore.insert(ssaIndex);
       }
-      if (liveness.after().get(ssaIndex) == true) {
-        for (size_t const oldSSAIndex : visitedLivenessSSAsForAfter)
+      if (liveness.after().get(ssaIndex)) {
+        for (size_t const oldSSAIndex : visitedLivenessSSAsForAfter) {
           graph.addEdge(oldSSAIndex, ssaIndex);
+        }
         visitedLivenessSSAsForAfter.insert(ssaIndex);
       }
     }

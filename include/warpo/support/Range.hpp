@@ -22,7 +22,7 @@ public:
     std::size_t m_cnt;
 
   public:
-    RangeIterator(std::size_t cnt) : m_cnt(cnt) {}
+    explicit RangeIterator(std::size_t cnt) : m_cnt(cnt) {}
 
     size_t &operator*() { return m_cnt; }
     RangeIterator &operator++() {
@@ -40,8 +40,8 @@ public:
     bool operator==(RangeIterator const &o) const { return m_cnt == o.m_cnt; }
   };
 
-  RangeIterator begin() const { return m_begin; }
-  RangeIterator end() const { return m_end; }
+  RangeIterator begin() const { return RangeIterator(m_begin); }
+  RangeIterator end() const { return RangeIterator(m_end); }
 };
 
 } // namespace warpo

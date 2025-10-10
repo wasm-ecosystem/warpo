@@ -31,7 +31,7 @@ void LeafFunctionFilter::runOnFunction(wasm::Module *m, wasm::Function *func) {
       markCurrentLivedSSAValid(expr);
     }
     void visitCallIndirect(wasm::CallIndirect *expr) {
-      // TODO: check if the target is a leaf function
+      // TODO(Congcong): check if the target is a leaf function
       markCurrentLivedSSAValid(expr);
     }
 
@@ -47,7 +47,7 @@ void LeafFunctionFilter::runOnFunction(wasm::Module *m, wasm::Function *func) {
   LivenessMap &livenessMap = info_->at(func);
   Collector collector{livenessMap, *leaf_};
   collector.walkFunctionInModule(func, m);
-  // TODO: mark parameters SSA valid
+  // TODO(Congcong): mark parameters SSA valid
   if (support::isDebug(PASS_NAME, func->name.str)) {
     std::cout << "valid SSA value: " << collector.validSSAValue_ << "\n";
     std::cout << "invalid SSA value: " << ~collector.validSSAValue_ << "\n";

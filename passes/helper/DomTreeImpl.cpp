@@ -62,7 +62,7 @@ ImmediateDomTree createDomTreeImpl(Handler h, size_t const n, std::vector<BasicB
 #endif
 
   idoms.resize(n, undef);
-  for (BasicBlock const *bb : bbs) {
+  for (BasicBlock const *const bb : bbs) {
     if (isStartNode(bb))
       idoms[bb->getIndex()] = bb->getIndex();
   }
@@ -71,16 +71,17 @@ ImmediateDomTree createDomTreeImpl(Handler h, size_t const n, std::vector<BasicB
   while (isChanged) {
     dump();
     isChanged = false;
-    for (BasicBlock const *bb : bbs) {
+    for (BasicBlock const *const bb : bbs) {
       if (isStartNode(bb)) {
         // skip start node
         continue;
       }
       size_t newIdom = undef;
-      for (BasicBlock const *pred : h.preds(bb)) {
+      for (BasicBlock const *const pred : h.preds(bb)) {
         size_t const predIndex = pred->getIndex();
         if (idoms[predIndex] == undef)
           continue;
+
         // pred is calculated
         if (newIdom == undef) {
           newIdom = predIndex;
@@ -143,14 +144,14 @@ warpo::passes::dom_tree_impl::ImmediateDomTree warpo::passes::dom_tree_impl::cre
 #ifdef WARPO_ENABLE_UNIT_TESTS
   std::cerr << __PRETTY_FUNCTION__ << "\n";
 #endif
-  std::vector<BasicBlock const *> bbs = cfg.getReversePostOrder();
+  std::vector<BasicBlock const *> const bbs = cfg.getReversePostOrder();
   return createDomTreeImpl(NormalHandler{}, cfg.size(), bbs);
 }
 warpo::passes::dom_tree_impl::ImmediateDomTree warpo::passes::dom_tree_impl::createPostDomTree(CFG const &cfg) {
 #ifdef WARPO_ENABLE_UNIT_TESTS
   std::cerr << __PRETTY_FUNCTION__ << "\n";
 #endif
-  std::vector<BasicBlock const *> bbs = cfg.getReversePostOrderOnReverseGraph();
+  std::vector<BasicBlock const *> const bbs = cfg.getReversePostOrderOnReverseGraph();
   return createDomTreeImpl(ReverseHandler{}, cfg.size(), bbs);
 }
 

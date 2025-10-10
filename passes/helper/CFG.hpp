@@ -23,11 +23,11 @@ struct IInfoPrinter {
   virtual std::optional<std::string> onExpr(wasm::Expression *expr) const = 0;
 };
 
-struct EmptyInfoPrinter : public IInfoPrinter {
+struct EmptyInfoPrinter final : public IInfoPrinter {
   std::optional<std::string> onExpr(wasm::Expression *) const override { return std::nullopt; }
 };
 
-struct BasicBlock {
+struct BasicBlock final {
   using iterator = std::vector<wasm::Expression *>::const_iterator;
   // Iterate through instructions.
   iterator begin() const { return insts.cbegin(); }
@@ -49,7 +49,7 @@ struct BasicBlock {
   void print(std::ostream &os, wasm::Module *wasm, size_t start, IInfoPrinter const &infoPrinter) const;
 
 private:
-  wasm::Index index;
+  wasm::Index index = 0U;
   bool entry = false;
   bool exit = false;
   std::vector<wasm::Expression *> insts;

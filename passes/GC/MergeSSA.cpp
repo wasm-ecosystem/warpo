@@ -43,7 +43,8 @@ public:
   }
 };
 
-void MergeSSA::runOnFunction(wasm::Module *m, wasm::Function *func) {
+void MergeSSA::runOnFunction(wasm::Module *const m, wasm::Function *const func) {
+  static_cast<void>(m);
   SSAMap const &ssaMap = moduleLevelSSAMap_.at(func);
   LivenessMap &livenessMap = info_->at(func);
   size_t const ssaCount = ssaMap.size();

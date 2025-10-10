@@ -27,13 +27,13 @@ static std::optional<std::string> convertEmptyStringToNullOpt(std::string const 
   return std::nullopt;
 }
 
-static cli::Opt<std::vector<std::string>> entryPaths{
+static cli::Opt<std::vector<std::string>> const entryPaths{
     cli::Category::Frontend,
     "entries",
     [](argparse::Argument &arg) -> void { arg.help("entry files").nargs(argparse::nargs_pattern::at_least_one); },
 };
 
-static cli::Opt<std::vector<std::string>> useOptions{
+static cli::Opt<std::vector<std::string>> const useOptions{
     cli::Category::Frontend,
     "-u",
     "--use",
@@ -55,13 +55,13 @@ static std::map<std::string, std::string> getUses() {
   return res;
 }
 
-static cli::Opt<std::string> ascWasmOption{
+static cli::Opt<std::string> const ascWasmOption{
     cli::Category::Frontend,
     "--asc-wasm",
     [](argparse::Argument &arg) -> void { arg.help("WASM files for the frontend compiler").hidden(); },
 };
 
-static cli::Opt<std::string> exportStartOption{
+static cli::Opt<std::string> const exportStartOption{
     cli::Category::Frontend,
     "--exportStart",
     [](argparse::Argument &arg) -> void {
@@ -71,12 +71,12 @@ static cli::Opt<std::string> exportStartOption{
     },
 };
 
-static cli::Opt<bool> exportTableOption{
+static cli::Opt<bool> const exportTableOption{
     cli::Category::Frontend,
     "--exportTable",
     [](argparse::Argument &arg) -> void { arg.help("Exports the function table as 'table'.").flag(); },
 };
-static cli::Opt<bool> exportRuntimeOption{
+static cli::Opt<bool> const exportRuntimeOption{
     cli::Category::Frontend,
     "--exportRuntime",
     [](argparse::Argument &arg) -> void {
@@ -84,7 +84,7 @@ static cli::Opt<bool> exportRuntimeOption{
     },
 };
 
-static cli::Opt<uint32_t> initialMemoryOption{
+static cli::Opt<uint32_t> const initialMemoryOption{
     cli::Category::Frontend,
     "--initialMemory",
     [](argparse::Argument &arg) -> void {
@@ -92,7 +92,7 @@ static cli::Opt<uint32_t> initialMemoryOption{
     },
 };
 
-static cli::Opt<bool> enableExtensionsOption{
+static cli::Opt<bool> const enableExtensionsOption{
     cli::Category::Frontend,
     "--enableExtensions",
     [](argparse::Argument &arg) -> void { arg.help("Enables experimental AssemblyScript extensions.").flag(); },
@@ -128,7 +128,7 @@ warpo::frontend::Config warpo::frontend::getDefaultConfig() {
 }
 
 frontend::CompilationResult frontend::compile() {
-  Config config{
+  Config const config{
       .uses = getUses(),
       .ascWasmPath = convertEmptyStringToNullOpt(ascWasmOption.get()),
       .features = common::Features::fromCLI(),
