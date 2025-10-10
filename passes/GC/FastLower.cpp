@@ -51,9 +51,9 @@ struct ToStackReplacer : public wasm::WalkerPass<wasm::PostWalker<ToStackReplace
       return self->enter(expr);
   }
   static void doLeaveCallLike(ToStackReplacer *self, wasm::Expression **currp) {
-    if ((*currp)->dynCast<wasm::Call>())
+    if ((*currp)->dynCast<wasm::Call>() != nullptr)
       return self->leave();
-    if ((*currp)->dynCast<wasm::CallIndirect>())
+    if ((*currp)->dynCast<wasm::CallIndirect>() != nullptr)
       return self->leave();
   }
   static void scan(ToStackReplacer *self, wasm::Expression **currp) {
