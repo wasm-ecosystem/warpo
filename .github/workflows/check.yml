@@ -41,6 +41,7 @@ jobs:
       - uses: ./.github/action/build
         with:
           CMAKE_ARGS: "-DENABLE_CLANG_TIDY=ON -DENABLE_WERROR=ON"
+          CMAKE_BUILD_ARGS: "--keep-going"
 
   bootstrap:
     strategy:

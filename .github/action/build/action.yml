@@ -5,6 +5,10 @@ inputs:
     description: "CMake Arguments"
     required: false
     default: ""
+  CMAKE_BUILD_ARGS:
+    description: "CMake Build Arguments"
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -51,7 +55,7 @@ runs:
       run: |
         set -ex
         cmake -B build -S . ${{ inputs.CMAKE_ARGS }}
-        cmake --build build --parallel
+        cmake --build build --parallel ${{ inputs.CMAKE_BUILD_ARGS }}
       shell: bash
       env:
         CMAKE_GENERATOR: Ninja
