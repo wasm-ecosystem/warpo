@@ -8,7 +8,15 @@ option(ENABLE_WERROR "Enable warnings as errors" OFF)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(FMT_DEBUG_POSTFIX "" CACHE STRING "Remove debug postfix from fmt library name" FORCE)
+
+if(NOT CMAKE_BUILD_TYPE)
+    if(WARPO_RELEASE)
+      set(CMAKE_BUILD_TYPE Release)
+    else()
+      set(CMAKE_BUILD_TYPE Debug)
+    endif()
+endif()
+
 add_subdirectory(third_party EXCLUDE_FROM_ALL)
 
 if(MSVC)
@@ -29,14 +37,6 @@ else()
   if(WARPO_SANITIZE)
     add_compile_options(-fsanitize=address)
     add_link_options(-fsanitize=address)
-  endif()
-
-  if(NOT CMAKE_BUILD_TYPE)
-    if(WARPO_RELEASE)
-      set(CMAKE_BUILD_TYPE Release)
-    else()
-      set(CMAKE_BUILD_TYPE Debug)
-    endif()
   endif()
 
   add_compile_options(-Wall -Wextra -Wpedantic  -Wformat=2
