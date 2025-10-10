@@ -8,7 +8,7 @@ option(ENABLE_WERROR "Enable warnings as errors" OFF)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
+set(FMT_DEBUG_POSTFIX "" CACHE STRING "Remove debug postfix from fmt library name" FORCE)
 add_subdirectory(third_party EXCLUDE_FROM_ALL)
 
 if(MSVC)
