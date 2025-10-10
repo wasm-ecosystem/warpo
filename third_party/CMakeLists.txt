@@ -13,6 +13,10 @@ FetchContent_Declare(
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 FetchContent_MakeAvailable(fmt)
+target_include_directories(fmt SYSTEM INTERFACE
+  $<BUILD_INTERFACE:${fmt_SOURCE_DIR}/include>
+)
+
 
 
 FetchContent_Declare(
