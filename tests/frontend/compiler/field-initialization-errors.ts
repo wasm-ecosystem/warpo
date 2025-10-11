@@ -9,8 +9,7 @@ class Ref {
 // Uninitialized with ctor
 class Ref_Ctor {
   a: ArrayBuffer; // TS2564
-  constructor() {
-  }
+  constructor() {}
 }
 {
   new Ref_Ctor();
@@ -19,8 +18,8 @@ class Ref_Ctor {
 // Uninitialized with inline ctor
 class Ref_InlineCtor {
   a: ArrayBuffer; // TS2564
-  @inline constructor() {
-  }
+
+  @inline constructor() {}
 }
 {
   new Ref_InlineCtor();
@@ -73,7 +72,9 @@ class Ref_Ctor_Prop_Init {
     this.foo;
     this.a = new ArrayBuffer(0);
   }
-  get foo(): i32 { return 1; }
+  get foo(): i32 {
+    return 1;
+  }
 }
 {
   new Ref_Ctor_Prop_Init();
@@ -134,8 +135,7 @@ var Ref_Ctor_Icallwith_Init_fn = (o: Ref_Ctor_Icallwith_Init): void => {};
 class Inherit_Base {
   a: ArrayBuffer; // TS2564
 }
-class Inherit extends Inherit_Base {
-}
+class Inherit extends Inherit_Base {}
 {
   new Inherit();
 }

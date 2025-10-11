@@ -1,5 +1,5 @@
 namespace foo {
-    export function bar<T>(): void {}
+  export function bar<T>(): void {}
 }
 
 // Should error from missing type arguments:

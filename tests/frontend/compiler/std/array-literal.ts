@@ -33,7 +33,9 @@ class Ref {}
 var dynamicArrayRef: Ref[] = [new Ref(), new Ref(), new Ref()];
 assert(dynamicArrayRef.length == 3);
 
-class RefWithCtor { constructor() {} }
+class RefWithCtor {
+  constructor() {}
+}
 var dynamicArrayRefWithCtor: RefWithCtor[] = [new RefWithCtor(), new RefWithCtor(), new RefWithCtor()];
 assert(dynamicArrayRefWithCtor.length == 3);
 
@@ -47,7 +49,7 @@ dynamicArrayRefWithCtor = changetype<RefWithCtor[]>(0);
 // Make sure unassigned literals don't leak
 function doesntLeak(refs: Ref[]): void {}
 {
-  doesntLeak([ new Ref() ]);
+  doesntLeak([new Ref()]);
 }
 
 __stack_pointer = __heap_base;

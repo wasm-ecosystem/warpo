@@ -74,8 +74,8 @@ var y: i8;
   assert(b); // should wrap
   let x: i8;
   x = <i8>ctz(2);
-  assert(x);  // should not wrap
+  assert(x); // should not wrap
   x = <i8>clz(1);
-  assert(x);  // should not wrap
+  assert(x); // should not wrap
   // TODO: test more?
 }

@@ -162,7 +162,8 @@ function getRef(): Ref {
 function testRefAutorelease(): void {
   var i = 0;
   var ref: Ref | null = new Ref();
-  while (getRef()) { // must not leak
+  while (getRef()) {
+    // must not leak
     if (++i == 10) {
       ref = null;
       break;

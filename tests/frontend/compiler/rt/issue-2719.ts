@@ -14,4 +14,3 @@ function issue2719_f2(t: issue2719_T): i32 {
 }
 
 issue2719_f1(1, new issue2719_T(), issue2719_f2(new issue2719_T()));
-

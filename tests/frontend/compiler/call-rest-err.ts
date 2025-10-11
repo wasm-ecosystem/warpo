@@ -10,6 +10,6 @@ function count<T>(...args: T[]): i32 {
   return args.length;
 }
 
-sum('a', 'b'); // expect a type mismatch error on each argument
-count(1, 'a'); // expect a type mismatch error on the second argument
+sum("a", "b"); // expect a type mismatch error on each argument
+count(1, "a"); // expect a type mismatch error on the second argument
 count(); // expect type inference error

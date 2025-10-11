@@ -4,26 +4,33 @@ class CtorAccessThis {
     public b: i32 = this.a, // TS2333
     public c: i32 = this.foo() // TS2333
   ) {}
-  foo(): i32 { return 0; }
+  foo(): i32 {
+    return 0;
+  }
 }
 
 new CtorAccessThis();
 
 class CtorAccessThisInline {
   d: i32 = 0;
+
   @inline
   constructor(
     public e: i32 = this.d, // TS2333
     public f: i32 = this.bar() // TS2333
   ) {}
-  bar(): i32 { return 0; }
+  bar(): i32 {
+    return 0;
+  }
 }
 
 new CtorAccessThisInline();
 
 class CtorSuper {
   g: i32 = 0;
-  baz(): i32 { return 0; }
+  baz(): i32 {
+    return 0;
+  }
 }
 
 class CtorAccessSuper extends CtorSuper {
@@ -38,6 +45,7 @@ class CtorAccessSuper extends CtorSuper {
 new CtorAccessSuper();
 
 class CtorAccessSuperInline extends CtorSuper {
+
   @inline
   constructor(
     public j: i32 = super.g, // TS2336

@@ -34,8 +34,4 @@ namespace Outer {
 var a: OuterClass | null;
 var b: Outer.InnerClass | null;
 var c: Outer.Inner.EvenInnerClass | null;
-export function outer(
-  a: OuterClass,
-  b: Outer.InnerClass,
-  c: Outer.Inner.EvenInnerClass
-): void {}
+export function outer(a: OuterClass, b: Outer.InnerClass, c: Outer.Inner.EvenInnerClass): void {}

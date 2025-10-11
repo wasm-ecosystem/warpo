@@ -102,25 +102,25 @@ class Ref {
   let arrf32: f32[] = [0.5, 1.0, 1.5, 2.5, 3.0];
 
   arrf32.fill(1.0, 1, 3);
-  assert(isArraysEqual<f32>(arrf32, [0.5, 1., 1., 2.5, 3.]));
+  assert(isArraysEqual<f32>(arrf32, [0.5, 1, 1, 2.5, 3]));
 
   arrf32.fill(0.0);
-  assert(isArraysEqual<f32>(arrf32, [0., 0., 0., 0., 0.]));
+  assert(isArraysEqual<f32>(arrf32, [0, 0, 0, 0, 0]));
 
   arrf32.fill(1.0, 0, -3);
-  assert(isArraysEqual<f32>(arrf32, [1., 1., 0., 0., 0.]));
+  assert(isArraysEqual<f32>(arrf32, [1, 1, 0, 0, 0]));
 
   arrf32.fill(2.0, -2);
-  assert(isArraysEqual<f32>(arrf32, [1., 1., 0., 2., 2.]));
+  assert(isArraysEqual<f32>(arrf32, [1, 1, 0, 2, 2]));
 
   arrf32.fill(0.0, 1, 0);
-  assert(isArraysEqual<f32>(arrf32, [1., 1., 0., 2., 2.]));
+  assert(isArraysEqual<f32>(arrf32, [1, 1, 0, 2, 2]));
 
   arrf32.fill(-1.0);
-  assert(isArraysEqual<f32>(arrf32, [-1., -1., -1., -1., -1.]));
+  assert(isArraysEqual<f32>(arrf32, [-1, -1, -1, -1, -1]));
 
   arrf32.fill(-0.0);
-  assert(isArraysEqual<f32>(arrf32, [-0., -0., -0., -0., -0.]));
+  assert(isArraysEqual<f32>(arrf32, [-0, -0, -0, -0, -0]));
 }
 
 // Array#push/pop //////////////////////////////////////////////////////////////////////////////////
@@ -390,10 +390,10 @@ var i: i32;
   assert(i == 2);
 
   i = arr.indexOf(45);
-  assert(i == - 1);
+  assert(i == -1);
 
   i = arr.indexOf(43, 100);
-  assert(i == - 1);
+  assert(i == -1);
 
   i = arr.indexOf(43, -100);
   assert(i == 1);
@@ -427,7 +427,6 @@ var i: i32;
   assert(numbers.lastIndexOf(2, 2) == 0);
   assert(numbers.lastIndexOf(2, -2) == 0);
   assert(numbers.lastIndexOf(2, -1) == 3);
-
 }
 
 // Array#includes //////////////////////////////////////////////////////////////////////////////////
@@ -613,14 +612,14 @@ var i: i32;
 {
   let intArr = [0, 1, 2, 3];
 
-  i = intArr.findLastIndex(value => value == 0);
+  i = intArr.findLastIndex((value) => value == 0);
 
   assert(i == 0);
 
-  i = intArr.findLastIndex(value => value == 1);
+  i = intArr.findLastIndex((value) => value == 1);
   assert(i == 1);
 
-  i = intArr.findLastIndex(value => value == 100);
+  i = intArr.findLastIndex((value) => value == 100);
   assert(i == -1);
 
   // Test side effect pop
@@ -713,7 +712,9 @@ var i: i32;
 
 {
   i = 0;
-  arr.forEach((value: i32) => { i += value; });
+  arr.forEach((value: i32) => {
+    i += value;
+  });
   assert(i == 6);
 
   // Test side effect push
@@ -726,7 +727,9 @@ var i: i32;
   assert(i == 6);
   assert(arr.length == 8);
   i = 0;
-  arr.forEach((value: i32) => { i += value; });
+  arr.forEach((value: i32) => {
+    i += value;
+  });
   assert(i == 406);
 
   arr.pop();
@@ -869,28 +872,28 @@ var i: i32;
 // Array#reduce ////////////////////////////////////////////////////////////////////////////////////
 
 {
-  i = arr.reduce<i32>(((prev: i32, current: i32): i32 => prev + current), 0);
+  i = arr.reduce<i32>((prev: i32, current: i32): i32 => prev + current, 0);
   assert(i == 6);
 
   // init value
-  i = arr.reduce(((prev: i32, current: i32): i32 => prev + current), 4);
+  i = arr.reduce((prev: i32, current: i32): i32 => prev + current, 4);
   assert(i == 10);
 
-  let boolVal = arr.reduce(((prev: bool, current: i32): bool => prev || current > 2), false);
+  let boolVal = arr.reduce((prev: bool, current: i32): bool => prev || current > 2, false);
   assert(boolVal == true);
 
-  boolVal = arr.reduce<bool>(((prev: bool, current: i32): bool => prev || current > 100), false);
+  boolVal = arr.reduce<bool>((prev: bool, current: i32): bool => prev || current > 100, false);
   assert(boolVal == false);
 
   // Test side effect push
-  i = arr.reduce<i32>(((prev: i32, current: i32, _: i32, array: Array<i32>): i32 => {
+  i = arr.reduce<i32>((prev: i32, current: i32, _: i32, array: Array<i32>): i32 => {
     array.push(1); // push side effect should not affect this method by spec
     return prev + current;
-  }), 0);
+  }, 0);
   // array should be changed, but this method result should be calculated for old array length
   assert(i == 6);
   assert(arr.length == 8);
-  i = arr.reduce(((prev: i32, current: i32): i32 => prev + current), 0);
+  i = arr.reduce((prev: i32, current: i32): i32 => prev + current, 0);
   assert(i == 10);
 
   arr.pop();
@@ -899,10 +902,10 @@ var i: i32;
   arr.pop();
 
   // Test side effect pop
-  i = arr.reduce(((prev: i32, current: i32, _: i32, array: Array<i32>): i32 => {
+  i = arr.reduce((prev: i32, current: i32, _: i32, array: Array<i32>): i32 => {
     array.pop(); // popped items shouldn't be reduced, and we shouldn't go out of bounds
     return prev + current;
-  }), 0);
+  }, 0);
   // only 2 first items was reduced, since last 2 was removed by .pop()
   assert(i == 1);
   assert(arr.length == 2);
@@ -914,28 +917,28 @@ var i: i32;
 // Array#reduceRight ///////////////////////////////////////////////////////////////////////////////
 
 {
-  i = arr.reduceRight<i32>(((prev: i32, current: i32): i32 => prev + current), 0);
+  i = arr.reduceRight<i32>((prev: i32, current: i32): i32 => prev + current, 0);
   assert(i == 6);
 
   // init value
-  i = arr.reduceRight(((prev: i32, current: i32): i32 => prev + current), 4);
+  i = arr.reduceRight((prev: i32, current: i32): i32 => prev + current, 4);
   assert(i == 10);
 
-  let boolVal = arr.reduceRight<bool>(((prev: bool, current: i32): bool => prev || current > 2), false);
+  let boolVal = arr.reduceRight<bool>((prev: bool, current: i32): bool => prev || current > 2, false);
   assert(boolVal == true);
 
-  boolVal = arr.reduceRight(((prev: bool, current: i32): bool => prev || current > 100), false);
+  boolVal = arr.reduceRight((prev: bool, current: i32): bool => prev || current > 100, false);
   assert(boolVal == false);
 
   // Test side effect push
-  i = arr.reduceRight<i32>(((prev: i32, current: i32, _: i32, array: Array<i32>): i32 => {
+  i = arr.reduceRight<i32>((prev: i32, current: i32, _: i32, array: Array<i32>): i32 => {
     array.push(1); // push side effect should not affect this method by spec
     return prev + current;
-  }), 0);
+  }, 0);
   // array should be changed, but this method result should be calculated for old array length
   assert(i == 6);
   assert(arr.length == 8);
-  i = arr.reduceRight(((prev: i32, current: i32): i32 => prev + current), 0);
+  i = arr.reduceRight((prev: i32, current: i32): i32 => prev + current, 0);
   assert(i == 10);
 
   arr.pop();
@@ -944,10 +947,10 @@ var i: i32;
   arr.pop();
 
   // Test side effect pop
-  i = arr.reduceRight(((prev: i32, current: i32, _: i32, array: Array<i32>): i32 => {
+  i = arr.reduceRight((prev: i32, current: i32, _: i32, array: Array<i32>): i32 => {
     array.pop(); // popped items should be reduced
     return prev + current;
-  }), 0);
+  }, 0);
 
   assert(i == 6);
   assert(arr.length == 0);
@@ -1016,40 +1019,40 @@ function createReverseOrderedElementsArray(size: i32): Array<Proxy<i32>> {
 const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-,.+/\\[]{}()<>*&$%^@#!?";
 
 let inputStabArr: Array<Dim> = [
-  { height: 100, width: 80  },
-  { height: 90,  width: 90  },
-  { height: 70,  width: 95  },
+  { height: 100, width: 80 },
+  { height: 90, width: 90 },
+  { height: 70, width: 95 },
   { height: 100, width: 100 },
-  { height: 80,  width: 110 },
+  { height: 80, width: 110 },
   { height: 110, width: 115 },
   { height: 100, width: 120 },
-  { height: 70,  width: 125 },
-  { height: 70,  width: 130 },
+  { height: 70, width: 125 },
+  { height: 70, width: 130 },
   { height: 100, width: 135 },
-  { height: 75,  width: 140 },
-  { height: 70,  width: 140 }
+  { height: 75, width: 140 },
+  { height: 70, width: 140 },
 ];
 
 let outputStabArr: Array<Dim> = [
-  { height: 70,  width: 95  },
-  { height: 70,  width: 125 },
-  { height: 70,  width: 130 },
-  { height: 70,  width: 140 },
-  { height: 75,  width: 140 },
-  { height: 80,  width: 110 },
-  { height: 90,  width: 90  },
-  { height: 100, width: 80  },
+  { height: 70, width: 95 },
+  { height: 70, width: 125 },
+  { height: 70, width: 130 },
+  { height: 70, width: 140 },
+  { height: 75, width: 140 },
+  { height: 80, width: 110 },
+  { height: 90, width: 90 },
+  { height: 100, width: 80 },
   { height: 100, width: 100 },
   { height: 100, width: 120 },
   { height: 100, width: 135 },
-  { height: 110, width: 115 }
+  { height: 110, width: 115 },
 ];
 
 function createRandomString(len: i32): string {
   var result = "";
 
   for (let i = 0; i < len; i++) {
-    result += charset.charAt(<i32>(NativeMath.floor(NativeMath.random() * charset.length)));
+    result += charset.charAt(<i32>NativeMath.floor(NativeMath.random() * charset.length));
   }
   return result;
 }
@@ -1112,9 +1115,9 @@ function assertSortedDefault<T>(arr: Array<T>): void {
   let reversed4: i32[] = [3, 2, 1, 0];
   let expected4: i32[] = [0, 1, 2, 3];
 
-  let reversed64    = createReverseOrderedArray(64);
-  let reversed128   = createReverseOrderedArray(128);
-  let reversed1024  = createReverseOrderedArray(1024);
+  let reversed64 = createReverseOrderedArray(64);
+  let reversed128 = createReverseOrderedArray(128);
+  let reversed1024 = createReverseOrderedArray(1024);
   let reversed10000 = createReverseOrderedArray(10000);
 
   let randomized512 = createRandomOrderedArray(512);
@@ -1152,7 +1155,7 @@ function assertSortedDefault<T>(arr: Array<T>): void {
 // Test sorting with custom comparator
 
 {
-  let randomized64  = createRandomOrderedArray(64);
+  let randomized64 = createRandomOrderedArray(64);
   let randomized257 = createRandomOrderedArray(257);
 
   assertSorted<i32>(randomized64, (a: i32, b: i32) => a - b);
@@ -1177,7 +1180,7 @@ function assertSortedDefault<T>(arr: Array<T>): void {
 // Test sorting strings
 
 {
-  let randomStringsActual:   (string | null)[] = ["a", "b", "a", "ab", "ba", "", null];
+  let randomStringsActual: (string | null)[] = ["a", "b", "a", "ab", "ba", "", null];
   let randomStringsExpected: (string | null)[] = ["", "a", "a", "ab", "b", "ba", null];
 
   assertSorted<string | null>(randomStringsActual);
@@ -1191,7 +1194,7 @@ function assertSortedDefault<T>(arr: Array<T>): void {
 
 {
   assert((<bool[]>[true, false]).join() == "true,false");
-  assert((<i32[]>[1,-2,-3]).join("") == "1-2-3");
+  assert((<i32[]>[1, -2, -3]).join("") == "1-2-3");
   assert((<u32[]>[1, 2, 3]).join("-") == "1-2-3");
   assert((<i32[]>[i32.MIN_VALUE, i32.MIN_VALUE]).join("__") == "-2147483648__-2147483648");
   assert((<f64[]>[0.0, 1.0, -2.0, NaN, -Infinity, Infinity]).join(", ") == "0.0, 1.0, -2.0, NaN, -Infinity, Infinity");
@@ -1207,8 +1210,8 @@ function assertSortedDefault<T>(arr: Array<T>): void {
 {
   let arr0: i32[] = [];
   let arr1: i32[] = [1];
-  let arr2: i32[] = [1,2];
-  let arr3: i32[] = [0,1,2,3];
+  let arr2: i32[] = [1, 2];
+  let arr3: i32[] = [0, 1, 2, 3];
 
   assert(arr0.toString() == "");
   assert(arr1.toString() == "1");
@@ -1217,13 +1220,13 @@ function assertSortedDefault<T>(arr: Array<T>): void {
 
   assert((<i8[]>[1, -1, 0]).toString() == "1,-1,0");
   assert((<i8[]>[-128, -127, -128]).toString() == "-128,-127,-128");
-  assert((<u16[]>[1, 0xFFFF, 0]).toString() == "1,65535,0");
-  assert((<i16[]>[-0x8000, -0xFF]).toString() == "-32768,-255");
+  assert((<u16[]>[1, 0xffff, 0]).toString() == "1,65535,0");
+  assert((<i16[]>[-0x8000, -0xff]).toString() == "-32768,-255");
   assert((<i32[]>[-0x80000000, -0x80]).toString() == "-2147483648,-128");
-  assert((<u64[]>[1, 0xFFFFFFFFFFFFFFFF, 0]).toString() == "1,18446744073709551615,0");
+  assert((<u64[]>[1, 0xffffffffffffffff, 0]).toString() == "1,18446744073709551615,0");
   assert(
     (<i64[]>[-1, -1234567890123456, i64.MIN_VALUE, 0, i64.MAX_VALUE]).toString() ==
-    "-1,-1234567890123456,-9223372036854775808,0,9223372036854775807"
+      "-1,-1234567890123456,-9223372036854775808,0,9223372036854775807"
   );
 
   let arrStr: (string | null)[] = ["", "a", "a", "ab", "b", "ba", null];
@@ -1231,10 +1234,16 @@ function assertSortedDefault<T>(arr: Array<T>): void {
   assert(arrStr.toString() == ",a,a,ab,b,ba,");
   assert((<Array<string | null>>["1", "2", null, "4"]).toString() == "1,2,,4");
 
-  let subarr32: i32[][] = [[1,2], [3,4]];
+  let subarr32: i32[][] = [
+    [1, 2],
+    [3, 4],
+  ];
   assert(subarr32.toString() == "1,2,3,4");
 
-  let subarr8: u8[][] = [[1,2], [3,4]];
+  let subarr8: u8[][] = [
+    [1, 2],
+    [3, 4],
+  ];
   assert(subarr8.toString() == "1,2,3,4");
 
   let subarrU32: u32[][][] = [[[1]]];
@@ -1263,12 +1272,14 @@ function assertSortedDefault<T>(arr: Array<T>): void {
 
   // see: https://github.com/AssemblyScript/assemblyscript/issues/2018
   let mapTarget: i32[][] = [[1], [2]];
-  let mapResult = mapTarget.map<i32[]>(nestedArray => {
-    assert(nestedArray.length == 1);
-    nestedArray.push(3);
-    assert(nestedArray.length == 2);
-    return nestedArray;
-  }).flat();
+  let mapResult = mapTarget
+    .map<i32[]>((nestedArray) => {
+      assert(nestedArray.length == 1);
+      nestedArray.push(3);
+      assert(nestedArray.length == 2);
+      return nestedArray;
+    })
+    .flat();
   assert(mapResult.length == 4);
   assert(mapResult[0] == 1);
   assert(mapResult[1] == 3);

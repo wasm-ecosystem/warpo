@@ -1,4 +1,3 @@
-
 // Object.is
 
 assert(Object.is(+0.0, +0.0) == true);
@@ -31,7 +30,7 @@ assert(Object.is<f32>(+Infinity, NaN) == false);
 assert(Object.is<f32>(NaN, Infinity) == false);
 assert(Object.is<f32>(NaN, NaN) == true);
 
-assert(Object.is(-0.0, 1e-1 * (-1e-308)) == false);
+assert(Object.is(-0.0, 1e-1 * -1e-308) == false);
 assert(Object.is(0, 0.0) == true);
 
 assert(Object.is<i32>(+0, -0) == true);
@@ -73,6 +72,6 @@ class Explicit extends Object {
   let object: Object = explicit;
   assert(object instanceof Explicit); // dynamic check
 
-  assert((<Object>implicit) instanceof Implicit);
-  assert((<Object>explicit) instanceof Explicit);
+  assert(<Object>implicit instanceof Implicit);
+  assert(<Object>explicit instanceof Explicit);
 }

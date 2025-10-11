@@ -4,7 +4,8 @@ const voidFn = (): void => {};
 voidFn() ? 1 : 0;
 
 // TS1345: An expression of type 'void' cannot be tested for truthiness.
-if (voidFn()) {}
+if (voidFn()) {
+}
 
 // TS1345: An expression of type 'void' cannot be tested for truthiness.
 !voidFn();

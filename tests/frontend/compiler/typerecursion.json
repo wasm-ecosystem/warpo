@@ -1,6 +1,3 @@
 {
-  "stderr": [
-    "AS100: Not implemented: Recursive types",
-    "EOF"
-  ]
+  "stderr": ["AS100: Not implemented: Recursive types", "EOF"]
 }

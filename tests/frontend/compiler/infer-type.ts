@@ -41,9 +41,7 @@ function refF(): f64 {
 var rF = refF();
 rF;
 
-for (var a = 0, b = 10; a < b; ++a) {
-  ;
-}
+for (var a = 0, b = 10; a < b; ++a) {}
 
 var inferi = 0x80000000; // infers u32
 assert(!isSigned(inferi));

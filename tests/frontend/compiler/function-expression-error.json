@@ -1,8 +1,4 @@
 {
-  "asc_flags": [
-  ],
-  "stderr": [
-    "TS1110: Type expected.", "missingReturnType",
-    "EOF"
-  ]
+  "asc_flags": [],
+  "stderr": ["TS1110: Type expected.", "missingReturnType", "EOF"]
 }

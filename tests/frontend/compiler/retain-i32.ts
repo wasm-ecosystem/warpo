@@ -1,22 +1,21 @@
 function test(a: u32, b: u32): void {
-
   // signed
   assert(<i8>(a + b) == <i8>(<i8>a + <i8>b));
   assert(<i8>(a - b) == <i8>(<i8>a - <i8>b));
   assert(<i8>(a * b) == <i8>(<i8>a * <i8>b));
-  assert(<i8>(a & b) == <i8>(<i8>a & <i8>b));
-  assert(<i8>(a | b) == <i8>(<i8>a | <i8>b));
-  assert(<i8>(a ^ b) == <i8>(<i8>a ^ <i8>b));
-  assert(<i8>(a << (b & 7)) == <i8>(<i8>a << <i8>b));
+  assert(<i8>(a & b) == <i8>((<i8>a) & (<i8>b)));
+  assert(<i8>(a | b) == <i8>((<i8>a) | (<i8>b)));
+  assert(<i8>(a ^ b) == <i8>((<i8>a) ^ (<i8>b)));
+  assert(<i8>(a << (b & 7)) == <i8>((<i8>a) << (<i8>b)));
 
   // unsigned
   assert(<u8>(a + b) == <u8>(<u8>a + <u8>b));
   assert(<u8>(a - b) == <u8>(<u8>a - <u8>b));
   assert(<u8>(a * b) == <u8>(<u8>a * <u8>b));
-  assert(<u8>(a & b) == <u8>(<u8>a & <u8>b));
-  assert(<u8>(a | b) == <u8>(<u8>a | <u8>b));
-  assert(<u8>(a ^ b) == <u8>(<u8>a ^ <u8>b));
-  assert(<u8>(a << (b & 7)) == <u8>(<u8>a << <u8>b));
+  assert(<u8>(a & b) == <u8>((<u8>a) & (<u8>b)));
+  assert(<u8>(a | b) == <u8>((<u8>a) | (<u8>b)));
+  assert(<u8>(a ^ b) == <u8>((<u8>a) ^ (<u8>b)));
+  assert(<u8>(a << (b & 7)) == <u8>((<u8>a) << (<u8>b)));
 }
 
 // signed
@@ -74,25 +73,25 @@ for (var i: i32 = i8.MIN_VALUE; i <= <i32>u8.MAX_VALUE; ++i) {
 // visually
 var si: i8;
 
-si = 127 + 127 + 1;   // sign-extends exactly once
+si = 127 + 127 + 1; // sign-extends exactly once
 assert(si == -1);
 
-si = 127 - 1 - 127;   // sign-extends exactly once
+si = 127 - 1 - 127; // sign-extends exactly once
 assert(si == -1);
 
-si = 127 * 2;         // sign-extends exactly once
+si = 127 * 2; // sign-extends exactly once
 assert(si == -2);
 
-si = -(-128);         // -MIN_VALUE == MIN_VALUE
+si = -(-128); // -MIN_VALUE == MIN_VALUE
 assert(si == -128);
 
-si = -128 * -1;       // -MIN_VALUE == MIN_VALUE
+si = -128 * -1; // -MIN_VALUE == MIN_VALUE
 assert(si == -128);
 
 si = 127 / -1;
 assert(si == -127);
 
-si = -128 / -1;       // -MIN_VALUE == MIN_VALUE
+si = -128 / -1; // -MIN_VALUE == MIN_VALUE
 assert(si == -128);
 
 si = 127 % 2;

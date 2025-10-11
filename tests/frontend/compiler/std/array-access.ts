@@ -19,7 +19,7 @@ export function stringArrayArrayMethodCall(a: string[][]): i32 {
 }
 
 // FIXME: Parenthesizing signature types is not supported
-type T = (x: i32) => i32
+type T = (x: i32) => i32;
 export function functionArrayElementCall(a: T[]): i32 {
   return a[0](123);
 }

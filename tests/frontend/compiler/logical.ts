@@ -3,8 +3,8 @@
 1 || unreachable();
 1.0 || unreachable();
 
-1 && 2 || unreachable();
-1.0 && 2.0 || unreachable();
+(1 && 2) || unreachable();
+(1.0 && 2.0) || unreachable();
 
 var i: i32;
 
@@ -40,10 +40,10 @@ assert(F == 1.0);
 
 // NaN is considered falseish
 
-f = NaN as f32 || 1.0 as f32;
+f = (NaN as f32) || (1.0 as f32);
 assert(f == 1.0);
 
-f = 1.0 as f32 || NaN as f32;
+f = (1.0 as f32) || (NaN as f32);
 assert(f == 1.0);
 
 F = NaN || 1.0;
@@ -52,10 +52,10 @@ assert(F == 1.0);
 F = 1.0 || NaN;
 assert(F == 1.0);
 
-f = 1.0 as f32 && NaN as f32;
+f = (1.0 as f32) && (NaN as f32);
 assert(isNaN(f));
 
-f = NaN as f32 && 1.0 as f32;
+f = (NaN as f32) && (1.0 as f32);
 assert(isNaN(f));
 
 F = 1.0 && NaN;

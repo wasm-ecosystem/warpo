@@ -26,7 +26,6 @@ function generic_type_alias(): void {
 }
 generic_type_alias();
 
-
 function alias_in_type_arguments(): void {
   type alias = i64;
   assert(idof<Array<alias>>() == idof<Array<i64>>());

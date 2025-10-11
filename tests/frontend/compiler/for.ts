@@ -2,9 +2,7 @@ var ran: bool;
 
 function testInitExpression(): void {
   var i: i32;
-  for (i = 0; i < 10; ++i) {
-    ;
-  }
+  for (i = 0; i < 10; ++i) {}
   assert(i == 10);
   ran = true;
 }
@@ -13,9 +11,7 @@ testInitExpression();
 assert(ran);
 
 function testInitStatement(): void {
-  for (var j = 0; j < 10; ++j) {
-    ;
-  }
+  for (var j = 0; j < 10; ++j) {}
   assert(j == 10);
   ran = true;
 }
@@ -35,7 +31,7 @@ assert(ran);
 
 function testConditionOmitted(): void {
   var i = 0;
-  for (;; ++i) if (i == 10) break;
+  for (; ; ++i) if (i == 10) break;
   assert(i == 10);
   ran = true;
 }
@@ -55,7 +51,7 @@ assert(ran);
 
 function testAlwaysTrue(): void {
   var i = 0;
-  for (;true;) {
+  for (; true; ) {
     if (++i == 10) break;
   }
   assert(i == 10);
@@ -66,7 +62,7 @@ testAlwaysTrue();
 assert(ran);
 
 function testAlwaysFalse(): void {
-  for (;false;) {
+  for (; false; ) {
     assert(false);
   }
   ran = true;
@@ -130,7 +126,7 @@ class Ref {}
 function testRef(): void {
   var i = 0;
   var ref: Ref | null = new Ref();
-  for (; ref;) {
+  for (; ref; ) {
     if (++i == 10) ref = null;
     else ref = new Ref();
   }
@@ -148,7 +144,8 @@ function getRef(): Ref {
 function testRefAutorelease(): void {
   var i = 0;
   var ref: Ref | null = new Ref();
-  for (ref = getRef(); getRef(); ref = getRef()) { // must not leak
+  for (ref = getRef(); getRef(); ref = getRef()) {
+    // must not leak
     if (++i == 10) {
       ref = null;
       break;

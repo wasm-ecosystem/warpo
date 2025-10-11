@@ -1,7 +1,6 @@
 function memmove(dest: usize, src: usize, n: usize): usize {
   var ret = dest;
-  if (dest == src)
-    return ret;
+  if (dest == src) return ret;
   // if (src + n <= dest || dest + n <= src) {
   //   memcpy(dest, src, n);
   //   return ret;
@@ -9,8 +8,7 @@ function memmove(dest: usize, src: usize, n: usize): usize {
   if (dest < src) {
     if (src % 8 == dest % 8) {
       while (dest % 8) {
-        if (!n)
-          return ret;
+        if (!n) return ret;
         --n;
         store<u8>(dest++, load<u8>(src++));
       }
@@ -28,8 +26,7 @@ function memmove(dest: usize, src: usize, n: usize): usize {
   } else {
     if (src % 8 == dest % 8) {
       while ((dest + n) % 8) {
-        if (!n)
-          return ret;
+        if (!n) return ret;
         store<u8>(dest + --n, load<u8>(src + n));
       }
       while (n >= 8) {
@@ -45,8 +42,8 @@ function memmove(dest: usize, src: usize, n: usize): usize {
 }
 
 const base: usize = 8;
-store<u64>(base     , 0x1111111111111111);
-store<u64>(base + 8 , 0x2222222222222222);
+store<u64>(base, 0x1111111111111111);
+store<u64>(base + 8, 0x2222222222222222);
 store<u64>(base + 16, 0x3333333333333333);
 store<u64>(base + 24, 0x4444444444444444);
 

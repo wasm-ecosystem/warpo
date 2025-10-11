@@ -1,6 +1,6 @@
 export function preInstantiate(imports, exports) {
   imports["mutable-globals"] = {
-    external: new WebAssembly.Global({ value: "i32", mutable: true }, 123)
+    external: new WebAssembly.Global({ value: "i32", mutable: true }, 123),
   };
 }
 export function postStart(instance) {

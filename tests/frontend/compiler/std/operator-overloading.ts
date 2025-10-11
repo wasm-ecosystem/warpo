@@ -1,91 +1,111 @@
 class Tester {
-  constructor(public x: i32, public y: i32) {
-  }
+  constructor(
+    public x: i32,
+    public y: i32
+  ) {}
+
 
   @operator("+")
   static add(a: Tester, b: Tester): Tester {
     return new Tester(a.x + b.x, a.y + b.y);
   }
 
+
   @operator("-")
   static sub(a: Tester, b: Tester): Tester {
     return new Tester(a.x - b.x, a.y - b.y);
   }
+
 
   @operator("*")
   static mul(a: Tester, b: Tester): Tester {
     return new Tester(a.x * b.x, a.y * b.y);
   }
 
+
   @operator("/")
   static div(a: Tester, b: Tester): Tester {
     return new Tester(a.x / b.x, a.y / b.y);
   }
+
 
   @operator("%")
   static mod(a: Tester, b: Tester): Tester {
     return new Tester(a.x % b.x, a.y % b.y);
   }
 
+
   @operator("**")
   static pow(a: Tester, b: Tester): Tester {
     return new Tester(<i32>(a.x ** b.x), <i32>(a.y ** b.y));
   }
+
 
   @operator("|")
   static or(a: Tester, b: Tester): Tester {
     return new Tester(a.x | b.x, a.y | b.y);
   }
 
+
   @operator("&")
   static and(a: Tester, b: Tester): Tester {
     return new Tester(a.x & b.x, a.y & b.y);
   }
+
 
   @operator("^")
   static xor(a: Tester, b: Tester): Tester {
     return new Tester(a.x ^ b.x, a.y ^ b.y);
   }
 
+
   @operator("==")
   static equals(a: Tester, b: Tester): bool {
     return a.x == b.x && a.y == b.y;
   }
+
 
   @operator("!=")
   static notEquals(a: Tester, b: Tester): bool {
     return a.x != b.x && a.y != b.y;
   }
 
+
   @operator(">")
   static greater(a: Tester, b: Tester): bool {
     return a.x > b.x && a.y > b.y;
   }
+
 
   @operator(">=")
   static greaterEquals(a: Tester, b: Tester): bool {
     return a.x >= b.x && a.y >= b.y;
   }
 
+
   @operator("<")
   static less(a: Tester, b: Tester): bool {
     return a.x < b.x && a.y < b.y;
   }
+
 
   @operator("<=")
   static lessEquals(a: Tester, b: Tester): bool {
     return a.x <= b.x && a.y <= b.y;
   }
 
+
   @operator(">>")
   static shr(value: Tester, shift: i32): Tester {
     return new Tester(value.x >> shift, value.y >> shift);
   }
 
+
   @operator(">>>")
   static shu(value: Tester, shift: i32): Tester {
     return new Tester(value.x >>> shift, value.y >>> shift);
   }
+
 
   @operator("<<")
   static shl(value: Tester, shift: i32): Tester {
@@ -98,20 +118,24 @@ class Tester {
     return new Tester(~value.x, ~value.y);
   }
 
+
   @operator.prefix("!")
   static excl(value: Tester): bool {
     return !value.x && !value.y;
   }
+
 
   @operator.prefix("+")
   static pos(value: Tester): Tester {
     return new Tester(+value.x, +value.y);
   }
 
+
   @operator.prefix("-")
   static neg(value: Tester): Tester {
     return new Tester(-value.x, -value.y);
   }
+
 
   @operator.prefix("++")
   inc(): this {
@@ -120,6 +144,7 @@ class Tester {
     return this;
   }
 
+
   @operator.prefix("--")
   dec(): this {
     --this.x;
@@ -127,10 +152,12 @@ class Tester {
     return this;
   }
 
+
   @operator.postfix("++")
   postInc(): Tester {
     return new Tester(this.x + 1, this.y + 1);
   }
+
 
   @operator.postfix("--")
   postDec(): Tester {
@@ -141,61 +168,61 @@ class Tester {
 // check additional
 var a1 = new Tester(1, 2);
 var a2 = new Tester(2, 3);
-var a  = a1 + a2;
+var a = a1 + a2;
 assert(a.x == 3 && a.y == 5);
 
 // check subtraction
 var s1 = new Tester(2, 3);
-var s2 = new Tester(2,-3);
-var s  = s1 - s2;
+var s2 = new Tester(2, -3);
+var s = s1 - s2;
 assert(s.x == 0 && s.y == 6);
 
 // check multiplication
 var m1 = new Tester(2, 5);
 var m2 = new Tester(3, 2);
-var m  = m1 * m2;
+var m = m1 * m2;
 assert(m.x == 6 && m.y == 10);
 
 // check division
 var d1 = new Tester(6, 50);
 var d2 = new Tester(3, 10);
-var d  = d1 / d2;
+var d = d1 / d2;
 assert(d.x == 2 && d.y == 5);
 
 // check remainder
 var f1 = new Tester(10, 10);
 var f2 = new Tester(6, 10);
-var f  = f1 % f2;
+var f = f1 % f2;
 assert(f.x == 4 && f.y == 0);
 
 // check power
 var p1 = new Tester(2, 3);
 var p2 = new Tester(4, 5);
-var p  = p1 ** p2;
+var p = p1 ** p2;
 assert(p.x == 16 && p.y == 243);
 
 // check bitwise and
-var n1 = new Tester(0xFF, 0x0F);
-var n2 = new Tester(0x0F, 0xFF);
-var n  = n1 & n2;
-assert(n.x == 0xF && n.y == 0xF);
+var n1 = new Tester(0xff, 0x0f);
+var n2 = new Tester(0x0f, 0xff);
+var n = n1 & n2;
+assert(n.x == 0xf && n.y == 0xf);
 
 // check bitwise or
-var o1 = new Tester(0x0F0F, 0xFF);
-var o2 = new Tester(0xF0F0, 0x00);
-var o  = o1 | o2;
-assert(o.x == 0xFFFF && o.y == 0xFF);
+var o1 = new Tester(0x0f0f, 0xff);
+var o2 = new Tester(0xf0f0, 0x00);
+var o = o1 | o2;
+assert(o.x == 0xffff && o.y == 0xff);
 
 // check bitwise xor
-var x1 = new Tester(0x00FF, 0xFF);
-var x2 = new Tester(0xFF00, 0x00);
-var x  = x1 ^ x2;
-assert(x.x == 0xFFFF && x.y == 0xFF);
+var x1 = new Tester(0x00ff, 0xff);
+var x2 = new Tester(0xff00, 0x00);
+var x = x1 ^ x2;
+assert(x.x == 0xffff && x.y == 0xff);
 
 // check truthfully equal
 var eq1 = new Tester(1, -2);
 var eq2 = new Tester(1, -2);
-var eq  = eq1 == eq2;
+var eq = eq1 == eq2;
 assert(eq == true);
 
 // check falsely equal
@@ -215,34 +242,34 @@ assert(eqf == true);
 // check greater
 var gt1 = new Tester(2, i32.MAX_VALUE);
 var gt2 = new Tester(1, 0);
-var gt  = gt1 > gt2;
+var gt = gt1 > gt2;
 assert(gt == true);
 
 // check greater or equal
 var gte1 = new Tester(2, 2);
 var gte2 = new Tester(2, 2);
-var gte  = gte1 >= gte2;
+var gte = gte1 >= gte2;
 assert(gte == true);
 
 // check less
-var le1 = new Tester(5,-1);
+var le1 = new Tester(5, -1);
 var le2 = new Tester(6, 6);
-var le  = le1 < le2;
+var le = le1 < le2;
 assert(le == true);
 
 // check less or equal
 var leq1 = new Tester(4, 3);
 var leq2 = new Tester(4, 3);
-var leq  = leq1 <= leq2;
+var leq = leq1 <= leq2;
 assert(leq == true);
 
 // check right shift
-var shr  = new Tester(8, 16);
+var shr = new Tester(8, 16);
 var sres = shr >> 3;
 assert(sres.x == 1 && sres.y == 2);
 
 // check right shift
-var shu  = new Tester(-8, -16);
+var shu = new Tester(-8, -16);
 var ures = shu >>> 3;
 assert(ures.x == 536870911 && ures.y == 536870910);
 
@@ -262,7 +289,7 @@ var nres = -neg;
 assert(nres.x == -neg.x && nres.y == -neg.y);
 
 // check unary not "~"
-var not = new Tester(0xFF, 0x10);
+var not = new Tester(0xff, 0x10);
 var res = ~not;
 assert(res.x == ~not.x && res.y == ~not.y);
 
@@ -293,12 +320,16 @@ assert(incdec.x == 0 && incdec.y == 1);
 
 // check inlined static
 class TesterInlineStatic {
-  constructor(public x: i32, public y: i32) {
-  }
+  constructor(
+    public x: i32,
+    public y: i32
+  ) {}
+
   @inline @operator("+")
   static add(a: TesterInlineStatic, b: TesterInlineStatic): TesterInlineStatic {
     return new TesterInlineStatic(a.x + b.x, a.y + b.y);
   }
+
 
   @inline @operator.postfix("++")
   static postInc(a: TesterInlineStatic): TesterInlineStatic {
@@ -308,17 +339,21 @@ class TesterInlineStatic {
 var ais1 = new TesterInlineStatic(1, 2);
 ais1 = ais1++; // 2, 3 (static skips re-assign)
 var ais2 = new TesterInlineStatic(2, 3);
-var ais  = ais1 + ais2;
+var ais = ais1 + ais2;
 assert(ais.x == 4 && ais.y == 6);
 
 // check inlined instance
 class TesterInlineInstance {
-  constructor(public x: i32, public y: i32) {
-  }
+  constructor(
+    public x: i32,
+    public y: i32
+  ) {}
+
   @inline @operator("+")
   add(b: TesterInlineInstance): TesterInlineInstance {
     return new TesterInlineInstance(this.x + b.x, this.y + b.y);
   }
+
 
   @inline @operator.postfix("++")
   postInc(): TesterInlineInstance {
@@ -328,7 +363,7 @@ class TesterInlineInstance {
 var aii1 = new TesterInlineInstance(1, 2);
 aii1++; // 2, 3
 var aii2 = new TesterInlineInstance(2, 3);
-var aii  = aii1 + aii2;
+var aii = aii1 + aii2;
 assert(aii.x == 4 && aii.y == 6);
 
 // test custom element access overloading with string keys
@@ -338,17 +373,15 @@ class TesterElementAccess {
     public x: i32,
     public y: i32
   ) {}
+
   @operator("[]")
   __get(key: string): i32 {
-    return key == "x"
-      ? this.x
-      : this.y;
+    return key == "x" ? this.x : this.y;
   }
+
   @operator("[]=")
   __set(key: string, value: i32): void {
-    key == "x"
-      ? this.x = value
-      : this.y = value;
+    key == "x" ? (this.x = value) : (this.y = value);
   }
 }
 
@@ -357,10 +390,10 @@ var tea = new TesterElementAccess(1, 2);
 tea["x"] = -1;
 tea["y"] = -2;
 
-assert(tea.x    == -1);
+assert(tea.x == -1);
 assert(tea["x"] == -1);
 
-assert(tea.y    == -2);
+assert(tea.y == -2);
 assert(tea["y"] == -2);
 
 tea["x"]++;

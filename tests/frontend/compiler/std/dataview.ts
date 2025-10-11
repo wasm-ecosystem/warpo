@@ -14,18 +14,18 @@
 
   assert(view.getFloat32(0, true) == -4.592586247781397e-20);
   assert(view.getFloat32(1, true) == -2.3413961970849473e-37);
-  assert(view.getFloat32(2, true) == 7.710587701863113e+22);
+  assert(view.getFloat32(2, true) == 7.710587701863113e22);
   assert(view.getFloat32(3, true) == 229.51023864746094);
   assert(view.getFloat32(4, true) == 14079802746555335000.0);
 
-  assert(view.getFloat32(0, false) == -2.2751405188178955e+33);
+  assert(view.getFloat32(0, false) == -2.2751405188178955e33);
   assert(view.getFloat32(1, false) == -62437351080004160000.0);
   assert(view.getFloat32(2, false) == 1403059112509440.0);
   assert(view.getFloat32(3, false) == -5.522466503261712e-20);
   assert(view.getFloat32(4, false) == -1.6843597451835358e-37);
 
-  assert(view.getFloat64(0, true) == 7.936550095674706e+150);
-  assert(view.getFloat64(0, false) == -4.1177747581885255e+264);
+  assert(view.getFloat64(0, true) == 7.936550095674706e150);
+  assert(view.getFloat64(0, false) == -4.1177747581885255e264);
 
   assert(view.getInt8(0) == -10);
   assert(view.getInt8(1) == -32);
@@ -110,11 +110,11 @@
   view.setFloat32(0, 1.5976661625240943e-18, true);
   assert(view.getFloat32(0, true) == 1.5976661625240943e-18);
 
-  view.setFloat32(0, 1.9762819733816963e+21, false);
-  assert(view.getFloat32(0, false) == 1.9762819733816963e+21);
+  view.setFloat32(0, 1.9762819733816963e21, false);
+  assert(view.getFloat32(0, false) == 1.9762819733816963e21);
 
-  view.setFloat64(0, -1.094252199637739e+148, true);
-  assert(view.getFloat64(0, true) == -1.094252199637739e+148);
+  view.setFloat64(0, -1.094252199637739e148, true);
+  assert(view.getFloat64(0, true) == -1.094252199637739e148);
 
   view.setFloat64(0, 6.022586634778589e-103, false);
   assert(view.getFloat64(0, false) == 6.022586634778589e-103);

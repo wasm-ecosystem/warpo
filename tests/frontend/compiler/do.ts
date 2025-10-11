@@ -17,7 +17,8 @@ assert(ran);
 
 function testEmpty(): void {
   var n = 10;
-  do; while(n--);
+  do;
+  while (n--);
   assert(n == -1);
   ran = true;
 }
@@ -126,7 +127,7 @@ function testNestedContinue(): void {
   do {
     if (++i == 10) break;
     do {
-      if ((++j % 10) == 0) break;
+      if (++j % 10 == 0) break;
       continue;
     } while (j);
     continue;

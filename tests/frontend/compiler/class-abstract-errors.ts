@@ -17,7 +17,9 @@ class Qux extends Foo {
   bar(): i32 {
     return 1;
   }
-  get a(): i32 { return 0; }
+  get a(): i32 {
+    return 0;
+  }
   set a(a: i32) {}
 }
 

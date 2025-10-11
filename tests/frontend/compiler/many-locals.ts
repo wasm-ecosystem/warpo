@@ -1,4 +1,5 @@
-export function testI32(a: i32): i32 { // does not have to remember wrap states
+export function testI32(a: i32): i32 {
+  // does not have to remember wrap states
   var a00 = a;
   var a01 = a00;
   var a02 = a01;
@@ -132,7 +133,8 @@ export function testI32(a: i32): i32 { // does not have to remember wrap states
 
 assert(testI32(42) == 42);
 
-export function testI8(a: i8): i8 { // has to remember wrap states
+export function testI8(a: i8): i8 {
+  // has to remember wrap states
   var a00 = a;
   var a01 = a00;
   var a02 = a01;

@@ -184,15 +184,15 @@
   const july9: i64 = 1468022400000;
   const dayMs: i64 = 24 * 60 * 60 * 1000;
 
-  assert(new Date(july6    ).getUTCDay() == 3);
+  assert(new Date(july6).getUTCDay() == 3);
   assert(new Date(july6 - 1).getUTCDay() == 2);
   assert(new Date(july6 + dayMs - 1).getUTCDay() == 3);
-  assert(new Date(july6 + dayMs    ).getUTCDay() == 4);
+  assert(new Date(july6 + dayMs).getUTCDay() == 4);
 
-  assert(new Date(july9    ).getUTCDay() == 6);
+  assert(new Date(july9).getUTCDay() == 6);
   assert(new Date(july9 - 1).getUTCDay() == 5);
   assert(new Date(july9 + dayMs - 1).getUTCDay() == 6);
-  assert(new Date(july9 + dayMs    ).getUTCDay() == 0);
+  assert(new Date(july9 + dayMs).getUTCDay() == 0);
 }
 
 // Date#setUTCMonth ////////////////////////////////////////////////////////////////////////////////
@@ -373,13 +373,13 @@
 // Minimum / Maximum dates ////////////////////////////////////////////////////////////////////////
 {
   let minDate = new Date(-8640000000000000);
-  let maxDate = new Date( 8640000000000000);
+  let maxDate = new Date(8640000000000000);
 
   assert(minDate.getTime() == -8640000000000000);
-  assert(maxDate.getTime() ==  8640000000000000);
+  assert(maxDate.getTime() == 8640000000000000);
 
   assert(minDate.getUTCFullYear() == -271821);
-  assert(maxDate.getUTCFullYear() ==  275760);
+  assert(maxDate.getUTCFullYear() == 275760);
 
   assert(minDate.getUTCMonth() == 3);
   assert(maxDate.getUTCMonth() == 8);
@@ -390,7 +390,7 @@
   assert(minDate.toISOString() == "-271821-04-20T00:00:00.000Z");
   assert(maxDate.toISOString() == "+275760-09-13T00:00:00.000Z");
 
-  let maxDateDec = new Date( 8640000000000000 - 1);
+  let maxDateDec = new Date(8640000000000000 - 1);
   let minDateInc = new Date(-8640000000000000 + 1);
 
   assert(minDateInc.getUTCFullYear() == -271821);

@@ -12,6 +12,7 @@ export function bar(): void {
   baz();
 }
 
+
 @inline
 export function baz(): void {
   bar();

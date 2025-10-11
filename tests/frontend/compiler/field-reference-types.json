@@ -1,7 +1,3 @@
 {
-  "stderr": [
-    "Not implemented: Reference typed fields",
-    "Not implemented: Reference typed fields",
-    "EOF"
-  ]
+  "stderr": ["Not implemented: Reference typed fields", "Not implemented: Reference typed fields", "EOF"]
 }

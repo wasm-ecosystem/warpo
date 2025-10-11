@@ -32,8 +32,7 @@ class EmptyCtorWithFieldAccess {
 var emptyCtorWithFieldAccess = new EmptyCtorWithFieldAccess();
 
 // direct allocate
-class None {
-}
+class None {}
 
 var none = new None();
 
@@ -94,10 +93,12 @@ class CtorFieldInitWithoutConstructor {
 assert(new CtorFieldInitWithoutConstructor().a == 10);
 assert(new CtorFieldInitWithoutConstructor().b == 10);
 
-
 class CtorFieldInitOrder {
   c: i32 = this.a + this.b;
-  constructor(public a: i32, public b: i32 = 2) {
+  constructor(
+    public a: i32,
+    public b: i32 = 2
+  ) {
     assert(a == 1);
     assert(this.a == 1);
     assert(b == 2);

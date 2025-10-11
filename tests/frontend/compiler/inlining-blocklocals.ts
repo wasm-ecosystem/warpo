@@ -4,6 +4,7 @@ var theCall_a: i32;
 var theCall_b: i32;
 var theCall_c: i32;
 
+
 @inline function theCall(a: i32, b: i32, c: i32): void {
   theCall_a = a;
   theCall_b = b;

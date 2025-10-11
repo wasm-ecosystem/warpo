@@ -1,9 +1,11 @@
 class A {
+
   @operator("==") __eq(other: B): bool {
     return true;
   }
 }
 class B {
+
   @operator("==") __eq(other: A): bool {
     return true;
   }
@@ -14,11 +16,13 @@ export function compare_nonnull(compare_nonnull_a: A, compare_nonnull_b: B): voi
 }
 
 class C {
+
   @operator("==") static __eq(self: C | null, other: D | null): bool {
     return true;
   }
 }
 class D {
+
   @operator("==") __eq(other: i32): bool {
     return true;
   }

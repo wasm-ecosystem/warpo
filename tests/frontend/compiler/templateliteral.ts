@@ -104,7 +104,7 @@ function test_raw(): void {
 }
 // test_raw(); // TODO: Requires ReadonlyArray to be safe
 
-class RecursiveObject  {
+class RecursiveObject {
   constructor(
     public key: string,
     public val: RecursiveObject | null = null

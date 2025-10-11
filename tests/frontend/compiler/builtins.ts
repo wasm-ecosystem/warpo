@@ -50,18 +50,28 @@ var i: i32;
 
 // small integers
 var l: i8;
-l = add<i8>(1, 2); assert(l == 3);
-l = sub<i8>(2, 1); assert(l == 1);
-l = mul<i8>(1, 2); assert(l == 2);
-l = div<i8>(6, 2); assert(l == 3);
-i = eq<i8>(1, 1); assert(i == 1);
-i = eq<i8>(1, 0); assert(i == 0);
-i = ne<i8>(1, 1); assert(i == 0);
-i = ne<i8>(1, 0); assert(i == 1);
+l = add<i8>(1, 2);
+assert(l == 3);
+l = sub<i8>(2, 1);
+assert(l == 1);
+l = mul<i8>(1, 2);
+assert(l == 2);
+l = div<i8>(6, 2);
+assert(l == 3);
+i = eq<i8>(1, 1);
+assert(i == 1);
+i = eq<i8>(1, 0);
+assert(i == 0);
+i = ne<i8>(1, 1);
+assert(i == 0);
+i = ne<i8>(1, 0);
+assert(i == 1);
 
 var v: u8;
-v = rotl<u8>(<u8>0b10001111, 3); assert(v == 0b01111100);
-v = rotr<u8>(<u8>0b10101010, 1); assert(v == 0b01010101);
+v = rotl<u8>(<u8>0b10001111, 3);
+assert(v == 0b01111100);
+v = rotr<u8>(<u8>0b10101010, 1);
+assert(v == 0b01010101);
 
 // integers
 clz<i32>(1);
@@ -95,19 +105,32 @@ i = ctz<i32>(1);
 i = popcnt<i32>(1);
 i = rotl<i32>(1, 1);
 i = rotr<i32>(1, 1);
-i = abs<i32>(-42); assert(i == 42);
-i = max<i32>(1, 2); assert(i == 2);
-i = min<i32>(1, 2); assert(i == 1);
-i = add<i32>(1, 2); assert(i == 3);
-i = sub<i32>(2, 1); assert(i == 1);
-i = mul<i32>(2, 3); assert(i == 6);
-i = div<i32>(6, 2); assert(i == 3);
-i = eq<i32>(1, 1); assert(i == 1);
-i = eq<i32>(1, 0); assert(i == 0);
-i = ne<i32>(1, 1); assert(i == 0);
-i = ne<i32>(1, 0); assert(i == 1);
-i = rem<i32>(1, 3); assert(i == 1);
-i = rem<i32>(15, 4); assert(i == 3);
+i = abs<i32>(-42);
+assert(i == 42);
+i = max<i32>(1, 2);
+assert(i == 2);
+i = min<i32>(1, 2);
+assert(i == 1);
+i = add<i32>(1, 2);
+assert(i == 3);
+i = sub<i32>(2, 1);
+assert(i == 1);
+i = mul<i32>(2, 3);
+assert(i == 6);
+i = div<i32>(6, 2);
+assert(i == 3);
+i = eq<i32>(1, 1);
+assert(i == 1);
+i = eq<i32>(1, 0);
+assert(i == 0);
+i = ne<i32>(1, 1);
+assert(i == 0);
+i = ne<i32>(1, 0);
+assert(i == 1);
+i = rem<i32>(1, 3);
+assert(i == 1);
+i = rem<i32>(15, 4);
+assert(i == 3);
 
 var I: i64;
 
@@ -133,19 +156,32 @@ I = ctz<i64>(1);
 I = popcnt<i64>(1);
 I = rotl<i64>(1, 1);
 I = rotr<i64>(1, 1);
-I = abs<i64>(-42); assert(I == 42);
-I = max<i64>(1, 2); assert(I == 2);
-I = min<i64>(1, 2); assert(I == 1);
-I = add<i64>(1, 2); assert(I == 3);
-I = sub<i64>(2, 1); assert(I == 1);
-I = mul<i64>(2, 3); assert(I == 6);
-I = div<i64>(6, 2); assert(I == 3);
-i = eq<i64>(1, 1); assert(i == 1);
-i = eq<i64>(1, 0); assert(i == 0);
-i = ne<i64>(1, 1); assert(i == 0);
-i = ne<i64>(1, 0); assert(i == 1);
-I = rem<i64>(1, 3); assert(I == 1);
-I = rem<i64>(15, 4); assert(I == 3);
+I = abs<i64>(-42);
+assert(I == 42);
+I = max<i64>(1, 2);
+assert(I == 2);
+I = min<i64>(1, 2);
+assert(I == 1);
+I = add<i64>(1, 2);
+assert(I == 3);
+I = sub<i64>(2, 1);
+assert(I == 1);
+I = mul<i64>(2, 3);
+assert(I == 6);
+I = div<i64>(6, 2);
+assert(I == 3);
+i = eq<i64>(1, 1);
+assert(i == 1);
+i = eq<i64>(1, 0);
+assert(i == 0);
+i = ne<i64>(1, 1);
+assert(i == 0);
+i = ne<i64>(1, 0);
+assert(i == 1);
+I = rem<i64>(1, 3);
+assert(I == 1);
+I = rem<i64>(15, 4);
+assert(I == 3);
 
 // floats
 
@@ -197,19 +233,28 @@ f = abs<f32>(1.25);
 f = ceil<f32>(1.25);
 f = copysign<f32>(1.25, 2.5);
 f = floor<f32>(1.25);
-f = add<f32>(1.5, 2.5); assert(f == 4.0);
-f = sub<f32>(2.5, 1.5); assert(f == 1.0);
-f = mul<f32>(1.5, 2.0); assert(f == 3.0);
-f = div<f32>(1.5, 0.5); assert(f == 3.0);
-f = max<f32>(1.25, 2.5); assert(f == 2.5);
+f = add<f32>(1.5, 2.5);
+assert(f == 4.0);
+f = sub<f32>(2.5, 1.5);
+assert(f == 1.0);
+f = mul<f32>(1.5, 2.0);
+assert(f == 3.0);
+f = div<f32>(1.5, 0.5);
+assert(f == 3.0);
+f = max<f32>(1.25, 2.5);
+assert(f == 2.5);
 f = min<f32>(1.25, 2.5);
 f = nearest<f32>(1.25);
 f = sqrt<f32>(1.25);
 f = trunc<f32>(1.25);
-i = eq<f32>(1.5, 1.5); assert(i == 1);
-i = eq<f32>(1.5, 2.5); assert(i == 0);
-i = ne<f32>(1.5, 1.5); assert(i == 0);
-i = ne<f32>(1.5, 2.5); assert(i == 1);
+i = eq<f32>(1.5, 1.5);
+assert(i == 1);
+i = eq<f32>(1.5, 2.5);
+assert(i == 0);
+i = ne<f32>(1.5, 1.5);
+assert(i == 0);
+i = ne<f32>(1.5, 2.5);
+assert(i == 1);
 b = isNaN<f32>(1.25);
 b = isFinite<f32>(1.25);
 
@@ -265,19 +310,27 @@ F = abs<f64>(1.25);
 F = ceil<f64>(1.25);
 F = copysign<f64>(1.25, 2.5);
 F = floor<f64>(1.25);
-F = add<f64>(1.5, 2.5); assert(F == 4.0);
-F = sub<f64>(2.5, 1.5); assert(F == 1.0);
-F = mul<f64>(1.5, 2.0); assert(F == 3.0);
-F = div<f64>(1.5, 0.5); assert(F == 3.0);
+F = add<f64>(1.5, 2.5);
+assert(F == 4.0);
+F = sub<f64>(2.5, 1.5);
+assert(F == 1.0);
+F = mul<f64>(1.5, 2.0);
+assert(F == 3.0);
+F = div<f64>(1.5, 0.5);
+assert(F == 3.0);
 F = max<f64>(1.25, 2.5);
 F = min<f64>(1.25, 2.5);
 F = nearest<f64>(1.25);
 F = sqrt<f64>(1.25);
 F = trunc<f64>(1.25);
-i = eq<f64>(1.5, 1.5); assert(i == 1);
-i = eq<f64>(1.5, 2.5); assert(i == 0);
-i = ne<f64>(1.5, 1.5); assert(i == 0);
-i = ne<f64>(1.5, 2.5); assert(i == 1);
+i = eq<f64>(1.5, 1.5);
+assert(i == 1);
+i = eq<f64>(1.5, 2.5);
+assert(i == 0);
+i = ne<f64>(1.5, 1.5);
+assert(i == 0);
+i = ne<f64>(1.5, 2.5);
+assert(i == 1);
 b = isNaN<f64>(1.25);
 b = isFinite<f64>(1.25);
 
@@ -296,23 +349,31 @@ f = div(2, f);
 
 // load and store
 
-i = load<i32>(8); store<i32>(8, i);
+i = load<i32>(8);
+store<i32>(8, i);
 store<i32>(8, load<i32>(8));
-I = load<i64>(8); store<i64>(8, I);
+I = load<i64>(8);
+store<i64>(8, I);
 store<i64>(8, load<i64>(8));
-f = load<f32>(8); store<f32>(8, f);
+f = load<f32>(8);
+store<f32>(8, f);
 store<f32>(8, load<f32>(8));
-F = load<f64>(8); store<f64>(8, F);
+F = load<f64>(8);
+store<f64>(8, F);
 store<f64>(8, load<f64>(8));
 
 const constantOffset: usize = 8;
-i = load<i32>(0, constantOffset); store<i32>(0, i, constantOffset);
+i = load<i32>(0, constantOffset);
+store<i32>(0, i, constantOffset);
 store<i32>(0, load<i32>(0, constantOffset), constantOffset);
-I = load<i64>(0, constantOffset); store<i64>(0, I, constantOffset);
+I = load<i64>(0, constantOffset);
+store<i64>(0, I, constantOffset);
 store<i64>(0, load<i64>(0, constantOffset), constantOffset);
-f = load<f32>(0, constantOffset); store<f32>(0, f, constantOffset);
+f = load<f32>(0, constantOffset);
+store<f32>(0, f, constantOffset);
 store<f32>(0, load<f32>(0, constantOffset), constantOffset);
-F = load<f64>(0, constantOffset); store<f64>(0, F, constantOffset);
+F = load<f64>(0, constantOffset);
+store<f64>(0, F, constantOffset);
 store<f64>(0, load<f64>(0, constantOffset), constantOffset);
 
 // load and store smaller types
@@ -339,7 +400,8 @@ I = load<i16>(8);
 I = load<i32>(8);
 I = load<i64>(8);
 
-u = i32.rem_u(15, 4); assert(u == 3);
+u = i32.rem_u(15, 4);
+assert(u == 3);
 
 var U: u64;
 U = load<u8>(8);
@@ -358,7 +420,8 @@ store<i64>(8, <i64>1);
 
 store<i64>(8, <i32>1); // must extend
 
-U = i64.rem_u(15, 4); assert(U == 3);
+U = i64.rem_u(15, 4);
+assert(U == 3);
 
 // reinterpretation
 
@@ -396,8 +459,10 @@ F = select<f64>(12.5, 25.0, false);
 
 if (!i) unreachable();
 
-var fn = function(a: i32, b: i32): i32 { return a + b; };
-assert(fn(1,2) == 3);
+var fn = function (a: i32, b: i32): i32 {
+  return a + b;
+};
+assert(fn(1, 2) == 3);
 assert(5 == call_indirect(fn.index, 2, 3)); // ctxType i32
 assert(fn.name == "");
 assert(fn.length == 2);
@@ -426,7 +491,10 @@ assert(alignof<u32>() == 2);
 assert(alignof<u64>() == 3);
 assert(alignof<bool>() == 0);
 
-class Foo<T> { a: T; b: T; }
+class Foo<T> {
+  a: T;
+  b: T;
+}
 assert(offsetof<Foo<i32>>("a") == 0);
 assert(offsetof<Foo<i32>>("b") == 4);
 assert(offsetof<Foo<i16>>("a") == 0);
@@ -473,19 +541,21 @@ assert(u32.MIN_VALUE == 0);
 assert(u32.MAX_VALUE == 0xffffffff);
 assert(u64.MIN_VALUE == 0);
 assert(u64.MAX_VALUE == 0xffffffffffffffff);
-assert(bool.MIN_VALUE == 0); assert(bool.MIN_VALUE == false);
-assert(bool.MAX_VALUE == 1); assert(bool.MAX_VALUE == true);
+assert(bool.MIN_VALUE == 0);
+assert(bool.MIN_VALUE == false);
+assert(bool.MAX_VALUE == 1);
+assert(bool.MAX_VALUE == true);
 
 assert(f32.MIN_NORMAL_VALUE == 1.1754943508222875e-38);
 assert(f32.MIN_VALUE == 1.401298464324817e-45);
-assert(f32.MAX_VALUE == 3.40282347e+38);
+assert(f32.MAX_VALUE == 3.40282347e38);
 assert(f32.MIN_SAFE_INTEGER == -16777215);
 assert(f32.MAX_SAFE_INTEGER == 16777215);
-assert(f32.EPSILON == 1.19209290e-07);
+assert(f32.EPSILON == 1.1920929e-7);
 
 assert(f64.MIN_NORMAL_VALUE == 2.2250738585072014e-308);
 assert(f64.MIN_VALUE == 5e-324);
-assert(f64.MAX_VALUE == 1.7976931348623157e+308);
+assert(f64.MAX_VALUE == 1.7976931348623157e308);
 assert(f64.MIN_SAFE_INTEGER == -9007199254740991);
 assert(f64.MAX_SAFE_INTEGER == 9007199254740991);
 assert(f64.EPSILON == 2.2204460492503131e-16);

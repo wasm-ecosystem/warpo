@@ -1,5 +1,7 @@
+
 @external("string_casemapping", "toUpperCaseFromIndex")
 declare function toUpperCaseFromIndex(index: i32, codePointIndex: i32): i32;
+
 
 @external("string_casemapping", "toLowerCaseFromIndex")
 declare function toLowerCaseFromIndex(index: i32, codePointIndex: i32): i32;
@@ -27,24 +29,24 @@ assert("καὶ σὰν πρῶτα ἀνδρειωμένη".toUpperCase() == "�
 assert("χαῖρε, ὦ χαῖρε, ᾿Ελευθεριά!".toUpperCase() == "ΧΑΙ͂ΡΕ, Ὦ ΧΑΙ͂ΡΕ, ᾿ΕΛΕΥΘΕΡΙΆ!");
 assert(
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ /0123456789abcdefghijklmnopqrstuvwxyz".toUpperCase() ==
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZ /0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ /0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 );
 assert(
   "ABCDEFGHIJKLMNOPQRSTUVWXYZ /0123456789abcdefghijklmnopqrstuvwxyz".toLowerCase() ==
-  "abcdefghijklmnopqrstuvwxyz /0123456789abcdefghijklmnopqrstuvwxyz"
+    "abcdefghijklmnopqrstuvwxyz /0123456789abcdefghijklmnopqrstuvwxyz"
 );
 assert("ß".toUpperCase() == "SS");
 assert("İ".toLowerCase() == "i̇"); // 0x0130
 assert(
   "£©µÀÆÖÞßéöÿ–—‘“”„†•…‰™œŠŸž€ ΑΒΓΔΩαβγδω АБВГДабвгд∀∂∈ℝ∧∪≡∞ ↑↗↨↻⇣ ┐┼╔╘░►☺♀ ﬁ�⑀₂ἠḂӥẄɐː⍎אԱა".toUpperCase() ==
-  "£©ΜÀÆÖÞSSÉÖŸ–—‘“”„†•…‰™ŒŠŸŽ€ ΑΒΓΔΩΑΒΓΔΩ АБВГДАБВГД∀∂∈ℝ∧∪≡∞ ↑↗↨↻⇣ ┐┼╔╘░►☺♀ FI�⑀₂ἨḂӤẄⱯː⍎אԱᲐ"
+    "£©ΜÀÆÖÞSSÉÖŸ–—‘“”„†•…‰™ŒŠŸŽ€ ΑΒΓΔΩΑΒΓΔΩ АБВГДАБВГД∀∂∈ℝ∧∪≡∞ ↑↗↨↻⇣ ┐┼╔╘░►☺♀ FI�⑀₂ἨḂӤẄⱯː⍎אԱᲐ"
 );
 assert("ß".toUpperCase().toLowerCase() == "ss");
 assert("ﬁ".toUpperCase().toLowerCase() == "fi");
 assert(
-  "𠜎 𠜱 𠝹 𠱓 𠱸 𠲖 𠳏 𠳕 𠴕 𠵼 𠵿 𠸎 𠸏 𠹷 𠺝 𠺢 𠻗 𠻹 𠻺 𠼭 𠼮 𠽌 𠾴 𠾼 𠿪 𡁜 𡁯 𡁵 𡁶 𡁻 𡃁".toUpperCase().toLowerCase()
-  ==
   "𠜎 𠜱 𠝹 𠱓 𠱸 𠲖 𠳏 𠳕 𠴕 𠵼 𠵿 𠸎 𠸏 𠹷 𠺝 𠺢 𠻗 𠻹 𠻺 𠼭 𠼮 𠽌 𠾴 𠾼 𠿪 𡁜 𡁯 𡁵 𡁶 𡁻 𡃁"
+    .toUpperCase()
+    .toLowerCase() == "𠜎 𠜱 𠝹 𠱓 𠱸 𠲖 𠳏 𠳕 𠴕 𠵼 𠵿 𠸎 𠸏 𠹷 𠺝 𠺢 𠻗 𠻹 𠻺 𠼭 𠼮 𠽌 𠾴 𠾼 𠿪 𡁜 𡁯 𡁵 𡁶 𡁻 𡃁"
 );
 
 assert(String.fromCodePoint(0x10000).toLowerCase() == "𐀀");
@@ -111,7 +113,7 @@ assert("\u1E99".toUpperCase() == "Y\u030A");
 assert("\u1E9A".toUpperCase() == "A\u02BE");
 
 // Test full unicode range `0x0 - 0x10FFFF` and asserting with v8 engine.
-for (let i = 0; i <= 0x10FFFF; i++) {
+for (let i = 0; i <= 0x10ffff; i++) {
   let source = String.fromCodePoint(i);
   let origLower = source.toLowerCase();
   let origUpper = source.toUpperCase();
@@ -119,23 +121,23 @@ for (let i = 0; i <= 0x10FFFF; i++) {
 
   // collect all code points for lower case on AssemblyScript side
   let origLowerCode = <i64>origLower.codePointAt(0);
-  if ((code1 = origLower.codePointAt(1)) >= 0) origLowerCode += <i64>code1 << 16;
-  if ((code2 = origLower.codePointAt(2)) >= 0) origLowerCode += <i64>code2 << 32;
+  if ((code1 = origLower.codePointAt(1)) >= 0) origLowerCode += (<i64>code1) << 16;
+  if ((code2 = origLower.codePointAt(2)) >= 0) origLowerCode += (<i64>code2) << 32;
 
   // collect all code points for upper case on AssemblyScript side
   let origUpperCode = <i64>origUpper.codePointAt(0);
-  if ((code1 = origUpper.codePointAt(1)) >= 0) origUpperCode += <i64>code1 << 16;
-  if ((code2 = origUpper.codePointAt(2)) >= 0) origUpperCode += <i64>code2 << 32;
+  if ((code1 = origUpper.codePointAt(1)) >= 0) origUpperCode += (<i64>code1) << 16;
+  if ((code2 = origUpper.codePointAt(2)) >= 0) origUpperCode += (<i64>code2) << 32;
 
   // collect all code points for lower case on JavaScript side
   let expectLowerCode = <i64>toLowerCaseFromIndex(i, 0);
-  if ((code1 = <i64>toLowerCaseFromIndex(i, 1)) >= 0) expectLowerCode += <i64>code1 << 16;
-  if ((code2 = <i64>toLowerCaseFromIndex(i, 2)) >= 0) expectLowerCode += <i64>code2 << 32;
+  if ((code1 = <i64>toLowerCaseFromIndex(i, 1)) >= 0) expectLowerCode += (<i64>code1) << 16;
+  if ((code2 = <i64>toLowerCaseFromIndex(i, 2)) >= 0) expectLowerCode += (<i64>code2) << 32;
 
   // collect all code points for upper case on JavaScript side
   let expectUpperCode = <i64>toUpperCaseFromIndex(i, 0);
-  if ((code1 = <i64>toUpperCaseFromIndex(i, 1)) >= 0) expectUpperCode += <i64>code1 << 16;
-  if ((code2 = <i64>toUpperCaseFromIndex(i, 2)) >= 0) expectUpperCode += <i64>code2 << 32;
+  if ((code1 = <i64>toUpperCaseFromIndex(i, 1)) >= 0) expectUpperCode += (<i64>code1) << 16;
+  if ((code2 = <i64>toUpperCaseFromIndex(i, 2)) >= 0) expectUpperCode += (<i64>code2) << 32;
 
   if (origLowerCode != expectLowerCode) {
     trace("origLowerCode != expectLowerCode", 1, i);

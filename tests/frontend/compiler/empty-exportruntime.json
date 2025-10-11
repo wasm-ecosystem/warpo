@@ -1,5 +1,3 @@
 {
-  "asc_flags": [
-    "--exportRuntime"
-  ]
+  "asc_flags": ["--exportRuntime"]
 }

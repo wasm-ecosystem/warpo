@@ -49,7 +49,7 @@ initInDo(false);
 
 function initInWhile(): void {
   let a: i32;
-  while (a = 1) {
+  while ((a = 1)) {
     a;
     break;
   }

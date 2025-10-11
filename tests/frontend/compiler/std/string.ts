@@ -26,14 +26,14 @@ assert(String.fromCharCode(0) == "\0");
 assert(String.fromCharCode(65600) == "@");
 assert(String.fromCharCode(54) == "6");
 assert(String.fromCharCode(0x10000 + 54) == "6");
-assert(String.fromCharCode(0xD800, 0xDF00) == "𐌀");
+assert(String.fromCharCode(0xd800, 0xdf00) == "𐌀");
 assert(String.fromCharCodes([0, 54]) == "\x006");
 assert(String.fromCharCodes([65, 66, 67]) == "ABC");
-assert(String.fromCharCodes([0xD834, 0xDF06, 0x61, 0xD834, 0xDF07]) == "\uD834\uDF06a\uD834\uDF07");
+assert(String.fromCharCodes([0xd834, 0xdf06, 0x61, 0xd834, 0xdf07]) == "\uD834\uDF06a\uD834\uDF07");
 
 assert(String.fromCodePoint(0) == "\0");
 assert(String.fromCodePoint(54) == "6");
-assert(String.fromCodePoint(0x1D306) == "\uD834\uDF06");
+assert(String.fromCodePoint(0x1d306) == "\uD834\uDF06");
 
 assert(str.startsWith("hi"));
 assert(str.endsWith("string"));
@@ -138,7 +138,7 @@ assert(parseInt("\u20291") == 1); // from test262
 assert(Math.signbit(parseInt("-0")));
 assert(parseInt("0XABCDEF") == parseInt("ABCDEF", 16));
 assert(parseInt("36893488147419103232") == 36893488147419103000.0); // bigger than 2 ** 64 - 1
-assert(parseInt("36893488147419103232", 13) == 5.135857308667095e+21);
+assert(parseInt("36893488147419103232", 13) == 5.135857308667095e21);
 assert(parseInt("-1000000000000000000000000", 10) == -1000000000000000000000000.0);
 assert(parseInt("0x10000000000000000000", 16) == 75557863725914323419136.0); // from test262
 assert(parseInt("1🔥") == 1);
@@ -173,32 +173,32 @@ assert(parseFloat("1.00") == 1);
 assert(parseFloat("1e-5") == 1e-5);
 assert(parseFloat("-1e-5") == -1e-5);
 assert(parseFloat("-0.3e-22") == -0.3e-22);
-assert(parseFloat("0.3e+22") == 0.3e+22);
+assert(parseFloat("0.3e+22") == 0.3e22);
 assert(parseFloat("1e-1") == 0.1);
 assert(parseFloat("0.1e-0") == 0.1);
 assert(parseFloat("0.1") == 0.1);
 assert(parseFloat(".25") == 0.25);
-assert(parseFloat("1.e+3a") == 1e+3);
+assert(parseFloat("1.e+3a") == 1e3);
 assert(parseFloat("1.0e-10") == 1e-10);
 assert(parseFloat("1.0e-30") == 1e-30);
 assert(parseFloat("1.0e-323") == 1e-323);
 assert(parseFloat("1.0e-324") == 0);
-assert(parseFloat("1e+308") == 1e+308);
+assert(parseFloat("1e+308") == 1e308);
 assert(parseFloat("1e+309") == Infinity);
 assert(isNaN(parseFloat("")));
 
 // with numeric separators (from tc39/test262)
 assert(parseFloat("1.0e-1_0") == 1e-1);
 assert(parseFloat("1.0e-10_0") == 1e-10);
-assert(parseFloat("1.0e+1_0") == 1e+1);
+assert(parseFloat("1.0e+1_0") == 1e1);
 assert(parseFloat("1_0") == 1);
 assert(parseFloat("1_1") == 1);
-assert(parseFloat("10.00_01e2") == 10.00);
+assert(parseFloat("10.00_01e2") == 10.0);
 assert(parseFloat("123456789_4") == 123456789);
 assert(parseFloat("1_0123456789") == 1);
 
 assert(parseFloat("1e-60") == 1e-60);
-assert(parseFloat("1e60") == 1e+60);
+assert(parseFloat("1e60") == 1e60);
 
 // special cases
 assert(parseFloat("123.4e") == 123.4);
@@ -272,7 +272,7 @@ assert(parseFloat("1e-38") == 1e-38);
 assert(parseFloat("2.220446049250313e-16") == f64.EPSILON);
 assert(parseFloat("1.7976931348623157e+308") == f64.MAX_VALUE);
 assert(parseFloat("5e-324") == f64.MIN_VALUE);
-assert(parseFloat("0.000001e+314") == 1e+308);
+assert(parseFloat("0.000001e+314") == 1e308);
 assert(parseFloat("0.00000000000000000000000000000000000000000000000000000001e+56") == 1.0);
 assert(parseFloat("+1E-325") == 0.0);
 assert(parseFloat("+1E+309") == Infinity);
@@ -305,20 +305,27 @@ assert(parseFloat(".247032822920623272088284396434110686182529901307162382212792
 
 // 2^-1074 * 1.5 + eps
 const Ox1p_1073 = reinterpret<f64>(0x2); // 0x1p-1073
-assert(parseFloat(".7410984687618698162648531893023320585475897039214871466383785237510132609053132e-323") == Ox1p_1073);
+assert(
+  parseFloat(".7410984687618698162648531893023320585475897039214871466383785237510132609053132e-323") == Ox1p_1073
+);
 
 // 2^-1022 + 2^-1075 + eps
 const Ox1_0000000000001p_1022 = reinterpret<f64>(0x10000000000001); // 0x1.0000000000001p-1022
-assert(parseFloat(".2225073858507201630123055637955676152503612414573018013083228724049586647606760e-307") == Ox1_0000000000001p_1022);
+assert(
+  parseFloat(".2225073858507201630123055637955676152503612414573018013083228724049586647606760e-307") ==
+    Ox1_0000000000001p_1022
+);
 
 // 2^1024 - 2^970 - eps = f64.MAX_VALUE
-assert(parseFloat(
-  "17976931348623158079372897140530341507993413271003782693617377898044" +
-  "49682927647509466490179775872070963302864166928879109465555478519404" +
-  "02630657488671505820681908902000708383676273854845817711531764475730" +
-  "27006985557136695962284291481986083493647529271907416844436551070434" +
-  "2711559699508093042880177904174497791.999999999999999999999999999999"
-) == f64.MAX_VALUE); // 0x1.fffffffffffffp1023
+assert(
+  parseFloat(
+    "17976931348623158079372897140530341507993413271003782693617377898044" +
+      "49682927647509466490179775872070963302864166928879109465555478519404" +
+      "02630657488671505820681908902000708383676273854845817711531764475730" +
+      "27006985557136695962284291481986083493647529271907416844436551070434" +
+      "2711559699508093042880177904174497791.999999999999999999999999999999"
+  ) == f64.MAX_VALUE
+); // 0x1.fffffffffffffp1023
 
 // 2^1024 - 2^970
 // assert(parseFloat(
@@ -345,15 +352,15 @@ assert(parseFloat("0.9822860653737296848190558448760465863597e2") == 98.22860653
 assert(parseFloat("0.7468949723190370809405570560160405324869e3") == 746.89497231903704);
 assert(parseFloat("0.1630268320282728475980459844271031751665e4") == 1630.2683202827284);
 assert(parseFloat("0.4637168629719170695109918769645492022088e5") == 46371.686297191707);
-assert(parseFloat("0.6537805944497711554209461686415872067523e6") == 653780.59444977110);
+assert(parseFloat("0.6537805944497711554209461686415872067523e6") == 653780.5944497711);
 assert(parseFloat("0.2346324356502437045212230713960457676531e6") == 234632.43565024371);
 assert(parseFloat("0.9709481716420048341897258980454298205278e8") == 97094817.164200485);
 assert(parseFloat("0.4996908522051874110779982354932499499602e9") == 499690852.20518744);
-assert(parseFloat("0.7925201200557245861944011267041787505149e22") == 7.9252012005572460e+21);
-assert(parseFloat("0.6096564585983177408934352570213377475739e30") == 6.0965645859831775e+29);
-assert(parseFloat("0.4800416117477028787874360205023549497128e67") == 4.8004161174770290e+66);
-assert(parseFloat("0.8524829079817968224830337931052781641483e105") == 8.524829079817968e+104);
-assert(parseFloat("0.0327123929170978211544706937274895608425e269") == 3.271239291709782e+267);
+assert(parseFloat("0.7925201200557245861944011267041787505149e22") == 7.925201200557246e21);
+assert(parseFloat("0.6096564585983177408934352570213377475739e30") == 6.0965645859831775e29);
+assert(parseFloat("0.4800416117477028787874360205023549497128e67") == 4.800416117477029e66);
+assert(parseFloat("0.8524829079817968224830337931052781641483e105") == 8.524829079817968e104);
+assert(parseFloat("0.0327123929170978211544706937274895608425e269") == 3.271239291709782e267);
 
 // with whitespaces
 assert(isNaN(parseFloat(" \t\n")));
@@ -427,8 +434,8 @@ assert("1234" == "1234");
 assert("1233" != "1234");
 
 {
-  let a = String.fromCodePoint(0xFF61);
-  let b = String.fromCodePoint(0xD800) + String.fromCodePoint(0xDC02);
+  let a = String.fromCodePoint(0xff61);
+  let b = String.fromCodePoint(0xd800) + String.fromCodePoint(0xdc02);
   assert(a > b);
 }
 
@@ -577,7 +584,7 @@ assert(itoa32(0x7fffffff, 10) == "2147483647");
 assert(itoa32(0x80000000, 10) == "-2147483648");
 assert(itoa32(0xffffffff, 10) == "-1");
 
-assert(itoa32(i8.MIN_VALUE,  10) == "-128");
+assert(itoa32(i8.MIN_VALUE, 10) == "-128");
 assert(itoa32(i16.MIN_VALUE, 10) == "-32768");
 assert(itoa32(i32.MIN_VALUE, 10) == "-2147483648");
 
@@ -606,12 +613,12 @@ assert(utoa32(0x7fffffff, 16) == "7fffffff");
 assert(utoa32(0x80000000, 16) == "80000000");
 assert(utoa32(0xffffffff, 16) == "ffffffff");
 
-assert(itoa32( 0, 16) == "0");
+assert(itoa32(0, 16) == "0");
 assert(itoa32(-0x1000, 16) == "-1000");
-assert(itoa32( 0x7fffffff, 16) == "7fffffff");
+assert(itoa32(0x7fffffff, 16) == "7fffffff");
 assert(itoa32(-0x7fffffff, 16) == "-7fffffff");
 assert(itoa32(-0x0fffffff, 16) == "-fffffff");
-assert(itoa32( 0x80000000, 16) == "-80000000");
+assert(itoa32(0x80000000, 16) == "-80000000");
 assert(itoa32(-0x80000000, 16) == "-80000000");
 
 // 32-bit radix 2
@@ -634,10 +641,10 @@ assert(itoa32(-0b11111111111, 2) == "-11111111111");
 
 // 32-bit radix random
 
-assert(utoa32(0xffffffff,  3) == "102002022201221111210");
-assert(utoa32(0xffffffff,  4) == "3333333333333333");
-assert(utoa32(0xffffffff,  5) == "32244002423140");
-assert(utoa32(0xffffffff,  8) == "37777777777");
+assert(utoa32(0xffffffff, 3) == "102002022201221111210");
+assert(utoa32(0xffffffff, 4) == "3333333333333333");
+assert(utoa32(0xffffffff, 5) == "32244002423140");
+assert(utoa32(0xffffffff, 8) == "37777777777");
 assert(utoa32(0xffffffff, 11) == "1904440553");
 assert(utoa32(0xffffffff, 15) == "1a20dcd80");
 assert(utoa32(0xffffffff, 17) == "a7ffda90");
@@ -668,7 +675,7 @@ assert(utoa64(9999868719476735, 10) == "9999868719476735");
 assert(utoa64(19999868719476735, 10) == "19999868719476735");
 assert(utoa64(129999868719476735, 10) == "129999868719476735");
 assert(utoa64(1239999868719476735, 10) == "1239999868719476735");
-assert(utoa64(u64.MAX_VALUE, 10)       == "18446744073709551615");
+assert(utoa64(u64.MAX_VALUE, 10) == "18446744073709551615");
 
 assert(itoa64(0, 10) == "0");
 assert(itoa64(-1234, 10) == "-1234");
@@ -701,7 +708,7 @@ assert(utoa64(0x7fffffffffffffff, 16) == "7fffffffffffffff");
 assert(utoa64(0xffffffffffffffff, 16) == "ffffffffffffffff");
 
 assert(itoa64(-0x7fffffffffffffff, 16) == "-7fffffffffffffff");
-assert(itoa64( 0x8000000000000000, 16) == "-8000000000000000");
+assert(itoa64(0x8000000000000000, 16) == "-8000000000000000");
 assert(itoa64(-0x8000000000000000, 16) == "-8000000000000000");
 
 // 64-bit radix 2
@@ -713,17 +720,19 @@ assert(utoa64(0b1110, 2) == "1110");
 assert(utoa64(0b111011, 2) == "111011");
 assert(utoa64(0b111111111111, 2) == "111111111111");
 assert(utoa64(0b11111111111111111111111111111111, 2) == "11111111111111111111111111111111");
-assert(utoa64(0b1111111111111111111111111111111111111111111111111, 2) == "1111111111111111111111111111111111111111111111111");
+assert(
+  utoa64(0b1111111111111111111111111111111111111111111111111, 2) == "1111111111111111111111111111111111111111111111111"
+);
 assert(utoa64(0xffffffffffffffff, 2) == "1111111111111111111111111111111111111111111111111111111111111111");
 
 assert(itoa64(-0b111111111111111111111111111111111, 2) == "-111111111111111111111111111111111");
 
 // 64-bit radix random
 
-assert(utoa64(0xffffffffffffffff,  3) == "11112220022122120101211020120210210211220");
-assert(utoa64(0xffffffffffffffff,  4) == "33333333333333333333333333333333");
-assert(utoa64(0xffffffffffffffff,  5) == "2214220303114400424121122430");
-assert(utoa64(0xffffffffffffffff,  8) == "1777777777777777777777");
+assert(utoa64(0xffffffffffffffff, 3) == "11112220022122120101211020120210210211220");
+assert(utoa64(0xffffffffffffffff, 4) == "33333333333333333333333333333333");
+assert(utoa64(0xffffffffffffffff, 5) == "2214220303114400424121122430");
+assert(utoa64(0xffffffffffffffff, 8) == "1777777777777777777777");
 assert(utoa64(0xffffffffffffffff, 11) == "335500516a429071284");
 assert(utoa64(0xffffffffffffffff, 15) == "2c1d56b648c6cd110");
 assert(utoa64(0xffffffffffffffff, 17) == "67979g60f5428010");
@@ -746,12 +755,12 @@ assert(dtoa(+f32.EPSILON) == "1.1920929e-7");
 assert(dtoa(-f32.EPSILON) == "-1.1920929e-7");
 assert(dtoa(+f32.MAX_VALUE) == "3.4028235e+38");
 assert(dtoa(-f32.MAX_VALUE) == "-3.4028235e+38");
-assert(dtoa(4.185580496821357e+298) == "4.185580496821357e+298");
+assert(dtoa(4.185580496821357e298) == "4.185580496821357e+298");
 assert(dtoa(2.2250738585072014e-308) == "2.2250738585072014e-308");
-assert(dtoa(4.940656E-318) == "4.940656e-318");
-assert(dtoa(9.0608011534336e+15) == "9060801153433600.0");
-assert(dtoa(4.708356024711512e+18) == "4708356024711512000.0");
-assert(dtoa(9.409340012568248e+18) == "9409340012568248000.0");
+assert(dtoa(4.940656e-318) == "4.940656e-318");
+assert(dtoa(9.0608011534336e15) == "9060801153433600.0");
+assert(dtoa(4.708356024711512e18) == "4708356024711512000.0");
+assert(dtoa(9.409340012568248e18) == "9409340012568248000.0");
 assert(dtoa(5e-324) == "5e-324");
 
 assert(dtoa(1.0) == "1.0");
@@ -759,17 +768,17 @@ assert(dtoa(0.1) == "0.1");
 assert(dtoa(-1.0) == "-1.0");
 assert(dtoa(-0.1) == "-0.1");
 
-assert(dtoa(1e+6) == "1000000.0");
+assert(dtoa(1e6) == "1000000.0");
 assert(dtoa(1e-6) == "0.000001");
-assert(dtoa(-1e+6) == "-1000000.0");
+assert(dtoa(-1e6) == "-1000000.0");
 assert(dtoa(-1e-6) == "-0.000001");
-assert(dtoa(1e+7) == "10000000.0");
+assert(dtoa(1e7) == "10000000.0");
 assert(dtoa(1e-7) == "1e-7");
 
-assert(dtoa(1e+308) == "1e+308");
-assert(dtoa(-1e+308) == "-1e+308");
-assert(dtoa(1e+309) == "Infinity");
-assert(dtoa(-1e+309) == "-Infinity");
+assert(dtoa(1e308) == "1e+308");
+assert(dtoa(-1e308) == "-1e+308");
+assert(dtoa(1e309) == "Infinity");
+assert(dtoa(-1e309) == "-Infinity");
 assert(dtoa(1e-308) == "1e-308");
 assert(dtoa(-1e-308) == "-1e-308");
 assert(dtoa(1e-323) == "1e-323");
@@ -783,12 +792,12 @@ assert(dtoa(0.9999999999999999) == "0.9999999999999999");
 assert(dtoa(0.99999999999999995) == "1.0");
 assert(dtoa(1234e-2) == "12.34");
 assert(dtoa(1.0 / 3.0) == "0.3333333333333333");
-assert(dtoa(1.234e+20) == "123400000000000000000.0");
-assert(dtoa(1.234e+21) == "1.234e+21");
+assert(dtoa(1.234e20) == "123400000000000000000.0");
+assert(dtoa(1.234e21) == "1.234e+21");
 assert(dtoa(2.71828) == "2.71828");
 assert(dtoa(2.71828e-2) == "0.0271828");
-assert(dtoa(2.71828e+2) == "271.828");
-assert(dtoa(1.1e+128) == "1.1e+128");
+assert(dtoa(2.71828e2) == "271.828");
+assert(dtoa(1.1e128) == "1.1e+128");
 assert(dtoa(1.1e-64) == "1.1e-64");
 assert(dtoa(0.000035689) == "0.000035689");
 
@@ -813,7 +822,6 @@ assert(dtoa(0.000035689) == "0.000035689");
 // Expected: 0.30000000000000004
 // Actual:   0.30000000000000007
 // assert(dtoa(0.1 + 0.2)   == "0.30000000000000004");
-
 
 // concat
 

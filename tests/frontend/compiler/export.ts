@@ -8,7 +8,8 @@ function sub(a: i32, b: i32): i32 {
 
 export { sub };
 
-function mul(a: i32, b: i32): i32 { // not exported as "mul"
+function mul(a: i32, b: i32): i32 {
+  // not exported as "mul"
   return a * b;
 }
 

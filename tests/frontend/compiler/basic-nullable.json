@@ -1,8 +1,4 @@
 {
-  "asc_flags": [
-  ],
-  "stderr": [
-    "AS204: Type 'i32' cannot be nullable.",
-    "EOF"
-  ]
+  "asc_flags": [],
+  "stderr": ["AS204: Type 'i32' cannot be nullable.", "EOF"]
 }

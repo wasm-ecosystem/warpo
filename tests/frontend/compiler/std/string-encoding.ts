@@ -14,17 +14,17 @@ function testUTF16Encode(): void {
   var ptr = changetype<usize>(buf);
   assert(buf.byteLength == 12);
   assert(load<u8>(ptr, 0) == 0x01);
-  assert(load<u8>(ptr, 1) == 0xD8);
+  assert(load<u8>(ptr, 1) == 0xd8);
   assert(load<u8>(ptr, 2) == 0x37);
-  assert(load<u8>(ptr, 3) == 0xDC);
+  assert(load<u8>(ptr, 3) == 0xdc);
   assert(load<u8>(ptr, 4) == 0x68);
   assert(load<u8>(ptr, 5) == 0x00);
   assert(load<u8>(ptr, 6) == 0x69);
   assert(load<u8>(ptr, 7) == 0x00);
   assert(load<u8>(ptr, 8) == 0x52);
-  assert(load<u8>(ptr, 9) == 0xD8);
+  assert(load<u8>(ptr, 9) == 0xd8);
   assert(load<u8>(ptr, 10) == 0x62);
-  assert(load<u8>(ptr, 11) == 0xDF);
+  assert(load<u8>(ptr, 11) == 0xdf);
 }
 testUTF16Encode();
 
@@ -61,16 +61,16 @@ function testUTF8Encode(): void {
   var buf = String.UTF8.encode(str);
   var ptr = changetype<usize>(buf);
   assert(buf.byteLength == 10);
-  assert(load<u8>(ptr, 0) == 0xF0);
+  assert(load<u8>(ptr, 0) == 0xf0);
   assert(load<u8>(ptr, 1) == 0x90);
   assert(load<u8>(ptr, 2) == 0x90);
-  assert(load<u8>(ptr, 3) == 0xB7);
+  assert(load<u8>(ptr, 3) == 0xb7);
   assert(load<u8>(ptr, 4) == 0x68);
   assert(load<u8>(ptr, 5) == 0x69);
-  assert(load<u8>(ptr, 6) == 0xF0);
-  assert(load<u8>(ptr, 7) == 0xA4);
-  assert(load<u8>(ptr, 8) == 0xAD);
-  assert(load<u8>(ptr, 9) == 0xA2);
+  assert(load<u8>(ptr, 6) == 0xf0);
+  assert(load<u8>(ptr, 7) == 0xa4);
+  assert(load<u8>(ptr, 8) == 0xad);
+  assert(load<u8>(ptr, 9) == 0xa2);
 }
 testUTF8Encode();
 
@@ -78,18 +78,18 @@ function testUTF8EncodeNullTerminated(): void {
   var buf = String.UTF8.encode(str, true);
   var ptr = changetype<usize>(buf);
   assert(buf.byteLength == 11);
-  assert(load<u8>(ptr, 0) == 0xF0);
+  assert(load<u8>(ptr, 0) == 0xf0);
   assert(load<u8>(ptr, 1) == 0x90);
   assert(load<u8>(ptr, 2) == 0x90);
-  assert(load<u8>(ptr, 3) == 0xB7);
+  assert(load<u8>(ptr, 3) == 0xb7);
   assert(load<u8>(ptr, 4) == 0x68);
   assert(load<u8>(ptr, 5) == 0x69);
-  assert(load<u8>(ptr, 6) == 0xF0);
-  assert(load<u8>(ptr, 7) == 0xA4);
-  assert(load<u8>(ptr, 8) == 0xAD);
-  assert(load<u8>(ptr, 9) == 0xA2);
+  assert(load<u8>(ptr, 6) == 0xf0);
+  assert(load<u8>(ptr, 7) == 0xa4);
+  assert(load<u8>(ptr, 8) == 0xad);
+  assert(load<u8>(ptr, 9) == 0xa2);
   assert(load<u8>(ptr, 10) == 0x00);
-  var str2 ="aaaaaaaaaaaaaaaaaaaaaaaaaaa\0";
+  var str2 = "aaaaaaaaaaaaaaaaaaaaaaaaaaa\0";
   var buf2 = String.UTF8.encode(str2, true);
   assert(buf2.byteLength == String.UTF8.byteLength(str2, true));
 }

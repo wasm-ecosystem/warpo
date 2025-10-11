@@ -17,10 +17,12 @@ function func_ii(a: i32): i32 {
   return a < 42 ? 2 : 3;
 }
 
+
 @inline
 function func_ii_opt(a: i32 = 0): i32 {
   return a;
 }
+
 
 @inline
 function func_ii_loc(a: i32): i32 {
@@ -34,21 +36,23 @@ function func_ii_loc(a: i32): i32 {
   return e;
 }
 
+
 @inline
-function func_iv(a: i32): void {
-}
+function func_iv(a: i32): void {}
+
 
 @inline
 function func_fe(): (a: i32) => i32 {
   return (a: i32): i32 => a;
 }
 
-
 class Foo {
+
   @inline
   static method_static(a: i32, b: i32 = 2): i32 {
     return a + b;
   }
+
   @inline
   method_this(a: i32, b: i32 = 3): Foo {
     return this;
@@ -56,7 +60,8 @@ class Foo {
 }
 
 function test_funcs(): void {
-  var a: f32 = -1, b: f64 = -2;
+  var a: f32 = -1,
+    b: f64 = -2;
   assert(func_ii(42) == 1);
   assert(func_ii(41) == 2);
   assert(func_ii(43) == 3);
@@ -77,6 +82,7 @@ test_funcs();
 class Baz {
   a: i32 = 1;
   b: i32;
+
   @inline constructor(c: i32) {
     this.b = c;
   }
@@ -85,6 +91,7 @@ class Baz {
 class Bar extends Baz {
   d: i32 = 3;
   e: i32;
+
   @inline constructor(f: i32) {
     super(2);
     this.e = f;

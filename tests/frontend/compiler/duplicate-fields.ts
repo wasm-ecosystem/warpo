@@ -1,11 +1,16 @@
 class A {
   bar: i32;
-  constructor(bar: i32) { this.bar = bar; }
+  constructor(bar: i32) {
+    this.bar = bar;
+  }
 }
 
 class B extends A {
   bar: i32 = 0;
-  constructor(bar: i32) { super(bar); this.bar = bar; }
+  constructor(bar: i32) {
+    super(bar);
+    this.bar = bar;
+  }
 }
 
 assert(offsetof<A>("bar") == 0);
@@ -18,22 +23,32 @@ assert(foo.bar == 10);
 
 class Foo {
   foo: i32;
-  constructor(foo: i32) { this.foo = foo; }
+  constructor(foo: i32) {
+    this.foo = foo;
+  }
 }
 
 class Bar extends Foo {
   bar: i32;
-  constructor(foo: i32, bar: i32) { super(foo); this.bar = bar; }
+  constructor(foo: i32, bar: i32) {
+    super(foo);
+    this.bar = bar;
+  }
 }
 
 class A2 {
   bar: Foo;
-  constructor(bar: Foo) { this.bar = bar; }
+  constructor(bar: Foo) {
+    this.bar = bar;
+  }
 }
 
 class B2 extends A2 {
   bar: Foo; // must be invariant
-  constructor(bar: Foo) { super(bar); this.bar = bar; }
+  constructor(bar: Foo) {
+    super(bar);
+    this.bar = bar;
+  }
 }
 
 assert(offsetof<A2>("bar") == 0);

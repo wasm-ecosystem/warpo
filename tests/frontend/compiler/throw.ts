@@ -18,7 +18,8 @@ function doThrowIfLoop(max: i32): void {
   var i = 0;
   while (++i < max) {
     let b = "234";
-    if (i > max) { // never
+    if (i > max) {
+      // never
       let c = "345";
       throw new Error("doThrowIfLoop");
     }

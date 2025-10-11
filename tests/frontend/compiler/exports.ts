@@ -17,24 +17,32 @@ export namespace math {
 // top-level enum
 export const enum Animal {
   CAT,
-  DOG
+  DOG,
 }
 
 // namespaced enum
 export namespace animals {
   export const enum Animal {
     CAT,
-    DOG
+    DOG,
   }
 }
 
 // top-level class
 export class Car {
   static readonly TIRES: i32 = 4;
-  static getNumTires(): i32 { return this.TIRES; }
-  constructor(public doors: i32 = 2) { this.doors = doors; }
-  get numDoors(): i32 { return this.doors; }
-  set numDoors(doors: i32) { this.doors = doors; }
+  static getNumTires(): i32 {
+    return this.TIRES;
+  }
+  constructor(public doors: i32 = 2) {
+    this.doors = doors;
+  }
+  get numDoors(): i32 {
+    return this.doors;
+  }
+  set numDoors(doors: i32) {
+    this.doors = doors;
+  }
   openDoors(): void {}
 }
 
@@ -42,10 +50,18 @@ export class Car {
 export namespace vehicles {
   export class Car {
     static readonly TIRES: i32 = 4;
-    static getNumTires(): i32 { return this.TIRES; }
-    constructor(public doors: i32 = 2) { this.doors = doors; }
-    get numDoors(): i32 { return this.doors; }
-    set numDoors(doors: i32) { this.doors = doors; }
+    static getNumTires(): i32 {
+      return this.TIRES;
+    }
+    constructor(public doors: i32 = 2) {
+      this.doors = doors;
+    }
+    get numDoors(): i32 {
+      return this.doors;
+    }
+    set numDoors(doors: i32) {
+      this.doors = doors;
+    }
     openDoors(): void {}
   }
 }
@@ -57,7 +73,7 @@ export namespace outer {
   }
 }
 
-export {renamed_mul} from "./export"; 
+export { renamed_mul } from "./export";
 
 // interfaces (should not error)
 export interface Iface {}

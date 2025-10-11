@@ -1,10 +1,10 @@
-var fnVoid = function(): void {};
+var fnVoid = function (): void {};
 fnVoid.call(null);
 
 var faVoid = (): void => {};
 faVoid.call(null);
 
-var fnRet = function(a: i32, b: i32): i32 {
+var fnRet = function (a: i32, b: i32): i32 {
   return a + b;
 };
 assert(fnRet.call(null, 1, 2) == 3);

@@ -1,5 +1,5 @@
 enum Bar {
-  Baz
+  Baz,
 }
 
 function foo(): boolean {

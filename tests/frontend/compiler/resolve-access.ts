@@ -22,4 +22,3 @@ export function propertyAccess(): string {
   container.foo = 1;
   return container.toU32().toString();
 }
-

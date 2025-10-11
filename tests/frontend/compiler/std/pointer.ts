@@ -6,9 +6,11 @@
     return changetype<Pointer<T>>(offset);
   }
 
+
   @inline get offset(): usize {
     return changetype<usize>(this);
   }
+
 
   @inline get value(): T {
     if (isReference<T>()) {
@@ -17,6 +19,7 @@
       return load<T>(changetype<usize>(this));
     }
   }
+
 
   @inline set value(value: T) {
     if (isReference<T>()) {
@@ -40,9 +43,11 @@
     return changetype<Pointer<T>>(changetype<usize>(this) + changetype<usize>(other));
   }
 
+
   @inline @operator("-") sub(other: Pointer<T>): Pointer<T> {
     return changetype<Pointer<T>>(changetype<usize>(this) - changetype<usize>(other));
   }
+
 
   @inline @operator.prefix("++") inc(): Pointer<T> {
     // FIXME: this should take alignment into account, but then would require a new builtin to
@@ -51,21 +56,25 @@
     return changetype<Pointer<T>>(changetype<usize>(this) + size);
   }
 
+
   @inline @operator.prefix("--") dec(): Pointer<T> {
     const size = isReference<T>() ? offsetof<T>() : sizeof<T>();
     return changetype<Pointer<T>>(changetype<usize>(this) - size);
   }
 
+
   @inline @operator("[]") get(index: i32): T {
     const size = isReference<T>() ? offsetof<T>() : sizeof<T>();
-    return load<T>(changetype<usize>(this) + (<usize>index * size));
+    return load<T>(changetype<usize>(this) + <usize>index * size);
   }
+
 
   @inline @operator("[]=") set(index: i32, value: T): void {
     const size = isReference<T>() ? offsetof<T>() : sizeof<T>();
-    store<T>(changetype<usize>(this) + (<usize>index * size), value);
+    store<T>(changetype<usize>(this) + <usize>index * size, value);
   }
 }
+
 
 @unmanaged
 class Entry {

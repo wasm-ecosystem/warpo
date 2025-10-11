@@ -4,7 +4,7 @@ export {
   renamed_b,
   renamed_b as renamed_renamed_b,
   default,
-  default as renamed_default
+  default as renamed_default,
 } from "./reexport";
 
 import { exportstar } from "./reexport";
@@ -22,5 +22,3 @@ assert(ReexportsNamespace.ExportsNamespace.add(2, 2) == 4);
 assert(ReexportsNamespace.ExportsNamespace.renamed_mul(2, 2) == 4);
 let exportsNamespaceCar: ReexportsNamespace.Car = new ReexportsNamespace.ExportsNamespace.Car();
 assert(exportsNamespaceCar.numDoors == 2);
-
-

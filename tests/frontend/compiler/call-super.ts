@@ -91,8 +91,7 @@ test4();
 
 class I {
   a: i32 = 1;
-  constructor() {
-  }
+  constructor() {}
 }
 
 class J extends I {

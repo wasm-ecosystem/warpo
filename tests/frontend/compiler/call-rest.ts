@@ -19,7 +19,7 @@ assert(indirect(1, 2, 3) == 6);
 assert(indirect(1, 2, 3, 4, 5) == 15);
 
 // constructor test
-class Foo{
+class Foo {
   values: i32[];
 
   constructor(a: i32, b: i32 = 0, ...rest: i32[]) {
@@ -51,4 +51,4 @@ assert(count<i32>(1) == 1);
 assert(count<i32>(1, 2, 3) == 3);
 
 // inferred generic test
-assert(count('a','b','c') == 3);
+assert(count("a", "b", "c") == 3);

@@ -535,15 +535,16 @@ uint64_t BinaryenI31GetForLink(uint64_t module, uint64_t i31, uint32_t signed_, 
 }
 uint64_t BinaryenSIMDReplaceForLink(uint64_t module, uint32_t op, uint64_t vec, uint32_t index, uint64_t value,
                                     [[maybe_unused]] vb::WasmModule *ctx) {
-  return reinterpret_cast<uint64_t>(BinaryenSIMDReplace(
-      reinterpret_cast<BinaryenModuleRef>(module), static_cast<BinaryenOp>(op),
-      reinterpret_cast<BinaryenExpressionRef>(vec), index, reinterpret_cast<BinaryenExpressionRef>(value)));
+  return reinterpret_cast<uint64_t>(
+      BinaryenSIMDReplace(reinterpret_cast<BinaryenModuleRef>(module), static_cast<BinaryenOp>(op),
+                          reinterpret_cast<BinaryenExpressionRef>(vec), static_cast<uint8_t>(index),
+                          reinterpret_cast<BinaryenExpressionRef>(value)));
 }
 uint64_t BinaryenSIMDExtractForLink(uint64_t module, uint32_t op, uint64_t vec, uint32_t index,
                                     [[maybe_unused]] vb::WasmModule *ctx) {
-  return reinterpret_cast<uint64_t>(BinaryenSIMDExtract(reinterpret_cast<BinaryenModuleRef>(module),
-                                                        static_cast<BinaryenOp>(op),
-                                                        reinterpret_cast<BinaryenExpressionRef>(vec), index));
+  return reinterpret_cast<uint64_t>(
+      BinaryenSIMDExtract(reinterpret_cast<BinaryenModuleRef>(module), static_cast<BinaryenOp>(op),
+                          reinterpret_cast<BinaryenExpressionRef>(vec), static_cast<uint8_t>(index)));
 }
 uint64_t BinaryenSIMDShuffleForLink(uint64_t module, uint64_t left, uint64_t right, uint64_t mask,
                                     [[maybe_unused]] vb::WasmModule *ctx) {
@@ -561,9 +562,9 @@ uint64_t BinaryenSIMDLoadStoreLaneForLink(uint64_t module, uint32_t op, uint32_t
                                           uint64_t ptr, uint64_t vec, uint64_t memoryName,
                                           [[maybe_unused]] vb::WasmModule *ctx) {
   return reinterpret_cast<uint64_t>(BinaryenSIMDLoadStoreLane(
-      reinterpret_cast<BinaryenModuleRef>(module), static_cast<BinaryenOp>(op), offset, align, index,
-      reinterpret_cast<BinaryenExpressionRef>(ptr), reinterpret_cast<BinaryenExpressionRef>(vec),
-      reinterpret_cast<const char *>(memoryName)));
+      reinterpret_cast<BinaryenModuleRef>(module), static_cast<BinaryenOp>(op), offset, align,
+      static_cast<uint8_t>(index), reinterpret_cast<BinaryenExpressionRef>(ptr),
+      reinterpret_cast<BinaryenExpressionRef>(vec), reinterpret_cast<const char *>(memoryName)));
 }
 uint64_t BinaryenSIMDShiftForLink(uint64_t module, uint32_t op, uint64_t vec, uint64_t shift,
                                   [[maybe_unused]] vb::WasmModule *ctx) {

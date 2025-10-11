@@ -5,7 +5,9 @@ class SomeClass {
   someInstanceMethod(): void {}
 }
 enum SomeEnum {}
-namespace SomeNamespace { const a: i32 = 1; }
+namespace SomeNamespace {
+  const a: i32 = 1;
+}
 function SomeFunction(): void {}
 
 assert(typeof SomeClass == "object"); // ClassPrototype
@@ -18,7 +20,7 @@ assert(typeof true == "boolean");
 assert(typeof null == "object");
 assert(typeof 1 == "number");
 assert(typeof 1.0 == "number");
-assert(typeof <i64>1 == "number");
+assert(typeof (<i64>1) == "number");
 assert(typeof "1" == "string");
 
 var b = true;

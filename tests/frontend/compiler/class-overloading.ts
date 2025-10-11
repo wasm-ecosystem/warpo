@@ -1,33 +1,41 @@
 var which: string = "";
 
 class A {
-  a<T>(a: T): void { // virtual
+  a<T>(a: T): void {
+    // virtual
     which = "A";
   }
-  b(b: i32): void { // virtual
+  b(b: i32): void {
+    // virtual
     which = "A";
   }
-  get c(): i32 { // virtual
+  get c(): i32 {
+    // virtual
     which = "A";
     return 0;
   }
-  set c(c: i32) { // virtual
+  set c(c: i32) {
+    // virtual
     which = "A";
   }
 }
 
 class B extends A {
-  a<T>(a: T): void { // virtual + overload
+  a<T>(a: T): void {
+    // virtual + overload
     which = "B";
   }
-  b(b: i32): void { // virtual + overload
+  b(b: i32): void {
+    // virtual + overload
     which = "B";
   }
-  get c(): i32 { // virtual + overload
+  get c(): i32 {
+    // virtual + overload
     which = "B";
     return 0;
   }
-  set c(c: i32) { // virtual + overload
+  set c(c: i32) {
+    // virtual + overload
     which = "B";
   }
 }
@@ -47,19 +55,23 @@ a.c = 1;
 assert(which == "B");
 
 class C extends B {
-  a<T>(a: T): void { // overload
+  a<T>(a: T): void {
+    // overload
     super.a(a);
     assert(which == "B");
     which = "C";
   }
-  b(b: i32): void { // overload
+  b(b: i32): void {
+    // overload
     which = "C";
   }
-  get c(): i32 { // overload
+  get c(): i32 {
+    // overload
     which = "C";
     return 0;
   }
-  set c(c: i32) { // overload
+  set c(c: i32) {
+    // overload
     which = "C";
   }
 }
@@ -115,17 +127,21 @@ a.c = 1;
 assert(which == "B");
 
 class F extends E {
-  a<T>(a: T): void { // overload
+  a<T>(a: T): void {
+    // overload
     which = "F";
   }
-  b(b: i32): void { // overload
+  b(b: i32): void {
+    // overload
     which = "F";
   }
-  get c(): i32 { // overload
+  get c(): i32 {
+    // overload
     which = "F";
     return 0;
   }
-  set c(c: i32) { // overload
+  set c(c: i32) {
+    // overload
     which = "F";
   }
 }
@@ -162,8 +178,7 @@ ia.foo();
 assert(which == "IB");
 
 // Should work with extended interfaces
-interface IC extends IA {
-}
+interface IC extends IA {}
 
 class CC implements IC {
   foo(): void {

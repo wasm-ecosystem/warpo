@@ -367,7 +367,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 55)
+     (i32.const 52)
      (i32.const 1)
     )
     (unreachable)
@@ -386,7 +386,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 56)
+     (i32.const 53)
      (i32.const 1)
     )
     (unreachable)
@@ -410,7 +410,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 59)
+     (i32.const 56)
      (i32.const 1)
     )
     (unreachable)
@@ -429,7 +429,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 60)
+     (i32.const 57)
      (i32.const 1)
     )
     (unreachable)
@@ -451,7 +451,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 61)
+     (i32.const 58)
      (i32.const 1)
     )
     (unreachable)
@@ -473,7 +473,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 62)
+     (i32.const 59)
      (i32.const 1)
     )
     (unreachable)
@@ -495,7 +495,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 63)
+     (i32.const 60)
      (i32.const 1)
     )
     (unreachable)
@@ -527,7 +527,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 66)
+     (i32.const 63)
      (i32.const 1)
     )
     (unreachable)
@@ -559,7 +559,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 69)
+     (i32.const 66)
      (i32.const 1)
     )
     (unreachable)
@@ -581,7 +581,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 70)
+     (i32.const 67)
      (i32.const 1)
     )
     (unreachable)
@@ -603,7 +603,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 71)
+     (i32.const 68)
      (i32.const 1)
     )
     (unreachable)
@@ -625,7 +625,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 72)
+     (i32.const 69)
      (i32.const 1)
     )
     (unreachable)

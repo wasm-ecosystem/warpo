@@ -4,7 +4,7 @@ class A1 {
   private c1: C1 | null;
 }
 
-class A2 extends A1 { }
+class A2 extends A1 {}
 
 class B1 {
   private a1: A1;

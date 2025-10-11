@@ -76,7 +76,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 8)
+     (i32.const 6)
      (i32.const 1)
     )
     (unreachable)
@@ -95,7 +95,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 9)
+     (i32.const 7)
      (i32.const 1)
     )
     (unreachable)
@@ -114,7 +114,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 17)
+     (i32.const 14)
      (i32.const 1)
     )
     (unreachable)
@@ -133,7 +133,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 18)
+     (i32.const 15)
      (i32.const 1)
     )
     (unreachable)
@@ -152,7 +152,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 30)
+     (i32.const 27)
      (i32.const 1)
     )
     (unreachable)
@@ -171,7 +171,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 32)
-     (i32.const 31)
+     (i32.const 28)
      (i32.const 1)
     )
     (unreachable)
@@ -190,8 +190,8 @@
     (call $~lib/builtins/abort
      (i32.const 64)
      (i32.const 32)
-     (i32.const 37)
-     (i32.const 5)
+     (i32.const 32)
+     (i32.const 8)
     )
     (unreachable)
    )

@@ -12,7 +12,7 @@ function testManaged(managed: Managed): void {
 
 testManaged({
   bar: 123,
-  baz: "hello world"
+  baz: "hello world",
 });
 
 // Should work with unmanaged classes
@@ -31,7 +31,7 @@ function testUnmanaged(unmanaged: Unmanaged): void {
 
 testUnmanaged({
   bar: 123,
-  baz: "hello world".substring(0, 5)
+  baz: "hello world".substring(0, 5),
 });
 
 // Should work with omitted fields
@@ -86,7 +86,7 @@ function testMixedOmitted(omitted: MixedOmitted): void {
 
 testMixedOmitted({
   simpleType: 0,
-  complexType: "test"
+  complexType: "test",
 });
 
 // Test omitted fields

@@ -27,7 +27,6 @@ function isInt32ArrayEqual(a: Int32Array, b: Array<i32>): bool {
 }
 
 function testInstantiate(len: i32): void {
-
   var i8a = new Int8Array(len);
   assert(i8a.byteOffset == 0);
   assert(i8a.byteLength == len * Int8Array.BYTES_PER_ELEMENT);
@@ -341,7 +340,7 @@ function testAt<ArrayType extends TypedArray<T>, T extends number>(): void {
   array[1] = <T>2;
   array[2] = <T>3;
 
-  assert(array.at( 0) == <T>1);
+  assert(array.at(0) == <T>1);
   assert(array.at(-1) == <T>3);
   assert(array.at(-3) == <T>1);
 }
@@ -384,7 +383,7 @@ function testArrayMap<ArrayType extends TypedArray<T>, T extends number>(): void
   source[0] = <T>1;
   source[1] = <T>2;
   source[2] = <T>3;
-  var result = source.map(value => <T>(value * value));
+  var result = source.map((value) => <T>(value * value));
   assert(result[0] == <T>1);
   assert(result[1] == <T>4);
   assert(result[2] == <T>9);
@@ -409,7 +408,7 @@ function testArrayFilter<ArrayType extends TypedArray<T>, T extends number>(): v
   source[2] = <T>3;
   source[3] = <T>4;
   source[5] = <T>5;
-  var result = source.filter(value => value > 2);
+  var result = source.filter((value) => value > 2);
   assert(result.byteOffset == 0);
   assert(result.length == 3);
   assert(result[0] == <T>3);
@@ -434,9 +433,9 @@ function testArraySome<ArrayType extends TypedArray<T>, T extends number>(): voi
   source[0] = <T>2;
   source[1] = <T>4;
   source[2] = <T>6;
-  var result: bool = source.some(value => value == <T>2);
+  var result: bool = source.some((value) => value == <T>2);
   assert(result);
-  var failResult = source.some(value => value == <T>0);
+  var failResult = source.some((value) => value == <T>0);
   assert(!failResult);
 }
 
@@ -457,9 +456,9 @@ function testArrayFindIndex<ArrayType extends TypedArray<T>, T extends number>()
   source[0] = <T>1;
   source[1] = <T>2;
   source[2] = <T>3;
-  var result = source.findIndex(value => value == <T>2);
+  var result = source.findIndex((value) => value == <T>2);
   assert(result == 1);
-  var failResult = source.findIndex(value => value == <T>4);
+  var failResult = source.findIndex((value) => value == <T>4);
   assert(failResult == -1);
 }
 
@@ -480,9 +479,9 @@ function testArrayFindLastIndex<ArrayType extends TypedArray<T>, T extends numbe
   source[0] = <T>1;
   source[1] = <T>2;
   source[2] = <T>3;
-  var result = source.findLastIndex(value => value == <T>2);
+  var result = source.findLastIndex((value) => value == <T>2);
   assert(result == 1);
-  var failResult = source.findLastIndex(value => value == <T>4);
+  var failResult = source.findLastIndex((value) => value == <T>4);
   assert(failResult == -1);
 }
 
@@ -503,9 +502,9 @@ function testArrayEvery<ArrayType extends TypedArray<T>, T extends number>(): vo
   source[0] = <T>2;
   source[1] = <T>4;
   source[2] = <T>6;
-  var result = source.every(value => value % <T>2 == <T>0);
+  var result = source.every((value) => value % <T>2 == <T>0);
   assert(result);
-  var failResult = source.every(value => value == <T>2);
+  var failResult = source.every((value) => value == <T>2);
   assert(!failResult);
 }
 
@@ -594,28 +593,28 @@ const testArrayIndexOfAndLastIndexOfValues: i32[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 
 function testArrayIndexOfAndLastIndexOf<TArray extends TypedArray<T>, T extends number>(): void {
   var values = testArrayIndexOfAndLastIndexOfValues;
   var length = values.length;
-  var array  = instantiate<TArray>(length);
+  var array = instantiate<TArray>(length);
 
   for (let i = 0; i < length; i++) {
     array[i] = <T>values[i];
   }
 
-  assert(array.indexOf(<T>0)  ==  0);
+  assert(array.indexOf(<T>0) == 0);
   assert(array.indexOf(<T>11) == -1);
   assert(array.indexOf(<T>-1) == -1);
-  assert(array.indexOf(<T>3)  ==  3);
-  assert(array.indexOf(<T>3, 2) ==  3);
-  assert(array.indexOf(<T>3, 3) ==  3);
+  assert(array.indexOf(<T>3) == 3);
+  assert(array.indexOf(<T>3, 2) == 3);
+  assert(array.indexOf(<T>3, 3) == 3);
   assert(array.indexOf(<T>3, 4) == -1);
   assert(array.indexOf(<T>1, 10) == -1);
   assert(array.indexOf(<T>1, -100) == 1);
 
-  assert(array.lastIndexOf(<T>0)  ==  0);
+  assert(array.lastIndexOf(<T>0) == 0);
   assert(array.lastIndexOf(<T>11) == -1);
   assert(array.lastIndexOf(<T>-1) == -1);
-  assert(array.lastIndexOf(<T>3)  ==  3);
-  assert(array.lastIndexOf(<T>3, 4) ==  3);
-  assert(array.lastIndexOf(<T>3, 3) ==  3);
+  assert(array.lastIndexOf(<T>3) == 3);
+  assert(array.lastIndexOf(<T>3, 4) == 3);
+  assert(array.lastIndexOf(<T>3, 3) == 3);
   assert(array.lastIndexOf(<T>3, 2) == -1);
   assert(array.lastIndexOf(<T>1, 100) == 1);
   assert(array.lastIndexOf(<T>1, -10) == 1);
@@ -623,10 +622,10 @@ function testArrayIndexOfAndLastIndexOf<TArray extends TypedArray<T>, T extends 
 
   var sliced = array.subarray(4, 9);
 
-  assert(sliced.indexOf(<T>3)  == -1);
-  assert(sliced.indexOf(<T>4)  ==  4 - 4);
-  assert(sliced.indexOf(<T>5)  ==  5 - 4);
-  assert(sliced.indexOf(<T>9)  == -1);
+  assert(sliced.indexOf(<T>3) == -1);
+  assert(sliced.indexOf(<T>4) == 4 - 4);
+  assert(sliced.indexOf(<T>5) == 5 - 4);
+  assert(sliced.indexOf(<T>9) == -1);
   assert(sliced.indexOf(<T>10) == -1);
   assert(sliced.indexOf(<T>11) == -1);
   assert(sliced.indexOf(<T>5, 1) == 5 - 4);
@@ -813,13 +812,16 @@ function testTypedArraySet<T extends TypedArray<number>>(): void {
   } else {
     // explicitly case the input values to valueof<T>
     valuesEqual<T>(a, [
-      100, 101, 102, 103,
+      100,
+      101,
+      102,
+      103,
       <valueof<T>>1000,
       <valueof<T>>1001,
       <valueof<T>>1002,
       <valueof<T>>-110,
       <valueof<T>>-111,
-      <valueof<T>>-112
+      <valueof<T>>-112,
     ]);
   }
 }
@@ -862,7 +864,7 @@ testTypedArraySet<Float64Array>();
   d[0] = 1;
   d[1] = 300;
   d[2] = 100;
-  d[3] = 0xFFFFFFFF;
+  d[3] = 0xffffffff;
 
   let e = new Int16Array(4);
   e[0] = -10;
@@ -902,7 +904,6 @@ testArraySort<Int64Array, i64>();
 testArraySort<Uint64Array, u64>();
 testArraySort<Float32Array, f32>();
 testArraySort<Float64Array, f64>();
-
 
 __stack_pointer = __heap_base;
 __collect();

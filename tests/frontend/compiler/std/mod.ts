@@ -11,8 +11,7 @@ function check<T>(actual: T, expected: T): bool {
 // === f64 % f64 ================================
 
 function test_fmod(left: f64, right: f64, expected: f64): bool {
-  return  check<f64>(         left % right , expected) &&
-  (!js || check<f64>(mod(left , right), expected));
+  return check<f64>(left % right, expected) && (!js || check<f64>(mod(left, right), expected));
 }
 
 // sanity
@@ -96,7 +95,7 @@ assert(test_fmod(NaN, -Infinity, NaN));
 // === f32 % f32 ================================
 
 function test_fmodf(left: f32, right: f32, expected: f32): bool {
-  return  check<f32>(left % right, expected);
+  return check<f32>(left % right, expected);
 }
 
 // sanity

@@ -1,6 +1,3 @@
 {
-  "asc_flags": [
-    "--importTable",
-    "--exportTable"
-  ]
+  "asc_flags": ["--importTable", "--exportTable"]
 }

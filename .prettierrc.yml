@@ -10,3 +10,5 @@ bracketSpacing: true
 arrowParens: "always"
 vueIndentScriptAndStyle: false
 endOfLine: "lf"
+plugins:
+  - assemblyscript-prettier

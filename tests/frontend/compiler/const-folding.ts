@@ -1,5 +1,5 @@
 let w = 42 >> 1;
-w = (w & 0xFC) | (w >> 1);
+w = (w & 0xfc) | (w >> 1);
 export const x = w;
 
 export function test(value: u64): u64 {

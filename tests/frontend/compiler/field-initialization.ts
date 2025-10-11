@@ -44,8 +44,7 @@ class Nullable {
 
 class Value_Ctor {
   a: i32; // OK (zeroed)
-  constructor() {
-  }
+  constructor() {}
 }
 {
   let o = new Value_Ctor();
@@ -54,8 +53,7 @@ class Value_Ctor {
 
 class Value_Init_Ctor {
   a: i32 = 1; // OK
-  constructor() {
-  }
+  constructor() {}
 }
 {
   let o = new Value_Init_Ctor();
@@ -75,8 +73,7 @@ class Value_Ctor_Init {
 
 class Ref_Init_Ctor {
   a: ArrayBuffer = new ArrayBuffer(0); // OK
-  constructor() {
-  }
+  constructor() {}
 }
 {
   let o = new Ref_Init_Ctor();
@@ -95,7 +92,8 @@ class Ref_Ctor_Init {
 }
 
 class Ref_Ctor_Param {
-  constructor(public a: ArrayBuffer) { // OK
+  constructor(public a: ArrayBuffer) {
+    // OK
   }
 }
 {
@@ -106,8 +104,7 @@ class Ref_Ctor_Param {
 
 class Nullable_Ctor {
   a: ArrayBuffer | null; // OK (zeroed)
-  constructor() {
-  }
+  constructor() {}
 }
 {
   let o = new Nullable_Ctor();
@@ -116,8 +113,7 @@ class Nullable_Ctor {
 
 class Nullable_Init_Ctor {
   a: ArrayBuffer | null = new ArrayBuffer(0); // OK
-  constructor() {
-  }
+  constructor() {}
 }
 {
   let o = new Nullable_Init_Ctor();
@@ -140,14 +136,12 @@ class Nullable_Ctor_Init {
 class Inherit_Base {
   a: ArrayBuffer = new ArrayBuffer(0);
 }
-class Inherit extends Inherit_Base {
-}
+class Inherit extends Inherit_Base {}
 {
   let o = new Inherit();
   assert(o.a != null);
 }
-class Inherit_Ctor extends Inherit_Base {
-}
+class Inherit_Ctor extends Inherit_Base {}
 {
   let o = new Inherit_Ctor();
   assert(o.a != null);
@@ -209,9 +203,9 @@ class Flow_Balanced {
 
 class Ref_Init_InlineCtor {
   a: ArrayBuffer = new ArrayBuffer(0); // OK
+
   @inline
-  constructor() {
-  }
+  constructor() {}
 }
 {
   let o = new Ref_Init_InlineCtor();
@@ -220,6 +214,7 @@ class Ref_Init_InlineCtor {
 
 class Ref_InlineCtor_Init {
   a: ArrayBuffer; // OK (in ctor)
+
   @inline
   constructor() {
     this.a = new ArrayBuffer(0);

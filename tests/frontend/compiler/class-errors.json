@@ -1,9 +1,4 @@
 {
-  "asc_flags": [
-  ],
-  "stderr": [
-    "TS2304: Cannot find name 'T'.",
-    "TS2339: Property 'v' does not exist on type 'class-errors/A'.",
-    "EOF"
-  ]
+  "asc_flags": [],
+  "stderr": ["TS2304: Cannot find name 'T'.", "TS2339: Property 'v' does not exist on type 'class-errors/A'.", "EOF"]
 }

@@ -1,10 +1,13 @@
 function doSwitch(n: i32): i32 {
   switch (n) {
-    case 1: return 1;
+    case 1:
+      return 1;
     case 0:
-    default: return 0;
+    default:
+      return 0;
     case 2:
-    case 3: return 23;
+    case 3:
+      return 23;
   }
 }
 assert(doSwitch(0) == 0);
@@ -15,10 +18,13 @@ assert(doSwitch(4) == 0);
 
 function doSwitchDefaultFirst(n: i32): i32 {
   switch (n) {
-    default: return 0;
-    case 1: return 1;
+    default:
+      return 0;
+    case 1:
+      return 1;
     case 2:
-    case 3: return 23;
+    case 3:
+      return 23;
   }
 }
 assert(doSwitchDefaultFirst(0) == 0);
@@ -29,9 +35,11 @@ assert(doSwitchDefaultFirst(4) == 0);
 
 function doSwitchDefaultOmitted(n: i32): i32 {
   switch (n) {
-    case 1: return 1;
+    case 1:
+      return 1;
     case 2:
-    case 3: return 23;
+    case 3:
+      return 23;
   }
   return 0;
 }
@@ -43,8 +51,10 @@ assert(doSwitchDefaultOmitted(4) == 0);
 
 function doSwitchBreakCase(n: i32): i32 {
   switch (n) {
-    case 1: break;
-    default: return 2;
+    case 1:
+      break;
+    default:
+      return 2;
   }
   return 1;
 }
@@ -54,8 +64,10 @@ assert(doSwitchBreakCase(2) == 2);
 
 function doSwitchBreakDefault(n: i32): i32 {
   switch (n) {
-    case 1: return 1;
-    default: break;
+    case 1:
+      return 1;
+    default:
+      break;
   }
   return 2;
 }
@@ -65,7 +77,8 @@ assert(doSwitchBreakDefault(2) == 2);
 
 function doSwitchFallThroughCase(n: i32): i32 {
   switch (n) {
-    default: return 2;
+    default:
+      return 2;
     case 1:
   }
   return 1;
@@ -76,7 +89,8 @@ assert(doSwitchFallThroughCase(2) == 2);
 
 function doSwitchFallThroughDefault(n: i32): i32 {
   switch (n) {
-    case 1: return 1;
+    case 1:
+      return 1;
     default:
   }
   return 2;
@@ -86,7 +100,8 @@ assert(doSwitchFallThroughDefault(1) == 1);
 assert(doSwitchFallThroughDefault(2) == 2);
 
 function doSwitchEmpty(n: i32): i32 {
-  switch (n) {} // (drop n)
+  switch (n) {
+  } // (drop n)
   return 2;
 }
 assert(doSwitchEmpty(0) == 2);
@@ -95,10 +110,14 @@ assert(doSwitchEmpty(2) == 2);
 
 function doSwitchString(s: string): i32 {
   switch (s) {
-    case "one": return 1;
-    case "two": return 2;
-    case "three": return 3;
-    default: return 4;
+    case "one":
+      return 1;
+    case "two":
+      return 2;
+    case "three":
+      return 3;
+    default:
+      return 4;
   }
 }
 
@@ -116,11 +135,16 @@ assert(doSwitchString("f" + "o" + "u" + "r") == 4);
 
 function doSwitchNullableString(s: string | null): i32 {
   switch (s) {
-    case null: return 0;
-    case "one": return 1;
-    case "two": return 2;
-    case "three": return 3;
-    default: return 4;
+    case null:
+      return 0;
+    case "one":
+      return 1;
+    case "two":
+      return 2;
+    case "three":
+      return 3;
+    default:
+      return 4;
   }
 }
 
@@ -139,8 +163,10 @@ assert(doSwitchNullableString("f" + "o" + "u" + "r") == 4);
 
 function doSwitchBoolean(b: bool): i32 {
   switch (b) {
-    case true: return 1;
-    case false: return 2;
+    case true:
+      return 1;
+    case false:
+      return 2;
   }
   return 0;
 }
@@ -150,10 +176,14 @@ assert(doSwitchBoolean(false) == 2);
 
 function doSwitchUInt32(n: u32): i32 {
   switch (n) {
-    case 1: return 1;
-    case 2: return 2;
-    case 3: return 3;
-    default: return 0;
+    case 1:
+      return 1;
+    case 2:
+      return 2;
+    case 3:
+      return 3;
+    default:
+      return 0;
   }
 }
 assert(doSwitchUInt32(0) == 0);
@@ -171,10 +201,14 @@ enum Foo {
 
 function doSwitchEnum(n: Foo): i32 {
   switch (n) {
-    case Foo.A: return 1;
-    case Foo.B: return 2;
-    case Foo.C: return 3;
-    default: return 0;
+    case Foo.A:
+      return 1;
+    case Foo.B:
+      return 2;
+    case Foo.C:
+      return 3;
+    default:
+      return 0;
   }
 }
 assert(doSwitchEnum(Foo.A) == 1);
@@ -184,10 +218,14 @@ assert(doSwitchEnum(Foo.D) == 0);
 
 function doSwitchUint8(n: u8): i32 {
   switch (n) {
-    case 1: return 1;
-    case 2: return 2;
-    case 3: return 3;
-    default: return 0;
+    case 1:
+      return 1;
+    case 2:
+      return 2;
+    case 3:
+      return 3;
+    default:
+      return 0;
   }
 }
 assert(doSwitchUint8(0) == 0);
@@ -198,9 +236,12 @@ assert(doSwitchUint8(4) == 0);
 
 function doSwitchFloat(n: f32): i32 {
   switch (n) {
-    case 1.0: return 1;
-    case 2.0: return 2;
-    default: return 0;
+    case 1.0:
+      return 1;
+    case 2.0:
+      return 2;
+    default:
+      return 0;
   }
 }
 assert(doSwitchFloat(0.0) == 0);
@@ -209,9 +250,12 @@ assert(doSwitchFloat(2.0) == 2);
 
 function doSwitchInt64(n: i64): i32 {
   switch (n) {
-    case (<i64>1): return 1;
-    case (<i64>2): return 2;
-    default: return 0;
+    case <i64>1:
+      return 1;
+    case <i64>2:
+      return 2;
+    default:
+      return 0;
   }
 }
 assert(doSwitchInt64(0) == 0);
@@ -222,15 +266,17 @@ function doSwitchUInt64(n: u64): i32 {
   const one: u64 = 1;
   const two: u64 = 2;
   switch (n) {
-    case one: return 1;
-    case two: return 2;
-    default: return 0;
+    case one:
+      return 1;
+    case two:
+      return 2;
+    default:
+      return 0;
   }
 }
 assert(doSwitchUInt64(0) == 0);
 assert(doSwitchUInt64(1) == 1);
 assert(doSwitchUInt64(2) == 2);
-
 
 // class members should switch like any other expression
 class FooClass {
@@ -243,24 +289,29 @@ class FooClass {
 
 function doSwitchClassMember(foo: FooClass): i32 {
   switch (foo.value) {
-    case 1: return 1;
-    case 2: return 2;
-    default: return 3;
+    case 1:
+      return 1;
+    case 2:
+      return 2;
+    default:
+      return 3;
   }
 }
 assert(doSwitchClassMember(new FooClass(1)) == 1);
 assert(doSwitchClassMember(new FooClass(2)) == 2);
 assert(doSwitchClassMember(new FooClass(3)) == 3);
 
-
 // class instances switch using reference equality by default
 const foo1 = new FooClass(1);
 const foo2 = new FooClass(2);
 function doSwitchClassInstance(foo: FooClass): i32 {
   switch (foo) {
-    case foo1: return 1;
-    case foo2: return 2;
-    default: return 3;
+    case foo1:
+      return 1;
+    case foo2:
+      return 2;
+    default:
+      return 3;
   }
 }
 assert(doSwitchClassInstance(foo1) == 1);
@@ -275,6 +326,7 @@ class BarClass {
     this.value = value;
   }
 
+
   @operator("==") private static __eq(left: BarClass | null, right: BarClass | null): bool {
     if (changetype<usize>(left) == changetype<usize>(right)) return true;
     if (!left || !right) return false;
@@ -284,10 +336,14 @@ class BarClass {
 
 function doSwitchClassInstanceWithOverload(foo: BarClass | null): i32 {
   switch (foo) {
-    case null: return 0;
-    case new BarClass(1): return 1;
-    case new BarClass(2): return 2;
-    default: return 3;
+    case null:
+      return 0;
+    case new BarClass(1):
+      return 1;
+    case new BarClass(2):
+      return 2;
+    default:
+      return 3;
   }
 }
 assert(doSwitchClassInstanceWithOverload(null) == 0);

@@ -11,37 +11,43 @@ interface K extends J {
 }
 
 class A implements I {
-  foo(): i32 { return 1; }
+  foo(): i32 {
+    return 1;
+  }
 }
 
 var a = new A();
 assert(a.foo() == 1);
 
-class B {
-}
+class B {}
 
 class C extends B implements I {
-  foo(): i32 { return 2; }
+  foo(): i32 {
+    return 2;
+  }
 }
 
 var c = new C();
 assert(c.foo() == 2);
 
 class D implements I, J {
-  foo(): i32 { return 3; }
+  foo(): i32 {
+    return 3;
+  }
 }
 
 let d = new D();
 assert(d.foo() == 3);
 
-class E extends D implements I {
-}
+class E extends D implements I {}
 
 let e = new E();
 assert(e.foo() == 3);
 
 class F extends D implements I {
-  foo(): i32 { return 4; }
+  foo(): i32 {
+    return 4;
+  }
 }
 
 let f = new F();
@@ -77,20 +83,32 @@ class A4 extends A2 implements I2 {
 class B2 implements I2 {
   // implement
   private _foo: i32 = 3;
-  get foo(): i32 { return this._foo; }
-  set foo(foo: i32) { this._foo = foo; }
+  get foo(): i32 {
+    return this._foo;
+  }
+  set foo(foo: i32) {
+    this._foo = foo;
+  }
 }
 class B3 extends B2 {
   // override
   private _foo2: i32 = 9;
-  get foo(): i32 { return this._foo2; }
-  set foo(foo: i32) { this._foo2 = foo; }
+  get foo(): i32 {
+    return this._foo2;
+  }
+  set foo(foo: i32) {
+    this._foo2 = foo;
+  }
 }
 class B4 extends B2 implements I2 {
   // both
   private _foo2: i32 = 11;
-  get foo(): i32 { return this._foo2; }
-  set foo(foo: i32) { this._foo2 = foo; }
+  get foo(): i32 {
+    return this._foo2;
+  }
+  set foo(foo: i32) {
+    this._foo2 = foo;
+  }
 }
 {
   let a2 = new A2();
