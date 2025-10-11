@@ -43,6 +43,39 @@ jobs:
           CMAKE_ARGS: "-DENABLE_CLANG_TIDY=ON -DENABLE_WERROR=ON"
           CMAKE_BUILD_ARGS: "-- -k 0"
 
+  cpp-linter:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: install deps
+        run: sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - name: Configure (for compile_commands.json)
+        run: cmake -B build -S .
+      - uses: cpp-linter/cpp-linter-action@v2
+        id: linter
+        with:
+          database: build/compile_commands.json
+          tidy-checks: "" # Use .clang-tidy config
+          files-changed-only: true
+          files: |
+            frontend/**
+            common/**
+            passes/**
+            support/**
+            tools/**
+            include/**
+            tests/**
+          ignore: |
+            third_party/**
+            build/**
+            assemblyscript/**
+      - name: Fail fast if issues
+        if: steps.linter.outputs.checks-failed > 0
+        run: exit 1
+
   bootstrap:
     strategy:
       matrix:
