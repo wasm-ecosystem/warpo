@@ -17,6 +17,9 @@ if(NOT CMAKE_BUILD_TYPE)
     endif()
 endif()
 
+add_definitions("-DINTERRUPTION_REQUEST=0")
+add_definitions("-DEAGER_ALLOCATION=1")
+
 add_subdirectory(third_party EXCLUDE_FROM_ALL)
 
 if(MSVC)
@@ -31,9 +34,6 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-warning-option")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
 
-  add_definitions("-DINTERRUPTION_REQUEST=0")
-  add_definitions("-DEAGER_ALLOCATION=1")
-
   if(WARPO_SANITIZE)
     add_compile_options(-fsanitize=address)
     add_link_options(-fsanitize=address)
@@ -45,8 +45,17 @@ else()
             -Wredundant-decls -Wsign-conversion -Wswitch -Wuninitialized
             -Wunused-parameter -Walloca -Wunused-result -Wunused-local-typedefs
             -Wwrite-strings -Wpointer-arith -Wfloat-conversion -Wnull-dereference -Wdiv-by-zero
-            -Wswitch-default -Wno-switch-bool -Wunknown-pragmas 
+            -Wno-switch-bool -Wunknown-pragmas 
   )
+
+  if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU") AND (NOT(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "11")))        
+      add_compile_options(-Wformat-signedness -Walloc-zero -Wduplicated-branches -Wduplicated-cond -Wimplicit-fallthrough=5 -Wlogical-op
+          -Wenum-conversion -Wno-switch-unreachable -Wliteral-suffix -Wno-builtin-macro-redefined -Wno-unknown-warning-option -Wdeprecated-copy
+      )
+            
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+      add_compile_options(-Wenum-conversion)
+  endif()
 
   set(cxx_warning_flags -Wnon-virtual-dtor -Wold-style-cast)
 

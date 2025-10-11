@@ -69,8 +69,6 @@ void traceForLink(uint32_t ptr, uint32_t n, double d1, double d2, double d3, dou
     case 5:
       ss << " " << d5;
       break;
-    default:
-      break;
     }
   }
   std::cout << std::move(ss).str() << std::endl;

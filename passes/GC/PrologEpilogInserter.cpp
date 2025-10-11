@@ -81,8 +81,6 @@ void PrologEpilogInserter::runOnFunction(wasm::Module *m, wasm::Function *func) 
       fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}, epilogue in {}", func->name.str, "opt", "opt");
     }
     break;
-  default:
-    break;
   }
 }
 

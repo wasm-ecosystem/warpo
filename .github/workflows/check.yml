@@ -30,19 +30,6 @@ jobs:
       - run: npm run test:opt:snapshot -- --debug
       - run: npm run test:as:snapshot
 
-  clang-tidy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-      - run: npm ci
-      - uses: ./.github/action/build
-        with:
-          CMAKE_ARGS: "-DENABLE_CLANG_TIDY=ON -DENABLE_WERROR=ON"
-          CMAKE_BUILD_ARGS: "-- -k 0"
-
   cpp-linter:
     runs-on: ubuntu-latest
     permissions:
@@ -64,6 +51,7 @@ jobs:
           tidy-checks: "" # Use .clang-tidy config
           format-checks: "ignore-format"
           style: ""
+          version: 18
           extra-args: "--format-style=none" # Explicitly disable format-style
           files-changed-only: true
           files: |

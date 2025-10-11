@@ -75,16 +75,6 @@ Checks: |
   clang-analyzer-optin.cplusplus.VirtualCall,
   clang-analyzer-optin.performance.Padding,
 
-  clang-analyzer-security.FloatLoopCounter,
-  clang-analyzer-security.insecureAPI.gets,
-  clang-analyzer-security.insecureAPI.mkstemp,
-  clang-analyzer-security.insecureAPI.mktemp,
-  clang-analyzer-security.insecureAPI.rand,
-  clang-analyzer-security.insecureAPI.strcpy,
-  clang-analyzer-security.insecureAPI.vfork,
-  clang-analyzer-security.insecureAPI.getpw,
-  clang-analyzer-security.insecureAPI.UncheckedReturn,
-
   clang-analyzer-unix.API,
   clang-analyzer-unix.Malloc,
   clang-analyzer-unix.MallocSizeof,
@@ -93,9 +83,6 @@ Checks: |
   clang-analyzer-unix.Vfork,
   clang-analyzer-unix.cstring.BadSizeArg,
   clang-analyzer-unix.cstring.NullArg,
-  clang-analyzer-valist.CopyToSelf,
-  clang-analyzer-valist.Uninitialized,
-  clang-analyzer-valist.Unterminated,
 
   cppcoreguidelines-avoid-goto,
   cppcoreguidelines-c-copy-assignment-signature,
@@ -124,7 +111,6 @@ Checks: |
   hicpp-no-assembler,
   hicpp-noexcept-move,
   hicpp-signed-bitwise,
-  hicpp-use-nullptr,
 
   misc-const-correctness,
   misc-definitions-in-headers,

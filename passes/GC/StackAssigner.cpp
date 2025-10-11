@@ -132,8 +132,6 @@ void StackAssigner::runOnFunction(wasm::Module *const m, wasm::Function *const f
   case Mode::GreedyConflictGraph:
     calStackPositionWithGreedyConflictGraphAlgorithm(func, stackPosition, livenessMap);
     break;
-  default:
-    break;
   }
 }
 
