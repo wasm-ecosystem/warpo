@@ -1940,7 +1940,7 @@
       )
      )
      (local.set $k
-      (i32.trunc_sat_f64_s
+      (i32.trunc_f64_s
        (local.get $dk)
       )
      )

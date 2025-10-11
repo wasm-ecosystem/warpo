@@ -8205,7 +8205,7 @@
                  (local.get $q)
                  (local.get $s)
                 )
-                (i64.trunc_sat_f64_u
+                (i64.trunc_f64_u
                  (f64.nearest
                   (f64.mul
                    (f64.const 0.00004294967296)
@@ -8273,7 +8273,7 @@
               (local.get $q|35)
               (local.get $s|37)
              )
-             (i64.trunc_sat_f64_u
+             (i64.trunc_f64_u
               (f64.div
                (f64.reinterpret_i64
                 (i64.add
@@ -15529,7 +15529,7 @@
       )
      )
      (local.set $k
-      (i32.trunc_sat_f64_s
+      (i32.trunc_f64_s
        (local.get $dk)
       )
      )

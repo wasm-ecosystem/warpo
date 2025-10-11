@@ -57211,7 +57211,7 @@
       )
      )
      (local.set $k
-      (i32.trunc_sat_f64_s
+      (i32.trunc_f64_s
        (local.get $dk)
       )
      )
@@ -63396,7 +63396,7 @@
            (f32.const 0)
           )
           (then
-           (i32.trunc_sat_f32_s
+           (i32.trunc_f32_s
             (local.get $value)
            )
           )
@@ -63733,7 +63733,7 @@
            (f64.const 0)
           )
           (then
-           (i32.trunc_sat_f64_s
+           (i32.trunc_f64_s
             (local.get $value)
            )
           )
@@ -64802,7 +64802,7 @@
            (f32.const 0)
           )
           (then
-           (i32.trunc_sat_f32_u
+           (i32.trunc_f32_u
             (local.get $value)
            )
           )
@@ -65120,7 +65120,7 @@
            (f64.const 0)
           )
           (then
-           (i32.trunc_sat_f64_u
+           (i32.trunc_f64_u
             (local.get $value)
            )
           )
@@ -66184,7 +66184,7 @@
            (f32.const 0)
           )
           (then
-           (i32.trunc_sat_f32_u
+           (i32.trunc_f32_u
             (f32.max
              (f32.const 0)
              (f32.min
@@ -66545,7 +66545,7 @@
            (f64.const 0)
           )
           (then
-           (i32.trunc_sat_f64_u
+           (i32.trunc_f64_u
             (f64.max
              (f64.const 0)
              (f64.min
@@ -67738,7 +67738,7 @@
            (f32.const 0)
           )
           (then
-           (i32.trunc_sat_f32_s
+           (i32.trunc_f32_s
             (local.get $value)
            )
           )
@@ -68056,7 +68056,7 @@
            (f64.const 0)
           )
           (then
-           (i32.trunc_sat_f64_s
+           (i32.trunc_f64_s
             (local.get $value)
            )
           )
@@ -69178,7 +69178,7 @@
            (f32.const 0)
           )
           (then
-           (i32.trunc_sat_f32_u
+           (i32.trunc_f32_u
             (local.get $value)
            )
           )
@@ -69496,7 +69496,7 @@
            (f64.const 0)
           )
           (then
-           (i32.trunc_sat_f64_u
+           (i32.trunc_f64_u
             (local.get $value)
            )
           )
@@ -70549,7 +70549,7 @@
            (f32.const 0)
           )
           (then
-           (i32.trunc_sat_f32_s
+           (i32.trunc_f32_s
             (local.get $value)
            )
           )
@@ -70867,7 +70867,7 @@
            (f64.const 0)
           )
           (then
-           (i32.trunc_sat_f64_s
+           (i32.trunc_f64_s
             (local.get $value)
            )
           )
@@ -71989,7 +71989,7 @@
            (f32.const 0)
           )
           (then
-           (i32.trunc_sat_f32_u
+           (i32.trunc_f32_u
             (local.get $value)
            )
           )
@@ -72307,7 +72307,7 @@
            (f64.const 0)
           )
           (then
-           (i32.trunc_sat_f64_u
+           (i32.trunc_f64_u
             (local.get $value)
            )
           )
@@ -73481,7 +73481,7 @@
            (f32.const 0)
           )
           (then
-           (i64.trunc_sat_f32_s
+           (i64.trunc_f32_s
             (local.get $value)
            )
           )
@@ -73747,7 +73747,7 @@
            (f64.const 0)
           )
           (then
-           (i64.trunc_sat_f64_s
+           (i64.trunc_f64_s
             (local.get $value)
            )
           )
@@ -74927,7 +74927,7 @@
            (f32.const 0)
           )
           (then
-           (i64.trunc_sat_f32_u
+           (i64.trunc_f32_u
             (local.get $value)
            )
           )
@@ -75193,7 +75193,7 @@
            (f64.const 0)
           )
           (then
-           (i64.trunc_sat_f64_u
+           (i64.trunc_f64_u
             (local.get $value)
            )
           )
@@ -78548,7 +78548,7 @@
            (f32.const 0)
           )
           (then
-           (i32.trunc_sat_f32_u
+           (i32.trunc_f32_u
             (f32.max
              (f32.const 0)
              (f32.min

@@ -4142,7 +4142,7 @@
    )
   )
   (global.set $binary/I
-   (i64.trunc_sat_f64_s
+   (i64.trunc_f64_s
     (call $~lib/math/NativeMath.pow
      (f64.convert_i64_s
       (global.get $binary/I)

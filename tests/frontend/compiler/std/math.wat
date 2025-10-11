@@ -6904,7 +6904,7 @@
        )
       )
       (local.set $blo|47
-       (i64.trunc_sat_f64_u
+       (i64.trunc_f64_u
         (f64.add
          (f64.mul
           (f64.mul
@@ -7551,7 +7551,7 @@
        (local.get $y1|27)
       )
       (br $~lib/math/rempio2|inlined.0
-       (i32.trunc_sat_f64_s
+       (i32.trunc_f64_s
         (local.get $q|18)
        )
       )
@@ -8530,7 +8530,7 @@
        )
       )
       (br $~lib/math/rempio2f|inlined.0
-       (i32.trunc_sat_f64_s
+       (i32.trunc_f64_s
         (local.get $q)
        )
       )
@@ -8980,7 +8980,7 @@
         (i32.const 1)
        )
       )
-      (i32.trunc_sat_f64_s
+      (i32.trunc_f64_s
        (f64.add
         (f64.mul
          (f64.const 1.4426950408889634)
@@ -10056,7 +10056,7 @@
         (i32.const 1)
        )
       )
-      (i32.trunc_sat_f32_s
+      (i32.trunc_f32_s
        (f32.add
         (f32.mul
          (f32.const 1.4426950216293335)
@@ -19297,7 +19297,7 @@
        (local.get $y1|28)
       )
       (br $~lib/math/rempio2|inlined.1
-       (i32.trunc_sat_f64_s
+       (i32.trunc_f64_s
         (local.get $q|19)
        )
       )
@@ -20266,7 +20266,7 @@
        )
       )
       (br $~lib/math/rempio2f|inlined.1
-       (i32.trunc_sat_f64_s
+       (i32.trunc_f64_s
         (local.get $q)
        )
       )
@@ -21776,7 +21776,7 @@
        (local.get $y1|21)
       )
       (br $~lib/math/rempio2|inlined.2
-       (i32.trunc_sat_f64_s
+       (i32.trunc_f64_s
         (local.get $q|12)
        )
       )
@@ -22614,7 +22614,7 @@
        )
       )
       (br $~lib/math/rempio2f|inlined.2
-       (i32.trunc_sat_f64_s
+       (i32.trunc_f64_s
         (local.get $q)
        )
       )
@@ -23981,7 +23981,7 @@
        (local.get $y1|35)
       )
       (br $~lib/math/rempio2|inlined.3
-       (i32.trunc_sat_f64_s
+       (i32.trunc_f64_s
         (local.get $q|26)
        )
       )
@@ -24362,7 +24362,7 @@
     )
     (then
      (local.set $result
-      (i32.trunc_sat_f64_s
+      (i32.trunc_f64_s
        (local.get $x)
       )
      )

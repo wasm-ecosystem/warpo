@@ -28369,7 +28369,7 @@
        (local.get $k)
        (i32.add
         (i32.const 10)
-        (i32.trunc_sat_f32_s
+        (i32.trunc_f32_s
          (local.get $k)
         )
        )
@@ -28405,7 +28405,7 @@
         )
         (i32.add
          (i32.const 10)
-         (i32.trunc_sat_f32_s
+         (i32.trunc_f32_s
           (local.get $k)
          )
         )
@@ -28492,7 +28492,7 @@
         )
         (i32.add
          (i32.const 10)
-         (i32.trunc_sat_f32_s
+         (i32.trunc_f32_s
           (local.get $k|2)
          )
         )
@@ -28516,7 +28516,7 @@
        (local.get $k|2)
        (i32.add
         (i32.const 20)
-        (i32.trunc_sat_f32_s
+        (i32.trunc_f32_s
          (local.get $k|2)
         )
        )
@@ -28552,7 +28552,7 @@
         )
         (i32.add
          (i32.const 20)
-         (i32.trunc_sat_f32_s
+         (i32.trunc_f32_s
           (local.get $k|2)
          )
         )
@@ -28820,7 +28820,7 @@
         )
         (i32.add
          (i32.const 20)
-         (i32.trunc_sat_f32_s
+         (i32.trunc_f32_s
           (local.get $k|10)
          )
         )
@@ -28935,7 +28935,7 @@
        (local.get $k|11)
        (i32.add
         (i32.const 10)
-        (i32.trunc_sat_f32_s
+        (i32.trunc_f32_s
          (local.get $k|11)
         )
        )
@@ -31293,7 +31293,7 @@
        (local.get $k)
        (i32.add
         (i32.const 10)
-        (i32.trunc_sat_f64_s
+        (i32.trunc_f64_s
          (local.get $k)
         )
        )
@@ -31329,7 +31329,7 @@
         )
         (i32.add
          (i32.const 10)
-         (i32.trunc_sat_f64_s
+         (i32.trunc_f64_s
           (local.get $k)
          )
         )
@@ -31416,7 +31416,7 @@
         )
         (i32.add
          (i32.const 10)
-         (i32.trunc_sat_f64_s
+         (i32.trunc_f64_s
           (local.get $k|2)
          )
         )
@@ -31440,7 +31440,7 @@
        (local.get $k|2)
        (i32.add
         (i32.const 20)
-        (i32.trunc_sat_f64_s
+        (i32.trunc_f64_s
          (local.get $k|2)
         )
        )
@@ -31476,7 +31476,7 @@
         )
         (i32.add
          (i32.const 20)
-         (i32.trunc_sat_f64_s
+         (i32.trunc_f64_s
           (local.get $k|2)
          )
         )
@@ -31744,7 +31744,7 @@
         )
         (i32.add
          (i32.const 20)
-         (i32.trunc_sat_f64_s
+         (i32.trunc_f64_s
           (local.get $k|10)
          )
         )
@@ -31859,7 +31859,7 @@
        (local.get $k|11)
        (i32.add
         (i32.const 10)
-        (i32.trunc_sat_f64_s
+        (i32.trunc_f64_s
          (local.get $k|11)
         )
        )

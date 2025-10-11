@@ -56,7 +56,7 @@
   (if
    (i32.eqz
     (i32.extend8_s
-     (i32.trunc_sat_f32_s
+     (i32.trunc_f32_s
       (global.get $portable-conversions/f)
      )
     )
@@ -74,7 +74,7 @@
   (if
    (i32.eqz
     (i32.extend8_s
-     (i32.trunc_sat_f64_s
+     (i32.trunc_f64_s
       (global.get $portable-conversions/F)
      )
     )
@@ -126,7 +126,7 @@
   (if
    (i32.eqz
     (i32.extend16_s
-     (i32.trunc_sat_f32_s
+     (i32.trunc_f32_s
       (global.get $portable-conversions/f)
      )
     )
@@ -144,7 +144,7 @@
   (if
    (i32.eqz
     (i32.extend16_s
-     (i32.trunc_sat_f64_s
+     (i32.trunc_f64_s
       (global.get $portable-conversions/F)
      )
     )
@@ -191,7 +191,7 @@
   )
   (if
    (i32.eqz
-    (i32.trunc_sat_f32_s
+    (i32.trunc_f32_s
      (global.get $portable-conversions/f)
     )
    )
@@ -207,7 +207,7 @@
   )
   (if
    (i32.eqz
-    (i32.trunc_sat_f64_s
+    (i32.trunc_f64_s
      (global.get $portable-conversions/F)
     )
    )
@@ -253,7 +253,7 @@
   )
   (if
    (i64.eqz
-    (i64.trunc_sat_f32_s
+    (i64.trunc_f32_s
      (global.get $portable-conversions/f)
     )
    )
@@ -269,7 +269,7 @@
   )
   (if
    (i64.eqz
-    (i64.trunc_sat_f64_s
+    (i64.trunc_f64_s
      (global.get $portable-conversions/F)
     )
    )
@@ -315,7 +315,7 @@
   )
   (if
    (i32.eqz
-    (i32.trunc_sat_f32_s
+    (i32.trunc_f32_s
      (global.get $portable-conversions/f)
     )
    )
@@ -331,7 +331,7 @@
   )
   (if
    (i32.eqz
-    (i32.trunc_sat_f64_s
+    (i32.trunc_f64_s
      (global.get $portable-conversions/F)
     )
    )
@@ -384,7 +384,7 @@
   (if
    (i32.eqz
     (i32.and
-     (i32.trunc_sat_f32_u
+     (i32.trunc_f32_u
       (global.get $portable-conversions/f)
      )
      (i32.const 255)
@@ -403,7 +403,7 @@
   (if
    (i32.eqz
     (i32.and
-     (i32.trunc_sat_f64_u
+     (i32.trunc_f64_u
       (global.get $portable-conversions/F)
      )
      (i32.const 255)
@@ -458,7 +458,7 @@
   (if
    (i32.eqz
     (i32.and
-     (i32.trunc_sat_f32_u
+     (i32.trunc_f32_u
       (global.get $portable-conversions/f)
      )
      (i32.const 65535)
@@ -477,7 +477,7 @@
   (if
    (i32.eqz
     (i32.and
-     (i32.trunc_sat_f64_u
+     (i32.trunc_f64_u
       (global.get $portable-conversions/F)
      )
      (i32.const 65535)
@@ -525,7 +525,7 @@
   )
   (if
    (i32.eqz
-    (i32.trunc_sat_f32_u
+    (i32.trunc_f32_u
      (global.get $portable-conversions/f)
     )
    )
@@ -541,7 +541,7 @@
   )
   (if
    (i32.eqz
-    (i32.trunc_sat_f64_u
+    (i32.trunc_f64_u
      (global.get $portable-conversions/F)
     )
    )
@@ -587,7 +587,7 @@
   )
   (if
    (i64.eqz
-    (i64.trunc_sat_f32_u
+    (i64.trunc_f32_u
      (global.get $portable-conversions/f)
     )
    )
@@ -603,7 +603,7 @@
   )
   (if
    (i64.eqz
-    (i64.trunc_sat_f64_u
+    (i64.trunc_f64_u
      (global.get $portable-conversions/F)
     )
    )
@@ -649,7 +649,7 @@
   )
   (if
    (i32.eqz
-    (i32.trunc_sat_f32_u
+    (i32.trunc_f32_u
      (global.get $portable-conversions/f)
     )
    )
@@ -665,7 +665,7 @@
   )
   (if
    (i32.eqz
-    (i32.trunc_sat_f64_u
+    (i32.trunc_f64_u
      (global.get $portable-conversions/F)
     )
    )

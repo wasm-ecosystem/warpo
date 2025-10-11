@@ -18059,7 +18059,7 @@
        (local.get $arr)
       )
       (local.get $i)
-      (i32.trunc_sat_f64_s
+      (i32.trunc_f64_s
        (f64.mul
         (call $~lib/math/NativeMath.random)
         (f64.convert_i32_s
@@ -26331,7 +26331,7 @@
         (call $~lib/rt/__tmptostack
          (call $~lib/string/String#charAt
           (global.get $std/array/charset)
-          (i32.trunc_sat_f64_s
+          (i32.trunc_f64_s
            (block $~lib/math/NativeMath.floor|inlined.0 (result f64)
             (local.set $x
              (f64.mul
@@ -26471,7 +26471,7 @@
       (local.get $i)
       (call $~lib/rt/__tmptostack
        (call $std/array/createRandomString
-        (i32.trunc_sat_f64_s
+        (i32.trunc_f64_s
          (f64.mul
           (call $~lib/math/NativeMath.random)
           (f64.const 32)
@@ -31186,7 +31186,7 @@
       )
      )
      (local.set $k
-      (i32.trunc_sat_f64_s
+      (i32.trunc_f64_s
        (local.get $dk)
       )
      )
