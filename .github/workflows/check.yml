@@ -45,7 +45,7 @@ jobs:
       - name: install assemblyscript deps
         run: npm ci
         working-directory: assemblyscript
-      - run: generate compile_commands.json
+      - name: generate compile_commands.json
         # build custom target to generate necessary headers
         run: |
           set -e
