@@ -19,7 +19,7 @@ class Liveness {
   DynBitset after_;
 
 public:
-  explicit Liveness(size_t size, DynBitset invalid) : before_(size), after_(size) { static_cast<void>(invalid); }
+  explicit Liveness(size_t size) : before_(size), after_(size) {}
   void setBefore(size_t index, bool isLive) { before_.set(index, isLive); }
   void setAfter(size_t index, bool isLive) { after_.set(index, isLive); }
   DynBitset const &before() const { return before_; }
