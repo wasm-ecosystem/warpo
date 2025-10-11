@@ -63,6 +63,7 @@ jobs:
           database: build/compile_commands.json
           tidy-checks: "" # Use .clang-tidy config
           format-checks: "ignore-format"
+          style: ""
           extra-args: "--format-style=none" # Explicitly disable format-style
           files-changed-only: true
           files: |
