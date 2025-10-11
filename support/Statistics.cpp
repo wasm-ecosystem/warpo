@@ -17,7 +17,7 @@
 
 namespace warpo::support {
 
-static cli::Opt<bool> const EnableStatisticsOption{
+static cli::Opt<bool> EnableStatisticsOption{
     cli::Category::All,
     "--stats",
     [](argparse::Argument &arg) { arg.help("Prints statistics times.").flag().hidden(); },

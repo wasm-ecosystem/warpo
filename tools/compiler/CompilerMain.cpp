@@ -17,7 +17,7 @@
 
 namespace warpo {
 
-static cli::Opt<std::filesystem::path> const outputPath{
+static cli::Opt<std::filesystem::path> outputPath{
     cli::Category::All,
     "-t",
     "--text",

@@ -40,7 +40,7 @@
 namespace warpo {
 namespace {
 
-cli::Opt<bool> const updateFlag{
+cli::Opt<bool> updateFlag{
     cli::Category::All,
     "-u",
     "--update",

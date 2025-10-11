@@ -205,7 +205,7 @@ struct TracePointInserterPlaceHolder : public wasm::Pass {
 
 namespace warpo {
 
-static cli::Opt<std::string> const tracePointMappingOption{
+static cli::Opt<std::string> tracePointMappingOption{
     cli::Category::Transformation,
     "--trace-point-mapping-file",
     [](argparse::Argument &arg) -> void { arg.help("File to write the trace output to."); },

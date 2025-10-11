@@ -162,7 +162,6 @@ Checks: |
   readability-string-compare,
   readability-uniqueptr-delete-release,
   readability-uppercase-literal-suffix,
-  cppcoreguidelines-avoid-non-const-global-variables,
 
 HeaderFilterRegex: "./(frontend|common|passes|support|tools|tests|include)/.*"
 FormatStyle: none

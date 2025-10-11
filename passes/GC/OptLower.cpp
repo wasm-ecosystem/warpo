@@ -31,30 +31,30 @@
 
 namespace warpo::passes::gc {
 
-static cli::Opt<bool> const NoLeafFunctionFilter{
+static cli::Opt<bool> NoLeafFunctionFilter{
     cli::Category::OnlyForTest,
     "--no-gc-leaf-function-filter",
     [](argparse::Argument &arg) { arg.help("Disable leaf function filter during GC lowering").flag().hidden(); },
 };
-static cli::Opt<bool> const NoMergeSSA{
+static cli::Opt<bool> NoMergeSSA{
     cli::Category::OnlyForTest,
     "--no-gc-merge-ssa",
     [](argparse::Argument &arg) { arg.help("Disable SSA merging during GC lowering").flag().hidden(); },
 };
-static cli::Opt<bool> const NoOptimizedStackPositionAssigner{
+static cli::Opt<bool> NoOptimizedStackPositionAssigner{
     cli::Category::OnlyForTest,
     "--no-gc-optimized-stack-position-assigner",
     [](argparse::Argument &arg) {
       arg.help("Disable optimized stack position assigner during GC lowering").flag().hidden();
     },
 };
-static cli::Opt<bool> const NoShrinkWrap{
+static cli::Opt<bool> NoShrinkWrap{
     cli::Category::OnlyForTest,
     "--no-gc-shrink-wrap",
     [](argparse::Argument &arg) { arg.help("Disable shrink wrap during GC lowering").flag().hidden(); },
 };
 
-static cli::Opt<bool> const TestOnlyControlGroup{
+static cli::Opt<bool> TestOnlyControlGroup{
     cli::Category::OnlyForTest,
     "--gc-test-only-control-group",
     [](argparse::Argument &arg) { arg.flag().hidden(); },

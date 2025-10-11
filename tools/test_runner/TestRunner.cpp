@@ -13,19 +13,19 @@
 #include "warpo/support/Opt.hpp"
 
 namespace warpo {
-static cli::Opt<std::string> const inputPath{
+static cli::Opt<std::string> inputPath{
     cli::Category::All,
     "-i",
     "--input",
     [](argparse::Argument &arg) -> void { arg.help("input file").required(); },
 };
-static cli::Opt<std::string> const outputPath{
+static cli::Opt<std::string> outputPath{
     cli::Category::All,
     "-o",
     "--output",
     [](argparse::Argument &arg) -> void { arg.help("output file").required(); },
 };
-static cli::Opt<std::string> const functionRegex{
+static cli::Opt<std::string> functionRegex{
     cli::Category::All,
     "--func",
     [](argparse::Argument &arg) -> void { arg.help("function name").required(); },

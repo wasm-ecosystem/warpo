@@ -17,12 +17,12 @@
 
 namespace warpo::passes {
 
-static cli::Opt<std::string> const sizeCostModelFile{
+static cli::Opt<std::string> sizeCostModelFile{
     cli::Category::Optimization,
     "--size-cost-model-file",
     [](argparse::Argument &arg) { arg.help("Instruction cost model file for size").default_value("").hidden(); },
 };
-static cli::Opt<std::string> const performanceCostModelFile{
+static cli::Opt<std::string> performanceCostModelFile{
     cli::Category::Optimization,
     "--performance-cost-model-file",
     [](argparse::Argument &arg) { arg.help("Instruction cost model file for performance").default_value("").hidden(); },

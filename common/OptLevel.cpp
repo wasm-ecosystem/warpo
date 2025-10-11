@@ -10,7 +10,7 @@
 
 namespace warpo::common {
 
-static cli::Opt<uint32_t> const optimizeLevelOption{
+static cli::Opt<uint32_t> optimizeLevelOption{
     cli::Category::Frontend | cli::Category::Optimization,
     "--optimizeLevel",
     [](argparse::Argument &arg) -> void {
@@ -18,7 +18,7 @@ static cli::Opt<uint32_t> const optimizeLevelOption{
     },
 };
 
-static cli::Opt<uint32_t> const shrinkLevelOption{
+static cli::Opt<uint32_t> shrinkLevelOption{
     cli::Category::Frontend | cli::Category::Optimization,
     "--shrinkLevel",
     [](argparse::Argument &arg) -> void {

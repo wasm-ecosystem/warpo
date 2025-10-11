@@ -8,7 +8,7 @@
 
 namespace warpo::common {
 
-static cli::Opt<std::vector<std::string>> const disableFeatureOptions{
+static cli::Opt<std::vector<std::string>> disableFeatureOptions{
     cli::Category::Frontend | cli::Category::Optimization,
     "--disable-feature",
     [](argparse::Argument &arg) -> void {

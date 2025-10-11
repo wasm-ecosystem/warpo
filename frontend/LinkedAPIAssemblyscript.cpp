@@ -36,7 +36,7 @@ std::string getAsString(uint32_t ptr, vb::WasmModule *ctx) {
   for (uint32_t i = 0; i < size; ++i) {
     ss << content[i * 2U];
   }
-  return ss.str();
+  return std::move(ss).str();
 }
 
 void abortForLink(uint32_t messagePtr, uint32_t fileNamePtr, uint32_t lineNumber, uint32_t columnNumber,

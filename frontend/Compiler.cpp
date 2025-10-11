@@ -27,13 +27,13 @@ static std::optional<std::string> convertEmptyStringToNullOpt(std::string const 
   return std::nullopt;
 }
 
-static cli::Opt<std::vector<std::string>> const entryPaths{
+static cli::Opt<std::vector<std::string>> entryPaths{
     cli::Category::Frontend,
     "entries",
     [](argparse::Argument &arg) -> void { arg.help("entry files").nargs(argparse::nargs_pattern::at_least_one); },
 };
 
-static cli::Opt<std::vector<std::string>> const useOptions{
+static cli::Opt<std::vector<std::string>> useOptions{
     cli::Category::Frontend,
     "-u",
     "--use",
@@ -55,13 +55,13 @@ static std::map<std::string, std::string> getUses() {
   return res;
 }
 
-static cli::Opt<std::string> const ascWasmOption{
+static cli::Opt<std::string> ascWasmOption{
     cli::Category::Frontend,
     "--asc-wasm",
     [](argparse::Argument &arg) -> void { arg.help("WASM files for the frontend compiler").hidden(); },
 };
 
-static cli::Opt<std::string> const exportStartOption{
+static cli::Opt<std::string> exportStartOption{
     cli::Category::Frontend,
     "--exportStart",
     [](argparse::Argument &arg) -> void {
@@ -71,12 +71,12 @@ static cli::Opt<std::string> const exportStartOption{
     },
 };
 
-static cli::Opt<bool> const exportTableOption{
+static cli::Opt<bool> exportTableOption{
     cli::Category::Frontend,
     "--exportTable",
     [](argparse::Argument &arg) -> void { arg.help("Exports the function table as 'table'.").flag(); },
 };
-static cli::Opt<bool> const exportRuntimeOption{
+static cli::Opt<bool> exportRuntimeOption{
     cli::Category::Frontend,
     "--exportRuntime",
     [](argparse::Argument &arg) -> void {
@@ -84,7 +84,7 @@ static cli::Opt<bool> const exportRuntimeOption{
     },
 };
 
-static cli::Opt<uint32_t> const initialMemoryOption{
+static cli::Opt<uint32_t> initialMemoryOption{
     cli::Category::Frontend,
     "--initialMemory",
     [](argparse::Argument &arg) -> void {
@@ -92,7 +92,7 @@ static cli::Opt<uint32_t> const initialMemoryOption{
     },
 };
 
-static cli::Opt<bool> const enableExtensionsOption{
+static cli::Opt<bool> enableExtensionsOption{
     cli::Category::Frontend,
     "--enableExtensions",
     [](argparse::Argument &arg) -> void { arg.help("Enables experimental AssemblyScript extensions.").flag(); },

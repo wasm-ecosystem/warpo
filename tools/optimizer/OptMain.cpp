@@ -12,14 +12,14 @@
 #include "warpo/support/Opt.hpp"
 
 namespace warpo {
-static cli::Opt<std::string> const inputPath{
+static cli::Opt<std::string> inputPath{
     cli::Category::All,
     "-i",
     "--input",
     [](argparse::Argument &arg) -> void { arg.help("input file").required(); },
 };
 
-static cli::Opt<std::filesystem::path> const outputPath{
+static cli::Opt<std::filesystem::path> outputPath{
     cli::Category::All,
     "-o",
     "--output",
