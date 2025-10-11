@@ -33,8 +33,7 @@ jobs:
   cpp-linter:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      metadata: read
+      contents: read
       pull-requests: write
     steps:
       - uses: actions/checkout@v5
@@ -53,7 +52,7 @@ jobs:
           style: "file"
           version: 21
           files-changed-only: true
-          thread-comments: ${{ github.event_name == 'pull_request' && 'update' }}
+          thread-comments: ${{ github.event_name == 'pull_request' }}
           file-annotations: true # Enable file annotations in workflow logs
           step-summary: true # Print results in job summary
           ignore: |
