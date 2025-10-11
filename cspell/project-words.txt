@@ -2,13 +2,16 @@ Aktiengesellschaft
 assemblyscript
 Bayerische
 Binaryen
+bugprone
 ccache
+cppcoreguidelines
 currp
 Dependee
 DWARPO
 Eqref
 googletest
 gtest
+hicpp
 inlinings
 insts
 localtostack

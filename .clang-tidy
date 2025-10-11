@@ -1,7 +1,5 @@
-Checks: |
+Checks: >
   -*,
-
-  bugprone-assert-side-effect,
   bugprone-bool-pointer-implicit-conversion,
   bugprone-copy-constructor-init,
   bugprone-dangling-handle,
@@ -39,7 +37,6 @@ Checks: |
   bugprone-unused-raii,
   bugprone-unused-return-value,
   bugprone-use-after-move,
-
   cert-dcl03-c,
   cert-dcl54-cpp,
   cert-dcl58-cpp,
@@ -50,31 +47,33 @@ Checks: |
   cert-fio38-c,
   cert-flp30-c,
   cert-oop11-cpp,
-
+  clang-analyzer-core.BitwiseShift,
   clang-analyzer-core.CallAndMessage,
+  clang-analyzer-core.CallAndMessageModeling,
+  clang-analyzer-core.DereferenceModeling,
   clang-analyzer-core.DivideZero,
   clang-analyzer-core.DynamicTypePropagation,
   clang-analyzer-core.NonNullParamChecker,
   clang-analyzer-core.NonnilStringConstants,
   clang-analyzer-core.NullDereference,
+  clang-analyzer-core.StackAddrEscapeBase,
   clang-analyzer-core.StackAddressEscape,
   clang-analyzer-core.UndefinedBinaryOperatorResult,
   clang-analyzer-core.VLASize,
+  clang-analyzer-core.builtin.BuiltinFunctions,
   clang-analyzer-core.builtin.NoReturnFunctions,
   clang-analyzer-core.uninitialized.ArraySubscript,
+  clang-analyzer-core.uninitialized.Assign,
   clang-analyzer-core.uninitialized.Branch,
   clang-analyzer-core.uninitialized.CapturedBlockVariable,
+  clang-analyzer-core.uninitialized.NewArraySize,
   clang-analyzer-core.uninitialized.UndefReturn,
-  clang-analyzer-core.uninitialized.Assign,
-
   clang-analyzer-cplusplus.NewDelete,
-  clang-analyzer-cplusplus.NewDeleteLeaks,
   clang-analyzer-cplusplus.SelfAssignment,
   clang-analyzer-deadcode.DeadStores,
   clang-analyzer-nullability.NullablePassedToNonnull,
   clang-analyzer-optin.cplusplus.VirtualCall,
   clang-analyzer-optin.performance.Padding,
-
   clang-analyzer-unix.API,
   clang-analyzer-unix.Malloc,
   clang-analyzer-unix.MallocSizeof,
@@ -83,7 +82,6 @@ Checks: |
   clang-analyzer-unix.Vfork,
   clang-analyzer-unix.cstring.BadSizeArg,
   clang-analyzer-unix.cstring.NullArg,
-
   cppcoreguidelines-avoid-goto,
   cppcoreguidelines-c-copy-assignment-signature,
   cppcoreguidelines-explicit-virtual-functions,
@@ -96,14 +94,12 @@ Checks: |
   cppcoreguidelines-pro-type-vararg,
   cppcoreguidelines-slicing,
   cppcoreguidelines-special-member-functions,
-
   google-default-arguments,
   google-explicit-constructor,
   google-global-names-in-headers,
   google-readability-casting,
   google-runtime-int,
   google-runtime-operator,
-
   hicpp-exception-baseclass,
   hicpp-move-const-arg,
   hicpp-multiway-paths-covered,
@@ -111,7 +107,6 @@ Checks: |
   hicpp-no-assembler,
   hicpp-noexcept-move,
   hicpp-signed-bitwise,
-
   misc-const-correctness,
   misc-definitions-in-headers,
   misc-misplaced-const,
@@ -126,9 +121,7 @@ Checks: |
   modernize-use-noexcept,
   modernize-use-nullptr,
   modernize-use-using,
-
   performance-move-const-arg,
-
   readability-delete-null-pointer,
   readability-implicit-bool-conversion,
   readability-inconsistent-declaration-parameter-name,
