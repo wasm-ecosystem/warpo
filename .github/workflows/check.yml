@@ -46,10 +46,10 @@ jobs:
         run: npm ci
         working-directory: assemblyscript
       - run: generate compile_commands.json
+        # build custom target to generate necessary headers
         run: |
           set -e
           cmake -B build -S .
-          # build custom target to generate necessary headers
           cmake --build build --parallel --target warpo_frontend_asc_wasm_hpp
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
