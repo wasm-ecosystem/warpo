@@ -50,6 +50,10 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci
       - uses: ./.github/action/build
       - name: Configure (for compile_commands.json)
         run: cmake -B build -S .
