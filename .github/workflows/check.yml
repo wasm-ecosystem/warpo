@@ -40,12 +40,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: "npm"
       - run: npm ci
       - uses: ./.github/action/build
-      - name: Configure (for compile_commands.json)
-        run: cmake -B build -S .
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           database: build/compile_commands.json
           tidy-checks: "" # Use .clang-tidy config
