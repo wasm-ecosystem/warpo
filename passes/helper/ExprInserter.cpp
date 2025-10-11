@@ -23,7 +23,7 @@ static bool isTerminator(wasm::Expression *expr) {
 bool ExprInserter::canInsertBefore(wasm::Expression *insertPosition) {
   // those instruction does not have children, so we can insert before them directly.
   if (insertPosition->is<wasm::GlobalGet>() || insertPosition->is<wasm::LocalGet>() ||
-      insertPosition->is<wasm::Const>())
+      insertPosition->is<wasm::Const>() || insertPosition->is<wasm::MemorySize>())
     return true;
   // those instruction should be inserted after the last operand
   if (insertPosition->is<wasm::Call>()) {
@@ -50,6 +50,7 @@ void ExprInserter::insertBefore(wasm::Builder &b, wasm::Expression *insertedExpr
   case wasm::Expression::GlobalGetId:
   case wasm::Expression::LocalGetId:
   case wasm::Expression::ConstId:
+  case wasm::Expression::MemorySizeId:
     *insertPositionPtr = b.makeBlock({insertedExpr, insertPosition}, insertPosition->type);
     break;
   case wasm::Expression::CallId: {

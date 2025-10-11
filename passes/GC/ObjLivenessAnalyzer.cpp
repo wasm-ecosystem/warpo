@@ -91,9 +91,9 @@ public:
   }
 
   void evaluateFunctionEntry(wasm::Function *func, FiniteIntPowersetLattice::Element &element) {
-    for (wasm::Index const paramIndex : Range{func->getNumParams()}) {
+    for (size_t const paramIndex : Range{func->getNumParams()}) {
       if (func->getParams()[paramIndex] == wasm::Type::i32) {
-        setActive(element, ssaMap_.getIndex(SSAValue{paramIndex}));
+        setActive(element, ssaMap_.getIndex(SSAValue{static_cast<wasm::Index>(paramIndex)}));
       }
     }
   }
@@ -188,10 +188,10 @@ public:
 
   void evaluateFunctionEntry(wasm::Function *func, FiniteIntPowersetLattice::Element &element) {
     currState = &element;
-    for (wasm::Index const paramIndex : Range{func->getNumParams()}) {
+    for (size_t const paramIndex : Range{func->getNumParams()}) {
       if (func->getParams()[paramIndex] == wasm::Type::i32) {
         // parameters
-        setActive(ssaMap_.getIndex(SSAValue{paramIndex}));
+        setActive(ssaMap_.getIndex(SSAValue{static_cast<wasm::Index>(paramIndex)}));
       }
     }
     currState = nullptr;
