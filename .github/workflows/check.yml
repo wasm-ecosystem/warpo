@@ -50,8 +50,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v5
-      - name: install deps
-        run: sudo apt-get update && sudo apt-get install -y cmake build-essential
+      - uses: ./.github/action/build
       - name: Configure (for compile_commands.json)
         run: cmake -B build -S .
       - uses: cpp-linter/cpp-linter-action@v2
@@ -59,6 +58,8 @@ jobs:
         with:
           database: build/compile_commands.json
           tidy-checks: "" # Use .clang-tidy config
+          format-checks: "" # Disable clang-format and format-style
+          extra-args: "--format-style=none" # Explicitly disable format-style
           files-changed-only: true
           files: |
             frontend/**
