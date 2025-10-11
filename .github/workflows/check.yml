@@ -42,7 +42,15 @@ jobs:
           node-version: "22"
           cache: "npm"
       - run: npm ci
-      - uses: ./.github/action/build
+      - name: install assemblyscript deps
+        run: npm ci
+        working-directory: assemblyscript
+      - run: generate compile_commands.json
+        run: |
+          set -e
+          cmake -B build -S .
+          # build custom target to generate necessary headers
+          cmake --build build --parallel --target warpo_frontend_asc_wasm_hpp
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
         env:
