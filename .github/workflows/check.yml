@@ -33,7 +33,8 @@ jobs:
   cpp-linter:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
+      metadata: read
       pull-requests: write
     steps:
       - uses: actions/checkout@v5
@@ -49,10 +50,10 @@ jobs:
         with:
           database: build/compile_commands.json
           tidy-checks: "" # Use .clang-tidy config
-          style: ""
-          version: 18
+          style: "file"
+          version: 21
           files-changed-only: true
-          thread-comments: false # Disable PR comments
+          thread-comments: ${{ github.event_name == 'pull_request' && 'update' }}
           file-annotations: true # Enable file annotations in workflow logs
           step-summary: true # Print results in job summary
           ignore: |
