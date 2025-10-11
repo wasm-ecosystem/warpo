@@ -17,6 +17,7 @@ if(NOT CMAKE_BUILD_TYPE)
   endif()
 endif()
 
+add_definitions("-DINTERRUPTION_REQUEST=0")
 add_definitions("-DEAGER_ALLOCATION=1")
 
 add_subdirectory(third_party EXCLUDE_FROM_ALL)

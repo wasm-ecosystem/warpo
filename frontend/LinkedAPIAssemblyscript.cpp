@@ -45,7 +45,6 @@ void abortForLink(uint32_t messagePtr, uint32_t fileNamePtr, uint32_t lineNumber
   ss << "abort: " << getAsString(messagePtr, ctx) << " in " << getAsString(fileNamePtr, ctx) << ":" << lineNumber << ":"
      << columnNumber;
   std::cerr << std::move(ss).str() << std::endl;
-  ctx->requestInterruption(vb::TrapCode::BUILTIN_TRAP);
 }
 
 void traceForLink(uint32_t ptr, uint32_t n, double d1, double d2, double d3, double d4, double d5,
