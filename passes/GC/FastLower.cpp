@@ -140,14 +140,15 @@ private:
     for (size_t i = 0, k = currentAllocatedSlots_.size(); i < k; i++) {
       if (!currentAllocatedSlots_.get(i)) {
         currentAllocatedSlots_.set(i, true);
-        return i;
+        return static_cast<uint32_t>(i);
       }
     }
     size_t const size = currentAllocatedSlots_.size();
     currentAllocatedSlots_.resize(size + 1U);
     currentAllocatedSlots_.set(size, true);
-    (*maxShadowStackOffsets_)[getFunction()] = ShadowStackElementSize * currentAllocatedSlots_.size();
-    return size;
+    (*maxShadowStackOffsets_)[getFunction()] =
+        static_cast<uint32_t>(ShadowStackElementSize) * static_cast<uint32_t>(currentAllocatedSlots_.size());
+    return static_cast<uint32_t>(size);
   }
 
   explicit ToStackReplacer(std::shared_ptr<MaxShadowStackOffsets> const &maxShadowStackOffsets)

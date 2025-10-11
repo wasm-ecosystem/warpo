@@ -138,7 +138,7 @@ frontend::CompilationResult compile(nlohmann::json const &configJson, std::files
   ss << *ret.m.get();
   std::string actual = std::move(ss).str();
   writeBinaryFile(expectedOutPath, std::move(actual));
-  return TestResult::Success;
+  return runModuleOnWarp(ret.m);
 }
 
 [[nodiscard]] TestResult runCompilationErrorCase(nlohmann::json const &configJson,
