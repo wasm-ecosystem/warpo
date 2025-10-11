@@ -49,23 +49,22 @@ jobs:
         with:
           database: build/compile_commands.json
           tidy-checks: "" # Use .clang-tidy config
-          format-checks: "ignore-format"
           style: ""
           version: 18
-          extra-args: "--format-style=none" # Explicitly disable format-style
           files-changed-only: true
-          files: |
-            frontend/**
-            common/**
-            passes/**
-            support/**
-            tools/**
-            include/**
-            tests/**
+          thread-comments: false # Disable PR comments
+          file-annotations: true # Enable file annotations in workflow logs
+          step-summary: true # Print results in job summary
           ignore: |
             third_party/**
             build/**
             assemblyscript/**
+      - name: Print linter results
+        if: always()
+        run: |
+          echo "Checks failed: ${{ steps.linter.outputs.checks-failed }}"
+          echo "Clang-tidy checks failed: ${{ steps.linter.outputs.clang-tidy-checks-failed }}"
+          echo "Clang-format checks failed: ${{ steps.linter.outputs.clang-format-checks-failed }}"
       - name: Fail fast if issues
         if: steps.linter.outputs.checks-failed > 0
         run: exit 1
