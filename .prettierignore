@@ -4,3 +4,4 @@
 #   "editor.defaultFormatter": "vscode.typescript-language-features"
 # }
 assemblyscript
+tests/frontend/compiler/**/*.ts

@@ -115,20 +115,20 @@ frontend::CompilationResult compile(nlohmann::json const &configJson, std::files
     if (hasExportStart)
       r->callExportedFunctionWithName<0>(r.getStackTop(), "_start");
   } catch (vb::TrapException &e) {
-    fmt::println("FAILED '{}': execution trapped due to {}", std::filesystem::relative(tsPath).c_str(), e.what());
+    fmt::println("FAILED '{}': execution trapped due to {}", tsPath.c_str(), e.what());
     return TestResult::Failure;
   } catch (vb::LinkingException &e) {
     // Linking failed is acceptable, skip unsupported function
-    fmt::println("SKIP '{}': {}", std::filesystem::relative(tsPath).c_str(), e.what());
+    fmt::println("SKIP '{}': {}", tsPath.c_str(), e.what());
     return TestResult::Skip;
   } catch (const std::exception &e) {
     // Feature not implemented in warp is acceptable
     bool const featureNotImplemented = std::string(e.what()).find("feature not implemented") != std::string::npos;
     if (!featureNotImplemented) {
-      fmt::println("FAILED '{}': {}", std::filesystem::relative(tsPath).c_str(), e.what());
+      fmt::println("FAILED '{}': {}", tsPath.c_str(), e.what());
       return TestResult::Failure;
     }
-    fmt::println("SKIP '{}': {}", std::filesystem::relative(tsPath).c_str(), e.what());
+    fmt::println("SKIP '{}': {}", tsPath.c_str(), e.what());
     return TestResult::Skip;
   }
 

@@ -11,14 +11,14 @@ function localConstInline(): void {
 localConstInline();
 
 function localConstArray(a: i32): void {
-  const b: i32[] = [a];
-  b = [2];
+  const b: i32[] = [ a ];
+  b = [ 2 ];
 }
 localConstArray(1);
 
 function localConstArrayInline(): void {
-  const a: i32[] = [1];
-  a = [2];
+  const a: i32[] = [ 1 ];
+  a = [ 2 ];
 }
 localConstArrayInline();
 
