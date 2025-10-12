@@ -41,22 +41,59 @@ else()
     add_link_options(-fsanitize=address)
   endif()
 
-  add_compile_options(-Wall -Wextra -Wpedantic -Wformat=2
-    -Wformat-security -Werror=format-security -Wcast-align -Wcast-qual -Wconversion
-    -Wdouble-promotion -Wfloat-equal -Wmissing-include-dirs
-    -Wredundant-decls -Wsign-conversion -Wswitch -Wuninitialized
-    -Wunused-parameter -Walloca -Wunused-result -Wunused-local-typedefs
-    -Wwrite-strings -Wpointer-arith -Wfloat-conversion -Wnull-dereference -Wdiv-by-zero
-    -Wno-switch-bool -Wunknown-pragmas
+  add_compile_options(
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Wformat=2
+    -Wformat-security
+    -Werror=format-security
+    -Wcast-align
+    -Wcast-qual
+    -Wconversion
+    -Wdouble-promotion
+    -Wfloat-equal
+    -Wmissing-include-dirs
+    -Wredundant-decls
+    -Wsign-conversion
+    -Wswitch
+    -Wuninitialized
+    -Wunused-parameter
+    -Walloca
+    -Wunused-result
+    -Wunused-local-typedefs
+    -Wwrite-strings
+    -Wpointer-arith
+    -Wfloat-conversion
+    -Wnull-dereference
+    -Wdiv-by-zero
+    -Wunknown-pragmas
   )
 
   if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU") AND(NOT(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "11")))
-    add_compile_options(-Wformat-signedness -Walloc-zero -Wduplicated-branches -Wduplicated-cond -Wimplicit-fallthrough=5 -Wlogical-op
-      -Wenum-conversion -Wno-switch-unreachable -Wliteral-suffix -Wno-builtin-macro-redefined -Wno-unknown-warning-option -Wdeprecated-copy
-    )
+    add_compile_options(
+      -Wformat-signedness
+      -Walloc-zero
+      -Wduplicated-branches
+      -Wduplicated-cond
+      -Wimplicit-fallthrough=5
+      -Wlogical-op
+      -Wenum-conversion
+      -Wliteral-suffix
+      -Wno-builtin-macro-redefined
+      -Wno-unknown-warning-option
+      -Wdeprecated-copy
 
+      # negative
+      -Wno-switch-unreachable
+    )
   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
-    add_compile_options(-Wenum-conversion)
+    add_compile_options(
+      -Wenum-conversion
+
+      # negative
+      -Wno-overlength-strings # FIXME
+    )
   endif()
 
   set(cxx_warning_flags -Wnon-virtual-dtor -Wold-style-cast)

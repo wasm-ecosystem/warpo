@@ -51,7 +51,8 @@ int32_t FrontendCompiler::allocString(std::string_view str) {
                                          static_cast<int32_t>(2))[0]
           .i32;
   r->callExportedFunctionWithName<1>(r.getStackTop(), "__pin", ptr);
-  uint8_t *const stringBegin = r->getLinearMemoryRegion(static_cast<uint32_t>(ptr), utf16Str.size());
+  uint8_t *const stringBegin =
+      r->getLinearMemoryRegion(static_cast<uint32_t>(ptr), static_cast<uint32_t>(utf16Str.size()));
   std::memcpy(stringBegin, utf16Str.data(), utf16Str.size() * sizeof(char16_t));
 
   return ptr;
