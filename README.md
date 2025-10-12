@@ -1,6 +1,6 @@
 # WARPO
 
-wasm optimizer designed for wasm-compiler
+next generation assemblyscript compiler
 
 ## quick start
 
