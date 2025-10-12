@@ -81,9 +81,15 @@ frontend::CompilationResult compile(nlohmann::json const &configJson, std::files
 
 [[nodiscard]] TestResult runModuleOnWarp(nlohmann::json const &configJson, std::filesystem::path const &tsPath,
                                          AsModule const &asModule) {
-  // skip unsupported test cases which has global imports
-  if (std::ranges::any_of(asModule.get()->globals,
-                          [](std::unique_ptr<wasm::Global> const &global) { return global->imported(); }))
+  bool const hasImportedGlobal = std::ranges::any_of(
+      asModule.get()->globals, [](std::unique_ptr<wasm::Global> const &global) { return global->imported(); });
+  if (hasImportedGlobal)
+    return TestResult::Skip;
+  bool const hasNonTrappingF2I =
+      configJson.contains("features") &&
+      std::ranges::any_of(configJson["features"].get<nlohmann::json::array_t>(),
+                          [](nlohmann::basic_json<> const &flag) { return flag == "nontrapping-f2i"; });
+  if (hasNonTrappingF2I)
     return TestResult::Skip;
 
   // lowering built-in imports
