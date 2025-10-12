@@ -52,7 +52,9 @@ class TestConfigJson {
   nlohmann::json const configJson_;
 
 public:
-  explicit TestConfigJson(nlohmann::json const &configJson) : configJson_(configJson) {}
+  explicit TestConfigJson(nlohmann::json const &configJson) : configJson_(configJson) {
+    assert(configJson_.is_object());
+  }
 
   frontend::Config createConfig() const {
     frontend::Config config = frontend::getDefaultConfig();
@@ -232,8 +234,7 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
 [[nodiscard]] TestResult run(std::filesystem::path const &tsPath) {
   try {
     std::filesystem::path const jsonPath = replaceExtension(tsPath, ".json");
-    nlohmann::json j = nlohmann::json::parse(std::filesystem::exists(jsonPath) ? readTextFile(jsonPath) : "{}");
-    assert(j.is_object());
+    nlohmann::json const j = nlohmann::json::parse(std::filesystem::exists(jsonPath) ? readTextFile(jsonPath) : "{}");
     TestConfigJson const configJson{j};
     std::filesystem::path const expectedOutPath = replaceExtension(tsPath, ".wat");
     if (updateFlag.get())
