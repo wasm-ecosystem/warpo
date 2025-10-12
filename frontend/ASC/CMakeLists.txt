@@ -23,7 +23,7 @@ set(asc_target_folder "${CMAKE_BINARY_DIR}/build-as")
 file(MAKE_DIRECTORY ${asc_target_folder})
 add_custom_command(
   COMMENT "Build ASC<${AS_BUILD_TARGET}> to WASM"
-  OUTPUT ${asc_target_folder}/assemblyscript.inc ${asc_target_folder}/library_sources.inc
+  OUTPUT ${asc_target_folder}/assemblyscript.inc ${asc_target_folder}/library_sources.inc ${asc_target_folder}/library_sources_map.inc
   DEPENDS ${asc_sources} ${CMAKE_CURRENT_SOURCE_DIR}/gen.mjs ${PROJECT_SOURCE_DIR}/asconfig.json
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 
@@ -31,7 +31,7 @@ add_custom_command(
   ARGS gen.mjs ${asc_target_folder} ${AS_BUILD_TARGET}
 )
 
-add_custom_target(warpo_frontend_asc_wasm_hpp ALL DEPENDS ${asc_target_folder}/assemblyscript.inc ${asc_target_folder}/library_sources.inc)
+add_custom_target(warpo_frontend_asc_wasm_hpp ALL DEPENDS ${asc_target_folder}/assemblyscript.inc ${asc_target_folder}/library_sources.inc ${asc_target_folder}/library_sources_map.inc)
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} warpo_frontend_asc_sources)
 

@@ -18,14 +18,32 @@ const ext_libs_path = join(project_root, "assemblyscript_extension", "std");
 
 execSync("node scripts/build.js", { cwd: join(project_root, "assemblyscript") });
 
+function stringToHexCArray(str) {
+  // Convert a string to a C-style hex array
+  // Each character is converted to its hex representation
+  // and padded to two digits, separated by commas.
+  // Example: "abc" -> "0x61, 0x62, 0x63"
+  let hexArray = [];
+  str = Buffer.from(str, "utf-8");
+  for (let i = 0, k = str.length; i < k; i++) hexArray.push(str[i].toString());
+  return hexArray.join(",");
+}
+
 async function createLibrarySources() {
   const { libraryFiles } = await import("../../assemblyscript/cli/index.generated.js");
-  writeFileSync(
-    join(target_folder, "library_sources.inc"),
-    Object.keys(libraryFiles)
-      .map((fileName) => `{\n  "${fileName}", R"##(${libraryFiles[fileName]})##",\n},\n`)
-      .join("")
-  );
+  const librarySourceMapInc = [];
+  const librarySourceInc = [];
+  let cnt = 0;
+  for (const fileName of Object.keys(libraryFiles)) {
+    cnt++;
+    const name = `library_source_${cnt}`;
+    librarySourceInc.push(`uint8_t const ${name}[] = {${stringToHexCArray(libraryFiles[fileName])}};\n`);
+    librarySourceMapInc.push(
+      `{"${fileName}", std::string_view{reinterpret_cast<const char*>(${name}), sizeof(${name})}},\n`
+    );
+  }
+  writeFileSync(join(target_folder, "library_sources.inc"), librarySourceInc.join(""));
+  writeFileSync(join(target_folder, "library_sources_map.inc"), librarySourceMapInc.join(""));
 }
 createLibrarySources();
 
@@ -54,7 +72,6 @@ writeFileSync(
   join(target_folder, "assemblyscript.inc"),
   `
 unsigned char asc_wasm[] = {${wasmBytes}};
-unsigned int asc_wasm_len = {${wasmBuf.length}};
   `
 );
 

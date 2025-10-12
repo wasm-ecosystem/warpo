@@ -38,7 +38,8 @@ class FrontendCompiler final {
   std::u16string utf8ToUtf16(std::string const &utf8Str);
   std::string utf16ToUtf8(std::u16string const &utf16Str);
 
-  void parseFile(int32_t const program, std::optional<std::string> const &code, std::string_view path, IsEntry isEntry);
+  void parseFile(int32_t const program, std::optional<std::string_view> const &code, std::string_view path,
+                 IsEntry isEntry);
 
   std::string getAsString(uint32_t ptr);
 

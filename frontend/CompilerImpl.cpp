@@ -58,8 +58,8 @@ int32_t FrontendCompiler::allocString(std::string_view str) {
   return ptr;
 }
 
-void FrontendCompiler::parseFile(int32_t const program, std::optional<std::string> const &code, std::string_view path,
-                                 IsEntry isEntry) {
+void FrontendCompiler::parseFile(int32_t const program, std::optional<std::string_view> const &code,
+                                 std::string_view path, IsEntry isEntry) {
   r->callExportedFunctionWithName<0>(r.getStackTop(), "__setArgumentsLength", 4U);
   if (code.has_value()) {
     r->callExportedFunctionWithName<0>(r.getStackTop(), "parse", program, allocString(code.value()), allocString(path),
@@ -220,11 +220,11 @@ FrontendCompiler::Dependency FrontendCompiler::getDependency(std::string const &
   if (nextFileInternalPath.starts_with(libraryPrefix)) {
     std::string const plainName = nextFileInternalPath.substr(libraryPrefix.size());
     if (embed_library_sources.contains(plainName)) {
-      return {embed_library_sources.at(plainName), libraryPrefix + plainName + extension};
+      return {.text = std::string{embed_library_sources.at(plainName)}, .path = libraryPrefix + plainName + extension};
     }
     std::string const indexName = plainName + "/index";
     if (embed_library_sources.contains(indexName)) {
-      return {embed_library_sources.at(indexName), libraryPrefix + indexName + extension};
+      return {.text = std::string{embed_library_sources.at(indexName)}, .path = libraryPrefix + indexName + extension};
     }
     return getDependencyForNodeModules(nextFileInternalPath, program, nextFile);
   }

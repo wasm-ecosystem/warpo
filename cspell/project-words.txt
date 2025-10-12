@@ -1,4 +1,5 @@
 Aktiengesellschaft
+asconfig
 assemblyscript
 Bayerische
 Binaryen

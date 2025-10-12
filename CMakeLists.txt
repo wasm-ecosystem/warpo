@@ -92,7 +92,6 @@ else()
       -Wenum-conversion
 
       # negative
-      -Wno-overlength-strings # FIXME
     )
   endif()
 
