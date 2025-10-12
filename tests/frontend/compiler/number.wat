@@ -7794,21 +7794,10 @@
     (f64.const -0)
    )
   )
-  (if
-   (i32.eqz
-    (f64.ne
-     (f64.const -0)
-     (f64.const -0)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 2240)
-     (i32.const 83)
-     (i32.const 1)
-    )
-    (unreachable)
+  (drop
+   (f64.eq
+    (f64.const -0)
+    (f64.const -0)
    )
   )
   (drop
@@ -7823,21 +7812,10 @@
     (f32.const -0)
    )
   )
-  (if
-   (i32.eqz
-    (f32.ne
-     (f32.const -0)
-     (f32.const -0)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 2240)
-     (i32.const 86)
-     (i32.const 1)
-    )
-    (unreachable)
+  (drop
+   (f32.eq
+    (f32.const -0)
+    (f32.const -0)
    )
   )
   (drop
