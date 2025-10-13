@@ -106,6 +106,8 @@ import {
   BuiltinNames
 } from "./builtins";
 
+import { createClass } from "./warpo";
+
 /** Indicates whether errors are reported or not. */
 export const enum ReportMode {
   /** Report errors. */
@@ -3482,6 +3484,8 @@ export class Resolver extends DiagnosticEmitter {
       }
       memoryOffset = base.nextMemoryOffset;
     }
+
+    createClass(instance.internalName, null, 0);
 
     // Resolve instance members
     let prototype = instance.prototype;

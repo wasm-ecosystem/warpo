@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(warpo)
+set(ProjectRoot ${CMAKE_CURRENT_SOURCE_DIR})
 
 option(WARPO_RELEASE "build for release" OFF)
 option(WARPO_SANITIZE "enable address sanitizer" OFF)

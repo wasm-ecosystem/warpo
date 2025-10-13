@@ -21,6 +21,7 @@ NOLINTNEXTLINE
 popcountll
 refinalization
 refinalize
+rtid
 succs
 tmptostack
 tostack

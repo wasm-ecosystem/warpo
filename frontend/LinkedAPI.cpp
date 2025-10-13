@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "LinkedAPI.hpp"
+#include "VariableInfo.hpp"
 #include "warpo/support/Container.hpp"
 
 #include "src/core/common/NativeSymbol.hpp"
@@ -22,6 +23,7 @@ std::vector<vb::NativeSymbol> createLinkedAPI() {
   append(linkedAPI, createCppWrapperAPI());
   append(linkedAPI, createBinaryenLinkedAPI());
   append(linkedAPI, createOptAPI());
+  append(linkedAPI, VariableInfo::createVariableInfoAPI());
   return linkedAPI;
 }
 

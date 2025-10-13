@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "AsString.hpp"
 #include "LinkedAPI.hpp"
 
 #include "src/WasmModule/WasmModule.hpp"
@@ -23,34 +24,18 @@ namespace warpo::frontend {
 
 namespace {
 
-std::string getAsString(uint32_t ptr, vb::WasmModule *ctx) {
-  if (ptr == 0U)
-    return "<<NULL>>";
-  uint8_t const *const header = ctx->getLinearMemoryRegion(ptr - 20U, 20);
-  uint32_t size = 0;
-  std::memcpy(&size, header + 16, sizeof(size));
-  uint8_t const *const content = ctx->getLinearMemoryRegion(ptr, size);
-  size /= 2U;
-
-  std::stringstream ss{};
-  for (uint32_t i = 0; i < size; ++i) {
-    ss << content[i * 2U];
-  }
-  return std::move(ss).str();
-}
-
 void abortForLink(uint32_t messagePtr, uint32_t fileNamePtr, uint32_t lineNumber, uint32_t columnNumber,
                   vb::WasmModule *ctx) {
   std::stringstream ss{};
-  ss << "abort: " << getAsString(messagePtr, ctx) << " in " << getAsString(fileNamePtr, ctx) << ":" << lineNumber << ":"
-     << columnNumber;
+  ss << "abort: " << AsString::get(messagePtr, ctx) << " in " << AsString::get(fileNamePtr, ctx) << ":" << lineNumber
+     << ":" << columnNumber;
   std::cerr << std::move(ss).str() << std::endl;
 }
 
 void traceForLink(uint32_t ptr, uint32_t n, double d1, double d2, double d3, double d4, double d5,
                   vb::WasmModule *ctx) {
   std::stringstream ss{};
-  ss << getAsString(ptr, ctx);
+  ss << AsString::get(ptr, ctx);
   for (size_t i = 1U; i <= n; i++) {
     switch (i) {
     case 1:
