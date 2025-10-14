@@ -291,7 +291,7 @@ struct Inlining : public Pass {
     }
     for (auto &ex : module->exports) {
       if (ex->kind == ExternalKind::Function) {
-        infos[ex->name].usedGlobally = true;
+        infos[*ex->getInternalName()].usedGlobally = true;
       }
     }
     if (module->start.is()) {
@@ -456,3 +456,40 @@ struct Inlining : public Pass {
 } // namespace warpo::passes
 
 wasm::Pass *warpo::passes::createAdvancedInliningPass() { return new Inlining(); }
+
+#ifdef WARPO_ENABLE_UNIT_TESTS
+
+#include <gtest/gtest.h>
+
+#include "Runner.hpp"
+#include "pass.h"
+
+namespace warpo::passes::ut {
+namespace {
+
+TEST(AdvInlining, UsedGlobally) {
+  auto m = loadWat(R"(
+    (module
+      (table $0 1 funcref)
+      (elem $0 (i32.const 1) $test/f1)
+      (export "f" (func $test/f0))
+      (func $test/f0)
+      (func $test/f1)
+    )
+  )");
+  PassRunner runner(m.get());
+  Inlining pass{};
+  pass.setPassRunner(&runner);
+  pass.module = m.get();
+
+  pass.prepare();
+
+  EXPECT_EQ(pass.infos.size(), 2U);
+  EXPECT_EQ(pass.infos["test/f0"].usedGlobally, true);
+  EXPECT_EQ(pass.infos["test/f1"].usedGlobally, true);
+}
+
+} // namespace
+} // namespace warpo::passes::ut
+
+#endif
