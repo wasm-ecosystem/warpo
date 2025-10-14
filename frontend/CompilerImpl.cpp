@@ -21,6 +21,7 @@
 #include "ASC/ASC.hpp"
 #include "CompilerImpl.hpp"
 #include "LinkedAPI.hpp"
+#include "VariableInfo.hpp" //fixme
 #include "llvm/Support/ConvertUTF.h"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/Debug.hpp"
@@ -384,6 +385,7 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
       return {.m = {}, .errorMessage = errorMessage_};
     asModule_.set(BinaryenModule{reinterpret_cast<wasm::Module *>(
         r->callExportedFunctionWithName<1>(stackTop, "getBinaryenModuleRef", compiled)[0].i64)});
+    VariableInfo::dumpElf();
     compileStat.release();
     return {.m = std::move(asModule_), .errorMessage = errorMessage_};
   } catch (vb::TrapException const &e) {

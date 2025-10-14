@@ -23,6 +23,8 @@ class VariableInfo final {
 public:
   static std::vector<vb::NativeSymbol> createVariableInfoAPI();
 
+  static void dumpElf();
+
 private:
   static void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const rtid,
                           vb::WasmModule const *const ctx);
