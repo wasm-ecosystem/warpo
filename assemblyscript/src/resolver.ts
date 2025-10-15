@@ -3460,7 +3460,9 @@ export class Resolver extends DiagnosticEmitter {
     // Alias base members
     let memoryOffset: u32 = 0;
     let base = instance.base;
+    let parentName: string|null = null;
     if (base) {
+      parentName = base.internalName;
       let implicitlyExtendsObject = instance.prototype.implicitlyExtendsObject;
       assert(!pendingClasses.has(base));
       let baseMembers = base.members;
@@ -3485,7 +3487,7 @@ export class Resolver extends DiagnosticEmitter {
       memoryOffset = base.nextMemoryOffset;
     }
 
-    createClass(instance.internalName, null, 0);
+    createClass(instance.internalName, parentName, 0);
 
     // Resolve instance members
     let prototype = instance.prototype;
