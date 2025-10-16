@@ -13,6 +13,7 @@
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
+#include <cassert>
 #include <cstring>
 #include <fstream>
 #include <iomanip>
@@ -28,17 +29,24 @@
 
 // LLVM DWARF YAML includes for testing
 #include "binaryen/src/support/istring.h"
+#include "binaryen/third_party/llvm-project/DWARFVisitor.h"
 #include "llvm/BinaryFormat/Dwarf.h"
 #include "llvm/DebugInfo/DWARF/DWARFContext.h"
 #include "llvm/DebugInfo/DWARF/DWARFDie.h"
 #include "llvm/ObjectYAML/DWARFEmitter.h"
 #include "llvm/ObjectYAML/DWARFYAML.h"
+#include "llvm/Support/LEB128.h"
 #include "llvm/Support/YAMLTraits.h"
 #include "llvm/Support/raw_ostream.h"
 
 namespace warpo::frontend {
 
 class FieldInfo final {
+public:
+  FieldInfo(wasm::IString name, wasm::IString type, uint32_t offsetInClass, bool nullable)
+      : name_(std::move(name)), type_(std::move(type)), offsetInClass_(offsetInClass), nullable_(nullable) {}
+
+private:
   wasm::IString name_;
   wasm::IString type_;
   uint32_t offsetInClass_;
@@ -50,7 +58,7 @@ class InterfaceInfo final {};
 class ClassInfo final {
 public:
   ClassInfo(wasm::IString name, wasm::IString parentName, uint32_t const rtid)
-      : name_(std::move(name)), parentName_(std::move(parentName)), rtid_(rtid) {}
+      : name_(std::move(name)), parentName_(std::move(parentName)), rtid_(rtid), debugInfoOffset_(SIZE_MAX) {}
 
   uint32_t getSize() const noexcept {
     return 0U; // implement later
@@ -60,15 +68,92 @@ public:
 
   std::vector<FieldInfo> const &getFields() const noexcept { return fields_; }
 
+  void addMember(wasm::IString name, wasm::IString type, uint32_t offsetInClass, bool nullable) {
+    fields_.emplace_back(FieldInfo{std::move(name), std::move(type), offsetInClass, nullable});
+  }
+
 private:
   wasm::IString name_;
   wasm::IString parentName_;
   uint32_t rtid_;
+  size_t debugInfoOffset_;
   std::vector<FieldInfo> fields_;
   std::vector<InterfaceInfo> interfaces_;
 };
 
 std::unordered_map<std::string, ClassInfo> classRegistry;
+
+// DIE offset tracker using visitor pattern (like Binaryen's DIEFixupVisitor)
+class DIEOffsetTracker : public llvm::DWARFYAML::Visitor {
+private:
+  uint64_t currentOffset_ = 0;
+  std::unordered_map<std::string, uint64_t> namedDIEOffsets_;
+  std::string currentDIEName_;
+  size_t currentAbbrevIndex_ = 0;
+
+  void onStartCompileUnit([[maybe_unused]] llvm::DWARFYAML::Unit &CU) override {
+    // CU header: length(4) + version(2) + abbr_offset(4) + addr_size(1) = 11 bytes
+    currentOffset_ = 11;
+  }
+
+  void onStartDIE([[maybe_unused]] llvm::DWARFYAML::Unit &CU, llvm::DWARFYAML::Entry &DIE) override {
+    // Store the offset of this DIE before processing it
+    uint64_t dieOffset = currentOffset_;
+
+    // Find the abbreviation for this DIE to extract its name
+    for (const auto &abbrev : DebugInfo.AbbrevDecls) {
+      if (abbrev.Code == DIE.AbbrCode.value) {
+        // Check if this abbrev has a DW_AT_name attribute
+        size_t valueIndex = 0;
+        for (const auto &attr : abbrev.Attributes) {
+          if (attr.Attribute == llvm::dwarf::DW_AT_name && valueIndex < DIE.Values.size()) {
+            // Extract the name from the form value
+            const auto &nameValue = DIE.Values[valueIndex];
+            if (!nameValue.CStr.empty()) {
+              // This DIE has a name, store its offset
+              std::string dieName(nameValue.CStr.data(), nameValue.CStr.size());
+              namedDIEOffsets_[dieName] = dieOffset;
+            }
+          }
+          valueIndex++;
+        }
+        break;
+      }
+    }
+
+    // Add size of abbrev code (ULEB128 - typically 1 byte for codes < 128)
+    currentOffset_ += llvm::getULEB128Size(DIE.AbbrCode.value);
+  }
+
+  void onValue([[maybe_unused]] const uint8_t U) override { currentOffset_ += 1; }
+  void onValue([[maybe_unused]] const uint16_t U) override { currentOffset_ += 2; }
+  void onValue([[maybe_unused]] const uint32_t U) override { currentOffset_ += 4; }
+  void onValue(const uint64_t U, const bool LEB = false) override {
+    if (LEB)
+      currentOffset_ += llvm::getULEB128Size(U);
+    else
+      currentOffset_ += 8;
+  }
+  void onValue(const int64_t S, const bool LEB = false) override {
+    if (LEB)
+      currentOffset_ += llvm::getSLEB128Size(S);
+    else
+      currentOffset_ += 8;
+  }
+  void onValue(const llvm::StringRef String) override { currentOffset_ += String.size() + 1; }
+  void onValue(const llvm::MemoryBufferRef MBR) override { currentOffset_ += MBR.getBufferSize(); }
+
+public:
+  DIEOffsetTracker(llvm::DWARFYAML::Data &DI) : llvm::DWARFYAML::Visitor(DI) {}
+
+  // Get the offset of a named DIE (e.g., a class by name)
+  uint64_t getDIEOffset(const std::string &name) const {
+    auto it = namedDIEOffsets_.find(name);
+    return (it != namedDIEOffsets_.end()) ? it->second : 0;
+  }
+
+  const std::unordered_map<std::string, uint64_t> &getAllOffsets() const { return namedDIEOffsets_; }
+};
 
 // Helper for automatic DWARF code assignment (since LLVM's DWARFYAML doesn't do it)
 class DWARFAutoAssigner {
@@ -104,6 +189,19 @@ public:
     return offset;
   }
 };
+
+void VariableInfo::addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
+                            uint32_t const offset, uint32_t const nullable, vb::WasmModule const *const ctx) {
+  std::string const className{AsString::get(classNamePtr, ctx)};
+  std::string const fieldName{AsString::get(fieldNamePtr, ctx)};
+  std::string const typeName{AsString::get(typeNamePtr, ctx)};
+  std::cout << "  field " << fieldName << " type " << typeName << " at offset " << offset
+            << (nullable ? " nullable" : "") << std::endl;
+
+  auto classIt = classRegistry.find(className);
+  assert(classIt != classRegistry.end());
+  classIt->second.addMember(wasm::IString(fieldName), wasm::IString(typeName), offset, nullable != 0);
+}
 
 void VariableInfo::createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const rtid,
                                vb::WasmModule const *const ctx) {
@@ -261,6 +359,17 @@ void VariableInfo::dumpElf() {
 
   std::cout << "Length before fixup: " << rootUnit.Length.getLength() << "\n";
 
+  // Track DIE offsets using visitor pattern (like Binaryen does)
+  DIEOffsetTracker offsetTracker(dwarfData);
+  offsetTracker.traverseDebugInfo();
+
+  // Now you can get offsets for any named DIE!
+  std::cout << "\n=== DIE Offsets ===\n";
+  for (const auto &[name, offset] : offsetTracker.getAllOffsets()) {
+    std::cout << "  " << name << " @ 0x" << std::hex << offset << std::dec << "\n";
+  }
+  std::cout << "===================\n\n";
+
   // Use LLVM's built-in EmitDebugSections with ApplyFixups=true to automatically calculate lengths
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
       llvm::DWARFYAML::EmitDebugSections(dwarfData, true);
@@ -300,6 +409,7 @@ void VariableInfo::dumpElf() {
 std::vector<vb::NativeSymbol> VariableInfo::createVariableInfoAPI() {
   return std::vector<vb::NativeSymbol>{
       STATIC_LINK("warpo", "_WarpoCreateClass", createClass),
+      STATIC_LINK("warpo", "_WarpoAddField", addField),
   };
 }
 } // namespace warpo::frontend

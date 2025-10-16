@@ -28,5 +28,8 @@ public:
 private:
   static void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const rtid,
                           vb::WasmModule const *const ctx);
+
+  static void addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
+                       uint32_t const offset, uint32_t const nullable, vb::WasmModule const *const ctx);
 };
 } // namespace warpo::frontend

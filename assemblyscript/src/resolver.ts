@@ -106,7 +106,7 @@ import {
   BuiltinNames
 } from "./builtins";
 
-import { createClass } from "./warpo";
+import { addField, createClass } from "./warpo";
 
 /** Indicates whether errors are reported or not. */
 export const enum ReportMode {
@@ -3549,6 +3549,7 @@ export class Resolver extends DiagnosticEmitter {
                   let mask = byteSize - 1;
                   if (memoryOffset & mask) memoryOffset = (memoryOffset | mask) + 1;
                   boundInstance.memoryOffset = memoryOffset;
+                  addField(instance.internalName, memberName, fieldType.toString(), boundInstance.memoryOffset, 0);
                   memoryOffset += byteSize;
                 }
                 boundPrototype.instance = boundInstance;
