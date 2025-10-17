@@ -1,5 +1,5 @@
 ;; ====================
-(func $tests/snapshot_diff/gc_lower_opt/shrink_wrap/prologue_parameter/_start (type $func.0 (func (param i32) (result i32)))
+(func $tests/snapshot_diff/gc_lower_opt/shrink_wrap/prologue_parameter/_start (func (param i32) (result i32))
   (local i32)
   (local i32)
 ;; ======remove=======

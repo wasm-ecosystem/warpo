@@ -104,7 +104,7 @@ class TestCase {
     if (oldDiff !== diff) {
       assert(
         false,
-        `diff for ${file} is different from the previous one. Please run the test again to update the diff file.`
+        `diff for ${this.file} is different from the previous one. Please run the test again to update the diff file.`
       );
     }
     return;

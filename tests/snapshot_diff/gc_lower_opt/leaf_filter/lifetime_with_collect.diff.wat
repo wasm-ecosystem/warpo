@@ -1,5 +1,5 @@
 ;; ====================
-(func $tests/snapshot_diff/gc_lower_opt/leaf_filter/lifetime_with_collect/_start (type $func.0 (func (result i32)))
+(func $tests/snapshot_diff/gc_lower_opt/leaf_filter/lifetime_with_collect/_start (func (result i32))
   (local i32)
   (local i32)
   (local i32)

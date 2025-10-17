@@ -1,5 +1,5 @@
 ;; ====================
-(func $tests/snapshot_diff/gc_lower_opt/base/new_obj_with_directly_use/_start (type $func.0 (func))
+(func $tests/snapshot_diff/gc_lower_opt/base/new_obj_with_directly_use/_start (func)
 ;; =========add========
   (local i32)
   block ;;none

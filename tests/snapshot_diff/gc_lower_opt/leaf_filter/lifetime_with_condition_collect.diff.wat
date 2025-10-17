@@ -1,5 +1,5 @@
 ;; ====================
-(func $tests/snapshot_diff/gc_lower_opt/leaf_filter/lifetime_with_condition_collect/foo_true (type $func.0 (func (result i32)))
+(func $tests/snapshot_diff/gc_lower_opt/leaf_filter/lifetime_with_condition_collect/foo_true (func (result i32))
   (local i32)
   (local i32)
   (local i32)
@@ -36,7 +36,7 @@
     local.get $1
   end
 )
-(func $tests/snapshot_diff/gc_lower_opt/leaf_filter/lifetime_with_condition_collect/foo_false (type $func.0 (func (result i32)))
+(func $tests/snapshot_diff/gc_lower_opt/leaf_filter/lifetime_with_condition_collect/foo_false (func (result i32))
   (local i32)
   (local i32)
   (local i32)
@@ -74,7 +74,7 @@
     local.get $1
   end
 )
-(func $tests/snapshot_diff/gc_lower_opt/leaf_filter/lifetime_with_condition_collect/foo_other_branch (type $func.0 (func (result i32)))
+(func $tests/snapshot_diff/gc_lower_opt/leaf_filter/lifetime_with_condition_collect/foo_other_branch (func (result i32))
   (local i32)
 ;; ======remove=======
 ;;(local i32)

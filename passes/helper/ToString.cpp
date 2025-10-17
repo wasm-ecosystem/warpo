@@ -2,6 +2,8 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <wasm-type.h>
+
 #include "ToString.hpp"
 #include "wasm-traversal.h"
 #include "wasm.h"
@@ -19,7 +21,22 @@ std::string warpo::passes::toString(wasm::Function *f) {
     using Supper = wasm::ExpressionStackWalker<Printer, wasm::UnifiedExpressionVisitor<Printer>>;
     std::stringstream ss;
     void walkFunction(wasm::Function *func) {
-      ss << "(func $" << func->name << " " << func->type << "\n";
+      ss << "(func $" << func->name;
+      wasm::Signature const sig = func->getSig();
+      if (sig.params.getID() != wasm::Type::none) {
+        ss << " (param";
+        for (wasm::Type const &paramType : sig.params)
+          ss << ' ' << paramType;
+        ss << ")";
+      }
+      if (sig.results.getID() != wasm::Type::none) {
+        ss << " (result";
+        for (wasm::Type const &resultType : sig.results)
+          ss << ' ' << resultType;
+        ss << ")";
+      }
+      ss << ")\n";
+
       for (auto &local : func->vars) {
         ss << "  (local " << local << ")\n";
       }
