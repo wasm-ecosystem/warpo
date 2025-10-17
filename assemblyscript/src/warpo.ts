@@ -1,7 +1,7 @@
 declare function _WarpoMarkDataElementImmutable(begin: u32, size: u32): void;
 declare function _WarpoCreateClass(className: string, parentClassName: string | null, size: u32, rtid: u32): void;
 
-declare function _WarpoAddField(className: string, fieldName: string, typeName: string, offset: u32, nullable: u32): void;
+declare function _WarpoAddField(className: string, fieldName: string, typeName: string, offset: u32, nullable: bool): void;
 
 
 export function markDataElementImmutable(begin: i64, size: i32): void {
@@ -13,6 +13,6 @@ export function createClass(className: string, parentClassName: string | null, s
   _WarpoCreateClass(className, parentClassName, size, rtid);
 }
 
-export function addField(className: string, fieldName: string, typeName: string, offset: u32, nullable: u32): void {
+export function addField(className: string, fieldName: string, typeName: string, offset: u32, nullable: bool): void {
   _WarpoAddField(className, fieldName, typeName, offset, nullable);
 }

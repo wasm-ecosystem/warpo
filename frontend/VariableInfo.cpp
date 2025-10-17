@@ -47,6 +47,11 @@ public:
   FieldInfo(wasm::IString name, wasm::IString type, uint32_t offsetInClass, bool nullable)
       : name_(std::move(name)), type_(std::move(type)), offsetInClass_(offsetInClass), nullable_(nullable) {}
 
+  std::string_view getName() const noexcept { return name_.str; }
+  std::string_view getType() const noexcept { return type_.str; }
+  uint32_t getOffsetInClass() const noexcept { return offsetInClass_; }
+  bool isNullable() const noexcept { return nullable_; }
+
 private:
   wasm::IString name_;
   wasm::IString type_;
@@ -259,7 +264,7 @@ void VariableInfo::dumpElf() {
   llvm::DWARFYAML::Abbrev classAbbrev;
   classAbbrev.Code = 0; // Will be auto-assigned by assigner
   classAbbrev.Tag = llvm::dwarf::DW_TAG_class_type;
-  classAbbrev.Children = llvm::dwarf::DW_CHILDREN_no;
+  classAbbrev.Children = llvm::dwarf::DW_CHILDREN_yes;
   classAbbrev.ListOffset = 0;
 
   // Add DW_AT_name attribute with DW_FORM_string form
@@ -375,10 +380,12 @@ void VariableInfo::dumpElf() {
   // Add class DIEs for each class in the registry
   std::cout << "Adding " << classRegistry.size() << " classes to debug info\n";
   for (const auto &[className, classInfo] : classRegistry) {
+    bool const isBasicType = classInfo.isBasicType();
+
     llvm::DWARFYAML::Entry classEntry;
 
     // Use base type abbreviation for basic types, class abbreviation for others
-    if (classInfo.isBasicType()) {
+    if (isBasicType) {
       classEntry.AbbrCode = baseTypeAbbrev.Code; // Use the base type abbreviation
     } else {
       classEntry.AbbrCode = classAbbrev.Code; // Use the class abbreviation
@@ -395,8 +402,42 @@ void VariableInfo::dumpElf() {
     classEntry.Values.push_back(classSizeValue);
 
     rootUnit.Entries.push_back(classEntry);
-    std::cout << "  Added " << (classInfo.isBasicType() ? "base type" : "class") << ": " << className
+    std::cout << "  Added " << (isBasicType ? "base type" : "class") << ": " << className
               << " (size: " << classInfo.getSize() << ")\n";
+
+    std::vector<FieldInfo> const &fields = classInfo.getFields();
+    for (const auto &field : fields) {
+      llvm::DWARFYAML::Entry memberEntry;
+      memberEntry.AbbrCode = memberAbbrev.Code; // Use the member abbreviation
+
+      // Add DW_AT_name value (inline string)
+      llvm::DWARFYAML::FormValue memberNameValue;
+      std::string_view fieldNameView = field.getName();
+      memberNameValue.CStr =
+          llvm::StringRef(fieldNameView.data(), fieldNameView.size()); // DW_FORM_string - inline string uses CStr field
+      memberEntry.Values.push_back(memberNameValue);
+
+      // Add DW_AT_type value (reference to type DIE - will be resolved later)
+      llvm::DWARFYAML::FormValue memberTypeValue;
+      memberTypeValue.Value = 0; // TODO: Calculate DIE offset reference for field type
+      memberEntry.Values.push_back(memberTypeValue);
+
+      // Add DW_AT_data_member_location value (offset within class)
+      llvm::DWARFYAML::FormValue memberLocationValue;
+      memberLocationValue.Value = field.getOffsetInClass(); // DW_FORM_data4
+      memberEntry.Values.push_back(memberLocationValue);
+
+      rootUnit.Entries.push_back(memberEntry);
+      std::cout << "    Added member: " << field.getName() << " (type: " << field.getType()
+                << ", offset: " << field.getOffsetInClass() << ")\n";
+    }
+
+    // Add terminator entry to mark end of children (required when DW_CHILDREN_yes)
+    if (!isBasicType) {
+      llvm::DWARFYAML::Entry childTerminator;
+      childTerminator.AbbrCode = 0; // Abbrev code 0 marks the end of children
+      rootUnit.Entries.push_back(childTerminator);
+    }
   }
 
   compileUnits.push_back(rootUnit);

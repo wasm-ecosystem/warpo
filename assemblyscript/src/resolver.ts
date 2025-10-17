@@ -3549,7 +3549,7 @@ export class Resolver extends DiagnosticEmitter {
                   let mask = byteSize - 1;
                   if (memoryOffset & mask) memoryOffset = (memoryOffset | mask) + 1;
                   boundInstance.memoryOffset = memoryOffset;
-                  addField(instance.internalName, memberName, fieldType.toString(), boundInstance.memoryOffset, 0);
+                  addField(instance.internalName, memberName, fieldType.toString(), boundInstance.memoryOffset, fieldType.isNullableReference);
                   memoryOffset += byteSize;
                 }
                 boundPrototype.instance = boundInstance;
