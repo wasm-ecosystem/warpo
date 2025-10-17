@@ -18,6 +18,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <regex>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -57,12 +58,11 @@ class InterfaceInfo final {};
 
 class ClassInfo final {
 public:
-  ClassInfo(wasm::IString name, wasm::IString parentName, uint32_t const rtid)
-      : name_(std::move(name)), parentName_(std::move(parentName)), rtid_(rtid), debugInfoOffset_(SIZE_MAX) {}
+  ClassInfo(wasm::IString name, wasm::IString parentName, uint32_t const size, uint32_t const rtid)
+      : name_(std::move(name)), parentName_(std::move(parentName)), size_(size), rtid_(rtid),
+        debugInfoOffset_(SIZE_MAX) {}
 
-  uint32_t getSize() const noexcept {
-    return 0U; // implement later
-  }
+  uint32_t getSize() const noexcept { return size_; }
 
   std::string_view const getName() const noexcept { return name_.str; }
 
@@ -72,9 +72,22 @@ public:
     fields_.emplace_back(FieldInfo{std::move(name), std::move(type), offsetInClass, nullable});
   }
 
+  bool isBasicType() const noexcept {
+    // Match basic type patterns like:
+    // ~lib/number/F32, ~lib/number/F64
+    // ~lib/number/U8, ~lib/number/I8
+    // ~lib/number/U16, ~lib/number/I16
+    // ~lib/number/U32, ~lib/number/I32
+    // ~lib/number/U64, ~lib/number/I64
+    // ~lib/number/Usize
+    static const std::regex basicTypePattern(R"(~lib/number/(F32|F64|U8|I8|U16|I16|U32|I32|U64|I64|Usize))");
+    return std::regex_match(name_.str.begin(), name_.str.end(), basicTypePattern);
+  }
+
 private:
   wasm::IString name_;
   wasm::IString parentName_;
+  uint32_t size_;
   uint32_t rtid_;
   size_t debugInfoOffset_;
   std::vector<FieldInfo> fields_;
@@ -203,13 +216,13 @@ void VariableInfo::addField(uint32_t const classNamePtr, uint32_t const fieldNam
   classIt->second.addMember(wasm::IString(fieldName), wasm::IString(typeName), offset, nullable != 0);
 }
 
-void VariableInfo::createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const rtid,
-                               vb::WasmModule const *const ctx) {
+void VariableInfo::createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const size,
+                               uint32_t const rtid, vb::WasmModule const *const ctx) {
   std::string const className{AsString::get(classNamePtr, ctx)};
   std::string const parentName{AsString::get(parentNamePtr, ctx)};
   std::cout << className << " extends " << parentName << " rtid=" << rtid << std::endl;
 
-  classRegistry.emplace(className, ClassInfo{wasm::IString(className), wasm::IString(parentName), rtid});
+  classRegistry.emplace(className, ClassInfo{wasm::IString(className), wasm::IString(parentName), size, rtid});
 }
 
 void VariableInfo::dumpElf() {
@@ -299,6 +312,31 @@ void VariableInfo::dumpElf() {
   assigner.assignAbbrevCode(memberAbbrev);
   abbrevDecls.push_back(memberAbbrev);
 
+  // 4. Create debug abbreviation for base type with DW_AT_name and DW_AT_byte_size
+  llvm::DWARFYAML::Abbrev baseTypeAbbrev;
+  baseTypeAbbrev.Code = 0; // Will be auto-assigned by assigner
+  baseTypeAbbrev.Tag = llvm::dwarf::DW_TAG_base_type;
+  baseTypeAbbrev.Children = llvm::dwarf::DW_CHILDREN_no;
+  baseTypeAbbrev.ListOffset = 0;
+
+  // Add DW_AT_name attribute with DW_FORM_string form
+  llvm::DWARFYAML::AttributeAbbrev baseTypeNameAttr;
+  baseTypeNameAttr.Attribute = llvm::dwarf::DW_AT_name;
+  baseTypeNameAttr.Form = llvm::dwarf::DW_FORM_string;
+  baseTypeNameAttr.Value = 0;
+  baseTypeAbbrev.Attributes.push_back(baseTypeNameAttr);
+
+  // Add DW_AT_byte_size attribute with DW_FORM_data1 form
+  llvm::DWARFYAML::AttributeAbbrev baseTypeSizeAttr;
+  baseTypeSizeAttr.Attribute = llvm::dwarf::DW_AT_byte_size;
+  baseTypeSizeAttr.Form = llvm::dwarf::DW_FORM_data1;
+  baseTypeSizeAttr.Value = 0;
+  baseTypeAbbrev.Attributes.push_back(baseTypeSizeAttr);
+
+  // Auto-assign abbreviation code
+  assigner.assignAbbrevCode(baseTypeAbbrev);
+  abbrevDecls.push_back(baseTypeAbbrev);
+
   // Add terminator (code 0 - never auto-assigned)
   llvm::DWARFYAML::Abbrev terminator;
   terminator.Code = 0;
@@ -338,7 +376,13 @@ void VariableInfo::dumpElf() {
   std::cout << "Adding " << classRegistry.size() << " classes to debug info\n";
   for (const auto &[className, classInfo] : classRegistry) {
     llvm::DWARFYAML::Entry classEntry;
-    classEntry.AbbrCode = classAbbrev.Code; // Use the class abbreviation
+
+    // Use base type abbreviation for basic types, class abbreviation for others
+    if (classInfo.isBasicType()) {
+      classEntry.AbbrCode = baseTypeAbbrev.Code; // Use the base type abbreviation
+    } else {
+      classEntry.AbbrCode = classAbbrev.Code; // Use the class abbreviation
+    }
 
     // Add DW_AT_name value (inline string)
     llvm::DWARFYAML::FormValue classNameValue;
@@ -347,11 +391,12 @@ void VariableInfo::dumpElf() {
 
     // Add DW_AT_byte_size value
     llvm::DWARFYAML::FormValue classSizeValue;
-    classSizeValue.Value = classInfo.getSize(); // DW_FORM_data4 - 4 bytes, uses Value field
+    classSizeValue.Value = classInfo.getSize(); // DW_FORM_data4 or DW_FORM_data1 depending on type
     classEntry.Values.push_back(classSizeValue);
 
     rootUnit.Entries.push_back(classEntry);
-    std::cout << "  Added class: " << className << " (size: " << classInfo.getSize() << ")\n";
+    std::cout << "  Added " << (classInfo.isBasicType() ? "base type" : "class") << ": " << className
+              << " (size: " << classInfo.getSize() << ")\n";
   }
 
   compileUnits.push_back(rootUnit);
