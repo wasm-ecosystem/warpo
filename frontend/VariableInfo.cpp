@@ -377,7 +377,14 @@ void VariableInfo::dumpElf() {
 
   rootUnit.Entries.push_back(rootEntry);
 
-  // Add class DIEs for each class in the registry
+  // STEP 1: Build complete DIE structure with members, but use placeholder type references
+  // Track which member entries need their type references fixed up
+  struct MemberFixup {
+    size_t entryIndex;    // Index in rootUnit.Entries
+    std::string typeName; // Name of the type this member references
+  };
+  std::vector<MemberFixup> memberFixups;
+
   std::cout << "Adding " << classRegistry.size() << " classes to debug info\n";
   for (const auto &[className, classInfo] : classRegistry) {
     bool const isBasicType = classInfo.isBasicType();
@@ -386,56 +393,60 @@ void VariableInfo::dumpElf() {
 
     // Use base type abbreviation for basic types, class abbreviation for others
     if (isBasicType) {
-      classEntry.AbbrCode = baseTypeAbbrev.Code; // Use the base type abbreviation
+      classEntry.AbbrCode = baseTypeAbbrev.Code;
     } else {
-      classEntry.AbbrCode = classAbbrev.Code; // Use the class abbreviation
+      classEntry.AbbrCode = classAbbrev.Code;
     }
 
     // Add DW_AT_name value (inline string)
     llvm::DWARFYAML::FormValue classNameValue;
-    classNameValue.CStr = className; // DW_FORM_string - inline string uses CStr field
+    classNameValue.CStr = className;
     classEntry.Values.push_back(classNameValue);
 
     // Add DW_AT_byte_size value
     llvm::DWARFYAML::FormValue classSizeValue;
-    classSizeValue.Value = classInfo.getSize(); // DW_FORM_data4 or DW_FORM_data1 depending on type
+    classSizeValue.Value = classInfo.getSize();
     classEntry.Values.push_back(classSizeValue);
 
     rootUnit.Entries.push_back(classEntry);
     std::cout << "  Added " << (isBasicType ? "base type" : "class") << ": " << className
               << " (size: " << classInfo.getSize() << ")\n";
 
-    std::vector<FieldInfo> const &fields = classInfo.getFields();
-    for (const auto &field : fields) {
-      llvm::DWARFYAML::Entry memberEntry;
-      memberEntry.AbbrCode = memberAbbrev.Code; // Use the member abbreviation
-
-      // Add DW_AT_name value (inline string)
-      llvm::DWARFYAML::FormValue memberNameValue;
-      std::string_view fieldNameView = field.getName();
-      memberNameValue.CStr =
-          llvm::StringRef(fieldNameView.data(), fieldNameView.size()); // DW_FORM_string - inline string uses CStr field
-      memberEntry.Values.push_back(memberNameValue);
-
-      // Add DW_AT_type value (reference to type DIE - will be resolved later)
-      llvm::DWARFYAML::FormValue memberTypeValue;
-      memberTypeValue.Value = 0; // TODO: Calculate DIE offset reference for field type
-      memberEntry.Values.push_back(memberTypeValue);
-
-      // Add DW_AT_data_member_location value (offset within class)
-      llvm::DWARFYAML::FormValue memberLocationValue;
-      memberLocationValue.Value = field.getOffsetInClass(); // DW_FORM_data4
-      memberEntry.Values.push_back(memberLocationValue);
-
-      rootUnit.Entries.push_back(memberEntry);
-      std::cout << "    Added member: " << field.getName() << " (type: " << field.getType()
-                << ", offset: " << field.getOffsetInClass() << ")\n";
-    }
-
-    // Add terminator entry to mark end of children (required when DW_CHILDREN_yes)
+    // For classes (not basic types), add members now
     if (!isBasicType) {
+      std::vector<FieldInfo> const &fields = classInfo.getFields();
+      for (const auto &field : fields) {
+        llvm::DWARFYAML::Entry memberEntry;
+        memberEntry.AbbrCode = memberAbbrev.Code;
+
+        // Add DW_AT_name value
+        llvm::DWARFYAML::FormValue memberNameValue;
+        std::string_view fieldNameView = field.getName();
+        memberNameValue.CStr = llvm::StringRef(fieldNameView.data(), fieldNameView.size());
+        memberEntry.Values.push_back(memberNameValue);
+
+        // Add DW_AT_type value (placeholder for now)
+        llvm::DWARFYAML::FormValue memberTypeValue;
+        memberTypeValue.Value = 0xDEADBEEF; // Obvious placeholder that will be fixed
+        memberEntry.Values.push_back(memberTypeValue);
+
+        // Add DW_AT_data_member_location value
+        llvm::DWARFYAML::FormValue memberLocationValue;
+        memberLocationValue.Value = field.getOffsetInClass();
+        memberEntry.Values.push_back(memberLocationValue);
+
+        // Remember this member needs its type reference fixed
+        size_t memberIndex = rootUnit.Entries.size();
+        memberFixups.push_back({memberIndex, std::string(field.getType())});
+
+        rootUnit.Entries.push_back(memberEntry);
+        std::cout << "    Added member: " << field.getName() << " (type: " << field.getType()
+                  << ", offset: " << field.getOffsetInClass() << ") - needs fixup\n";
+      }
+
+      // Add terminator entry to mark end of children
       llvm::DWARFYAML::Entry childTerminator;
-      childTerminator.AbbrCode = 0; // Abbrev code 0 marks the end of children
+      childTerminator.AbbrCode = 0;
       rootUnit.Entries.push_back(childTerminator);
     }
   }
@@ -443,18 +454,66 @@ void VariableInfo::dumpElf() {
   compileUnits.push_back(rootUnit);
   dwarfData.CompileUnits = compileUnits;
 
-  std::cout << "Length before fixup: " << rootUnit.Length.getLength() << "\n";
-
-  // Track DIE offsets using visitor pattern (like Binaryen does)
+  // STEP 2: Now that all DIEs are in place, calculate their offsets
+  std::cout << "\n=== Calculating DIE offsets ===\n";
   DIEOffsetTracker offsetTracker(dwarfData);
   offsetTracker.traverseDebugInfo();
 
-  // Now you can get offsets for any named DIE!
-  std::cout << "\n=== DIE Offsets ===\n";
+  std::cout << "=== DIE Offsets ===\n";
   for (const auto &[name, offset] : offsetTracker.getAllOffsets()) {
     std::cout << "  " << name << " @ 0x" << std::hex << offset << std::dec << "\n";
   }
   std::cout << "===================\n\n";
+
+  // Build a map from short type names to full DIE type names
+  // e.g., "u32" -> "~lib/number/U32", "usize" -> "~lib/number/Usize"
+  std::unordered_map<std::string, std::string> typeNameMap;
+  for (const auto &[fullTypeName, offset] : offsetTracker.getAllOffsets()) {
+    // Extract short name from full path like "~lib/number/U32" -> "U32"
+    size_t lastSlash = fullTypeName.find_last_of('/');
+    if (lastSlash != std::string::npos && lastSlash + 1 < fullTypeName.size()) {
+      std::string shortName = fullTypeName.substr(lastSlash + 1);
+      // Convert to lowercase for case-insensitive matching (u32, U32, etc.)
+      std::string lowerShortName = shortName;
+      std::transform(lowerShortName.begin(), lowerShortName.end(), lowerShortName.begin(), ::tolower);
+      typeNameMap[lowerShortName] = fullTypeName;
+    }
+    // Also map the full name to itself (for non-basic types like classes)
+    typeNameMap[fullTypeName] = fullTypeName;
+  }
+
+  // STEP 3: Fix up all member type references with actual DIE offsets
+  std::cout << "=== Fixing up member type references ===\n";
+  for (const auto &fixup : memberFixups) {
+    // Strip nullable suffix " | null" if present
+    std::string typeName = fixup.typeName;
+    size_t nullablePos = typeName.find(" | null");
+    if (nullablePos != std::string::npos) {
+      typeName = typeName.substr(0, nullablePos);
+    }
+
+    // Try to find the type by exact name first, then by mapped name
+    uint64_t typeOffset = offsetTracker.getDIEOffset(typeName);
+    if (typeOffset == 0) {
+      // Try lowercase version for basic types
+      std::string lowerTypeName = typeName;
+      std::transform(lowerTypeName.begin(), lowerTypeName.end(), lowerTypeName.begin(), ::tolower);
+      auto it = typeNameMap.find(lowerTypeName);
+      if (it != typeNameMap.end()) {
+        typeOffset = offsetTracker.getDIEOffset(it->second);
+      }
+    }
+
+    if (typeOffset > 0) {
+      // The type reference is at Values[1] (0=name, 1=type, 2=location)
+      dwarfData.CompileUnits[0].Entries[fixup.entryIndex].Values[1].Value = typeOffset;
+      std::cout << "  Fixed member @ entry[" << fixup.entryIndex << "] type='" << fixup.typeName << "' -> offset=0x"
+                << std::hex << typeOffset << std::dec << "\n";
+    } else {
+      std::cerr << "  ERROR: Could not find DIE offset for type '" << fixup.typeName << "'\n";
+    }
+  }
+  std::cout << "========================================" << std::endl;
 
   // Use LLVM's built-in EmitDebugSections with ApplyFixups=true to automatically calculate lengths
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
