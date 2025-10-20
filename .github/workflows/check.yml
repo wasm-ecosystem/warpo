@@ -64,10 +64,7 @@ jobs:
           thread-comments: ${{ github.event_name == 'pull_request' }}
           file-annotations: true # Enable file annotations in workflow logs
           step-summary: true # Print results in job summary
-          ignore: |
-            third_party/**
-            build/**
-            assemblyscript/**
+          ignore: third_party|build|assemblyscript
       - name: Print linter results
         if: always()
         run: |
