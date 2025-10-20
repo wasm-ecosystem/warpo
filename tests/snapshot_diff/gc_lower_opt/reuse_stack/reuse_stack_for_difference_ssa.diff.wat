@@ -31,7 +31,7 @@
 ;; =========add========
           i32.store $0 align=1
 ;; ====================
-          local.get $2
+          local.get $0
         end
       call $tests/snapshot_diff/gc_lower_opt/reuse_stack/reuse_stack_for_difference_ssa/foo
         block ;;i32
@@ -58,7 +58,7 @@
 ;; =========add========
           i32.store $0 align=1
 ;; ====================
-          local.get $2
+          local.get $1
         end
       call $tests/snapshot_diff/gc_lower_opt/reuse_stack/reuse_stack_for_difference_ssa/foo
     end

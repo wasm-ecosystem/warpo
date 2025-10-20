@@ -13,7 +13,7 @@
 ;;        global.get $~lib/memory/__stack_pointer
 ;;        local.get $1
 ;;      i32.store $0 align=1
-;;      local.get $1
+;;      local.get $0
 ;;    end
 ;; ====================
   call $tests/snapshot_diff/gc_lower_opt/ssa_merge/ssa_merge_by_get_param/foo

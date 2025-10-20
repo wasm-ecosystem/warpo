@@ -16,7 +16,7 @@
             global.get $~lib/memory/__stack_pointer
             local.get $1
           i32.store $0 align=1
-          local.get $1
+          i32.const 0
         end
       local.set $0
       if ;;none
@@ -41,7 +41,7 @@
 ;;          global.get $~lib/memory/__stack_pointer
 ;;          local.get $1
 ;;        i32.store $0 offset=8 align=1
-;;        local.get $1
+;;        local.get $0
 ;;      end
 ;; ====================
       call $tests/snapshot_diff/gc_lower_opt/ssa_merge/ssa_merge_for_cond/foo

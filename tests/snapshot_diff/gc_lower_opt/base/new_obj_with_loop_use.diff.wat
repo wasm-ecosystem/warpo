@@ -20,7 +20,7 @@
             global.get $~lib/memory/__stack_pointer
             local.get $2
           i32.store $0 align=1
-          local.get $2
+          i32.const 0
         end
 ;; ====================
       local.set $0

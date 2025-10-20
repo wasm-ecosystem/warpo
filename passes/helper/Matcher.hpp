@@ -7,9 +7,12 @@
 #include <functional>
 #include <initializer_list>
 #include <map>
+#include <sstream>
 #include <string>
 #include <type_traits>
+#include <utility>
 
+#include "gtest/gtest.h"
 #include "support/index.h"
 #include "warpo/support/Container.hpp"
 #include "wasm.h"
@@ -294,3 +297,24 @@ static inline M<wasm::Block> at(size_t n, M<wasm::Expression> &&m) {
 } // namespace block
 
 } // namespace warpo::passes::matcher
+
+#ifdef WARPO_ENABLE_UNIT_TESTS
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+namespace warpo::passes::matcher {
+
+inline void isMatchedImpl(M<wasm::Expression> &m, wasm::Expression *expr, const char *file, int line) {
+  if (!m(*expr)) {
+    std::stringstream ss{};
+    ss << *expr;
+    GTEST_FAIL_AT(file, line) << std::move(ss).str();
+  }
+}
+
+} // namespace warpo::passes::matcher
+
+#define isMatched(match, expr) warpo::passes::matcher::isMatchedImpl(match, expr, __FILE__, __LINE__)
+
+#endif
