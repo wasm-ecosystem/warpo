@@ -1,5 +1,5 @@
 ;; ====================
-(func $tests/snapshot_diff/advanced_inlining/large_function_use_once/_start (func)
+(func $tests/snapshot_diff/advanced_inlining/large_function_use_once/_start)
 ;; =========add========
   (local i32)
   (local i32)

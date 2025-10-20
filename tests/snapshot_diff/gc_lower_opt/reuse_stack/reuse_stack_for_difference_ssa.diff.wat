@@ -1,5 +1,5 @@
 ;; ====================
-(func $tests/snapshot_diff/gc_lower_opt/reuse_stack/reuse_stack_for_difference_ssa/_start (func)
+(func $tests/snapshot_diff/gc_lower_opt/reuse_stack/reuse_stack_for_difference_ssa/_start)
   (local i32)
   (local i32)
   (local i32)

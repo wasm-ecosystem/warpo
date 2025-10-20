@@ -1,7 +1,7 @@
 ;; ======remove=======
-;;(func $~lib/rt/__localtostack (func (param i32) (result i32))
+;;(func $~lib/rt/__localtostack (param i32) (result i32))
 ;; =========add========
-(func $~lib/rt/__decrease_sp (func (param i32))
+(func $~lib/rt/__decrease_sp (param i32))
   block ;;none
         global.get $~lib/memory/__stack_pointer
         local.get $0
@@ -21,9 +21,9 @@
 ;; ====================
 )
 ;; ======remove=======
-;;(func $~lib/rt/__tmptostack (func (param i32) (result i32))
+;;(func $~lib/rt/__tmptostack (param i32) (result i32))
 ;; =========add========
-(func $~lib/rt/__increase_sp (func (param i32))
+(func $~lib/rt/__increase_sp (param i32))
   block ;;none
         global.get $~lib/memory/__stack_pointer
         local.get $0

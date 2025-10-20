@@ -1,5 +1,5 @@
 ;; ====================
-(func $tests/snapshot_diff/gc_lower_opt/ssa_merge/ssa_merge_by_get_param/_start (func (param i32))
+(func $tests/snapshot_diff/gc_lower_opt/ssa_merge/ssa_merge_by_get_param/_start (param i32))
 ;; ======remove=======
 ;;(local i32)
 ;;block ;;none

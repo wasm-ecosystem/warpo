@@ -1,5 +1,5 @@
 ;; ====================
-(func $tests/snapshot_diff/gc_lower_opt/shrink_wrap_leaf_filter/prologue_muteted_to_stack/_start (func (result i32))
+(func $tests/snapshot_diff/gc_lower_opt/shrink_wrap_leaf_filter/prologue_muteted_to_stack/_start (result i32))
   (local i32)
   (local i32)
   (local i32)

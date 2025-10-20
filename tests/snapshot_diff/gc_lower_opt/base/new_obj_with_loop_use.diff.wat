@@ -1,5 +1,5 @@
 ;; ====================
-(func $tests/snapshot_diff/gc_lower_opt/base/new_obj_with_loop_use/_start (func)
+(func $tests/snapshot_diff/gc_lower_opt/base/new_obj_with_loop_use/_start)
   (local i32)
   (local i32)
 ;; =========add========

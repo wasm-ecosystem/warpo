@@ -1,5 +1,5 @@
 ;; ====================
-(func $tests/snapshot_diff/advanced_inlining/large_function_use_multiple/_start (func)
+(func $tests/snapshot_diff/advanced_inlining/large_function_use_multiple/_start)
   block ;;none
       i32.const 1
       i32.const 2
