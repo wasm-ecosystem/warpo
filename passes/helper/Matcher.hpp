@@ -12,7 +12,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "gtest/gtest.h"
 #include "support/index.h"
 #include "warpo/support/Container.hpp"
 #include "wasm.h"
