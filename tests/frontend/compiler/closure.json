@@ -1,5 +1,4 @@
 {
-  "asc_flags": [],
   "stderr": [
     "AS100: Not implemented: Closures",
     "$local1; // closure 1",

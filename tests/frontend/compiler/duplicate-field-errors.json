@@ -1,5 +1,4 @@
 {
-  "asc_flags": [],
   "stderr": [
     "TS2385: Overload signatures must all be public, private or protected.",
     "public privPub: i32;",

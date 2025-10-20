@@ -1,5 +1,4 @@
 {
-  "asc_flags": [],
   "stderr": [
     "TS2540: Cannot assign to",
     "b = 3;",

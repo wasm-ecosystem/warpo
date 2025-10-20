@@ -1,5 +1,4 @@
 {
-  "asc_flags": [],
   "stderr": [
     "TS2564: Property 'field-initialization-errors/Ref#a' has no initializer",
     "TS2564: Property 'field-initialization-errors/Ref_Ctor#a' has no initializer",

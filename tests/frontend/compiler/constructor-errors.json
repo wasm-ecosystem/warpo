@@ -1,5 +1,4 @@
 {
-  "asc_flags": [],
   "stderr": [
     "TS2333: 'this' cannot be referenced in constructor arguments.",
     "b: i32 = this.a, // TS2333",

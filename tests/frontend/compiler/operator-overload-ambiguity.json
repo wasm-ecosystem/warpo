@@ -1,5 +1,4 @@
 {
-  "asc_flags": [],
   "stderr": [
     "AS240: Ambiguous operator overload '==' (conflicting overloads 'operator-overload-ambiguity/A#__eq' and 'operator-overload-ambiguity/B#__eq').",
     "compare_nonnull_a == compare_nonnull_b;",
