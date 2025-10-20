@@ -14,10 +14,14 @@
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
+
+#include "llvm/ADT/StringMap.h"
+#include "llvm/Support/MemoryBuffer.h"
 
 #include "src/WasmModule/WasmModule.hpp"
 #include "src/core/common/NativeSymbol.hpp"
@@ -32,7 +36,7 @@ public:
 
   static std::vector<vb::NativeSymbol> createVariableInfoAPI();
 
-  static void dumpElf();
+  static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> generateDwarf();
 
 private:
   static void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const size,

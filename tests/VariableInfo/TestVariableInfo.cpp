@@ -6,6 +6,8 @@
 #include <support/colors.h>
 #include <vector>
 
+#include "frontend/VariableInfo/VariableInfo.hpp"
+#include "llvm/DebugInfo/DWARF/DWARFContext.h"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/FileSystem.hpp"
 
@@ -20,7 +22,28 @@ TEST(TestVariableInfo, TestClassInfo) {
   std::stringstream ss;
   ss << *compileResult.m.get();
   std::string actual = std::move(ss).str();
-  warpo::writeBinaryFile("/home/jcq/workspace/warpo/build/test.wat", std::move(actual));
+
+  llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> debugSections = warpo::frontend::VariableInfo::generateDwarf();
+
+  std::unique_ptr<llvm::DWARFContext> dwarfContext = llvm::DWARFContext::create(debugSections, 4U, true);
+
+  std::string dumpOutput;
+  llvm::raw_string_ostream dumpStream(dumpOutput);
+  llvm::DIDumpOptions dumpOptions;
+  dumpOptions.ShowChildren = true;
+  dumpOptions.ShowParents = false;
+  dumpOptions.ShowForm = false;
+  dumpOptions.SummarizeTypes = false;
+  dumpOptions.Verbose = false;
+  dumpOptions.DisplayRawContents = false;
+  dwarfContext->dump(dumpStream, dumpOptions);
+  dumpStream.flush();
+
+  std::ofstream outFile("/home/jcq/workspace/warpo/debug_info_dump.txt");
+  if (outFile) {
+    outFile << dumpOutput;
+    outFile.close();
+  }
 
   // Compare the two debug info dump files
   std::ifstream expectedFile("/home/jcq/workspace/warpo/tests/VariableInfo/debug_info_dump.txt");
