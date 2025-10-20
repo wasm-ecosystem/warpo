@@ -10,6 +10,8 @@
 
 namespace warpo::passes {
 
+template <class... Ts> bool isOneOf(wasm::Expression *expr) { return ((expr->is<Ts>()) || ...); }
+
 inline void setAsUnImported(wasm::Importable *importable) {
   assert(importable != nullptr);
   importable->module = wasm::Name{};

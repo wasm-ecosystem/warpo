@@ -9,7 +9,7 @@
 #include <memory>
 #include <optional>
 
-#include "../helper/ExprExt.hpp"
+#include "../helper/BinaryenExt.hpp"
 #include "GCInfo.hpp"
 #include "StackAssigner.hpp"
 #include "ToStackReplacer.hpp"
