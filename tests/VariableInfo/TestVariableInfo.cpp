@@ -1,5 +1,7 @@
+#include <fstream>
 #include <gtest/gtest.h>
 #include <pass.h>
+#include <sstream>
 #include <string>
 #include <support/colors.h>
 #include <vector>
@@ -19,4 +21,21 @@ TEST(TestVariableInfo, TestClassInfo) {
   ss << *compileResult.m.get();
   std::string actual = std::move(ss).str();
   warpo::writeBinaryFile("/home/jcq/workspace/warpo/build/test.wat", std::move(actual));
+
+  // Compare the two debug info dump files
+  std::ifstream expectedFile("/home/jcq/workspace/warpo/tests/VariableInfo/debug_info_dump.txt");
+  std::ifstream actualFile("/home/jcq/workspace/warpo/debug_info_dump.txt");
+
+  ASSERT_TRUE(expectedFile.is_open()) << "Failed to open expected debug_info_dump.txt";
+  ASSERT_TRUE(actualFile.is_open()) << "Failed to open actual debug_info_dump.txt";
+
+  std::stringstream expectedBuffer;
+  std::stringstream actualBuffer;
+  expectedBuffer << expectedFile.rdbuf();
+  actualBuffer << actualFile.rdbuf();
+
+  std::string expectedContent = expectedBuffer.str();
+  std::string actualContent = actualBuffer.str();
+
+  ASSERT_EQ(expectedContent, actualContent) << "Debug info dump files do not match!";
 }

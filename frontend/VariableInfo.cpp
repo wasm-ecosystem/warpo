@@ -45,7 +45,7 @@ namespace warpo::frontend {
 class FieldInfo final {
 public:
   FieldInfo(wasm::IString name, wasm::IString type, uint32_t offsetInClass, bool nullable)
-      : name_(std::move(name)), type_(std::move(type)), offsetInClass_(offsetInClass), nullable_(nullable) {}
+      : name_(std::move(name)), type_(normalizeTypeName(type)), offsetInClass_(offsetInClass), nullable_(nullable) {}
 
   std::string_view getName() const noexcept { return name_.str; }
   std::string_view getType() const noexcept { return type_.str; }
@@ -53,6 +53,30 @@ public:
   bool isNullable() const noexcept { return nullable_; }
 
 private:
+  // Normalize short basic type names to full AssemblyScript type names
+  // e.g., "i32" -> "~lib/number/I32", "usize" -> "~lib/number/Usize"
+  // Assumes input is already lowercase
+  static wasm::IString normalizeTypeName(const wasm::IString &type) noexcept {
+    std::string_view typeStr = type.str;
+
+    // Map of lowercase short names to full type names
+    static const std::unordered_map<std::string_view, std::string_view> basicTypeMap = {
+        {"i8", "~lib/number/I8"},   {"u8", "~lib/number/U8"},       {"i16", "~lib/number/I16"},
+        {"u16", "~lib/number/U16"}, {"i32", "~lib/number/I32"},     {"u32", "~lib/number/U32"},
+        {"i64", "~lib/number/I64"}, {"u64", "~lib/number/U64"},     {"f32", "~lib/number/F32"},
+        {"f64", "~lib/number/F64"}, {"usize", "~lib/number/Usize"},
+    };
+
+    // Check if it's a basic type that needs mapping
+    auto it = basicTypeMap.find(typeStr);
+    if (it != basicTypeMap.end()) {
+      return wasm::IString(std::string(it->second).c_str());
+    }
+
+    // Return original if not a basic type
+    return type;
+  }
+
   wasm::IString name_;
   wasm::IString type_;
   uint32_t offsetInClass_;
@@ -76,6 +100,10 @@ public:
   void addMember(wasm::IString name, wasm::IString type, uint32_t offsetInClass, bool nullable) {
     fields_.emplace_back(FieldInfo{std::move(name), std::move(type), offsetInClass, nullable});
   }
+
+  void setDebugInfoOffset(uint64_t offset) noexcept { debugInfoOffset_ = offset; }
+
+  uint64_t getDebugInfoOffset() const noexcept { return debugInfoOffset_; }
 
   bool isBasicType() const noexcept {
     // Match basic type patterns like:
@@ -101,13 +129,11 @@ private:
 
 std::unordered_map<std::string, ClassInfo> classRegistry;
 
-// DIE offset tracker using visitor pattern (like Binaryen's DIEFixupVisitor)
-class DIEOffsetTracker : public llvm::DWARFYAML::Visitor {
+// Calculate DIE offsets by traversing the entries and updating classRegistry
+class DIEOffsetCalculator : public llvm::DWARFYAML::Visitor {
 private:
   uint64_t currentOffset_ = 0;
-  std::unordered_map<std::string, uint64_t> namedDIEOffsets_;
-  std::string currentDIEName_;
-  size_t currentAbbrevIndex_ = 0;
+  std::unordered_map<std::string, ClassInfo> &classRegistry_;
 
   void onStartCompileUnit([[maybe_unused]] llvm::DWARFYAML::Unit &CU) override {
     // CU header: length(4) + version(2) + abbr_offset(4) + addr_size(1) = 11 bytes
@@ -128,9 +154,12 @@ private:
             // Extract the name from the form value
             const auto &nameValue = DIE.Values[valueIndex];
             if (!nameValue.CStr.empty()) {
-              // This DIE has a name, store its offset
+              // This DIE has a name, update the class registry with its offset
               std::string dieName(nameValue.CStr.data(), nameValue.CStr.size());
-              namedDIEOffsets_[dieName] = dieOffset;
+              auto it = classRegistry_.find(dieName);
+              if (it != classRegistry_.end()) {
+                it->second.setDebugInfoOffset(dieOffset);
+              }
             }
           }
           valueIndex++;
@@ -162,15 +191,8 @@ private:
   void onValue(const llvm::MemoryBufferRef MBR) override { currentOffset_ += MBR.getBufferSize(); }
 
 public:
-  DIEOffsetTracker(llvm::DWARFYAML::Data &DI) : llvm::DWARFYAML::Visitor(DI) {}
-
-  // Get the offset of a named DIE (e.g., a class by name)
-  uint64_t getDIEOffset(const std::string &name) const {
-    auto it = namedDIEOffsets_.find(name);
-    return (it != namedDIEOffsets_.end()) ? it->second : 0;
-  }
-
-  const std::unordered_map<std::string, uint64_t> &getAllOffsets() const { return namedDIEOffsets_; }
+  DIEOffsetCalculator(llvm::DWARFYAML::Data &DI, std::unordered_map<std::string, ClassInfo> &registry)
+      : llvm::DWARFYAML::Visitor(DI), classRegistry_(registry) {}
 };
 
 // Helper for automatic DWARF code assignment (since LLVM's DWARFYAML doesn't do it)
@@ -454,33 +476,10 @@ void VariableInfo::dumpElf() {
   compileUnits.push_back(rootUnit);
   dwarfData.CompileUnits = compileUnits;
 
-  // STEP 2: Now that all DIEs are in place, calculate their offsets
+  // STEP 2: Now that all DIEs are in place, calculate their offsets and update classRegistry
   std::cout << "\n=== Calculating DIE offsets ===\n";
-  DIEOffsetTracker offsetTracker(dwarfData);
-  offsetTracker.traverseDebugInfo();
-
-  std::cout << "=== DIE Offsets ===\n";
-  for (const auto &[name, offset] : offsetTracker.getAllOffsets()) {
-    std::cout << "  " << name << " @ 0x" << std::hex << offset << std::dec << "\n";
-  }
-  std::cout << "===================\n\n";
-
-  // Build a map from short type names to full DIE type names
-  // e.g., "u32" -> "~lib/number/U32", "usize" -> "~lib/number/Usize"
-  std::unordered_map<std::string, std::string> typeNameMap;
-  for (const auto &[fullTypeName, offset] : offsetTracker.getAllOffsets()) {
-    // Extract short name from full path like "~lib/number/U32" -> "U32"
-    size_t lastSlash = fullTypeName.find_last_of('/');
-    if (lastSlash != std::string::npos && lastSlash + 1 < fullTypeName.size()) {
-      std::string shortName = fullTypeName.substr(lastSlash + 1);
-      // Convert to lowercase for case-insensitive matching (u32, U32, etc.)
-      std::string lowerShortName = shortName;
-      std::transform(lowerShortName.begin(), lowerShortName.end(), lowerShortName.begin(), ::tolower);
-      typeNameMap[lowerShortName] = fullTypeName;
-    }
-    // Also map the full name to itself (for non-basic types like classes)
-    typeNameMap[fullTypeName] = fullTypeName;
-  }
+  DIEOffsetCalculator offsetCalculator(dwarfData, classRegistry);
+  offsetCalculator.traverseDebugInfo();
 
   // STEP 3: Fix up all member type references with actual DIE offsets
   std::cout << "=== Fixing up member type references ===\n";
@@ -492,25 +491,21 @@ void VariableInfo::dumpElf() {
       typeName = typeName.substr(0, nullablePos);
     }
 
-    // Try to find the type by exact name first, then by mapped name
-    uint64_t typeOffset = offsetTracker.getDIEOffset(typeName);
-    if (typeOffset == 0) {
-      // Try lowercase version for basic types
-      std::string lowerTypeName = typeName;
-      std::transform(lowerTypeName.begin(), lowerTypeName.end(), lowerTypeName.begin(), ::tolower);
-      auto it = typeNameMap.find(lowerTypeName);
-      if (it != typeNameMap.end()) {
-        typeOffset = offsetTracker.getDIEOffset(it->second);
-      }
+    // Look up the type directly in the registry (types are already normalized by FieldInfo)
+    uint64_t typeOffset = 0;
+    auto it = classRegistry.find(typeName);
+    if (it != classRegistry.end()) {
+      typeOffset = it->second.getDebugInfoOffset();
     }
 
-    if (typeOffset > 0) {
+    if (typeOffset > 0 && typeOffset != SIZE_MAX) {
       // The type reference is at Values[1] (0=name, 1=type, 2=location)
       dwarfData.CompileUnits[0].Entries[fixup.entryIndex].Values[1].Value = typeOffset;
-      std::cout << "  Fixed member @ entry[" << fixup.entryIndex << "] type='" << fixup.typeName << "' -> offset=0x"
+      std::cout << "  Fixed member @ entry[" << fixup.entryIndex << "] type='" << fixup.typeName << "' @ offset=0x"
                 << std::hex << typeOffset << std::dec << "\n";
     } else {
-      std::cerr << "  ERROR: Could not find DIE offset for type '" << fixup.typeName << "'\n";
+      std::cerr << "  ERROR: Could not find DIE offset for type '" << fixup.typeName << "' (after stripping nullable: '"
+                << typeName << "')\n";
     }
   }
   std::cout << "========================================" << std::endl;
