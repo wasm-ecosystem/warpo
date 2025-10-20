@@ -17,7 +17,9 @@ TEST(TestVariableInfo, TestClassInfo) {
   config.useColorfulDiagMessage = false;
   Colors::setEnabled(false);
 
-  std::vector<std::string> const entries{"/home/jcq/workspace/warpo/tests/VariableInfo/test.ts"};
+  std::filesystem::path const testDir = std::filesystem::path(__FILE__).parent_path();
+  std::filesystem::path const testFilePath = testDir / "test.ts";
+  std::vector<std::string> const entries{testFilePath.string()};
   warpo::frontend::CompilationResult const compileResult{warpo::frontend::compile(entries, config)};
   std::stringstream ss;
   ss << *compileResult.m.get();
@@ -46,7 +48,8 @@ TEST(TestVariableInfo, TestClassInfo) {
   }
 
   // Compare the two debug info dump files
-  std::ifstream expectedFile("/home/jcq/workspace/warpo/tests/VariableInfo/debug_info_dump.txt");
+  std::filesystem::path const expectedDumpPath = testDir / "debug_info_dump.txt";
+  std::ifstream expectedFile(expectedDumpPath);
   std::ifstream actualFile("/home/jcq/workspace/warpo/debug_info_dump.txt");
 
   ASSERT_TRUE(expectedFile.is_open()) << "Failed to open expected debug_info_dump.txt";
