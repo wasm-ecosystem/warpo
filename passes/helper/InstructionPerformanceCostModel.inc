@@ -192,6 +192,15 @@ OPCODE("i64.extend8_s", I64_EXTEND8_S, 1 * ArithmeticOperationCost)
 OPCODE("i64.extend16_s", I64_EXTEND16_S, 1 * ArithmeticOperationCost)
 OPCODE("i64.extend32_s", I64_EXTEND32_S, 1 * ArithmeticOperationCost)
 
+OPCODE("i32.trunc_sat_f32_s", I32_TRUNC_SAT_F32_S, 141 * ArithmeticOperationCost)
+OPCODE("i32.trunc_sat_f32_u", I32_TRUNC_SAT_F32_U, 141 * ArithmeticOperationCost)
+OPCODE("i32.trunc_sat_f64_s", I32_TRUNC_SAT_F64_S, 141 * ArithmeticOperationCost)
+OPCODE("i32.trunc_sat_f64_u", I32_TRUNC_SAT_F64_U, 141 * ArithmeticOperationCost)
+OPCODE("i64.trunc_sat_f32_s", I64_TRUNC_SAT_F32_S, 141 * ArithmeticOperationCost)
+OPCODE("i64.trunc_sat_f32_u", I64_TRUNC_SAT_F32_U, 141 * ArithmeticOperationCost)
+OPCODE("i64.trunc_sat_f64_s", I64_TRUNC_SAT_F64_S, 141 * ArithmeticOperationCost)
+OPCODE("i64.trunc_sat_f64_u", I64_TRUNC_SAT_F64_U, 141 * ArithmeticOperationCost)
+
 #undef MemoryAccessCost
 #undef ArithmeticOperationCost
 #undef BranchCost
