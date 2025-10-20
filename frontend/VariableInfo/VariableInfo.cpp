@@ -18,6 +18,7 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <memory>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -27,12 +28,8 @@
 #include "DebugStringManager.hpp"
 #include "FieldInfo.hpp"
 #include "VariableInfo.hpp"
-#include "frontend/AsString.hpp"
-
-#include "src/core/common/function_traits.hpp"
-
-// LLVM DWARF YAML includes for testing
 #include "binaryen/third_party/llvm-project/DWARFVisitor.h"
+#include "frontend/AsString.hpp"
 #include "llvm/BinaryFormat/Dwarf.h"
 #include "llvm/DebugInfo/DWARF/DWARFContext.h"
 #include "llvm/DebugInfo/DWARF/DWARFDie.h"
@@ -41,6 +38,8 @@
 #include "llvm/Support/LEB128.h"
 #include "llvm/Support/YAMLTraits.h"
 #include "llvm/Support/raw_ostream.h"
+
+#include "src/core/common/function_traits.hpp"
 
 namespace warpo::frontend {
 
@@ -55,51 +54,51 @@ private:
   uint64_t currentOffset_ = 0U;
   VariableInfo::ClassRegistry &classRegistry_;
 
-  void onStartCompileUnit([[maybe_unused]] llvm::DWARFYAML::Unit &CU) override { currentOffset_ = 11U; }
+  void onStartCompileUnit([[maybe_unused]] llvm::DWARFYAML::Unit &CU) override {
+    currentOffset_ = 11U; // CU header: 4(length) + 2(version) + 4(abbrev_offset) + 1(address_size)
+  }
 
   void onStartDIE([[maybe_unused]] llvm::DWARFYAML::Unit &CU, llvm::DWARFYAML::Entry &DIE) override {
     uint64_t const dieOffset = currentOffset_;
+    if (DIE.AbbrCode.value != 0U) {
 
-    for (llvm::DWARFYAML::Abbrev const &abbrev : DebugInfo.AbbrevDecls) {
-      if (abbrev.Code == DIE.AbbrCode.value) {
-        size_t valueIndex = 0U;
-        for (llvm::DWARFYAML::AttributeAbbrev const &attr : abbrev.Attributes) {
-          if (attr.Attribute == llvm::dwarf::DW_AT_name && valueIndex < DIE.Values.size()) {
-            llvm::DWARFYAML::FormValue const &nameValue = DIE.Values[valueIndex];
-            if (!nameValue.CStr.empty()) {
-              std::string_view const dieName(nameValue.CStr.data(), nameValue.CStr.size());
-              VariableInfo::ClassRegistry::iterator it = classRegistry_.find(dieName);
-              if (it != classRegistry_.end()) {
-                it->second.setDebugInfoOffset(dieOffset);
-              }
-            }
-          }
-          valueIndex++;
-        }
-        break;
+      llvm::DWARFYAML::Abbrev const &abbrev = DebugInfo.AbbrevDecls[DIE.AbbrCode.value - 1U];
+      assert(abbrev.Code == DIE.AbbrCode.value);
+      if ((abbrev.Tag == llvm::dwarf::Tag::DW_TAG_class_type) || (abbrev.Tag == llvm::dwarf::Tag::DW_TAG_base_type)) {
+
+        constexpr size_t nameIndex = 0U;
+        llvm::DWARFYAML::AttributeAbbrev const &attr = abbrev.Attributes[nameIndex];
+        assert(attr.Attribute == llvm::dwarf::DW_AT_name);
+
+        llvm::DWARFYAML::FormValue const &nameValue = DIE.Values[nameIndex];
+        assert(!nameValue.CStr.empty());
+        std::string_view const dieName(nameValue.CStr.data(), nameValue.CStr.size());
+        VariableInfo::ClassRegistry::iterator it = classRegistry_.find(dieName);
+        assert(it != classRegistry_.end());
+        it->second.setDebugInfoOffset(dieOffset);
       }
     }
 
     currentOffset_ += llvm::getULEB128Size(DIE.AbbrCode.value);
   }
 
-  void onValue([[maybe_unused]] const uint8_t U) override { currentOffset_ += 1U; }
-  void onValue([[maybe_unused]] const uint16_t U) override { currentOffset_ += 2U; }
-  void onValue([[maybe_unused]] const uint32_t U) override { currentOffset_ += 4U; }
-  void onValue(const uint64_t U, const bool LEB = false) override {
+  void onValue([[maybe_unused]] uint8_t const U) override { currentOffset_ += 1U; }
+  void onValue([[maybe_unused]] uint16_t const U) override { currentOffset_ += 2U; }
+  void onValue([[maybe_unused]] uint32_t const U) override { currentOffset_ += 4U; }
+  void onValue(uint64_t const U, bool const LEB = false) override {
     if (LEB)
       currentOffset_ += llvm::getULEB128Size(U);
     else
       currentOffset_ += 8U;
   }
-  void onValue(const int64_t S, const bool LEB = false) override {
+  void onValue(int64_t const S, bool const LEB = false) override {
     if (LEB)
       currentOffset_ += llvm::getSLEB128Size(S);
     else
       currentOffset_ += 8U;
   }
-  void onValue(const llvm::StringRef String) override { currentOffset_ += String.size() + 1U; }
-  void onValue(const llvm::MemoryBufferRef MBR) override { currentOffset_ += MBR.getBufferSize(); }
+  void onValue(llvm::StringRef const String) override { currentOffset_ += String.size() + 1U; }
+  void onValue(llvm::MemoryBufferRef const MBR) override { currentOffset_ += MBR.getBufferSize(); }
 };
 
 void VariableInfo::addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
