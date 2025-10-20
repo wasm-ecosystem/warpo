@@ -8,6 +8,7 @@ ccache
 cppcoreguidelines
 currp
 Dependee
+DWARFYAML
 DWARPO
 Eqref
 googletest

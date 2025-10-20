@@ -55,7 +55,11 @@ private:
   VariableInfo::ClassRegistry &classRegistry_;
 
   void onStartCompileUnit([[maybe_unused]] llvm::DWARFYAML::Unit &CU) override {
-    currentOffset_ = 11U; // CU header: 4(length) + 2(version) + 4(abbrev_offset) + 1(address_size)
+    constexpr uint64_t lengthFieldSize = 4U;
+    constexpr uint64_t versionFieldSize = 2U;
+    constexpr uint64_t abbrevOffsetFieldSize = 4U;
+    constexpr uint64_t addressSizeFieldSize = 1U;
+    currentOffset_ = lengthFieldSize + versionFieldSize + abbrevOffsetFieldSize + addressSizeFieldSize;
   }
 
   void onStartDIE([[maybe_unused]] llvm::DWARFYAML::Unit &CU, llvm::DWARFYAML::Entry &DIE) override {
@@ -224,7 +228,7 @@ void VariableInfo::dumpElf() {
 
   rootUnit.Entries.push_back(rootEntry);
 
-  struct MemberFixup {
+  struct MemberFixup final {
     size_t entryIndex;
     std::string_view typeName;
   };
@@ -286,21 +290,12 @@ void VariableInfo::dumpElf() {
   offsetCalculator.traverseDebugInfo();
 
   for (MemberFixup const &fixup : memberFixups) {
-    std::string_view typeName = fixup.typeName;
-    size_t const nullablePos = typeName.find(" | null");
-    if (nullablePos != std::string_view::npos) {
-      typeName = typeName.substr(0U, nullablePos);
-    }
+    std::string_view const typeName = fixup.typeName;
 
-    uint64_t typeOffset = 0U;
     ClassRegistry::const_iterator it = classRegistry_.find(typeName);
-    if (it != classRegistry_.end()) {
-      typeOffset = it->second.getDebugInfoOffset();
-    }
-
-    if (typeOffset > 0U && typeOffset != SIZE_MAX) {
-      dwarfData.CompileUnits[0U].Entries[fixup.entryIndex].Values[1U].Value = typeOffset;
-    }
+    assert(it != classRegistry_.end());
+    uint64_t const typeOffset = it->second.getDebugInfoOffset();
+    dwarfData.CompileUnits[0U].Entries[fixup.entryIndex].Values[1U].Value = typeOffset;
   }
 
   dwarfData.DebugStrings = stringManager.getDebugStrings();

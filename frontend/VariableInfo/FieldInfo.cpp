@@ -30,7 +30,7 @@ wasm::IString FieldInfo::normalizeTypeName(const wasm::IString &type) noexcept {
       {"i8", "~lib/number/I8"},   {"u8", "~lib/number/U8"},       {"i16", "~lib/number/I16"},
       {"u16", "~lib/number/U16"}, {"i32", "~lib/number/I32"},     {"u32", "~lib/number/U32"},
       {"i64", "~lib/number/I64"}, {"u64", "~lib/number/U64"},     {"f32", "~lib/number/F32"},
-      {"f64", "~lib/number/F64"}, {"usize", "~lib/number/Usize"},
+      {"f64", "~lib/number/F64"}, {"usize", "~lib/number/Usize"}, {"isize", "~lib/number/Isize"},
   };
 
   std::unordered_map<std::string_view, std::string_view>::const_iterator it = basicTypeMap.find(typeStr);

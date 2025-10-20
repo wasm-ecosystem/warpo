@@ -19,7 +19,7 @@ Abbrev table for offset: 0x00000000
 
 
 .debug_info contents:
-0x00000000: Compile Unit: length = 0x00000353 version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x00000357)
+0x00000000: Compile Unit: length = 0x0000034f version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x00000353)
 
 0x0000000b: DW_TAG_compile_unit
               DW_AT_producer	("warpo")
@@ -30,7 +30,7 @@ Abbrev table for offset: 0x00000000
 
 0x00000033:     DW_TAG_member
                   DW_AT_name	("flags")
-                  DW_AT_type	(0x00000333 "~lib/number/I32")
+                  DW_AT_type	(0x0000032f "~lib/number/I32")
                   DW_AT_data_member_location	(0x00000000)
 
 0x00000042:     NULL
@@ -41,22 +41,22 @@ Abbrev table for offset: 0x00000000
 
 0x0000005e:     DW_TAG_member
                   DW_AT_name	("gcInfo")
-                  DW_AT_type	(0x000002f6 "~lib/number/U32")
+                  DW_AT_type	(0x000002f2 "~lib/number/U32")
                   DW_AT_data_member_location	(0x00000004)
 
 0x0000006e:     DW_TAG_member
                   DW_AT_name	("gcInfo2")
-                  DW_AT_type	(0x000002f6 "~lib/number/U32")
+                  DW_AT_type	(0x000002f2 "~lib/number/U32")
                   DW_AT_data_member_location	(0x00000008)
 
 0x0000007f:     DW_TAG_member
                   DW_AT_name	("rtId")
-                  DW_AT_type	(0x000002f6 "~lib/number/U32")
+                  DW_AT_type	(0x000002f2 "~lib/number/U32")
                   DW_AT_data_member_location	(0x0000000c)
 
 0x0000008d:     DW_TAG_member
                   DW_AT_name	("rtSize")
-                  DW_AT_type	(0x000002f6 "~lib/number/U32")
+                  DW_AT_type	(0x000002f2 "~lib/number/U32")
                   DW_AT_data_member_location	(0x00000010)
 
 0x0000009d:     NULL
@@ -83,7 +83,7 @@ Abbrev table for offset: 0x00000000
 
 0x000000f3:     DW_TAG_member
                   DW_AT_name	("x")
-                  DW_AT_type	(0x00000333 "~lib/number/I32")
+                  DW_AT_type	(0x0000032f "~lib/number/I32")
                   DW_AT_data_member_location	(0x00000000)
 
 0x000000fe:     NULL
@@ -149,12 +149,12 @@ Abbrev table for offset: 0x00000000
 
 0x00000204:     DW_TAG_member
                   DW_AT_name	("rtId")
-                  DW_AT_type	(0x000002f6 "~lib/number/U32")
+                  DW_AT_type	(0x000002f2 "~lib/number/U32")
                   DW_AT_data_member_location	(0x0000000c)
 
 0x00000212:     DW_TAG_member
                   DW_AT_name	("rtSize")
-                  DW_AT_type	(0x000002f6 "~lib/number/U32")
+                  DW_AT_type	(0x000002f2 "~lib/number/U32")
                   DW_AT_data_member_location	(0x00000010)
 
 0x00000222:     NULL
@@ -175,7 +175,7 @@ Abbrev table for offset: 0x00000000
 
 0x0000026c:     DW_TAG_member
                   DW_AT_name	("byteLength")
-                  DW_AT_type	(0x00000333 "~lib/number/I32")
+                  DW_AT_type	(0x0000032f "~lib/number/I32")
                   DW_AT_data_member_location	(0x00000008)
 
 0x00000280:     NULL
@@ -202,32 +202,30 @@ Abbrev table for offset: 0x00000000
                 DW_AT_name	("~lib/number/I64")
                 DW_AT_byte_size	(0x04)
 
-0x000002de:   DW_TAG_class_type
+0x000002de:   DW_TAG_base_type
                 DW_AT_name	("~lib/number/Isize")
-                DW_AT_byte_size	(0x00000004)
+                DW_AT_byte_size	(0x04)
 
-0x000002f5:     NULL
-
-0x000002f6:   DW_TAG_base_type
+0x000002f2:   DW_TAG_base_type
                 DW_AT_name	("~lib/number/U32")
                 DW_AT_byte_size	(0x04)
 
-0x00000308:   DW_TAG_class_type
+0x00000304:   DW_TAG_class_type
                 DW_AT_name	("~lib/rt/common/BLOCK")
                 DW_AT_byte_size	(0x00000004)
 
-0x00000322:     DW_TAG_member
+0x0000031e:     DW_TAG_member
                   DW_AT_name	("mmInfo")
                   DW_AT_type	(0x00000111 "~lib/number/Usize")
                   DW_AT_data_member_location	(0x00000000)
 
-0x00000332:     NULL
+0x0000032e:     NULL
 
-0x00000333:   DW_TAG_base_type
+0x0000032f:   DW_TAG_base_type
                 DW_AT_name	("~lib/number/I32")
                 DW_AT_byte_size	(0x04)
 
-0x00000345:   DW_TAG_base_type
+0x00000341:   DW_TAG_base_type
                 DW_AT_name	("~lib/number/U64")
                 DW_AT_byte_size	(0x04)
 

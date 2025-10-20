@@ -29,7 +29,7 @@ void ClassInfo::addMember(wasm::IString name, wasm::IString type, uint32_t offse
 }
 
 bool ClassInfo::isBasicType() const noexcept {
-  static const std::regex basicTypePattern(R"(~lib/number/(F32|F64|U8|I8|U16|I16|U32|I32|U64|I64|Usize))");
+  static const std::regex basicTypePattern(R"(~lib/number/(F32|F64|U8|I8|U16|I16|U32|I32|U64|I64|Usize|Isize))");
   return std::regex_match(name_.str.begin(), name_.str.end(), basicTypePattern);
 }
 
