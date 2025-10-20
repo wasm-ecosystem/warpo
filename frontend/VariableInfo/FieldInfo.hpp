@@ -1,5 +1,5 @@
 ///
-/// @file VariableInfo.hpp
+/// @file FieldInfo.hpp
 /// @copyright Copyright (C) 2025 wasm-ecosystem
 /// SPDX-License-Identifier: Apache-2.0
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,23 +13,32 @@
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
+#pragma once
+
 #include <cstdint>
-#include <vector>
+#include <string_view>
+#include <unordered_map>
 
-#include "src/WasmModule/WasmModule.hpp"
-#include "src/core/common/NativeSymbol.hpp"
+#include "binaryen/src/support/istring.h"
+
 namespace warpo::frontend {
-class VariableInfo final {
-public:
-  static std::vector<vb::NativeSymbol> createVariableInfoAPI();
 
-  static void dumpElf();
+class FieldInfo final {
+public:
+  FieldInfo(wasm::IString name, wasm::IString type, uint32_t offsetInClass, bool nullable);
+
+  std::string_view getName() const noexcept { return name_.str; }
+  std::string_view getType() const noexcept { return type_.str; }
+  uint32_t getOffsetInClass() const noexcept { return offsetInClass_; }
+  bool isNullable() const noexcept { return nullable_; }
 
 private:
-  static void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const size,
-                          uint32_t const rtid, vb::WasmModule const *const ctx);
+  static wasm::IString normalizeTypeName(const wasm::IString &type) noexcept;
 
-  static void addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
-                       uint32_t const offset, uint32_t const nullable, vb::WasmModule const *const ctx);
+  wasm::IString name_;
+  wasm::IString type_;
+  uint32_t offsetInClass_;
+  bool nullable_;
 };
+
 } // namespace warpo::frontend

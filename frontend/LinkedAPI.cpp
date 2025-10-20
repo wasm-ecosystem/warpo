@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "LinkedAPI.hpp"
-#include "VariableInfo.hpp"
+#include "VariableInfo/VariableInfo.hpp"
 #include "warpo/support/Container.hpp"
 
 #include "src/core/common/NativeSymbol.hpp"

@@ -21,7 +21,7 @@
 #include "ASC/ASC.hpp"
 #include "CompilerImpl.hpp"
 #include "LinkedAPI.hpp"
-#include "VariableInfo.hpp" //fixme
+#include "VariableInfo/VariableInfo.hpp" //fixme
 #include "llvm/Support/ConvertUTF.h"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/Debug.hpp"

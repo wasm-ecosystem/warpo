@@ -1,0 +1,339 @@
+///
+/// @file VariableInfo.cpp
+/// @copyright Copyright (C) 2025 wasm-ecosystem
+/// SPDX-License-Identifier: Apache-2.0
+/// Licensed under the Apache License, Version 2.0 (the "License");
+/// you may not use this file except in compliance with the License.
+/// You may obtain a copy of the License at
+///
+///     http://www.apache.org/licenses/LICENSE-2.0
+///
+/// Unless required by applicable law or agreed to in writing, software
+/// distributed under the License is distributed on an "AS IS" BASIS,
+/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+/// See the License for the specific language governing permissions and
+/// limitations under the License.
+#include <cassert>
+#include <cstring>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+
+#include "AbbrevFactory.hpp"
+#include "ClassInfo.hpp"
+#include "DebugStringManager.hpp"
+#include "FieldInfo.hpp"
+#include "VariableInfo.hpp"
+#include "frontend/AsString.hpp"
+
+#include "src/core/common/function_traits.hpp"
+
+// LLVM DWARF YAML includes for testing
+#include "binaryen/third_party/llvm-project/DWARFVisitor.h"
+#include "llvm/BinaryFormat/Dwarf.h"
+#include "llvm/DebugInfo/DWARF/DWARFContext.h"
+#include "llvm/DebugInfo/DWARF/DWARFDie.h"
+#include "llvm/ObjectYAML/DWARFEmitter.h"
+#include "llvm/ObjectYAML/DWARFYAML.h"
+#include "llvm/Support/LEB128.h"
+#include "llvm/Support/YAMLTraits.h"
+#include "llvm/Support/raw_ostream.h"
+
+namespace warpo::frontend {
+
+VariableInfo::ClassRegistry VariableInfo::classRegistry_;
+
+class DIEOffsetCalculator : public llvm::DWARFYAML::Visitor {
+public:
+  DIEOffsetCalculator(llvm::DWARFYAML::Data &DI, VariableInfo::ClassRegistry &registry)
+      : llvm::DWARFYAML::Visitor(DI), classRegistry_(registry) {}
+
+private:
+  uint64_t currentOffset_ = 0U;
+  VariableInfo::ClassRegistry &classRegistry_;
+
+  void onStartCompileUnit([[maybe_unused]] llvm::DWARFYAML::Unit &CU) override { currentOffset_ = 11U; }
+
+  void onStartDIE([[maybe_unused]] llvm::DWARFYAML::Unit &CU, llvm::DWARFYAML::Entry &DIE) override {
+    uint64_t const dieOffset = currentOffset_;
+
+    for (llvm::DWARFYAML::Abbrev const &abbrev : DebugInfo.AbbrevDecls) {
+      if (abbrev.Code == DIE.AbbrCode.value) {
+        size_t valueIndex = 0U;
+        for (llvm::DWARFYAML::AttributeAbbrev const &attr : abbrev.Attributes) {
+          if (attr.Attribute == llvm::dwarf::DW_AT_name && valueIndex < DIE.Values.size()) {
+            llvm::DWARFYAML::FormValue const &nameValue = DIE.Values[valueIndex];
+            if (!nameValue.CStr.empty()) {
+              std::string_view const dieName(nameValue.CStr.data(), nameValue.CStr.size());
+              VariableInfo::ClassRegistry::iterator it = classRegistry_.find(dieName);
+              if (it != classRegistry_.end()) {
+                it->second.setDebugInfoOffset(dieOffset);
+              }
+            }
+          }
+          valueIndex++;
+        }
+        break;
+      }
+    }
+
+    currentOffset_ += llvm::getULEB128Size(DIE.AbbrCode.value);
+  }
+
+  void onValue([[maybe_unused]] const uint8_t U) override { currentOffset_ += 1U; }
+  void onValue([[maybe_unused]] const uint16_t U) override { currentOffset_ += 2U; }
+  void onValue([[maybe_unused]] const uint32_t U) override { currentOffset_ += 4U; }
+  void onValue(const uint64_t U, const bool LEB = false) override {
+    if (LEB)
+      currentOffset_ += llvm::getULEB128Size(U);
+    else
+      currentOffset_ += 8U;
+  }
+  void onValue(const int64_t S, const bool LEB = false) override {
+    if (LEB)
+      currentOffset_ += llvm::getSLEB128Size(S);
+    else
+      currentOffset_ += 8U;
+  }
+  void onValue(const llvm::StringRef String) override { currentOffset_ += String.size() + 1U; }
+  void onValue(const llvm::MemoryBufferRef MBR) override { currentOffset_ += MBR.getBufferSize(); }
+};
+
+void VariableInfo::addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
+                            uint32_t const offset, uint32_t const nullable, vb::WasmModule const *const ctx) {
+  std::string const className = AsString::get(classNamePtr, ctx);
+  std::string const fieldName = AsString::get(fieldNamePtr, ctx);
+  std::string const typeName = AsString::get(typeNamePtr, ctx);
+
+  ClassRegistry::iterator classIt = classRegistry_.find(className);
+  assert(classIt != classRegistry_.end());
+  classIt->second.addMember(fieldName, typeName, offset, nullable != 0);
+}
+
+void VariableInfo::createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const size,
+                               uint32_t const rtid, vb::WasmModule const *const ctx) {
+  wasm::IString const className(AsString::get(classNamePtr, ctx));
+  wasm::IString const parentName(AsString::get(parentNamePtr, ctx));
+
+  classRegistry_.emplace(className.str, ClassInfo{className, parentName, size, rtid});
+}
+
+void VariableInfo::dumpElf() {
+  llvm::DWARFYAML::Data dwarfData;
+  dwarfData.IsLittleEndian = true;
+
+  DebugStringManager stringManager;
+  AbbrevFactory::reset();
+
+  std::vector<llvm::DWARFYAML::Abbrev> abbrevDecls;
+
+  llvm::DWARFYAML::Abbrev rootAbbrev =
+      AbbrevFactory::create(llvm::dwarf::DW_TAG_compile_unit, llvm::dwarf::DW_CHILDREN_yes);
+
+  llvm::DWARFYAML::AttributeAbbrev producerAttr;
+  producerAttr.Attribute = llvm::dwarf::DW_AT_producer;
+  producerAttr.Form = llvm::dwarf::DW_FORM_strp;
+  producerAttr.Value = 0U;
+  rootAbbrev.Attributes.push_back(producerAttr);
+
+  abbrevDecls.push_back(rootAbbrev);
+
+  llvm::DWARFYAML::Abbrev classAbbrev =
+      AbbrevFactory::create(llvm::dwarf::DW_TAG_class_type, llvm::dwarf::DW_CHILDREN_yes);
+
+  llvm::DWARFYAML::AttributeAbbrev nameAttr;
+  nameAttr.Attribute = llvm::dwarf::DW_AT_name;
+  nameAttr.Form = llvm::dwarf::DW_FORM_string;
+  nameAttr.Value = 0U;
+  classAbbrev.Attributes.push_back(nameAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev byteSizeAttr;
+  byteSizeAttr.Attribute = llvm::dwarf::DW_AT_byte_size;
+  byteSizeAttr.Form = llvm::dwarf::DW_FORM_data4;
+  byteSizeAttr.Value = 0U;
+  classAbbrev.Attributes.push_back(byteSizeAttr);
+
+  abbrevDecls.push_back(classAbbrev);
+
+  llvm::DWARFYAML::Abbrev memberAbbrev = AbbrevFactory::create(llvm::dwarf::DW_TAG_member, llvm::dwarf::DW_CHILDREN_no);
+
+  llvm::DWARFYAML::AttributeAbbrev memberNameAttr;
+  memberNameAttr.Attribute = llvm::dwarf::DW_AT_name;
+  memberNameAttr.Form = llvm::dwarf::DW_FORM_string;
+  memberNameAttr.Value = 0U;
+  memberAbbrev.Attributes.push_back(memberNameAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev memberTypeAttr;
+  memberTypeAttr.Attribute = llvm::dwarf::DW_AT_type;
+  memberTypeAttr.Form = llvm::dwarf::DW_FORM_ref4;
+  memberTypeAttr.Value = 0U;
+  memberAbbrev.Attributes.push_back(memberTypeAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev memberLocationAttr;
+  memberLocationAttr.Attribute = llvm::dwarf::DW_AT_data_member_location;
+  memberLocationAttr.Form = llvm::dwarf::DW_FORM_data4;
+  memberLocationAttr.Value = 0U;
+  memberAbbrev.Attributes.push_back(memberLocationAttr);
+
+  abbrevDecls.push_back(memberAbbrev);
+
+  llvm::DWARFYAML::Abbrev baseTypeAbbrev =
+      AbbrevFactory::create(llvm::dwarf::DW_TAG_base_type, llvm::dwarf::DW_CHILDREN_no);
+
+  llvm::DWARFYAML::AttributeAbbrev baseTypeNameAttr;
+  baseTypeNameAttr.Attribute = llvm::dwarf::DW_AT_name;
+  baseTypeNameAttr.Form = llvm::dwarf::DW_FORM_string;
+  baseTypeNameAttr.Value = 0U;
+  baseTypeAbbrev.Attributes.push_back(baseTypeNameAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev baseTypeSizeAttr;
+  baseTypeSizeAttr.Attribute = llvm::dwarf::DW_AT_byte_size;
+  baseTypeSizeAttr.Form = llvm::dwarf::DW_FORM_data1;
+  baseTypeSizeAttr.Value = 0U;
+  baseTypeAbbrev.Attributes.push_back(baseTypeSizeAttr);
+
+  abbrevDecls.push_back(baseTypeAbbrev);
+
+  llvm::DWARFYAML::Abbrev terminator;
+  terminator.Code = 0U;
+  terminator.Tag = llvm::dwarf::DW_TAG_null;
+  terminator.Children = llvm::dwarf::DW_CHILDREN_no;
+  terminator.ListOffset = 0U;
+  abbrevDecls.push_back(terminator);
+
+  dwarfData.AbbrevDecls = abbrevDecls;
+
+  size_t producerOffset = stringManager.addString("warpo");
+
+  std::vector<llvm::DWARFYAML::Unit> compileUnits;
+
+  llvm::DWARFYAML::Unit rootUnit;
+  rootUnit.Length.setLength(0U);
+  rootUnit.Version = 4U;
+  rootUnit.AbbrOffset = 0U;
+  rootUnit.AddrSize = 4U;
+
+  llvm::DWARFYAML::Entry rootEntry;
+  rootEntry.AbbrCode = rootAbbrev.Code;
+
+  llvm::DWARFYAML::FormValue producerValue;
+  producerValue.Value = producerOffset;
+  rootEntry.Values.push_back(producerValue);
+
+  rootUnit.Entries.push_back(rootEntry);
+
+  struct MemberFixup {
+    size_t entryIndex;
+    std::string_view typeName;
+  };
+  std::vector<MemberFixup> memberFixups;
+
+  for (std::pair<std::string_view const, ClassInfo> const &entry : classRegistry_) {
+    std::string_view const className = entry.first;
+    ClassInfo const &classInfo = entry.second;
+    bool const isBasicType = classInfo.isBasicType();
+
+    llvm::DWARFYAML::Entry classEntry;
+    classEntry.AbbrCode = isBasicType ? baseTypeAbbrev.Code : classAbbrev.Code;
+
+    llvm::DWARFYAML::FormValue classNameValue;
+    classNameValue.CStr = llvm::StringRef(className.data(), className.size());
+    classEntry.Values.push_back(classNameValue);
+
+    llvm::DWARFYAML::FormValue classSizeValue;
+    classSizeValue.Value = classInfo.getSize();
+    classEntry.Values.push_back(classSizeValue);
+
+    rootUnit.Entries.push_back(classEntry);
+
+    if (!isBasicType) {
+      std::vector<FieldInfo> const &fields = classInfo.getFields();
+      for (FieldInfo const &field : fields) {
+        llvm::DWARFYAML::Entry memberEntry;
+        memberEntry.AbbrCode = memberAbbrev.Code;
+
+        llvm::DWARFYAML::FormValue memberNameValue;
+        std::string_view const fieldNameView = field.getName();
+        memberNameValue.CStr = llvm::StringRef(fieldNameView.data(), fieldNameView.size());
+        memberEntry.Values.push_back(memberNameValue);
+
+        llvm::DWARFYAML::FormValue memberTypeValue;
+        memberTypeValue.Value = 0xDEADBEEFU;
+        memberEntry.Values.push_back(memberTypeValue);
+
+        llvm::DWARFYAML::FormValue memberLocationValue;
+        memberLocationValue.Value = field.getOffsetInClass();
+        memberEntry.Values.push_back(memberLocationValue);
+
+        size_t const memberIndex = rootUnit.Entries.size();
+        memberFixups.push_back({memberIndex, field.getType()});
+
+        rootUnit.Entries.push_back(memberEntry);
+      }
+
+      llvm::DWARFYAML::Entry childTerminator;
+      childTerminator.AbbrCode = 0U;
+      rootUnit.Entries.push_back(childTerminator);
+    }
+  }
+
+  compileUnits.push_back(rootUnit);
+  dwarfData.CompileUnits = compileUnits;
+
+  DIEOffsetCalculator offsetCalculator(dwarfData, classRegistry_);
+  offsetCalculator.traverseDebugInfo();
+
+  for (MemberFixup const &fixup : memberFixups) {
+    std::string_view typeName = fixup.typeName;
+    size_t const nullablePos = typeName.find(" | null");
+    if (nullablePos != std::string_view::npos) {
+      typeName = typeName.substr(0U, nullablePos);
+    }
+
+    uint64_t typeOffset = 0U;
+    ClassRegistry::const_iterator it = classRegistry_.find(typeName);
+    if (it != classRegistry_.end()) {
+      typeOffset = it->second.getDebugInfoOffset();
+    }
+
+    if (typeOffset > 0U && typeOffset != SIZE_MAX) {
+      dwarfData.CompileUnits[0U].Entries[fixup.entryIndex].Values[1U].Value = typeOffset;
+    }
+  }
+
+  dwarfData.DebugStrings = stringManager.getDebugStrings();
+
+  llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
+      llvm::DWARFYAML::EmitDebugSections(dwarfData, true);
+
+  std::unique_ptr<llvm::DWARFContext> dwarfContext = llvm::DWARFContext::create(debugSections, 4U, true);
+
+  std::string dumpOutput;
+  llvm::raw_string_ostream dumpStream(dumpOutput);
+  llvm::DIDumpOptions dumpOptions;
+  dumpOptions.ShowChildren = true;
+  dumpOptions.ShowParents = false;
+  dumpOptions.ShowForm = false;
+  dumpOptions.SummarizeTypes = false;
+  dumpOptions.Verbose = false;
+  dumpOptions.DisplayRawContents = false;
+  dwarfContext->dump(dumpStream, dumpOptions);
+  dumpStream.flush();
+
+  std::ofstream outFile("/home/jcq/workspace/warpo/debug_info_dump.txt");
+  if (outFile) {
+    outFile << dumpOutput;
+    outFile.close();
+  }
+}
+
+std::vector<vb::NativeSymbol> VariableInfo::createVariableInfoAPI() {
+  return std::vector<vb::NativeSymbol>{
+      STATIC_LINK("warpo", "_WarpoCreateClass", createClass),
+      STATIC_LINK("warpo", "_WarpoAddField", addField),
+  };
+}
+} // namespace warpo::frontend

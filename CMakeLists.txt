@@ -22,6 +22,7 @@ add_definitions("-DINTERRUPTION_REQUEST=0")
 add_definitions("-DEAGER_ALLOCATION=1")
 
 add_subdirectory(third_party EXCLUDE_FROM_ALL)
+include_directories(${ProjectRoot})
 
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
