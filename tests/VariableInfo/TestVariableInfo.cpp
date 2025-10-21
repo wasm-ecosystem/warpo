@@ -34,6 +34,10 @@ TEST(TestVariableInfo, TestClassInfo) {
   std::filesystem::path const testFilePath = testDir / "testDebugSymbol.ts";
   std::vector<std::string> const entries{testFilePath.string()};
   warpo::frontend::CompilationResult const compileResult{warpo::frontend::compile(entries, config)};
+  if (compileResult.errorMessage.size() > 0U) {
+    std::cout << "compile failed due to " << compileResult.errorMessage << std::endl;
+    std::terminate();
+  }
   std::stringstream ss;
   ss << *compileResult.m.get();
   std::string const actual = std::move(ss).str();
