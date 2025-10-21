@@ -17,17 +17,14 @@
 
 namespace warpo::frontend {
 
-uint32_t AbbrevFactory::nextCode_ = 1U;
-
 llvm::DWARFYAML::Abbrev AbbrevFactory::create(llvm::dwarf::Tag tag, llvm::dwarf::Constants children) noexcept {
   llvm::DWARFYAML::Abbrev abbrev;
-  abbrev.Code = nextCode_++;
+  abbrev.Code = nextCode_;
+  nextCode_++;
   abbrev.Tag = tag;
   abbrev.Children = children;
   abbrev.ListOffset = 0;
   return abbrev;
 }
-
-void AbbrevFactory::reset() noexcept { nextCode_ = 1U; }
 
 } // namespace warpo::frontend

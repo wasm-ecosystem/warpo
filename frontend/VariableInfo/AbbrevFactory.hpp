@@ -25,17 +25,15 @@ namespace warpo::frontend {
 /// @brief Factory for creating DWARF abbreviations with auto-incrementing codes
 class AbbrevFactory final {
 public:
+  inline AbbrevFactory() noexcept : nextCode_(1U) {}
   /// @brief Create a new abbreviation with auto-incrementing code
   /// @param tag The DWARF tag (e.g., DW_TAG_compile_unit, DW_TAG_class_type)
   /// @param children Whether this abbreviation has children (DW_CHILDREN_yes or DW_CHILDREN_no)
   /// @return A new Abbrev object with auto-assigned code
-  static llvm::DWARFYAML::Abbrev create(llvm::dwarf::Tag tag, llvm::dwarf::Constants children) noexcept;
-
-  /// @brief Reset the code counter for a new compilation unit
-  static void reset() noexcept;
+  llvm::DWARFYAML::Abbrev create(llvm::dwarf::Tag tag, llvm::dwarf::Constants children) noexcept;
 
 private:
-  static uint32_t nextCode_;
+  uint32_t nextCode_;
 };
 
 } // namespace warpo::frontend

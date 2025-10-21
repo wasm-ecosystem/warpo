@@ -140,12 +140,12 @@ llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> VariableInfo::generateDwarf
   dwarfData.IsLittleEndian = true;
 
   DebugStringManager stringManager;
-  AbbrevFactory::reset();
+  AbbrevFactory abbrevFactory;
 
   std::vector<llvm::DWARFYAML::Abbrev> abbrevDecls;
 
   llvm::DWARFYAML::Abbrev rootAbbrev =
-      AbbrevFactory::create(llvm::dwarf::DW_TAG_compile_unit, llvm::dwarf::DW_CHILDREN_yes);
+      abbrevFactory.create(llvm::dwarf::DW_TAG_compile_unit, llvm::dwarf::DW_CHILDREN_yes);
 
   llvm::DWARFYAML::AttributeAbbrev producerAttr{};
   producerAttr.Attribute = llvm::dwarf::DW_AT_producer;
@@ -156,7 +156,7 @@ llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> VariableInfo::generateDwarf
   abbrevDecls.push_back(rootAbbrev);
 
   llvm::DWARFYAML::Abbrev classAbbrev =
-      AbbrevFactory::create(llvm::dwarf::DW_TAG_class_type, llvm::dwarf::DW_CHILDREN_yes);
+      abbrevFactory.create(llvm::dwarf::DW_TAG_class_type, llvm::dwarf::DW_CHILDREN_yes);
 
   llvm::DWARFYAML::AttributeAbbrev nameAttr{};
   nameAttr.Attribute = llvm::dwarf::DW_AT_name;
@@ -172,7 +172,7 @@ llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> VariableInfo::generateDwarf
 
   abbrevDecls.push_back(classAbbrev);
 
-  llvm::DWARFYAML::Abbrev memberAbbrev = AbbrevFactory::create(llvm::dwarf::DW_TAG_member, llvm::dwarf::DW_CHILDREN_no);
+  llvm::DWARFYAML::Abbrev memberAbbrev = abbrevFactory.create(llvm::dwarf::DW_TAG_member, llvm::dwarf::DW_CHILDREN_no);
 
   llvm::DWARFYAML::AttributeAbbrev memberNameAttr{};
   memberNameAttr.Attribute = llvm::dwarf::DW_AT_name;
@@ -195,7 +195,7 @@ llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> VariableInfo::generateDwarf
   abbrevDecls.push_back(memberAbbrev);
 
   llvm::DWARFYAML::Abbrev baseTypeAbbrev =
-      AbbrevFactory::create(llvm::dwarf::DW_TAG_base_type, llvm::dwarf::DW_CHILDREN_no);
+      abbrevFactory.create(llvm::dwarf::DW_TAG_base_type, llvm::dwarf::DW_CHILDREN_no);
 
   llvm::DWARFYAML::AttributeAbbrev baseTypeNameAttr{};
   baseTypeNameAttr.Attribute = llvm::dwarf::DW_AT_name;
