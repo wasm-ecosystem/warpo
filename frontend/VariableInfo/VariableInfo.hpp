@@ -38,6 +38,8 @@ public:
 
   static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> generateDwarf();
 
+  static std::string dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const &debugSections);
+
 private:
   static void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const size,
                           uint32_t const rtid, vb::WasmModule const *const ctx);

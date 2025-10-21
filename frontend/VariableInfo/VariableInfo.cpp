@@ -31,6 +31,7 @@
 #include "binaryen/third_party/llvm-project/DWARFVisitor.h"
 #include "frontend/AsString.hpp"
 #include "llvm/BinaryFormat/Dwarf.h"
+#include "llvm/DebugInfo/DWARF/DWARFContext.h"
 #include "llvm/DebugInfo/DWARF/DWARFDie.h"
 #include "llvm/ObjectYAML/DWARFEmitter.h"
 #include "llvm/ObjectYAML/DWARFYAML.h"
@@ -302,6 +303,22 @@ llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> VariableInfo::generateDwarf
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> debugSections =
       llvm::DWARFYAML::EmitDebugSections(dwarfData, true);
   return debugSections;
+}
+
+std::string VariableInfo::dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const &debugSections) {
+  std::unique_ptr<llvm::DWARFContext> dwarfContext = llvm::DWARFContext::create(debugSections, 4U, true);
+  std::string dumpOutput;
+  llvm::raw_string_ostream dumpStream(dumpOutput);
+  llvm::DIDumpOptions dumpOptions;
+  dumpOptions.ShowChildren = true;
+  dumpOptions.ShowParents = false;
+  dumpOptions.ShowForm = false;
+  dumpOptions.SummarizeTypes = false;
+  dumpOptions.Verbose = false;
+  dumpOptions.DisplayRawContents = false;
+  dwarfContext->dump(dumpStream, dumpOptions);
+  dumpStream.flush();
+  return dumpOutput;
 }
 
 std::vector<vb::NativeSymbol> VariableInfo::createVariableInfoAPI() {
