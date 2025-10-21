@@ -62,6 +62,18 @@ template <class T, class P> struct IsMatcherImpl {
       return (m(t, ctx) && ...);
     }};
   }
+  M<P> operator()(std::initializer_list<M<T>> ms) const {
+    return M<P>{[ms = std::vector<M<T>>{ms}](P const &expr, Context &ctx) -> bool {
+      if (!expr.template is<T>())
+        return false;
+      T const &t = *expr.template cast<T>();
+      for (M<T> const &m : ms) {
+        if (!m(t, ctx))
+          return false;
+      }
+      return true;
+    }};
+  }
 };
 
 template <class T> M<T> anyOf(std::initializer_list<M<T>> ms) {
