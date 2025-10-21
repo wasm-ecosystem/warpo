@@ -30,6 +30,7 @@
 #include "VariableInfo.hpp"
 #include "binaryen/third_party/llvm-project/DWARFVisitor.h"
 #include "frontend/AsString.hpp"
+#include "frontend/CompilerImpl.hpp"
 #include "llvm/BinaryFormat/Dwarf.h"
 #include "llvm/DebugInfo/DWARF/DWARFContext.h"
 #include "llvm/DebugInfo/DWARF/DWARFDie.h"
@@ -42,8 +43,6 @@
 #include "src/core/common/function_traits.hpp"
 
 namespace warpo::frontend {
-
-VariableInfo::ClassRegistry VariableInfo::classRegistry_;
 
 class DIEOffsetCalculator : public llvm::DWARFYAML::Visitor {
 public:
@@ -107,13 +106,19 @@ private:
 
 void VariableInfo::addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
                             uint32_t const offset, uint32_t const nullable, vb::WasmModule const *const ctx) {
-  std::string const className = AsString::get(classNamePtr, ctx);
-  std::string const fieldName = AsString::get(fieldNamePtr, ctx);
-  std::string const typeName = AsString::get(typeNamePtr, ctx);
+  std::string className = AsString::get(classNamePtr, ctx);
+  std::string fieldName = AsString::get(fieldNamePtr, ctx);
+  std::string typeName = AsString::get(typeNamePtr, ctx);
+  FrontendCompiler *const pCompiler = reinterpret_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->variableInfo_.addFieldInternal(std::move(className), std::move(fieldName), std::move(typeName), offset,
+                                            nullable);
+}
 
-  ClassRegistry::iterator const classIt = classRegistry_.find(className);
+void VariableInfo::addFieldInternal(std::string className, std::string fieldName, std::string const typeName,
+                                    uint32_t const offset, uint32_t const nullable) {
+  ClassRegistry::iterator const classIt = classRegistry_.find(std::move(className));
   assert(classIt != classRegistry_.end());
-  classIt->second.addMember(fieldName, typeName, offset, nullable != 0);
+  classIt->second.addMember(std::move(fieldName), std::move(typeName), offset, nullable != 0);
 }
 
 void VariableInfo::createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const size,
@@ -121,6 +126,12 @@ void VariableInfo::createClass(uint32_t const classNamePtr, uint32_t const paren
   wasm::IString const className(AsString::get(classNamePtr, ctx));
   wasm::IString const parentName(AsString::get(parentNamePtr, ctx));
 
+  FrontendCompiler *const pCompiler = reinterpret_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->variableInfo_.createClassInternal(className, parentName, size, rtid);
+}
+
+void VariableInfo::createClassInternal(wasm::IString className, wasm::IString parentName, uint32_t const size,
+                                       uint32_t const rtid) {
   classRegistry_.emplace(className.str, ClassInfo{className, parentName, size, rtid});
 }
 

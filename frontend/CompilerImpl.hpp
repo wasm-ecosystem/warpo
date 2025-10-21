@@ -18,6 +18,7 @@
 #include <string_view>
 #include <vector>
 
+#include "VariableInfo/VariableInfo.hpp"
 #include "warp_runner/warpRunner.hpp"
 #include "warpo/common/AsModule.hpp"
 #include "warpo/frontend/Compiler.hpp"
@@ -75,6 +76,7 @@ public:
 
   std::set<void *> allocedPtrs_;
   AsModule asModule_;
+  VariableInfo variableInfo_;
 };
 
 } // namespace warpo::frontend

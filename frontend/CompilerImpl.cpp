@@ -386,7 +386,7 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     asModule_.set(BinaryenModule{reinterpret_cast<wasm::Module *>(
         r->callExportedFunctionWithName<1>(stackTop, "getBinaryenModuleRef", compiled)[0].i64)});
 
-    llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections = VariableInfo::generateDwarf();
+    llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections = variableInfo_.generateDwarf();
     if (!debugSections.empty()) {
       for (auto I = debugSections.begin(); !(I == debugSections.end()); I++) {
         llvm::StringRef const sectionName = I->getKey();

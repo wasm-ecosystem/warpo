@@ -13,6 +13,8 @@
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
+#ifndef VARIABLE_INFO_HPP
+#define VARIABLE_INFO_HPP
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -20,6 +22,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "ClassInfo.hpp"
+#include "binaryen/src/support/istring.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/Support/MemoryBuffer.h"
 
@@ -28,15 +32,13 @@
 
 namespace warpo::frontend {
 
-class ClassInfo;
-
 class VariableInfo final {
 public:
   using ClassRegistry = std::unordered_map<std::string_view, ClassInfo>;
 
   static std::vector<vb::NativeSymbol> createVariableInfoAPI();
 
-  static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> generateDwarf();
+  llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> generateDwarf();
 
   static std::string dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const &debugSections);
 
@@ -47,6 +49,12 @@ private:
   static void addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
                        uint32_t const offset, uint32_t const nullable, vb::WasmModule const *const ctx);
 
-  static ClassRegistry classRegistry_;
+  void createClassInternal(wasm::IString className, wasm::IString parentName, uint32_t const size, uint32_t const rtid);
+
+  void addFieldInternal(std::string className, std::string fieldName, std::string const typeName, uint32_t const offset,
+                        uint32_t const nullable);
+
+  ClassRegistry classRegistry_;
 };
 } // namespace warpo::frontend
+#endif
