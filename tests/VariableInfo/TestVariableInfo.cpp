@@ -36,13 +36,13 @@ TEST(TestVariableInfo, TestClassInfo) {
   warpo::frontend::CompilationResult const compileResult{warpo::frontend::compile(entries, config)};
   std::stringstream ss;
   ss << *compileResult.m.get();
-  std::string actual = std::move(ss).str();
+  std::string const actual = std::move(ss).str();
 
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> debugSections;
 
   // Extract debug sections from the compiled module
   static std::regex const debugSectionPattern{R"(debug_(info|line|str|abbrev|aranges|ranges))"};
-  wasm::Module *wasmModule = reinterpret_cast<wasm::Module *>(compileResult.m.get());
+  wasm::Module const *const wasmModule = reinterpret_cast<wasm::Module *>(compileResult.m.get());
   for (auto const &customSection : wasmModule->customSections) {
     if (std::regex_match(customSection.name, debugSectionPattern)) {
       std::unique_ptr<llvm::MemoryBuffer> buffer = llvm::MemoryBuffer::getMemBufferCopy(

@@ -390,7 +390,7 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     if (!debugSections.empty()) {
       for (auto I = debugSections.begin(); !(I == debugSections.end()); I++) {
         llvm::StringRef const sectionName = I->getKey();
-        llvm::MemoryBuffer const *buffer = I->getValue().get();
+        llvm::MemoryBuffer const *const buffer = I->getValue().get();
         BinaryenAddCustomSection(asModule_.get(), sectionName.data(),
                                  reinterpret_cast<const char *>(buffer->getBufferStart()), buffer->getBufferSize());
       }

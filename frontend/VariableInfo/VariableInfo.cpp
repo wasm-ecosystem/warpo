@@ -77,7 +77,7 @@ private:
         llvm::DWARFYAML::FormValue const &nameValue = DIE.Values[nameIndex];
         assert(!nameValue.CStr.empty());
         std::string_view const dieName(nameValue.CStr.data(), nameValue.CStr.size());
-        VariableInfo::ClassRegistry::iterator it = classRegistry_.find(dieName);
+        VariableInfo::ClassRegistry::iterator const it = classRegistry_.find(dieName);
         assert(it != classRegistry_.end());
         it->second.setDebugInfoOffset(dieOffset);
       }
@@ -89,13 +89,13 @@ private:
   void onValue([[maybe_unused]] uint8_t const U) override { currentOffset_ += 1U; }
   void onValue([[maybe_unused]] uint16_t const U) override { currentOffset_ += 2U; }
   void onValue([[maybe_unused]] uint32_t const U) override { currentOffset_ += 4U; }
-  void onValue(uint64_t const U, bool const LEB = false) override {
+  void onValue(uint64_t const U, bool const LEB) override {
     if (LEB)
       currentOffset_ += llvm::getULEB128Size(U);
     else
       currentOffset_ += 8U;
   }
-  void onValue(int64_t const S, bool const LEB = false) override {
+  void onValue(int64_t const S, bool const LEB) override {
     if (LEB)
       currentOffset_ += llvm::getSLEB128Size(S);
     else
@@ -111,7 +111,7 @@ void VariableInfo::addField(uint32_t const classNamePtr, uint32_t const fieldNam
   std::string const fieldName = AsString::get(fieldNamePtr, ctx);
   std::string const typeName = AsString::get(typeNamePtr, ctx);
 
-  ClassRegistry::iterator classIt = classRegistry_.find(className);
+  ClassRegistry::iterator const classIt = classRegistry_.find(className);
   assert(classIt != classRegistry_.end());
   classIt->second.addMember(fieldName, typeName, offset, nullable != 0);
 }
@@ -136,7 +136,7 @@ llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> VariableInfo::generateDwarf
   llvm::DWARFYAML::Abbrev rootAbbrev =
       AbbrevFactory::create(llvm::dwarf::DW_TAG_compile_unit, llvm::dwarf::DW_CHILDREN_yes);
 
-  llvm::DWARFYAML::AttributeAbbrev producerAttr;
+  llvm::DWARFYAML::AttributeAbbrev producerAttr{};
   producerAttr.Attribute = llvm::dwarf::DW_AT_producer;
   producerAttr.Form = llvm::dwarf::DW_FORM_strp;
   producerAttr.Value = 0U;
@@ -147,13 +147,13 @@ llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> VariableInfo::generateDwarf
   llvm::DWARFYAML::Abbrev classAbbrev =
       AbbrevFactory::create(llvm::dwarf::DW_TAG_class_type, llvm::dwarf::DW_CHILDREN_yes);
 
-  llvm::DWARFYAML::AttributeAbbrev nameAttr;
+  llvm::DWARFYAML::AttributeAbbrev nameAttr{};
   nameAttr.Attribute = llvm::dwarf::DW_AT_name;
   nameAttr.Form = llvm::dwarf::DW_FORM_string;
   nameAttr.Value = 0U;
   classAbbrev.Attributes.push_back(nameAttr);
 
-  llvm::DWARFYAML::AttributeAbbrev byteSizeAttr;
+  llvm::DWARFYAML::AttributeAbbrev byteSizeAttr{};
   byteSizeAttr.Attribute = llvm::dwarf::DW_AT_byte_size;
   byteSizeAttr.Form = llvm::dwarf::DW_FORM_data4;
   byteSizeAttr.Value = 0U;
@@ -163,19 +163,19 @@ llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> VariableInfo::generateDwarf
 
   llvm::DWARFYAML::Abbrev memberAbbrev = AbbrevFactory::create(llvm::dwarf::DW_TAG_member, llvm::dwarf::DW_CHILDREN_no);
 
-  llvm::DWARFYAML::AttributeAbbrev memberNameAttr;
+  llvm::DWARFYAML::AttributeAbbrev memberNameAttr{};
   memberNameAttr.Attribute = llvm::dwarf::DW_AT_name;
   memberNameAttr.Form = llvm::dwarf::DW_FORM_string;
   memberNameAttr.Value = 0U;
   memberAbbrev.Attributes.push_back(memberNameAttr);
 
-  llvm::DWARFYAML::AttributeAbbrev memberTypeAttr;
+  llvm::DWARFYAML::AttributeAbbrev memberTypeAttr{};
   memberTypeAttr.Attribute = llvm::dwarf::DW_AT_type;
   memberTypeAttr.Form = llvm::dwarf::DW_FORM_ref4;
   memberTypeAttr.Value = 0U;
   memberAbbrev.Attributes.push_back(memberTypeAttr);
 
-  llvm::DWARFYAML::AttributeAbbrev memberLocationAttr;
+  llvm::DWARFYAML::AttributeAbbrev memberLocationAttr{};
   memberLocationAttr.Attribute = llvm::dwarf::DW_AT_data_member_location;
   memberLocationAttr.Form = llvm::dwarf::DW_FORM_data4;
   memberLocationAttr.Value = 0U;
@@ -186,13 +186,13 @@ llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> VariableInfo::generateDwarf
   llvm::DWARFYAML::Abbrev baseTypeAbbrev =
       AbbrevFactory::create(llvm::dwarf::DW_TAG_base_type, llvm::dwarf::DW_CHILDREN_no);
 
-  llvm::DWARFYAML::AttributeAbbrev baseTypeNameAttr;
+  llvm::DWARFYAML::AttributeAbbrev baseTypeNameAttr{};
   baseTypeNameAttr.Attribute = llvm::dwarf::DW_AT_name;
   baseTypeNameAttr.Form = llvm::dwarf::DW_FORM_string;
   baseTypeNameAttr.Value = 0U;
   baseTypeAbbrev.Attributes.push_back(baseTypeNameAttr);
 
-  llvm::DWARFYAML::AttributeAbbrev baseTypeSizeAttr;
+  llvm::DWARFYAML::AttributeAbbrev baseTypeSizeAttr{};
   baseTypeSizeAttr.Attribute = llvm::dwarf::DW_AT_byte_size;
   baseTypeSizeAttr.Form = llvm::dwarf::DW_FORM_data1;
   baseTypeSizeAttr.Value = 0U;
@@ -209,7 +209,7 @@ llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> VariableInfo::generateDwarf
 
   dwarfData.AbbrevDecls = abbrevDecls;
 
-  size_t producerOffset = stringManager.addString("warpo");
+  size_t const producerOffset = stringManager.addString("warpo");
 
   std::vector<llvm::DWARFYAML::Unit> compileUnits;
 
@@ -292,7 +292,7 @@ llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> VariableInfo::generateDwarf
   for (MemberFixup const &fixup : memberFixups) {
     std::string_view const typeName = fixup.typeName;
 
-    ClassRegistry::const_iterator it = classRegistry_.find(typeName);
+    ClassRegistry::const_iterator const it = classRegistry_.find(typeName);
     assert(it != classRegistry_.end());
     uint64_t const typeOffset = it->second.getDebugInfoOffset();
     dwarfData.CompileUnits[0U].Entries[fixup.entryIndex].Values[1U].Value = typeOffset;

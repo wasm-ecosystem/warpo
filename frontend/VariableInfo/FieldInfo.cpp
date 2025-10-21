@@ -21,7 +21,7 @@
 namespace warpo::frontend {
 
 FieldInfo::FieldInfo(wasm::IString name, wasm::IString type, uint32_t offsetInClass, bool nullable)
-    : name_(std::move(name)), type_(normalizeTypeName(type)), offsetInClass_(offsetInClass), nullable_(nullable) {}
+    : name_(name), type_(normalizeTypeName(type)), offsetInClass_(offsetInClass), nullable_(nullable) {}
 
 wasm::IString FieldInfo::normalizeTypeName(const wasm::IString &type) noexcept {
   std::string_view const typeStr = type.str;
@@ -33,7 +33,7 @@ wasm::IString FieldInfo::normalizeTypeName(const wasm::IString &type) noexcept {
       {"f64", "~lib/number/F64"}, {"usize", "~lib/number/Usize"}, {"isize", "~lib/number/Isize"},
   };
 
-  std::unordered_map<std::string_view, std::string_view>::const_iterator it = basicTypeMap.find(typeStr);
+  std::unordered_map<std::string_view, std::string_view>::const_iterator const it = basicTypeMap.find(typeStr);
   if (it != basicTypeMap.end()) {
     return wasm::IString(std::string(it->second).c_str());
   }

@@ -20,7 +20,7 @@ namespace warpo::frontend {
 size_t DebugStringManager::addString(std::string_view str) {
   wasm::IString const internedStr(str);
 
-  std::unordered_map<wasm::IString, size_t>::const_iterator it = stringOffsets_.find(internedStr);
+  std::unordered_map<wasm::IString, size_t>::const_iterator const it = stringOffsets_.find(internedStr);
   if (it != stringOffsets_.end()) {
     return it->second;
   }

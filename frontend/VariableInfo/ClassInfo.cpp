@@ -21,11 +21,10 @@
 namespace warpo::frontend {
 
 ClassInfo::ClassInfo(wasm::IString name, wasm::IString parentName, uint32_t const size, uint32_t const rtid)
-    : name_(std::move(name)), parentName_(std::move(parentName)), size_(size), rtid_(rtid), debugInfoOffset_(SIZE_MAX) {
-}
+    : name_(name), parentName_(parentName), size_(size), rtid_(rtid), debugInfoOffset_(SIZE_MAX) {}
 
 void ClassInfo::addMember(wasm::IString name, wasm::IString type, uint32_t offsetInClass, bool nullable) {
-  fields_.emplace_back(FieldInfo{std::move(name), std::move(type), offsetInClass, nullable});
+  fields_.emplace_back(FieldInfo{name, type, offsetInClass, nullable});
 }
 
 bool ClassInfo::isBasicType() const noexcept {
