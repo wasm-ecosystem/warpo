@@ -11,14 +11,12 @@
     call $~lib/rt/__decrease_sp
     block ;;none
         block ;;i32
+            global.get $~lib/memory/__stack_pointer
 ;; ====================
             i32.const 0
 ;; ======remove=======
 ;;    call $~lib/rt/__localtostack
 ;; =========add========
-          local.set $2
-            global.get $~lib/memory/__stack_pointer
-            local.get $2
           i32.store $0 align=1
           i32.const 0
         end

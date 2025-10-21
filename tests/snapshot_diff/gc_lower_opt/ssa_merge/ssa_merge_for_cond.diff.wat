@@ -11,10 +11,8 @@
     call $~lib/rt/__decrease_sp
     block ;;none
         block ;;i32
-            i32.const 0
-          local.set $1
             global.get $~lib/memory/__stack_pointer
-            local.get $1
+            i32.const 0
           i32.store $0 align=1
           i32.const 0
         end
@@ -34,12 +32,10 @@
       end
 ;; ======remove=======
 ;;      block ;;i32
+;;          global.get $~lib/memory/__stack_pointer
 ;; ====================
         local.get $0
 ;; ======remove=======
-;;        local.set $1
-;;          global.get $~lib/memory/__stack_pointer
-;;          local.get $1
 ;;        i32.store $0 offset=8 align=1
 ;;        local.get $0
 ;;      end

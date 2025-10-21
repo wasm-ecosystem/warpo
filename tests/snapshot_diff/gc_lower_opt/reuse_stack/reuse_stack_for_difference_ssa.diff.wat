@@ -22,10 +22,8 @@
         end
       local.set $0
         block ;;i32
-            local.get $0
-          local.set $2
             global.get $~lib/memory/__stack_pointer
-            local.get $2
+            local.get $0
 ;; ======remove=======
 ;;        i32.store $0 offset=4 align=1
 ;; =========add========
@@ -49,10 +47,8 @@
         end
       local.set $1
         block ;;i32
-            local.get $1
-          local.set $2
             global.get $~lib/memory/__stack_pointer
-            local.get $2
+            local.get $1
 ;; ======remove=======
 ;;        i32.store $0 offset=12 align=1
 ;; =========add========

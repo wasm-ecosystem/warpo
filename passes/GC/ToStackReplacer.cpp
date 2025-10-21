@@ -119,7 +119,7 @@ TEST(ToStackReplaceTest, Ignore) {
   )");
   wasm::Function *const func = m->getFunction("main");
 
-  StackPosition stackPosition{};
+  StackPosition const stackPosition{};
   CallReplacer replace{stackPosition, func};
   replace.walkFunctionInModule(func, m.get());
 
