@@ -4,6 +4,7 @@
 
 #include <wasm-type.h>
 
+#include "BinaryenExt.hpp"
 #include "ToString.hpp"
 #include "wasm-traversal.h"
 #include "wasm.h"
@@ -59,7 +60,7 @@ std::string warpo::passes::toString(wasm::Function *f) {
       }
     }
     static void doPostVisit(Printer *self, wasm::Expression **currp) {
-      if ((*currp)->is<wasm::Block>() || (*currp)->is<wasm::If>() || (*currp)->is<wasm::Loop>()) {
+      if (isOneOf<wasm::Block, wasm::If, wasm::Loop>(*currp)) {
         self->indent();
         self->ss << "end\n";
       } else {

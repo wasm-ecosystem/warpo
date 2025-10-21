@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "../helper/BinaryenExt.hpp"
 #include "../helper/CFG.hpp"
 #include "../helper/Powerset.hpp"
 #include "GCInfo.hpp"
@@ -143,11 +144,12 @@ TmpUses TmpUses::create(wasm::Function *func, SSAMap const &ssaMap) {
         for (size_t const index : Range<-1>{expressionStack.size() - 1U, 0U}) {
           wasm::Expression *const current = expressionStack[index];
           wasm::Expression *const parent = expressionStack[index - 1];
-          if (parent->is<wasm::Block>() || parent->is<wasm::Loop>() ||
-              (parent->is<wasm::If>() && parent->cast<wasm::If>()->condition != current)) {
-            // skip control flow opcode
+          // block like opcodes does not use the value actually, skip it to find real use site which use the block
+          // result
+          if (isOneOf<wasm::Block, wasm::Loop>(parent))
             continue;
-          }
+          if (auto ifExpr = parent->dynCast<wasm::If>(); ifExpr != nullptr && ifExpr->condition == current)
+            continue;
           tmpUses_.try_emplace(parent, std::vector<size_t>{}).first->second.push_back(ssaMap_.getIndex(SSAValue{expr}));
           return;
         }
@@ -377,10 +379,8 @@ void ObjLivenessAnalyzer::runOnFunction(wasm::Module *m, wasm::Function *func) {
 
   for (wasm::analysis::BasicBlock const &bb : cfg) {
     for (wasm::Expression *const expr : bb) {
-      if (expr->is<wasm::Call>() || expr->is<wasm::CallIndirect>() || expr->is<wasm::LocalGet>() ||
-          expr->is<wasm::LocalSet>() || tmpUses.contains(expr)) {
+      if (isOneOf<wasm::Call, wasm::CallIndirect, wasm::LocalGet, wasm::LocalSet>(expr) || tmpUses.contains(expr))
         livenessMap.ensureExpression(expr);
-      }
     }
   }
 

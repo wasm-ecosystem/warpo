@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "BinaryenExt.hpp"
 #include "ExprInserter.hpp"
 #include "ToString.hpp"
 #include "fmt/base.h"
@@ -16,9 +17,7 @@
 
 namespace warpo::passes {
 
-static bool isTerminator(wasm::Expression *expr) {
-  return expr->is<wasm::Return>() || expr->is<wasm::Unreachable>() || expr->is<wasm::Break>();
-}
+static bool isTerminator(wasm::Expression *expr) { return isOneOf<wasm::Return, wasm::Unreachable, wasm::Break>(expr); }
 
 bool ExprInserter::canInsertBefore(wasm::Expression *insertPosition) {
   // those instruction does not have children, so we can insert before them directly.

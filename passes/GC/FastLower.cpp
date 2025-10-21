@@ -58,12 +58,12 @@ struct ToStackReplacer : public wasm::WalkerPass<wasm::PostWalker<ToStackReplace
   }
   static void scan(ToStackReplacer *self, wasm::Expression **currp) {
     wasm::Expression const *const curr = *currp;
-    if (curr->is<wasm::Call>() || curr->is<wasm::CallIndirect>())
+    if (isOneOf<wasm::Call, wasm::CallIndirect>(curr))
       self->pushTask(ToStackReplacer::doLeaveCallLike, currp);
 
     wasm::PostWalker<ToStackReplacer>::scan(self, currp);
 
-    if (curr->is<wasm::Call>() || curr->is<wasm::CallIndirect>())
+    if (isOneOf<wasm::Call, wasm::CallIndirect>(curr))
       self->pushTask(ToStackReplacer::doEnterCallLike, currp);
   }
 

@@ -11,6 +11,7 @@
 namespace warpo::passes {
 
 template <class... Ts> bool isOneOf(wasm::Expression *expr) { return ((expr->is<Ts>()) || ...); }
+template <class... Ts> bool isOneOf(wasm::Expression const *expr) { return ((expr->is<Ts>()) || ...); }
 
 inline void setAsUnImported(wasm::Importable *importable) {
   assert(importable != nullptr);
