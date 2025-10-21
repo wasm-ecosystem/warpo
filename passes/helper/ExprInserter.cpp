@@ -2,9 +2,11 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <literal.h>
 #include <memory>
 #include <vector>
 
+#include "BinaryenExt.hpp"
 #include "ExprInserter.hpp"
 #include "ToString.hpp"
 #include "fmt/base.h"
@@ -21,21 +23,26 @@ static bool isTerminator(wasm::Expression *expr) {
 }
 
 bool ExprInserter::canInsertBefore(wasm::Expression *insertPosition) {
-  // those instruction does not have children, so we can insert before them directly.
-  if (insertPosition->is<wasm::GlobalGet>() || insertPosition->is<wasm::LocalGet>() ||
-      insertPosition->is<wasm::Const>() || insertPosition->is<wasm::MemorySize>())
+  // those instructions does not have children, so we can insert before them directly.
+  if (isOneOf<wasm::GlobalGet, wasm::LocalGet, wasm::Const, wasm::MemorySize>(insertPosition))
     return true;
-  // those instruction should be inserted after the last operand
-  if (insertPosition->is<wasm::Call>()) {
-    wasm::Call *const call = insertPosition->cast<wasm::Call>();
+  // those instructions should be inserted after the last operand
+  if (wasm::Call *const call = insertPosition->dynCast<wasm::Call>(); call != nullptr) {
     if (call->operands.empty())
       return true;
     if (canInsertAfter(call->operands.back()))
       return true;
   }
-  if (insertPosition->is<wasm::LocalSet>()) {
-    wasm::LocalSet *const localSet = insertPosition->cast<wasm::LocalSet>();
+  if (wasm::LocalSet *const localSet = insertPosition->dynCast<wasm::LocalSet>(); localSet != nullptr) {
     if (canInsertAfter(localSet->value))
+      return true;
+  }
+  if (wasm::Binary const *const binary = insertPosition->dynCast<wasm::Binary>(); binary != nullptr) {
+    if (canInsertAfter(binary->right))
+      return true;
+  }
+  if (wasm::Unary const *const unary = insertPosition->dynCast<wasm::Unary>(); unary != nullptr) {
+    if (canInsertAfter(unary->value))
       return true;
   }
   fmt::println("[" PASS_NAME "] fn '{}', failed to insert before {}", func_->name.str, toString(insertPosition));
@@ -65,6 +72,16 @@ void ExprInserter::insertBefore(wasm::Builder &b, wasm::Expression *insertedExpr
   case wasm::Expression::LocalSetId: {
     wasm::LocalSet *const localSet = insertPosition->cast<wasm::LocalSet>();
     insertAfter(b, insertedExpr, &localSet->value);
+    break;
+  }
+  case wasm::Expression::BinaryId: {
+    wasm::Binary *const binary = insertPosition->cast<wasm::Binary>();
+    insertAfter(b, insertedExpr, &binary->right);
+    break;
+  }
+  case wasm::Expression::UnaryId: {
+    wasm::Unary *const unary = insertPosition->cast<wasm::Unary>();
+    insertAfter(b, insertedExpr, &unary->value);
     break;
   }
   default:
@@ -231,16 +248,40 @@ TEST(ExprInserter, InsertBeforeLocalSet) {
   ASSERT_EQ(f->body, insertPos);
 
   using namespace matcher;
-  auto matcher = isLocalSet(local_set::v(isBlock(block::has(3), block::at(0, isLocalSet(local_set::v(isConst()))),
-                                                 block::at(1, isNop()), block::at(2, isLocalGet()))));
-  EXPECT_TRUE(matcher(*f->body));
+  auto match = isLocalSet(local_set::v(isBlock({
+      block::has(3),
+      block::at(0, isLocalSet(local_set::v(isConst()))),
+      block::at(1, isNop()),
+      block::at(2, isLocalGet()),
+  })));
+  isMatched(match, f->body);
+}
+
+TEST(ExprInserter, InsertBeforeBinary) {
+  wasm::Module m{};
+  wasm::Builder b{m};
+  const wasm::Literal L{static_cast<int32_t>(1)};
+  const wasm::Literal R{static_cast<int32_t>(2)};
+  wasm::Expression *const insertPos = b.makeBinary(wasm::BinaryOp::AddInt32, b.makeConst(L), b.makeConst(R));
+  std::unique_ptr<wasm::Function> f = wasm::Builder::makeFunction("test", wasm::Signature(), {}, insertPos);
+  ExprInserter inserter{f.get()};
+
+  ASSERT_TRUE(inserter.canInsertBefore(insertPos));
+  inserter.insertBefore(b, b.makeNop(), findExprPointer(insertPos, f.get()));
 
   ASSERT_EQ(f->body, insertPos);
-  ASSERT_TRUE(insertPos->cast<LocalSet>()->value->is<Block>());
-  ASSERT_TRUE(insertPos->cast<LocalSet>()->value->cast<Block>()->list[0]->is<LocalSet>());
-  ASSERT_TRUE(insertPos->cast<LocalSet>()->value->cast<Block>()->list[0]->cast<LocalSet>()->value->is<Const>());
-  ASSERT_TRUE(insertPos->cast<LocalSet>()->value->cast<Block>()->list[1]->is<Nop>());
-  ASSERT_TRUE(insertPos->cast<LocalSet>()->value->cast<Block>()->list[2]->is<LocalGet>());
+
+  using namespace matcher;
+  auto match = isBinary({
+      binary::lhs(isConst(const_::v(L))),
+      binary::rhs(isBlock({
+          block::has(3),
+          block::at(0, isLocalSet(local_set::v(isConst(const_::v(R))))),
+          block::at(1, isNop()),
+          block::at(2, isLocalGet()),
+      })),
+  });
+  isMatched(match, f->body);
 }
 
 TEST(ExprInserter, InsertAfterTypeNone) {
