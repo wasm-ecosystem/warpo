@@ -38,7 +38,7 @@ runs:
     - uses: actions/cache@v4
       with:
         path: build_cache
-        key: ccache-${{ runner.os }}-${{ inputs.CMAKE_ARGS }}-${{ hashFiles('**/CMakeLists.txt') }}
+        key: ccache-${{ runner.os }}-${{ inputs.CMAKE_ARGS }}-${{ github.run_id }}
         restore-keys: |
           ccache-${{ runner.os }}-${{ inputs.CMAKE_ARGS }}-
           ccache-${{ runner.os }}-
