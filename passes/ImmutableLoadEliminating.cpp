@@ -236,8 +236,8 @@ TEST_P(ImmutableDataRangeTest, LoadImmutableData) {
   runner.run();
 
   if (GetParam().isReplaced_) {
-    auto matcher = matcher::isConst(matcher::const_::v(wasm::Literal{0U}));
-    EXPECT_TRUE(matcher(*f->body));
+    auto match = matcher::isConst(matcher::const_::v(wasm::Literal{0U}));
+    EXPECT_TRUE(match(*f->body));
   } else {
     EXPECT_TRUE(f->body->is<wasm::Load>());
   }
@@ -275,8 +275,8 @@ TEST(ImmutableLoadEliminatingTest, Offset) {
   runner.add(std::unique_ptr<wasm::Pass>{createImmutableLoadEliminatingPass(ranges)});
   runner.run();
 
-  auto matcher = matcher::isConst(matcher::const_::v(wasm::Literal{0U}));
-  EXPECT_TRUE(matcher(*f->body));
+  auto match = matcher::isConst(matcher::const_::v(wasm::Literal{0U}));
+  EXPECT_TRUE(match(*f->body));
 }
 
 struct P1 {
@@ -311,9 +311,9 @@ TEST_P(LoadKindTest, LoadImmutableData) {
 
   using namespace matcher;
 
-  auto matcher = isDrop(drop::v(isConst(const_::v(GetParam().value_))));
+  auto match = isDrop(drop::v(isConst(const_::v(GetParam().value_))));
 
-  EXPECT_TRUE(matcher(*f->body));
+  isMatched(match, f->body);
 }
 
 INSTANTIATE_TEST_SUITE_P(

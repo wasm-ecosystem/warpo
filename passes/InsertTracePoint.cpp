@@ -251,7 +251,7 @@ TEST(TracePointInserterTest, WithoutResult) {
   runner.run();
 
   using namespace matcher;
-  auto const match = isBlock(block::list(allOf({
+  auto match = isBlock(block::list(allOf({
       has(3),
       at(0, isCall(call::callee(tracePointFunctionName), call::operands(allOf({at(0, isConst())})))),
       at(1, isBlock(block::list(allOf({
@@ -263,8 +263,7 @@ TEST(TracePointInserterTest, WithoutResult) {
             })))),
       at(2, isCall(call::callee(tracePointFunctionName), call::operands(allOf({at(0, isConst())})))),
   })));
-
-  EXPECT_TRUE(match(*fn->body));
+  isMatched(match, fn->body);
 }
 
 TEST(TracePointInserterTest, WithResult) {
@@ -287,7 +286,7 @@ TEST(TracePointInserterTest, WithResult) {
   runner.run();
 
   using namespace matcher;
-  auto const match = isBlock(block::list(allOf({
+  auto match = isBlock(block::list(allOf({
       has(4),
       at(0, isCall(call::callee(tracePointFunctionName), call::operands(allOf({at(0, isConst())})))),
       at(1, isLocalSet(local_set::v(isBlock(block::list(allOf({
@@ -300,8 +299,7 @@ TEST(TracePointInserterTest, WithResult) {
       at(2, isCall(call::callee(tracePointFunctionName), call::operands(allOf({at(0, isConst())})))),
       at(3, isLocalGet()),
   })));
-
-  EXPECT_TRUE(match(*fn->body));
+  isMatched(match, fn->body);
 }
 
 TEST(TracePointInserterTest, CallImport) {
@@ -321,7 +319,7 @@ TEST(TracePointInserterTest, CallImport) {
   runner.run();
 
   using namespace matcher;
-  auto const match = isBlock(block::list(allOf({
+  auto match = isBlock(block::list(allOf({
       has(3),
       at(0, isCall(call::callee(tracePointFunctionName), call::operands(at(0, isConst())))),
       at(1, isBlock(block::list(allOf({
@@ -332,8 +330,7 @@ TEST(TracePointInserterTest, CallImport) {
             })))),
       at(2, isCall(call::callee(tracePointFunctionName), call::operands(at(0, isConst())))),
   })));
-
-  EXPECT_TRUE(match(*fn->body));
+  isMatched(match, fn->body);
 }
 
 } // namespace

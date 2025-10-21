@@ -231,9 +231,9 @@ TEST(ExprInserter, InsertBeforeLocalSet) {
   ASSERT_EQ(f->body, insertPos);
 
   using namespace matcher;
-  auto matcher = isLocalSet(local_set::v(isBlock(block::has(3), block::at(0, isLocalSet(local_set::v(isConst()))),
-                                                 block::at(1, isNop()), block::at(2, isLocalGet()))));
-  EXPECT_TRUE(matcher(*f->body));
+  auto match = isLocalSet(local_set::v(isBlock(block::has(3), block::at(0, isLocalSet(local_set::v(isConst()))),
+                                               block::at(1, isNop()), block::at(2, isLocalGet()))));
+  EXPECT_TRUE(match(*f->body));
 
   ASSERT_EQ(f->body, insertPos);
   ASSERT_TRUE(insertPos->cast<LocalSet>()->value->is<Block>());
