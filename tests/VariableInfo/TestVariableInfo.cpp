@@ -31,7 +31,7 @@ TEST(TestVariableInfo, TestClassInfo) {
   Colors::setEnabled(false);
 
   std::filesystem::path const testDir = std::filesystem::path(__FILE__).parent_path();
-  std::filesystem::path const testFilePath = testDir / "test.ts";
+  std::filesystem::path const testFilePath = testDir / "testDebugSymbol.ts";
   std::vector<std::string> const entries{testFilePath.string()};
   warpo::frontend::CompilationResult const compileResult{warpo::frontend::compile(entries, config)};
   std::stringstream ss;
@@ -52,7 +52,7 @@ TEST(TestVariableInfo, TestClassInfo) {
   }
 
   std::string const dumpOutput = warpo::frontend::VariableInfo::dumpDwarf(debugSections);
-  const char *const fixtureName{"debug_info_fixture.txt"};
+  const char *const fixtureName{"debugInfoFixture.txt"};
   std::filesystem::path const expectedDumpPath = testDir / fixtureName;
 
   if (updateFixturesFlag.get()) {
