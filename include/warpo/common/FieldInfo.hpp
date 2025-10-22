@@ -16,29 +16,27 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 #include <string_view>
-#include <unordered_map>
 
-#include "binaryen/src/support/istring.h"
-
-namespace warpo::frontend {
+namespace warpo {
 
 class FieldInfo final {
 public:
-  FieldInfo(wasm::IString name, wasm::IString type, uint32_t offsetInClass, bool nullable);
+  FieldInfo(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable);
 
-  std::string_view getName() const noexcept { return name_.str; }
-  std::string_view getType() const noexcept { return type_.str; }
+  std::string_view getName() const noexcept { return name_; }
+  std::string_view getType() const noexcept { return type_; }
   uint32_t getOffsetInClass() const noexcept { return offsetInClass_; }
   bool isNullable() const noexcept { return nullable_; }
 
 private:
-  static wasm::IString normalizeTypeName(const wasm::IString &type) noexcept;
+  static std::string_view normalizeTypeName(std::string_view const type) noexcept;
 
-  wasm::IString name_;
-  wasm::IString type_;
+  std::string name_;
+  std::string_view type_;
   uint32_t offsetInClass_;
   bool nullable_;
 };
 
-} // namespace warpo::frontend
+} // namespace warpo

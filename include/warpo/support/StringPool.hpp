@@ -1,5 +1,5 @@
 ///
-/// @file AsString.hpp
+/// @file StringPool.hpp
 /// @copyright Copyright (C) 2025 wasm-ecosystem
 /// SPDX-License-Identifier: Apache-2.0
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,12 +14,16 @@
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
 #include <cstdint>
+#include <memory>
 #include <string>
+#include <unordered_map>
+namespace warpo {
+class StringPool final {
 
-#include "src/WasmModule/WasmModule.hpp"
-namespace warpo::frontend {
-class AsString final {
 public:
-  static std::string get(uint32_t const ptr, vb::WasmModule const *const ctx);
+  std::string_view internString(std::string_view str);
+
+private:
+  std::unordered_map<std::string_view, std::unique_ptr<std::string>> pool_;
 };
-} // namespace warpo::frontend
+} // namespace warpo

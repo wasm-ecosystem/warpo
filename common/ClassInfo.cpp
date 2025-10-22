@@ -16,20 +16,22 @@
 #include <regex>
 #include <utility>
 
-#include "ClassInfo.hpp"
+#include "warpo/common/ClassInfo.hpp"
 
-namespace warpo::frontend {
+namespace warpo {
 
-ClassInfo::ClassInfo(wasm::IString name, wasm::IString parentName, uint32_t const size, uint32_t const rtid)
+ClassInfo::ClassInfo(std::string_view const name, std::string_view const parentName, uint32_t const size,
+                     uint32_t const rtid)
     : name_(name), parentName_(parentName), size_(size), rtid_(rtid), debugInfoOffset_(SIZE_MAX) {}
 
-void ClassInfo::addMember(wasm::IString name, wasm::IString type, uint32_t offsetInClass, bool nullable) {
-  fields_.emplace_back(FieldInfo{name, type, offsetInClass, nullable});
+void ClassInfo::addMember(std::string name, std::string_view const type, uint32_t const offsetInClass,
+                          bool const nullable) {
+  fields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
 }
 
 bool ClassInfo::isBasicType() const noexcept {
   static const std::regex basicTypePattern(R"(~lib/number/(F32|F64|U8|I8|U16|I16|U32|I32|U64|I64|Usize|Isize|Bool))");
-  return std::regex_match(name_.str.begin(), name_.str.end(), basicTypePattern);
+  return std::regex_match(name_.begin(), name_.end(), basicTypePattern);
 }
 
-} // namespace warpo::frontend
+} // namespace warpo

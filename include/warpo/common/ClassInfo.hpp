@@ -20,21 +20,20 @@
 #include <vector>
 
 #include "FieldInfo.hpp"
-#include "binaryen/src/support/istring.h"
 
-namespace warpo::frontend {
+namespace warpo {
 
 class InterfaceInfo final {};
 
 class ClassInfo final {
 public:
-  ClassInfo(wasm::IString name, wasm::IString parentName, uint32_t size, uint32_t rtid);
+  ClassInfo(std::string_view const name, std::string_view const parentName, uint32_t const size, uint32_t const rtid);
 
   uint32_t getSize() const noexcept { return size_; }
-  std::string_view getName() const noexcept { return name_.str; }
+  std::string_view getName() const noexcept { return name_; }
   std::vector<FieldInfo> const &getFields() const noexcept { return fields_; }
 
-  void addMember(wasm::IString name, wasm::IString type, uint32_t offsetInClass, bool nullable);
+  void addMember(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable);
 
   void setDebugInfoOffset(uint64_t offset) noexcept { debugInfoOffset_ = offset; }
   uint64_t getDebugInfoOffset() const noexcept { return debugInfoOffset_; }
@@ -42,8 +41,8 @@ public:
   bool isBasicType() const noexcept;
 
 private:
-  wasm::IString name_;
-  wasm::IString parentName_;
+  std::string_view name_;
+  std::string_view parentName_;
   uint32_t size_;
   uint32_t rtid_;
   size_t debugInfoOffset_;
@@ -51,4 +50,4 @@ private:
   std::vector<InterfaceInfo> interfaces_;
 };
 
-} // namespace warpo::frontend
+} // namespace warpo

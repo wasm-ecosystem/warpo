@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
 project(warpo)
-set(ProjectRoot ${CMAKE_CURRENT_SOURCE_DIR})
 
 option(WARPO_RELEASE "build for release" OFF)
 option(WARPO_SANITIZE "enable address sanitizer" OFF)
@@ -22,7 +21,6 @@ add_definitions("-DINTERRUPTION_REQUEST=0")
 add_definitions("-DEAGER_ALLOCATION=1")
 
 add_subdirectory(third_party EXCLUDE_FROM_ALL)
-include_directories(${ProjectRoot})
 
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)

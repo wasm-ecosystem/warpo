@@ -11,6 +11,8 @@
 #include <set>
 #include <utility>
 
+#include "VariableInfo.hpp"
+
 namespace warpo {
 
 class BinaryenModule {
@@ -74,6 +76,7 @@ class AsModule {
 
 public:
   std::shared_ptr<ImmutableDataElementRanges> immutableRanges_;
+  VariableInfo variableInfo_;
   // TODO: more information fields
 
   AsModule() = default;

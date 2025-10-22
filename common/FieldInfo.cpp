@@ -14,17 +14,17 @@
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
 #include <string>
+#include <unordered_map>
 #include <utility>
 
-#include "FieldInfo.hpp"
+#include "warpo/common/FieldInfo.hpp"
 
-namespace warpo::frontend {
+namespace warpo {
 
-FieldInfo::FieldInfo(wasm::IString name, wasm::IString type, uint32_t offsetInClass, bool nullable)
-    : name_(name), type_(normalizeTypeName(type)), offsetInClass_(offsetInClass), nullable_(nullable) {}
+FieldInfo::FieldInfo(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable)
+    : name_(std::move(name)), type_(normalizeTypeName(type)), offsetInClass_(offsetInClass), nullable_(nullable) {}
 
-wasm::IString FieldInfo::normalizeTypeName(const wasm::IString &type) noexcept {
-  std::string_view const typeStr = type.str;
+std::string_view FieldInfo::normalizeTypeName(std::string_view const type) noexcept {
 
   static const std::unordered_map<std::string_view, std::string_view> basicTypeMap = {
       {"i8", "~lib/number/I8"},        {"u8", "~lib/number/U8"},       {"i16", "~lib/number/I16"},
@@ -34,12 +34,12 @@ wasm::IString FieldInfo::normalizeTypeName(const wasm::IString &type) noexcept {
       {"boolean", "~lib/number/Bool"},
   };
 
-  std::unordered_map<std::string_view, std::string_view>::const_iterator const it = basicTypeMap.find(typeStr);
+  std::unordered_map<std::string_view, std::string_view>::const_iterator const it = basicTypeMap.find(type);
   if (it != basicTypeMap.end()) {
-    return wasm::IString(std::string(it->second).c_str());
+    return it->second;
   }
 
   return type;
 }
 
-} // namespace warpo::frontend
+} // namespace warpo

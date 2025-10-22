@@ -1,9 +1,8 @@
 add_subdirectory(ASC)
 
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} warpo_frontend_sources)
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/VariableInfo variableInfoSources)
 
-add_library(warpo_frontend ${warpo_frontend_sources} ${variableInfoSources})
+add_library(warpo_frontend ${warpo_frontend_sources})
 
 target_link_libraries(warpo_frontend
   PRIVATE warpo_frontend_asc warp_runner

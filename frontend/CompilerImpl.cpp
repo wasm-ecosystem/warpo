@@ -21,7 +21,6 @@
 #include "ASC/ASC.hpp"
 #include "CompilerImpl.hpp"
 #include "LinkedAPI.hpp"
-#include "VariableInfo/VariableInfo.hpp"
 #include "llvm/Support/ConvertUTF.h"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/Debug.hpp"
@@ -385,16 +384,6 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
       return {.m = {}, .errorMessage = errorMessage_};
     asModule_.set(BinaryenModule{reinterpret_cast<wasm::Module *>(
         r->callExportedFunctionWithName<1>(stackTop, "getBinaryenModuleRef", compiled)[0].i64)});
-
-    llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections = variableInfo_.generateDwarf();
-    if (!debugSections.empty()) {
-      for (auto I = debugSections.begin(); !(I == debugSections.end()); I++) {
-        llvm::StringRef const sectionName = I->getKey();
-        llvm::MemoryBuffer const *const buffer = I->getValue().get();
-        BinaryenAddCustomSection(asModule_.get(), sectionName.data(),
-                                 reinterpret_cast<const char *>(buffer->getBufferStart()), buffer->getBufferSize());
-      }
-    }
 
     compileStat.release();
     return {.m = std::move(asModule_), .errorMessage = errorMessage_};

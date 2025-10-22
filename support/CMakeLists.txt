@@ -41,6 +41,10 @@ if(NOT WARPO_RELEASE)
     gtest_main
     gmock
   )
+  target_link_libraries(${LIB_NAME}_test
+    PUBLIC warp_runner
+  )
+  add_dependencies(${LIB_NAME}_test vb_libWasmModule)
 endif()
 
 add_library(${LIB_NAME}
@@ -62,3 +66,8 @@ target_compile_definitions(${LIB_NAME}
   PUBLIC
   GIT_COMMIT="${GIT_COMMIT}"
 )
+
+target_link_libraries(${LIB_NAME}
+  PUBLIC vb_libWasmModule
+)
+add_dependencies(${LIB_NAME} vb_libWasmModule)

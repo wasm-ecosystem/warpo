@@ -23,38 +23,28 @@
 #include <vector>
 
 #include "ClassInfo.hpp"
-#include "binaryen/src/support/istring.h"
 #include "llvm/ADT/StringMap.h"
 #include "llvm/Support/MemoryBuffer.h"
+#include "warpo/support/StringPool.hpp"
 
 #include "src/WasmModule/WasmModule.hpp"
 #include "src/core/common/NativeSymbol.hpp"
-
-namespace warpo::frontend {
+namespace warpo {
 
 class VariableInfo final {
 public:
   using ClassRegistry = std::unordered_map<std::string_view, ClassInfo>;
 
-  static std::vector<vb::NativeSymbol> createVariableInfoAPI();
-
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> generateDwarf();
 
-  static std::string dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const &debugSections);
+  void createClass(std::string className, std::string parentName, uint32_t const size, uint32_t const rtid);
+
+  void addField(std::string_view const className, std::string fieldName, std::string typeName, uint32_t const offset,
+                uint32_t const nullable);
 
 private:
-  static void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const size,
-                          uint32_t const rtid, vb::WasmModule const *const ctx);
-
-  static void addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
-                       uint32_t const offset, uint32_t const nullable, vb::WasmModule const *const ctx);
-
-  void createClassInternal(wasm::IString className, wasm::IString parentName, uint32_t const size, uint32_t const rtid);
-
-  void addFieldInternal(std::string className, std::string fieldName, std::string const typeName, uint32_t const offset,
-                        uint32_t const nullable);
-
   ClassRegistry classRegistry_;
+  StringPool stringPool_;
 };
-} // namespace warpo::frontend
+} // namespace warpo
 #endif

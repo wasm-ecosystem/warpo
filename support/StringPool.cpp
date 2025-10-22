@@ -1,5 +1,5 @@
 ///
-/// @file AbbrevFactory.cpp
+/// @file AsString.cpp
 /// @copyright Copyright (C) 2025 wasm-ecosystem
 /// SPDX-License-Identifier: Apache-2.0
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,18 +13,23 @@
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
-#include "AbbrevFactory.hpp"
+#include <cstdint>
+#include <sstream>
+#include <string>
 
-namespace warpo::frontend {
+#include "warpo/support/StringPool.hpp"
 
-llvm::DWARFYAML::Abbrev AbbrevFactory::create(llvm::dwarf::Tag tag, llvm::dwarf::Constants children) noexcept {
-  llvm::DWARFYAML::Abbrev abbrev;
-  abbrev.Code = nextCode_;
-  nextCode_++;
-  abbrev.Tag = tag;
-  abbrev.Children = children;
-  abbrev.ListOffset = 0;
-  return abbrev;
+namespace warpo {
+
+std::string_view StringPool::internString(std::string_view str) {
+  auto it = pool_.find(str);
+  if (it != pool_.end()) {
+    return *it->second;
+  }
+  auto newStr = std::make_unique<std::string>(str);
+  std::string_view result = *newStr;
+  pool_[result] = std::move(newStr);
+  return result;
 }
 
-} // namespace warpo::frontend
+} // namespace warpo

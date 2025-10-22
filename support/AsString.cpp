@@ -17,10 +17,10 @@
 #include <sstream>
 #include <string>
 
-#include "AsString.hpp"
+#include "warpo/support/AsString.hpp"
 
 #include "src/WasmModule/WasmModule.hpp"
-namespace warpo::frontend {
+namespace warpo {
 
 std::string AsString::get(uint32_t const ptr, vb::WasmModule const *const ctx) {
   if (ptr == 0U)
@@ -38,4 +38,4 @@ std::string AsString::get(uint32_t const ptr, vb::WasmModule const *const ctx) {
   return std::move(ss).str();
 }
 
-} // namespace warpo::frontend
+} // namespace warpo
