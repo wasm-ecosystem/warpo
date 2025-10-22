@@ -24,6 +24,7 @@ public:
   std::string_view internString(std::string_view str);
 
 private:
-  std::unordered_map<std::string_view, std::unique_ptr<std::string>> pool_;
+  using PoolType = std::unordered_map<std::string_view, std::unique_ptr<std::string>>;
+  PoolType pool_;
 };
 } // namespace warpo

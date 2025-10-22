@@ -20,18 +20,17 @@ void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint
   std::string className{AsString::get(classNamePtr, ctx)};
   std::string parentName{AsString::get(parentNamePtr, ctx)};
 
-  FrontendCompiler *const pCompiler = reinterpret_cast<FrontendCompiler *>(ctx->getContext());
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   pCompiler->asModule_.variableInfo_.createClass(std::move(className), std::move(parentName), size, rtid);
 }
 
 void addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
               uint32_t const offset, uint32_t const nullable, vb::WasmModule const *const ctx) {
-  std::string className = AsString::get(classNamePtr, ctx);
+  std::string const className = AsString::get(classNamePtr, ctx);
   std::string fieldName = AsString::get(fieldNamePtr, ctx);
   std::string typeName = AsString::get(typeNamePtr, ctx);
-  FrontendCompiler *const pCompiler = reinterpret_cast<FrontendCompiler *>(ctx->getContext());
-  pCompiler->asModule_.variableInfo_.addField(std::move(className), std::move(fieldName), std::move(typeName), offset,
-                                              nullable);
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.addField(className, std::move(fieldName), std::move(typeName), offset, nullable);
 }
 
 } // namespace

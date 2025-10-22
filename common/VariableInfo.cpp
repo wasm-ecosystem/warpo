@@ -52,29 +52,29 @@ void VariableInfo::createClass(std::string const className, std::string const pa
 #include <gtest/gtest.h>
 
 namespace warpo::ut {
-TEST(VariableInfoTest, TestCreateClass) {
-  VariableInfo varInfo;
+TEST(TestVariableInfo, TestCreateClass) {
+  VariableInfo variableInfo;
 
   // 1. Add two classes
-  varInfo.createClass("Person", "Object", 64, 1);
-  varInfo.createClass("Employee", "Person", 96, 2);
+  variableInfo.createClass("Person", "Object", 64, 1);
+  variableInfo.createClass("Employee", "Person", 96, 2);
 
   // 2. Add several members to each class
   // Person class members
-  varInfo.addField("Person", "name", "~lib/string/String", 0, 0);
-  varInfo.addField("Person", "age", "~lib/number/I32", 8, 0);
-  varInfo.addField("Person", "email", "~lib/string/String", 12, 1); // nullable
+  variableInfo.addField("Person", "name", "~lib/string/String", 0, 0);
+  variableInfo.addField("Person", "age", "~lib/number/I32", 8, 0);
+  variableInfo.addField("Person", "email", "~lib/string/String", 12, 1); // nullable
 
   // Employee class members
-  varInfo.addField("Employee", "name", "~lib/string/String", 0, 0);
-  varInfo.addField("Employee", "age", "~lib/number/I32", 8, 0);
-  varInfo.addField("Employee", "email", "~lib/string/String", 12, 1);
-  varInfo.addField("Employee", "employeeId", "~lib/number/I32", 16, 0);
-  varInfo.addField("Employee", "department", "~lib/string/String", 20, 0);
-  varInfo.addField("Employee", "salary", "~lib/number/F64", 24, 0);
+  variableInfo.addField("Employee", "name", "~lib/string/String", 0, 0);
+  variableInfo.addField("Employee", "age", "~lib/number/I32", 8, 0);
+  variableInfo.addField("Employee", "email", "~lib/string/String", 12, 1);
+  variableInfo.addField("Employee", "employeeId", "~lib/number/I32", 16, 0);
+  variableInfo.addField("Employee", "department", "~lib/string/String", 20, 0);
+  variableInfo.addField("Employee", "salary", "~lib/number/F64", 24, 0);
 
   // 3. Get the class registry
-  const auto &classRegistry = varInfo.getClassRegistry();
+  const auto &classRegistry = variableInfo.getClassRegistry();
 
   // 4. Assert if the classes and members are correctly added
   // Verify we have exactly 2 classes

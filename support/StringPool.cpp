@@ -22,12 +22,12 @@
 namespace warpo {
 
 std::string_view StringPool::internString(std::string_view str) {
-  auto it = pool_.find(str);
+  PoolType::const_iterator const it = pool_.find(str);
   if (it != pool_.end()) {
     return *it->second;
   }
-  auto newStr = std::make_unique<std::string>(str);
-  std::string_view result = *newStr;
+  std::unique_ptr<std::string> newStr = std::make_unique<std::string>(str);
+  std::string_view const result = *newStr;
   pool_[result] = std::move(newStr);
   return result;
 }
@@ -42,9 +42,9 @@ namespace warpo::ut {
 
 TEST(TestStringPool, testAddString) {
   StringPool pool;
-  std::string_view str1 = pool.internString("hello");
-  std::string_view str2 = pool.internString("world");
-  std::string_view str3 = pool.internString("hello");
+  std::string_view const str1 = pool.internString("hello");
+  std::string_view const str2 = pool.internString("world");
+  std::string_view const str3 = pool.internString("hello");
 
   EXPECT_EQ(str1, "hello");
   EXPECT_EQ(str2, "world");
