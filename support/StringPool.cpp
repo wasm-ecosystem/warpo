@@ -1,5 +1,5 @@
 ///
-/// @file AsString.cpp
+/// @file StringPool.cpp
 /// @copyright Copyright (C) 2025 wasm-ecosystem
 /// SPDX-License-Identifier: Apache-2.0
 /// Licensed under the Apache License, Version 2.0 (the "License");
