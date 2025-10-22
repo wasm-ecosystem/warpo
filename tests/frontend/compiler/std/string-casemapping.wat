@@ -9143,22 +9143,6 @@
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
-  (call $~lib/rt/itcms/__visit
-   (i32.const 256)
-   (local.get $0)
-  )
-  (call $~lib/rt/itcms/__visit
-   (i32.const 64)
-   (local.get $0)
-  )
-  (call $~lib/rt/itcms/__visit
-   (i32.const 18608)
-   (local.get $0)
-  )
-  (call $~lib/rt/itcms/__visit
-   (i32.const 19664)
-   (local.get $0)
-  )
   (if
    (local.tee $1
     (global.get $~lib/util/casemap/SPECIALS_UPPER)

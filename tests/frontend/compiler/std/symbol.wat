@@ -6507,22 +6507,6 @@
     )
    )
   )
-  (call $~lib/rt/itcms/__visit
-   (i32.const 304)
-   (local.get $0)
-  )
-  (call $~lib/rt/itcms/__visit
-   (i32.const 512)
-   (local.get $0)
-  )
-  (call $~lib/rt/itcms/__visit
-   (i32.const 624)
-   (local.get $0)
-  )
-  (call $~lib/rt/itcms/__visit
-   (i32.const 112)
-   (local.get $0)
-  )
  )
  (func $~lib/arraybuffer/ArrayBufferView~visit (param $0 i32) (param $1 i32)
   (local $2 i32)

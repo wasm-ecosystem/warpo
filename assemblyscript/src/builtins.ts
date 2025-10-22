@@ -10837,6 +10837,7 @@ export function compileVisitGlobals(compiler: Compiler): void {
   let exprs = new Array<ExpressionRef>();
   let sizeTypeRef = compiler.options.sizeTypeRef;
   let visitInstance = assert(compiler.program.visitInstance);
+  let staticGcObjectOffsets = compiler.staticGcObjectOffsets;
 
   // this function is @lazy: make sure it exists
   compiler.compileFunction(visitInstance, true);
@@ -10855,16 +10856,20 @@ export function compileVisitGlobals(compiler: Compiler): void {
     ) {
       if (global.is(CommonFlags.Inlined)) {
         let value = global.constantIntegerValue;
-        if (i64_low(value) || i64_high(value)) {
-          exprs.push(
-            module.call(visitInstance.internalName, [
-              compiler.options.isWasm64
-                ? module.i64(i64_low(value), i64_high(value))
-                : module.i32(i64_low(value)),
-              module.local_get(0, TypeRef.I32) // cookie
-            ], TypeRef.None)
-          );
+        if (i64_low(value) == 0 && i64_high(value) == 0) {
+          continue;
         }
+        if (staticGcObjectOffsets.has(i64_high(value)) && assert(staticGcObjectOffsets.get(i64_high(value))).has(i64_low(value))) {
+          continue;
+        }
+        exprs.push(
+          module.call(visitInstance.internalName, [
+            compiler.options.isWasm64
+              ? module.i64(i64_low(value), i64_high(value))
+              : module.i32(i64_low(value)),
+            module.local_get(0, TypeRef.I32) // cookie
+          ], TypeRef.None)
+        );
       } else {
         exprs.push(
           module.if(

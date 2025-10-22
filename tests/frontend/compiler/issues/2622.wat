@@ -3407,14 +3407,6 @@
     )
    )
   )
-  (call $~lib/rt/itcms/__visit
-   (i32.const 224)
-   (local.get $0)
-  )
-  (call $~lib/rt/itcms/__visit
-   (i32.const 32)
-   (local.get $0)
-  )
   (if
    (local.tee $1
     (global.get $issues/2622/_a/t1)

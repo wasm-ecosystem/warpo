@@ -3807,18 +3807,6 @@
     )
    )
   )
-  (call $~lib/rt/itcms/__visit
-   (i32.const 384)
-   (local.get $0)
-  )
-  (call $~lib/rt/itcms/__visit
-   (i32.const 592)
-   (local.get $0)
-  )
-  (call $~lib/rt/itcms/__visit
-   (i32.const 192)
-   (local.get $0)
-  )
  )
  (func $~lib/arraybuffer/ArrayBufferView~visit (param $0 i32) (param $1 i32)
   (local $2 i32)
