@@ -27,16 +27,19 @@ class InterfaceInfo final {};
 
 class ClassInfo final {
 public:
-  ClassInfo(std::string_view const name, std::string_view const parentName, uint32_t const size, uint32_t const rtid);
+  inline ClassInfo(std::string_view const name, std::string_view const parentName, uint32_t const size,
+                   uint32_t const rtid) noexcept
+      : name_(name), parentName_(parentName), size_(size), rtid_(rtid), debugInfoOffset_(SIZE_MAX) {}
 
-  uint32_t getSize() const noexcept { return size_; }
-  std::string_view getName() const noexcept { return name_; }
-  std::vector<FieldInfo> const &getFields() const noexcept { return fields_; }
+  inline uint32_t getSize() const noexcept { return size_; }
+  inline std::string_view getName() const noexcept { return name_; }
+  inline uint32_t getRtid() const noexcept { return rtid_; }
+  inline std::vector<FieldInfo> const &getFields() const noexcept { return fields_; }
 
   void addMember(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable);
 
-  void setDebugInfoOffset(uint64_t offset) noexcept { debugInfoOffset_ = offset; }
-  uint64_t getDebugInfoOffset() const noexcept { return debugInfoOffset_; }
+  inline void setDebugInfoOffset(uint64_t offset) noexcept { debugInfoOffset_ = offset; }
+  inline uint64_t getDebugInfoOffset() const noexcept { return debugInfoOffset_; }
 
   bool isBasicType() const noexcept;
 

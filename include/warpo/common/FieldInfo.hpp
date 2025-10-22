@@ -23,12 +23,13 @@ namespace warpo {
 
 class FieldInfo final {
 public:
-  FieldInfo(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable);
+  inline FieldInfo(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable)
+      : name_(std::move(name)), type_(normalizeTypeName(type)), offsetInClass_(offsetInClass), nullable_(nullable) {}
 
-  std::string_view getName() const noexcept { return name_; }
-  std::string_view getType() const noexcept { return type_; }
-  uint32_t getOffsetInClass() const noexcept { return offsetInClass_; }
-  bool isNullable() const noexcept { return nullable_; }
+  inline std::string_view getName() const noexcept { return name_; }
+  inline std::string_view getType() const noexcept { return type_; }
+  inline uint32_t getOffsetInClass() const noexcept { return offsetInClass_; }
+  inline bool isNullable() const noexcept { return nullable_; }
 
 private:
   static std::string_view normalizeTypeName(std::string_view const type) noexcept;

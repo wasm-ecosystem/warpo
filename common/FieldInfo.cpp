@@ -21,9 +21,6 @@
 
 namespace warpo {
 
-FieldInfo::FieldInfo(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable)
-    : name_(std::move(name)), type_(normalizeTypeName(type)), offsetInClass_(offsetInClass), nullable_(nullable) {}
-
 std::string_view FieldInfo::normalizeTypeName(std::string_view const type) noexcept {
 
   static const std::unordered_map<std::string_view, std::string_view> basicTypeMap = {

@@ -35,12 +35,12 @@ class VariableInfo final {
 public:
   using ClassRegistry = std::unordered_map<std::string_view, ClassInfo>;
 
-  llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> generateDwarf();
-
   void createClass(std::string className, std::string parentName, uint32_t const size, uint32_t const rtid);
 
   void addField(std::string_view const className, std::string fieldName, std::string typeName, uint32_t const offset,
                 uint32_t const nullable);
+
+  ClassRegistry const &getClassRegistry() const noexcept { return classRegistry_; }
 
 private:
   ClassRegistry classRegistry_;

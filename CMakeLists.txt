@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 project(warpo)
+enable_testing()
 
 option(WARPO_RELEASE "build for release" OFF)
 option(WARPO_SANITIZE "enable address sanitizer" OFF)

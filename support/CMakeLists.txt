@@ -19,6 +19,7 @@ set(LIB_NAME warpo_support)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} ${LIB_NAME}_sources)
 
 if(NOT WARPO_RELEASE)
+  include(GoogleTest)
   add_executable(${LIB_NAME}_test
     ${${LIB_NAME}_sources}
   )
@@ -45,6 +46,7 @@ if(NOT WARPO_RELEASE)
     PUBLIC warp_runner
   )
   add_dependencies(${LIB_NAME}_test vb_libWasmModule)
+  gtest_add_tests(TARGET ${LIB_NAME}_test)
 endif()
 
 add_library(${LIB_NAME}

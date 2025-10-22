@@ -15,7 +15,7 @@ target_include_directories(${LIB_NAME}
 )
 
 if(NOT WARPO_RELEASE)
-
+  include(GoogleTest)
   add_executable(${LIB_NAME}_test ${warpo_common_sources})
   target_compile_definitions(${LIB_NAME}_test PRIVATE
     WARPO_ENABLE_UNIT_TESTS
@@ -29,4 +29,5 @@ if(NOT WARPO_RELEASE)
   target_include_directories(${LIB_NAME}_test
     PUBLIC "${PROJECT_SOURCE_DIR}/include"
   )
+  gtest_add_tests(TARGET ${LIB_NAME}_test)
 endif()

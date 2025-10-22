@@ -5,6 +5,7 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/GC warpo_passes_sources)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/helper warpo_passes_sources)
 
 if(NOT WARPO_RELEASE)
+  include(GoogleTest)
   add_subdirectory(unittests)
 
   add_executable(${LIB_NAME}_test ${warpo_passes_sources})
@@ -18,6 +19,7 @@ if(NOT WARPO_RELEASE)
     PRIVATE "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"
     PUBLIC "${PROJECT_SOURCE_DIR}/include"
   )
+  gtest_add_tests(TARGET ${LIB_NAME}_test)
 endif()
 
 if(WARPO_RELEASE)

@@ -33,3 +33,26 @@ std::string_view StringPool::internString(std::string_view str) {
 }
 
 } // namespace warpo
+
+#ifdef WARPO_ENABLE_UNIT_TESTS
+
+#include <gtest/gtest.h>
+
+namespace warpo::ut {
+
+TEST(TestStringPool, testAddString) {
+  StringPool pool;
+  std::string_view str1 = pool.internString("hello");
+  std::string_view str2 = pool.internString("world");
+  std::string_view str3 = pool.internString("hello");
+
+  EXPECT_EQ(str1, "hello");
+  EXPECT_EQ(str2, "world");
+  EXPECT_EQ(str1, str3);
+  EXPECT_EQ(str1.data(), str3.data()); // same address
+  EXPECT_NE(str1.data(), str2.data()); // different address
+}
+
+} // namespace warpo::ut
+
+#endif

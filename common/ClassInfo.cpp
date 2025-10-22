@@ -20,10 +20,6 @@
 
 namespace warpo {
 
-ClassInfo::ClassInfo(std::string_view const name, std::string_view const parentName, uint32_t const size,
-                     uint32_t const rtid)
-    : name_(name), parentName_(parentName), size_(size), rtid_(rtid), debugInfoOffset_(SIZE_MAX) {}
-
 void ClassInfo::addMember(std::string name, std::string_view const type, uint32_t const offsetInClass,
                           bool const nullable) {
   fields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
