@@ -10,6 +10,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "InsertTracePoint.hpp"
 #include "literal.h"
@@ -28,6 +29,11 @@ constexpr const char *tracePointFunctionName = "~/lib/trace_point";
 constexpr size_t traceOffset = 0x1'000000;
 
 namespace warpo::passes {
+
+static bool isLibFunction(wasm::Function *func) { return func->name.startsWith("~lib"); }
+
+static bool isBuiltinImportFunction(wasm::Function *func) { return func->imported() && func->module == "builtin"; }
+
 namespace {
 
 struct FunctionIndexMap : private IncMap<wasm::Function *> {
@@ -37,7 +43,12 @@ struct FunctionIndexMap : private IncMap<wasm::Function *> {
   static FunctionIndexMap create(wasm::Module *m) {
     FunctionIndexMap functionIndexes{};
     for (std::unique_ptr<wasm::Function> const &func : m->functions) {
-      if (func->name.startsWith("~lib"))
+      // builtin is provide by wasm-compiler as intrinsic.
+      // it may be called in higher frequency, so we skip tracing for builtin functions.
+      if (isBuiltinImportFunction(func.get()))
+        continue;
+      // not statistic library function calls.
+      if (isLibFunction(func.get()) && !func->imported())
         continue;
       functionIndexes.insert(func.get());
     }
@@ -61,11 +72,14 @@ struct TracingInserter : public wasm::Pass {
     struct WrapperCall : public wasm::PostWalker<WrapperCall> {
       FunctionIndexMap const &functionIndexes_;
       explicit WrapperCall(FunctionIndexMap const &functionIndexes) : functionIndexes_(functionIndexes) {}
+      // special handling for call to imported functions.
       void visitCall(wasm::Call *expr) {
         wasm::Function *func = getModule()->getFunction(expr->target);
         if (!func->imported())
           return;
-        assert(functionIndexes_.contains(func));
+        /// builtin function does not have index.
+        if (!functionIndexes_.contains(func))
+          return;
         int32_t const index = static_cast<int32_t>(functionIndexes_.getIndex(func));
         wasm::Builder b{*getModule()};
         wasm::Type const resultType = func->getResults();
@@ -229,7 +243,6 @@ wasm::Pass *passes::createInsertTracePointPass() {
 #include "pass.h"
 
 namespace warpo::passes::ut {
-namespace {
 
 TEST(TracePointInserterTest, WithoutResult) {
   auto m = loadWat(R"(
@@ -302,6 +315,21 @@ TEST(TracePointInserterTest, WithResult) {
   isMatched(match, fn->body);
 }
 
+static matcher::M<wasm::Expression> createMatchAfterInsertForCallImport(std::string_view callFunctionName) {
+  using namespace matcher;
+  return isBlock({
+      block::has(3),
+      block::at(0, isCall(call::callee(tracePointFunctionName), call::operands(at(0, isConst())))),
+      block::at(1, isBlock({
+                       block::has(3),
+                       block::at(0, isCall(call::callee(tracePointFunctionName))),
+                       block::at(1, isCall(call::callee(callFunctionName))),
+                       block::at(2, isCall(call::callee(tracePointFunctionName))),
+                   })),
+      block::at(2, isCall(call::callee(tracePointFunctionName), call::operands(at(0, isConst())))),
+  });
+}
+
 TEST(TracePointInserterTest, CallImport) {
   auto m = loadWat(R"(
     (module
@@ -318,22 +346,51 @@ TEST(TracePointInserterTest, CallImport) {
   runner.add(std::unique_ptr<wasm::Pass>{new TracePointInserter(tracePointMappingOption.get())});
   runner.run();
 
-  using namespace matcher;
-  auto match = isBlock(block::list(allOf({
-      has(3),
-      at(0, isCall(call::callee(tracePointFunctionName), call::operands(at(0, isConst())))),
-      at(1, isBlock(block::list(allOf({
-                has(3),
-                at(0, isCall(call::callee(tracePointFunctionName))),
-                at(1, isCall(call::callee("empty"))),
-                at(2, isCall(call::callee(tracePointFunctionName))),
-            })))),
-      at(2, isCall(call::callee(tracePointFunctionName), call::operands(at(0, isConst())))),
-  })));
+  auto match = createMatchAfterInsertForCallImport("empty");
   isMatched(match, fn->body);
 }
 
-} // namespace
+TEST(TracePointInserterTest, CallLibImport) {
+  auto m = loadWat(R"(
+    (module
+      (import "env" "empty" (func $~lib/empty))
+      (func $fn_call_import
+        call $~lib/empty
+      )
+    )
+  )");
+
+  wasm::Function *const fn = m->getFunction("fn_call_import");
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{new TracePointInserter(tracePointMappingOption.get())});
+  runner.run();
+
+  auto match = createMatchAfterInsertForCallImport("~lib/empty");
+  isMatched(match, fn->body);
+}
+
+TEST(TracePointInserterTest, CallBuiltinImport) {
+  auto m = loadWat(R"(
+    (module
+      (import "builtin" "empty" (func $empty))
+      (func $fn_call_import
+        call $empty
+      )
+    )
+  )");
+
+  wasm::Function *const fn = m->getFunction("fn_call_import");
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{new TracePointInserter(tracePointMappingOption.get())});
+  runner.run();
+
+  using namespace matcher;
+  auto match = createMatchAfterInsertForCallImport("empty");
+  isNotMatched(match, fn->body);
+}
+
 } // namespace warpo::passes::ut
 
 #endif

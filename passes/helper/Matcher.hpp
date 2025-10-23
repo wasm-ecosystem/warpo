@@ -326,8 +326,19 @@ inline void isMatchedImpl(M<wasm::Expression> &m, wasm::Expression *expr, const 
   }
 }
 
+inline void isNotMatchedImpl(M<wasm::Expression> &m, wasm::Expression *expr, const char *file, int line) {
+  if (expr == nullptr)
+    GTEST_FAIL_AT(file, line) << "expr is nullptr";
+  if (m(*expr)) {
+    std::stringstream ss{};
+    ss << *expr;
+    GTEST_FAIL_AT(file, line) << std::move(ss).str();
+  }
+}
+
 } // namespace warpo::passes::matcher
 
-#define isMatched(match, expr) warpo::passes::matcher::isMatchedImpl(match, expr, __FILE__, __LINE__)
+#define isMatched(match, expr) ::warpo::passes::matcher::isMatchedImpl(match, expr, __FILE__, __LINE__)
+#define isNotMatched(match, expr) ::warpo::passes::matcher::isNotMatchedImpl(match, expr, __FILE__, __LINE__)
 
 #endif
