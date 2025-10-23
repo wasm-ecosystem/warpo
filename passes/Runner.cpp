@@ -30,6 +30,7 @@
 #include "warpo/common/DebugLevel.hpp"
 #include "warpo/common/Features.hpp"
 #include "warpo/common/OptLevel.hpp"
+#include "warpo/passes/DwarfGenerator/DwarfGenerator.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Statistics.hpp"
@@ -129,6 +130,20 @@ static void optimize(AsModule const &m) {
   ensureValidate(*m.get());
 }
 
+static void addDebugInfoAsCustomSection(AsModule const &m) {
+  llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
+      passes::DwarfGenerator::generateDebugSections(m.variableInfo_.getClassRegistry());
+
+  if (!debugSections.empty()) {
+    for (auto I = debugSections.begin(); !(I == debugSections.end()); I++) {
+      llvm::StringRef const sectionName = I->getKey();
+      llvm::MemoryBuffer const *const buffer = I->getValue().get();
+      BinaryenAddCustomSection(m.get(), sectionName.data(), reinterpret_cast<const char *>(buffer->getBufferStart()),
+                               buffer->getBufferSize());
+    }
+  }
+}
+
 passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
 #ifndef WARPO_RELEASE_BUILD
   ensureValidate(*m.get());
@@ -141,9 +156,12 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
   // wasm and source map
   wasm::BufferWithRandomAccess buffer;
   wasm::PassOptions const options = wasm::PassOptions::getWithoutOptimization();
+  if (common::isEmitDebugInfo()) {
+    addDebugInfoAsCustomSection(m);
+  }
   wasm::WasmBinaryWriter writer(m.get(), buffer, options);
   std::stringstream sourceMapStream;
-  if (common::isEmitDebugLineInfo()) {
+  if (common::isEmitDebugLine()) {
     assert(!config.sourceMapURL.empty());
     writer.setSourceMap(&sourceMapStream, config.sourceMapURL);
   }
@@ -212,7 +230,7 @@ void passes::runAndEmit(AsModule const &m, std::filesystem::path const &outputPa
       throw std::runtime_error{fmt::format("ERROR: failed to open file: {}", outputFiles.wasm_.c_str())};
     }
   }
-  if (!outputFiles.sourceMap_.empty() && common::isEmitDebugLineInfo()) {
+  if (!outputFiles.sourceMap_.empty() && common::isEmitDebugLine()) {
     if (std::ofstream of{outputFiles.sourceMap_, std::ios::out}; of.good()) {
       of.write(output.sourceMap.data(), static_cast<std::streamsize>(output.sourceMap.size()));
     } else {

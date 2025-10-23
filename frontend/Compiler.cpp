@@ -122,6 +122,7 @@ warpo::frontend::Config warpo::frontend::getDefaultConfig() {
       .optimizationLevel = 0U,
       .shrinkLevel = 0U,
       .emitDebugLine = false,
+      .emitDebugInfo = false,
       .useColorfulDiagMessage = support::isTTY(),
       .enableExtensions = false,
   };
@@ -140,8 +141,8 @@ frontend::CompilationResult frontend::compile() {
                            : std::optional<uint32_t>{initialMemoryOption.get()},
       .optimizationLevel = common::getOptimizationLevel(),
       .shrinkLevel = common::getShrinkLevel(),
-      // currently, AS only support debug line via source map
-      .emitDebugLine = common::isEmitDebugLineInfo(),
+      .emitDebugLine = common::isEmitDebugLine(),
+      .emitDebugInfo = common::isEmitDebugInfo(),
       .useColorfulDiagMessage = support::isTTY(),
       .enableExtensions = enableExtensionsOption.get(),
   };

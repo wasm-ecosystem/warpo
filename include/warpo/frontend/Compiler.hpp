@@ -32,6 +32,7 @@ struct Config {
   uint32_t optimizationLevel;
   uint32_t shrinkLevel;
   bool emitDebugLine;
+  bool emitDebugInfo;
   bool useColorfulDiagMessage;
   bool enableExtensions;
 };

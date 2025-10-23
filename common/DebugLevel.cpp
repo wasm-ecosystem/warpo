@@ -13,6 +13,15 @@ static cli::Opt<bool> optimizeLevelOption{
     [](argparse::Argument &arg) -> void { arg.help("Enables debug information in emitted binaries.").flag(); },
 };
 
+static cli::Opt<bool> perfOption{
+    cli::Category::Frontend | cli::Category::Optimization,
+    "--perf",
+    [](argparse::Argument &arg) -> void {
+      arg.help("Enables performance profiling information in emitted binaries.").flag();
+    },
+};
+
 } // namespace warpo::common
 
-bool warpo::common::isEmitDebugLineInfo() { return optimizeLevelOption.get(); }
+bool warpo::common::isEmitDebugLine() { return optimizeLevelOption.get(); }
+bool warpo::common::isEmitDebugInfo() { return optimizeLevelOption.get() || perfOption.get(); }

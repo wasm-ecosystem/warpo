@@ -6,6 +6,7 @@
 
 namespace warpo::common {
 
-bool isEmitDebugLineInfo();
+bool isEmitDebugLine();
+bool isEmitDebugInfo();
 
 } // namespace warpo::common

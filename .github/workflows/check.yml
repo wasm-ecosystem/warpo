@@ -29,6 +29,7 @@ jobs:
       - run: npm run test:ut
       - run: npm run test:opt:snapshot -- --debug
       - run: npm run test:as:snapshot
+      - run: npm run test:debug_symbol
 
   cpp-linter:
     runs-on: ubuntu-latest

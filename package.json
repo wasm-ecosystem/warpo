@@ -15,6 +15,8 @@
     "test:opt:snapshot": "node tests/snapshot_diff/index.mjs",
     "test:bootstrap:debug": "./tests/bootstrap/debug.sh",
     "test:bootstrap:release": "./tests/bootstrap/release.sh",
+    "test:debug_symbol": "./build/tests/DebugSymbol/TestDebugSymbol",
+    "test:debug_symbol:update": "build/tests/DebugSymbol/TestDebugSymbol --update-fixtures",
     "test": "npm run test:ut && npm run test:as:snapshot && npm run test:opt:snapshot && npm run test:bootstrap:debug && npm run test:bootstrap:release",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs"
