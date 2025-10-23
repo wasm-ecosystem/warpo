@@ -68,8 +68,3 @@ target_compile_definitions(${LIB_NAME}
   PUBLIC
   GIT_COMMIT="${GIT_COMMIT}"
 )
-
-target_link_libraries(${LIB_NAME}
-  PUBLIC vb_libWasmModule
-)
-add_dependencies(${LIB_NAME} vb_libWasmModule)

@@ -26,7 +26,6 @@
 #include "warpo/common/ClassInfo.hpp"
 #include "warpo/common/FieldInfo.hpp"
 #include "warpo/common/VariableInfo.hpp"
-#include "warpo/support/AsString.hpp"
 
 namespace warpo {
 

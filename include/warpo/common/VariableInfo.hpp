@@ -27,8 +27,6 @@
 #include "llvm/Support/MemoryBuffer.h"
 #include "warpo/support/StringPool.hpp"
 
-#include "src/WasmModule/WasmModule.hpp"
-#include "src/core/common/NativeSymbol.hpp"
 namespace warpo {
 
 class VariableInfo final {

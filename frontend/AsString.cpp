@@ -17,7 +17,7 @@
 #include <sstream>
 #include <string>
 
-#include "warpo/support/AsString.hpp"
+#include "AsString.hpp"
 
 #include "src/WasmModule/WasmModule.hpp"
 namespace warpo {
