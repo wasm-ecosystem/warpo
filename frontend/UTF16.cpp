@@ -1,6 +1,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <stdexcept>
 #include <string>
 #include <string_view>
 
