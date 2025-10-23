@@ -21,7 +21,7 @@
 #include "ASC/ASC.hpp"
 #include "CompilerImpl.hpp"
 #include "LinkedAPI.hpp"
-#include "llvm/Support/ConvertUTF.h"
+#include "UTF16.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/Debug.hpp"
 #include "warpo/support/FileSystem.hpp"
@@ -45,7 +45,7 @@ enum WasmFFIBool : uint32_t { WASM_FALSE = 0, WASM_TRUE = 1 };
 
 } // namespace
 int32_t FrontendCompiler::allocString(std::string_view str) {
-  std::u16string utf16Str = utf8ToUtf16(std::string(str));
+  std::u16string utf16Str = utf16::fromUTF8(std::string(str));
   int32_t const ptr =
       r->callExportedFunctionWithName<1>(r.getStackTop(), "__new", static_cast<int32_t>(utf16Str.size() * 2U),
                                          static_cast<int32_t>(2))[0]
@@ -78,45 +78,8 @@ std::string FrontendCompiler::getAsString(uint32_t ptr) {
   std::u16string utf16Str;
   utf16Str.resize(size / 2);
   std::memcpy(utf16Str.data(), content, size);
-  return utf16ToUtf8(utf16Str);
+  return utf16::toUTF8(utf16Str);
 };
-
-std::u16string FrontendCompiler::utf8ToUtf16(std::string const &utf8Str) {
-  if (utf8Str.empty())
-    return std::u16string();
-  const llvm::UTF8 *src = reinterpret_cast<const llvm::UTF8 *>(utf8Str.data());
-  llvm::UTF8 const *const srcEnd = src + utf8Str.size();
-  std::u16string utf16Str;
-  utf16Str.resize(utf8Str.size());
-  llvm::UTF16 *dst = reinterpret_cast<llvm::UTF16 *>(utf16Str.data());
-  llvm::UTF16 *const dstEnd = dst + utf16Str.size();
-
-  if (llvm::ConvertUTF8toUTF16(&src, srcEnd, &dst, dstEnd, llvm::strictConversion) != llvm::conversionOK)
-    throw std::runtime_error("UTF8 to UTF16 conversion failed");
-  // Resize the string to the actual number of UTF-16 code units written.
-  // The pointer subtraction yields a ptrdiff_t; it must be non-negative and fit into size_t.
-  ptrdiff_t const written16 = dst - reinterpret_cast<llvm::UTF16 *>(utf16Str.data());
-  utf16Str.resize(static_cast<std::u16string::size_type>(written16));
-  return utf16Str;
-}
-
-std::string FrontendCompiler::utf16ToUtf8(std::u16string const &utf16Str) {
-  if (utf16Str.empty())
-    return std::string();
-  const llvm::UTF16 *src = reinterpret_cast<const llvm::UTF16 *>(utf16Str.data());
-  llvm::UTF16 const *const srcEnd = src + utf16Str.size();
-  std::string utf8Str;
-  utf8Str.resize(utf16Str.size() * 4); // UTF-8 can be up to 4 bytes per Unicode code point
-  llvm::UTF8 *dst = reinterpret_cast<llvm::UTF8 *>(utf8Str.data());
-  llvm::UTF8 *const dstEnd = dst + utf8Str.size();
-
-  if (llvm::ConvertUTF16toUTF8(&src, srcEnd, &dst, dstEnd, llvm::strictConversion) != llvm::conversionOK)
-    throw std::runtime_error("UTF16 to UTF8 conversion failed");
-  // Resize the string to the actual number of UTF-8 bytes written.
-  ptrdiff_t const written8 = dst - reinterpret_cast<llvm::UTF8 *>(utf8Str.data());
-  utf8Str.resize(static_cast<std::string::size_type>(written8));
-  return utf8Str;
-}
 
 using PackageResolveResult = std::optional<std::pair<std::string, std::optional<std::string>>>;
 
