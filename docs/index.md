@@ -7,15 +7,12 @@ hero:
   tagline: "next generation AssemblyScript compiler with optimizations"
   actions:
     - theme: brand
-      text: Lowering Pass
-      link: /lower/index.md
-    - theme: brand
-      text: Builtin Transform
-      link: /transform/index.md
-    - theme: brand
-      text: Optimization Pass
-      link: /opt/index.md
+      text: Get Started
+      link: /using_language/index.md
     - theme: alt
-      text: Infrastructure
-      link: /infra/index.md
+      text: View on GitHub
+      link: https://github.com/wasm-ecosystem/warpo
+    - theme: alt
+      text: Download from NPM
+      link: https://www.npmjs.com/package/warpo
 ---

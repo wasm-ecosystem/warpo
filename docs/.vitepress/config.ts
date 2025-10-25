@@ -20,7 +20,10 @@ export default defineConfig({
   title: "warpo document",
   description: "wasm optimizer designed for AssemblyScript and wasm-compiler",
   base: "/warpo/",
-  head: [["meta", { name: "google-site-verification", content: "762vxla4bLoGKFlH_iYkk7TVUhrwwpMFS2r7idty0_Y" }]],
+  head: [
+    ["link", { rel: "icon", href: "/warpo/favicon.ico" }],
+    ["meta", { name: "google-site-verification", content: "762vxla4bLoGKFlH_iYkk7TVUhrwwpMFS2r7idty0_Y" }],
+  ],
   sitemap: {
     hostname: "https://wasm-ecosystem.github.io/warpo/",
   },
@@ -35,31 +38,63 @@ export default defineConfig({
     ],
     sidebar: [
       {
-        text: "Document",
+        text: "Using the Language",
+        link: "/using_language/index",
+        items: [
+          {
+            text: "current status",
+            link: "/using_language/current_status",
+          },
+        ],
+      },
+      {
+        text: "Using the Compiler",
+        link: "/using_compiler/quick_start",
+        items: [],
+      },
+      {
+        text: "Using the Runtime",
+        items: [
+          {
+            text: "garbage collection",
+            link: "/using_runtime/garbage_collection",
+          },
+        ],
+      },
+      {
+        text: "Executing WebAssembly",
+        link: "/executing_webassembly/index",
+        items: [],
+      },
+      {
+        text: "Technical Details",
         items: [
           {
             text: "Lowering Passes",
-            link: "/lower/index",
-            items: listItems("docs", "lower"),
+            link: "/tech/lower/index",
+            items: listItems("docs", "tech/lower"),
           },
           {
             text: "Builtin Transform",
-            link: "/transform/index",
-            items: listItems("docs", "transform"),
+            link: "/tech/transform/index",
+            items: listItems("docs", "tech/transform"),
           },
           {
             text: "Optimization Passes",
-            link: "/opt/index",
-            items: listItems("docs", "opt"),
+            link: "/tech/opt/index",
+            items: listItems("docs", "tech/opt"),
           },
           {
             text: "Infrastructure",
-            link: "/infra/index",
-            items: listItems("docs", "infra"),
+            link: "/tech/infra/index",
+            items: listItems("docs", "tech/infra"),
           },
         ],
       },
     ],
-    socialLinks: [{ icon: "github", link: "https://github.com/wasm-ecosystem/warpo" }],
+    socialLinks: [
+      { icon: "github", link: "https://github.com/wasm-ecosystem/warpo" },
+      { icon: "npm", link: "https://www.npmjs.com/package/warpo" },
+    ],
   },
 });
