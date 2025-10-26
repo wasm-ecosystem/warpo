@@ -23,10 +23,14 @@ warpo::cli::Opt<bool> updateFixturesFlag{
 };
 } // namespace
 
-class TestDebugSymbol_P : public ::testing::TestWithParam<std::string> {};
+class TestDebugSymbol_P : public ::testing::TestWithParam<std::string> {
+protected:
+  void SetUp() override {
+    warpo::frontend::init();
+  }
+};
 
 TEST_P(TestDebugSymbol_P, DebugInfo) {
-  warpo::frontend::init();
   warpo::frontend::Config config = warpo::frontend::getDefaultConfig();
   config.useColorfulDiagMessage = false;
   config.emitDebugInfo = true;
@@ -43,21 +47,10 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
   }
   std::stringstream ss;
   ss << *compileResult.m.get();
-  std::string const actual = std::move(ss).str();
 
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> debugSections =
       warpo::passes::DwarfGenerator::generateDebugSections(compileResult.m.variableInfo_.getClassRegistry());
 
-  // Extract debug sections from the compiled module
-  static std::regex const debugSectionPattern{R"(debug_(info|line|str|abbrev|aranges|ranges))"};
-  wasm::Module const *const wasmModule = reinterpret_cast<wasm::Module *>(compileResult.m.get());
-  for (auto const &customSection : wasmModule->customSections) {
-    if (std::regex_match(customSection.name, debugSectionPattern)) {
-      std::unique_ptr<llvm::MemoryBuffer> buffer = llvm::MemoryBuffer::getMemBufferCopy(
-          llvm::StringRef(customSection.data.data(), customSection.data.size()), customSection.name);
-      debugSections[customSection.name] = std::move(buffer);
-    }
-  }
 
   std::string const dumpOutput = warpo::passes::DwarfGenerator::dumpDwarf(debugSections);
   std::string const fixtureName = testCaseName + "Fixture.txt";
@@ -68,11 +61,10 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
     std::ofstream outFile(expectedDumpPath, std::ios::out | std::ios::trunc);
     ASSERT_TRUE(outFile.is_open()) << "Failed to create/open fixture file for writing: " << expectedDumpPath;
     outFile << dumpOutput;
-    outFile.close();
     std::cout << "Updated fixture file: " << expectedDumpPath << std::endl;
   } else {
     // Test mode: compare with expected output
-    std::ifstream expectedFile(expectedDumpPath);
+    std::ifstream expectedFile{expectedDumpPath};
     ASSERT_TRUE(expectedFile.is_open()) << "Failed to open expected debug_info fixture at " << expectedDumpPath;
 
     std::stringstream expectedBuffer;
