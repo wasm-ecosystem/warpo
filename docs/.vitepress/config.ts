@@ -45,6 +45,10 @@ export default defineConfig({
             text: "current status",
             link: "/using_language/current_status",
           },
+          {
+            text: "experimental features",
+            link: "/using_language/experimental_features",
+          },
         ],
       },
       {

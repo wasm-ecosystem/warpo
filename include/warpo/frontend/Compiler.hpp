@@ -33,7 +33,7 @@ struct Config {
   uint32_t shrinkLevel;
   bool emitDebugLine;
   bool useColorfulDiagMessage;
-  bool enableExtensions;
+  bool experimental;
 };
 
 Config getDefaultConfig();
