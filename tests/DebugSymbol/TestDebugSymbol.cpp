@@ -25,9 +25,7 @@ warpo::cli::Opt<bool> updateFixturesFlag{
 
 class TestDebugSymbol_P : public ::testing::TestWithParam<std::string> {
 protected:
-  void SetUp() override {
-    warpo::frontend::init();
-  }
+  void SetUp() override { warpo::frontend::init(); }
 };
 
 TEST_P(TestDebugSymbol_P, DebugInfo) {
@@ -48,9 +46,8 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
   std::stringstream ss;
   ss << *compileResult.m.get();
 
-  llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> debugSections =
+  llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
       warpo::passes::DwarfGenerator::generateDebugSections(compileResult.m.variableInfo_.getClassRegistry());
-
 
   std::string const dumpOutput = warpo::passes::DwarfGenerator::dumpDwarf(debugSections);
   std::string const fixtureName = testCaseName + "Fixture.txt";
@@ -64,7 +61,7 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
     std::cout << "Updated fixture file: " << expectedDumpPath << std::endl;
   } else {
     // Test mode: compare with expected output
-    std::ifstream expectedFile{expectedDumpPath};
+    std::ifstream const expectedFile{expectedDumpPath};
     ASSERT_TRUE(expectedFile.is_open()) << "Failed to open expected debug_info fixture at " << expectedDumpPath;
 
     std::stringstream expectedBuffer;

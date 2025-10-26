@@ -41,7 +41,7 @@ std::filesystem::path warpo::replaceExtension(std::filesystem::path const &path,
 std::string warpo::readTextFile(std::string const &path) {
   if (!std::filesystem::exists(path))
     throw std::runtime_error{"cannot open file: " + path};
-  std::ifstream ifs{path, std::ios::in};
+  std::ifstream const ifs{path, std::ios::in};
   if (!ifs.is_open())
     throw std::runtime_error{"cannot open file: " + path};
   std::stringstream buffer;
@@ -52,7 +52,7 @@ std::string warpo::readTextFile(std::string const &path) {
 std::string warpo::readBinaryFile(std::string const &path) {
   if (!std::filesystem::exists(path))
     throw std::runtime_error{"cannot open file: " + path};
-  std::ifstream ifs{path, std::ios::in | std::ios::binary};
+  std::ifstream const ifs{path, std::ios::in | std::ios::binary};
   if (!ifs.is_open())
     throw std::runtime_error{"cannot open file: " + path};
   std::stringstream buffer;
