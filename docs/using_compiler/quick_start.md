@@ -23,3 +23,7 @@ node node_modules/.bin/warpo assembly/index.ts -o build/release.wasm --optimizeL
 npx warpo assembly/index.ts -o build/debug.wat # simplify with npx
 npx warpo -h # for more cli options
 ```
+
+## debug build
+use `--debug` to generate debug symbol.
+For debugger developers, refer to [detailed debug symbol design](./tech/debug//debug_symbol.md)
