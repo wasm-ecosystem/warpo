@@ -307,7 +307,7 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
         continue;
       parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
     }
-    if (config.enableExtensions) {
+    if (config.experimental) {
       for (auto const &[libName, libSource] : warpo::frontend::embed_extension_library_sources)
         parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
     }
@@ -337,7 +337,7 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
 
     support::PerfRAII compileStat{support::PerfItemKind::CompilationHIR_Compilation};
 
-    if (config.enableExtensions)
+    if (config.experimental)
       r->callExportedFunctionWithName<0>(stackTop, "activeExtensions");
 
     r->callExportedFunctionWithName<0>(stackTop, "initializeProgram", program);

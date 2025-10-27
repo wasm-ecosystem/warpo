@@ -76,8 +76,8 @@ public:
           static_cast<void>(0); // do nothing, incremental is default
         else if (flag == "--bindings raw")
           static_cast<void>(0); // do nothing, raw binding is default
-        else if (flag == "--enableExtensions")
-          config.enableExtensions = true;
+        else if (flag == "--experimental")
+          config.experimental = true;
         else if (flag == "--shrinkLevel 3")
           config.shrinkLevel = 3;
         else

@@ -34,7 +34,7 @@ struct Config {
   bool emitDebugLine;
   bool emitDebugInfo;
   bool useColorfulDiagMessage;
-  bool enableExtensions;
+  bool experimental;
 };
 
 Config getDefaultConfig();

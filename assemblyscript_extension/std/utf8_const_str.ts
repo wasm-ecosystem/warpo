@@ -1,4 +1,5 @@
 export namespace utf8 {
+
   @unmanaged
   export class ConstStr {
     toString(): string {
@@ -16,4 +17,3 @@ export namespace utf8 {
   @builtin
   export declare function build(x: string): ConstStr;
 }
-

@@ -2,38 +2,17 @@
 
 next generation assemblyscript compiler
 
-## quick start
+Seamlessly migrate from TypeScript to developing WebAssembly modules!
 
-config `tsconfig.json` like below.
+## Documents
 
-```json
-{
-  "extends": "warpo/tsconfig-warpo.json",
-  "include": ["./**/*.ts"]
-}
-```
+https://wasm-ecosystem.github.io/warpo/
 
-write ts code in `assembly/index.ts`
-
-```bash
-export function add(a: i32, b: i32): i32 {
-  return a + b;
-}
-```
-
-```bash
-node node_modules/.bin/warpo assembly/index.ts -o build/debug.wat
-node node_modules/.bin/warpo assembly/index.ts -o build/release.wasm --optimizeLevel 3 --shrinkLevel 2
-npx warpo assembly/index.ts -o build/debug.wat # simplify with npx
-npx warpo -h # for more cli options
-```
-
-## language
+## Acknowledgment
 
 - [Assemblyscript](https://www.assemblyscript.org/)
-- warpo new features: WIP
-- [warpo optimization](https://wasm-ecosystem.github.io/warpo/)
+- [binaryen](https://github.com/WebAssembly/binaryen)
 
-## developer
+## for Developer
 
 see [CONTRIBUTING](./CONTRIBUTING.md)

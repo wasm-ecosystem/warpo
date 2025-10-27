@@ -13,6 +13,7 @@
 #include <string_view>
 
 #include "InsertTracePoint.hpp"
+#include "helper/ExprInserter.hpp"
 #include "literal.h"
 #include "pass.h"
 #include "warpo/support/FileSystem.hpp"
@@ -74,33 +75,24 @@ struct TracingInserter : public wasm::Pass {
       explicit WrapperCall(FunctionIndexMap const &functionIndexes) : functionIndexes_(functionIndexes) {}
       // special handling for call to imported functions.
       void visitCall(wasm::Call *expr) {
-        wasm::Function *func = getModule()->getFunction(expr->target);
-        if (!func->imported())
+        wasm::Function *const targetFunc = getModule()->getFunction(expr->target);
+        if (!targetFunc->imported())
           return;
         /// builtin function does not have index.
-        if (!functionIndexes_.contains(func))
+        if (!functionIndexes_.contains(targetFunc))
           return;
-        int32_t const index = static_cast<int32_t>(functionIndexes_.getIndex(func));
+        int32_t const index = static_cast<int32_t>(functionIndexes_.getIndex(targetFunc));
         wasm::Builder b{*getModule()};
-        wasm::Type const resultType = func->getResults();
-        if (func->getResults() == wasm::Type::none) {
-          replaceCurrent(b.makeBlock(
-              {
-                  b.makeCall(tracePointFunctionName, {b.makeConst(wasm::Literal(index))}, wasm::Type::none),
-                  expr,
-                  b.makeCall(tracePointFunctionName, {b.makeConst(wasm::Literal(-index))}, wasm::Type::none),
-              },
-              wasm::Type::none));
+        ExprInserter inserter{getFunction()};
+        if (inserter.canInsertBefore(expr) && inserter.canInsertAfter(expr)) {
+          inserter.insertBefore(
+              b, b.makeCall(tracePointFunctionName, {b.makeConst(wasm::Literal(index))}, wasm::Type::none),
+              getCurrentPointer());
+          inserter.insertAfter(
+              b, b.makeCall(tracePointFunctionName, {b.makeConst(wasm::Literal(-index))}, wasm::Type::none),
+              getCurrentPointer());
         } else {
-          wasm::Index const localIdx = wasm::Builder::addVar(getFunction(), resultType);
-          replaceCurrent(b.makeBlock(
-              {
-                  b.makeCall(tracePointFunctionName, {b.makeConst(wasm::Literal(index))}, wasm::Type::none),
-                  b.makeLocalSet(localIdx, expr),
-                  b.makeCall(tracePointFunctionName, {b.makeConst(wasm::Literal(-index))}, wasm::Type::none),
-                  b.makeLocalGet(localIdx, resultType),
-              },
-              resultType));
+          fmt::println(PASS_NAME "failed to insert trace point for call import to function '{}'", targetFunc->name.str);
         }
       }
     };
@@ -321,10 +313,13 @@ static matcher::M<wasm::Expression> createMatchAfterInsertForCallImport(std::str
       block::has(3),
       block::at(0, isCall(call::callee(tracePointFunctionName), call::operands(at(0, isConst())))),
       block::at(1, isBlock({
-                       block::has(3),
-                       block::at(0, isCall(call::callee(tracePointFunctionName))),
-                       block::at(1, isCall(call::callee(callFunctionName))),
-                       block::at(2, isCall(call::callee(tracePointFunctionName))),
+                       block::has(2),
+                       block::at(0, isBlock({
+                                        block::has(2),
+                                        block::at(0, isCall(call::callee(tracePointFunctionName))),
+                                        block::at(1, isCall(call::callee(callFunctionName))),
+                                    })),
+                       block::at(1, isCall(call::callee(tracePointFunctionName))),
                    })),
       block::at(2, isCall(call::callee(tracePointFunctionName), call::operands(at(0, isConst())))),
   });
