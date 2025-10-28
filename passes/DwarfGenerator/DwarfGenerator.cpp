@@ -130,6 +130,12 @@ DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRe
   byteSizeAttr.Value = 0U;
   classAbbrev.Attributes.push_back(byteSizeAttr);
 
+  llvm::DWARFYAML::AttributeAbbrev classSignatureAttr{};
+  classSignatureAttr.Attribute = llvm::dwarf::DW_AT_signature;
+  classSignatureAttr.Form = llvm::dwarf::DW_FORM_data4;
+  classSignatureAttr.Value = 0U;
+  classAbbrev.Attributes.push_back(classSignatureAttr);
+
   abbrevDecls.push_back(classAbbrev);
 
   llvm::DWARFYAML::Abbrev memberAbbrev = abbrevFactory.create(llvm::dwarf::DW_TAG_member, llvm::dwarf::DW_CHILDREN_no);
@@ -210,20 +216,40 @@ DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRe
     ClassInfo const &classInfo = entry.second;
     bool const isBasicType = classInfo.isBasicType();
 
-    llvm::DWARFYAML::Entry classEntry;
-    classEntry.AbbrCode = isBasicType ? baseTypeAbbrev.Code : classAbbrev.Code;
+    if (isBasicType) {
+      // Handle basic type
+      llvm::DWARFYAML::Entry baseTypeEntry;
+      baseTypeEntry.AbbrCode = baseTypeAbbrev.Code;
 
-    llvm::DWARFYAML::FormValue classNameValue;
-    classNameValue.CStr = llvm::StringRef(className.data(), className.size());
-    classEntry.Values.push_back(classNameValue);
+      llvm::DWARFYAML::FormValue baseTypeNameValue;
+      baseTypeNameValue.CStr = llvm::StringRef(className.data(), className.size());
+      baseTypeEntry.Values.push_back(baseTypeNameValue);
 
-    llvm::DWARFYAML::FormValue classSizeValue;
-    classSizeValue.Value = classInfo.getSize();
-    classEntry.Values.push_back(classSizeValue);
+      llvm::DWARFYAML::FormValue baseTypeSizeValue;
+      baseTypeSizeValue.Value = classInfo.getSize();
+      baseTypeEntry.Values.push_back(baseTypeSizeValue);
 
-    rootUnit.Entries.push_back(classEntry);
+      rootUnit.Entries.push_back(baseTypeEntry);
+    } else {
+      // Handle class type
+      llvm::DWARFYAML::Entry classEntry;
+      classEntry.AbbrCode = classAbbrev.Code;
 
-    if (!isBasicType) {
+      llvm::DWARFYAML::FormValue classNameValue;
+      classNameValue.CStr = llvm::StringRef(className.data(), className.size());
+      classEntry.Values.push_back(classNameValue);
+
+      llvm::DWARFYAML::FormValue classSizeValue;
+      classSizeValue.Value = classInfo.getSize();
+      classEntry.Values.push_back(classSizeValue);
+
+      llvm::DWARFYAML::FormValue classSignatureValue;
+      classSignatureValue.Value = classInfo.getRtid();
+      classEntry.Values.push_back(classSignatureValue);
+
+      rootUnit.Entries.push_back(classEntry);
+
+      // Add member fields
       std::vector<FieldInfo> const &fields = classInfo.getFields();
       for (FieldInfo const &field : fields) {
         llvm::DWARFYAML::Entry memberEntry;
@@ -248,6 +274,7 @@ DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRe
         rootUnit.Entries.push_back(memberEntry);
       }
 
+      // Add terminator for class children
       llvm::DWARFYAML::Entry childTerminator;
       childTerminator.AbbrCode = 0U;
       rootUnit.Entries.push_back(childTerminator);
