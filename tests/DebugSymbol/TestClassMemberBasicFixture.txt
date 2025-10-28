@@ -7,7 +7,7 @@ Abbrev table for offset: 0x00000000
 [2] DW_TAG_class_type	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
 	DW_AT_byte_size	DW_FORM_data4
-	DW_AT_type	DW_FORM_data4
+	DW_AT_signature	DW_FORM_data4
 
 [3] DW_TAG_member	DW_CHILDREN_no
 	DW_AT_name	DW_FORM_string
@@ -28,7 +28,7 @@ Abbrev table for offset: 0x00000000
 0x00000010:   DW_TAG_class_type
                 DW_AT_name	("tests/DebugSymbol/TestClassMemberBasic/CT<i32>")
                 DW_AT_byte_size	(0x00000004)
-                DW_AT_type	(0x00000006 "")
+                DW_AT_signature	(0x00000006)
 
 0x00000048:     DW_TAG_member
                   DW_AT_name	("a")
@@ -40,7 +40,7 @@ Abbrev table for offset: 0x00000000
 0x00000054:   DW_TAG_class_type
                 DW_AT_name	("~lib/rt/tlsf/Block")
                 DW_AT_byte_size	(0x00000004)
-                DW_AT_type	(0x00000000 "")
+                DW_AT_signature	(0x00000000)
 
 0x00000070:     DW_TAG_member
                   DW_AT_name	("prev")
@@ -57,7 +57,7 @@ Abbrev table for offset: 0x00000000
 0x0000008d:   DW_TAG_class_type
                 DW_AT_name	("~lib/shared/typeinfo/Typeinfo")
                 DW_AT_byte_size	(0x00000004)
-                DW_AT_type	(0x00000000 "")
+                DW_AT_signature	(0x00000000)
 
 0x000000b4:     DW_TAG_member
                   DW_AT_name	("flags")
@@ -69,7 +69,7 @@ Abbrev table for offset: 0x00000000
 0x000000c4:   DW_TAG_class_type
                 DW_AT_name	("~lib/array/Array<i32>")
                 DW_AT_byte_size	(0x00000004)
-                DW_AT_type	(0x00000005 "")
+                DW_AT_signature	(0x00000005)
 
 0x000000e3:     DW_TAG_member
                   DW_AT_name	("buffer")
@@ -96,7 +96,7 @@ Abbrev table for offset: 0x00000000
 0x0000012c:   DW_TAG_class_type
                 DW_AT_name	("~lib/rt/common/OBJECT")
                 DW_AT_byte_size	(0x00000004)
-                DW_AT_type	(0x00000000 "")
+                DW_AT_signature	(0x00000000)
 
 0x0000014b:     DW_TAG_member
                   DW_AT_name	("gcInfo")
@@ -123,7 +123,7 @@ Abbrev table for offset: 0x00000000
 0x0000018b:   DW_TAG_class_type
                 DW_AT_name	("tests/DebugSymbol/TestClassMemberBasic/C1")
                 DW_AT_byte_size	(0x00000004)
-                DW_AT_type	(0x00000004 "")
+                DW_AT_signature	(0x00000004)
 
 0x000001be:     DW_TAG_member
                   DW_AT_name	("x")
@@ -148,21 +148,21 @@ Abbrev table for offset: 0x00000000
 0x000001fb:   DW_TAG_class_type
                 DW_AT_name	("~lib/object/Object")
                 DW_AT_byte_size	(0x00000004)
-                DW_AT_type	(0x00000000 "")
+                DW_AT_signature	(0x00000000)
 
 0x00000217:     NULL
 
 0x00000218:   DW_TAG_class_type
                 DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
                 DW_AT_byte_size	(0x00000004)
-                DW_AT_type	(0x00000001 "")
+                DW_AT_signature	(0x00000001)
 
 0x0000023e:     NULL
 
 0x0000023f:   DW_TAG_class_type
                 DW_AT_name	("~lib/rt/tlsf/Root")
                 DW_AT_byte_size	(0x00000004)
-                DW_AT_type	(0x00000000 "")
+                DW_AT_signature	(0x00000000)
 
 0x0000025a:     DW_TAG_member
                   DW_AT_name	("flMap")
@@ -182,14 +182,14 @@ Abbrev table for offset: 0x00000000
 0x0000028e:   DW_TAG_class_type
                 DW_AT_name	("~lib/string/String")
                 DW_AT_byte_size	(0x00000004)
-                DW_AT_type	(0x00000002 "")
+                DW_AT_signature	(0x00000002)
 
 0x000002aa:     NULL
 
 0x000002ab:   DW_TAG_class_type
                 DW_AT_name	("~lib/rt/itcms/Object")
                 DW_AT_byte_size	(0x00000004)
-                DW_AT_type	(0x00000000 "")
+                DW_AT_signature	(0x00000000)
 
 0x000002c9:     DW_TAG_member
                   DW_AT_name	("nextWithColor")
@@ -216,7 +216,7 @@ Abbrev table for offset: 0x00000000
 0x0000030d:   DW_TAG_class_type
                 DW_AT_name	("~lib/arraybuffer/ArrayBufferView")
                 DW_AT_byte_size	(0x00000004)
-                DW_AT_type	(0x00000003 "")
+                DW_AT_signature	(0x00000003)
 
 0x00000337:     DW_TAG_member
                   DW_AT_name	("buffer")
@@ -266,7 +266,7 @@ Abbrev table for offset: 0x00000000
 0x000003ee:   DW_TAG_class_type
                 DW_AT_name	("~lib/rt/common/BLOCK")
                 DW_AT_byte_size	(0x00000004)
-                DW_AT_type	(0x00000000 "")
+                DW_AT_signature	(0x00000000)
 
 0x0000040c:     DW_TAG_member
                   DW_AT_name	("mmInfo")
