@@ -15,5 +15,6 @@ static cli::Opt<bool> debugOption{
 
 } // namespace warpo::common
 
+bool warpo::common::isEmitDebugName() { return debugOption.get(); }
 bool warpo::common::isEmitDebugLine() { return debugOption.get(); }
 bool warpo::common::isEmitDebugInfo() { return debugOption.get(); }

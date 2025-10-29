@@ -165,8 +165,8 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
     assert(!config.sourceMapURL.empty());
     writer.setSourceMap(&sourceMapStream, config.sourceMapURL);
   }
-  writer.setNamesSection(false);
-  writer.setEmitModuleName(false);
+  writer.setNamesSection(common::isEmitDebugName());
+  writer.setEmitModuleName(common::isEmitDebugName());
   writer.write();
 
   // wat
