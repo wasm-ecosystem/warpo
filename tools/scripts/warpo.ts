@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import * as os from "node:os";
 import { execSync, spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
