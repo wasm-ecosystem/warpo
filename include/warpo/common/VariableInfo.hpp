@@ -33,7 +33,7 @@ class VariableInfo final {
 public:
   using ClassRegistry = std::unordered_map<std::string_view, ClassInfo>;
 
-  void createClass(std::string className, std::string parentName, uint32_t const size, uint32_t const rtid);
+  void createClass(std::string className, std::string parentName, uint32_t const rtid);
 
   void addField(std::string_view const className, std::string fieldName, std::string typeName, uint32_t const offset,
                 uint32_t const nullable);

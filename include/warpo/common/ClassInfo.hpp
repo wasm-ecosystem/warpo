@@ -27,11 +27,9 @@ class InterfaceInfo final {};
 
 class ClassInfo final {
 public:
-  inline ClassInfo(std::string_view const name, std::string_view const parentName, uint32_t const size,
-                   uint32_t const rtid) noexcept
-      : name_(name), parentName_(parentName), size_(size), rtid_(rtid), debugInfoOffset_(SIZE_MAX) {}
+  inline ClassInfo(std::string_view const name, std::string_view const parentName, uint32_t const rtid) noexcept
+      : name_(name), parentName_(parentName), rtid_(rtid), debugInfoOffset_(SIZE_MAX) {}
 
-  inline uint32_t getSize() const noexcept { return size_; }
   inline std::string_view getName() const noexcept { return name_; }
   inline uint32_t getRtid() const noexcept { return rtid_; }
   inline std::vector<FieldInfo> const &getFields() const noexcept { return fields_; }
@@ -46,7 +44,6 @@ public:
 private:
   std::string_view name_;
   std::string_view parentName_;
-  uint32_t size_;
   uint32_t rtid_;
   size_t debugInfoOffset_;
   std::vector<FieldInfo> fields_;

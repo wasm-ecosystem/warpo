@@ -15,13 +15,13 @@ namespace warpo::frontend {
 
 namespace {
 
-void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const size, uint32_t const rtid,
+void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const rtid,
                  vb::WasmModule const *const ctx) {
   std::string className{AsString::get(classNamePtr, ctx)};
   std::string parentName{AsString::get(parentNamePtr, ctx)};
 
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
-  pCompiler->asModule_.variableInfo_.createClass(std::move(className), std::move(parentName), size, rtid);
+  pCompiler->asModule_.variableInfo_.createClass(std::move(className), std::move(parentName), rtid);
 }
 
 void addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,

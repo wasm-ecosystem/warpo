@@ -124,12 +124,6 @@ DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRe
   nameAttr.Value = 0U;
   classAbbrev.Attributes.push_back(nameAttr);
 
-  llvm::DWARFYAML::AttributeAbbrev byteSizeAttr{};
-  byteSizeAttr.Attribute = llvm::dwarf::DW_AT_byte_size;
-  byteSizeAttr.Form = llvm::dwarf::DW_FORM_data4;
-  byteSizeAttr.Value = 0U;
-  classAbbrev.Attributes.push_back(byteSizeAttr);
-
   llvm::DWARFYAML::AttributeAbbrev classSignatureAttr{};
   classSignatureAttr.Attribute = llvm::dwarf::DW_AT_signature;
   classSignatureAttr.Form = llvm::dwarf::DW_FORM_data4;
@@ -168,12 +162,6 @@ DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRe
   baseTypeNameAttr.Form = llvm::dwarf::DW_FORM_string;
   baseTypeNameAttr.Value = 0U;
   baseTypeAbbrev.Attributes.push_back(baseTypeNameAttr);
-
-  llvm::DWARFYAML::AttributeAbbrev baseTypeSizeAttr{};
-  baseTypeSizeAttr.Attribute = llvm::dwarf::DW_AT_byte_size;
-  baseTypeSizeAttr.Form = llvm::dwarf::DW_FORM_data1;
-  baseTypeSizeAttr.Value = 0U;
-  baseTypeAbbrev.Attributes.push_back(baseTypeSizeAttr);
 
   abbrevDecls.push_back(baseTypeAbbrev);
 
@@ -225,10 +213,6 @@ DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRe
       baseTypeNameValue.CStr = llvm::StringRef(className.data(), className.size());
       baseTypeEntry.Values.push_back(baseTypeNameValue);
 
-      llvm::DWARFYAML::FormValue baseTypeSizeValue;
-      baseTypeSizeValue.Value = classInfo.getSize();
-      baseTypeEntry.Values.push_back(baseTypeSizeValue);
-
       rootUnit.Entries.push_back(baseTypeEntry);
     } else {
       // Handle class type
@@ -238,10 +222,6 @@ DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRe
       llvm::DWARFYAML::FormValue classNameValue;
       classNameValue.CStr = llvm::StringRef(className.data(), className.size());
       classEntry.Values.push_back(classNameValue);
-
-      llvm::DWARFYAML::FormValue classSizeValue;
-      classSizeValue.Value = classInfo.getSize();
-      classEntry.Values.push_back(classSizeValue);
 
       llvm::DWARFYAML::FormValue classSignatureValue;
       classSignatureValue.Value = classInfo.getRtid();

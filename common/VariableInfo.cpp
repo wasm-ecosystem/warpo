@@ -37,11 +37,10 @@ void VariableInfo::addField(std::string_view const className, std::string fieldN
   classIt->second.addMember(std::move(fieldName), internedTypeName, offset, nullable != 0);
 }
 
-void VariableInfo::createClass(std::string const className, std::string const parentName, uint32_t const size,
-                               uint32_t const rtid) {
+void VariableInfo::createClass(std::string const className, std::string const parentName, uint32_t const rtid) {
   std::string_view const internedClassName = stringPool_.internString(className);
   std::string_view const internedParentName = stringPool_.internString(parentName);
-  classRegistry_.emplace(internedClassName, ClassInfo{internedClassName, internedParentName, size, rtid});
+  classRegistry_.emplace(internedClassName, ClassInfo{internedClassName, internedParentName, rtid});
 }
 
 } // namespace warpo
@@ -55,8 +54,8 @@ TEST(TestVariableInfo, TestCreateClass) {
   VariableInfo variableInfo;
 
   // 1. Add two classes
-  variableInfo.createClass("Person", "Object", 64, 1);
-  variableInfo.createClass("Employee", "Person", 96, 2);
+  variableInfo.createClass("Person", "Object", 1);
+  variableInfo.createClass("Employee", "Person", 2);
 
   // 2. Add several members to each class
   // Person class members
@@ -85,7 +84,6 @@ TEST(TestVariableInfo, TestCreateClass) {
   const ClassInfo &personClass = personIt->second;
 
   EXPECT_EQ(personClass.getName(), "Person");
-  EXPECT_EQ(personClass.getSize(), 64);
   EXPECT_EQ(personClass.getRtid(), 1);
   EXPECT_EQ(personClass.getFields().size(), 3);
 
@@ -112,7 +110,6 @@ TEST(TestVariableInfo, TestCreateClass) {
   const ClassInfo &employeeClass = employeeIt->second;
 
   EXPECT_EQ(employeeClass.getName(), "Employee");
-  EXPECT_EQ(employeeClass.getSize(), 96);
   EXPECT_EQ(employeeClass.getRtid(), 2);
   EXPECT_EQ(employeeClass.getFields().size(), 6);
 

@@ -3357,7 +3357,7 @@ export class Resolver extends DiagnosticEmitter {
       memoryOffset = base.nextMemoryOffset;
     }
 
-    createClass(instance.internalName, parentName, instance.type.byteSize, instance.id);
+    createClass(instance.internalName, parentName, instance.id);
 
     // Resolve instance members
     let prototype = instance.prototype;
