@@ -8,16 +8,15 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <filesystem>
 #include <fmt/base.h>
 #include <fmt/format.h>
-#include <map>
 #include <optional>
 #include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "ModuleResolver.hpp"
 #include "warp_runner/WarpRunner.hpp"
 #include "warpo/common/AsModule.hpp"
 #include "warpo/frontend/Compiler.hpp"
@@ -30,7 +29,7 @@ class FrontendCompiler final {
   enum class IsEntry : uint32_t { NO, YES };
 
   WarpRunner r;
-  std::map<std::string, std::filesystem::path> packageRootMap_;
+  ModuleResolver moduleResolver_;
   size_t errorCount_ = 0;
   std::string errorMessage_;
 
@@ -41,16 +40,6 @@ class FrontendCompiler final {
 
   std::string getAsString(uint32_t ptr);
 
-  std::optional<std::filesystem::path> findPackageRoot(std::filesystem::path const &sourceInternalPath,
-                                                       std::string const &packageName);
-
-  struct Dependency final {
-    std::optional<std::string> text;
-    std::string path;
-  };
-
-  Dependency getDependencyForNodeModules(std::string const &nextFileInternalPath, int32_t program, int32_t nextFile);
-  Dependency getDependencyForUserCode(std::string const &nextFileInternalPath);
   Dependency getDependency(std::string const &nextFileInternalPath, int32_t program, int32_t nextFile);
 
   std::vector<Dependency> getAllDependencies(int32_t const program);
