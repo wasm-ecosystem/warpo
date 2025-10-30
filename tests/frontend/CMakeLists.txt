@@ -5,6 +5,4 @@ target_link_libraries(warpo_frontend_test
 )
 target_include_directories(warpo_frontend_test
   SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"
-  PRIVATE "${PROJECT_SOURCE_DIR}"
-  PRIVATE "${PROJECT_SOURCE_DIR}/frontend"
 )

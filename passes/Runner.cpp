@@ -12,6 +12,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <support/index.h>
 #include <utility>
 #include <vector>
 
@@ -74,21 +75,6 @@ static std::unique_ptr<wasm::PassRunner> createPassRunner(wasm::Module *const m)
   return passRunner;
 }
 
-static void lowering(wasm::Module *const m) {
-  {
-    support::PerfRAII const r{support::PerfItemKind::Lowering};
-    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m);
-    if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0)
-      passRunner->add(std::unique_ptr<wasm::Pass>{new passes::gc::OptLower()});
-    else
-      passRunner->add(std::unique_ptr<wasm::Pass>{new passes::gc::FastLower()});
-    passRunner->run();
-  }
-#ifndef WARPO_RELEASE_BUILD
-  ensureValidate(*m);
-#endif
-}
-
 static void preOptimize(AsModule const &m) {
   {
     support::PerfRAII const r{support::PerfItemKind::Instrument};
@@ -139,7 +125,7 @@ static void addDebugInfoAsCustomSection(AsModule const &m) {
       llvm::StringRef const sectionName = I->getKey();
       llvm::MemoryBuffer const *const buffer = I->getValue().get();
       BinaryenAddCustomSection(m.get(), sectionName.data(), reinterpret_cast<const char *>(buffer->getBufferStart()),
-                               buffer->getBufferSize());
+                               static_cast<wasm::Index>(buffer->getBufferSize()));
     }
   }
 }
@@ -148,7 +134,7 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
 #ifndef WARPO_RELEASE_BUILD
   ensureValidate(*m.get());
 #endif
-  lowering(m.get());
+  lowering(m);
   preOptimize(m);
   if (common::getOptimizationLevel() > 0U || common::getShrinkLevel() > 0U)
     optimize(m);
@@ -251,3 +237,18 @@ void passes::runAndEmit(std::string const &inputPath, std::filesystem::path cons
 }
 
 } // namespace warpo
+
+void warpo::passes::lowering(AsModule const &m) {
+  {
+    support::PerfRAII const r{support::PerfItemKind::Lowering};
+    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get());
+    if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0)
+      passRunner->add(std::unique_ptr<wasm::Pass>{new passes::gc::OptLower()});
+    else
+      passRunner->add(std::unique_ptr<wasm::Pass>{new passes::gc::FastLower()});
+    passRunner->run();
+  }
+#ifndef WARPO_RELEASE_BUILD
+  ensureValidate(*m.get());
+#endif
+}

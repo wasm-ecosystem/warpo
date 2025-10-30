@@ -67,6 +67,10 @@ void warpo::writeBinaryFile(std::string const &path, std::string data) {
   out << data;
 }
 
+bool warpo::isDirectory(std::filesystem::path const &path) { return std::filesystem::is_directory(path); }
+
+bool warpo::isRegularFile(std::filesystem::path const &path) { return std::filesystem::is_regular_file(path); }
+
 #ifdef WARPO_ENABLE_UNIT_TESTS
 
 #include <gtest/gtest.h>

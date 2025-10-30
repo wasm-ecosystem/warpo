@@ -26,6 +26,8 @@ struct Config {
 
 void init();
 
+void lowering(AsModule const &m);
+
 Output runOnWat(std::string const &input, Config const &config);
 Output runOnModule(AsModule const &m, Config const &config);
 

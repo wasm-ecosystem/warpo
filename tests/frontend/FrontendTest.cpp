@@ -15,7 +15,6 @@
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <pass.h>
-#include <passes/GC/OptLower.hpp>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -25,9 +24,10 @@
 #include <vector>
 #include <wasm-binary.h>
 
-#include "LinkedAPI.hpp"
-#include "warp_runner/warpRunner.hpp"
+#include "warp_runner/WarpRunner.hpp"
 #include "warpo/frontend/Compiler.hpp"
+#include "warpo/frontend/LinkedAPIAssemblyscript.hpp"
+#include "warpo/passes/Runner.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
 #include "wasm-validator.h"
@@ -126,9 +126,7 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
     return TestResult::Skip;
 
   // lowering built-in imports
-  wasm::PassRunner passRunner{asModule.get()};
-  passRunner.add(std::unique_ptr<wasm::Pass>{new passes::gc::OptLower()});
-  passRunner.run();
+  passes::lowering(asModule);
   wasm::BufferWithRandomAccess buffer;
   wasm::WasmBinaryWriter writer(asModule.get(), buffer, wasm::PassOptions::getWithoutOptimization());
   writer.setNamesSection(false);

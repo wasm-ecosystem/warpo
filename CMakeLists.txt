@@ -116,6 +116,7 @@ else()
 endif()
 
 add_subdirectory(common)
+add_subdirectory(driver)
 add_subdirectory(frontend)
 add_subdirectory(passes)
 add_subdirectory(support)

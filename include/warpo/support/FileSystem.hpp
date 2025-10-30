@@ -21,4 +21,7 @@ std::string readBinaryFile(std::string const &path);
 
 void writeBinaryFile(std::string const &path, std::string data);
 
+bool isDirectory(const std::filesystem::path &path);
+bool isRegularFile(std::filesystem::path const &path);
+
 } // namespace warpo

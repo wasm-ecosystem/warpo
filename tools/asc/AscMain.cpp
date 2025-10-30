@@ -7,23 +7,17 @@
 #include <cstdlib>
 #include <cstring>
 #include <exception>
-#include <filesystem>
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <string>
 
+#include "warpo/driver/Driver.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/support/Opt.hpp"
 
 namespace warpo {
 
-static cli::Opt<std::filesystem::path> outputPath{
-    cli::Category::All,
-    "-o",
-    "--output",
-    [](argparse::Argument &arg) -> void { arg.help("output file").required(); },
-};
 // NOLINTNEXTLINE(modernize-avoid-c-arrays)
 void ascMain(int argc, const char *argv[]) {
   frontend::init();
@@ -31,13 +25,7 @@ void ascMain(int argc, const char *argv[]) {
   argparse::ArgumentParser program("warpo_asc", "git@" GIT_COMMIT);
   cli::init(cli::Category::Frontend | cli::Category::Transformation | cli::Category::Optimization, program, argc, argv);
 
-  frontend::CompilationResult const result = frontend::compile();
-  if (result.m.invalid()) {
-    fmt::println("compilation failed");
-    fmt::println("{}", result.errorMessage);
-    throw std::runtime_error("compilation failed");
-  }
-  passes::runAndEmit(result.m, outputPath.get());
+  driver::build();
 }
 
 } // namespace warpo

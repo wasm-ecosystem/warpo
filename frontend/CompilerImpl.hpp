@@ -18,7 +18,7 @@
 #include <string_view>
 #include <vector>
 
-#include "warp_runner/warpRunner.hpp"
+#include "warp_runner/WarpRunner.hpp"
 #include "warpo/common/AsModule.hpp"
 #include "warpo/frontend/Compiler.hpp"
 

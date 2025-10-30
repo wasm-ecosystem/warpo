@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "AsString.hpp"
-#include "LinkedAPI.hpp"
+#include "warpo/frontend/LinkedAPIAssemblyscript.hpp"
 
 #include "src/WasmModule/WasmModule.hpp"
 #include "src/core/common/NativeSymbol.hpp"

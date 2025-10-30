@@ -3,14 +3,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <cassert>
-#include <cstddef>
 #include <cstdlib>
 #include <cstring>
 #include <fmt/base.h>
 #include <vector>
 
 #include "LinkedAPI.hpp"
-#include "warpo/common/VariableInfo.hpp"
+#include "warpo/frontend/LinkedAPIAssemblyscript.hpp"
 #include "warpo/support/Container.hpp"
 
 #include "src/core/common/NativeSymbol.hpp"
