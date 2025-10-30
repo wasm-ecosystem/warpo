@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-#include "AsString.hpp"
+#include "warpo/frontend/AsString.hpp"
 #include "warpo/frontend/LinkedAPIAssemblyscript.hpp"
 
 #include "src/WasmModule/WasmModule.hpp"

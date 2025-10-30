@@ -32,6 +32,7 @@
   ],
   "author": "congcong.cai@bmw.com",
   "files": [
+    "create",
     "dist",
     "types",
     "tsconfig-warpo.json",

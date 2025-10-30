@@ -8,6 +8,7 @@
 
 namespace warpo::frontend {
 
+// FIXME: move it to warp_runner
 class AsString final {
 public:
   static std::string get(uint32_t const ptr, vb::WasmModule const *const ctx);

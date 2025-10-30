@@ -8,6 +8,8 @@
 #include "src/WasmModule/WasmModule.hpp"
 #include "src/utils/STDCompilerLogger.hpp"
 
+namespace warpo {
+
 class WarpRunner {
   vb::STDCompilerLogger logger;
   uint8_t const *stackTop;
@@ -21,3 +23,5 @@ public:
   vb::STDCompilerLogger &getLogger() { return logger; }
   void printStacktrace() { m.printStacktrace(logger); }
 };
+
+} // namespace warpo

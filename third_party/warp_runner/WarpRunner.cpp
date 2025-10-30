@@ -5,8 +5,12 @@
 
 #include "src/utils/StackTop.hpp"
 
+namespace warpo {
+
 WarpRunner::WarpRunner(void *const ctx)
     : logger(), stackTop(static_cast<uint8_t const *>(vb::getStackTop())), m{logger} {
   m.setStacktraceRecordCount(32U);
   m.setContext(ctx);
 }
+
+} // namespace warpo

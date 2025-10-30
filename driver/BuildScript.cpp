@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "BuildScript.hpp"
+#include "LinkedAPI.hpp"
 #include "warp_runner/WarpRunner.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/frontend/LinkedAPIAssemblyscript.hpp"
@@ -41,7 +42,7 @@ static std::filesystem::path getProjectConfigPath() {
 
 } // namespace warpo::driver
 
-std::unique_ptr<WarpRunner> warpo::driver::initProjectConfig() {
+std::unique_ptr<warpo::WarpRunner> warpo::driver::initProjectConfig() {
   frontend::Config frontendConfig = frontend::getDefaultConfig();
   frontendConfig.emitDebugLine = true;
 
@@ -58,8 +59,7 @@ std::unique_ptr<WarpRunner> warpo::driver::initProjectConfig() {
   passes::Output output = passes::runOnModule(result.m, passesConfig);
 
   std::unique_ptr<WarpRunner> r{new WarpRunner(nullptr)};
-  std::vector<vb::NativeSymbol> linkedAPI;
-  append(linkedAPI, frontend::createAssemblyscriptAPI());
+  std::vector<vb::NativeSymbol> const &linkedAPI = getLinkedAPI();
   (*r)->initFromBytecode(vb::Span<uint8_t const>{output.wasm.data(), output.wasm.size()},
                          vb::Span<vb::NativeSymbol const>(linkedAPI.data(), linkedAPI.size()), false);
   uint8_t const *const stackTop = (*r).getStackTop();

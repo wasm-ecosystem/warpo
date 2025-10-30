@@ -4,10 +4,10 @@
 #include <cassert>
 #include <utility>
 
-#include "AsString.hpp"
 #include "CompilerImpl.hpp"
 #include "LinkedAPI.hpp"
 #include "warpo/common/AsModule.hpp"
+#include "warpo/frontend/AsString.hpp"
 
 #include "src/core/common/function_traits.hpp"
 
