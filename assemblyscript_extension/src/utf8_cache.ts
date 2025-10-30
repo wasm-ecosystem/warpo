@@ -8,7 +8,11 @@ import { Class, Program } from "../../assemblyscript/src/program";
 class Utf8Cache {
   cache: Map<string, i32> = new Map();
 
-  constructor(private constStrClass: Class, private compiler: Compiler, private program: Program) {}
+  constructor(
+    private constStrClass: Class,
+    private compiler: Compiler,
+    private program: Program
+  ) {}
   ensure(str: string): i32 {
     const cache = this.cache;
     if (cache.has(str)) return cache.get(str);

@@ -19,7 +19,9 @@
     "test:debug_symbol:update": "build/tests/DebugSymbol/TestDebugSymbol --update-fixtures",
     "test": "npm run test:ut && npm run test:as:snapshot && npm run test:opt:snapshot && npm run test:bootstrap:debug && npm run test:bootstrap:release",
     "docs:dev": "vitepress dev docs",
-    "docs:build": "vitepress build docs"
+    "docs:build": "vitepress build docs",
+    "prettier": "prettier --check .",
+    "prettier:fix": "prettier --write ."
   },
   "license": "Apache-2.0",
   "keywords": [

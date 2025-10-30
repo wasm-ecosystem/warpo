@@ -89,6 +89,11 @@ export default defineConfig({
             items: listItems("docs", "tech/opt"),
           },
           {
+            text: "Debugging Support",
+            link: "/tech/debug_symbol/index",
+            items: listItems("docs", "tech/debug_symbol"),
+          },
+          {
             text: "Infrastructure",
             link: "/tech/infra/index",
             items: listItems("docs", "tech/infra"),
