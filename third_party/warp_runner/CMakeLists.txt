@@ -1,5 +1,5 @@
 add_library(warp_runner
-  warpRunner.cpp
+  WarpRunner.cpp
 )
 
 target_link_libraries(warp_runner
