@@ -24,7 +24,7 @@ static cli::Opt<std::filesystem::path> projectOption{
     "-p",
     "--project",
     [](argparse::Argument &arg) -> void {
-      arg.help("Compile the project given the path to its configuration file, or to a folder with a 'build.ts'")
+      arg.help("Compile the project given the path to its configuration file, or to a folder with a 'create.ts'")
           .nargs(1U)
           .default_value("");
     },
@@ -32,12 +32,10 @@ static cli::Opt<std::filesystem::path> projectOption{
 
 static std::filesystem::path getProjectConfigPath() {
   std::filesystem::path projectPath = projectOption.get();
-  if (projectPath.empty()) {
-    return std::filesystem::current_path() / "build.ts";
-  }
-  if (isDirectory(projectPath)) {
-    return projectPath / "build.ts";
-  }
+  if (projectPath.empty())
+    return std::filesystem::current_path() / "create.ts";
+  if (isDirectory(projectPath))
+    return projectPath / "create.ts";
   return projectPath;
 }
 
@@ -54,7 +52,7 @@ std::unique_ptr<WarpRunner> warpo::driver::initProjectConfig() {
   if (result.m.invalid()) {
     fmt::println("compilation failed");
     fmt::println("{}", result.errorMessage);
-    throw std::runtime_error("compilation 'build.ts' failed");
+    throw std::runtime_error("compilation 'create.ts' failed");
   }
   passes::Config const passesConfig{.sourceMapURL = ""};
   passes::Output output = passes::runOnModule(result.m, passesConfig);

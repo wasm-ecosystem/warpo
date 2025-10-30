@@ -14,6 +14,7 @@ Eqref
 googletest
 gtest
 hicpp
+idof
 inlinings
 insts
 localtostack
