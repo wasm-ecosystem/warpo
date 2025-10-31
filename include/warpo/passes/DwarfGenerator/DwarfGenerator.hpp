@@ -18,8 +18,7 @@
 namespace warpo::passes {
 class DwarfGenerator final {
 public:
-  static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
-  generateDebugSections(VariableInfo::ClassRegistry const &classRegistry);
+  static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> generateDebugSections(VariableInfo const &variableInfo);
   static std::string dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const &debugSections);
 };
 

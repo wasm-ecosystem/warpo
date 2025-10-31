@@ -40,10 +40,15 @@ public:
 
   void addTemplateType(std::string_view const className, std::string_view const templateTypeName);
 
+  void addGlobalType(std::string variableName, std::string_view const typeName);
+
   ClassRegistry const &getClassRegistry() const noexcept { return classRegistry_; }
+
+  std::unordered_map<std::string, std::string_view> const &getGlobalTypes() const noexcept { return globalTypes_; }
 
 private:
   ClassRegistry classRegistry_;
+  std::unordered_map<std::string, std::string_view> globalTypes_;
   StringPool stringPool_;
 };
 } // namespace warpo

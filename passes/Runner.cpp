@@ -118,7 +118,7 @@ static void optimize(AsModule const &m) {
 
 static void addDebugInfoAsCustomSection(AsModule const &m) {
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
-      passes::DwarfGenerator::generateDebugSections(m.variableInfo_.getClassRegistry());
+      passes::DwarfGenerator::generateDebugSections(m.variableInfo_);
 
   if (!debugSections.empty()) {
     for (auto I = debugSections.begin(); !(I == debugSections.end()); I++) {
