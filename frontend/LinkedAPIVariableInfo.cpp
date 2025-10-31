@@ -42,7 +42,7 @@ void addTemplateType(uint32_t const classNamePtr, uint32_t const templateTypeNam
 
 void addGlobal(uint32_t const variableNamePtr, uint32_t const typeNamePtr, vb::WasmModule const *const ctx) {
   std::string variableName = AsString::get(variableNamePtr, ctx);
-  std::string typeName = AsString::get(typeNamePtr, ctx);
+  std::string const typeName = AsString::get(typeNamePtr, ctx);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   pCompiler->asModule_.variableInfo_.addGlobalType(std::move(variableName), typeName);
 }
