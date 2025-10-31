@@ -22,9 +22,8 @@ static cli::Opt<std::filesystem::path> outputPath{
 } // namespace warpo::driver
 
 void warpo::driver::build() {
-  initProjectConfig();
-
-  frontend::CompilationResult const result = frontend::compile();
+  std::unique_ptr<BuildScriptRunner> runner = BuildScriptRunner::create();
+  frontend::CompilationResult const result = frontend::compile(runner.get());
   if (result.m.invalid()) {
     fmt::println("compilation failed");
     fmt::println("{}", result.errorMessage);

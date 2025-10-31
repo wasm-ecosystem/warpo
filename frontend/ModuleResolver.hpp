@@ -8,6 +8,8 @@
 #include <optional>
 #include <string>
 
+#include "warpo/frontend/Compiler.hpp"
+
 namespace warpo::frontend {
 
 constexpr const char *const libraryPrefix = "~lib/";
@@ -20,8 +22,10 @@ struct Dependency final {
 
 class ModuleResolver {
   std::map<std::string, std::filesystem::path> packageRootMap_;
+  Pluggable *plugin_;
 
 public:
+  explicit ModuleResolver(Pluggable *plugin) : plugin_(plugin) {}
   std::optional<std::filesystem::path> findPackageRoot(std::filesystem::path const &sourceInternalPath,
                                                        std::string const &packageName);
 

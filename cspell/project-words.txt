@@ -5,6 +5,7 @@ Bayerische
 Binaryen
 bugprone
 ccache
+changetype
 cppcoreguidelines
 currp
 Dependee

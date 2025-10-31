@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <string>
 
-#include "UTF16.hpp"
 #include "warpo/frontend/AsString.hpp"
+#include "warpo/frontend/UTF16.hpp"
 
 #include "src/WasmModule/WasmModule.hpp"
 namespace warpo::frontend {

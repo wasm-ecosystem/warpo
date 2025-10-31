@@ -104,9 +104,10 @@ namespace warpo {
 
 void frontend::init() { FrontendCompiler::init(); }
 
-frontend::CompilationResult frontend::compile(std::vector<std::string> const &entryFilePaths, Config const &config) {
+frontend::CompilationResult frontend::compile(Pluggable *plugin, std::vector<std::string> const &entryFilePaths,
+                                              Config const &config) {
   support::PerfRAII const r(support::PerfItemKind::CompilationHIR);
-  FrontendCompiler compiler{config};
+  FrontendCompiler compiler{config, plugin};
   return compiler.compile(entryFilePaths, config);
 }
 
@@ -128,7 +129,7 @@ warpo::frontend::Config warpo::frontend::getDefaultConfig() {
   };
 }
 
-frontend::CompilationResult frontend::compile() {
+frontend::CompilationResult frontend::compile(Pluggable *plugin) {
   Config const config{
       .uses = getUses(),
       .ascWasmPath = convertEmptyStringToNullOpt(ascWasmOption.get()),
@@ -146,8 +147,7 @@ frontend::CompilationResult frontend::compile() {
       .useColorfulDiagMessage = support::isTTY(),
       .experimental = experimentalOption.get(),
   };
-
-  return compile(entryPaths.get(), config);
+  return compile(plugin, entryPaths.get(), config);
 }
 
 } // namespace warpo

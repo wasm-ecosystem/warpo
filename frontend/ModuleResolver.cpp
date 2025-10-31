@@ -30,9 +30,17 @@ static PackageResolveResult getPackageName(std::string const &fileInternalPath) 
 
 std::optional<std::filesystem::path> ModuleResolver::findPackageRoot(std::filesystem::path const &sourceInternalPath,
                                                                      std::string const &packageName) {
+  // cache hit
   auto const it = packageRootMap_.find(packageName);
   if (it != packageRootMap_.end())
     return it->second;
+  // plugin
+  if (plugin_ != nullptr) {
+    if (std::optional<std::filesystem::path> packageRoot = plugin_->getPackageRoot(packageName);
+        packageRoot.has_value())
+      return packageRoot;
+  }
+  // default resolver
   std::filesystem::path current;
   PackageResolveResult const sourcePackage = getPackageName(sourceInternalPath);
   if (sourcePackage.has_value()) {

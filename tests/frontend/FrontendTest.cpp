@@ -113,7 +113,7 @@ public:
 
 frontend::CompilationResult compile(TestConfigJson const &configJson, std::filesystem::path const &tsPath) {
   std::vector<std::string> const entries{tsPath.string()};
-  return frontend::compile(entries, configJson.createConfig());
+  return frontend::compile(nullptr, entries, configJson.createConfig());
 }
 
 [[nodiscard]] TestResult runModuleOnWarp(TestConfigJson const &configJson, std::filesystem::path const &tsPath,

@@ -1,12 +1,17 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <cstring>
 #include <fmt/base.h>
+#include <string>
 #include <vector>
+#include <warp_runner/WarpRunner.hpp>
 
+#include "BuildScript.hpp"
 #include "LinkedAPI.hpp"
 #include "warpo/frontend/AsString.hpp"
 #include "warpo/frontend/LinkedAPIAssemblyscript.hpp"
+#include "warpo/frontend/UTF16.hpp"
 #include "warpo/support/Container.hpp"
 
 #include "src/WasmModule/WasmModule.hpp"
@@ -14,15 +19,54 @@
 
 namespace warpo::driver {
 
-static uint32_t getCreateFileDirPathForLink(vb::WasmModule *ctx) { return 0; }
-
-static void onModuleResolveForLink(uint32_t fnIndex, uint32_t rtId, vb::WasmModule *ctx) {
-  fmt::println("onModuleResolve called with fnIndex: {}, rtId: {}", fnIndex, rtId);
+static uint32_t allocObject(vb::WasmModule *ctx, int32_t rtId, int32_t size) {
+  uint32_t const offset = ctx->callExportedFunctionWithName<1>(stackTop(), "__new", size, rtId)[0].u32;
+  ctx->callExportedFunctionWithName<1>(stackTop(), "__pin", offset);
+  return offset;
 }
 
-static void setPackagePathForLink(uint32_t packageNamePtr, uint32_t packagePathPtr, vb::WasmModule *ctx) {
-  std::string const packageName = frontend::AsString::get(packageNamePtr, ctx);
-  std::string const packagePath = frontend::AsString::get(packagePathPtr, ctx);
+// FIXME: duplicated with CompilerImpl.cpp
+static uint32_t allocString(vb::WasmModule *ctx, std::string_view str) {
+  std::u16string utf16Str = frontend::utf16::fromUTF8(std::string(str));
+  uint32_t const offset = allocObject(ctx, 2 /* rtId for string */, static_cast<int32_t>(utf16Str.size() * 2U));
+  uint8_t *const ptr =
+      ctx->getLinearMemoryRegion(static_cast<uint32_t>(offset), static_cast<uint32_t>(utf16Str.size()));
+  std::memcpy(ptr, utf16Str.data(), utf16Str.size() * sizeof(char16_t));
+  return offset;
+}
+
+static BuildScriptRunner *getRunner(vb::WasmModule *ctx) { return static_cast<BuildScriptRunner *>(ctx->getContext()); }
+
+static uint32_t getCreateFileDirPathForLink(vb::WasmModule *ctx) {
+  uint32_t const pathOffset = allocString(ctx, getRunner(ctx)->getBuildScriptPath());
+  return pathOffset;
+}
+
+static void onModuleResolveForLink(uint32_t callbackFnIndex, int32_t rtId, vb::WasmModule *ctx) {
+  getRunner(ctx)->registerOnModuleResolve(
+      [ctx, callbackFnIndex, rtId](std::string const &packageName) -> std::optional<std::filesystem::path> {
+        // detail layout see create/resolveModule.ts
+        using PackageNameType = uint32_t;
+        constexpr uint32_t packageNameOffset = 0U;
+        constexpr uint32_t packageNameSize = sizeof(PackageNameType);
+        using PackagePathType = uint32_t;
+        constexpr uint32_t packageOffset = packageNameOffset + packageNameSize;
+        constexpr uint32_t packagePathSize = sizeof(PackagePathType);
+        constexpr uint32_t resolveModuleSize = packageOffset + packagePathSize;
+
+        uint32_t const stringOffset = allocString(ctx, packageName);
+        uint32_t const resolveModuleOffset = allocObject(ctx, rtId, resolveModuleSize);
+        uint8_t *const resolveModulePtr =
+            ctx->getLinearMemoryRegion(static_cast<uint32_t>(resolveModuleOffset) + packageNameOffset, packageNameSize);
+        std::memcpy(resolveModulePtr, &stringOffset, packageNameSize);
+        ctx->callWasmFunctionByExportedTableIndex<0>(stackTop(), callbackFnIndex, resolveModuleOffset);
+        uint32_t pathOffset;
+        std::memcpy(&pathOffset, resolveModulePtr + packageNameSize, packagePathSize);
+        if (pathOffset == 0U)
+          return std::nullopt;
+        return {frontend::AsString::get(pathOffset, ctx)};
+      });
+  fmt::println("onModuleResolve called with fnIndex: {}", callbackFnIndex);
 }
 
 static std::vector<vb::NativeSymbol> createLinkedAPICreate() {
@@ -30,7 +74,6 @@ static std::vector<vb::NativeSymbol> createLinkedAPICreate() {
       STATIC_LINK("__warpo_create", "getCreateFileDirPath", getCreateFileDirPathForLink),
 
       STATIC_LINK("__warpo_create", "onModuleResolve", onModuleResolveForLink),
-      STATIC_LINK("__warpo_create", "setPackagePath", setPackagePathForLink),
   };
 }
 

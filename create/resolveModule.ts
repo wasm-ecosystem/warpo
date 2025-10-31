@@ -1,9 +1,13 @@
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 import * as api from "./__warpo_create";
 
 export class ModuleResolve {
   packageName!: string;
+  private packagePath: string | null = null;
   setPackagePath(packagePath: string): void {
-    api.setPackagePath(this.packageName, packagePath);
+    this.packagePath = packagePath;
   }
 }
 

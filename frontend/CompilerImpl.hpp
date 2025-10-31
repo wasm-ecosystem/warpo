@@ -29,7 +29,9 @@ class FrontendCompiler final {
   enum class IsEntry : uint32_t { NO, YES };
 
   WarpRunner r;
+  Pluggable *plugin_;
   ModuleResolver moduleResolver_;
+
   size_t errorCount_ = 0;
   std::string errorMessage_;
 
@@ -51,7 +53,7 @@ public:
   static void init() { vb::WasmModule::initEnvironment(&malloc, &realloc, &free); }
   static void deinit() { vb::WasmModule::destroyEnvironment(); }
 
-  explicit FrontendCompiler(Config const &config);
+  explicit FrontendCompiler(Config const &config, Pluggable *plugin);
   FrontendCompiler(FrontendCompiler const &) = delete;
   FrontendCompiler &operator=(FrontendCompiler const &) = delete;
   FrontendCompiler(FrontendCompiler &&) = delete;

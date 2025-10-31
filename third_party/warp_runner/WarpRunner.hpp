@@ -7,6 +7,7 @@
 
 #include "src/WasmModule/WasmModule.hpp"
 #include "src/utils/STDCompilerLogger.hpp"
+#include "src/utils/StackTop.hpp"
 
 namespace warpo {
 
@@ -23,5 +24,8 @@ public:
   vb::STDCompilerLogger &getLogger() { return logger; }
   void printStacktrace() { m.printStacktrace(logger); }
 };
+
+// TODO: cache stack top with thread id to reduce syscall
+inline uint8_t const *stackTop() { return static_cast<uint8_t const *>(vb::getStackTop()); }
 
 } // namespace warpo

@@ -1,4 +1,5 @@
-export declare function getCreateFileDirPath(): string;
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
 
-export declare function onModuleResolve(fn: i32, rtId: i32): void;
-export declare function setPackagePath(packageName: string, packagePath: string): void;
+export declare function getCreateFileDirPath(): string;
+export declare function onModuleResolve(callbackFnIndex: i32, rtId: i32): void;

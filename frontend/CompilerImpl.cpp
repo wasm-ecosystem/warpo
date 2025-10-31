@@ -20,8 +20,9 @@
 #include "ASC/ASC.hpp"
 #include "CompilerImpl.hpp"
 #include "LinkedAPI.hpp"
-#include "UTF16.hpp"
+#include "ModuleResolver.hpp"
 #include "warpo/frontend/Compiler.hpp"
+#include "warpo/frontend/UTF16.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Statistics.hpp"
 #include "wasm.h"
@@ -78,19 +79,20 @@ std::string FrontendCompiler::getAsString(uint32_t ptr) {
 
 Dependency FrontendCompiler::getDependency(std::string const &nextFileInternalPath, int32_t program, int32_t nextFile) {
   support::PerfRAII const perfRAII{support::PerfItemKind::CompilationHIR_Parsing_DepsResolve};
-  if (nextFileInternalPath.starts_with(libraryPrefix)) {
-    std::string const plainName = nextFileInternalPath.substr(std::string_view{libraryPrefix}.size());
-    if (embed_library_sources.contains(plainName))
-      return {.text = std::string{embed_library_sources.at(plainName)}, .path = libraryPrefix + plainName + extension};
-    std::string const indexName = plainName + "/index";
-    if (embed_library_sources.contains(indexName))
-      return {.text = std::string{embed_library_sources.at(indexName)}, .path = libraryPrefix + indexName + extension};
-    int32_t const dependee =
-        r->callExportedFunctionWithName<1>(r.getStackTop(), "getDependee", program, nextFile)[0].i32;
-    std::string const dependeePath = getAsString(static_cast<uint32_t>(dependee));
-    return moduleResolver_.getDependencyForNodeModules(nextFileInternalPath, dependeePath);
-  }
-  return moduleResolver_.getDependencyForUserCode(nextFileInternalPath);
+  // all library sources are with "~lib/" prefix
+  if (!nextFileInternalPath.starts_with(libraryPrefix))
+    return moduleResolver_.getDependencyForUserCode(nextFileInternalPath);
+
+  std::string const plainName = nextFileInternalPath.substr(std::string_view{libraryPrefix}.size());
+  if (embed_library_sources.contains(plainName))
+    return {.text = std::string{embed_library_sources.at(plainName)}, .path = libraryPrefix + plainName + extension};
+  std::string const indexName = plainName + "/index";
+  if (embed_library_sources.contains(indexName))
+    return {.text = std::string{embed_library_sources.at(indexName)}, .path = libraryPrefix + indexName + extension};
+  // cache miss
+  int32_t const dependee = r->callExportedFunctionWithName<1>(r.getStackTop(), "getDependee", program, nextFile)[0].i32;
+  std::string const dependeePath = getAsString(static_cast<uint32_t>(dependee));
+  return moduleResolver_.getDependencyForNodeModules(nextFileInternalPath, dependeePath);
 }
 
 std::vector<Dependency> FrontendCompiler::getAllDependencies(int32_t const program) {
@@ -133,7 +135,8 @@ FrontendCompiler::~FrontendCompiler() {
   }
 }
 
-FrontendCompiler::FrontendCompiler(Config const &config) : r{this} {
+FrontendCompiler::FrontendCompiler(Config const &config, Pluggable *plugin)
+    : r{this}, plugin_{plugin}, moduleResolver_(plugin) {
   if (config.ascWasmPath) [[unlikely]] {
     support::PerfRAII const p{support::PerfItemKind::CompilationHIR_PrepareWASMModule};
     std::string const wasmBytes = readBinaryFile(*config.ascWasmPath);
