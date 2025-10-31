@@ -108,7 +108,7 @@ import {
   BuiltinTypesContext
 } from "./builtins";
 
-import { addField, createClass } from "./warpo";
+import { addField, createClass, addTemplateType } from "./warpo";
 
 /** Indicates whether errors are reported or not. */
 export const enum ReportMode {
@@ -3191,6 +3191,18 @@ export class Resolver extends DiagnosticEmitter {
       }
     }
     if (anyPending) return instance;
+    let parentName: string | null = null;
+    let base = instance.base;
+    if(base){
+      parentName = base.internalName;
+    }
+    createClass(instance.internalName, parentName, instance.id);
+
+    if(typeArguments){
+      for(let i = 0; i < typeArguments.length; i++){
+        addTemplateType(instance.internalName, typeArguments[i].toString());
+      }
+    }
 
     // We only get here if the base class has been fully resolved already.
     this.finishResolveClass(instance, reportMode);
@@ -3330,9 +3342,7 @@ export class Resolver extends DiagnosticEmitter {
     // Alias base members
     let memoryOffset: u32 = 0;
     let base = instance.base;
-    let parentName: string|null = null;
     if (base) {
-      parentName = base.internalName;
       let implicitlyExtendsObject = instance.prototype.implicitlyExtendsObject;
       assert(!pendingClasses.has(base));
       let baseMembers = base.members;
@@ -3356,8 +3366,6 @@ export class Resolver extends DiagnosticEmitter {
       }
       memoryOffset = base.nextMemoryOffset;
     }
-
-    createClass(instance.internalName, parentName, instance.id);
 
     // Resolve instance members
     let prototype = instance.prototype;

@@ -165,6 +165,17 @@ DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRe
 
   abbrevDecls.push_back(baseTypeAbbrev);
 
+  llvm::DWARFYAML::Abbrev templateTypeParamAbbrev =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_template_type_parameter, llvm::dwarf::DW_CHILDREN_no);
+
+  llvm::DWARFYAML::AttributeAbbrev templateTypeParamTypeAttr{};
+  templateTypeParamTypeAttr.Attribute = llvm::dwarf::DW_AT_type;
+  templateTypeParamTypeAttr.Form = llvm::dwarf::DW_FORM_ref4;
+  templateTypeParamTypeAttr.Value = 0U;
+  templateTypeParamAbbrev.Attributes.push_back(templateTypeParamTypeAttr);
+
+  abbrevDecls.push_back(templateTypeParamAbbrev);
+
   llvm::DWARFYAML::Abbrev terminator;
   terminator.Code = 0U;
   terminator.Tag = llvm::dwarf::DW_TAG_null;
@@ -193,11 +204,12 @@ DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRe
 
   rootUnit.Entries.push_back(rootEntry);
 
-  struct MemberFixup final {
+  struct TypeRefFixup final {
     size_t entryIndex;
+    size_t valueIndex;
     std::string_view typeName;
   };
-  std::vector<MemberFixup> memberFixups;
+  std::vector<TypeRefFixup> typeRefFixups;
 
   for (std::pair<std::string_view const, ClassInfo> const &entry : classRegistry) {
     std::string_view const className = entry.first;
@@ -249,9 +261,25 @@ DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRe
         memberEntry.Values.push_back(memberLocationValue);
 
         size_t const memberIndex = rootUnit.Entries.size();
-        memberFixups.push_back({memberIndex, field.getType()});
+        typeRefFixups.push_back({memberIndex, 1U, field.getType()});
 
         rootUnit.Entries.push_back(memberEntry);
+      }
+
+      // Add template type parameters
+      std::vector<std::string_view> const &templateTypes = classInfo.getTemplateTypes();
+      for (std::string_view const templateTypeName : templateTypes) {
+        llvm::DWARFYAML::Entry templateTypeParamEntry;
+        templateTypeParamEntry.AbbrCode = templateTypeParamAbbrev.Code;
+
+        llvm::DWARFYAML::FormValue templateTypeValue;
+        templateTypeValue.Value = 0xDEADBEEFU;
+        templateTypeParamEntry.Values.push_back(templateTypeValue);
+
+        size_t const templateTypeIndex = rootUnit.Entries.size();
+        typeRefFixups.push_back({templateTypeIndex, 0U, templateTypeName});
+
+        rootUnit.Entries.push_back(templateTypeParamEntry);
       }
 
       // Add terminator for class children
@@ -267,11 +295,11 @@ DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRe
   DIEOffsetCalculator offsetCalculator(dwarfData);
   offsetCalculator.traverseDebugInfo();
 
-  for (MemberFixup const &fixup : memberFixups) {
+  for (TypeRefFixup const &fixup : typeRefFixups) {
     std::string_view const typeName = fixup.typeName;
     uint64_t const typeOffset = offsetCalculator.getOffset(typeName);
     assert(typeOffset != 0U);
-    dwarfData.CompileUnits[0U].Entries[fixup.entryIndex].Values[1U].Value = typeOffset;
+    dwarfData.CompileUnits[0U].Entries[fixup.entryIndex].Values[fixup.valueIndex].Value = typeOffset;
   }
 
   dwarfData.DebugStrings = stringManager.getDebugStrings();

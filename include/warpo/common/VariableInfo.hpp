@@ -38,6 +38,8 @@ public:
   void addField(std::string_view const className, std::string fieldName, std::string typeName, uint32_t const offset,
                 uint32_t const nullable);
 
+  void addTemplateType(std::string_view const className, std::string_view const templateTypeName);
+
   ClassRegistry const &getClassRegistry() const noexcept { return classRegistry_; }
 
 private:

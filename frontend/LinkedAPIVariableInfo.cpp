@@ -33,12 +33,19 @@ void addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t
   pCompiler->asModule_.variableInfo_.addField(className, std::move(fieldName), std::move(typeName), offset, nullable);
 }
 
+void addTemplateType(uint32_t const classNamePtr, uint32_t const templateTypeNamePtr, vb::WasmModule const *const ctx) {
+  std::string const className = AsString::get(classNamePtr, ctx);
+  std::string const templateTypeName = AsString::get(templateTypeNamePtr, ctx);
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.addTemplateType(className, templateTypeName);
+}
 } // namespace
 
 std::vector<vb::NativeSymbol> createVariableInfoAPI() {
   return std::vector<vb::NativeSymbol>{
       STATIC_LINK("warpo", "_WarpoCreateClass", createClass),
       STATIC_LINK("warpo", "_WarpoAddField", addField),
+      STATIC_LINK("warpo", "_WarpoAddTemplateType", addTemplateType),
   };
 }
 
