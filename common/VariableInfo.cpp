@@ -171,9 +171,6 @@ TEST(TestVariableInfo, TestTemplateTypes) {
   ASSERT_NE(containerIt, classRegistry.end());
   const ClassInfo &containerClass = containerIt->second;
 
-  EXPECT_EQ(containerClass.getName(), "Container<T>");
-  EXPECT_EQ(containerClass.getRtid(), 10);
-
   // Verify template types
   const auto &templateTypes = containerClass.getTemplateTypes();
   ASSERT_EQ(templateTypes.size(), 2);

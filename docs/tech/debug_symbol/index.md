@@ -40,4 +40,10 @@ Currently debug symbols has two parts:
 - `DW_AT_name` -> `DW_FORM_string`
 - `DW_AT_byte_size` -> `DW_FORM_data1`
 
+### tag: DW_TAG_template_type_parameter
+
+**hasChildren:** false
+
+- `DW_AT_type` -> `DW_FORM_ref4` (reference to type DIE)
+
 Topology dwarf debug symbol is ![here](./debugSymbol.excalidraw.svg)
