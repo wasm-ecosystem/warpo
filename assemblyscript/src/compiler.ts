@@ -219,7 +219,7 @@ import {
   liftRequiresExportRuntime,
   lowerRequiresExportRuntime
 } from "./bindings/js";
-import { markDataElementImmutable } from "./warpo";
+import { markDataElementImmutable, addGlobal } from "./warpo";
 
 /** Features enabled by default. */
 export const defaultFeatures = Feature.MutableGlobals
@@ -1375,7 +1375,7 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     let internalName = global.internalName;
-
+    addGlobal(internalName, type.toString());
     if (initializeInStart) { // initialize to mutable zero and set the actual value in start
       if (isDeclaredInline) {
         this.error(

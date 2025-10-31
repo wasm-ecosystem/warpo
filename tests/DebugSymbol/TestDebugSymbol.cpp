@@ -47,7 +47,7 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
   ss << *compileResult.m.get();
 
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
-      warpo::passes::DwarfGenerator::generateDebugSections(compileResult.m.variableInfo_.getClassRegistry());
+      warpo::passes::DwarfGenerator::generateDebugSections(compileResult.m.variableInfo_);
 
   std::string const dumpOutput = warpo::passes::DwarfGenerator::dumpDwarf(debugSections);
   std::string const fixtureName = testCaseName + "Fixture.txt";
@@ -73,7 +73,7 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
 }
 
 INSTANTIATE_TEST_SUITE_P(DebugSymbolTests, TestDebugSymbol_P,
-                         ::testing::Values("TestClassMemberBasic", "TestTemplateClass"));
+                         ::testing::Values("TestClassMemberBasic", "TestTemplateClass", "TestGlobal"));
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

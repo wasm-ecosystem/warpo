@@ -3,7 +3,7 @@ declare function _WarpoCreateClass(className: string, parentClassName: string | 
 declare function _WarpoAddTemplateType(className: string, templateTypeName: string): void;
 
 declare function _WarpoAddField(className: string, fieldName: string, typeName: string, offset: u32, nullable: bool): void;
-
+declare function _WarpoAddGlobal(variableName: string, typeName: string): void;
 
 export function markDataElementImmutable(begin: i64, size: i32): void {
   _WarpoMarkDataElementImmutable(i64_low(begin), <u32>size);
@@ -20,4 +20,8 @@ export function addField(className: string, fieldName: string, typeName: string,
 
 export function addTemplateType(className: string, templateTypeName: string): void {
   _WarpoAddTemplateType(className, templateTypeName);
+}
+
+export function addGlobal(variableName: string, typeName: string): void {
+  _WarpoAddGlobal(variableName, typeName);
 }

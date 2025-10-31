@@ -19,9 +19,13 @@ Abbrev table for offset: 0x00000000
 [5] DW_TAG_template_type_parameter	DW_CHILDREN_no
 	DW_AT_type	DW_FORM_ref4
 
+[6] DW_TAG_variable	DW_CHILDREN_no
+	DW_AT_name	DW_FORM_string
+	DW_AT_type	DW_FORM_ref4
+
 
 .debug_info contents:
-0x00000000: Compile Unit: length = 0x00000406 version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x0000040a)
+0x00000000: Compile Unit: length = 0x00000b28 version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x00000b2c)
 
 0x0000000b: DW_TAG_compile_unit
               DW_AT_producer	("warpo")
@@ -263,6 +267,246 @@ Abbrev table for offset: 0x00000000
 
 0x000003f9:   DW_TAG_base_type
                 DW_AT_name	("~lib/number/U64")
+
+0x0000040a:   DW_TAG_variable
+                DW_AT_name	("~lib/util/sort/MIN_RUN_LENGTH")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x0000042d:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/visitCount")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x0000044b:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/state")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x00000464:   DW_TAG_variable
+                DW_AT_name	("~lib/util/number/MAX_DOUBLE_LENGTH")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x0000048c:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/BLOCK_MINSIZE")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x000004ac:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/threshold")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x000004c9:   DW_TAG_variable
+                DW_AT_name	("~lib/util/error/E_ALLOCATION_TOO_LARGE")
+                DW_AT_type	(0x00000270 "~lib/string/String")
+
+0x000004f5:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/STEPFACTOR")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x00000513:   DW_TAG_variable
+                DW_AT_name	("~lib/util/sort/INSERTION_SORT_THRESHOLD")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x00000540:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/fromSpace")
+                DW_AT_type	(0x00000289 "~lib/rt/itcms/Object")
+
+0x0000055d:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/VISIT_SCAN")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x0000057b:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/toSpace")
+                DW_AT_type	(0x00000289 "~lib/rt/itcms/Object")
+
+0x00000596:   DW_TAG_variable
+                DW_AT_name	("~lib/util/math/EXP_TABLE_BITS")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x000005b9:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/AL_SIZE")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x000005d5:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/PROFILE")
+                DW_AT_type	(0x00000345 "~lib/number/Bool")
+
+0x000005f1:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/HL_START")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x0000060c:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/OBJECT_MAXSIZE")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x0000062f:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/TOTAL_OVERHEAD")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x00000652:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/DEBUG")
+                DW_AT_type	(0x00000345 "~lib/number/Bool")
+
+0x0000066c:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/gray")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x00000684:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/BLOCK_MAXSIZE")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x000006a6:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/transparent")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x000006c5:   DW_TAG_variable
+                DW_AT_name	("~lib/util/math/LOG_TABLE_BITS")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x000006e8:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/SL_BITS")
+                DW_AT_type	(0x000003ac "~lib/number/U32")
+
+0x00000702:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/TRACE")
+                DW_AT_type	(0x00000345 "~lib/number/Bool")
+
+0x0000071c:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/AL_MASK")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x00000738:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/BLOCK_OVERHEAD")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x0000075b:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/pinSpace")
+                DW_AT_type	(0x00000289 "~lib/rt/itcms/Object")
+
+0x00000777:   DW_TAG_variable
+                DW_AT_name	("~lib/util/error/E_INDEXOUTOFRANGE")
+                DW_AT_type	(0x00000270 "~lib/string/String")
+
+0x0000079e:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/SB_SIZE")
+                DW_AT_type	(0x000003ac "~lib/number/U32")
+
+0x000007b8:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/AL_BITS")
+                DW_AT_type	(0x000003ac "~lib/number/U32")
+
+0x000007d4:   DW_TAG_variable
+                DW_AT_name	("~lib/util/math/EXP2F_TABLE_BITS")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x000007f9:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/white")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x00000812:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/COLOR_MASK")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x00000830:   DW_TAG_variable
+                DW_AT_name	("~lib/util/math/LOG2F_TABLE_BITS")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x00000855:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/IDLEFACTOR")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x00000873:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/STATE_SWEEP")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x00000892:   DW_TAG_variable
+                DW_AT_name	("~lib/util/math/LOGF_TABLE_BITS")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x000008b6:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/STATE_MARK")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x000008d4:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/ROOT_SIZE")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x000008f0:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/HL_END")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x00000909:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/total")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x00000922:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/ROOT")
+                DW_AT_type	(0x00000227 "~lib/rt/tlsf/Root")
+
+0x00000939:   DW_TAG_variable
+                DW_AT_name	("~lib/util/math/LOG2_TABLE_BITS")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x0000095d:   DW_TAG_variable
+                DW_AT_name	("~lib/util/math/POW_LOG_TABLE_BITS")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x00000984:   DW_TAG_variable
+                DW_AT_name	("~lib/util/math/SIGN_BIAS")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x000009a2:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/iter")
+                DW_AT_type	(0x00000289 "~lib/rt/itcms/Object")
+
+0x000009ba:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/SL_SIZE")
+                DW_AT_type	(0x000003ac "~lib/number/U32")
+
+0x000009d4:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/STATE_IDLE")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
+
+0x000009f2:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/SB_BITS")
+                DW_AT_type	(0x000003ac "~lib/number/U32")
+
+0x00000a0c:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/FL_BITS")
+                DW_AT_type	(0x000003ac "~lib/number/U32")
+
+0x00000a26:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/GRANULARITY")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x00000a45:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/RTRACE")
+                DW_AT_type	(0x00000345 "~lib/number/Bool")
+
+0x00000a60:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/TAGS_MASK")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x00000a7c:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/FREE")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x00000a93:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/LEFTFREE")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x00000aae:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/OBJECT_OVERHEAD")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x00000ad2:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/SL_START")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x00000aed:   DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/SL_END")
+                DW_AT_type	(0x000001d8 "~lib/number/Usize")
+
+0x00000b06:   DW_TAG_variable
+                DW_AT_name	("~lib/native/ASC_LOW_MEMORY_LIMIT")
+                DW_AT_type	(0x000003e8 "~lib/number/I32")
 
 .debug_str contents:
 0x00000000: "warpo"

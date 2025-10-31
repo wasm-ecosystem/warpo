@@ -52,6 +52,12 @@ void VariableInfo::addTemplateType(std::string_view const className, std::string
   classIt->second.addTemplateType(internedTypeName);
 }
 
+void VariableInfo::addGlobalType(std::string variableName, std::string_view const typeName) {
+  std::string_view const normalizedTypeName = TypeNameHelper::normalizeTypeName(typeName);
+  std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
+  globalTypes_.emplace(std::move(variableName), internedTypeName);
+}
+
 } // namespace warpo
 
 #ifdef WARPO_ENABLE_UNIT_TESTS
@@ -180,6 +186,19 @@ TEST(TestVariableInfo, TestTemplateTypes) {
 
   // ~lib/string/String should remain unchanged
   EXPECT_EQ(templateTypes[1], "~lib/string/String");
+}
+
+TEST(TestVariableInfo, TestGlobalTypes) {
+  VariableInfo variableInfo;
+
+  variableInfo.addGlobalType("counter", "i32");
+  variableInfo.addGlobalType("message", "~lib/string/String");
+
+  const auto &globalTypes = variableInfo.getGlobalTypes();
+
+  ASSERT_EQ(globalTypes.size(), 2);
+  EXPECT_EQ(globalTypes.at("counter"), "~lib/number/I32");
+  EXPECT_EQ(globalTypes.at("message"), "~lib/string/String");
 }
 } // namespace warpo::ut
 #endif

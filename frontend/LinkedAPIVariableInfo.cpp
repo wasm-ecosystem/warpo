@@ -39,6 +39,14 @@ void addTemplateType(uint32_t const classNamePtr, uint32_t const templateTypeNam
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   pCompiler->asModule_.variableInfo_.addTemplateType(className, templateTypeName);
 }
+
+void addGlobal(uint32_t const variableNamePtr, uint32_t const typeNamePtr, vb::WasmModule const *const ctx) {
+  std::string variableName = AsString::get(variableNamePtr, ctx);
+  std::string const typeName = AsString::get(typeNamePtr, ctx);
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.addGlobalType(std::move(variableName), typeName);
+}
+
 } // namespace
 
 std::vector<vb::NativeSymbol> createVariableInfoAPI() {
@@ -46,6 +54,7 @@ std::vector<vb::NativeSymbol> createVariableInfoAPI() {
       STATIC_LINK("warpo", "_WarpoCreateClass", createClass),
       STATIC_LINK("warpo", "_WarpoAddField", addField),
       STATIC_LINK("warpo", "_WarpoAddTemplateType", addTemplateType),
+      STATIC_LINK("warpo", "_WarpoAddGlobal", addGlobal),
   };
 }
 

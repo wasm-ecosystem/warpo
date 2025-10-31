@@ -95,7 +95,10 @@ private:
 };
 
 llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
-DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRegistry) {
+DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
+  VariableInfo::ClassRegistry const &classRegistry = variableInfo.getClassRegistry();
+  std::unordered_map<std::string, std::string_view> const &globalTypes = variableInfo.getGlobalTypes();
+
   llvm::DWARFYAML::Data dwarfData;
   dwarfData.IsLittleEndian = true;
 
@@ -175,6 +178,23 @@ DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRe
   templateTypeParamAbbrev.Attributes.push_back(templateTypeParamTypeAttr);
 
   abbrevDecls.push_back(templateTypeParamAbbrev);
+
+  llvm::DWARFYAML::Abbrev variableAbbrev =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_variable, llvm::dwarf::DW_CHILDREN_no);
+
+  llvm::DWARFYAML::AttributeAbbrev variableNameAttr{};
+  variableNameAttr.Attribute = llvm::dwarf::DW_AT_name;
+  variableNameAttr.Form = llvm::dwarf::DW_FORM_string;
+  variableNameAttr.Value = 0U;
+  variableAbbrev.Attributes.push_back(variableNameAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev variableTypeAttr{};
+  variableTypeAttr.Attribute = llvm::dwarf::DW_AT_type;
+  variableTypeAttr.Form = llvm::dwarf::DW_FORM_ref4;
+  variableTypeAttr.Value = 0U;
+  variableAbbrev.Attributes.push_back(variableTypeAttr);
+
+  abbrevDecls.push_back(variableAbbrev);
 
   llvm::DWARFYAML::Abbrev terminator;
   terminator.Code = 0U;
@@ -287,6 +307,28 @@ DwarfGenerator::generateDebugSections(VariableInfo::ClassRegistry const &classRe
       childTerminator.AbbrCode = 0U;
       rootUnit.Entries.push_back(childTerminator);
     }
+  }
+
+  // Add global variables
+  for (std::pair<std::string const, std::string_view> const &globalEntry : globalTypes) {
+    std::string const &variableName = globalEntry.first;
+    std::string_view const typeName = globalEntry.second;
+
+    llvm::DWARFYAML::Entry variableEntry;
+    variableEntry.AbbrCode = variableAbbrev.Code;
+
+    llvm::DWARFYAML::FormValue variableNameValue;
+    variableNameValue.CStr = llvm::StringRef(variableName.data(), variableName.size());
+    variableEntry.Values.push_back(variableNameValue);
+
+    llvm::DWARFYAML::FormValue variableTypeValue;
+    variableTypeValue.Value = 0xDEADBEEFU;
+    variableEntry.Values.push_back(variableTypeValue);
+
+    size_t const variableIndex = rootUnit.Entries.size();
+    typeRefFixups.push_back({variableIndex, 1U, typeName});
+
+    rootUnit.Entries.push_back(variableEntry);
   }
 
   compileUnits.push_back(rootUnit);
