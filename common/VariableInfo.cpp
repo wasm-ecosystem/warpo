@@ -25,6 +25,7 @@
 
 #include "warpo/common/ClassInfo.hpp"
 #include "warpo/common/FieldInfo.hpp"
+#include "warpo/common/TypeNameHelper.hpp"
 #include "warpo/common/VariableInfo.hpp"
 
 namespace warpo {
@@ -41,6 +42,14 @@ void VariableInfo::createClass(std::string const className, std::string const pa
   std::string_view const internedClassName = stringPool_.internString(className);
   std::string_view const internedParentName = stringPool_.internString(parentName);
   classRegistry_.emplace(internedClassName, ClassInfo{internedClassName, internedParentName, rtid});
+}
+
+void VariableInfo::addTemplateType(std::string_view const className, std::string_view const templateTypeName) {
+  ClassRegistry::iterator const classIt = classRegistry_.find(className);
+  assert(classIt != classRegistry_.end());
+  std::string_view const normalizedTypeName = TypeNameHelper::normalizeTypeName(templateTypeName);
+  std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
+  classIt->second.addTemplateType(internedTypeName);
 }
 
 } // namespace warpo
@@ -142,6 +151,35 @@ TEST(TestVariableInfo, TestCreateClass) {
   EXPECT_EQ(employeeFields[5].getType(), "~lib/number/F64");
   EXPECT_EQ(employeeFields[5].getOffsetInClass(), 24);
   EXPECT_FALSE(employeeFields[5].isNullable());
+}
+
+TEST(TestVariableInfo, TestTemplateTypes) {
+  VariableInfo variableInfo;
+
+  // Create a generic container class
+  variableInfo.createClass("Container<T>", "Object", 10);
+
+  // Add template types - one basic type (i32) and one complex type (String)
+  variableInfo.addTemplateType("Container<T>", "i32");
+  variableInfo.addTemplateType("Container<T>", "~lib/string/String");
+
+  // Get the class registry
+  const auto &classRegistry = variableInfo.getClassRegistry();
+
+  // Verify the container class exists
+  auto containerIt = classRegistry.find("Container<T>");
+  ASSERT_NE(containerIt, classRegistry.end());
+  const ClassInfo &containerClass = containerIt->second;
+
+  // Verify template types
+  const auto &templateTypes = containerClass.getTemplateTypes();
+  ASSERT_EQ(templateTypes.size(), 2);
+
+  // i32 should be normalized to ~lib/number/I32
+  EXPECT_EQ(templateTypes[0], "~lib/number/I32");
+
+  // ~lib/string/String should remain unchanged
+  EXPECT_EQ(templateTypes[1], "~lib/string/String");
 }
 } // namespace warpo::ut
 #endif

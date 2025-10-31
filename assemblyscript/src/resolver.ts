@@ -108,7 +108,7 @@ import {
   BuiltinTypesContext
 } from "./builtins";
 
-import { addField, createClass } from "./warpo";
+import { addField, createClass, addTemplateType } from "./warpo";
 
 /** Indicates whether errors are reported or not. */
 export const enum ReportMode {
@@ -3300,6 +3300,22 @@ export class Resolver extends DiagnosticEmitter {
     /** How to proceed with eventual diagnostics. */
     reportMode: ReportMode
   ): void {
+    // Create the class in C++ registry first, before processing any members
+    let parentName: string | null = null;
+    let baseClass = instance.base;
+    if (baseClass) {
+      parentName = baseClass.internalName;
+    }
+    createClass(instance.internalName, parentName, instance.id);
+
+    // Add template types if present
+    let typeArguments = instance.typeArguments;
+    if (typeArguments) {
+      for (let i = 0; i < typeArguments.length; i++) {
+        addTemplateType(instance.internalName, typeArguments[i].toString());
+      }
+    }
+
     let members = instance.members;
     if (!members) instance.members = members = new Map();
 
@@ -3330,9 +3346,7 @@ export class Resolver extends DiagnosticEmitter {
     // Alias base members
     let memoryOffset: u32 = 0;
     let base = instance.base;
-    let parentName: string|null = null;
     if (base) {
-      parentName = base.internalName;
       let implicitlyExtendsObject = instance.prototype.implicitlyExtendsObject;
       assert(!pendingClasses.has(base));
       let baseMembers = base.members;
@@ -3356,8 +3370,6 @@ export class Resolver extends DiagnosticEmitter {
       }
       memoryOffset = base.nextMemoryOffset;
     }
-
-    createClass(instance.internalName, parentName, instance.id);
 
     // Resolve instance members
     let prototype = instance.prototype;

@@ -39,6 +39,10 @@ public:
   inline void setDebugInfoOffset(uint64_t offset) noexcept { debugInfoOffset_ = offset; }
   inline uint64_t getDebugInfoOffset() const noexcept { return debugInfoOffset_; }
 
+  inline void addTemplateType(std::string_view const typeName) noexcept { templateTypes_.push_back(typeName); }
+
+  std::vector<std::string_view> const &getTemplateTypes() const noexcept { return templateTypes_; }
+
   bool isBasicType() const noexcept;
 
 private:
@@ -48,6 +52,7 @@ private:
   size_t debugInfoOffset_;
   std::vector<FieldInfo> fields_;
   std::vector<InterfaceInfo> interfaces_;
+  std::vector<std::string_view> templateTypes_;
 };
 
 } // namespace warpo

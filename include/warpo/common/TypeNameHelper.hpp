@@ -1,5 +1,5 @@
 ///
-/// @file FieldInfo.hpp
+/// @file TypeNameHelper.hpp
 /// @copyright Copyright (C) 2025 wasm-ecosystem
 /// SPDX-License-Identifier: Apache-2.0
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,30 +15,17 @@
 /// limitations under the License.
 #pragma once
 
-#include <cstdint>
-#include <string>
 #include <string_view>
-
-#include "TypeNameHelper.hpp"
+#include <unordered_map>
 
 namespace warpo {
 
-class FieldInfo final {
+class TypeNameHelper final {
 public:
-  inline FieldInfo(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable)
-      : name_(std::move(name)), type_(TypeNameHelper::normalizeTypeName(type)), offsetInClass_(offsetInClass),
-        nullable_(nullable) {}
-
-  inline std::string_view getName() const noexcept { return name_; }
-  inline std::string_view getType() const noexcept { return type_; }
-  inline uint32_t getOffsetInClass() const noexcept { return offsetInClass_; }
-  inline bool isNullable() const noexcept { return nullable_; }
+  static std::string_view normalizeTypeName(std::string_view const type) noexcept;
 
 private:
-  std::string name_;
-  std::string_view type_;
-  uint32_t offsetInClass_;
-  bool nullable_;
+  static const std::unordered_map<std::string_view, std::string_view> basicTypeMap;
 };
 
 } // namespace warpo
