@@ -37,8 +37,8 @@ static uint32_t allocString(vb::WasmModule *ctx, std::string_view str) {
 
 static BuildScriptRunner *getRunner(vb::WasmModule *ctx) { return static_cast<BuildScriptRunner *>(ctx->getContext()); }
 
-static uint32_t getCreateFileDirPathForLink(vb::WasmModule *ctx) {
-  uint32_t const pathOffset = allocString(ctx, getRunner(ctx)->getBuildScriptPath());
+static uint32_t getCreateFileDirNameForLink(vb::WasmModule *ctx) {
+  uint32_t const pathOffset = allocString(ctx, getRunner(ctx)->getCreateFileDirName());
   return pathOffset;
 }
 
@@ -71,7 +71,7 @@ static void onModuleResolveForLink(uint32_t callbackFnIndex, int32_t rtId, vb::W
 
 static std::vector<vb::NativeSymbol> createLinkedAPICreate() {
   return std::vector<vb::NativeSymbol>{
-      STATIC_LINK("__warpo_create", "getCreateFileDirPath", getCreateFileDirPathForLink),
+      STATIC_LINK("__warpo_create", "getCreateFileDirName", getCreateFileDirNameForLink),
 
       STATIC_LINK("__warpo_create", "onModuleResolve", onModuleResolveForLink),
   };

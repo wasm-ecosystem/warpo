@@ -16,7 +16,7 @@ using OnResolveModuleFn = std::function<std::optional<std::filesystem::path>(std
 
 class BuildScriptRunner final : public frontend::Pluggable {
   WarpRunner r_;
-  std::string buildScriptPath_;
+  std::string createFileDirName_;
   explicit BuildScriptRunner(std::filesystem::path const &buildScriptPath);
 
   std::optional<OnResolveModuleFn> onModuleResolveCallback_;
@@ -25,7 +25,7 @@ public:
   /// @return nullptr when the project configuration file is not found
   static std::unique_ptr<BuildScriptRunner> create();
 
-  std::string getBuildScriptPath() const { return buildScriptPath_; }
+  std::string const &getCreateFileDirName() const { return createFileDirName_; }
 
   OnResolveModuleFn::result_type getPackageRoot(std::string const &packageName) override;
   void registerOnModuleResolve(OnResolveModuleFn callback);

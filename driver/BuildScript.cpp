@@ -39,11 +39,13 @@ static std::filesystem::path getProjectConfigPath() {
 }
 
 BuildScriptRunner::BuildScriptRunner(std::filesystem::path const &buildScriptPath)
-    : r_{this}, buildScriptPath_{buildScriptPath} {
+    : r_{this}, createFileDirName_{buildScriptPath.parent_path().string()} {
+  constexpr const char *startFunctionName = "__create_start";
   frontend::Config createConfig = frontend::getDefaultConfig();
   createConfig.emitDebugLine = true;
   createConfig.exportRuntime = true;
   createConfig.exportTable = true;
+  createConfig.exportStart = startFunctionName;
   frontend::CompilationResult const result = frontend::compile(nullptr, {buildScriptPath}, createConfig);
   if (result.m.invalid()) {
     fmt::println("compilation failed");
@@ -57,6 +59,7 @@ BuildScriptRunner::BuildScriptRunner(std::filesystem::path const &buildScriptPat
   r_->initFromBytecode(vb::Span<uint8_t const>{output.wasm.data(), output.wasm.size()},
                        vb::Span<vb::NativeSymbol const>(linkedAPI.data(), linkedAPI.size()), false);
   r_->start(stackTop());
+  r_->callExportedFunctionWithName<0>(stackTop(), startFunctionName);
 }
 
 std::unique_ptr<BuildScriptRunner> BuildScriptRunner::create() {

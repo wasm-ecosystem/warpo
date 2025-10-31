@@ -1,0 +1,8 @@
+{
+  "name": "as",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@cdc/assemblyscript-library-functions": "^2.10.0"
+  }
+}
