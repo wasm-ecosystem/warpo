@@ -3191,18 +3191,6 @@ export class Resolver extends DiagnosticEmitter {
       }
     }
     if (anyPending) return instance;
-    let parentName: string | null = null;
-    let base = instance.base;
-    if(base){
-      parentName = base.internalName;
-    }
-    createClass(instance.internalName, parentName, instance.id);
-
-    if(typeArguments){
-      for(let i = 0; i < typeArguments.length; i++){
-        addTemplateType(instance.internalName, typeArguments[i].toString());
-      }
-    }
 
     // We only get here if the base class has been fully resolved already.
     this.finishResolveClass(instance, reportMode);
@@ -3312,6 +3300,22 @@ export class Resolver extends DiagnosticEmitter {
     /** How to proceed with eventual diagnostics. */
     reportMode: ReportMode
   ): void {
+    // Create the class in C++ registry first, before processing any members
+    let parentName: string | null = null;
+    let baseClass = instance.base;
+    if (baseClass) {
+      parentName = baseClass.internalName;
+    }
+    createClass(instance.internalName, parentName, instance.id);
+
+    // Add template types if present
+    let typeArguments = instance.typeArguments;
+    if (typeArguments) {
+      for (let i = 0; i < typeArguments.length; i++) {
+        addTemplateType(instance.internalName, typeArguments[i].toString());
+      }
+    }
+
     let members = instance.members;
     if (!members) instance.members = members = new Map();
 
