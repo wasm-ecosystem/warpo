@@ -38,7 +38,7 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
   std::filesystem::path const testDir = std::filesystem::path(__FILE__).parent_path();
   std::filesystem::path const testFilePath = testDir / (testCaseName + ".ts");
   std::vector<std::string> const entries{testFilePath.string()};
-  warpo::frontend::CompilationResult const compileResult{warpo::frontend::compile(nullptr, entries, config)};
+  warpo::frontend::CompilationResult const compileResult{warpo::frontend::compile(entries, config)};
   if (compileResult.errorMessage.size() > 0U) {
     std::cout << "compile failed due to " << compileResult.errorMessage << std::endl;
     std::terminate();

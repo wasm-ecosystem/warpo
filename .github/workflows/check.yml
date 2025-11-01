@@ -26,12 +26,14 @@ jobs:
           node-version: "22"
       - run: npm ci
       - uses: ./.github/action/build
+      # enable docs is available
+      - run: npm run docs:build
+      # test
       - run: npm run test:ut
       - run: npm run test:opt:snapshot -- --debug
       - run: npm run test:as:snapshot
       - run: npm run test:debug_symbol
-      - name: test doc build
-        run: npm run docs:build
+      - run: npm run test:driver
 
   bootstrap:
     strategy:
