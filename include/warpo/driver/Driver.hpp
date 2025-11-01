@@ -3,8 +3,10 @@
 
 #pragma once
 
+#include <filesystem>
 namespace warpo::driver {
 
 void build();
+void build(std::filesystem::path const &outputPath);
 
 } // namespace warpo::driver

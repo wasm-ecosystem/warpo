@@ -1,3 +1,6 @@
 import { v } from "@as/custom/lib/index";
 
-assert(v == "from other lib");
+export function _start(): void {
+  assert(v == "from other lib");
+  trace("success");
+}

@@ -66,7 +66,6 @@ static void onModuleResolveForLink(uint32_t callbackFnIndex, int32_t rtId, vb::W
           return std::nullopt;
         return {frontend::AsString::get(pathOffset, ctx)};
       });
-  fmt::println("onModuleResolve called with fnIndex: {}", callbackFnIndex);
 }
 
 static std::vector<vb::NativeSymbol> createLinkedAPICreate() {
