@@ -1,6 +1,5 @@
 #include <fstream>
 #include <gtest/gtest.h>
-#include <regex>
 #include <sstream>
 #include <string>
 #include <support/colors.h>
@@ -10,7 +9,6 @@
 #include "llvm/Support/MemoryBuffer.h"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/passes/DwarfGenerator/DwarfGenerator.hpp"
-#include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
 #include "wasm.h"
 
@@ -38,7 +36,7 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
   std::filesystem::path const testDir = std::filesystem::path(__FILE__).parent_path();
   std::filesystem::path const testFilePath = testDir / (testCaseName + ".ts");
   std::vector<std::string> const entries{testFilePath.string()};
-  warpo::frontend::CompilationResult const compileResult{warpo::frontend::compile(entries, config)};
+  warpo::frontend::CompilationResult const compileResult{warpo::frontend::compile(nullptr, entries, config)};
   if (compileResult.errorMessage.size() > 0U) {
     std::cout << "compile failed due to " << compileResult.errorMessage << std::endl;
     std::terminate();
