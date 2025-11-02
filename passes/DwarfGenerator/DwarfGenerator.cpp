@@ -19,7 +19,6 @@
 #include "binaryen/third_party/llvm-project/DWARFVisitor.h"
 #include "llvm/BinaryFormat/Dwarf.h"
 #include "llvm/DebugInfo/DWARF/DWARFContext.h"
-#include "llvm/DebugInfo/DWARF/DWARFDie.h"
 #include "llvm/ObjectYAML/DWARFEmitter.h"
 #include "llvm/ObjectYAML/DWARFYAML.h"
 #include "llvm/Support/LEB128.h"
@@ -97,7 +96,7 @@ private:
 llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
 DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
   VariableInfo::ClassRegistry const &classRegistry = variableInfo.getClassRegistry();
-  std::unordered_map<std::string, std::string_view> const &globalTypes = variableInfo.getGlobalTypes();
+  VariableInfo::GlobalTypes const &globalTypes = variableInfo.getGlobalTypes();
 
   llvm::DWARFYAML::Data dwarfData;
   dwarfData.IsLittleEndian = true;

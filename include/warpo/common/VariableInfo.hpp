@@ -13,25 +13,23 @@
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
-#ifndef VARIABLE_INFO_HPP
-#define VARIABLE_INFO_HPP
+
+#pragma once
+
 #include <cstdint>
-#include <memory>
+#include <map>
 #include <string>
 #include <string_view>
-#include <unordered_map>
-#include <vector>
 
 #include "ClassInfo.hpp"
-#include "llvm/ADT/StringMap.h"
-#include "llvm/Support/MemoryBuffer.h"
 #include "warpo/support/StringPool.hpp"
 
 namespace warpo {
 
 class VariableInfo final {
 public:
-  using ClassRegistry = std::unordered_map<std::string_view, ClassInfo>;
+  using ClassRegistry = std::map<std::string_view, ClassInfo>;
+  using GlobalTypes = std::map<std::string, std::string_view>;
 
   void createClass(std::string className, std::string parentName, uint32_t const rtid);
 
@@ -44,12 +42,12 @@ public:
 
   ClassRegistry const &getClassRegistry() const noexcept { return classRegistry_; }
 
-  std::unordered_map<std::string, std::string_view> const &getGlobalTypes() const noexcept { return globalTypes_; }
+  GlobalTypes const &getGlobalTypes() const noexcept { return globalTypes_; }
 
 private:
   ClassRegistry classRegistry_;
-  std::unordered_map<std::string, std::string_view> globalTypes_;
+  GlobalTypes globalTypes_;
   StringPool stringPool_;
 };
+
 } // namespace warpo
-#endif
