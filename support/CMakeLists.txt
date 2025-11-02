@@ -45,7 +45,6 @@ if(NOT WARPO_RELEASE)
   target_link_libraries(${LIB_NAME}_test
     PUBLIC warp_runner
   )
-  add_dependencies(${LIB_NAME}_test vb_libWasmModule)
   gtest_add_tests(TARGET ${LIB_NAME}_test)
 endif()
 

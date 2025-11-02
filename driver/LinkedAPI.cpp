@@ -5,40 +5,22 @@
 #include <fmt/base.h>
 #include <string>
 #include <vector>
-#include <warp_runner/WarpRunner.hpp>
 
 #include "BuildScript.hpp"
 #include "LinkedAPI.hpp"
-#include "warpo/frontend/AsString.hpp"
-#include "warpo/frontend/LinkedAPIAssemblyscript.hpp"
-#include "warpo/frontend/UTF16.hpp"
 #include "warpo/support/Container.hpp"
+#include "warpo/warp_runner/LinkedAPIAssemblyscript.hpp"
+#include "warpo/warp_runner/WarpRunner.hpp"
 
 #include "src/WasmModule/WasmModule.hpp"
 #include "src/core/common/function_traits.hpp"
 
 namespace warpo::driver {
 
-static uint32_t allocObject(vb::WasmModule *ctx, int32_t rtId, int32_t size) {
-  uint32_t const offset = ctx->callExportedFunctionWithName<1>(stackTop(), "__new", size, rtId)[0].u32;
-  ctx->callExportedFunctionWithName<1>(stackTop(), "__pin", offset);
-  return offset;
-}
-
-// FIXME: duplicated with CompilerImpl.cpp
-static uint32_t allocString(vb::WasmModule *ctx, std::string_view str) {
-  std::u16string utf16Str = frontend::utf16::fromUTF8(std::string(str));
-  uint32_t const offset = allocObject(ctx, 2 /* rtId for string */, static_cast<int32_t>(utf16Str.size() * 2U));
-  uint8_t *const ptr =
-      ctx->getLinearMemoryRegion(static_cast<uint32_t>(offset), static_cast<uint32_t>(utf16Str.size()));
-  std::memcpy(ptr, utf16Str.data(), utf16Str.size() * sizeof(char16_t));
-  return offset;
-}
-
 static BuildScriptRunner *getRunner(vb::WasmModule *ctx) { return static_cast<BuildScriptRunner *>(ctx->getContext()); }
 
 static uint32_t getCreateFileDirNameForLink(vb::WasmModule *ctx) {
-  uint32_t const pathOffset = allocString(ctx, getRunner(ctx)->getCreateFileDirName());
+  uint32_t const pathOffset = WarpRunner::allocString(ctx, getRunner(ctx)->getCreateFileDirName());
   return pathOffset;
 }
 
@@ -60,7 +42,7 @@ public:
   explicit ResolveModule(uint32_t offset) : offset_(offset) {}
 
   void setPackageName(std::string const &packageName, vb::WasmModule *ctx) {
-    uint32_t const stringOffset = allocString(ctx, packageName);
+    uint32_t const stringOffset = WarpRunner::allocString(ctx, packageName);
     uint8_t *const ptr = ctx->getLinearMemoryRegion(offset_ + packageNameOffset, packageNameSize);
     std::memcpy(ptr, &stringOffset, packageNameSize);
   }
@@ -70,7 +52,7 @@ public:
     std::memcpy(&pathOffset, ptr, packagePathSize);
     if (pathOffset == 0U)
       return std::nullopt;
-    return {frontend::AsString::get(pathOffset, ctx)};
+    return {WarpRunner::getString(ctx, pathOffset)};
   }
 };
 
@@ -79,7 +61,7 @@ public:
 static void onModuleResolveForLink(uint32_t callbackFnIndex, int32_t rtId, vb::WasmModule *ctx) {
   getRunner(ctx)->registerOnModuleResolve(
       [ctx, callbackFnIndex, rtId](std::string const &packageName) -> std::optional<std::filesystem::path> {
-        uint32_t const resolveModuleOffset = allocObject(ctx, rtId, ResolveModule::size);
+        uint32_t const resolveModuleOffset = WarpRunner::allocObject(ctx, rtId, ResolveModule::size);
         ResolveModule resolveModule{resolveModuleOffset};
         resolveModule.setPackageName(packageName, ctx);
         ctx->callWasmFunctionByExportedTableIndex<0>(stackTop(), callbackFnIndex, resolveModuleOffset);

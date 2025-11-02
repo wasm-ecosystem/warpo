@@ -12,9 +12,9 @@
 #include <sstream>
 #include <utility>
 #include <vector>
+#include <warpo/warp_runner/WarpRunner.hpp>
 
-#include "warpo/frontend/AsString.hpp"
-#include "warpo/frontend/LinkedAPIAssemblyscript.hpp"
+#include "warpo/warp_runner/LinkedAPIAssemblyscript.hpp"
 
 #include "src/WasmModule/WasmModule.hpp"
 #include "src/core/common/NativeSymbol.hpp"
@@ -27,15 +27,15 @@ namespace {
 void abortForLink(uint32_t messagePtr, uint32_t fileNamePtr, uint32_t lineNumber, uint32_t columnNumber,
                   vb::WasmModule *ctx) {
   std::stringstream ss{};
-  ss << "abort: " << AsString::get(messagePtr, ctx) << " in " << AsString::get(fileNamePtr, ctx) << ":" << lineNumber
-     << ":" << columnNumber;
+  ss << "abort: " << WarpRunner::getString(ctx, messagePtr) << " in " << WarpRunner::getString(ctx, fileNamePtr) << ":"
+     << lineNumber << ":" << columnNumber;
   std::cerr << std::move(ss).str() << std::endl;
 }
 
 void traceForLink(uint32_t ptr, uint32_t n, double d1, double d2, double d3, double d4, double d5,
                   vb::WasmModule *ctx) {
   std::stringstream ss{};
-  ss << AsString::get(ptr, ctx);
+  ss << WarpRunner::getString(ctx, ptr);
   for (size_t i = 1U; i <= n; i++) {
     switch (i) {
     case 1:

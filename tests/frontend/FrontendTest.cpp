@@ -24,12 +24,12 @@
 #include <vector>
 #include <wasm-binary.h>
 
-#include "warp_runner/WarpRunner.hpp"
 #include "warpo/frontend/Compiler.hpp"
-#include "warpo/frontend/LinkedAPIAssemblyscript.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
+#include "warpo/warp_runner/LinkedAPIAssemblyscript.hpp"
+#include "warpo/warp_runner/WarpRunner.hpp"
 #include "wasm-validator.h"
 #include "wasm.h"
 
@@ -142,11 +142,11 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
   WarpRunner r{nullptr};
   try {
     static std::vector<vb::NativeSymbol> const linkedAPI = frontend::createAssemblyscriptAPI();
-    r->initFromBytecode(vb::Span<const uint8_t>{wasm.data(), wasm.size()},
-                        vb::Span<vb::NativeSymbol const>{linkedAPI.data(), linkedAPI.size()}, false);
-    r->start(r.getStackTop());
+    r.initFromBytecode(vb::Span<const uint8_t>{wasm.data(), wasm.size()},
+                       vb::Span<vb::NativeSymbol const>{linkedAPI.data(), linkedAPI.size()}, false);
+    r.start();
     if (configJson.hasExportStart())
-      r->callExportedFunctionWithName<0>(r.getStackTop(), "_start");
+      r.callExportedFunctionWithName<0>("_start");
   } catch (vb::TrapException &e) {
     fmt::println("FAILED '{}': execution trapped due to {}", tsPath.c_str(), e.what());
     return TestResult::Failure;

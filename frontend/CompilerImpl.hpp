@@ -17,9 +17,9 @@
 #include <vector>
 
 #include "ModuleResolver.hpp"
-#include "warp_runner/WarpRunner.hpp"
 #include "warpo/common/AsModule.hpp"
 #include "warpo/frontend/Compiler.hpp"
+#include "warpo/warp_runner/WarpRunner.hpp"
 
 #include "src/WasmModule/WasmModule.hpp"
 
@@ -35,12 +35,8 @@ class FrontendCompiler final {
   size_t errorCount_ = 0;
   std::string errorMessage_;
 
-  int32_t allocString(std::string_view str);
-
   void parseFile(int32_t const program, std::optional<std::string_view> const &code, std::string_view path,
                  IsEntry isEntry);
-
-  std::string getAsString(uint32_t ptr);
 
   Dependency getDependency(std::string const &nextFileInternalPath, int32_t program, int32_t nextFile);
 

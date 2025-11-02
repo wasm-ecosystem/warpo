@@ -5,10 +5,10 @@
 #include <string>
 #include <string_view>
 
+#include "UTF16.hpp"
 #include "llvm/Support/ConvertUTF.h"
-#include "warpo/frontend/UTF16.hpp"
 
-namespace warpo::frontend {
+namespace warpo {
 
 static_assert(sizeof(std::string_view::value_type) == sizeof(llvm::UTF8),
               "std::string::value_type and llvm::UTF8 must have the same size");
@@ -52,4 +52,4 @@ std::string utf16::toUTF8(std::u16string_view utf16Str) {
   return utf8Str;
 }
 
-} // namespace warpo::frontend
+} // namespace warpo

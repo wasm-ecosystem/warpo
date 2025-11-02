@@ -7,11 +7,11 @@
 
 #include "BuildScript.hpp"
 #include "LinkedAPI.hpp"
-#include "warp_runner/WarpRunner.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
+#include "warpo/warp_runner/WarpRunner.hpp"
 
 #include "src/core/common/NativeSymbol.hpp"
 #include "src/core/common/Span.hpp"
@@ -56,10 +56,10 @@ BuildScriptRunner::BuildScriptRunner(std::filesystem::path const &buildScriptPat
   passes::Output output = passes::runOnModule(result.m, passesConfig);
 
   std::vector<vb::NativeSymbol> const &linkedAPI = getLinkedAPI();
-  r_->initFromBytecode(vb::Span<uint8_t const>{output.wasm.data(), output.wasm.size()},
-                       vb::Span<vb::NativeSymbol const>(linkedAPI.data(), linkedAPI.size()), false);
-  r_->start(stackTop());
-  r_->callExportedFunctionWithName<0>(stackTop(), startFunctionName);
+  r_.initFromBytecode(vb::Span<uint8_t const>{output.wasm.data(), output.wasm.size()},
+                      vb::Span<vb::NativeSymbol const>(linkedAPI.data(), linkedAPI.size()), false);
+  r_.start();
+  r_.callExportedFunctionWithName<0>(startFunctionName);
 }
 
 std::unique_ptr<BuildScriptRunner> BuildScriptRunner::create() {
