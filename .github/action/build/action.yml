@@ -34,6 +34,8 @@ runs:
       shell: pwsh
       run: |
         choco install ccache ninja -y
+    - if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1
     - shell: bash
       run: |
         set -ex
@@ -55,12 +57,23 @@ runs:
       shell: bash
       working-directory: assemblyscript
 
-    - name: build
+    - name: build (Linux/macOS)
+      if: runner.os != 'Windows'
       run: |
         set -ex
         cmake -B build -S . ${{ inputs.CMAKE_ARGS }}
         cmake --build build --parallel ${{ inputs.CMAKE_BUILD_ARGS }}
       shell: bash
+      env:
+        CMAKE_GENERATOR: Ninja
+        CMAKE_C_COMPILER_LAUNCHER: ccache
+        CMAKE_CXX_COMPILER_LAUNCHER: ccache
+    - name: build (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        cmake -B build -S . -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl ${{ inputs.CMAKE_ARGS }}
+        cmake --build build --parallel ${{ inputs.CMAKE_BUILD_ARGS }}
+      shell: pwsh
       env:
         CMAKE_GENERATOR: Ninja
         CMAKE_C_COMPILER_LAUNCHER: ccache
