@@ -53,7 +53,7 @@ int main(int argc, char const *argv[]) {
 
   std::string wat = passes::runOnWatForTest(input, std::regex{functionRegex.get()});
 
-  std::ofstream watOf{outputPath.get(), std::ios::out};
+  std::ofstream watOf{outputPath.get(), std::ios::out | std::ios::binary};
   if (!watOf.good()) {
     fmt::println("ERROR: failed to open file: {}", outputPath.get());
     return 1;

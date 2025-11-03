@@ -40,8 +40,10 @@ jobs:
       - run: npm ci
       - uses: ./.github/action/build
       - run: npm run test:ut
+      - run: npm run test:opt:snapshot -- --debug
       - run: npm run test:as:snapshot
       - run: npm run test:debug_symbol
+      - run: npm run docs:build
 
   bootstrap:
     strategy:
