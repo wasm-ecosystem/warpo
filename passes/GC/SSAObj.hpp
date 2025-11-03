@@ -8,8 +8,8 @@
 
 #include "warpo/support/DynBitSet.hpp"
 #include "warpo/support/IncMap.hpp"
-#include "wasm.h"
 #include "warpo/support/Unreachable.hpp"
+#include "wasm.h"
 
 namespace warpo::passes::gc {
 
@@ -37,7 +37,7 @@ struct SSAValue {
       case Kind::Arg:
         return value_.arg <=> other.value_.arg;
       default:
-       UNREACHABLE;
+        UNREACHABLE;
       }
     } else {
       return kind_ <=> other.kind_;

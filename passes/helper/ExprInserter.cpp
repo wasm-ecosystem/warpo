@@ -10,10 +10,10 @@
 #include "ExprInserter.hpp"
 #include "ToString.hpp"
 #include "fmt/base.h"
+#include "warpo/support/Unreachable.hpp"
 #include "wasm-builder.h"
 #include "wasm-type.h"
 #include "wasm.h"
-#include "warpo/support/Unreachable.hpp"
 
 #define PASS_NAME "EXPR_INSERTER"
 

@@ -232,7 +232,8 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
 [[nodiscard]] TestResult run(std::filesystem::path const &tsPath) {
   try {
     std::filesystem::path const jsonPath = replaceExtension(tsPath, ".json");
-    nlohmann::json const j = nlohmann::json::parse(std::filesystem::exists(jsonPath) ? readTextFile(jsonPath.string()) : "{}");
+    nlohmann::json const j =
+        nlohmann::json::parse(std::filesystem::exists(jsonPath) ? readTextFile(jsonPath.string()) : "{}");
     TestConfigJson const configJson{j};
     std::filesystem::path const expectedOutPath = replaceExtension(tsPath, ".wat");
     if (updateFlag.get())

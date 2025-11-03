@@ -59,10 +59,10 @@ inline int32_t popcntll(uint64_t const mask) noexcept {
   return _CountOneBits64(mask);
 #endif
 }
-#elif (((defined __GNUC__) || (defined __clang__)) )
-inline int32_t popcntll(uint64_t const mask) noexcept {
-  return __builtin_popcountll(mask);
-}
+#elif (((defined __GNUC__) || (defined __clang__)))
+inline int32_t popcntll(uint64_t const mask) noexcept { return __builtin_popcountll(mask); }
+#else
+static_assert(false, "C/C++ compiler not supported");
 #endif
 size_t DynBitset::count() const {
   size_t count = 0;

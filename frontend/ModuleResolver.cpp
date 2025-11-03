@@ -64,7 +64,8 @@ Dependency ModuleResolver::getDependencyForUserCode(std::string const &nextFileI
       fmt::println("[module resolve] find user code '{}'", filePathWithExt);
     return {readTextFile(filePathWithExt), filePathWithExt};
   }
-  const std::filesystem::path indexPathWithExt = std::filesystem::path{nextFileInternalPath} / (std::string{"index"} + extension);
+  const std::filesystem::path indexPathWithExt =
+      std::filesystem::path{nextFileInternalPath} / (std::string{"index"} + extension);
   if (std::filesystem::exists(indexPathWithExt) && std::filesystem::is_regular_file(indexPathWithExt)) {
     return {readTextFile(indexPathWithExt.string()), indexPathWithExt.string()};
   }
