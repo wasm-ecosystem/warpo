@@ -2,6 +2,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <cstdlib>
@@ -216,7 +217,9 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     parseLibStat.release();
 
     for (std::string const &filePath : entryFilePaths) {
-      std::string const relativeFilePath = std::filesystem::relative(filePath).string();
+      std::string relativeFilePath = std::filesystem::relative(filePath).string();
+      // Normalize path separators to forward slashes for consistency across platforms
+      std::ranges::replace(relativeFilePath, '\\', '/');
       parseFile(program, readTextFile(filePath), relativeFilePath, IsEntry::YES);
     }
     while (true) {
