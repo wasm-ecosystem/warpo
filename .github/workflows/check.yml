@@ -41,6 +41,7 @@ jobs:
       - uses: ./.github/action/build
       - run: npm run test:ut
       - run: npm run test:as:snapshot
+      - run: npm run test:debug_symbol
 
   bootstrap:
     strategy:
