@@ -42,29 +42,48 @@ static uint32_t getCreateFileDirNameForLink(vb::WasmModule *ctx) {
   return pathOffset;
 }
 
+namespace {
+
+class ResolveModule {
+  // detail layout see create/resolveModule.ts
+  using PackageNameType = uint32_t;
+  constexpr static uint32_t packageNameOffset = 0U;
+  constexpr static uint32_t packageNameSize = sizeof(PackageNameType);
+  using PackagePathType = uint32_t;
+  constexpr static uint32_t packageOffset = packageNameOffset + packageNameSize;
+  constexpr static uint32_t packagePathSize = sizeof(PackagePathType);
+
+  uint32_t offset_;
+
+public:
+  constexpr static uint32_t size = packageOffset + packagePathSize;
+  explicit ResolveModule(uint32_t offset) : offset_(offset) {}
+
+  void setPackageName(std::string const &packageName, vb::WasmModule *ctx) {
+    uint32_t const stringOffset = allocString(ctx, packageName);
+    uint8_t *const ptr = ctx->getLinearMemoryRegion(offset_ + packageNameOffset, packageNameSize);
+    std::memcpy(ptr, &stringOffset, packageNameSize);
+  }
+  std::optional<std::filesystem::path> getPackagePath(vb::WasmModule *ctx) {
+    uint32_t pathOffset;
+    uint8_t *const ptr = ctx->getLinearMemoryRegion(offset_ + packageOffset, packagePathSize);
+    std::memcpy(&pathOffset, ptr, packagePathSize);
+    if (pathOffset == 0U)
+      return std::nullopt;
+    return {frontend::AsString::get(pathOffset, ctx)};
+  }
+};
+
+} // namespace
+
 static void onModuleResolveForLink(uint32_t callbackFnIndex, int32_t rtId, vb::WasmModule *ctx) {
   getRunner(ctx)->registerOnModuleResolve(
       [ctx, callbackFnIndex, rtId](std::string const &packageName) -> std::optional<std::filesystem::path> {
-        // detail layout see create/resolveModule.ts
-        using PackageNameType = uint32_t;
-        constexpr uint32_t packageNameOffset = 0U;
-        constexpr uint32_t packageNameSize = sizeof(PackageNameType);
-        using PackagePathType = uint32_t;
-        constexpr uint32_t packageOffset = packageNameOffset + packageNameSize;
-        constexpr uint32_t packagePathSize = sizeof(PackagePathType);
-        constexpr uint32_t resolveModuleSize = packageOffset + packagePathSize;
-
-        uint32_t const stringOffset = allocString(ctx, packageName);
-        uint32_t const resolveModuleOffset = allocObject(ctx, rtId, resolveModuleSize);
-        uint8_t *const resolveModulePtr =
-            ctx->getLinearMemoryRegion(static_cast<uint32_t>(resolveModuleOffset) + packageNameOffset, packageNameSize);
-        std::memcpy(resolveModulePtr, &stringOffset, packageNameSize);
+        uint32_t const resolveModuleOffset = allocObject(ctx, rtId, ResolveModule::size);
+        ResolveModule resolveModule{resolveModuleOffset};
+        resolveModule.setPackageName(packageName, ctx);
         ctx->callWasmFunctionByExportedTableIndex<0>(stackTop(), callbackFnIndex, resolveModuleOffset);
-        uint32_t pathOffset;
-        std::memcpy(&pathOffset, resolveModulePtr + packageNameSize, packagePathSize);
-        if (pathOffset == 0U)
-          return std::nullopt;
-        return {frontend::AsString::get(pathOffset, ctx)};
+        return resolveModule.getPackagePath(ctx);
       });
 }
 
