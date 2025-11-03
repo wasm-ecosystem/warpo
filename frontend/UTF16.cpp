@@ -19,7 +19,7 @@ std::u16string utf16::fromUTF8(std::string_view utf8Str) {
   if (utf8Str.empty())
     return std::u16string{};
   const llvm::UTF8 *src = reinterpret_cast<const llvm::UTF8 *>(&utf8Str[0]);
-  llvm::UTF8 const *const srcEnd = reinterpret_cast<const llvm::UTF8 *>(&utf8Str[utf8Str.size()]);
+  llvm::UTF8 const *const srcEnd = reinterpret_cast<const llvm::UTF8 *>(&utf8Str[utf8Str.size() - 1U]) + 1U;
   std::u16string utf16Str;
   utf16Str.resize(utf8Str.size());
   llvm::UTF16 *dst = reinterpret_cast<llvm::UTF16 *>(utf16Str.data());
@@ -38,7 +38,7 @@ std::string utf16::toUTF8(std::u16string_view utf16Str) {
   if (utf16Str.empty())
     return std::string{};
   const llvm::UTF16 *src = reinterpret_cast<const llvm::UTF16 *>(&utf16Str[0]);
-  llvm::UTF16 const *const srcEnd = reinterpret_cast<const llvm::UTF16 *>(&utf16Str[utf16Str.size()]);
+  llvm::UTF16 const *const srcEnd = reinterpret_cast<const llvm::UTF16 *>(&utf16Str[utf16Str.size() - 1U]) + 1U;
   std::string utf8Str;
   utf8Str.resize(utf16Str.size() * 2); // UTF-8 can be up to 4 bytes per Unicode code point
   llvm::UTF8 *dst = reinterpret_cast<llvm::UTF8 *>(&utf8Str[0]);
