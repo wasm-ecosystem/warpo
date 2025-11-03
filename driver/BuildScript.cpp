@@ -50,7 +50,7 @@ std::unique_ptr<WarpRunner> warpo::driver::initProjectConfig() {
   std::filesystem::path const buildScriptPath = getProjectConfigPath();
   if (!isRegularFile(buildScriptPath))
     return nullptr;
-  frontend::CompilationResult const result = frontend::compile({buildScriptPath}, frontendConfig);
+  frontend::CompilationResult const result = frontend::compile({buildScriptPath.string()}, frontendConfig);
   if (result.m.invalid()) {
     fmt::println("compilation failed");
     fmt::println("{}", result.errorMessage);

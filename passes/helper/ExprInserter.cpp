@@ -13,6 +13,7 @@
 #include "wasm-builder.h"
 #include "wasm-type.h"
 #include "wasm.h"
+#include "warpo/support/Unreachable.hpp"
 
 #define PASS_NAME "EXPR_INSERTER"
 
@@ -83,7 +84,7 @@ void ExprInserter::insertBefore(wasm::Builder &b, wasm::Expression *insertedExpr
     break;
   }
   default:
-    __builtin_unreachable();
+    UNREACHABLE;
   }
 }
 
@@ -161,7 +162,7 @@ void ExprInserter::insertAfter(wasm::Builder &b, wasm::Expression *insertedExpr,
       return;
     }
   }
-  __builtin_unreachable();
+  UNREACHABLE;
 }
 
 } // namespace warpo::passes

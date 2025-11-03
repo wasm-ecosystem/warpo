@@ -29,6 +29,17 @@ jobs:
       - run: npm run test:debug_symbol
       - name: test doc build
         run: npm run docs:build
+  
+  test_windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci
+      - uses: ./.github/action/build
+      - run: npm run test:ut
 
   bootstrap:
     strategy:

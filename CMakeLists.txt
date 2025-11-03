@@ -24,6 +24,7 @@ add_definitions("-DEAGER_ALLOCATION=1")
 add_subdirectory(third_party EXCLUDE_FROM_ALL)
 
 if(MSVC)
+  add_compile_options(/Zc:__cplusplus)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
   add_compile_options(/W4 /EHsc)
 

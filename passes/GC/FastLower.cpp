@@ -74,7 +74,7 @@ struct ToStackReplacer : public wasm::WalkerPass<wasm::PostWalker<ToStackReplace
       return;
     wasm::Call *const call = expr->value->cast<wasm::Call>();
     if (call->operands.size() != 1U)
-      __builtin_trap();
+      std::terminate();
     wasm::Builder b{*getModule()};
     uint32_t const slot = allocSlotForLocal(expr->index);
     call->operands.push_back(b.makeConst(wasm::Literal(4U * slot)));

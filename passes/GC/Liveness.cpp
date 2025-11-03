@@ -63,8 +63,8 @@ std::optional<Liveness> LivenessMap::getLiveness(wasm::Expression *expr) const {
 Liveness LivenessMap::getLiveness(size_t const exprIndex) const {
   Liveness ret{dimension_};
   for (size_t const index : Range{dimension_}) {
-    ret.setBefore(index, get(static_cast<ssize_t>(exprIndex), Pos::Before, index));
-    ret.setAfter(index, get(static_cast<ssize_t>(exprIndex), Pos::After, index));
+    ret.setBefore(index, get(exprIndex, Pos::Before, index));
+    ret.setAfter(index, get(exprIndex, Pos::After, index));
   }
   ret.applyInvalid(invalid_);
   return ret;
