@@ -36,6 +36,11 @@ runs:
         choco install ccache ninja -y
     - if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
+    - if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        echo "CMAKE_C_COMPILER=cl" >> $env:GITHUB_ENV
+        echo "CMAKE_CXX_COMPILER=cl" >> $env:GITHUB_ENV
     - shell: bash
       run: |
         set -ex
