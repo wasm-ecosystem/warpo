@@ -13,8 +13,7 @@
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
-#ifndef WARPO_SUPPORT_UNREACHABLE_HPP
-#define WARPO_SUPPORT_UNREACHABLE_HPP
+#pragma once
 
 #ifndef UNREACHABLE
 #ifdef _MSC_VER
@@ -24,6 +23,4 @@
 #else
 static_assert(false, "C/C++ compiler not supported");
 #endif
-#endif
-
 #endif

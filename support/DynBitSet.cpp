@@ -52,7 +52,7 @@ bool DynBitset::get(size_t index) const {
 }
 
 #if (defined _MSC_VER) && !(defined __clang__)
-inline int32_t popcntll(uint64_t const mask) noexcept {
+inline static int32_t popcntll(uint64_t const mask) noexcept {
 #if (defined _M_X64)
   return static_cast<int32_t>(__popcnt64(mask));
 #else
@@ -60,7 +60,7 @@ inline int32_t popcntll(uint64_t const mask) noexcept {
 #endif
 }
 #elif (((defined __GNUC__) || (defined __clang__)))
-inline int32_t popcntll(uint64_t const mask) noexcept { return __builtin_popcountll(mask); }
+inline static int32_t popcntll(uint64_t const mask) noexcept { return __builtin_popcountll(mask); }
 #else
 static_assert(false, "C/C++ compiler not supported");
 #endif
