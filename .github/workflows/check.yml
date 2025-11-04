@@ -27,7 +27,7 @@ jobs:
       - if: runner.os == 'Windows'
         uses: ./.github/action/build
         with:
-          CMAKE_ARGS: '-DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl'
+          CMAKE_ARGS: "-DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl"
       - if: runner.os != 'Windows'
         uses: ./.github/action/build
       - run: npm run test:ut
