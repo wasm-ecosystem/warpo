@@ -3,10 +3,12 @@
 
 #pragma once
 
-#include <filesystem>
+#include <vector>
+
+#include "src/core/common/NativeSymbol.hpp"
+
 namespace warpo::driver {
 
-void build();
-void build(std::filesystem::path const &outputPath);
+std::vector<vb::NativeSymbol> const &getLinkedAPI();
 
-} // namespace warpo::driver
+}

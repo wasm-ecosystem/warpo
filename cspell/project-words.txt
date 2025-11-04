@@ -5,7 +5,9 @@ Bayerische
 Binaryen
 bugprone
 ccache
+changetype
 cppcoreguidelines
+ctest
 currp
 Dependee
 DWARFYAML
@@ -14,8 +16,10 @@ Eqref
 googletest
 gtest
 hicpp
+idof
 inlinings
 insts
+itcms
 localtostack
 Motoren
 NOLINTNEXTLINE

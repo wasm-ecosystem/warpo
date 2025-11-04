@@ -12,7 +12,7 @@
 
 namespace warpo::driver {
 
-static cli::Opt<std::filesystem::path> outputPath{
+static cli::Opt<std::filesystem::path> outputPathOption{
     cli::Category::All,
     "-o",
     "--output",
@@ -21,14 +21,15 @@ static cli::Opt<std::filesystem::path> outputPath{
 
 } // namespace warpo::driver
 
-void warpo::driver::build() {
-  initProjectConfig();
-
-  frontend::CompilationResult const result = frontend::compile();
+void warpo::driver::build(std::filesystem::path const &outputPath) {
+  std::unique_ptr<BuildScriptRunner> const runner = BuildScriptRunner::create();
+  frontend::CompilationResult const result = frontend::compile(runner.get());
   if (result.m.invalid()) {
     fmt::println("compilation failed");
     fmt::println("{}", result.errorMessage);
     throw std::runtime_error("compilation failed");
   }
-  passes::runAndEmit(result.m, outputPath.get());
+  passes::runAndEmit(result.m, outputPath);
 }
+
+void warpo::driver::build() { build(outputPathOption.get()); }

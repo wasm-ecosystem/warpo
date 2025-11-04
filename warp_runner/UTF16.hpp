@@ -5,9 +5,9 @@
 
 #include <string>
 
-namespace warpo::frontend::utf16 {
+namespace warpo::utf16 {
 
 std::u16string fromUTF8(std::string_view utf8Str);
 std::string toUTF8(std::u16string_view utf16Str);
 
-} // namespace warpo::frontend::utf16
+} // namespace warpo::utf16

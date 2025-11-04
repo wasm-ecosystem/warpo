@@ -5,6 +5,7 @@
 #pragma once
 
 #include <binaryen/src/binaryen-c.h>
+#include <filesystem>
 #include <map>
 #include <optional>
 #include <string>
@@ -39,12 +40,20 @@ struct Config {
 
 Config getDefaultConfig();
 
+class Pluggable {
+public:
+  virtual ~Pluggable() = default;
+  virtual std::optional<std::filesystem::path> getPackageRoot([[maybe_unused]] std::string const &packageName) {
+    return std::nullopt;
+  }
+};
+
 struct CompilationResult {
   AsModule m;
   std::string errorMessage;
 };
 
-CompilationResult compile();
-CompilationResult compile(std::vector<std::string> const &entryFilePaths, Config const &config);
+CompilationResult compile(Pluggable *plugin);
+CompilationResult compile(Pluggable *plugin, std::vector<std::string> const &entryFilePaths, Config const &config);
 
 } // namespace warpo::frontend

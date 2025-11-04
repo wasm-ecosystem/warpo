@@ -31,5 +31,3 @@ FetchContent_Declare(
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
 FetchContent_MakeAvailable(wasm-compiler)
-
-add_subdirectory(warp_runner)

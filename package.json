@@ -17,7 +17,8 @@
     "test:bootstrap:release": "./tests/bootstrap/release.sh",
     "test:debug_symbol": "cross-env-shell ./build/tests/DebugSymbol/TestDebugSymbol",
     "test:debug_symbol:update": "cross-env-shell build/tests/DebugSymbol/TestDebugSymbol --update-fixtures",
-    "test": "npm run test:ut && npm run test:as:snapshot && npm run test:opt:snapshot && npm run test:bootstrap:debug && npm run test:bootstrap:release",
+    "test:driver": "node tests/driver/index.mjs",
+    "test": "npm run test:ut && npm run test:as:snapshot && npm run test:opt:snapshot && npm run test:driver && npm run test:debug_symbol && npm run test:bootstrap:debug && npm run test:bootstrap:release",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "prettier": "prettier --check .",
@@ -32,6 +33,7 @@
   ],
   "author": "congcong.cai@bmw.com",
   "files": [
+    "create",
     "dist",
     "types",
     "tsconfig-warpo.json",
@@ -39,11 +41,13 @@
     "assemblyscript/std/assembly/index.d.ts"
   ],
   "devDependencies": {
+    "@assemblyscript/loader": "^0.28.9",
     "@types/node": "^22.15.21",
     "assemblyscript": "^0.28.4",
     "assemblyscript-prettier": "^3.0.1",
     "cross-env": "^10.1.0",
-    "diff": "^7.0.0",
+    "chalk": "^5.6.2",
+    "diff": "^8.0.0",
     "prettier": "^3.6.2",
     "typescript": "^5.8.3",
     "vitepress": "^1.6.3"

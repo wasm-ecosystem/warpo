@@ -29,7 +29,7 @@ void compilerMain(int argc, const char *argv[]) {
   argparse::ArgumentParser program("warpo_compiler", "git@" GIT_COMMIT);
   cli::init(cli::Category::Frontend, program, argc, argv);
 
-  frontend::CompilationResult const result = frontend::compile();
+  frontend::CompilationResult const result = frontend::compile(nullptr);
   if (result.m.invalid()) {
     fmt::println("compilation failed");
     fmt::println("{}", result.errorMessage);
