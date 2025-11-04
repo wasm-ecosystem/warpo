@@ -21,9 +21,12 @@ endif()
 add_definitions("-DINTERRUPTION_REQUEST=0")
 add_definitions("-DEAGER_ALLOCATION=1")
 
-add_subdirectory(third_party EXCLUDE_FROM_ALL)
-
 if(MSVC)
+  add_compile_options(
+			$<$<CONFIG:>:/MD> # ---------|
+			$<$<CONFIG:Debug>:/MDd> # ---|-- Dynamic link the runtime libraries
+			$<$<CONFIG:Release>:/MD> # --|
+	)
   foreach(config DEBUG RELWITHDEBINFO)
     foreach(lang C CXX)
       set(flags_var "CMAKE_${lang}_FLAGS_${config}")
@@ -31,6 +34,12 @@ if(MSVC)
       set(${flags_var} "${${flags_var}}")
     endforeach()
   endforeach()
+  add_compile_options(/MP)
+endif()
+
+add_subdirectory(third_party EXCLUDE_FROM_ALL)
+
+if(MSVC)
   add_compile_options(/Zc:__cplusplus)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
   add_compile_options(/W4 /EHsc)
@@ -40,7 +49,7 @@ if(MSVC)
   endif()
 
   set(CMAKE_SUPPRESS_REGENERATION ON)
-  add_compile_options(/MP)
+  
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-warning-option")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
