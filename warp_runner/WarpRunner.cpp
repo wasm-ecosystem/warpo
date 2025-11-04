@@ -9,7 +9,7 @@
 namespace warpo {
 
 uint8_t const *stackTop() {
-  thread_local static uint8_t const *stackTop = static_cast<uint8_t const *>(vb::getStackTop());
+  thread_local static uint8_t const *const stackTop = static_cast<uint8_t const *>(vb::getStackTop());
   return stackTop;
 }
 
