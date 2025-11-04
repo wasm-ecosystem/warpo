@@ -57,23 +57,12 @@ runs:
       shell: bash
       working-directory: assemblyscript
 
-    - name: build (Linux/macOS)
-      if: runner.os != 'Windows'
+    - name: build
       run: |
         set -ex
         cmake -B build -S . ${{ inputs.CMAKE_ARGS }}
         cmake --build build --parallel ${{ inputs.CMAKE_BUILD_ARGS }}
       shell: bash
-      env:
-        CMAKE_GENERATOR: Ninja
-        CMAKE_C_COMPILER_LAUNCHER: ccache
-        CMAKE_CXX_COMPILER_LAUNCHER: ccache
-    - name: build (Windows)
-      if: runner.os == 'Windows'
-      run: |
-        cmake -B build -S . -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl ${{ inputs.CMAKE_ARGS }}
-        cmake --build build --parallel ${{ inputs.CMAKE_BUILD_ARGS }}
-      shell: pwsh
       env:
         CMAKE_GENERATOR: Ninja
         CMAKE_C_COMPILER_LAUNCHER: ccache

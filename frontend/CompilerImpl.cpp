@@ -39,6 +39,16 @@ namespace {
 
 enum WasmFFIBool : uint32_t { WASM_FALSE = 0, WASM_TRUE = 1 };
 
+std::string normalizePathForPlatform(std::filesystem::path const &filePath) {
+  // NOLINTNEXTLINE(misc-const-correctness)
+  std::string relativeFilePath = std::filesystem::relative(filePath).string();
+#ifdef _WIN32
+  // Normalize path separators to forward slashes on Windows
+  std::ranges::replace(relativeFilePath, '\\', '/');
+#endif
+  return relativeFilePath;
+}
+
 } // namespace
 int32_t FrontendCompiler::allocString(std::string_view str) {
   std::u16string utf16Str = utf16::fromUTF8(std::string(str));
@@ -217,9 +227,7 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     parseLibStat.release();
 
     for (std::string const &filePath : entryFilePaths) {
-      std::string relativeFilePath = std::filesystem::relative(filePath).string();
-      // Normalize path separators to forward slashes for consistency across platforms
-      std::ranges::replace(relativeFilePath, '\\', '/');
+      std::string const relativeFilePath = normalizePathForPlatform(filePath);
       parseFile(program, readTextFile(filePath), relativeFilePath, IsEntry::YES);
     }
     while (true) {
