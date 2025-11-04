@@ -40,11 +40,11 @@ void addTemplateType(uint32_t const classNamePtr, uint32_t const templateTypeNam
   pCompiler->asModule_.variableInfo_.addTemplateType(className, templateTypeName);
 }
 
-void addGlobal(uint32_t const variableNamePtr, uint32_t const typeNamePtr, vb::WasmModule const *const ctx) {
+void addGlobal(uint32_t const variableNamePtr, uint32_t const typeNamePtr, uint32_t const nullable, vb::WasmModule const *const ctx) {
   std::string variableName = AsString::get(variableNamePtr, ctx);
   std::string const typeName = AsString::get(typeNamePtr, ctx);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
-  pCompiler->asModule_.variableInfo_.addGlobalType(std::move(variableName), typeName);
+  pCompiler->asModule_.variableInfo_.addGlobalType(std::move(variableName), typeName, nullable);
 }
 
 } // namespace

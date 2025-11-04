@@ -309,9 +309,9 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
   }
 
   // Add global variables
-  for (std::pair<std::string const, std::string_view> const &globalEntry : globalTypes) {
+  for (std::pair<std::string const, VariableInfo::GlobalTypeInfo> const &globalEntry : globalTypes) {
     std::string const &variableName = globalEntry.first;
-    std::string_view const typeName = globalEntry.second;
+    std::string_view const typeName = globalEntry.second.typeName;
 
     llvm::DWARFYAML::Entry variableEntry;
     variableEntry.AbbrCode = variableAbbrev.Code;

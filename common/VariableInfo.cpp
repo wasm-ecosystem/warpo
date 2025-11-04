@@ -52,10 +52,10 @@ void VariableInfo::addTemplateType(std::string_view const className, std::string
   classIt->second.addTemplateType(internedTypeName);
 }
 
-void VariableInfo::addGlobalType(std::string variableName, std::string_view const typeName) {
+void VariableInfo::addGlobalType(std::string variableName, std::string_view const typeName, uint32_t const nullable) {
   std::string_view const normalizedTypeName = TypeNameHelper::normalizeTypeName(typeName);
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  globalTypes_.emplace(std::move(variableName), internedTypeName);
+  globalTypes_.emplace(std::move(variableName), GlobalTypeInfo{internedTypeName, nullable != 0});
 }
 
 } // namespace warpo
@@ -191,14 +191,16 @@ TEST(TestVariableInfo, TestTemplateTypes) {
 TEST(TestVariableInfo, TestGlobalTypes) {
   VariableInfo variableInfo;
 
-  variableInfo.addGlobalType("counter", "i32");
-  variableInfo.addGlobalType("message", "~lib/string/String");
+  variableInfo.addGlobalType("counter", "i32", 0);
+  variableInfo.addGlobalType("message", "~lib/string/String", 1);
 
   const auto &globalTypes = variableInfo.getGlobalTypes();
 
   ASSERT_EQ(globalTypes.size(), 2);
-  EXPECT_EQ(globalTypes.at("counter"), "~lib/number/I32");
-  EXPECT_EQ(globalTypes.at("message"), "~lib/string/String");
+  EXPECT_EQ(globalTypes.at("counter").typeName, "~lib/number/I32");
+  EXPECT_FALSE(globalTypes.at("counter").nullable);
+  EXPECT_EQ(globalTypes.at("message").typeName, "~lib/string/String");
+  EXPECT_TRUE(globalTypes.at("message").nullable);
 }
 } // namespace warpo::ut
 #endif
