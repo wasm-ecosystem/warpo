@@ -35,6 +35,7 @@ if(MSVC)
     endforeach()
   endforeach()
   add_compile_options(/MP)
+  add_compile_options(/FC)
 endif()
 
 add_subdirectory(third_party EXCLUDE_FROM_ALL)
