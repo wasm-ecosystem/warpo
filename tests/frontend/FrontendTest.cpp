@@ -272,8 +272,8 @@ void collectTestFilesImpl(std::vector<std::filesystem::path> &testFiles, std::fi
 }
 
 std::filesystem::path getTestFolder() {
-  std::filesystem::path const sourceFile = std::filesystem::absolute(__FILE__);
-  std::filesystem::path const folder = sourceFile.parent_path() / "compiler";
+  // __FILE__ is absolute path when compiled with MSVC /FC flag
+  std::filesystem::path const folder = std::filesystem::path{__FILE__}.parent_path() / "compiler";
   return folder;
 }
 
