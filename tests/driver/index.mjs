@@ -10,7 +10,6 @@ async function importRunFiles() {
     if (entry.isDirectory()) {
       const runFile = join(__dirname, entry.name, "run.mjs");
       const fileUrl = pathToFileURL(runFile).href;
-      console.log(`importing: ${fileUrl}`);
       await import(fileUrl);
     }
   }
