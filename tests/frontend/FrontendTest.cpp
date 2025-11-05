@@ -272,8 +272,9 @@ void collectTestFilesImpl(std::vector<std::filesystem::path> &testFiles, std::fi
 }
 
 std::filesystem::path getTestFolder() {
-  std::filesystem::path const folder = std::filesystem::path{__FILE__}.parent_path() / "compiler";
-  return std::filesystem::absolute(folder);
+  std::filesystem::path const sourceFile = std::filesystem::absolute(__FILE__);
+  std::filesystem::path const folder = sourceFile.parent_path() / "compiler";
+  return folder;
 }
 
 std::vector<std::filesystem::path> collectTestFiles(std::filesystem::path const &folder) {
@@ -293,7 +294,6 @@ void frontendTestMain(int argc, const char *argv[]) {
   cli::init(cli::Category::OnlyForTest, program, argc, argv);
 
   std::filesystem::path const testFolder = getTestFolder();
-  std::cout << "Test folder: " << testFolder.string() << std::endl;
   std::filesystem::current_path(testFolder);
   std::vector<std::filesystem::path> const testFiles = collectTestFiles(testFolder);
 
