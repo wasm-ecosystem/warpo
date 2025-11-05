@@ -37,7 +37,7 @@ void compilerMain(int argc, const char *argv[]) {
   }
   char *const wasmText = BinaryenModuleAllocateAndWriteText(result.m.get());
   ensureFileDirectory(outputPath.get());
-  std::ofstream watOf{outputPath.get(), std::ios::out};
+  std::ofstream watOf{outputPath.get(), std::ios::out | std::ios::binary};
   watOf << wasmText;
   std::free(wasmText);
 }

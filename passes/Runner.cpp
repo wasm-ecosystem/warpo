@@ -204,7 +204,7 @@ void passes::runAndEmit(AsModule const &m, std::filesystem::path const &outputPa
 
   passes::Output const output = runOnModule(m, passes::Config{.sourceMapURL = getBaseName(outputFiles.sourceMap_)});
 
-  if (std::ofstream of{outputFiles.wat_, std::ios::out}; of.good()) {
+  if (std::ofstream of{outputFiles.wat_, std::ios::out | std::ios::binary}; of.good()) {
     of.write(output.wat.data(), static_cast<std::streamsize>(output.wat.size()));
   } else {
     throw std::runtime_error{fmt::format("failed to open file: {}", outputFiles.wat_.string())};
