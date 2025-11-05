@@ -30,6 +30,14 @@ jobs:
       # test
       - run: npm run test:ut
       - run: npm run test:opt:snapshot -- --debug
+      - name: Debug - Run test with bash
+        if: runner.os == 'Windows'
+        shell: bash
+        run: npm run test:as:snapshot
+      - name: Debug - Run test with pwsh
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: npm run test:as:snapshot
       - run: npm run test:as:snapshot
       - run: npm run test:debug_symbol
       - run: npm run test:driver
