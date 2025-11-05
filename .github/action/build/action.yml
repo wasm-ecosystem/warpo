@@ -48,6 +48,7 @@ runs:
         mkdir -p build_cache
         # Configure ccache for better MSVC compatibility and debugging
         if [[ "${{ runner.os }}" == "Windows" ]]; then
+          echo "CCACHE_SLOPPINESS=include_file_mtime,include_file_ctime,time_macros,pch_defines,file_stat_matches" >> $GITHUB_ENV
           echo "CCACHE_BASEDIR=$(pwd)" >> $GITHUB_ENV
           echo "CCACHE_DEBUG=1" >> $GITHUB_ENV
           echo "CCACHE_LOGFILE=$(pwd)/ccache.log" >> $GITHUB_ENV
