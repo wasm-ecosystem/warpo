@@ -152,6 +152,7 @@ import {
   builtinFunctions,
   builtinVariables_onAccess
 } from "./builtins";
+import { addParameter, addSubProgram } from "./warpo";
 
 // Memory manager constants
 const AL_SIZE = 16;
@@ -3817,7 +3818,15 @@ export class Function extends TypedElement {
     this.type = signature.type;
     let flow = Flow.createDefault(this);
     this.flow = flow;
+    const functionName = decodeURIComponent(this.internalName);
     if (!prototype.is(CommonFlags.Ambient)) {
+
+      if(this.parent.kind == ElementKind.Class){
+        addSubProgram(functionName, this.parent.internalName);
+      }else{
+        addSubProgram(functionName, null);
+      }
+
       let localIndex = 0;
       let thisType = signature.thisType;
       if (thisType) {
@@ -3832,6 +3841,8 @@ export class Function extends TypedElement {
         scopedLocals.set(CommonNames.this_, local);
         this.localsByIndex[local.index] = local;
         flow.setLocalFlag(local.index, LocalFlags.Initialized);
+        
+        addParameter(functionName, "this", thisType.toString(), local.index, false);
       }
       let parameterTypes = signature.parameterTypes;
       for (let i = 0, k = parameterTypes.length; i < k; ++i) {
@@ -3848,6 +3859,9 @@ export class Function extends TypedElement {
         scopedLocals.set(parameterName, local);
         this.localsByIndex[local.index] = local;
         flow.setLocalFlag(local.index, LocalFlags.Initialized);
+        let classOrWrapper = parameterType.getClassOrWrapper(this.program);
+        let fullTypeName = classOrWrapper ? classOrWrapper.internalName : parameterType.toString();
+        addParameter(functionName, parameterName, fullTypeName, local.index, parameterType.isNullableReference);
       }
     }
     registerConcreteElement(program, this);

@@ -17,7 +17,8 @@
 #include "warpo/common/SubProgramInfo.hpp"
 
 namespace warpo {
-void SubProgramInfo::addParameter(std::string variableName, std::string_view const typeName, uint32_t const index) {
+void SubProgramInfo::addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
+                                  bool const nullable) {
 
   addParameter(LocalInfo{
       std::move(variableName),
@@ -25,6 +26,7 @@ void SubProgramInfo::addParameter(std::string variableName, std::string_view con
       index,
       0U,
       0U,
+      nullable,
   });
 }
 } // namespace warpo

@@ -27,15 +27,15 @@ namespace warpo {
 class LocalInfo final {
 public:
   inline LocalInfo(std::string name, std::string_view const type, uint32_t const index, uint32_t const start,
-                   uint32_t const end) noexcept
-      : name_(std::move(name)), type_(TypeNameHelper::normalizeTypeName(type)), index_(index), start_(start),
-        end_(end) {}
+                   uint32_t const end, bool const nullable) noexcept
+      : name_(std::move(name)), type_(type), index_(index), start_(start), end_(end), nullable_(nullable) {}
 
   inline std::string_view getName() const noexcept { return name_; }
   inline std::string_view getType() const noexcept { return type_; }
   inline uint32_t getIndex() const noexcept { return index_; }
   inline uint32_t getStart() const noexcept { return start_; }
   inline uint32_t getEnd() const noexcept { return end_; }
+  inline bool isNullable() const noexcept { return nullable_; }
 
 private:
   std::string name_;
@@ -43,6 +43,7 @@ private:
   uint32_t index_;
   uint32_t start_;
   uint32_t end_;
+  bool nullable_;
 };
 
 } // namespace warpo

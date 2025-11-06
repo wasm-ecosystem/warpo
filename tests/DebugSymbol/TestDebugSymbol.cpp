@@ -71,7 +71,8 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
 }
 
 INSTANTIATE_TEST_SUITE_P(DebugSymbolTests, TestDebugSymbol_P,
-                         ::testing::Values("TestClassMemberBasic", "TestTemplateClass", "TestGlobal"));
+                         ::testing::Values("TestClassMemberBasic", "TestTemplateClass", "TestGlobal",
+                                           "TestFunctionParameter"));
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

@@ -38,7 +38,8 @@ public:
   inline void addParameter(LocalInfo parameter) noexcept { parameters_.push_back(std::move(parameter)); }
   inline void addLocal(LocalInfo local) noexcept { locals_.push_back(std::move(local)); }
 
-  void addParameter(std::string variableName, std::string_view const typeName, uint32_t const index);
+  void addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
+                    bool const nullable);
 
 private:
   std::string_view name_;
