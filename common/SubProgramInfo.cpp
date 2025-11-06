@@ -29,4 +29,17 @@ void SubProgramInfo::addParameter(std::string variableName, std::string_view con
       nullable,
   });
 }
+
+void SubProgramInfo::addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
+                              uint32_t const start, uint32_t const end, bool const nullable) {
+
+  addLocal(LocalInfo{
+      std::move(variableName),
+      typeName,
+      index,
+      start,
+      end,
+      nullable,
+  });
+}
 } // namespace warpo

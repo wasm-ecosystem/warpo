@@ -41,6 +41,9 @@ public:
   void addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
                     bool const nullable);
 
+  void addLocal(std::string variableName, std::string_view const typeName, uint32_t const index, uint32_t const start,
+                uint32_t const end, bool const nullable);
+
 private:
   std::string_view name_;
   std::vector<LocalInfo> parameters_;

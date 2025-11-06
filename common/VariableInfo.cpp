@@ -60,7 +60,7 @@ void VariableInfo::addGlobalType(std::string variableName, std::string_view cons
 
 void VariableInfo::addSubProgram(std::string subProgramName, std::string_view const belongClassName) {
 
-  if (!belongClassName.empty() && belongClassName != "<<NULL>>") {
+  if (!belongClassName.empty() && (belongClassName != "<<NULL>>")) {
     auto classIt = classRegistry_.find(belongClassName);
     assert(classIt != classRegistry_.end() && "Class not found in registry");
     // NOLINTNEXTLINE(misc-const-correctness)
@@ -80,6 +80,16 @@ void VariableInfo::addParameter(std::string_view const subProgramName, std::stri
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
   assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
   it->second.addParameter(std::move(variableName), internedTypeName, index, nullable);
+}
+
+void VariableInfo::addLocal(std::string_view const subProgramName, std::string variableName,
+                            std::string_view const typeName, uint32_t const index, uint32_t const start,
+                            uint32_t const end, bool const nullable) {
+  SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
+  std::string_view const normalizedTypeName = TypeNameHelper::normalizeTypeName(typeName);
+  std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
+  assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
+  it->second.addLocal(std::move(variableName), internedTypeName, index, start, end, nullable);
 }
 
 } // namespace warpo
@@ -280,6 +290,44 @@ TEST(TestVariableInfo, TestAddParameter) {
   EXPECT_EQ(multiplyParams[1].getType(), "~lib/number/I32");
   EXPECT_EQ(multiplyParams[1].getIndex(), 1);
   EXPECT_FALSE(multiplyParams[1].isNullable());
+}
+
+TEST(TestVariableInfo, TestAddLocal) {
+  VariableInfo variableInfo;
+
+  // Test global function
+  variableInfo.addSubProgram("processData", "");
+  variableInfo.addLocal("processData", "result", "i32", 1, 10, 50, false);
+
+  const auto &subProgramRegistry = variableInfo.getSubProgramRegistry();
+  const auto &globalFunctions = subProgramRegistry.getList();
+  ASSERT_EQ(globalFunctions.size(), 1);
+
+  const auto &locals = globalFunctions[0].getLocals();
+  ASSERT_EQ(locals.size(), 1);
+  EXPECT_EQ(locals[0].getName(), "result");
+  EXPECT_EQ(locals[0].getIndex(), 1);
+  EXPECT_EQ(locals[0].getStart(), 10);
+  EXPECT_EQ(locals[0].getEnd(), 50);
+
+  // Test class member function
+  variableInfo.createClass("Math", "Object", 300);
+  variableInfo.addSubProgram("compute", "Math");
+  variableInfo.addLocal("compute", "temp", "i32", 1, 5, 30, false);
+
+  const auto &classRegistry = variableInfo.getClassRegistry();
+  auto mathIt = classRegistry.find("Math");
+  ASSERT_NE(mathIt, classRegistry.end());
+
+  const auto &memberFunctions = mathIt->second.getSubProgramRegistry().getList();
+  ASSERT_EQ(memberFunctions.size(), 1);
+
+  const auto &computeLocals = memberFunctions[0].getLocals();
+  ASSERT_EQ(computeLocals.size(), 1);
+  EXPECT_EQ(computeLocals[0].getName(), "temp");
+  EXPECT_EQ(computeLocals[0].getIndex(), 1);
+  EXPECT_EQ(computeLocals[0].getStart(), 5);
+  EXPECT_EQ(computeLocals[0].getEnd(), 30);
 }
 } // namespace warpo::ut
 #endif
