@@ -41,18 +41,13 @@ runs:
       run: |
         echo "CMAKE_C_COMPILER=cl" >> $env:GITHUB_ENV
         echo "CMAKE_CXX_COMPILER=cl" >> $env:GITHUB_ENV
+        echo "CCACHE_SLOPPINESS=include_file_mtime,include_file_ctime,time_macros,pch_defines,file_stat_matches" >> $env:GITHUB_ENV
+        echo "CCACHE_BASEDIR=$(pwd)" >> $env:GITHUB_ENV
     - shell: bash
       run: |
         set -ex
         echo "CCACHE_DIR=$(pwd)/build_cache" >> $GITHUB_ENV
         mkdir -p build_cache
-        # Configure ccache for better MSVC compatibility and debugging
-        if [[ "${{ runner.os }}" == "Windows" ]]; then
-          echo "CCACHE_SLOPPINESS=include_file_mtime,include_file_ctime,time_macros,pch_defines,file_stat_matches" >> $GITHUB_ENV
-          echo "CCACHE_BASEDIR=$(pwd)" >> $GITHUB_ENV
-          echo "CCACHE_DEBUG=1" >> $GITHUB_ENV
-          echo "CCACHE_LOGFILE=$(pwd)/ccache.log" >> $GITHUB_ENV
-        fi
     - uses: actions/cache@v4
       with:
         path: build_cache
@@ -82,23 +77,3 @@ runs:
     - shell: bash
       run: |
         ccache --show-stats
-        # Save detailed info for Windows artifact
-        if [[ "${{ runner.os }}" == "Windows" ]]; then
-          echo "=== Detailed ccache statistics ==="
-          ccache --show-stats --verbose
-          echo "=== ccache configuration ===" > ccache-config.txt
-          ccache --show-config >> ccache-config.txt
-          echo "=== ccache statistics ===" > ccache-stats.txt
-          ccache --show-stats --verbose >> ccache-stats.txt
-        fi
-    - name: Upload ccache debug log
-      if: runner.os == 'Windows' && always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: ccache-debug-log-${{ runner.os }}-${{ github.run_number }}
-        path: |
-          ccache.log
-          ccache-config.txt
-          ccache-stats.txt
-        retention-days: 7
-        if-no-files-found: warn
