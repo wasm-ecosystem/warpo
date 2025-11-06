@@ -121,14 +121,14 @@ TEST(TestVariableInfo, TestCreateClass) {
   variableInfo.addField("Employee", "salary", "~lib/number/F64", 24, 0);
 
   // 3. Get the class registry
-  const auto &classRegistry = variableInfo.getClassRegistry();
+  const VariableInfo::ClassRegistry &classRegistry = variableInfo.getClassRegistry();
 
   // 4. Assert if the classes and members are correctly added
   // Verify we have exactly 2 classes
   ASSERT_EQ(classRegistry.size(), 2);
 
   // Verify Person class
-  auto personIt = classRegistry.find("Person");
+  VariableInfo::ClassRegistry::const_iterator const personIt = classRegistry.find("Person");
   ASSERT_NE(personIt, classRegistry.end());
   const ClassInfo &personClass = personIt->second;
 
@@ -137,7 +137,7 @@ TEST(TestVariableInfo, TestCreateClass) {
   EXPECT_EQ(personClass.getFields().size(), 3);
 
   // Verify Person fields
-  const auto &personFields = personClass.getFields();
+  const std::vector<FieldInfo> &personFields = personClass.getFields();
   EXPECT_EQ(personFields[0].getName(), "name");
   EXPECT_EQ(personFields[0].getType(), "~lib/string/String");
   EXPECT_EQ(personFields[0].getOffsetInClass(), 0);
@@ -154,7 +154,7 @@ TEST(TestVariableInfo, TestCreateClass) {
   EXPECT_TRUE(personFields[2].isNullable());
 
   // Verify Employee class
-  auto employeeIt = classRegistry.find("Employee");
+  VariableInfo::ClassRegistry::const_iterator const employeeIt = classRegistry.find("Employee");
   ASSERT_NE(employeeIt, classRegistry.end());
   const ClassInfo &employeeClass = employeeIt->second;
 
@@ -163,7 +163,7 @@ TEST(TestVariableInfo, TestCreateClass) {
   EXPECT_EQ(employeeClass.getFields().size(), 6);
 
   // Verify Employee fields
-  const auto &employeeFields = employeeClass.getFields();
+  const std::vector<FieldInfo> &employeeFields = employeeClass.getFields();
   EXPECT_EQ(employeeFields[0].getName(), "name");
   EXPECT_EQ(employeeFields[0].getType(), "~lib/string/String");
   EXPECT_EQ(employeeFields[0].getOffsetInClass(), 0);
@@ -204,15 +204,15 @@ TEST(TestVariableInfo, TestTemplateTypes) {
   variableInfo.addTemplateType("Container<T>", "~lib/string/String");
 
   // Get the class registry
-  const auto &classRegistry = variableInfo.getClassRegistry();
+  const VariableInfo::ClassRegistry &classRegistry = variableInfo.getClassRegistry();
 
   // Verify the container class exists
-  auto containerIt = classRegistry.find("Container<T>");
+  VariableInfo::ClassRegistry::const_iterator const containerIt = classRegistry.find("Container<T>");
   ASSERT_NE(containerIt, classRegistry.end());
   const ClassInfo &containerClass = containerIt->second;
 
   // Verify template types
-  const auto &templateTypes = containerClass.getTemplateTypes();
+  const std::vector<std::string_view> &templateTypes = containerClass.getTemplateTypes();
   ASSERT_EQ(templateTypes.size(), 2);
 
   // i32 should be normalized to ~lib/number/I32
@@ -228,7 +228,7 @@ TEST(TestVariableInfo, TestGlobalTypes) {
   variableInfo.addGlobalType("counter", "i32");
   variableInfo.addGlobalType("message", "~lib/string/String");
 
-  const auto &globalTypes = variableInfo.getGlobalTypes();
+  const VariableInfo::GlobalTypes &globalTypes = variableInfo.getGlobalTypes();
 
   ASSERT_EQ(globalTypes.size(), 2);
   EXPECT_EQ(globalTypes.at("counter"), "~lib/number/I32");
@@ -244,14 +244,14 @@ TEST(TestVariableInfo, TestAddParameter) {
   variableInfo.addParameter("calculateSum", "b", "i32", 1, false);
 
   // Verify global function parameters
-  const auto &subProgramRegistry = variableInfo.getSubProgramRegistry();
-  const auto &globalFunctions = subProgramRegistry.getList();
+  const SubProgramRegistry &subProgramRegistry = variableInfo.getSubProgramRegistry();
+  const std::deque<SubProgramInfo> &globalFunctions = subProgramRegistry.getList();
   ASSERT_EQ(globalFunctions.size(), 1);
 
   const SubProgramInfo &calculateSum = globalFunctions[0];
   EXPECT_EQ(calculateSum.getName(), "calculateSum");
 
-  const auto &calcParams = calculateSum.getParameters();
+  const std::vector<LocalInfo> &calcParams = calculateSum.getParameters();
   ASSERT_EQ(calcParams.size(), 2);
   EXPECT_EQ(calcParams[0].getName(), "a");
   EXPECT_EQ(calcParams[0].getType(), "~lib/number/I32");
@@ -269,18 +269,18 @@ TEST(TestVariableInfo, TestAddParameter) {
   variableInfo.addParameter("multiply", "y", "i32", 1, false);
 
   // Verify class member function parameters
-  const auto &classRegistry = variableInfo.getClassRegistry();
-  auto mathIt = classRegistry.find("Math");
+  const VariableInfo::ClassRegistry &classRegistry = variableInfo.getClassRegistry();
+  VariableInfo::ClassRegistry::const_iterator const mathIt = classRegistry.find("Math");
   ASSERT_NE(mathIt, classRegistry.end());
 
   const ClassInfo &mathClass = mathIt->second;
-  const auto &memberFunctions = mathClass.getSubProgramRegistry().getList();
+  const std::deque<SubProgramInfo> &memberFunctions = mathClass.getSubProgramRegistry().getList();
   ASSERT_EQ(memberFunctions.size(), 1);
 
   const SubProgramInfo &multiply = memberFunctions[0];
   EXPECT_EQ(multiply.getName(), "multiply");
 
-  const auto &multiplyParams = multiply.getParameters();
+  const std::vector<LocalInfo> &multiplyParams = multiply.getParameters();
   ASSERT_EQ(multiplyParams.size(), 2);
   EXPECT_EQ(multiplyParams[0].getName(), "x");
   EXPECT_EQ(multiplyParams[0].getType(), "~lib/number/I32");
@@ -299,11 +299,11 @@ TEST(TestVariableInfo, TestAddLocal) {
   variableInfo.addSubProgram("processData", "");
   variableInfo.addLocal("processData", "result", "i32", 1, 10, 50, false);
 
-  const auto &subProgramRegistry = variableInfo.getSubProgramRegistry();
-  const auto &globalFunctions = subProgramRegistry.getList();
+  const SubProgramRegistry &subProgramRegistry = variableInfo.getSubProgramRegistry();
+  const std::deque<SubProgramInfo> &globalFunctions = subProgramRegistry.getList();
   ASSERT_EQ(globalFunctions.size(), 1);
 
-  const auto &locals = globalFunctions[0].getLocals();
+  const std::vector<LocalInfo> &locals = globalFunctions[0].getLocals();
   ASSERT_EQ(locals.size(), 1);
   EXPECT_EQ(locals[0].getName(), "result");
   EXPECT_EQ(locals[0].getIndex(), 1);
@@ -315,14 +315,14 @@ TEST(TestVariableInfo, TestAddLocal) {
   variableInfo.addSubProgram("compute", "Math");
   variableInfo.addLocal("compute", "temp", "i32", 1, 5, 30, false);
 
-  const auto &classRegistry = variableInfo.getClassRegistry();
-  auto mathIt = classRegistry.find("Math");
+  const VariableInfo::ClassRegistry &classRegistry = variableInfo.getClassRegistry();
+  VariableInfo::ClassRegistry::const_iterator const mathIt = classRegistry.find("Math");
   ASSERT_NE(mathIt, classRegistry.end());
 
-  const auto &memberFunctions = mathIt->second.getSubProgramRegistry().getList();
+  const std::deque<SubProgramInfo> &memberFunctions = mathIt->second.getSubProgramRegistry().getList();
   ASSERT_EQ(memberFunctions.size(), 1);
 
-  const auto &computeLocals = memberFunctions[0].getLocals();
+  const std::vector<LocalInfo> &computeLocals = memberFunctions[0].getLocals();
   ASSERT_EQ(computeLocals.size(), 1);
   EXPECT_EQ(computeLocals[0].getName(), "temp");
   EXPECT_EQ(computeLocals[0].getIndex(), 1);
