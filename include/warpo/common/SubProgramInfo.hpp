@@ -28,7 +28,7 @@ namespace warpo {
 
 class SubProgramInfo final {
 public:
-  explicit inline SubProgramInfo(std::string_view name) noexcept : name_(std::move(name)) {}
+  explicit inline SubProgramInfo(std::string_view const name) noexcept : name_(name) {}
 
   inline std::string_view getName() const noexcept { return name_; }
 

@@ -63,9 +63,11 @@ void VariableInfo::addSubProgram(std::string subProgramName, std::string_view co
   if (!belongClassName.empty() && belongClassName != "<<NULL>>") {
     auto classIt = classRegistry_.find(belongClassName);
     assert(classIt != classRegistry_.end() && "Class not found in registry");
+    // NOLINTNEXTLINE(misc-const-correctness)
     SubProgramInfo &subProgramInfo = classIt->second.addSubProgram(std::move(subProgramName));
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
   } else {
+    // NOLINTNEXTLINE(misc-const-correctness)
     SubProgramInfo &subProgramInfo = subProgramRegistry_.addSubProgram(std::move(subProgramName));
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
   }
