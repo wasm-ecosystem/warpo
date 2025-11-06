@@ -231,7 +231,7 @@ TEST(TestVariableInfo, TestAddParameter) {
 
   // Verify global function parameters
   const auto &subProgramRegistry = variableInfo.getSubProgramRegistry();
-  const auto &globalFunctions = subProgramRegistry.getRegistry();
+  const auto &globalFunctions = subProgramRegistry.getList();
   ASSERT_EQ(globalFunctions.size(), 1);
 
   const SubProgramInfo &calculateSum = globalFunctions[0];
@@ -258,7 +258,7 @@ TEST(TestVariableInfo, TestAddParameter) {
   ASSERT_NE(mathIt, classRegistry.end());
 
   const ClassInfo &mathClass = mathIt->second;
-  const auto &memberFunctions = mathClass.getSubProgramRegistry().getRegistry();
+  const auto &memberFunctions = mathClass.getSubProgramRegistry().getList();
   ASSERT_EQ(memberFunctions.size(), 1);
 
   const SubProgramInfo &multiply = memberFunctions[0];

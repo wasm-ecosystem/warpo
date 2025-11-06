@@ -257,11 +257,6 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
 
   rootUnit.Entries.push_back(rootEntry);
 
-  struct TypeRefFixup final {
-    size_t entryIndex;
-    size_t valueIndex;
-    std::string_view typeName;
-  };
   std::vector<TypeRefFixup> typeRefFixups;
 
   for (std::pair<std::string_view const, ClassInfo> const &entry : classRegistry) {
@@ -335,6 +330,13 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
         rootUnit.Entries.push_back(templateTypeParamEntry);
       }
 
+      // Add class member functions
+      SubProgramRegistry const &memberFunctions = classInfo.getSubProgramRegistry();
+      std::deque<SubProgramInfo> const &memberFunctionList = memberFunctions.getList();
+      for (SubProgramInfo const &subProgram : memberFunctionList) {
+        addSubProgramWithParameters(subProgram, rootUnit, subprogramAbbrev, formalParameterAbbrev, typeRefFixups);
+      }
+
       // Add terminator for class children
       llvm::DWARFYAML::Entry childTerminator;
       childTerminator.AbbrCode = 0U;
@@ -362,6 +364,13 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
     typeRefFixups.push_back({variableIndex, 1U, typeName});
 
     rootUnit.Entries.push_back(variableEntry);
+  }
+
+  // Add global functions
+  SubProgramRegistry const &globalFunctions = variableInfo.getSubProgramRegistry();
+  std::deque<SubProgramInfo> const &globalFunctionList = globalFunctions.getList();
+  for (SubProgramInfo const &subProgram : globalFunctionList) {
+    addSubProgramWithParameters(subProgram, rootUnit, subprogramAbbrev, formalParameterAbbrev, typeRefFixups);
   }
 
   compileUnits.push_back(rootUnit);
@@ -398,6 +407,51 @@ std::string DwarfGenerator::dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::Memo
   dwarfContext->dump(dumpStream, dumpOptions);
   dumpStream.flush();
   return dumpOutput;
+}
+
+void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
+                                                 llvm::DWARFYAML::Abbrev const &subprogramAbbrev,
+                                                 llvm::DWARFYAML::Abbrev const &formalParameterAbbrev,
+                                                 std::vector<TypeRefFixup> &typeRefFixups) {
+  llvm::DWARFYAML::Entry subprogramEntry;
+  subprogramEntry.AbbrCode = subprogramAbbrev.Code;
+
+  llvm::DWARFYAML::FormValue subprogramNameValue;
+  std::string_view const subProgramName = subProgram.getName();
+  subprogramNameValue.CStr = llvm::StringRef(subProgramName.data(), subProgramName.size());
+  subprogramEntry.Values.push_back(subprogramNameValue);
+
+  rootUnit.Entries.push_back(subprogramEntry);
+
+  // Add formal parameters
+  std::vector<LocalInfo> const &parameters = subProgram.getParameters();
+  for (LocalInfo const &param : parameters) {
+    llvm::DWARFYAML::Entry paramEntry;
+    paramEntry.AbbrCode = formalParameterAbbrev.Code;
+
+    llvm::DWARFYAML::FormValue paramNameValue;
+    std::string_view const paramName = param.getName();
+    paramNameValue.CStr = llvm::StringRef(paramName.data(), paramName.size());
+    paramEntry.Values.push_back(paramNameValue);
+
+    llvm::DWARFYAML::FormValue paramTypeValue;
+    paramTypeValue.Value = 0xDEADBEEFU;
+    paramEntry.Values.push_back(paramTypeValue);
+
+    llvm::DWARFYAML::FormValue paramLocationValue;
+    paramLocationValue.Value = param.getIndex();
+    paramEntry.Values.push_back(paramLocationValue);
+
+    size_t const paramIndex = rootUnit.Entries.size();
+    typeRefFixups.push_back({paramIndex, 1U, param.getType()});
+
+    rootUnit.Entries.push_back(paramEntry);
+  }
+
+  // Add terminator for subprogram children
+  llvm::DWARFYAML::Entry subprogramTerminator;
+  subprogramTerminator.AbbrCode = 0U;
+  rootUnit.Entries.push_back(subprogramTerminator);
 }
 
 } // namespace warpo::passes
