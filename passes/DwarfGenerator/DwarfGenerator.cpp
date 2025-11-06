@@ -195,6 +195,40 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
 
   abbrevDecls.push_back(variableAbbrev);
 
+  llvm::DWARFYAML::Abbrev formalParameterAbbrev =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_formal_parameter, llvm::dwarf::DW_CHILDREN_no);
+
+  llvm::DWARFYAML::AttributeAbbrev formalParamNameAttr{};
+  formalParamNameAttr.Attribute = llvm::dwarf::DW_AT_name;
+  formalParamNameAttr.Form = llvm::dwarf::DW_FORM_string;
+  formalParamNameAttr.Value = 0U;
+  formalParameterAbbrev.Attributes.push_back(formalParamNameAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev formalParamTypeAttr{};
+  formalParamTypeAttr.Attribute = llvm::dwarf::DW_AT_type;
+  formalParamTypeAttr.Form = llvm::dwarf::DW_FORM_ref4;
+  formalParamTypeAttr.Value = 0U;
+  formalParameterAbbrev.Attributes.push_back(formalParamTypeAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev formalParamLocationAttr{};
+  formalParamLocationAttr.Attribute = llvm::dwarf::DW_AT_location;
+  formalParamLocationAttr.Form = llvm::dwarf::DW_FORM_data4;
+  formalParamLocationAttr.Value = 0U;
+  formalParameterAbbrev.Attributes.push_back(formalParamLocationAttr);
+
+  abbrevDecls.push_back(formalParameterAbbrev);
+
+  llvm::DWARFYAML::Abbrev subprogramAbbrev =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_subprogram, llvm::dwarf::DW_CHILDREN_yes);
+
+  llvm::DWARFYAML::AttributeAbbrev subprogramNameAttr{};
+  subprogramNameAttr.Attribute = llvm::dwarf::DW_AT_name;
+  subprogramNameAttr.Form = llvm::dwarf::DW_FORM_string;
+  subprogramNameAttr.Value = 0U;
+  subprogramAbbrev.Attributes.push_back(subprogramNameAttr);
+
+  abbrevDecls.push_back(subprogramAbbrev);
+
   llvm::DWARFYAML::Abbrev terminator;
   terminator.Code = 0U;
   terminator.Tag = llvm::dwarf::DW_TAG_null;

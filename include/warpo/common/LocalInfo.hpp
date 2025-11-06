@@ -1,5 +1,5 @@
 ///
-/// @file FieldInfo.hpp
+/// @file LocalInfo.hpp
 /// @copyright Copyright (C) 2025 wasm-ecosystem
 /// SPDX-License-Identifier: Apache-2.0
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,23 +24,25 @@
 
 namespace warpo {
 
-class FieldInfo final {
+class LocalInfo final {
 public:
-  inline FieldInfo(std::string name, std::string_view const type, uint32_t const offsetInClass,
-                   bool const nullable) noexcept
-      : name_(std::move(name)), type_(TypeNameHelper::normalizeTypeName(type)), offsetInClass_(offsetInClass),
-        nullable_(nullable) {}
+  inline LocalInfo(std::string name, std::string_view const type, uint32_t const index, uint32_t const start,
+                   uint32_t const end) noexcept
+      : name_(std::move(name)), type_(TypeNameHelper::normalizeTypeName(type)), index_(index), start_(start),
+        end_(end) {}
 
   inline std::string_view getName() const noexcept { return name_; }
   inline std::string_view getType() const noexcept { return type_; }
-  inline uint32_t getOffsetInClass() const noexcept { return offsetInClass_; }
-  inline bool isNullable() const noexcept { return nullable_; }
+  inline uint32_t getIndex() const noexcept { return index_; }
+  inline uint32_t getStart() const noexcept { return start_; }
+  inline uint32_t getEnd() const noexcept { return end_; }
 
 private:
   std::string name_;
   std::string_view type_;
-  uint32_t offsetInClass_;
-  bool nullable_;
+  uint32_t index_;
+  uint32_t start_;
+  uint32_t end_;
 };
 
 } // namespace warpo

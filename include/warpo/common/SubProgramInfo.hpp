@@ -1,5 +1,5 @@
 ///
-/// @file FieldInfo.hpp
+/// @file SubProgramInfo.hpp
 /// @copyright Copyright (C) 2025 wasm-ecosystem
 /// SPDX-License-Identifier: Apache-2.0
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,28 +19,31 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
+#include "LocalInfo.hpp"
 #include "TypeNameHelper.hpp"
 
 namespace warpo {
 
-class FieldInfo final {
+class SubProgramInfo final {
 public:
-  inline FieldInfo(std::string name, std::string_view const type, uint32_t const offsetInClass,
-                   bool const nullable) noexcept
-      : name_(std::move(name)), type_(TypeNameHelper::normalizeTypeName(type)), offsetInClass_(offsetInClass),
-        nullable_(nullable) {}
+  explicit inline SubProgramInfo(std::string_view name) noexcept : name_(std::move(name)) {}
 
   inline std::string_view getName() const noexcept { return name_; }
-  inline std::string_view getType() const noexcept { return type_; }
-  inline uint32_t getOffsetInClass() const noexcept { return offsetInClass_; }
-  inline bool isNullable() const noexcept { return nullable_; }
+
+  inline std::vector<LocalInfo> const &getParameters() const noexcept { return parameters_; }
+  inline std::vector<LocalInfo> const &getLocals() const noexcept { return locals_; }
+
+  inline void addParameter(LocalInfo parameter) noexcept { parameters_.push_back(std::move(parameter)); }
+  inline void addLocal(LocalInfo local) noexcept { locals_.push_back(std::move(local)); }
+
+  void addParameter(std::string variableName, std::string_view const typeName, uint32_t const index);
 
 private:
-  std::string name_;
-  std::string_view type_;
-  uint32_t offsetInClass_;
-  bool nullable_;
+  std::string_view name_;
+  std::vector<LocalInfo> parameters_;
+  std::vector<LocalInfo> locals_;
 };
 
 } // namespace warpo

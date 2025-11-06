@@ -58,6 +58,26 @@ void VariableInfo::addGlobalType(std::string variableName, std::string_view cons
   globalTypes_.emplace(std::move(variableName), internedTypeName);
 }
 
+void VariableInfo::addSubProgram(std::string subProgramName, std::string_view const belongClassName) {
+
+  if (!belongClassName.empty()) {
+    auto classIt = classRegistry_.find(belongClassName);
+    assert(classIt != classRegistry_.end() && "Class not found in registry");
+    SubProgramInfo &subProgramInfo = classIt->second.addSubProgram(std::move(subProgramName));
+    subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
+  } else {
+    SubProgramInfo &subProgramInfo = subProgramRegistry_.addSubProgram(std::move(subProgramName));
+    subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
+  }
+}
+
+void VariableInfo::addParameter(std::string_view const subProgramName, std::string variableName,
+                                std::string_view const typeName, uint32_t const index) {
+  SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
+  assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
+  it->second.addParameter(std::move(variableName), typeName, index);
+}
+
 } // namespace warpo
 
 #ifdef WARPO_ENABLE_UNIT_TESTS
@@ -199,6 +219,59 @@ TEST(TestVariableInfo, TestGlobalTypes) {
   ASSERT_EQ(globalTypes.size(), 2);
   EXPECT_EQ(globalTypes.at("counter"), "~lib/number/I32");
   EXPECT_EQ(globalTypes.at("message"), "~lib/string/String");
+}
+
+TEST(TestVariableInfo, TestAddParameter) {
+  VariableInfo variableInfo;
+
+  // Test adding parameters to global function
+  variableInfo.addSubProgram("calculateSum", "");
+  variableInfo.addParameter("calculateSum", "a", "i32", 0);
+  variableInfo.addParameter("calculateSum", "b", "i32", 1);
+
+  // Verify global function parameters
+  const auto &subProgramRegistry = variableInfo.getSubProgramRegistry();
+  const auto &globalFunctions = subProgramRegistry.getRegistry();
+  ASSERT_EQ(globalFunctions.size(), 1);
+
+  const SubProgramInfo &calculateSum = globalFunctions[0];
+  EXPECT_EQ(calculateSum.getName(), "calculateSum");
+
+  const auto &calcParams = calculateSum.getParameters();
+  ASSERT_EQ(calcParams.size(), 2);
+  EXPECT_EQ(calcParams[0].getName(), "a");
+  EXPECT_EQ(calcParams[0].getType(), "~lib/number/I32");
+  EXPECT_EQ(calcParams[0].getIndex(), 0);
+  EXPECT_EQ(calcParams[1].getName(), "b");
+  EXPECT_EQ(calcParams[1].getType(), "~lib/number/I32");
+  EXPECT_EQ(calcParams[1].getIndex(), 1);
+
+  // Test adding parameters to class member function
+  variableInfo.createClass("Math", "Object", 200);
+  variableInfo.addSubProgram("multiply", "Math");
+  variableInfo.addParameter("multiply", "x", "i32", 0);
+  variableInfo.addParameter("multiply", "y", "i32", 1);
+
+  // Verify class member function parameters
+  const auto &classRegistry = variableInfo.getClassRegistry();
+  auto mathIt = classRegistry.find("Math");
+  ASSERT_NE(mathIt, classRegistry.end());
+
+  const ClassInfo &mathClass = mathIt->second;
+  const auto &memberFunctions = mathClass.getSubProgramRegistry().getRegistry();
+  ASSERT_EQ(memberFunctions.size(), 1);
+
+  const SubProgramInfo &multiply = memberFunctions[0];
+  EXPECT_EQ(multiply.getName(), "multiply");
+
+  const auto &multiplyParams = multiply.getParameters();
+  ASSERT_EQ(multiplyParams.size(), 2);
+  EXPECT_EQ(multiplyParams[0].getName(), "x");
+  EXPECT_EQ(multiplyParams[0].getType(), "~lib/number/I32");
+  EXPECT_EQ(multiplyParams[0].getIndex(), 0);
+  EXPECT_EQ(multiplyParams[1].getName(), "y");
+  EXPECT_EQ(multiplyParams[1].getType(), "~lib/number/I32");
+  EXPECT_EQ(multiplyParams[1].getIndex(), 1);
 }
 } // namespace warpo::ut
 #endif
