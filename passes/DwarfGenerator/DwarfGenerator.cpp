@@ -61,7 +61,7 @@ private:
       if ((abbrev.Tag == llvm::dwarf::Tag::DW_TAG_class_type) || (abbrev.Tag == llvm::dwarf::Tag::DW_TAG_base_type)) {
 
         constexpr size_t nameIndex = 0U;
-        llvm::DWARFYAML::AttributeAbbrev const &attr = abbrev.Attributes[nameIndex];
+        [[maybe_unused]] llvm::DWARFYAML::AttributeAbbrev const &attr = abbrev.Attributes[nameIndex];
         assert(attr.Attribute == llvm::dwarf::DW_AT_name);
 
         llvm::DWARFYAML::FormValue const &nameValue = DIE.Values[nameIndex];

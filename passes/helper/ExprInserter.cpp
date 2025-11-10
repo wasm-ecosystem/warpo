@@ -94,7 +94,6 @@ bool ExprInserter::canInsertAfter(wasm::Expression *insertPosition) {
     if (insertPosition->is<wasm::Unreachable>())
       return true;
     if (wasm::Return const *const expr = insertPosition->dynCast<wasm::Return>(); expr != nullptr) {
-      return true;
       if (expr->value == nullptr)
         return true;
       if (canInsertAfter(expr->value))
@@ -102,7 +101,6 @@ bool ExprInserter::canInsertAfter(wasm::Expression *insertPosition) {
     }
     if (wasm::Break const *const expr = insertPosition->dynCast<wasm::Break>();
         expr != nullptr && expr->condition == nullptr) {
-      return true;
       if (expr->value == nullptr)
         return true;
       if (canInsertAfter(expr->value))
