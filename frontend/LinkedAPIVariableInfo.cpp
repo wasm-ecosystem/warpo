@@ -17,8 +17,8 @@ namespace {
 
 void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const rtid,
                  vb::WasmModule const *const ctx) {
-  std::string className{WarpRunner::getString(ctx, classNamePtr)};
-  std::string parentName{WarpRunner::getString(ctx, parentNamePtr)};
+  std::string className{WarpRunner::getString(ctx, classNamePtr)}; // NOLINT(misc-const-correctness) intentional non-const to allow efficient move
+  std::string parentName{WarpRunner::getString(ctx, parentNamePtr)}; // NOLINT(misc-const-correctness) intentional non-const to allow efficient move
 
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   pCompiler->asModule_.variableInfo_.createClass(std::move(className), std::move(parentName), rtid);

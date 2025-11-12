@@ -26,8 +26,7 @@ class FieldInfo final {
 public:
   inline FieldInfo(std::string name, std::string_view const type, uint32_t const offsetInClass,
                    bool const nullable) noexcept
-      : name_(std::move(name)), type_(type), offsetInClass_(offsetInClass),
-        nullable_(nullable) {}
+      : name_(std::move(name)), type_(type), offsetInClass_(offsetInClass), nullable_(nullable) {}
 
   inline std::string_view getName() const noexcept { return name_; }
   inline std::string_view getType() const noexcept { return type_; }

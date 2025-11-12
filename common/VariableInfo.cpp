@@ -24,8 +24,8 @@
 #include <vector>
 
 #include "warpo/common/ClassInfo.hpp"
-#include "warpo/common/TypeNameHelper.hpp"
 #include "warpo/common/FieldInfo.hpp"
+#include "warpo/common/TypeNameHelper.hpp"
 #include "warpo/common/VariableInfo.hpp"
 
 namespace warpo {
