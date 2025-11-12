@@ -233,79 +233,66 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
   for (std::pair<std::string_view const, ClassInfo> const &entry : classRegistry) {
     std::string_view const className = entry.first;
     ClassInfo const &classInfo = entry.second;
-    bool const isBasicType = classInfo.isBasicType();
 
-    if (isBasicType) {
-      // Handle basic type
-      llvm::DWARFYAML::Entry baseTypeEntry;
-      baseTypeEntry.AbbrCode = baseTypeAbbrev.Code;
+    // Handle class type
+    llvm::DWARFYAML::Entry classEntry;
+    classEntry.AbbrCode = classAbbrev.Code;
 
-      llvm::DWARFYAML::FormValue baseTypeNameValue;
-      baseTypeNameValue.CStr = llvm::StringRef(className.data(), className.size());
-      baseTypeEntry.Values.push_back(baseTypeNameValue);
+    llvm::DWARFYAML::FormValue classNameValue;
+    classNameValue.CStr = llvm::StringRef(className.data(), className.size());
+    classEntry.Values.push_back(classNameValue);
 
-      rootUnit.Entries.push_back(baseTypeEntry);
-    } else {
-      // Handle class type
-      llvm::DWARFYAML::Entry classEntry;
-      classEntry.AbbrCode = classAbbrev.Code;
+    llvm::DWARFYAML::FormValue classSignatureValue;
+    classSignatureValue.Value = classInfo.getRtid();
+    classEntry.Values.push_back(classSignatureValue);
 
-      llvm::DWARFYAML::FormValue classNameValue;
-      classNameValue.CStr = llvm::StringRef(className.data(), className.size());
-      classEntry.Values.push_back(classNameValue);
+    rootUnit.Entries.push_back(classEntry);
 
-      llvm::DWARFYAML::FormValue classSignatureValue;
-      classSignatureValue.Value = classInfo.getRtid();
-      classEntry.Values.push_back(classSignatureValue);
+    // Add member fields
+    std::vector<FieldInfo> const &fields = classInfo.getFields();
+    for (FieldInfo const &field : fields) {
+      llvm::DWARFYAML::Entry memberEntry;
+      memberEntry.AbbrCode = memberAbbrev.Code;
 
-      rootUnit.Entries.push_back(classEntry);
+      llvm::DWARFYAML::FormValue memberNameValue;
+      std::string_view const fieldNameView = field.getName();
+      memberNameValue.CStr = llvm::StringRef(fieldNameView.data(), fieldNameView.size());
+      memberEntry.Values.push_back(memberNameValue);
 
-      // Add member fields
-      std::vector<FieldInfo> const &fields = classInfo.getFields();
-      for (FieldInfo const &field : fields) {
-        llvm::DWARFYAML::Entry memberEntry;
-        memberEntry.AbbrCode = memberAbbrev.Code;
+      llvm::DWARFYAML::FormValue memberTypeValue;
+      memberTypeValue.Value = 0xDEADBEEFU;
+      memberEntry.Values.push_back(memberTypeValue);
 
-        llvm::DWARFYAML::FormValue memberNameValue;
-        std::string_view const fieldNameView = field.getName();
-        memberNameValue.CStr = llvm::StringRef(fieldNameView.data(), fieldNameView.size());
-        memberEntry.Values.push_back(memberNameValue);
+      llvm::DWARFYAML::FormValue memberLocationValue;
+      memberLocationValue.Value = field.getOffsetInClass();
+      memberEntry.Values.push_back(memberLocationValue);
 
-        llvm::DWARFYAML::FormValue memberTypeValue;
-        memberTypeValue.Value = 0xDEADBEEFU;
-        memberEntry.Values.push_back(memberTypeValue);
+      size_t const memberIndex = rootUnit.Entries.size();
+      typeRefFixups.push_back({memberIndex, 1U, field.getType()});
 
-        llvm::DWARFYAML::FormValue memberLocationValue;
-        memberLocationValue.Value = field.getOffsetInClass();
-        memberEntry.Values.push_back(memberLocationValue);
-
-        size_t const memberIndex = rootUnit.Entries.size();
-        typeRefFixups.push_back({memberIndex, 1U, field.getType()});
-
-        rootUnit.Entries.push_back(memberEntry);
-      }
-
-      // Add template type parameters
-      std::vector<std::string_view> const &templateTypes = classInfo.getTemplateTypes();
-      for (std::string_view const templateTypeName : templateTypes) {
-        llvm::DWARFYAML::Entry templateTypeParamEntry;
-        templateTypeParamEntry.AbbrCode = templateTypeParamAbbrev.Code;
-
-        llvm::DWARFYAML::FormValue templateTypeValue;
-        templateTypeValue.Value = 0xDEADBEEFU;
-        templateTypeParamEntry.Values.push_back(templateTypeValue);
-
-        size_t const templateTypeIndex = rootUnit.Entries.size();
-        typeRefFixups.push_back({templateTypeIndex, 0U, templateTypeName});
-
-        rootUnit.Entries.push_back(templateTypeParamEntry);
-      }
-
-      // Add terminator for class children
-      llvm::DWARFYAML::Entry childTerminator;
-      childTerminator.AbbrCode = 0U;
-      rootUnit.Entries.push_back(childTerminator);
+      rootUnit.Entries.push_back(memberEntry);
     }
+
+    // Add template type parameters
+    std::vector<std::string_view> const &templateTypes = classInfo.getTemplateTypes();
+    for (std::string_view const templateTypeName : templateTypes) {
+      llvm::DWARFYAML::Entry templateTypeParamEntry;
+      templateTypeParamEntry.AbbrCode = templateTypeParamAbbrev.Code;
+
+      llvm::DWARFYAML::FormValue templateTypeValue;
+      templateTypeValue.Value = 0xDEADBEEFU;
+      templateTypeParamEntry.Values.push_back(templateTypeValue);
+
+      size_t const templateTypeIndex = rootUnit.Entries.size();
+      typeRefFixups.push_back({templateTypeIndex, 0U, templateTypeName});
+
+      rootUnit.Entries.push_back(templateTypeParamEntry);
+    }
+
+    // Add terminator for class children
+    llvm::DWARFYAML::Entry childTerminator;
+    childTerminator.AbbrCode = 0U;
+    rootUnit.Entries.push_back(childTerminator);
   }
 
   // Add global variables

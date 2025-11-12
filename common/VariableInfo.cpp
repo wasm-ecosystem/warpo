@@ -25,7 +25,6 @@
 
 #include "warpo/common/ClassInfo.hpp"
 #include "warpo/common/FieldInfo.hpp"
-#include "warpo/common/TypeNameHelper.hpp"
 #include "warpo/common/VariableInfo.hpp"
 
 namespace warpo {
@@ -47,14 +46,12 @@ void VariableInfo::createClass(std::string const className, std::string const pa
 void VariableInfo::addTemplateType(std::string_view const className, std::string_view const templateTypeName) {
   ClassRegistry::iterator const classIt = classRegistry_.find(className);
   assert(classIt != classRegistry_.end());
-  std::string_view const normalizedTypeName = TypeNameHelper::normalizeTypeName(templateTypeName);
-  std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
+  std::string_view const internedTypeName = stringPool_.internString(templateTypeName);
   classIt->second.addTemplateType(internedTypeName);
 }
 
 void VariableInfo::addGlobalType(std::string variableName, std::string_view const typeName, uint32_t const nullable) {
-  std::string_view const normalizedTypeName = TypeNameHelper::normalizeTypeName(typeName);
-  std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
+  std::string_view const internedTypeName = stringPool_.internString(typeName);
   globalTypes_.emplace(std::move(variableName), GlobalTypeInfo{internedTypeName, nullable != 0});
 }
 
@@ -181,8 +178,7 @@ TEST(TestVariableInfo, TestTemplateTypes) {
   const auto &templateTypes = containerClass.getTemplateTypes();
   ASSERT_EQ(templateTypes.size(), 2);
 
-  // i32 should be normalized to ~lib/number/I32
-  EXPECT_EQ(templateTypes[0], "~lib/number/I32");
+  EXPECT_EQ(templateTypes[0], "i32");
 
   // ~lib/string/String should remain unchanged
   EXPECT_EQ(templateTypes[1], "~lib/string/String");
@@ -197,7 +193,7 @@ TEST(TestVariableInfo, TestGlobalTypes) {
   const auto &globalTypes = variableInfo.getGlobalTypes();
 
   ASSERT_EQ(globalTypes.size(), 2);
-  EXPECT_EQ(globalTypes.at("counter").typeName, "~lib/number/I32");
+  EXPECT_EQ(globalTypes.at("counter").typeName, "i32");
   EXPECT_FALSE(globalTypes.at("counter").nullable);
   EXPECT_EQ(globalTypes.at("message").typeName, "~lib/string/String");
   EXPECT_TRUE(globalTypes.at("message").nullable);

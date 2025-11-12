@@ -3312,7 +3312,7 @@ export class Resolver extends DiagnosticEmitter {
     let typeArguments = instance.typeArguments;
     if (typeArguments) {
       for (let i = 0; i < typeArguments.length; i++) {
-        addTemplateType(instance.internalName, typeArguments[i].toString());
+        addTemplateType(instance.internalName, typeArguments[i].toStringWithoutNullable());
       }
     }
 
@@ -3431,8 +3431,7 @@ export class Resolver extends DiagnosticEmitter {
                   let mask = byteSize - 1;
                   if (memoryOffset & mask) memoryOffset = (memoryOffset | mask) + 1;
                   boundInstance.memoryOffset = memoryOffset;
-                  let classOrWrapper = fieldType.getClassOrWrapper(this.program);
-                  let fullTypeName = classOrWrapper ? classOrWrapper.internalName : fieldType.toString();
+                  const fullTypeName = fieldType.toStringWithoutNullable();
                   addField(instance.internalName, memberName, fullTypeName, boundInstance.memoryOffset, fieldType.isNullableReference);
                   memoryOffset += byteSize;
                 }

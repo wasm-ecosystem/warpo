@@ -631,6 +631,27 @@ export class Type {
     }
   }
 
+  /** Converts this type to a string without nullable postfix. */
+  toStringWithoutNullable(): string {
+    if (this.isReference) {
+      let classReference = this.getClass();
+      if (classReference) {
+        return classReference.internalName;
+      } else {
+        let signatureReference = this.getSignature();
+        if (signatureReference) {
+          return `(${signatureReference.toString()})`;
+        } else {
+          return this.kindToString();
+        }
+      }
+    }
+    if (this == Type.auto) {
+      return "auto";
+    }
+    return this.kindToString();
+  }
+
   /** Converts this type to a string. */
   toString(validWat: bool = false): string {
     const nullablePostfix = validWat ? "|null" : " | null";

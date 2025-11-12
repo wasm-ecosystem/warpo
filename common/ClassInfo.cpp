@@ -25,9 +25,4 @@ void ClassInfo::addMember(std::string name, std::string_view const type, uint32_
   fields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
 }
 
-bool ClassInfo::isBasicType() const noexcept {
-  static const std::regex basicTypePattern(R"(~lib/number/(F32|F64|U8|I8|U16|I16|U32|I32|U64|I64|Usize|Isize|Bool))");
-  return std::regex_match(name_.begin(), name_.end(), basicTypePattern);
-}
-
 } // namespace warpo
