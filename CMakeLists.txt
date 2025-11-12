@@ -18,15 +18,16 @@ if(NOT CMAKE_BUILD_TYPE)
   endif()
 endif()
 
-add_definitions("-DINTERRUPTION_REQUEST=0")
-add_definitions("-DEAGER_ALLOCATION=1")
+add_compile_definitions("INTERRUPTION_REQUEST=0")
+add_compile_definitions("EAGER_ALLOCATION=1")
 
 if(MSVC)
   add_compile_options(
-			$<$<CONFIG:>:/MD> # ---------|
-			$<$<CONFIG:Debug>:/MDd> # ---|-- Dynamic link the runtime libraries
-			$<$<CONFIG:Release>:/MD> # --|
-	)
+    $<$<CONFIG:>:/MD> # ---------|
+    $<$<CONFIG:Debug>:/MDd> # ---|-- Dynamic link the runtime libraries
+    $<$<CONFIG:Release>:/MD> # --|
+  )
+
   foreach(config DEBUG RELWITHDEBINFO)
     foreach(lang C CXX)
       set(flags_var "CMAKE_${lang}_FLAGS_${config}")
@@ -34,6 +35,7 @@ if(MSVC)
       set(${flags_var} "${${flags_var}}")
     endforeach()
   endforeach()
+
   add_compile_options(/MP)
   add_compile_options(/FC)
 endif()
@@ -50,7 +52,7 @@ if(MSVC)
   endif()
 
   set(CMAKE_SUPPRESS_REGENERATION ON)
-  
+
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-warning-option")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
