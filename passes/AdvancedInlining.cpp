@@ -158,7 +158,7 @@ struct FunctionInfoScanner : public WalkerPass<PostWalker<FunctionInfoScanner>> 
       info.inliningMode = InliningMode::Uninlineble;
     }
 
-    float const bodyCost = measureSizeCost(curr->body);
+    float const bodyCost = measureSizeCost(getModule(), curr->body);
     info.functionCost = bodyCost + getFunctionSizeCost();
     info.inlinedCost = bodyCost;
   }

@@ -107,7 +107,7 @@ struct CostModel {
     return costModelParser;
   }
 
-  float getSizeCostByExpr(wasm::Expression *expr) const;
+  float getSizeCostByExpr(wasm::Module *m, wasm::Expression *expr) const;
   float getSizeCostByOpcode(Opcode opcode) const;
   float getPerformanceCostByOpcode(Opcode opcode) const;
 
@@ -159,7 +159,43 @@ CostModel::CostModel() {
     performanceCost_ = createCostModelFromFile(performanceCostModelPath);
 }
 
-float CostModel::getSizeCostByExpr(wasm::Expression *expr) const {
+float CostModel::getSizeCostByExpr(wasm::Module *m, wasm::Expression *expr) const {
+  // handle builtin call separately, they are cheaper than normal calls
+  if (wasm::Call *const callExpr = expr->dynCast<wasm::Call>(); callExpr != nullptr) {
+    wasm::Function *const function = m->getFunction(callExpr->target);
+    if (function->imported() && function->module == "builtin") {
+      if (function->base == "tracePoint")
+        return 0.0F;
+      if (function->base == "isFunctionLinked")
+        return 0.0F;
+
+      if (function->base == "getLengthOfLinkedMemory")
+        return getSizeCostByOpcode(Opcode::I32_LOAD);
+      if (function->base == "getU8FromLinkedMemory")
+        return getSizeCostByOpcode(Opcode::I32_LOAD8_U);
+      if (function->base == "getI8FromLinkedMemory")
+        return getSizeCostByOpcode(Opcode::I32_LOAD8_S);
+      if (function->base == "getU16FromLinkedMemory")
+        return getSizeCostByOpcode(Opcode::I32_LOAD16_U);
+      if (function->base == "getI16FromLinkedMemory")
+        return getSizeCostByOpcode(Opcode::I32_LOAD16_S);
+      if (function->base == "getU32FromLinkedMemory")
+        return getSizeCostByOpcode(Opcode::I32_LOAD);
+      if (function->base == "getI32FromLinkedMemory")
+        return getSizeCostByOpcode(Opcode::I32_LOAD);
+      if (function->base == "getU64FromLinkedMemory")
+        return getSizeCostByOpcode(Opcode::I64_LOAD);
+      if (function->base == "getI64FromLinkedMemory")
+        return getSizeCostByOpcode(Opcode::I64_LOAD);
+      if (function->base == "getF32FromLinkedMemory")
+        return getSizeCostByOpcode(Opcode::F32_LOAD);
+      if (function->base == "getF64FromLinkedMemory")
+        return getSizeCostByOpcode(Opcode::F64_LOAD);
+
+      if (function->base == "copyFromLinkedMemory")
+        return getSizeCostByOpcode(Opcode::MEMORY_COPY);
+    }
+  }
   switch (expr->_id) {
   case wasm::Expression::BlockId:
     return getSizeCostByOpcode(Opcode::BLOCK) + getSizeCostByOpcode(Opcode::END);
@@ -559,18 +595,22 @@ float warpo::passes::getFunctionSizeCost() {
   return CostModel::ins().getSizeCostByOpcode(Opcode::FUNC) + CostModel::ins().getSizeCostByOpcode(Opcode::END);
 }
 
-float warpo::passes::getOpcodeSizeCost(wasm::Expression *expr) { return CostModel::ins().getSizeCostByExpr(expr); }
+float warpo::passes::getOpcodeSizeCost(wasm::Module *m, wasm::Expression *expr) {
+  return CostModel::ins().getSizeCostByExpr(m, expr);
+}
 
 float warpo::passes::getOpcodeSizeCost(Opcode opcode) { return CostModel::ins().getSizeCostByOpcode(opcode); }
 
-float warpo::passes::measureSizeCost(wasm::Expression *expr) {
+float warpo::passes::measureSizeCost(wasm::Module *m, wasm::Expression *expr) {
   struct CostMeasure : public wasm::PostWalker<CostMeasure, wasm::UnifiedExpressionVisitor<CostMeasure>> {
-    float cost = 0;
-    void visitExpression(wasm::Expression *expr) { cost += CostModel::ins().getSizeCostByExpr(expr); }
+    float cost_ = 0;
+    wasm::Module *m_;
+    explicit CostMeasure(wasm::Module *module) : m_{module} {}
+    void visitExpression(wasm::Expression *expr) { cost_ += CostModel::ins().getSizeCostByExpr(m_, expr); }
   };
-  CostMeasure measurer{};
+  CostMeasure measurer{m};
   measurer.walk(expr);
-  return measurer.cost;
+  return measurer.cost_;
 }
 
 float warpo::passes::getFunctionPerformanceCost() {
