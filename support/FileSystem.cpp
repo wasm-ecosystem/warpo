@@ -13,6 +13,9 @@
 
 void warpo::ensureFileDirectory(const std::filesystem::path &filePath) {
   std::filesystem::path const dirPath = filePath.parent_path();
+  // handle a.txt case where parent_path() is empty
+  if (dirPath.empty())
+    return;
   ensureDirectory(dirPath);
 }
 
