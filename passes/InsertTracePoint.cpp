@@ -177,7 +177,9 @@ struct TracePointInserter : public wasm::Pass {
     wasm::Builder const b{*m};
     if (m->getFunctionOrNull(tracePointFunctionName) == nullptr) {
       std::unique_ptr<wasm::Function> func = wasm::Builder::makeFunction(
-          tracePointFunctionName, wasm::Signature{wasm::Type::i32, wasm::Type::none}, {}, nullptr);
+          tracePointFunctionName,
+          wasm::Type{wasm::Signature{wasm::Type::i32, wasm::Type::none}, wasm::NonNullable, wasm::Inexact}, {},
+          nullptr);
       func->module = "builtin";
       func->base = "tracePoint";
       m->addFunction(std::move(func));
@@ -229,12 +231,33 @@ wasm::Pass *passes::createInsertTracePointPass() {
 #ifdef WARPO_ENABLE_UNIT_TESTS
 
 #include <gtest/gtest.h>
+#include <wasm-validator.h>
 
 #include "Runner.hpp"
 #include "helper/Matcher.hpp"
 #include "pass.h"
 
 namespace warpo::passes::ut {
+
+TEST(TracePointInserterTest, PassValidation) {
+  auto m = loadWat(R"(
+    (module
+      (func $empty)
+      (func $fn_without_result
+        call $empty
+        call $empty
+        call $empty
+        call $empty
+      )
+    )
+  )");
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{new TracePointInserter(tracePointMappingOption.get())});
+  runner.run();
+
+  EXPECT_TRUE(wasm::WasmValidator{}.validate(*m));
+}
 
 TEST(TracePointInserterTest, WithoutResult) {
   auto m = loadWat(R"(
