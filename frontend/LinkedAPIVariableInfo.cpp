@@ -3,8 +3,8 @@
 
 #include <cassert>
 #include <utility>
+#include <warpo/warp_runner/WarpRunner.hpp>
 
-#include "AsString.hpp"
 #include "CompilerImpl.hpp"
 #include "LinkedAPI.hpp"
 #include "warpo/common/AsModule.hpp"
@@ -17,8 +17,8 @@ namespace {
 
 void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const rtid,
                  vb::WasmModule const *const ctx) {
-  std::string className{AsString::get(classNamePtr, ctx)};
-  std::string parentName{AsString::get(parentNamePtr, ctx)};
+  std::string className{WarpRunner::getString(ctx, classNamePtr)};
+  std::string parentName{WarpRunner::getString(ctx, parentNamePtr)};
 
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   pCompiler->asModule_.variableInfo_.createClass(std::move(className), std::move(parentName), rtid);
@@ -26,26 +26,55 @@ void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint
 
 void addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
               uint32_t const offset, uint32_t const nullable, vb::WasmModule const *const ctx) {
-  std::string const className = AsString::get(classNamePtr, ctx);
-  std::string fieldName = AsString::get(fieldNamePtr, ctx);
-  std::string typeName = AsString::get(typeNamePtr, ctx);
+  std::string const className = WarpRunner::getString(ctx, classNamePtr);
+  std::string fieldName = WarpRunner::getString(ctx, fieldNamePtr);
+  std::string typeName = WarpRunner::getString(ctx, typeNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   pCompiler->asModule_.variableInfo_.addField(className, std::move(fieldName), std::move(typeName), offset, nullable);
 }
 
 void addTemplateType(uint32_t const classNamePtr, uint32_t const templateTypeNamePtr, vb::WasmModule const *const ctx) {
-  std::string const className = AsString::get(classNamePtr, ctx);
-  std::string const templateTypeName = AsString::get(templateTypeNamePtr, ctx);
+  std::string const className = WarpRunner::getString(ctx, classNamePtr);
+  std::string const templateTypeName = WarpRunner::getString(ctx, templateTypeNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   pCompiler->asModule_.variableInfo_.addTemplateType(className, templateTypeName);
 }
 
 void addGlobal(uint32_t const variableNamePtr, uint32_t const typeNamePtr, uint32_t const nullable,
                vb::WasmModule const *const ctx) {
-  std::string variableName = AsString::get(variableNamePtr, ctx);
-  std::string const typeName = AsString::get(typeNamePtr, ctx);
+  std::string variableName = WarpRunner::getString(ctx, variableNamePtr);
+  std::string const typeName = WarpRunner::getString(ctx, typeNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   pCompiler->asModule_.variableInfo_.addGlobalType(std::move(variableName), typeName, nullable);
+}
+
+void addSubProgram(uint32_t const subProgramNamePtr, uint32_t const belongClassNamePtr,
+                   vb::WasmModule const *const ctx) {
+  std::string subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
+  std::string const belongClassName = WarpRunner::getString(ctx, belongClassNamePtr);
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.addSubProgram(std::move(subProgramName), belongClassName);
+}
+
+void addParameter(uint32_t const subProgramNamePtr, uint32_t const variableNamePtr, uint32_t const typeNamePtr,
+                  uint32_t const index, uint32_t const nullable, vb::WasmModule const *const ctx) {
+  std::string const subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
+  std::string variableName = WarpRunner::getString(ctx, variableNamePtr);
+  std::string const typeName = WarpRunner::getString(ctx, typeNamePtr);
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.addParameter(subProgramName, std::move(variableName), typeName, index,
+                                                  nullable != 0);
+}
+
+void addLocal(uint32_t const subProgramNamePtr, uint32_t const variableNamePtr, uint32_t const typeNamePtr,
+              uint32_t const index, uint32_t const start, uint32_t const end, uint32_t const nullable,
+              vb::WasmModule const *const ctx) {
+  std::string const subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
+  std::string variableName = WarpRunner::getString(ctx, variableNamePtr);
+  std::string const typeName = WarpRunner::getString(ctx, typeNamePtr);
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.addLocal(subProgramName, std::move(variableName), typeName, index, start, end,
+                                              nullable != 0);
 }
 
 } // namespace
@@ -56,6 +85,9 @@ std::vector<vb::NativeSymbol> createVariableInfoAPI() {
       STATIC_LINK("warpo", "_WarpoAddField", addField),
       STATIC_LINK("warpo", "_WarpoAddTemplateType", addTemplateType),
       STATIC_LINK("warpo", "_WarpoAddGlobal", addGlobal),
+      STATIC_LINK("warpo", "_WarpoAddSubProgram", addSubProgram),
+      STATIC_LINK("warpo", "_WarpoAddParameter", addParameter),
+      STATIC_LINK("warpo", "_WarpoAddLocal", addLocal),
   };
 }
 

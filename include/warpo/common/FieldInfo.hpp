@@ -18,12 +18,14 @@
 #include <cstdint>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace warpo {
 
 class FieldInfo final {
 public:
-  inline FieldInfo(std::string name, std::string_view const type, uint32_t const offsetInClass, bool const nullable)
+  inline FieldInfo(std::string name, std::string_view const type, uint32_t const offsetInClass,
+                   bool const nullable) noexcept
       : name_(std::move(name)), type_(type), offsetInClass_(offsetInClass),
         nullable_(nullable) {}
 

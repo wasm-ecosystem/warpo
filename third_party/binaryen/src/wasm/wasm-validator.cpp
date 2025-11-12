@@ -2389,8 +2389,6 @@ void FunctionValidator::visitRefFunc(RefFunc* curr) {
                 func->type,
                 curr,
                 "function reference type must match referenced function type");
-  shouldBeTrue(
-    curr->type.isExact(), curr, "function reference should be exact");
 }
 
 void FunctionValidator::visitRefEq(RefEq* curr) {
@@ -2911,6 +2909,10 @@ void FunctionValidator::visitI31Get(I31Get* curr) {
 void FunctionValidator::visitRefTest(RefTest* curr) {
   shouldBeTrue(
     getModule()->features.hasGC(), curr, "ref.test requires gc [--enable-gc]");
+
+  shouldBeTrue(
+    curr->castType.isCastable(), curr, "ref.test cannot cast to invalid type");
+
   if (curr->ref->type == Type::unreachable) {
     return;
   }
@@ -2940,6 +2942,9 @@ void FunctionValidator::visitRefTest(RefTest* curr) {
                  "ref.test of exact type requires custom descriptors "
                  "[--enable-custom-descriptors]");
   }
+
+  shouldBeTrue(
+    curr->ref->type.isCastable(), curr, "ref.test cannot cast invalid type");
 }
 
 void FunctionValidator::visitRefCast(RefCast* curr) {
@@ -2999,6 +3004,11 @@ void FunctionValidator::visitRefCast(RefCast* curr) {
                  "ref.cast to exact type requires custom descriptors "
                  "[--enable-custom-descriptors]");
   }
+
+  shouldBeTrue(
+    curr->ref->type.isCastable(), curr, "ref.cast cannot cast invalid type");
+  shouldBeTrue(
+    curr->type.isCastable(), curr, "ref.cast cannot cast to invalid type");
 
   if (!curr->desc) {
     return;
@@ -3123,6 +3133,10 @@ void FunctionValidator::visitBrOn(BrOn* curr) {
                      "br_on_cast* to exact type requires custom descriptors "
                      "[--enable-custom-descriptors]");
       }
+      shouldBeTrue(
+        curr->ref->type.isCastable(), curr, "br_on cannot cast invalid type");
+      shouldBeTrue(
+        curr->castType.isCastable(), curr, "br_on cannot cast to invalid type");
       break;
     }
   }
@@ -4144,6 +4158,14 @@ void FunctionValidator::visitFunction(Function* curr) {
   shouldBeTrue(features <= getModule()->features,
                curr->name,
                "all used types should be allowed");
+
+  if (curr->imported()) {
+    shouldBeTrue(
+      !curr->type.isExact(), curr->name, "imported function should be inexact");
+  } else {
+    shouldBeTrue(
+      curr->type.isExact(), curr->name, "defined function should be exact");
+  }
 
   // validate optional local names
   std::unordered_set<Name> seen;

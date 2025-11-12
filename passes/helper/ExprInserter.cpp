@@ -10,6 +10,7 @@
 #include "ExprInserter.hpp"
 #include "ToString.hpp"
 #include "fmt/base.h"
+#include "warpo/support/Unreachable.hpp"
 #include "wasm-builder.h"
 #include "wasm-type.h"
 #include "wasm.h"
@@ -83,7 +84,7 @@ void ExprInserter::insertBefore(wasm::Builder &b, wasm::Expression *insertedExpr
     break;
   }
   default:
-    __builtin_unreachable();
+    UNREACHABLE;
   }
 }
 
@@ -93,7 +94,6 @@ bool ExprInserter::canInsertAfter(wasm::Expression *insertPosition) {
     if (insertPosition->is<wasm::Unreachable>())
       return true;
     if (wasm::Return const *const expr = insertPosition->dynCast<wasm::Return>(); expr != nullptr) {
-      return true;
       if (expr->value == nullptr)
         return true;
       if (canInsertAfter(expr->value))
@@ -101,7 +101,6 @@ bool ExprInserter::canInsertAfter(wasm::Expression *insertPosition) {
     }
     if (wasm::Break const *const expr = insertPosition->dynCast<wasm::Break>();
         expr != nullptr && expr->condition == nullptr) {
-      return true;
       if (expr->value == nullptr)
         return true;
       if (canInsertAfter(expr->value))
@@ -161,7 +160,7 @@ void ExprInserter::insertAfter(wasm::Builder &b, wasm::Expression *insertedExpr,
       return;
     }
   }
-  __builtin_unreachable();
+  UNREACHABLE;
 }
 
 } // namespace warpo::passes

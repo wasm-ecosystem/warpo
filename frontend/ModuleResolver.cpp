@@ -30,11 +30,19 @@ static PackageResolveResult getPackageName(std::string const &fileInternalPath) 
 
 std::optional<std::filesystem::path> ModuleResolver::findPackageRoot(std::filesystem::path const &sourceInternalPath,
                                                                      std::string const &packageName) {
+  // cache hit
   auto const it = packageRootMap_.find(packageName);
   if (it != packageRootMap_.end())
     return it->second;
+  // plugin
+  if (plugin_ != nullptr) {
+    if (std::optional<std::filesystem::path> packageRoot = plugin_->getPackageRoot(packageName);
+        packageRoot.has_value())
+      return packageRoot;
+  }
+  // default resolver
   std::filesystem::path current;
-  PackageResolveResult const sourcePackage = getPackageName(sourceInternalPath);
+  PackageResolveResult const sourcePackage = getPackageName(sourceInternalPath.string());
   if (sourcePackage.has_value()) {
     std::string const sourcePackageName = (*sourcePackage).first;
     assert(packageRootMap_.contains(sourcePackageName));
@@ -49,7 +57,7 @@ std::optional<std::filesystem::path> ModuleResolver::findPackageRoot(std::filesy
     if (std::filesystem::exists(target) && std::filesystem::is_directory(target)) {
       packageRootMap_[packageName] = target;
       if (support::isDebug("ModuleResolve"))
-        fmt::println("[module resolve] resolve library '{}' in '{}'", packageName, target.c_str());
+        fmt::println("[module resolve] resolve library '{}' in '{}'", packageName, target.string());
       return target;
     }
     current = current.parent_path();
@@ -64,9 +72,10 @@ Dependency ModuleResolver::getDependencyForUserCode(std::string const &nextFileI
       fmt::println("[module resolve] find user code '{}'", filePathWithExt);
     return {readTextFile(filePathWithExt), filePathWithExt};
   }
-  const std::string indexPathWithExt = std::filesystem::path{nextFileInternalPath} / (std::string{"index"} + extension);
+  const std::filesystem::path indexPathWithExt =
+      std::filesystem::path{nextFileInternalPath} / (std::string{"index"} + extension);
   if (std::filesystem::exists(indexPathWithExt) && std::filesystem::is_regular_file(indexPathWithExt)) {
-    return {readTextFile(indexPathWithExt), indexPathWithExt};
+    return {readTextFile(indexPathWithExt.string()), indexPathWithExt.string()};
   }
   const std::string dFilePathWithExt = nextFileInternalPath + ".d" + extension;
   if (std::filesystem::exists(dFilePathWithExt) && std::filesystem::is_regular_file(dFilePathWithExt)) {
@@ -97,13 +106,13 @@ Dependency ModuleResolver::getDependencyForNodeModules(std::string const &nextFi
         fmt::println("[module resolve] resolve '{}' to '{}'", nextFileInternalPath, internalPath);
       return {readTextFile(filePathWithExt), internalPath};
     }
-    const std::string indexPathWithExt = plainPath / (std::string{"index"} + extension);
+    const std::filesystem::path indexPathWithExt = plainPath / (std::string{"index"} + extension);
     if (std::filesystem::exists(indexPathWithExt) && std::filesystem::is_regular_file(indexPathWithExt)) {
       std::string const internalPath =
           libraryPrefix + packageName + (filePath.has_value() ? ("/" + *filePath) : "") + "/index" + extension;
       if (support::isDebug("ModuleResolve"))
         fmt::println("[module resolve] resolve '{}' to '{}'", nextFileInternalPath, internalPath);
-      return {readTextFile(indexPathWithExt), internalPath};
+      return {readTextFile(indexPathWithExt.string()), internalPath};
     }
   }
   if (support::isDebug("ModuleResolve"))

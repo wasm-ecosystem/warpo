@@ -260,10 +260,10 @@ enum class Opcode : uint32_t {
 
 float getFunctionSizeCost();
 
-float getOpcodeSizeCost(wasm::Expression *expr);
+float getOpcodeSizeCost(wasm::Module *m, wasm::Expression *expr);
 float getOpcodeSizeCost(Opcode opcode);
 
-float measureSizeCost(wasm::Expression *expr);
+float measureSizeCost(wasm::Module *m, wasm::Expression *expr);
 
 float getFunctionPerformanceCost();
 float getOpcodePerformanceCost(Opcode opcode);

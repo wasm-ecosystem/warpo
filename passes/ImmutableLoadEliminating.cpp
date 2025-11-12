@@ -117,7 +117,7 @@ private:
                              static_cast<uint32_t>(getValueFromDataSegment(start + 2U)) << 16U |
                              static_cast<uint32_t>(getValueFromDataSegment(start + 3U)) << 24U};
       default:
-        __builtin_trap();
+        std::terminate();
       }
     }
     case wasm::Type::i64: {
@@ -157,7 +157,7 @@ private:
                              static_cast<uint64_t>(getValueFromDataSegment(start + 6U)) << 48U |
                              static_cast<uint64_t>(getValueFromDataSegment(start + 7U)) << 56U};
       default:
-        __builtin_trap();
+        std::terminate();
       }
     }
     case wasm::Type::f32: {
@@ -181,7 +181,7 @@ private:
           .castToF64();
     }
     default: {
-      __builtin_trap();
+      std::terminate();
     }
     }
   }

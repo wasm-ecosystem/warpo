@@ -114,7 +114,7 @@ uint64_t BinaryenUnreachableForLink(uint64_t module, [[maybe_unused]] vb::WasmMo
   return reinterpret_cast<uint64_t>(BinaryenUnreachable(reinterpret_cast<BinaryenModuleRef>(module)));
 }
 uint32_t BinaryenExpressionGetIdForLink(uint64_t expr, [[maybe_unused]] vb::WasmModule *ctx) {
-  return reinterpret_cast<uint32_t>(BinaryenExpressionGetId(reinterpret_cast<BinaryenExpressionRef>(expr)));
+  return static_cast<uint32_t>(BinaryenExpressionGetId(reinterpret_cast<BinaryenExpressionRef>(expr)));
 }
 uint32_t BinaryenLocalSetIsTeeForLink(uint64_t expr, [[maybe_unused]] vb::WasmModule *ctx) {
   return static_cast<uint32_t>(BinaryenLocalSetIsTee(reinterpret_cast<BinaryenExpressionRef>(expr)));

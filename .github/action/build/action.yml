@@ -30,6 +30,19 @@ runs:
         HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
         HOMEBREW_NO_AUTO_UPDATE: 1
         HOMEBREW_NO_INSTALL_CLEANUP: 1
+    - if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        choco install ccache ninja -y
+    - if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1
+    - if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        echo "CMAKE_C_COMPILER=cl" >> $env:GITHUB_ENV
+        echo "CMAKE_CXX_COMPILER=cl" >> $env:GITHUB_ENV
+        echo "CCACHE_SLOPPINESS=include_file_mtime,include_file_ctime,time_macros,pch_defines,file_stat_matches" >> $env:GITHUB_ENV
+        echo "CCACHE_BASEDIR=$(pwd)" >> $env:GITHUB_ENV
     - shell: bash
       run: |
         set -ex
@@ -62,4 +75,5 @@ runs:
         CMAKE_C_COMPILER_LAUNCHER: ccache
         CMAKE_CXX_COMPILER_LAUNCHER: ccache
     - shell: bash
-      run: ccache  --show-stats
+      run: |
+        ccache --show-stats

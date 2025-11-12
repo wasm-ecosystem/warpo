@@ -49,12 +49,15 @@ template<typename Subclass> struct TypeNameGeneratorBase {
 private:
   constexpr void assertValidUsage() {
 #if !defined(__GNUC__) || __GNUC__ >= 14
+//workaround of MSVC bug https://developercommunity.visualstudio.com/t/msvc-error-C1001:-Internal-compiler-erro/10992638?scope=follow
+#ifndef _MSC_VER
     // Check that the subclass provides `getNames` with the correct type.
     using Self = TypeNameGeneratorBase<Subclass>;
     static_assert(
       static_cast<TypeNames (Self::*)(HeapType)>(&Self::getNames) !=
         static_cast<TypeNames (Self::*)(HeapType)>(&Subclass::getNames),
       "Derived class must implement getNames");
+#endif
 #endif
   }
 };

@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "FieldInfo.hpp"
+#include "SubProgramRegistry.hpp"
 
 namespace warpo {
 
@@ -45,6 +46,12 @@ public:
 
   bool isBasicType() const noexcept;
 
+  inline SubProgramInfo &addSubProgram(std::string subProgramName) {
+    return classMemberFunctionRegistry_.addSubProgram(std::move(subProgramName));
+  }
+
+  inline SubProgramRegistry const &getSubProgramRegistry() const noexcept { return classMemberFunctionRegistry_; }
+
 private:
   std::string_view name_;
   std::string_view parentName_;
@@ -53,6 +60,7 @@ private:
   std::vector<FieldInfo> fields_;
   std::vector<InterfaceInfo> interfaces_;
   std::vector<std::string_view> templateTypes_;
+  SubProgramRegistry classMemberFunctionRegistry_;
 };
 
 } // namespace warpo

@@ -11,6 +11,9 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#if (defined _MSC_VER) && !(defined __clang__)
+#include <intrin.h>
+#endif
 
 #include "warpo/support/DynBitSet.hpp"
 
@@ -48,10 +51,23 @@ bool DynBitset::get(size_t index) const {
   return ((data_[block_index] >> static_cast<Element>(bit_index)) & 1U) == 1U;
 }
 
+#if (defined _MSC_VER) && !(defined __clang__)
+inline static int32_t popcntll(uint64_t const mask) noexcept {
+#if (defined _M_X64)
+  return static_cast<int32_t>(__popcnt64(mask));
+#else
+  return _CountOneBits64(mask);
+#endif
+}
+#elif (((defined __GNUC__) || (defined __clang__)))
+inline static int32_t popcntll(uint64_t const mask) noexcept { return __builtin_popcountll(mask); }
+#else
+static_assert(false, "C/C++ compiler not supported");
+#endif
 size_t DynBitset::count() const {
   size_t count = 0;
   for (const auto data : data_) {
-    count += static_cast<size_t>(__builtin_popcountll(data));
+    count += static_cast<size_t>(popcntll(data));
   }
   return count;
 }

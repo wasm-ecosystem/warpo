@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <concepts>
+#include <iterator>
 #include <set>
 #include <utility>
 #include <vector>

@@ -6,13 +6,12 @@
 #include <memory>
 
 #include "BuildScript.hpp"
-#include "warp_runner/WarpRunner.hpp"
+#include "LinkedAPI.hpp"
 #include "warpo/frontend/Compiler.hpp"
-#include "warpo/frontend/LinkedAPIAssemblyscript.hpp"
 #include "warpo/passes/Runner.hpp"
-#include "warpo/support/Container.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
+#include "warpo/warp_runner/WarpRunner.hpp"
 
 #include "src/core/common/NativeSymbol.hpp"
 #include "src/core/common/Span.hpp"
@@ -24,7 +23,7 @@ static cli::Opt<std::filesystem::path> projectOption{
     "-p",
     "--project",
     [](argparse::Argument &arg) -> void {
-      arg.help("Compile the project given the path to its configuration file, or to a folder with a 'build.ts'")
+      arg.help("Compile the project given the path to its configuration file, or to a folder with a 'create.ts'")
           .nargs(1U)
           .default_value("");
     },
@@ -32,39 +31,51 @@ static cli::Opt<std::filesystem::path> projectOption{
 
 static std::filesystem::path getProjectConfigPath() {
   std::filesystem::path projectPath = projectOption.get();
-  if (projectPath.empty()) {
-    return std::filesystem::current_path() / "build.ts";
-  }
-  if (isDirectory(projectPath)) {
-    return projectPath / "build.ts";
-  }
+  if (projectPath.empty())
+    return std::filesystem::current_path() / "create.ts";
+  if (isDirectory(projectPath))
+    return projectPath / "create.ts";
   return projectPath;
 }
 
-} // namespace warpo::driver
-
-std::unique_ptr<WarpRunner> warpo::driver::initProjectConfig() {
-  frontend::Config frontendConfig = frontend::getDefaultConfig();
-  frontendConfig.emitDebugLine = true;
-
-  std::filesystem::path const buildScriptPath = getProjectConfigPath();
-  if (!isRegularFile(buildScriptPath))
-    return nullptr;
-  frontend::CompilationResult const result = frontend::compile({buildScriptPath}, frontendConfig);
+BuildScriptRunner::BuildScriptRunner(std::filesystem::path const &buildScriptPath)
+    : r_{this}, createFileDirName_{buildScriptPath.parent_path().string()} {
+  constexpr const char *startFunctionName = "__create_start";
+  frontend::Config createConfig = frontend::getDefaultConfig();
+  createConfig.emitDebugLine = true;
+  createConfig.exportRuntime = true;
+  createConfig.exportTable = true;
+  createConfig.exportStart = startFunctionName;
+  frontend::CompilationResult const result = frontend::compile(nullptr, {buildScriptPath.string()}, createConfig);
   if (result.m.invalid()) {
     fmt::println("compilation failed");
     fmt::println("{}", result.errorMessage);
-    throw std::runtime_error("compilation 'build.ts' failed");
+    throw std::runtime_error{"compilation 'create.ts' failed"};
   }
   passes::Config const passesConfig{.sourceMapURL = ""};
   passes::Output output = passes::runOnModule(result.m, passesConfig);
 
-  std::unique_ptr<WarpRunner> r{new WarpRunner(nullptr)};
-  std::vector<vb::NativeSymbol> linkedAPI;
-  append(linkedAPI, frontend::createAssemblyscriptAPI());
-  (*r)->initFromBytecode(vb::Span<uint8_t const>{output.wasm.data(), output.wasm.size()},
-                         vb::Span<vb::NativeSymbol const>(linkedAPI.data(), linkedAPI.size()), false);
-  uint8_t const *const stackTop = (*r).getStackTop();
-  (*r)->start(stackTop);
-  return r;
+  std::vector<vb::NativeSymbol> const &linkedAPI = getLinkedAPI();
+  r_.initFromBytecode(vb::Span<uint8_t const>{output.wasm.data(), output.wasm.size()},
+                      vb::Span<vb::NativeSymbol const>(linkedAPI.data(), linkedAPI.size()), false);
+  r_.start();
+  r_.callExportedFunctionWithName<0>(startFunctionName);
 }
+
+std::unique_ptr<BuildScriptRunner> BuildScriptRunner::create() {
+  std::filesystem::path const buildScriptPath = getProjectConfigPath();
+  if (!isRegularFile(buildScriptPath))
+    return nullptr;
+  return std::unique_ptr<BuildScriptRunner>{new BuildScriptRunner(buildScriptPath)};
+}
+
+std::optional<std::filesystem::path> BuildScriptRunner::getPackageRoot(std::string const &packageName) {
+  if (onModuleResolveCallback_.has_value())
+    return onModuleResolveCallback_.value()(packageName);
+  return std::nullopt;
+}
+void BuildScriptRunner::registerOnModuleResolve(OnResolveModuleFn callback) {
+  onModuleResolveCallback_ = std::move(callback);
+}
+
+} // namespace warpo::driver

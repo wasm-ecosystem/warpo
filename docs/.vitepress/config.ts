@@ -54,7 +54,12 @@ export default defineConfig({
       {
         text: "Using the Compiler",
         link: "/using_compiler/quick_start",
-        items: [],
+        items: [
+          {
+            text: "third-party libraries",
+            link: "/using_compiler/module_resolution",
+          },
+        ],
       },
       {
         text: "Using the Runtime",

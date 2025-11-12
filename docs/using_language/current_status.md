@@ -4,7 +4,7 @@
 
 WARPO supports most of well-known TS features
 
-- numberic calculation
+- numeric calculation
 - function
 - class, interface and polymorphism
 - generics

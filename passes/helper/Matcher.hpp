@@ -55,7 +55,7 @@ template <class T> struct M {
 
 template <class T, class P> struct IsMatcherImpl {
   template <class... E> M<P> operator()(M<E> &&...m) const {
-    return M<P>{[... m = std::move(m)](P const &expr, Context &ctx) -> bool {
+    return M<P>{[... m = std::move(m)](P const &expr, [[maybe_unused]] Context &ctx) -> bool {
       if (!expr.template is<T>())
         return false;
       T const &t = *expr.template cast<T>();

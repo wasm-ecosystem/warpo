@@ -20,9 +20,12 @@
 #include <map>
 #include <string>
 #include <string_view>
+#include <unordered_map>
+#include <utility>
 
 #include "ClassInfo.hpp"
-#include "warpo/support/StringPool.hpp"
+#include "SubProgramInfo.hpp"
+#include "SubProgramRegistry.hpp"
 
 namespace warpo {
 
@@ -48,10 +51,23 @@ public:
 
   GlobalTypes const &getGlobalTypes() const noexcept { return globalTypes_; }
 
+  SubProgramRegistry const &getSubProgramRegistry() const noexcept { return subProgramRegistry_; }
+
+  void addSubProgram(std::string subProgramName, std::string_view const belongClassName);
+
+  void addParameter(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
+                    uint32_t const index, bool const nullable);
+
+  void addLocal(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
+                uint32_t const index, uint32_t const start, uint32_t const end, bool const nullable);
+
 private:
+  using SubProgramLookupMap = std::unordered_map<std::string_view, SubProgramInfo &>;
   ClassRegistry classRegistry_;
   GlobalTypes globalTypes_;
   StringPool stringPool_;
+  SubProgramRegistry subProgramRegistry_;
+  SubProgramLookupMap subProgramLookupMap_;
 };
 
 } // namespace warpo

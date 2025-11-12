@@ -66,7 +66,7 @@ static Counter createCounter(std::vector<std::unique_ptr<wasm::Global>> const &g
       continue;
     if (!global->init->is<wasm::Const>())
       continue;
-    bool const success = counter.insert_or_assign(global->name, 0U).second;
+    [[maybe_unused]] bool const success = counter.insert_or_assign(global->name, 0U).second;
     assert(success);
   }
   return counter;

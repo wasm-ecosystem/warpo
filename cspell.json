@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
   "language": "en",
   "dictionaryDefinitions": [
     {
@@ -7,5 +8,16 @@
       "addWords": true
     }
   ],
-  "dictionaries": ["project-words"]
+  "dictionaries": ["project-words"],
+  "ignorePaths": [
+    "build/**",
+    "*.svg",
+    "passes/DoInlining.cpp",
+    "passes/DoInlining.hpp",
+    "third_party/**",
+    "assemblyscript/**",
+    "*.wat",
+    "tests/frontend/compiler/**",
+    "tests/DebugSymbol/*.txt"
+  ]
 }

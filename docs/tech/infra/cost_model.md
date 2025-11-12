@@ -18,3 +18,9 @@ preset size cost models for 5 backend:
 - model/instruction_cost_tricore_vb_warp.txt
 - model/instruction_cost_x86_64_active_vb_warp.txt
 - model/instruction_cost_x86_64_vb_warp.txt
+
+::: detail
+calling wasm-compiler's builtin functions will be treated as similar opcode instead of call opcode.
+`getU32FromLinkedMemory` series builtin functions are equivalent to the corresponding `***_LOAD`.
+`isFunctionLinked` and `tracePoint` will be treated as `NOP`.
+:::

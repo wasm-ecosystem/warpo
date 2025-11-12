@@ -43,7 +43,7 @@ struct LivenessMap {
   void set(wasm::Expression *expr, Pos pos, size_t index, bool isLive) {
     set(getIndexBase(expr).value(), pos, index, isLive);
   }
-  bool get(ssize_t base, Pos pos, size_t index) const {
+  bool get(size_t base, Pos pos, size_t index) const {
     return storage_.get((2 * static_cast<size_t>(base) + (pos == Pos::Before ? 0U : 1U)) * dimension_ + index);
   }
   void ensureExpression(wasm::Expression *expr) {

@@ -24,12 +24,12 @@
 #include <vector>
 #include <wasm-binary.h>
 
-#include "warp_runner/WarpRunner.hpp"
 #include "warpo/frontend/Compiler.hpp"
-#include "warpo/frontend/LinkedAPIAssemblyscript.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
+#include "warpo/warp_runner/LinkedAPIAssemblyscript.hpp"
+#include "warpo/warp_runner/WarpRunner.hpp"
 #include "wasm-validator.h"
 #include "wasm.h"
 
@@ -113,7 +113,7 @@ public:
 
 frontend::CompilationResult compile(TestConfigJson const &configJson, std::filesystem::path const &tsPath) {
   std::vector<std::string> const entries{tsPath.string()};
-  return frontend::compile(entries, configJson.createConfig());
+  return frontend::compile(nullptr, entries, configJson.createConfig());
 }
 
 [[nodiscard]] TestResult runModuleOnWarp(TestConfigJson const &configJson, std::filesystem::path const &tsPath,
@@ -142,26 +142,26 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
   WarpRunner r{nullptr};
   try {
     static std::vector<vb::NativeSymbol> const linkedAPI = frontend::createAssemblyscriptAPI();
-    r->initFromBytecode(vb::Span<const uint8_t>{wasm.data(), wasm.size()},
-                        vb::Span<vb::NativeSymbol const>{linkedAPI.data(), linkedAPI.size()}, false);
-    r->start(r.getStackTop());
+    r.initFromBytecode(vb::Span<const uint8_t>{wasm.data(), wasm.size()},
+                       vb::Span<vb::NativeSymbol const>{linkedAPI.data(), linkedAPI.size()}, false);
+    r.start();
     if (configJson.hasExportStart())
-      r->callExportedFunctionWithName<0>(r.getStackTop(), "_start");
+      r.callExportedFunctionWithName<0>("_start");
   } catch (vb::TrapException &e) {
-    fmt::println("FAILED '{}': execution trapped due to {}", tsPath.c_str(), e.what());
+    fmt::println("FAILED '{}': execution trapped due to {}", tsPath.string(), e.what());
     return TestResult::Failure;
   } catch (vb::LinkingException &e) {
     // Linking failed is acceptable, skip unsupported function
-    fmt::println("SKIP '{}': {}", tsPath.c_str(), e.what());
+    fmt::println("SKIP '{}': {}", tsPath.string(), e.what());
     return TestResult::Skip;
   } catch (const std::exception &e) {
     // Feature not implemented in warp is acceptable
     bool const featureNotImplemented = std::string(e.what()).find("feature not implemented") != std::string::npos;
     if (!featureNotImplemented) {
-      fmt::println("FAILED '{}': {}", tsPath.c_str(), e.what());
+      fmt::println("FAILED '{}': {}", tsPath.string(), e.what());
       return TestResult::Failure;
     }
-    fmt::println("SKIP '{}': {}", tsPath.c_str(), e.what());
+    fmt::println("SKIP '{}': {}", tsPath.string(), e.what());
     return TestResult::Skip;
   }
 
@@ -174,13 +174,13 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
     return TestResult::Success;
   frontend::CompilationResult const ret = compile(configJson, tsPath);
   if (ret.m.invalid()) {
-    fmt::println("FAILED '{}': expected to compile successfully\nerror message: {}", tsPath.c_str(), ret.errorMessage);
+    fmt::println("FAILED '{}': expected to compile successfully\nerror message: {}", tsPath.string(), ret.errorMessage);
     return TestResult::Failure;
   }
   std::stringstream ss;
   ss << *ret.m.get();
   std::string actual = std::move(ss).str();
-  writeBinaryFile(expectedOutPath, std::move(actual));
+  writeBinaryFile(expectedOutPath.string(), std::move(actual));
   return runModuleOnWarp(configJson, tsPath, ret.m);
 }
 
@@ -205,7 +205,7 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
                  "{}"
                  "\t========== actual error message==========",
                  ret.errorMessage);
-    fmt::println("FAILED '{}': stderr mismatch", tsPath.c_str());
+    fmt::println("FAILED '{}': stderr mismatch", tsPath.string());
     return TestResult::Failure;
   }
   return TestResult::Success;
@@ -215,15 +215,15 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
                                          std::filesystem::path const &expectedOutPath) {
   frontend::CompilationResult const ret = compile(configJson, tsPath);
   if (ret.m.invalid()) {
-    fmt::println("FAILED '{}': expected to compile successfully\nerror message: {}", tsPath.c_str(), ret.errorMessage);
+    fmt::println("FAILED '{}': expected to compile successfully\nerror message: {}", tsPath.string(), ret.errorMessage);
     return TestResult::Failure;
   }
   std::stringstream ss;
   ss << *ret.m.get();
   std::string const actual = std::move(ss).str();
-  std::string const expected = readTextFile(expectedOutPath);
+  std::string const expected = readTextFile(expectedOutPath.string());
   if (expected != actual) {
-    fmt::println("FAILED '{}': mismatched wat output", tsPath.c_str());
+    fmt::println("FAILED '{}': mismatched wat output", tsPath.string());
     return TestResult::Failure;
   }
   return runModuleOnWarp(configJson, tsPath, ret.m);
@@ -232,21 +232,22 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
 [[nodiscard]] TestResult run(std::filesystem::path const &tsPath) {
   try {
     std::filesystem::path const jsonPath = replaceExtension(tsPath, ".json");
-    nlohmann::json const j = nlohmann::json::parse(std::filesystem::exists(jsonPath) ? readTextFile(jsonPath) : "{}");
+    nlohmann::json const j =
+        nlohmann::json::parse(std::filesystem::exists(jsonPath) ? readTextFile(jsonPath.string()) : "{}");
     TestConfigJson const configJson{j};
     std::filesystem::path const expectedOutPath = replaceExtension(tsPath, ".wat");
     if (updateFlag.get())
       return runUpdate(configJson, tsPath, expectedOutPath);
     if (configJson.checkErrorMessage()) {
       if (std::filesystem::exists(expectedOutPath)) {
-        fmt::println("{} should be removed when --stderr is specified.", expectedOutPath.c_str());
+        fmt::println("{} should be removed when --stderr is specified.", expectedOutPath.string());
         std::abort();
       }
       return runCompilationErrorCase(configJson, tsPath);
     }
     return runSnapshotCase(configJson, tsPath, expectedOutPath);
   } catch (std::exception const &e) {
-    fmt::println("FAILED '{}': unkown error {}", tsPath.c_str(), e.what());
+    fmt::println("FAILED '{}': unkown error {}", tsPath.string(), e.what());
     return TestResult::Failure;
   }
 }
@@ -271,6 +272,7 @@ void collectTestFilesImpl(std::vector<std::filesystem::path> &testFiles, std::fi
 }
 
 std::filesystem::path getTestFolder() {
+  // __FILE__ is absolute path when compiled with MSVC /FC flag
   std::filesystem::path const folder = std::filesystem::path{__FILE__}.parent_path() / "compiler";
   return folder;
 }

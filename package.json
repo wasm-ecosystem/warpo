@@ -11,17 +11,19 @@
     "build:cpp": "cmake -S . -B build && cmake --build build --parallel",
     "build": "npm run build:ts && npm run build:cpp",
     "test:ut": "cd build && ctest --output-on-failure",
-    "test:as:snapshot": "./build/tests/frontend/warpo_frontend_test",
+    "test:as:snapshot": "cross-env-shell ./build/tests/frontend/warpo_frontend_test",
     "test:opt:snapshot": "node tests/snapshot_diff/index.mjs",
     "test:bootstrap:debug": "./tests/bootstrap/debug.sh",
     "test:bootstrap:release": "./tests/bootstrap/release.sh",
-    "test:debug_symbol": "./build/tests/DebugSymbol/TestDebugSymbol",
-    "test:debug_symbol:update": "build/tests/DebugSymbol/TestDebugSymbol --update-fixtures",
-    "test": "npm run test:ut && npm run test:as:snapshot && npm run test:opt:snapshot && npm run test:bootstrap:debug && npm run test:bootstrap:release",
+    "test:debug_symbol": "cross-env-shell ./build/tests/DebugSymbol/TestDebugSymbol",
+    "test:debug_symbol:update": "cross-env-shell build/tests/DebugSymbol/TestDebugSymbol --update-fixtures",
+    "test:driver": "node tests/driver/index.mjs",
+    "test": "npm run test:ut && npm run test:as:snapshot && npm run test:opt:snapshot && npm run test:driver && npm run test:debug_symbol && npm run test:bootstrap:debug && npm run test:bootstrap:release",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "prettier": "prettier --check .",
-    "prettier:fix": "prettier --write ."
+    "prettier:fix": "prettier --write .",
+    "cspell": "cspell ."
   },
   "license": "Apache-2.0",
   "keywords": [
@@ -32,6 +34,7 @@
   ],
   "author": "congcong.cai@bmw.com",
   "files": [
+    "create",
     "dist",
     "types",
     "tsconfig-warpo.json",
@@ -39,10 +42,14 @@
     "assemblyscript/std/assembly/index.d.ts"
   ],
   "devDependencies": {
+    "@assemblyscript/loader": "^0.28.9",
     "@types/node": "^22.15.21",
     "assemblyscript": "^0.28.4",
     "assemblyscript-prettier": "^3.0.1",
-    "diff": "^7.0.0",
+    "chalk": "^5.6.2",
+    "cross-env": "^10.1.0",
+    "cspell": "^9.3.0",
+    "diff": "^8.0.0",
     "prettier": "^3.6.2",
     "typescript": "^5.8.3",
     "vitepress": "^1.6.3"

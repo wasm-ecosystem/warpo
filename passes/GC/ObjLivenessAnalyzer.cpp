@@ -337,16 +337,16 @@ struct InfoPrinter : public IInfoPrinter {
     if (auto get = expr->dynCast<wasm::LocalGet>()) {
       if (localsUses_.contains(get)) {
         ss << "[local use: ";
-        for (size_t const &index : localsUses_.at(get)) {
-          ss << index << " ";
+        for (size_t const &i : localsUses_.at(get)) {
+          ss << i << " ";
         }
         ss << "] ";
       }
     }
     if (tmpUses_.contains(expr)) {
       ss << "[tmp use: ";
-      for (size_t const &index : tmpUses_.at(expr)) {
-        ss << index << " ";
+      for (size_t const &i : tmpUses_.at(expr)) {
+        ss << i << " ";
       }
       ss << "] ";
     }

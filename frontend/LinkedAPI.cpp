@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "LinkedAPI.hpp"
-#include "warpo/frontend/LinkedAPIAssemblyscript.hpp"
 #include "warpo/support/Container.hpp"
+#include "warpo/warp_runner/LinkedAPIAssemblyscript.hpp"
 
 #include "src/core/common/NativeSymbol.hpp"
 

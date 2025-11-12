@@ -8,6 +8,7 @@
 
 #include "warpo/support/DynBitSet.hpp"
 #include "warpo/support/IncMap.hpp"
+#include "warpo/support/Unreachable.hpp"
 #include "wasm.h"
 
 namespace warpo::passes::gc {
@@ -36,7 +37,7 @@ struct SSAValue {
       case Kind::Arg:
         return value_.arg <=> other.value_.arg;
       default:
-        __builtin_unreachable();
+        UNREACHABLE;
       }
     } else {
       return kind_ <=> other.kind_;
@@ -49,7 +50,7 @@ struct SSAValue {
     case Kind::Arg:
       return value_.arg;
     default:
-      __builtin_unreachable();
+      UNREACHABLE;
     }
   }
   std::optional<wasm::Index> tryGetLocalIndex() const {
