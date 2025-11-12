@@ -3842,7 +3842,7 @@ export class Function extends TypedElement {
         this.localsByIndex[local.index] = local;
         flow.setLocalFlag(local.index, LocalFlags.Initialized);
         
-        addParameter(functionName, "this", thisType.toString(), local.index, false);
+        addParameter(functionName, "this", thisType.toStringWithoutNullable(), local.index, false);
       }
       let parameterTypes = signature.parameterTypes;
       for (let i = 0, k = parameterTypes.length; i < k; ++i) {
@@ -3859,8 +3859,7 @@ export class Function extends TypedElement {
         scopedLocals.set(parameterName, local);
         this.localsByIndex[local.index] = local;
         flow.setLocalFlag(local.index, LocalFlags.Initialized);
-        let classOrWrapper = parameterType.getClassOrWrapper(this.program);
-        let fullTypeName = classOrWrapper ? classOrWrapper.internalName : parameterType.toString();
+        const fullTypeName = parameterType.toStringWithoutNullable();
         addParameter(functionName, parameterName, fullTypeName, local.index, parameterType.isNullableReference);
       }
     }
