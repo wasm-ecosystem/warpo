@@ -35,7 +35,7 @@ public:
   };
   using GlobalTypes = std::map<std::string, GlobalTypeInfo>;
 
-  void createClass(std::string className, std::string parentName, uint32_t const rtid);
+  void createClass(std::string_view className, std::string parentName, uint32_t const rtid);
 
   void addField(std::string_view const className, std::string fieldName, std::string typeName, uint32_t const offset,
                 uint32_t const nullable);

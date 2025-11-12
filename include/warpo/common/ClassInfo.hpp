@@ -43,6 +43,8 @@ public:
 
   std::vector<std::string_view> const &getTemplateTypes() const noexcept { return templateTypes_; }
 
+  bool isBasicType() const noexcept;
+
 private:
   std::string_view name_;
   std::string_view parentName_;

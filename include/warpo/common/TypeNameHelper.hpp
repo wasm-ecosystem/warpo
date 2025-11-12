@@ -1,5 +1,5 @@
-///
-/// @file ClassInfo.cpp
+//
+/// @file TypeNameHelper.hpp
 /// @copyright Copyright (C) 2025 wasm-ecosystem
 /// SPDX-License-Identifier: Apache-2.0
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,19 @@
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
-#include <regex>
-#include <utility>
+#pragma once
 
-#include "warpo/common/ClassInfo.hpp"
+#include <string_view>
+#include <unordered_map>
 
 namespace warpo {
 
-void ClassInfo::addMember(std::string name, std::string_view const type, uint32_t const offsetInClass,
-                          bool const nullable) {
-  fields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
-}
+class TypeNameHelper final {
+public:
+  static std::string_view normalizeTypeName(std::string_view const type) noexcept;
 
-bool ClassInfo::isBasicType() const noexcept {
-  static const std::regex basicTypePattern(R"(~lib/number/(F32|F64|U8|I8|U16|I16|U32|I32|U64|I64|Usize|Isize|Bool))");
-  return std::regex_match(name_.begin(), name_.end(), basicTypePattern);
-}
+private:
+  static const std::unordered_map<std::string_view, std::string_view> basicTypeMap;
+};
 
 } // namespace warpo

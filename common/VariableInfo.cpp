@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "warpo/common/ClassInfo.hpp"
+#include "warpo/common/TypeNameHelper.hpp"
 #include "warpo/common/FieldInfo.hpp"
 #include "warpo/common/VariableInfo.hpp"
 
@@ -37,8 +38,8 @@ void VariableInfo::addField(std::string_view const className, std::string fieldN
   classIt->second.addMember(std::move(fieldName), internedTypeName, offset, nullable != 0);
 }
 
-void VariableInfo::createClass(std::string const className, std::string const parentName, uint32_t const rtid) {
-  std::string_view const internedClassName = stringPool_.internString(className);
+void VariableInfo::createClass(std::string_view const className, std::string const parentName, uint32_t const rtid) {
+  std::string_view const internedClassName = stringPool_.internString(TypeNameHelper::normalizeTypeName(className));
   std::string_view const internedParentName = stringPool_.internString(parentName);
   classRegistry_.emplace(internedClassName, ClassInfo{internedClassName, internedParentName, rtid});
 }
