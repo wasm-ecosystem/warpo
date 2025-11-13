@@ -41,7 +41,7 @@ int main(int argc, char const *argv[]) {
   try {
     cli::init(cli::Category::All, program, argc, argv);
     std::string const input = readBinaryFile(inputPath.get());
-    std::string wat = passes::runOnWatForTest(input, std::regex{functionRegex.get()});
+    std::string const wat = passes::runOnWatForTest(input, std::regex{functionRegex.get()});
     writeBinaryFile(outputPath.get(), wat);
   } catch (const std::exception &e) {
     fmt::print(stderr, "ERROR: {}\n", e.what());
