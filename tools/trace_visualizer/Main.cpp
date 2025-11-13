@@ -7,8 +7,10 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#include <optional>
 #include <protozero/pbf_writer.hpp>
 #include <ranges>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -37,7 +39,7 @@ static cli::Opt<std::filesystem::path> outputFileOption{
 };
 
 const double RATE = 1.0 / (200 * 1000000);
-const int TOTAL_SLICE_COUNT = 1000;
+const uint64_t TOTAL_SLICE_COUNT = UINT64_MAX;
 
 struct TraceEventWriter {
   protozero::pbf_writer pbf_;
@@ -92,65 +94,83 @@ class TraceBuilder {
 public:
   TraceWriter writer_;
 
-  void createTraceData();
+  TraceBuilder() {
+    std::ifstream mappingFile(tracePointMappingFileOption.get(), std::ios::in);
+    std::string line;
+    while (std::getline(mappingFile, line)) {
+      size_t index = line.find(' ');
+      if (index != std::string::npos) {
+        int fnId = std::stoi(line.substr(0, index));
+        functionIndexes_[fnId] = line.substr(index + 1);
+      }
+    }
+
+    recordFile_ = std::ifstream{traceRecordFileOption.get(), std::ios::binary};
+    std::string magic(16, '\0');
+    recordFile_.read(magic.data(), 16);
+    if (magic != "___WARP_TRACE___")
+      throw std::runtime_error("Invalid trace record file");
+  }
+
+  void process() {
+    uint64_t sliceCount = 0;
+    uint32_t lastTime = 0U;
+
+    while (true) {
+      if (pendingSlice_.empty()) {
+        if (sliceCount >= TOTAL_SLICE_COUNT)
+          break;
+        sliceCount++;
+      }
+      std::optional<Record> record = nextRecord();
+      lastTime = record->time;
+      // finish
+      if (!record.has_value())
+        break;
+
+      if (record->fnId > 0) {
+        pendingSlice_.push_back(record->fnId);
+        addBeginEvent(record->uuid, record->time, record->fnId);
+      } else {
+        PopCount const popCount = getPopCount(*record);
+        if (!popCount.found) {
+          std::cerr << "warning: No matching begin for end event " << record->fnId << " in " << record->time
+                    << std::endl;
+          if (!recoverFromMissingBegin(*record))
+            return;
+          continue;
+        }
+        if (popCount.additionalPopCount > 0U) {
+          std::cerr << "warning: No matching end for begin event "
+                    << pendingSlice_[pendingSlice_.size() - popCount.additionalPopCount] << " in " << record->time
+                    << std::endl;
+          if (!recoverFromMissingEnd(*record, popCount.additionalPopCount, lastTime))
+            return;
+          continue;
+        }
+        pendingSlice_.pop_back();
+        addEndEvent(record->uuid, record->time);
+      }
+    }
+  }
 
 private:
-  void addBeginEvent(uint64_t uuid, uint64_t timestamp, std::string const &functionName) {
-    writer_.writeTracePacket([&](TracePacketWriter &tracePacketWriter) -> void {
-      tracePacketWriter.writeTimestamp(timestamp);
-      tracePacketWriter.writeTrustedPacketSequenceId(1U);
-      tracePacketWriter.writeTrackEvent([&](TraceEventWriter &traceEventWriter) -> void {
-        traceEventWriter.writeTrackUuid(uuid);
-        traceEventWriter.writeName(functionName);
-        traceEventWriter.writeType(TraceEventWriter::Type::TYPE_SLICE_BEGIN);
-      });
-    });
-  }
-  void addEndEvent(uint64_t uuid, uint64_t timestamp) {
-    writer_.writeTracePacket([&](TracePacketWriter &tracePacketWriter) -> void {
-      tracePacketWriter.writeTimestamp(timestamp);
-      tracePacketWriter.writeTrustedPacketSequenceId(1U);
-      tracePacketWriter.writeTrackEvent([&](TraceEventWriter &traceEventWriter) -> void {
-        traceEventWriter.writeTrackUuid(uuid);
-        traceEventWriter.writeType(TraceEventWriter::Type::TYPE_SLICE_END);
-      });
-    });
-  }
-};
+  uint64_t lastTs_ = 0U;
+  uint64_t overflowCount_ = 0U;
+  std::vector<int32_t> pendingSlice_;
+  std::map<int, std::string> functionIndexes_;
+  std::ifstream recordFile_;
 
-void TraceBuilder::createTraceData() {
-  std::map<int, std::string> functionIndexes;
-  std::ifstream mappingFile(tracePointMappingFileOption.get(), std::ios::in);
-  std::string line;
-  while (std::getline(mappingFile, line)) {
-    size_t index = line.find(' ');
-    if (index != std::string::npos) {
-      int fnId = std::stoi(line.substr(0, index));
-      functionIndexes[fnId] = line.substr(index + 1);
-    }
-  }
-
-  std::ifstream recordFile(traceRecordFileOption.get(), std::ios::binary);
-  std::string magic(16, '\0');
-  recordFile.read(magic.data(), 16);
-  if (magic != "___WARP_TRACE___")
-    throw std::runtime_error("Invalid trace record file");
-
-  std::vector<int32_t> pendingSlice;
-  uint64_t slice_count = UINT64_MAX;
-  uint64_t lastTs = 0U;
-  uint64_t overflowCount = 0U;
-
-  while (true) {
-    if (pendingSlice.empty()) {
-      slice_count++;
-      if (slice_count >= TOTAL_SLICE_COUNT)
-        break;
-    }
+  struct Record {
+    uint64_t uuid;
+    uint32_t time;
+    int32_t fnId;
+  };
+  std::optional<Record> nextRecord() {
     std::array<uint8_t, 16U> data{};
-    recordFile.read(reinterpret_cast<char *>(data.data()), data.size());
-    if (recordFile.gcount() < 16)
-      break;
+    recordFile_.read(reinterpret_cast<char *>(data.data()), data.size());
+    if (recordFile_.gcount() < 16)
+      return std::nullopt;
 
     uint64_t uuid;
     std::memcpy(&uuid, &data[0], sizeof(uuid));
@@ -159,42 +179,100 @@ void TraceBuilder::createTraceData() {
     int32_t fnId;
     std::memcpy(&fnId, &data[12], sizeof(fnId));
 
-    uint64_t refinedTime = time;
-    refinedTime += (1ULL << 32ULL) * overflowCount;
-    if (lastTs > refinedTime)
-      overflowCount++;
-    refinedTime += 1ULL << 32ULL;
-    lastTs = refinedTime;
+    uint64_t refinedTime = static_cast<uint64_t>(time) + (overflowCount_ << 32ULL);
+    if (lastTs_ > refinedTime) {
+      overflowCount_++;
+      refinedTime += 1ULL << 32ULL;
+    }
+    assert(lastTs_ <= refinedTime);
+    lastTs_ = refinedTime;
 
     uint32_t scaledTime = static_cast<uint32_t>(static_cast<double>(refinedTime) * RATE);
 
     assert(fnId != 0);
-    if (fnId > 0) {
-      auto it = functionIndexes.find(fnId);
-      std::string const functionName =
-          (it != functionIndexes.end()) ? it->second : "unknown function " + std::to_string(fnId);
-      addBeginEvent(uuid, scaledTime, functionName);
-      pendingSlice.push_back(fnId);
-    } else {
-      size_t popCount = 0;
-      for (int32_t it : std::ranges::reverse_view(pendingSlice)) {
-        popCount++;
-        if (it == -fnId)
-          break;
-      }
-      if (popCount == pendingSlice.size()) {
-        std::cerr << "warning: No matching begin for end event " << fnId << std::endl;
+    return {{.uuid = uuid, .time = scaledTime, .fnId = fnId}};
+  }
+
+  struct PopCount {
+    bool found = false;
+    size_t additionalPopCount = 0;
+  };
+  PopCount getPopCount(Record const &record) {
+    size_t popCount = 0;
+    for (int32_t it : std::ranges::reverse_view(pendingSlice_)) {
+      if (it == -record.fnId)
+        return {.found = true, .additionalPopCount = popCount};
+      popCount++;
+    }
+    return {.found = false, .additionalPopCount = 0U};
+  }
+
+  // true for recover successfully
+  [[nodiscard]] bool recoverFromMissingBegin(Record const &missingBeginRecord) {
+    while (true) {
+      std::optional<Record> record = nextRecord();
+      // finish
+      if (!record.has_value())
+        return false;
+      if (record->fnId > 0)
         continue;
+      PopCount const popCount = getPopCount(*record);
+      if (!popCount.found)
+        continue;
+      for (size_t i = 0; i < popCount.additionalPopCount; ++i) {
+        pendingSlice_.pop_back();
+        addEndEvent(missingBeginRecord.uuid, missingBeginRecord.time);
       }
-      for (size_t i = 0; i < popCount; ++i) {
-        if (popCount != i + 1)
-          std::cerr << "warning: No matching end for begin event " << pendingSlice.back() << std::endl;
-        pendingSlice.pop_back();
-        addEndEvent(uuid, scaledTime);
-      }
+      addFailedBeginEndEvent(missingBeginRecord.uuid, missingBeginRecord.time, record->time);
+      pendingSlice_.pop_back();
+      addEndEvent(record->uuid, record->time);
+      return true;
     }
   }
-}
+
+  [[nodiscard]] bool recoverFromMissingEnd(Record const &record, size_t additionalPopCount, uint32_t lastTime) {
+    for (size_t i = 0; i < additionalPopCount; ++i) {
+      pendingSlice_.pop_back();
+      addEndEvent(record.uuid, lastTime);
+    }
+    addFailedBeginEndEvent(record.uuid, lastTime, record.time);
+    pendingSlice_.pop_back();
+    addEndEvent(record.uuid, record.time);
+    return true;
+  }
+
+  void addBeginEvent(uint64_t uuid, uint32_t time, int32_t fnId) {
+    auto it = functionIndexes_.find(fnId);
+    std::string const functionName =
+        (it != functionIndexes_.end()) ? it->second : "unknown function " + std::to_string(fnId);
+    addBeginEvent(uuid, time, functionName);
+  }
+  void addBeginEvent(uint64_t uuid, uint32_t time, std::string const &name) {
+    writer_.writeTracePacket([&](TracePacketWriter &tracePacketWriter) -> void {
+      tracePacketWriter.writeTimestamp(time);
+      tracePacketWriter.writeTrustedPacketSequenceId(1U);
+      tracePacketWriter.writeTrackEvent([&](TraceEventWriter &traceEventWriter) -> void {
+        traceEventWriter.writeTrackUuid(uuid);
+        traceEventWriter.writeName(name);
+        traceEventWriter.writeType(TraceEventWriter::Type::TYPE_SLICE_BEGIN);
+      });
+    });
+  }
+  void addEndEvent(uint64_t uuid, uint32_t time) {
+    writer_.writeTracePacket([&](TracePacketWriter &tracePacketWriter) -> void {
+      tracePacketWriter.writeTimestamp(time);
+      tracePacketWriter.writeTrustedPacketSequenceId(1U);
+      tracePacketWriter.writeTrackEvent([&](TraceEventWriter &traceEventWriter) -> void {
+        traceEventWriter.writeTrackUuid(uuid);
+        traceEventWriter.writeType(TraceEventWriter::Type::TYPE_SLICE_END);
+      });
+    });
+  }
+  void addFailedBeginEndEvent(uint64_t uuid, uint32_t startTime, uint32_t endTime) {
+    addBeginEvent(uuid, startTime, "UNKNOWN [lose data]");
+    addEndEvent(uuid, endTime);
+  }
+};
 
 } // namespace warpo
 
@@ -203,7 +281,7 @@ int main(int argc, const char **argv) {
   argparse::ArgumentParser program("warpo_trace_visualizer", "git@" GIT_COMMIT);
   cli::init(cli::Category::All, program, argc, argv);
   TraceBuilder builder;
-  builder.createTraceData();
+  builder.process();
   warpo::writeBinaryFile(outputFileOption.get(), builder.writer_.data_);
   std::cout << "Trace written to " << outputFileOption.get() << std::endl;
   std::cout << "Open with https://ui.perfetto.dev." << std::endl;

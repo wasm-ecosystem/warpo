@@ -1,5 +1,5 @@
 rm -rf tests/bootstrap/tmp/perf
-
+mkdir -p tests/bootstrap/tmp/perf
 set -e
 
 echo "build with trace points"

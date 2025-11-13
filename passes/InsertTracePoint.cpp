@@ -14,6 +14,7 @@
 #include <string_view>
 
 #include "InsertTracePoint.hpp"
+#include "helper/CostModel.hpp"
 #include "helper/ExprInserter.hpp"
 #include "literal.h"
 #include "pass.h"
@@ -51,6 +52,9 @@ struct FunctionIndexMap : private IncMap<wasm::Function *> {
         continue;
       // not statistic library function calls.
       if (isLibFunction(func.get()) && !func->imported())
+        continue;
+      // ignore quiet small functions
+      if (func->body != nullptr && measureSizeCost(m, func->body) <= 5.0F * getOpcodeSizeCost(Opcode::I32_LOAD))
         continue;
       functionIndexes.insert(func.get());
     }
