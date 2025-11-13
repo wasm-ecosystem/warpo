@@ -9,15 +9,16 @@
 #include "CFG.hpp"
 #include "DomTree.hpp"
 #include "DomTreeImpl.hpp"
+#include "warpo/support/DomTree.hpp"
 
 namespace warpo::passes {
 
 struct DomTree::Storage {
   std::shared_ptr<CFG> cfg_;
-  dom_tree_impl::ImmediateDomTree idomTree;
-  dom_tree_impl::ImmediateDomTree postIdomTree;
-  dom_tree_impl::DomTree domTree;
-  dom_tree_impl::DomTree postDomTree;
+  ImmediateDomTree idomTree;
+  ImmediateDomTree postIdomTree;
+  ::warpo::DomTree domTree;
+  ::warpo::DomTree postDomTree;
 
   explicit Storage(std::shared_ptr<CFG> const &cfg)
       : cfg_(cfg), idomTree(dom_tree_impl::createDomTree(*cfg)), postIdomTree(dom_tree_impl::createPostDomTree(*cfg)),
