@@ -39,6 +39,7 @@ Motoren
 msvc
 NOLINTNEXTLINE
 nontrapping
+pftrace
 popcnt
 popcntll
 popcountll

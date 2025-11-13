@@ -30,4 +30,5 @@ FetchContent_Declare(
   URL https://github.com/wasm-ecosystem/wasm-compiler/archive/refs/tags/3.0.5.tar.gz
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
 )
+set(ENABLE_EXTENSIONS ON)
 FetchContent_MakeAvailable(wasm-compiler)

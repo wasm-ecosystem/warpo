@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -13,10 +14,27 @@
 #include <vector>
 
 #include "warpo/support/FileSystem.hpp"
+#include "warpo/support/Opt.hpp"
 
-const std::string TRACE_POINT_MAPPING_FILE = "tmp/perf/trace_points.txt";
-const std::string TRACE_RECORD_FILE = "tmp/perf/trace_record.bin";
-const std::string OUTPUT_PF_TRACE_FILE = "tmp/perf/output.pftrace";
+namespace warpo {
+
+static cli::Opt<std::filesystem::path> tracePointMappingFileOption{
+    cli::Category::All,
+    "--trace-point-mapping-file",
+    [](argparse::Argument &arg) -> void { arg.help("File to read the trace point mapping."); },
+};
+
+static cli::Opt<std::filesystem::path> traceRecordFileOption{
+    cli::Category::All,
+    "--trace-point-record-file",
+    [](argparse::Argument &arg) -> void { arg.help("File to read the trace point record."); },
+};
+
+static cli::Opt<std::filesystem::path> outputFileOption{
+    cli::Category::All,
+    "--output-pftrace-file",
+    [](argparse::Argument &arg) -> void { arg.help("File to write the Perfetto trace data."); },
+};
 
 const double RATE = 1.0 / (200 * 1000000);
 const int TOTAL_SLICE_COUNT = 1000;
@@ -102,7 +120,7 @@ private:
 
 void TraceBuilder::createTraceData() {
   std::map<int, std::string> functionIndexes;
-  std::ifstream mappingFile(TRACE_POINT_MAPPING_FILE);
+  std::ifstream mappingFile(tracePointMappingFileOption.get(), std::ios::in);
   std::string line;
   while (std::getline(mappingFile, line)) {
     size_t index = line.find(' ');
@@ -112,7 +130,7 @@ void TraceBuilder::createTraceData() {
     }
   }
 
-  std::ifstream recordFile(TRACE_RECORD_FILE, std::ios::binary);
+  std::ifstream recordFile(traceRecordFileOption.get(), std::ios::binary);
   std::string magic(16, '\0');
   recordFile.read(magic.data(), 16);
   if (magic != "___WARP_TRACE___")
@@ -178,11 +196,16 @@ void TraceBuilder::createTraceData() {
   }
 }
 
-int main() {
+} // namespace warpo
+
+int main(int argc, const char **argv) {
+  using namespace warpo;
+  argparse::ArgumentParser program("warpo_trace_visualizer", "git@" GIT_COMMIT);
+  cli::init(cli::Category::All, program, argc, argv);
   TraceBuilder builder;
   builder.createTraceData();
-  warpo::writeBinaryFile(OUTPUT_PF_TRACE_FILE, builder.writer_.data_);
-  std::cout << "Trace written to " << OUTPUT_PF_TRACE_FILE << std::endl;
+  warpo::writeBinaryFile(outputFileOption.get(), builder.writer_.data_);
+  std::cout << "Trace written to " << outputFileOption.get() << std::endl;
   std::cout << "Open with https://ui.perfetto.dev." << std::endl;
   return 0;
 }

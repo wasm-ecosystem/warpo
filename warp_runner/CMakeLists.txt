@@ -5,7 +5,7 @@ add_library(warp_runner
 )
 
 target_link_libraries(warp_runner
-  PUBLIC binaryen vb_libWasmModule fmt::fmt
+  PUBLIC binaryen vb_libWasmModule fmt::fmt vb_extensions
 )
 target_include_directories(warp_runner
   SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/third_party/binaryen/third_party/llvm-project/include"
