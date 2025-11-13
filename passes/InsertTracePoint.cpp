@@ -7,6 +7,7 @@
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <fstream>
+#include <ios>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -191,8 +192,7 @@ struct TracePointInserter : public wasm::Pass {
     runner.run();
 
     if (!tracePointMappingFile_.empty()) {
-      std::ofstream of{tracePointMappingFile_, std::ios::out};
-      ensureFileDirectory(tracePointMappingFile_);
+      std::ofstream of = openOFStream(tracePointMappingFile_, std::ios::out | std::ios::trunc);
       functionIndexes.forEach([&](wasm::Function *func, size_t index) { of << index << " " << func->name << "\n"; });
     }
   }

@@ -1,9 +1,9 @@
-#include <fstream>
 #include <gtest/gtest.h>
 #include <sstream>
 #include <string>
 #include <support/colors.h>
 #include <vector>
+#include <warpo/support/FileSystem.hpp>
 
 #include "llvm/DebugInfo/DWARF/DWARFContext.h"
 #include "llvm/Support/MemoryBuffer.h"
@@ -53,19 +53,11 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
 
   if (updateFixturesFlag.get()) {
     // Update mode: create or overwrite the fixture file
-    std::ofstream outFile(expectedDumpPath, std::ios::out | std::ios::trunc);
-    ASSERT_TRUE(outFile.is_open()) << "Failed to create/open fixture file for writing: " << expectedDumpPath;
-    outFile << dumpOutput;
+    warpo::writeBinaryFile(expectedDumpPath, dumpOutput);
     std::cout << "Updated fixture file: " << expectedDumpPath << std::endl;
   } else {
     // Test mode: compare with expected output
-    std::ifstream const expectedFile{expectedDumpPath};
-    ASSERT_TRUE(expectedFile.is_open()) << "Failed to open expected debug_info fixture at " << expectedDumpPath;
-
-    std::stringstream expectedBuffer;
-    expectedBuffer << expectedFile.rdbuf();
-    std::string const expectedContent = expectedBuffer.str();
-
+    std::string const expectedContent = warpo::readBinaryFile(expectedDumpPath);
     ASSERT_EQ(expectedContent, dumpOutput) << "Debug info dump does not match expected fixture!";
   }
 }

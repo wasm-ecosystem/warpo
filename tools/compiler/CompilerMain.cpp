@@ -36,8 +36,7 @@ void compilerMain(int argc, const char *argv[]) {
     throw std::runtime_error("compilation failed");
   }
   char *const wasmText = BinaryenModuleAllocateAndWriteText(result.m.get());
-  ensureFileDirectory(outputPath.get());
-  std::ofstream watOf{outputPath.get(), std::ios::out | std::ios::binary};
+  std::ofstream watOf = openOFStream(outputPath.get(), std::ios::out | std::ios::binary | std::ios::trunc);
   watOf << wasmText;
   std::free(wasmText);
 }

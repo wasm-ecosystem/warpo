@@ -203,25 +203,10 @@ void passes::runAndEmit(AsModule const &m, std::filesystem::path const &outputPa
   ensureFileDirectory(outputFiles.wasm_);
 
   passes::Output const output = runOnModule(m, passes::Config{.sourceMapURL = getBaseName(outputFiles.sourceMap_)});
-
-  if (std::ofstream of{outputFiles.wat_, std::ios::out | std::ios::binary}; of.good()) {
-    of.write(output.wat.data(), static_cast<std::streamsize>(output.wat.size()));
-  } else {
-    throw std::runtime_error{fmt::format("failed to open file: {}", outputFiles.wat_.string())};
-  }
-  if (!outputFiles.wasm_.empty()) {
-    if (std::ofstream of{outputFiles.wasm_, std::ios::binary | std::ios::out}; of.good()) {
-      of.write(reinterpret_cast<char const *>(output.wasm.data()), static_cast<std::streamsize>(output.wasm.size()));
-    } else {
-      throw std::runtime_error{fmt::format("ERROR: failed to open file: {}", outputFiles.wasm_.string())};
-    }
-  }
+  writeBinaryFile(outputFiles.wat_, output.wat);
+  writeBinaryFile(outputFiles.wasm_, output.wasm);
   if (!outputFiles.sourceMap_.empty() && common::isEmitDebugLine()) {
-    if (std::ofstream of{outputFiles.sourceMap_, std::ios::out}; of.good()) {
-      of.write(output.sourceMap.data(), static_cast<std::streamsize>(output.sourceMap.size()));
-    } else {
-      throw std::runtime_error{fmt::format("failed to open file: {}", outputFiles.sourceMap_.string())};
-    }
+    writeBinaryFile(outputFiles.sourceMap_, output.sourceMap);
   }
 }
 
