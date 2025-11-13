@@ -26,7 +26,7 @@ void ClassInfo::addMember(std::string name, std::string_view const type, uint32_
 }
 
 bool ClassInfo::isBasicType() const noexcept {
-  static const std::regex basicTypePattern(R"(~lib/number/(F32|F64|U8|I8|U16|I16|U32|I32|U64|I64|Usize|Isize|Bool))");
+  static const std::regex basicTypePattern(R"(^(f32|f64|u8|i8|u16|i16|u32|i32|u64|i64|usize|isize|bool)$)");
   return std::regex_match(name_.begin(), name_.end(), basicTypePattern);
 }
 
