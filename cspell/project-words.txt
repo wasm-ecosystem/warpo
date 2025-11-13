@@ -42,6 +42,7 @@ nontrapping
 popcnt
 popcntll
 popcountll
+protozero
 refinalization
 refinalize
 RELWITHDEBINFO

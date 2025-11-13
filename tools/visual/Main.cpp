@@ -4,16 +4,14 @@
 #include <cstdint>
 #include <cstring>
 #include <fstream>
-#include <functional>
 #include <iostream>
 #include <map>
+#include <protozero/pbf_writer.hpp>
 #include <ranges>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "pb_encode.h"
-#include "protos/perfetto/trace/perfetto_trace.pb.h"
 #include "warpo/support/FileSystem.hpp"
 
 const std::string TRACE_POINT_MAPPING_FILE = "tmp/perf/trace_points.txt";
@@ -23,80 +21,86 @@ const std::string OUTPUT_PF_TRACE_FILE = "tmp/perf/output.pftrace";
 const double RATE = 1.0 / (200 * 1000000);
 const int TOTAL_SLICE_COUNT = 1000;
 
-perfetto_protos_Trace trace;
+struct TraceEventWriter {
+  protozero::pbf_writer pbf_;
+  enum class Type : int32_t {
+    TYPE_SLICE_BEGIN = 1,
+    TYPE_SLICE_END = 2,
+  };
+  inline static constexpr protozero::pbf_tag_type type_tag = 9U;        // optional Type type
+  inline static constexpr protozero::pbf_tag_type track_uuid_tag = 11U; // optional uint64 track_uuid
+  // oneof name_field {
+  //   string name
+  // }
+  inline static constexpr protozero::pbf_tag_type name_tag = 23U;
 
-class TraceBuilder {
-public:
-  explicit TraceBuilder() {}
+  void writeType(Type type) { pbf_.add_int32(type_tag, static_cast<int32_t>(type)); }
+  void writeTrackUuid(uint64_t uuid) { pbf_.add_uint64(track_uuid_tag, uuid); }
+  void writeName(std::string const &name) { pbf_.add_string(name_tag, name); }
+};
 
-  std::vector<uint8_t> createTraceData();
+struct TracePacketWriter {
+  protozero::pbf_writer pbf_;
+  inline static constexpr protozero::pbf_tag_type timestamp_tag = 8; // optional uint64 timestamp
+  // oneof optional_trusted_packet_sequence_id {
+  //   uint32 trusted_packet_sequence_id
+  // }
+  inline static constexpr protozero::pbf_tag_type trusted_packet_sequence_id_tag = 10;
+  // oneof data {
+  //   TrackEvent track_event
+  // }
+  inline static constexpr protozero::pbf_tag_type track_event_tag = 11;
 
-private:
-  template <class Fn> static pb_callback_t createCallOnce(Fn &&fn) {
-    pb_callback_t callback = {.funcs = {.encode = nullptr}, .arg = nullptr};
-    using FnWrapper = std::function<bool(pb_ostream_t * stream, const pb_field_t *field)>;
-    FnWrapper *const ptr = new FnWrapper(std::forward<Fn>(fn));
-    callback.arg = reinterpret_cast<void *>(ptr);
-    callback.funcs.encode = [](pb_ostream_t *stream, const pb_field_t *field, void *const *arg) -> bool {
-      FnWrapper *const func = static_cast<FnWrapper *>(*arg);
-      bool const ret = (*func)(stream, field);
-      // delete func;
-      return ret;
-    };
-    return callback;
-  }
-
-  static pb_callback_t createString(std::string str) {
-    return createCallOnce([str = std::move(str)](pb_ostream_t *stream, const pb_field_t *field) -> bool {
-      assert(pb_encode_tag_for_field(stream, field));
-      return pb_encode_string(stream, reinterpret_cast<pb_byte_t const *>(str.c_str()), str.size());
-    });
-  }
-
-  static perfetto_protos_TracePacket addBeginEvent(uint64_t uuid, uint64_t timestamp, std::string const &functionName) {
-    perfetto_protos_TracePacket packet = perfetto_protos_TracePacket_init_default;
-    packet.has_timestamp = true;
-    packet.timestamp = timestamp;
-
-    packet.which_optional_trusted_packet_sequence_id = perfetto_protos_TracePacket_trusted_packet_sequence_id_tag;
-    packet.optional_trusted_packet_sequence_id.trusted_packet_sequence_id = 1;
-
-    packet.which_data = perfetto_protos_TracePacket_track_event_tag;
-    packet.data.track_event = perfetto_protos_TrackEvent_init_default;
-
-    packet.data.track_event.has_track_uuid = true;
-    packet.data.track_event.track_uuid = uuid;
-
-    packet.data.track_event.has_type = true;
-    packet.data.track_event.type = perfetto_protos_TrackEvent_Type_TYPE_SLICE_BEGIN;
-
-    packet.data.track_event.which_name_field = perfetto_protos_TrackEvent_name_tag;
-    packet.data.track_event.name_field.name = createString(functionName);
-
-    return packet;
-  }
-  static perfetto_protos_TracePacket addEndEvent(uint64_t uuid, uint64_t timestamp) {
-    perfetto_protos_TracePacket packet = perfetto_protos_TracePacket_init_default;
-    packet.has_timestamp = true;
-    packet.timestamp = timestamp;
-
-    packet.which_optional_trusted_packet_sequence_id = perfetto_protos_TracePacket_trusted_packet_sequence_id_tag;
-    packet.optional_trusted_packet_sequence_id.trusted_packet_sequence_id = 1;
-
-    packet.which_data = perfetto_protos_TracePacket_track_event_tag;
-    packet.data.track_event = perfetto_protos_TrackEvent_init_default;
-
-    packet.data.track_event.has_track_uuid = true;
-    packet.data.track_event.track_uuid = uuid;
-
-    packet.data.track_event.has_type = true;
-    packet.data.track_event.type = perfetto_protos_TrackEvent_Type_TYPE_SLICE_END;
-
-    return packet;
+  void writeTimestamp(uint64_t timestamp) { pbf_.add_uint64(timestamp_tag, timestamp); }
+  void writeTrustedPacketSequenceId(uint32_t id) { pbf_.add_uint32(trusted_packet_sequence_id_tag, id); }
+  void writeTrackEvent(std::function<void(TraceEventWriter &)> const &writeTraceEvent) {
+    TraceEventWriter trackEventWriter{.pbf_ = protozero::pbf_writer{pbf_, track_event_tag}};
+    writeTraceEvent(trackEventWriter);
   }
 };
 
-std::vector<uint8_t> TraceBuilder::createTraceData() {
+struct TraceWriter {
+  inline static constexpr protozero::pbf_tag_type packet_tag = 1; // repeated TracePacket packet
+  std::string data_;
+  protozero::pbf_writer pbf_{data_};
+
+  void writeTracePacket(std::function<void(TracePacketWriter &)> const &writePacket) {
+    TracePacketWriter tracePacketWriter{.pbf_ = protozero::pbf_writer{pbf_, packet_tag}};
+    writePacket(tracePacketWriter);
+  }
+};
+
+class TraceBuilder {
+public:
+  TraceWriter writer_;
+
+  void createTraceData();
+
+private:
+  void addBeginEvent(uint64_t uuid, uint64_t timestamp, std::string const &functionName) {
+    writer_.writeTracePacket([&](TracePacketWriter &tracePacketWriter) -> void {
+      tracePacketWriter.writeTimestamp(timestamp);
+      tracePacketWriter.writeTrustedPacketSequenceId(1U);
+      tracePacketWriter.writeTrackEvent([&](TraceEventWriter &traceEventWriter) -> void {
+        traceEventWriter.writeTrackUuid(uuid);
+        traceEventWriter.writeName(functionName);
+        traceEventWriter.writeType(TraceEventWriter::Type::TYPE_SLICE_BEGIN);
+      });
+    });
+  }
+  void addEndEvent(uint64_t uuid, uint64_t timestamp) {
+    writer_.writeTracePacket([&](TracePacketWriter &tracePacketWriter) -> void {
+      tracePacketWriter.writeTimestamp(timestamp);
+      tracePacketWriter.writeTrustedPacketSequenceId(1U);
+      tracePacketWriter.writeTrackEvent([&](TraceEventWriter &traceEventWriter) -> void {
+        traceEventWriter.writeTrackUuid(uuid);
+        traceEventWriter.writeType(TraceEventWriter::Type::TYPE_SLICE_END);
+      });
+    });
+  }
+};
+
+void TraceBuilder::createTraceData() {
   std::map<int, std::string> functionIndexes;
   std::ifstream mappingFile(TRACE_POINT_MAPPING_FILE);
   std::string line;
@@ -107,8 +111,6 @@ std::vector<uint8_t> TraceBuilder::createTraceData() {
       functionIndexes[fnId] = line.substr(index + 1);
     }
   }
-
-  std::vector<perfetto_protos_TracePacket> packets;
 
   std::ifstream recordFile(TRACE_RECORD_FILE, std::ios::binary);
   std::string magic(16, '\0');
@@ -153,7 +155,7 @@ std::vector<uint8_t> TraceBuilder::createTraceData() {
       auto it = functionIndexes.find(fnId);
       std::string const functionName =
           (it != functionIndexes.end()) ? it->second : "unknown function " + std::to_string(fnId);
-      // packets.push_back(addBeginEvent(uuid, scaledTime, functionName));
+      addBeginEvent(uuid, scaledTime, functionName);
       pendingSlice.push_back(fnId);
     } else {
       size_t popCount = 0;
@@ -170,33 +172,16 @@ std::vector<uint8_t> TraceBuilder::createTraceData() {
         if (popCount != i + 1)
           std::cerr << "warning: No matching end for begin event " << pendingSlice.back() << std::endl;
         pendingSlice.pop_back();
-        packets.push_back(addEndEvent(uuid, scaledTime));
+        addEndEvent(uuid, scaledTime);
       }
     }
   }
-
-  perfetto_protos_Trace trace = perfetto_protos_Trace_init_default;
-  trace.packet = createCallOnce([&packets](pb_ostream_t *stream, const pb_field_t *field) -> bool {
-    for (perfetto_protos_TracePacket const &packet : packets) {
-      assert(pb_encode_tag_for_field(stream, field));
-      assert(pb_encode_submessage(stream, field->descriptor, &packet));
-    }
-    return true;
-  });
-
-  std::vector<uint8_t> buffer;
-  size_t size;
-  assert(pb_get_encoded_size(&size, perfetto_protos_Trace_fields, &trace));
-  buffer.resize(size);
-  pb_ostream_t stream = pb_ostream_from_buffer(reinterpret_cast<pb_byte_t *>(buffer.data()), buffer.size());
-  pb_write(&stream, buffer.data(), buffer.size());
-  return buffer;
 }
 
 int main() {
   TraceBuilder builder;
-  std::vector<uint8_t> traceData = builder.createTraceData();
-  warpo::writeBinaryFile(OUTPUT_PF_TRACE_FILE, traceData);
+  builder.createTraceData();
+  warpo::writeBinaryFile(OUTPUT_PF_TRACE_FILE, builder.writer_.data_);
   std::cout << "Trace written to " << OUTPUT_PF_TRACE_FILE << std::endl;
   std::cout << "Open with https://ui.perfetto.dev." << std::endl;
   return 0;

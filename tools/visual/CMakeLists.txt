@@ -4,6 +4,8 @@ add_executable(warpo_visual ${sources})
 
 target_link_libraries(warpo_visual
   PUBLIC
-  perfetto_protobuf
   warpo_support
+)
+target_include_directories(warpo_visual
+  SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/third_party/protozero/include"
 )
