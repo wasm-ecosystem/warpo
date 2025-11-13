@@ -1,5 +1,5 @@
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} perfetto_sources)
-aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/protos/perfetto/trace perfetto_sources)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} sources)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/protos/perfetto/trace sources)
 
-add_library(perfetto ${perfetto_sources})
-target_include_directories(perfetto PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(perfetto_protobuf ${sources})
+target_include_directories(perfetto_protobuf PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
