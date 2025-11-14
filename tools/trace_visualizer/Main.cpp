@@ -5,6 +5,7 @@
 #include <atomic>
 #include <cassert>
 #include <chrono>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
@@ -45,6 +46,7 @@ static uint64_t getCurrentCPUCounter() { throw std::runtime_error("Not implement
 
 #if defined(__x86_64__)
 #if defined(__clang__) || defined(__GNUC__)
+#include <x86intrin.h>
 static uint64_t getCurrentCPUCounter() { return static_cast<uint64_t>(__rdtsc()); }
 #endif
 #elif defined(_MSC_VER)
@@ -108,10 +110,11 @@ class RecordReader {
   }
 
 public:
+  inline static constexpr double EPS = 1e-9;
   explicit RecordReader(std::ifstream recordFile, double countToPerfettoTimestampRate)
-      : recordFile_(std::move(recordFile)),
-        countToPerfettoTimestampRate_(countToPerfettoTimestampRate == 0.0 ? measureCountToPerfettoTimestampRate()
-                                                                          : countToPerfettoTimestampRate) {
+      : recordFile_(std::move(recordFile)), countToPerfettoTimestampRate_(std::abs(countToPerfettoTimestampRate) < EPS
+                                                                              ? measureCountToPerfettoTimestampRate()
+                                                                              : countToPerfettoTimestampRate) {
     std::string magic(16, '\0');
     recordFile_.read(magic.data(), 16);
     if (magic != "___WARP_TRACE___")
