@@ -45,6 +45,7 @@ popcnt
 popcntll
 popcountll
 protozero
+rdtsc
 refinalization
 refinalize
 RELWITHDEBINFO

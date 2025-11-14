@@ -31,13 +31,26 @@
 
 namespace warpo {
 
-#ifdef __aarch64__
+#if defined(__aarch64__)
+#if defined(__clang__) || defined(__GNUC__)
 static uint64_t getCurrentCPUCounter() {
   uint64_t result;
   asm("mrs %0, cntvct_el0" : "=r"(result));
   return result;
 }
+#elif defined(_MSC_VER)
+static uint64_t getCurrentCPUCounter() { throw std::runtime_error("Not implemented on MSVC for ARM64"); }
 #endif
+#endif // defined(__aarch64__)
+
+#if defined(__x86_64__)
+#if defined(__clang__) || defined(__GNUC__)
+static uint64_t getCurrentCPUCounter() { return static_cast<uint64_t>(__rdtsc()); }
+#endif
+#elif defined(_MSC_VER)
+#include <intrin.h>
+static uint64_t getCurrentCPUCounter() { return static_cast<uint64_t>(__rdtsc()); }
+#endif // defined(__x86_64__)
 
 static double measureCountToPerfettoTimestampRate() {
   std::chrono::high_resolution_clock::time_point const startTime = std::chrono::high_resolution_clock::now();
@@ -54,7 +67,7 @@ static double measureCountToPerfettoTimestampRate() {
   uint64_t const elapsedCount = endCount - startCount;
 
   double const rate = elapsedTimeNs / static_cast<double>(elapsedCount);
-  fmt::println("Measured count to Perfetto timestamp rate: {} ns/count", rate);
+  fmt::println("measured count to Perfetto timestamp rate: {} ns/count", rate);
   return rate;
 }
 
@@ -169,6 +182,8 @@ public:
 
       if (record->fnId > 0) {
         pendingSlice_.push_back(record->fnId);
+        if (pendingSlice_.size() == 1U)
+          fmt::println("start slice '{}' in {}ms", functionIndexes_.at(record->fnId), record->time / 1000'000U);
         addBeginEvent(record->uuid, record->time, record->fnId);
       } else {
         PopCount const popCount = getPopCount(*record);
@@ -188,6 +203,8 @@ public:
             return;
           continue;
         }
+        if (pendingSlice_.size() == 1U)
+          fmt::println("end slice {} in {}ms", functionIndexes_.at(pendingSlice_.back()), record->time / 1000'000U);
         pendingSlice_.pop_back();
         addEndEvent(record->uuid, record->time);
       }
@@ -227,11 +244,11 @@ private:
       if (!popCount.found)
         continue;
       for (size_t i = 0; i < popCount.additionalPopCount; ++i) {
-        popSliceStack();
+        pendingSlice_.pop_back();
         addEndEvent(missingBeginRecord.uuid, missingBeginRecord.time);
       }
       addFailedBeginEndEvent(missingBeginRecord.uuid, missingBeginRecord.time, record->time);
-      popSliceStack();
+      pendingSlice_.pop_back();
       addEndEvent(record->uuid, record->time);
       return true;
     }
@@ -239,19 +256,13 @@ private:
 
   [[nodiscard]] bool recoverFromMissingEnd(Record const &record, size_t additionalPopCount, uint64_t lastTime) {
     for (size_t i = 0; i < additionalPopCount; ++i) {
-      popSliceStack();
+      pendingSlice_.pop_back();
       addEndEvent(record.uuid, lastTime);
     }
     addFailedBeginEndEvent(record.uuid, lastTime, record.time);
-    popSliceStack();
+    pendingSlice_.pop_back();
     addEndEvent(record.uuid, record.time);
     return true;
-  }
-
-  void popSliceStack() {
-    if (pendingSlice_.size() == 1U)
-      fmt::println("Processed slice {}", functionIndexes_[pendingSlice_.back()]);
-    pendingSlice_.pop_back();
   }
 
   void addBeginEvent(uint64_t uuid, uint64_t time, int32_t fnId) {
