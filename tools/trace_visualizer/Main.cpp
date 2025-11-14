@@ -30,6 +30,14 @@
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
 
+#if defined(__x86_64__)
+#if defined(__clang__) || defined(__GNUC__)
+#include <x86intrin.h>
+#endif
+#elif defined(_MSC_VER)
+#include <intrin.h>
+#endif // defined(__x86_64__)
+
 namespace warpo {
 
 #if defined(__aarch64__)
@@ -46,11 +54,9 @@ static uint64_t getCurrentCPUCounter() { throw std::runtime_error("Not implement
 
 #if defined(__x86_64__)
 #if defined(__clang__) || defined(__GNUC__)
-#include <x86intrin.h>
 static uint64_t getCurrentCPUCounter() { return static_cast<uint64_t>(__rdtsc()); }
 #endif
 #elif defined(_MSC_VER)
-#include <intrin.h>
 static uint64_t getCurrentCPUCounter() { return static_cast<uint64_t>(__rdtsc()); }
 #endif // defined(__x86_64__)
 
