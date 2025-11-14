@@ -104,7 +104,6 @@ Checks: >
   hicpp-move-const-arg,
   hicpp-multiway-paths-covered,
   hicpp-named-parameter,
-  hicpp-no-assembler,
   hicpp-noexcept-move,
   hicpp-signed-bitwise,
   misc-const-correctness,

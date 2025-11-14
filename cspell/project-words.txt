@@ -8,6 +8,7 @@ callees
 ccache
 changetype
 choco
+cntvct
 copysign
 cplusplus
 cppcoreguidelines

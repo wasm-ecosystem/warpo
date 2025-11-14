@@ -1,92 +1,135 @@
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 #include <array>
+#include <atomic>
 #include <cassert>
+#include <chrono>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
+#include <fmt/base.h>
 #include <fstream>
+#include <functional>
+#include <ios>
 #include <iostream>
 #include <map>
 #include <optional>
 #include <protozero/pbf_writer.hpp>
 #include <ranges>
+#include <ratio>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
+#include "Perfetto.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
 
 namespace warpo {
 
-static cli::Opt<std::filesystem::path> tracePointMappingFileOption{
-    cli::Category::All,
-    "--trace-point-mapping-file",
-    [](argparse::Argument &arg) -> void { arg.help("File to read the trace point mapping."); },
+#ifdef __aarch64__
+static uint64_t getCurrentCPUCounter() {
+  uint64_t result;
+  asm("mrs %0, cntvct_el0" : "=r"(result));
+  return result;
+}
+#endif
+
+static double measureCountToPerfettoTimestampRate() {
+  std::chrono::high_resolution_clock::time_point const startTime = std::chrono::high_resolution_clock::now();
+  uint64_t const startCount = getCurrentCPUCounter();
+  std::atomic_signal_fence(std::memory_order_seq_cst);
+  std::this_thread::sleep_for(std::chrono::microseconds(100));
+  std::atomic_signal_fence(std::memory_order_seq_cst);
+  std::chrono::high_resolution_clock::time_point const endTime = std::chrono::high_resolution_clock::now();
+  uint64_t const endCount = getCurrentCPUCounter();
+  double const elapsedTimeNs =
+      std::chrono::duration_cast<std::chrono::duration<double, std::nano>>(
+          std::chrono::duration_cast<std::chrono::duration<double, std::nano>>(endTime - startTime))
+          .count();
+  uint64_t const elapsedCount = endCount - startCount;
+
+  double const rate = elapsedTimeNs / static_cast<double>(elapsedCount);
+  fmt::println("Measured count to Perfetto timestamp rate: {} ns/count", rate);
+  return rate;
+}
+
+namespace {
+
+struct Record {
+  uint64_t uuid;
+  uint64_t time;
+  int64_t deltaTime;
+  int32_t fnId;
 };
 
-static cli::Opt<std::filesystem::path> traceRecordFileOption{
-    cli::Category::All,
-    "--trace-point-record-file",
-    [](argparse::Argument &arg) -> void { arg.help("File to read the trace point record."); },
-};
+class RecordReader {
+  uint64_t lastCounter_ = 0U;
+  uint64_t overflowCount_ = 0U;
+  std::ifstream recordFile_;
+  double const countToPerfettoTimestampRate_;
+  std::optional<Record> nextRecord_;
 
-static cli::Opt<std::filesystem::path> outputFileOption{
-    cli::Category::All,
-    "--output-pftrace-file",
-    [](argparse::Argument &arg) -> void { arg.help("File to write the Perfetto trace data."); },
-};
-
-const double RATE = 1.0 / (200 * 1000000);
-const uint64_t TOTAL_SLICE_COUNT = UINT64_MAX;
-
-struct TraceEventWriter {
-  protozero::pbf_writer pbf_;
-  enum class Type : int32_t {
-    TYPE_SLICE_BEGIN = 1,
-    TYPE_SLICE_END = 2,
+  struct RawRecord {
+    uint64_t uuid;
+    uint32_t rawCounter;
+    int32_t fnId;
   };
-  inline static constexpr protozero::pbf_tag_type type_tag = 9U;        // optional Type type
-  inline static constexpr protozero::pbf_tag_type track_uuid_tag = 11U; // optional uint64 track_uuid
-  // oneof name_field {
-  //   string name
-  // }
-  inline static constexpr protozero::pbf_tag_type name_tag = 23U;
+  std::optional<RawRecord> readRawRecord() {
+    std::array<uint8_t, 16U> data{};
+    recordFile_.read(reinterpret_cast<char *>(data.data()), data.size());
+    if (recordFile_.gcount() < 16)
+      return std::nullopt;
 
-  void writeType(Type type) { pbf_.add_int32(type_tag, static_cast<int32_t>(type)); }
-  void writeTrackUuid(uint64_t uuid) { pbf_.add_uint64(track_uuid_tag, uuid); }
-  void writeName(std::string const &name) { pbf_.add_string(name_tag, name); }
-};
-
-struct TracePacketWriter {
-  protozero::pbf_writer pbf_;
-  inline static constexpr protozero::pbf_tag_type timestamp_tag = 8; // optional uint64 timestamp
-  // oneof optional_trusted_packet_sequence_id {
-  //   uint32 trusted_packet_sequence_id
-  // }
-  inline static constexpr protozero::pbf_tag_type trusted_packet_sequence_id_tag = 10;
-  // oneof data {
-  //   TrackEvent track_event
-  // }
-  inline static constexpr protozero::pbf_tag_type track_event_tag = 11;
-
-  void writeTimestamp(uint64_t timestamp) { pbf_.add_uint64(timestamp_tag, timestamp); }
-  void writeTrustedPacketSequenceId(uint32_t id) { pbf_.add_uint32(trusted_packet_sequence_id_tag, id); }
-  void writeTrackEvent(std::function<void(TraceEventWriter &)> const &writeTraceEvent) {
-    TraceEventWriter trackEventWriter{.pbf_ = protozero::pbf_writer{pbf_, track_event_tag}};
-    writeTraceEvent(trackEventWriter);
+    uint64_t uuid;
+    std::memcpy(&uuid, &data[0], sizeof(uuid));
+    uint32_t rawCounter;
+    std::memcpy(&rawCounter, &data[8], sizeof(rawCounter));
+    int32_t fnId;
+    std::memcpy(&fnId, &data[12], sizeof(fnId));
+    return {{.uuid = uuid, .rawCounter = rawCounter, .fnId = fnId}};
   }
-};
 
-struct TraceWriter {
-  inline static constexpr protozero::pbf_tag_type packet_tag = 1; // repeated TracePacket packet
-  std::string data_;
-  protozero::pbf_writer pbf_{data_};
+public:
+  explicit RecordReader(std::ifstream recordFile, double countToPerfettoTimestampRate)
+      : recordFile_(std::move(recordFile)),
+        countToPerfettoTimestampRate_(countToPerfettoTimestampRate == 0.0 ? measureCountToPerfettoTimestampRate()
+                                                                          : countToPerfettoTimestampRate) {
+    std::string magic(16, '\0');
+    recordFile_.read(magic.data(), 16);
+    if (magic != "___WARP_TRACE___")
+      throw std::runtime_error("Invalid trace record file");
+  }
 
-  void writeTracePacket(std::function<void(TracePacketWriter &)> const &writePacket) {
-    TracePacketWriter tracePacketWriter{.pbf_ = protozero::pbf_writer{pbf_, packet_tag}};
-    writePacket(tracePacketWriter);
+  std::optional<Record> nextRecord() {
+    if (nextRecord_.has_value()) {
+      Record record = *nextRecord_;
+      nextRecord_.reset();
+      return record;
+    }
+    std::optional<RawRecord> rawRecord = readRawRecord();
+    if (!rawRecord.has_value())
+      return std::nullopt;
+    uint64_t refinedCounter = static_cast<uint64_t>(rawRecord->rawCounter) + (overflowCount_ << 32ULL);
+    if (lastCounter_ > refinedCounter) {
+      overflowCount_++;
+      refinedCounter += 1ULL << 32ULL;
+    }
+    assert(lastCounter_ <= refinedCounter);
+    int64_t const deltaTime = static_cast<int64_t>(refinedCounter - lastCounter_);
+    lastCounter_ = refinedCounter;
+    uint64_t const scaledTime =
+        static_cast<uint64_t>(static_cast<double>(refinedCounter) * countToPerfettoTimestampRate_);
+    // workaround for macos missing the first record issue
+    if (scaledTime == 0) {
+      nextRecord_ = nextRecord();
+      return {{.uuid = rawRecord->uuid, .time = nextRecord_->time, .deltaTime = deltaTime, .fnId = rawRecord->fnId}};
+    }
+    return {{.uuid = rawRecord->uuid, .time = scaledTime, .deltaTime = deltaTime, .fnId = rawRecord->fnId}};
   }
 };
 
@@ -94,36 +137,32 @@ class TraceBuilder {
 public:
   TraceWriter writer_;
 
-  TraceBuilder() {
-    std::ifstream mappingFile(tracePointMappingFileOption.get(), std::ios::in);
+  explicit TraceBuilder(std::filesystem::path const &tracePointMappingFile,
+                        std::filesystem::path const &traceRecordFile, double countToPerfettoTimestampRate,
+                        uint32_t maxSliceCount)
+      : recordReader_{std::ifstream{traceRecordFile, std::ios::in | std::ios::binary}, countToPerfettoTimestampRate},
+        maxSliceCount_{maxSliceCount == 0U ? UINT32_MAX : maxSliceCount} {
+    std::ifstream mappingFile(tracePointMappingFile, std::ios::in);
     std::string line;
     while (std::getline(mappingFile, line)) {
       size_t index = line.find(' ');
       if (index != std::string::npos) {
-        int fnId = std::stoi(line.substr(0, index));
+        int32_t fnId = std::stoi(line.substr(0, index));
         functionIndexes_[fnId] = line.substr(index + 1);
       }
     }
-
-    recordFile_ = std::ifstream{traceRecordFileOption.get(), std::ios::binary};
-    std::string magic(16, '\0');
-    recordFile_.read(magic.data(), 16);
-    if (magic != "___WARP_TRACE___")
-      throw std::runtime_error("Invalid trace record file");
   }
 
   void process() {
-    uint64_t sliceCount = 0;
-    uint32_t lastTime = 0U;
+    uint32_t sliceCount = 0;
 
     while (true) {
       if (pendingSlice_.empty()) {
-        if (sliceCount >= TOTAL_SLICE_COUNT)
-          break;
         sliceCount++;
+        if (sliceCount > maxSliceCount_)
+          break;
       }
-      std::optional<Record> record = nextRecord();
-      lastTime = record->time;
+      std::optional<Record> record = recordReader_.nextRecord();
       // finish
       if (!record.has_value())
         break;
@@ -144,7 +183,8 @@ public:
           std::cerr << "warning: No matching end for begin event "
                     << pendingSlice_[pendingSlice_.size() - popCount.additionalPopCount] << " in " << record->time
                     << std::endl;
-          if (!recoverFromMissingEnd(*record, popCount.additionalPopCount, lastTime))
+          if (!recoverFromMissingEnd(*record, popCount.additionalPopCount,
+                                     record->time - static_cast<uint64_t>(record->deltaTime)))
             return;
           continue;
         }
@@ -155,43 +195,10 @@ public:
   }
 
 private:
-  uint64_t lastTs_ = 0U;
-  uint64_t overflowCount_ = 0U;
   std::vector<int32_t> pendingSlice_;
-  std::map<int, std::string> functionIndexes_;
-  std::ifstream recordFile_;
-
-  struct Record {
-    uint64_t uuid;
-    uint32_t time;
-    int32_t fnId;
-  };
-  std::optional<Record> nextRecord() {
-    std::array<uint8_t, 16U> data{};
-    recordFile_.read(reinterpret_cast<char *>(data.data()), data.size());
-    if (recordFile_.gcount() < 16)
-      return std::nullopt;
-
-    uint64_t uuid;
-    std::memcpy(&uuid, &data[0], sizeof(uuid));
-    uint32_t time;
-    std::memcpy(&time, &data[8], sizeof(time));
-    int32_t fnId;
-    std::memcpy(&fnId, &data[12], sizeof(fnId));
-
-    uint64_t refinedTime = static_cast<uint64_t>(time) + (overflowCount_ << 32ULL);
-    if (lastTs_ > refinedTime) {
-      overflowCount_++;
-      refinedTime += 1ULL << 32ULL;
-    }
-    assert(lastTs_ <= refinedTime);
-    lastTs_ = refinedTime;
-
-    uint32_t scaledTime = static_cast<uint32_t>(static_cast<double>(refinedTime) * RATE);
-
-    assert(fnId != 0);
-    return {{.uuid = uuid, .time = scaledTime, .fnId = fnId}};
-  }
+  std::map<int32_t, std::string> functionIndexes_;
+  RecordReader recordReader_;
+  uint32_t const maxSliceCount_;
 
   struct PopCount {
     bool found = false;
@@ -210,7 +217,7 @@ private:
   // true for recover successfully
   [[nodiscard]] bool recoverFromMissingBegin(Record const &missingBeginRecord) {
     while (true) {
-      std::optional<Record> record = nextRecord();
+      std::optional<Record> record = recordReader_.nextRecord();
       // finish
       if (!record.has_value())
         return false;
@@ -220,34 +227,40 @@ private:
       if (!popCount.found)
         continue;
       for (size_t i = 0; i < popCount.additionalPopCount; ++i) {
-        pendingSlice_.pop_back();
+        popSliceStack();
         addEndEvent(missingBeginRecord.uuid, missingBeginRecord.time);
       }
       addFailedBeginEndEvent(missingBeginRecord.uuid, missingBeginRecord.time, record->time);
-      pendingSlice_.pop_back();
+      popSliceStack();
       addEndEvent(record->uuid, record->time);
       return true;
     }
   }
 
-  [[nodiscard]] bool recoverFromMissingEnd(Record const &record, size_t additionalPopCount, uint32_t lastTime) {
+  [[nodiscard]] bool recoverFromMissingEnd(Record const &record, size_t additionalPopCount, uint64_t lastTime) {
     for (size_t i = 0; i < additionalPopCount; ++i) {
-      pendingSlice_.pop_back();
+      popSliceStack();
       addEndEvent(record.uuid, lastTime);
     }
     addFailedBeginEndEvent(record.uuid, lastTime, record.time);
-    pendingSlice_.pop_back();
+    popSliceStack();
     addEndEvent(record.uuid, record.time);
     return true;
   }
 
-  void addBeginEvent(uint64_t uuid, uint32_t time, int32_t fnId) {
+  void popSliceStack() {
+    if (pendingSlice_.size() == 1U)
+      fmt::println("Processed slice {}", functionIndexes_[pendingSlice_.back()]);
+    pendingSlice_.pop_back();
+  }
+
+  void addBeginEvent(uint64_t uuid, uint64_t time, int32_t fnId) {
     auto it = functionIndexes_.find(fnId);
     std::string const functionName =
         (it != functionIndexes_.end()) ? it->second : "unknown function " + std::to_string(fnId);
     addBeginEvent(uuid, time, functionName);
   }
-  void addBeginEvent(uint64_t uuid, uint32_t time, std::string const &name) {
+  void addBeginEvent(uint64_t uuid, uint64_t time, std::string const &name) {
     writer_.writeTracePacket([&](TracePacketWriter &tracePacketWriter) -> void {
       tracePacketWriter.writeTimestamp(time);
       tracePacketWriter.writeTrustedPacketSequenceId(1U);
@@ -258,7 +271,7 @@ private:
       });
     });
   }
-  void addEndEvent(uint64_t uuid, uint32_t time) {
+  void addEndEvent(uint64_t uuid, uint64_t time) {
     writer_.writeTracePacket([&](TracePacketWriter &tracePacketWriter) -> void {
       tracePacketWriter.writeTimestamp(time);
       tracePacketWriter.writeTrustedPacketSequenceId(1U);
@@ -268,22 +281,65 @@ private:
       });
     });
   }
-  void addFailedBeginEndEvent(uint64_t uuid, uint32_t startTime, uint32_t endTime) {
+  void addFailedBeginEndEvent(uint64_t uuid, uint64_t startTime, uint64_t endTime) {
     addBeginEvent(uuid, startTime, "UNKNOWN [lose data]");
     addEndEvent(uuid, endTime);
   }
 };
 
-} // namespace warpo
+} // namespace
 
-int main(int argc, const char **argv) {
-  using namespace warpo;
+static cli::Opt<std::filesystem::path> tracePointMappingFileOption{
+    cli::Category::All,
+    "--trace-point-mapping-file",
+    [](argparse::Argument &arg) -> void { arg.required().help("File to read the trace point mapping."); },
+};
+
+static cli::Opt<std::filesystem::path> traceRecordFileOption{
+    cli::Category::All,
+    "--trace-point-record-file",
+    [](argparse::Argument &arg) -> void { arg.required().help("File to read the trace point record."); },
+};
+
+static cli::Opt<std::filesystem::path> outputFileOption{
+    cli::Category::All,
+    "--output-pftrace-file",
+    [](argparse::Argument &arg) -> void { arg.required().help("File to write the Perfetto trace data."); },
+};
+
+static cli::Opt<uint32_t> maxSliceCountOption{
+    cli::Category::All,
+    "--max-slice-count",
+    [](argparse::Argument &arg) -> void {
+      arg.help("Maximum number of slices to process. Slice means a complete call");
+    },
+};
+
+static cli::Opt<double> countToPerfettoTimestampRateOption{
+    cli::Category::All,
+    "--count-to-perfetto-timestamp-rate",
+    [](argparse::Argument &arg) -> void { arg.help("Rate to convert CPU count to Perfetto timestamp."); },
+};
+
+void traceVisualizerMain(int argc, const char **argv) {
   argparse::ArgumentParser program("warpo_trace_visualizer", "git@" GIT_COMMIT);
   cli::init(cli::Category::All, program, argc, argv);
-  TraceBuilder builder;
+  TraceBuilder builder{tracePointMappingFileOption.get(), traceRecordFileOption.get(),
+                       countToPerfettoTimestampRateOption.get(), maxSliceCountOption.get()};
   builder.process();
   warpo::writeBinaryFile(outputFileOption.get(), builder.writer_.data_);
   std::cout << "Trace written to " << outputFileOption.get() << std::endl;
   std::cout << "Open with https://ui.perfetto.dev." << std::endl;
+}
+
+} // namespace warpo
+
+int main(int argc, const char **argv) {
+  try {
+    warpo::traceVisualizerMain(argc, argv);
+  } catch (std::exception const &e) {
+    fmt::println("ERROR: {}", e.what());
+    return 1;
+  }
   return 0;
 }
