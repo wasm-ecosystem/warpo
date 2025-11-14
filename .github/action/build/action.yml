@@ -17,7 +17,6 @@ runs:
       shell: bash
       run: |
         set -ex
-        sudo rm /var/lib/man-db/auto-update ; true
         sudo apt-get update
         sudo apt-get install -y ccache cmake ninja-build
     - if: runner.os == 'macOS'
