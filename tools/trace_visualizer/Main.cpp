@@ -158,9 +158,9 @@ public:
     std::ifstream mappingFile(tracePointMappingFile, std::ios::in);
     std::string line;
     while (std::getline(mappingFile, line)) {
-      size_t index = line.find(' ');
+      size_t const index = line.find(' ');
       if (index != std::string::npos) {
-        int32_t fnId = std::stoi(line.substr(0, index));
+        int32_t const fnId = std::stoi(line.substr(0, index));
         functionIndexes_[fnId] = line.substr(index + 1);
       }
     }
@@ -223,7 +223,7 @@ private:
   };
   PopCount getPopCount(Record const &record) {
     size_t popCount = 0;
-    for (int32_t it : std::ranges::reverse_view(pendingSlice_)) {
+    for (int32_t const it : std::ranges::reverse_view(pendingSlice_)) {
       if (it == -record.fnId)
         return {.found = true, .additionalPopCount = popCount};
       popCount++;
