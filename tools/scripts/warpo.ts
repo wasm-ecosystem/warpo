@@ -7,8 +7,10 @@ import { join } from "node:path";
 
 const dirname = import.meta.dirname;
 
-function download_url(version: string, arch: string, platform: string): string {
-  if ((platform === "linux" && arch === "x86_64") || (platform === "macos" && arch === "arm64")) {
+function download_url(version: string): string {
+  const arch = os.arch();
+  const platform = os.platform();
+  if ((platform === "linux" && arch === "x86_64") || (platform === "darwin" && arch === "arm64")) {
     return `https://github.com/wasm-ecosystem/warpo/releases/download/${version}/warpo-${version}-${platform}-${arch}.tar.gz`;
   }
   console.log(`there is no precompiled binary for ${version} + ${platform} + ${arch}, please compile from source.`);
@@ -27,10 +29,7 @@ function get_binary(): string | null {
     process.env["WARPO_DOWNLOAD_VERSION"] ||
     JSON.parse(readFileSync(join(dirname, "..", "package.json"), "utf8")).version;
 
-  let platform: string = os.platform();
-  if (platform === "darwin") platform = "macos";
-
-  const url = download_url(version, os.arch(), platform);
+  const url = download_url(version);
   console.log(`downloading warpo from ${url}`);
   execSync(`curl -L ${url} | tar xz -C ${dirname}`, { stdio: "inherit" });
   return join(dirname, "warpo", "warpo_asc");

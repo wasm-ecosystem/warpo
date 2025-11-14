@@ -18,30 +18,31 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: "npm"
       - run: npm ci
+
+      - id: release_info
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const os = require('os');
+            core.setOutput('PLATFORM', os.platform());
+            core.setOutput('ARCH', os.arch());
+            core.setOutput('VERSION', context.payload.release.tag_name);
 
       - uses: ./.github/action/build
         with:
           CMAKE_ARGS: "-DWARPO_RELEASE=ON"
       - run: npm run build:ts
 
-      - id: release_info
-        run: |
-          if [ "${{ runner.os }}" == "macOS" ]; then
-            echo "OS=macos" >> $GITHUB_OUTPUT
-          elif [ "${{ runner.os }}" == "Linux" ]; then
-            echo "OS=linux" >> $GITHUB_OUTPUT
-          fi
-          echo "CPU=$(uname -m)" >> $GITHUB_OUTPUT
-          echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
       - name: Pack build/warpo directory
         run: |
-          tar -czvf build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.OS }}-${{ steps.release_info.outputs.CPU }}.tar.gz -C build warpo
+          tar -czvf build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.tar.gz -C build warpo
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.OS }}-${{ steps.release_info.outputs.CPU }}.tar.gz
+            build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.tar.gz
       - name: Publish to NPM
         if: matrix.os == 'ubuntu-latest'
         run: |
