@@ -65,22 +65,37 @@ std::optional<std::filesystem::path> ModuleResolver::findPackageRoot(std::filesy
   return std::nullopt;
 }
 
+// priority:
+// 1. If X is a file, load X as its file extension format.
+// 2. If X is a directory, X/index.ts is a file, load X/index.ts.
+// 3. If X.d.ts is a file, load X.d.ts.
+// 4. THROW "not found".
 Dependency ModuleResolver::getDependencyForUserCode(std::string const &nextFileInternalPath) {
+  // currently we only support *.json
+  if (isRegularFile(nextFileInternalPath) && nextFileInternalPath.ends_with(".json")) {
+    if (support::isDebug("ModuleResolve"))
+      fmt::println("[module resolve] find user code in json format '{}'", nextFileInternalPath);
+    return {readTextFile(nextFileInternalPath), nextFileInternalPath};
+  }
+
   const std::string filePathWithExt = nextFileInternalPath + extension;
-  if (std::filesystem::exists(filePathWithExt) && std::filesystem::is_regular_file(filePathWithExt)) {
+  if (isRegularFile(filePathWithExt)) {
     if (support::isDebug("ModuleResolve"))
       fmt::println("[module resolve] find user code '{}'", filePathWithExt);
     return {readTextFile(filePathWithExt), filePathWithExt};
   }
+
   const std::filesystem::path indexPathWithExt =
       std::filesystem::path{nextFileInternalPath} / (std::string{"index"} + extension);
-  if (std::filesystem::exists(indexPathWithExt) && std::filesystem::is_regular_file(indexPathWithExt)) {
+  if (isRegularFile(indexPathWithExt.string())) {
     return {readTextFile(indexPathWithExt.string()), indexPathWithExt.string()};
   }
+
   const std::string dFilePathWithExt = nextFileInternalPath + ".d" + extension;
-  if (std::filesystem::exists(dFilePathWithExt) && std::filesystem::is_regular_file(dFilePathWithExt)) {
+  if (isRegularFile(dFilePathWithExt)) {
     return {readTextFile(dFilePathWithExt), filePathWithExt};
   }
+
   if (support::isDebug("ModuleResolve"))
     fmt::println("[module resolve] cannot find library '{}'", nextFileInternalPath);
   return {std::nullopt, nextFileInternalPath + extension};
