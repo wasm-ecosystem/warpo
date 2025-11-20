@@ -111,7 +111,8 @@ import {
   VariableStatement,
   ParameterKind,
   ParameterNode,
-  TypeName
+  TypeName,
+  JsonSource
 } from "./ast";
 
 import {
@@ -153,6 +154,7 @@ import {
   builtinVariables_onAccess
 } from "./builtins";
 import { addParameter, addSubProgram } from "./warpo";
+import { JsonNumber, JsonString } from "./json";
 
 // Memory manager constants
 const AL_SIZE = 16;
@@ -440,7 +442,7 @@ export class Program extends DiagnosticEmitter {
     this.module = Module.create(options.stackSize > 0, options.sizeTypeRef);    
     this.parser = new Parser(this.diagnostics, this.sources);
     this.resolver = new Resolver(this);
-    let nativeFile = new File(this, Source.native);
+    let nativeFile = createFile(this, Source.native);
     this.nativeFile = nativeFile;
     this.filesByName.set(nativeFile.internalName, nativeFile);
   }
@@ -1098,7 +1100,7 @@ export class Program extends DiagnosticEmitter {
     // initialize relevant declaration-like statements of the entire program
     for (let i = 0, k = this.sources.length; i < k; ++i) {
       let source = this.sources[i];
-      let file = new File(this, source);
+      let file = createFile(this, source);
       this.filesByName.set(file.internalName, file);
       let statements = source.statements;
       for (let j = 0, l = statements.length; j < l; ++j) {
@@ -2902,7 +2904,7 @@ export const enum ElementKind {
   /** A {@link TypeDefinition}.  */
   TypeDefinition,
   /** An {@link IndexSignature}. */
-  IndexSignature
+  IndexSignature,
 }
 
 /** Indicates built-in decorators that are present. */
@@ -3231,11 +3233,22 @@ export abstract class TypedElement extends DeclaredElement {
   }
 }
 
+export function createFile(
+  /** Program this file belongs to. */
+  program: Program,
+  /** Source of this file. */
+  source: Source
+): File {
+  // FIXME: support type check for instanceof
+  if (source instanceof JsonSource) return new JsonFile(program, source as JsonSource);
+  return new File(program, source);
+}
+
 /** A file representing the implicit top-level namespace of a source. */
 export class File extends Element {
 
   /** File exports. */
-  exports: Map<string,DeclaredElement> | null = null;
+  exports: Map<string, DeclaredElement> | null = null;
   /** File re-exports. */
   exportsStar: File[] | null = null;
   /** Top-level start function of this file. */
@@ -3376,6 +3389,61 @@ export class File extends Element {
         exportsStar[i].copyExportsToNamespace(ns);
       }
     }
+  }
+}
+
+export class JsonFile extends File {
+  constructor(
+    /** Program this file belongs to. */
+    program: Program,
+    /** Source of this file. */
+    source: JsonSource
+  ) {
+    super(program, source);
+  }
+
+  get jsonSource(): JsonSource {
+    return this.source as JsonSource;
+  }
+
+  /** Looks up the export of the specified name. */
+  override lookupExport(name: string): DeclaredElement | null {
+    // create a global variable for this JSON property
+    let exports = this.exports;
+    if (exports && exports.has(name)) return assert(exports.get(name));
+    const jsonObject = this.jsonSource.obj;
+    const index = jsonObject.key.indexOf(name);
+    if (index == -1) return null;
+    const value = jsonObject.value[index];
+    if (value instanceof JsonNumber) {
+      const global =  new Global(
+        name,
+        this,
+        DecoratorFlags.Lazy,
+      )
+      global.setConstantFloatValue((value as JsonNumber).value, Type.f64);
+      return global;
+    } else if (value instanceof JsonString) {
+      const range = value.range;
+      const global = new Global(
+        name,
+        this,
+        DecoratorFlags.Lazy,
+        Node.createVariableDeclaration(
+          Node.createIdentifierExpression(name, range, false),
+          null,
+          CommonFlags.Export,
+          null,
+          Node.createStringLiteralExpression((value as JsonString).value, range),
+          range,
+        )
+      )
+      return global;
+    } else {
+      this.program.error(DiagnosticCode.Not_implemented_0, value.range, "import complex object from json file");
+      return null;
+    }
+
   }
 }
 
@@ -3588,7 +3656,6 @@ export class EnumValue extends VariableLikeElement {
 
 /** A global variable. */
 export class Global extends VariableLikeElement {
-
   /** Constructs a new global variable. */
   constructor(
     /** Simple name. */

@@ -4,6 +4,7 @@
     "target": "esnext",
     "module": "commonjs",
     "noLib": true,
+    "resolveJsonModule": true,
     "allowJs": false,
     "typeRoots": ["types"],
     "types": ["warpo"],

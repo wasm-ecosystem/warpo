@@ -42,6 +42,7 @@ import {
 import {
   Type
 } from "./types";
+import { JsonObject } from "./json";
 
 /** Indicates the kind of a node. */
 export const enum NodeKind {
@@ -1715,6 +1716,20 @@ export class Source extends Node {
   /** Gets the column number at the last position queried with `lineAt`. Starts at `1`. */
   columnAt(): i32 {
     return this.lineColumn;
+  }
+}
+
+export class JsonSource extends Source {
+  constructor(
+    /** Source kind. */
+    sourceKind: SourceKind,
+    /** Normalized path with file extension. */
+    normalizedPath: string,
+    /** Full source text. */
+    text: string,
+    public obj: JsonObject,
+  ) {
+    super(sourceKind, normalizedPath, text);
   }
 }
 

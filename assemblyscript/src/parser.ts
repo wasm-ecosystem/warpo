@@ -87,9 +87,10 @@ import {
   VoidStatement,
   WhileStatement,
   ModuleDeclaration,
-
-  mangleInternalPath
+  JsonSource,
+  mangleInternalPath,
 } from "./ast";
+import { JsonObject, JsonString, JsonValue } from "./json";
 
 /** Represents a dependee. */
 class Dependee {
@@ -140,6 +141,13 @@ export class Parser extends DiagnosticEmitter {
     // the frontend gives us paths with file extensions
     let normalizedPath = normalizePath(path);
     let internalPath = mangleInternalPath(normalizedPath);
+    const kind = isEntry
+        ? SourceKind.UserEntry
+        : path.startsWith(LIBRARY_PREFIX)
+          ? path.indexOf(PATH_DELIMITER, LIBRARY_PREFIX.length) < 0
+            ? SourceKind.LibraryEntry
+            : SourceKind.Library
+          : SourceKind.User;
 
     // check if already processed
     if (this.donelog.has(internalPath)) return;
@@ -161,18 +169,40 @@ export class Parser extends DiagnosticEmitter {
       return;
     }
 
+    if (normalizedPath.endsWith(".json")) {
+      this.parseJsonSourceFile(text, normalizedPath, kind);
+    } else {
+      this.parseTsSourceFile(text, normalizedPath, kind);
+    }
+  }
+
+  private parseJsonSourceFile(
+    /** Source text of the file. */
+    text: string,
+    /** Normalized path of the file. */
+    normalizedPath: string,
+    /** Whether this is an entry file. */
+    kind: SourceKind
+  ): void {
+    let source = new JsonSource(kind, normalizedPath, text, new JsonObject(
+      // FIXME: from C++
+      ["name"],
+      [new JsonString("hh")]
+    ));
+    this.sources.push(source);
+    
+  }
+
+  private parseTsSourceFile(
+    /** Source text of the file. */
+    text: string,
+    /** Normalized path of the file. */
+    normalizedPath: string,
+    /** Whether this is an entry file. */
+    kind: SourceKind
+  ): void {
     // create the source element
-    let source = new Source(
-      isEntry
-        ? SourceKind.UserEntry
-        : path.startsWith(LIBRARY_PREFIX)
-          ? path.indexOf(PATH_DELIMITER, LIBRARY_PREFIX.length) < 0
-            ? SourceKind.LibraryEntry
-            : SourceKind.Library
-          : SourceKind.User,
-      normalizedPath,
-      text
-    );
+    let source = new Source(kind, normalizedPath, text);
 
     this.sources.push(source);
     this.currentSource = source;
