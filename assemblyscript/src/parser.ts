@@ -90,7 +90,7 @@ import {
   JsonSource,
   mangleInternalPath,
 } from "./ast";
-import { JsonObject, JsonString, JsonValue } from "./json";
+import { JsonObject, JsonParser, JsonString, JsonValue } from "./json";
 
 /** Represents a dependee. */
 class Dependee {
@@ -184,13 +184,9 @@ export class Parser extends DiagnosticEmitter {
     /** Whether this is an entry file. */
     kind: SourceKind
   ): void {
-    let source = new JsonSource(kind, normalizedPath, text, new JsonObject(
-      // FIXME: from C++
-      ["name"],
-      [new JsonString("hh")]
-    ));
+    let source = new JsonSource(kind, normalizedPath, text);
+    source.obj = new JsonParser(source, this.diagnostics).parse();
     this.sources.push(source);
-    
   }
 
   private parseTsSourceFile(

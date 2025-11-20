@@ -154,7 +154,7 @@ import {
   builtinVariables_onAccess
 } from "./builtins";
 import { addParameter, addSubProgram } from "./warpo";
-import { JsonNumber, JsonString } from "./json";
+import { JsonF64, JsonI64, JsonString } from "./json";
 
 // Memory manager constants
 const AL_SIZE = 16;
@@ -3412,18 +3412,29 @@ export class JsonFile extends File {
     let exports = this.exports;
     if (exports && exports.has(name)) return assert(exports.get(name));
     const jsonObject = this.jsonSource.obj;
+    if (jsonObject == null) return null;
     const index = jsonObject.key.indexOf(name);
     if (index == -1) return null;
     const value = jsonObject.value[index];
-    if (value instanceof JsonNumber) {
+    if (value instanceof JsonI64) {
       const global =  new Global(
         name,
         this,
         DecoratorFlags.Lazy,
       )
-      global.setConstantFloatValue((value as JsonNumber).value, Type.f64);
+      global.setConstantIntegerValue((value as JsonI64).value, Type.i64);
       return global;
-    } else if (value instanceof JsonString) {
+    }
+    if (value instanceof JsonF64) {
+      const global =  new Global(
+        name,
+        this,
+        DecoratorFlags.Lazy,
+      )
+      global.setConstantFloatValue((value as JsonF64).value, Type.f64);
+      return global;
+    }
+    if (value instanceof JsonString) {
       const range = value.range;
       const global = new Global(
         name,

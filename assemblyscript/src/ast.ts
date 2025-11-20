@@ -1720,6 +1720,7 @@ export class Source extends Node {
 }
 
 export class JsonSource extends Source {
+  obj: JsonObject | null = null;
   constructor(
     /** Source kind. */
     sourceKind: SourceKind,
@@ -1727,7 +1728,6 @@ export class JsonSource extends Source {
     normalizedPath: string,
     /** Full source text. */
     text: string,
-    public obj: JsonObject,
   ) {
     super(sourceKind, normalizedPath, text);
   }
