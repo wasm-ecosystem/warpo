@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "AdvancedInlining.hpp"
+#include "BinaryWriter.hpp"
 #include "ConditionalReturn.hpp"
 #include "ExtractMostFrequentlyUsedGlobals.hpp"
 #include "GC/FastLower.hpp"
@@ -145,7 +146,7 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
   if (common::isEmitDebugInfo()) {
     addDebugInfoAsCustomSection(m);
   }
-  wasm::WasmBinaryWriter writer(m.get(), buffer, options);
+  BinaryWriter writer(m.get(), buffer, options);
   std::stringstream sourceMapStream;
   if (common::isEmitDebugLine()) {
     assert(!config.sourceMapURL.empty());
