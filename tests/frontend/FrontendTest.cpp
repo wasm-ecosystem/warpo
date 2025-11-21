@@ -179,8 +179,8 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
   }
   std::stringstream ss;
   ss << *ret.m.get();
-  std::string actual = std::move(ss).str();
-  writeBinaryFile(expectedOutPath.string(), std::move(actual));
+  std::string const actual = std::move(ss).str();
+  writeBinaryFile(expectedOutPath.string(), actual);
   return runModuleOnWarp(configJson, tsPath, ret.m);
 }
 

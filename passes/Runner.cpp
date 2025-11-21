@@ -116,9 +116,14 @@ static void optimize(AsModule const &m) {
   ensureValidate(*m.get());
 }
 
-static void addDebugInfoAsCustomSection(AsModule const &m) {
+static void addDebugInfoAsCustomSection(AsModule const &m, wasm::BinaryLocations const &binaryLocations) {
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
-      passes::DwarfGenerator::generateDebugSections(m.variableInfo_);
+      passes::DwarfGenerator::generateDebugSections(m.variableInfo_, binaryLocations);
+
+  std::string const dwarfStr = passes::DwarfGenerator::dumpDwarf(debugSections);
+
+  std::ofstream dwarfFile{"./build/dwarf.txt", std::ios::out | std::ios::trunc};
+  dwarfFile << dwarfStr;
 
   if (!debugSections.empty()) {
     for (auto I = debugSections.begin(); !(I == debugSections.end()); I++) {
@@ -142,18 +147,22 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
   // wasm and source map
   wasm::BufferWithRandomAccess buffer;
   wasm::PassOptions const options = wasm::PassOptions::getWithoutOptimization();
-  if (common::isEmitDebugInfo()) {
-    addDebugInfoAsCustomSection(m);
-  }
+
   wasm::WasmBinaryWriter writer(m.get(), buffer, options);
   std::stringstream sourceMapStream;
   if (common::isEmitDebugLine()) {
     assert(!config.sourceMapURL.empty());
     writer.setSourceMap(&sourceMapStream, config.sourceMapURL);
   }
+
   writer.setNamesSection(common::isEmitDebugName());
   writer.setEmitModuleName(common::isEmitDebugName());
   writer.write();
+
+  if (common::isEmitDebugInfo()) {
+    wasm::BinaryLocations const &binaryLocations = writer.getBinaryLocations();
+    addDebugInfoAsCustomSection(m, binaryLocations);
+  }
 
   // wat
   std::stringstream ss{};

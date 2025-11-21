@@ -94,7 +94,7 @@ private:
 };
 
 llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
-DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
+DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::BinaryLocations const &binaryLocations) {
   VariableInfo::ClassRegistry const &classRegistry = variableInfo.getClassRegistry();
   VariableInfo::GlobalTypes const &globalTypes = variableInfo.getGlobalTypes();
 
@@ -195,6 +195,29 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
 
   abbrevDecls.push_back(variableAbbrev);
 
+  llvm::DWARFYAML::Abbrev localVariableAbbrev =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_variable, llvm::dwarf::DW_CHILDREN_no);
+
+  llvm::DWARFYAML::AttributeAbbrev localVarNameAttr{};
+  localVarNameAttr.Attribute = llvm::dwarf::DW_AT_name;
+  localVarNameAttr.Form = llvm::dwarf::DW_FORM_string;
+  localVarNameAttr.Value = 0U;
+  localVariableAbbrev.Attributes.push_back(localVarNameAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev localVarTypeAttr{};
+  localVarTypeAttr.Attribute = llvm::dwarf::DW_AT_type;
+  localVarTypeAttr.Form = llvm::dwarf::DW_FORM_ref4;
+  localVarTypeAttr.Value = 0U;
+  localVariableAbbrev.Attributes.push_back(localVarTypeAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev localVarLocationAttr{};
+  localVarLocationAttr.Attribute = llvm::dwarf::DW_AT_location;
+  localVarLocationAttr.Form = llvm::dwarf::DW_FORM_data4;
+  localVarLocationAttr.Value = 0U;
+  localVariableAbbrev.Attributes.push_back(localVarLocationAttr);
+
+  abbrevDecls.push_back(localVariableAbbrev);
+
   llvm::DWARFYAML::Abbrev formalParameterAbbrev =
       abbrevFactory.create(llvm::dwarf::DW_TAG_formal_parameter, llvm::dwarf::DW_CHILDREN_no);
 
@@ -217,6 +240,23 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
   formalParameterAbbrev.Attributes.push_back(formalParamLocationAttr);
 
   abbrevDecls.push_back(formalParameterAbbrev);
+
+  llvm::DWARFYAML::Abbrev lexicalBlockAbbrev =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_lexical_block, llvm::dwarf::DW_CHILDREN_yes);
+
+  llvm::DWARFYAML::AttributeAbbrev lexicalBlockLowPcAttr{};
+  lexicalBlockLowPcAttr.Attribute = llvm::dwarf::DW_AT_low_pc;
+  lexicalBlockLowPcAttr.Form = llvm::dwarf::DW_FORM_addr;
+  lexicalBlockLowPcAttr.Value = 0U;
+  lexicalBlockAbbrev.Attributes.push_back(lexicalBlockLowPcAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev lexicalBlockHighPcAttr{};
+  lexicalBlockHighPcAttr.Attribute = llvm::dwarf::DW_AT_high_pc;
+  lexicalBlockHighPcAttr.Form = llvm::dwarf::DW_FORM_addr;
+  lexicalBlockHighPcAttr.Value = 0U;
+  lexicalBlockAbbrev.Attributes.push_back(lexicalBlockHighPcAttr);
+
+  abbrevDecls.push_back(lexicalBlockAbbrev);
 
   llvm::DWARFYAML::Abbrev subprogramAbbrev =
       abbrevFactory.create(llvm::dwarf::DW_TAG_subprogram, llvm::dwarf::DW_CHILDREN_yes);
@@ -334,7 +374,8 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
       SubProgramRegistry const &memberFunctions = classInfo.getSubProgramRegistry();
       std::deque<SubProgramInfo> const &memberFunctionList = memberFunctions.getList();
       for (SubProgramInfo const &subProgram : memberFunctionList) {
-        addSubProgramWithParameters(subProgram, rootUnit, subprogramAbbrev, formalParameterAbbrev, typeRefFixups);
+        addSubProgramWithParameters(subProgram, rootUnit, subprogramAbbrev, formalParameterAbbrev, lexicalBlockAbbrev,
+                                    localVariableAbbrev, binaryLocations, typeRefFixups);
       }
 
       // Add terminator for class children
@@ -370,7 +411,8 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
   SubProgramRegistry const &globalFunctions = variableInfo.getSubProgramRegistry();
   std::deque<SubProgramInfo> const &globalFunctionList = globalFunctions.getList();
   for (SubProgramInfo const &subProgram : globalFunctionList) {
-    addSubProgramWithParameters(subProgram, rootUnit, subprogramAbbrev, formalParameterAbbrev, typeRefFixups);
+    addSubProgramWithParameters(subProgram, rootUnit, subprogramAbbrev, formalParameterAbbrev, lexicalBlockAbbrev,
+                                localVariableAbbrev, binaryLocations, typeRefFixups);
   }
 
   compileUnits.push_back(rootUnit);
@@ -412,6 +454,9 @@ std::string DwarfGenerator::dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::Memo
 void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
                                                  llvm::DWARFYAML::Abbrev const &subprogramAbbrev,
                                                  llvm::DWARFYAML::Abbrev const &formalParameterAbbrev,
+                                                 llvm::DWARFYAML::Abbrev const &lexicalBlockAbbrev,
+                                                 llvm::DWARFYAML::Abbrev const &localVariableAbbrev,
+                                                 wasm::BinaryLocations const &binaryLocations,
                                                  std::vector<TypeRefFixup> &typeRefFixups) {
   llvm::DWARFYAML::Entry subprogramEntry;
   subprogramEntry.AbbrCode = subprogramAbbrev.Code;
@@ -446,6 +491,65 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
     typeRefFixups.push_back({paramIndex, 1U, param.getType()});
 
     rootUnit.Entries.push_back(paramEntry);
+  }
+
+  // Add lexical blocks for locals
+  SubProgramInfo::LocalsMap const &localsMap = subProgram.getLocals();
+  for (auto const &localsEntry : localsMap) {
+    BinaryenExpressionRef const expr = localsEntry.first;
+    std::vector<LocalInfo> const &locals = localsEntry.second;
+
+    // Look up the expression range in binaryLocations
+    wasm::BinaryLocations::Span exprSpan = {0U, 0U};
+    if (expr != nullptr) {
+      auto const exprIt = binaryLocations.expressions.find(reinterpret_cast<wasm::Expression *>(expr));
+      if (exprIt != binaryLocations.expressions.end()) {
+        exprSpan = exprIt->second;
+      }
+    }
+
+    // Add lexical block entry
+    llvm::DWARFYAML::Entry blockEntry;
+    blockEntry.AbbrCode = lexicalBlockAbbrev.Code;
+
+    llvm::DWARFYAML::FormValue blockLowPcValue;
+    blockLowPcValue.Value = exprSpan.start;
+    blockEntry.Values.push_back(blockLowPcValue);
+
+    llvm::DWARFYAML::FormValue blockHighPcValue;
+    blockHighPcValue.Value = exprSpan.end;
+    blockEntry.Values.push_back(blockHighPcValue);
+
+    rootUnit.Entries.push_back(blockEntry);
+
+    // Add local variables within the lexical block
+    for (LocalInfo const &local : locals) {
+      llvm::DWARFYAML::Entry localEntry;
+      localEntry.AbbrCode = localVariableAbbrev.Code;
+
+      llvm::DWARFYAML::FormValue localNameValue;
+      std::string_view const localName = local.getName();
+      localNameValue.CStr = llvm::StringRef(localName.data(), localName.size());
+      localEntry.Values.push_back(localNameValue);
+
+      llvm::DWARFYAML::FormValue localTypeValue;
+      localTypeValue.Value = 0xDEADBEEFU;
+      localEntry.Values.push_back(localTypeValue);
+
+      llvm::DWARFYAML::FormValue localLocationValue;
+      localLocationValue.Value = local.getIndex();
+      localEntry.Values.push_back(localLocationValue);
+
+      size_t const localIndex = rootUnit.Entries.size();
+      typeRefFixups.push_back({localIndex, 1U, local.getType()});
+
+      rootUnit.Entries.push_back(localEntry);
+    }
+
+    // Add terminator for lexical block children
+    llvm::DWARFYAML::Entry blockTerminator;
+    blockTerminator.AbbrCode = 0U;
+    rootUnit.Entries.push_back(blockTerminator);
   }
 
   // Add terminator for subprogram children

@@ -1,3 +1,5 @@
+import {ExpressionRef} from "./module";
+
 declare function _WarpoMarkDataElementImmutable(begin: u32, size: u32): void;
 declare function _WarpoCreateClass(className: string, parentClassName: string | null, rtid: u32): void;
 declare function _WarpoAddTemplateType(className: string, templateTypeName: string): void;
@@ -7,7 +9,7 @@ declare function _WarpoAddGlobal(variableName: string, typeName: string, nullabl
 
 declare function _WarpoAddSubProgram(subProgramName: string, belongClassName: string | null): void;
 declare function _WarpoAddParameter(subProgramName: string, variableName: string, typeName: string, index: u32, nullable: bool): void;
-declare function _WarpoAddLocal(subProgramName: string, variableName: string, typeName: string, index: u32, start: u32, end: u32, nullable: bool): void;
+declare function _WarpoAddLocal(subProgramName: string, variableName: string, typeName: string, index: u32, expressionRef: ExpressionRef, nullable: bool): void;
 
 export function markDataElementImmutable(begin: i64, size: i32): void {
   _WarpoMarkDataElementImmutable(i64_low(begin), <u32>size);
@@ -38,6 +40,6 @@ export function addParameter(subProgramName: string, variableName: string, typeN
   _WarpoAddParameter(subProgramName, variableName, typeName, index, nullable);
 }
 
-export function addLocal(subProgramName: string, variableName: string, typeName: string, index: u32, start: u32, end: u32, nullable: bool): void {
-  _WarpoAddLocal(subProgramName, variableName, typeName, index, start, end, nullable);
+export function addLocal(subProgramName: string, variableName: string, typeName: string, index: u32, expresionRef:ExpressionRef, nullable: bool): void {
+  _WarpoAddLocal(subProgramName, variableName, typeName, index, expresionRef, nullable);
 }

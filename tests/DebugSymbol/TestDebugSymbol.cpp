@@ -10,6 +10,7 @@
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/passes/DwarfGenerator/DwarfGenerator.hpp"
 #include "warpo/support/Opt.hpp"
+#include "wasm-binary.h"
 #include "wasm.h"
 
 namespace {
@@ -41,11 +42,19 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
     std::cout << "compile failed due to " << compileResult.errorMessage << std::endl;
     std::terminate();
   }
-  std::stringstream ss;
-  ss << *compileResult.m.get();
+
+  // wasm and source map
+  wasm::BufferWithRandomAccess buffer;
+  wasm::PassOptions const options = wasm::PassOptions::getWithoutOptimization();
+
+  wasm::WasmBinaryWriter writer(compileResult.m.get(), buffer, options);
+
+  writer.setNamesSection(true);
+  writer.setEmitModuleName(true);
+  writer.write();
 
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
-      warpo::passes::DwarfGenerator::generateDebugSections(compileResult.m.variableInfo_);
+      warpo::passes::DwarfGenerator::generateDebugSections(compileResult.m.variableInfo_, writer.getBinaryLocations());
 
   std::string const dumpOutput = warpo::passes::DwarfGenerator::dumpDwarf(debugSections);
   std::string const fixtureName = testCaseName + "Fixture.txt";

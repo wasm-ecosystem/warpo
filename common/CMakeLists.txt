@@ -8,7 +8,7 @@ target_link_libraries(${LIB_NAME}
   PUBLIC binaryen fmt::fmt warpo_support
 )
 target_include_directories(${LIB_NAME}
-  SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"
+  SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"
 )
 target_include_directories(${LIB_NAME}
   PUBLIC "${PROJECT_SOURCE_DIR}/include"

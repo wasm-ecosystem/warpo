@@ -13,6 +13,7 @@
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
+#include "binaryen/src/wasm.h"
 #include "llvm/ObjectYAML/DWARFEmitter.h"
 #include "llvm/ObjectYAML/DWARFYAML.h"
 #include "warpo/common/SubProgramInfo.hpp"
@@ -28,13 +29,17 @@ struct TypeRefFixup final {
 
 class DwarfGenerator final {
 public:
-  static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> generateDebugSections(VariableInfo const &variableInfo);
+  static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
+  generateDebugSections(VariableInfo const &variableInfo, wasm::BinaryLocations const &binaryLocations);
   static std::string dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const &debugSections);
 
 private:
   static void addSubProgramWithParameters(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
                                           llvm::DWARFYAML::Abbrev const &subprogramAbbrev,
                                           llvm::DWARFYAML::Abbrev const &formalParameterAbbrev,
+                                          llvm::DWARFYAML::Abbrev const &lexicalBlockAbbrev,
+                                          llvm::DWARFYAML::Abbrev const &localVariableAbbrev,
+                                          wasm::BinaryLocations const &binaryLocations,
                                           std::vector<TypeRefFixup> &typeRefFixups);
 };
 

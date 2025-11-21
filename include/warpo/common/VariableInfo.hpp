@@ -59,7 +59,7 @@ public:
                     uint32_t const index, bool const nullable);
 
   void addLocal(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
-                uint32_t const index, uint32_t const start, uint32_t const end, bool const nullable);
+                uint32_t const index, BinaryenExpressionRef const expr, bool const nullable);
 
 private:
   using SubProgramLookupMap = std::unordered_map<std::string_view, SubProgramInfo &>;

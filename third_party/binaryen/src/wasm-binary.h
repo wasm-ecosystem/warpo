@@ -1463,6 +1463,10 @@ public:
 
   void writeMemoryOrder(MemoryOrder order, bool isRMW = false);
 
+  BinaryLocations const& getBinaryLocations() const noexcept {
+    return binaryLocations;
+  }
+
 private:
   Module* wasm;
   BufferWithRandomAccess& o;

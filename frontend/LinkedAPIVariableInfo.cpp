@@ -69,13 +69,14 @@ void addParameter(uint32_t const subProgramNamePtr, uint32_t const variableNameP
 }
 
 void addLocal(uint32_t const subProgramNamePtr, uint32_t const variableNamePtr, uint32_t const typeNamePtr,
-              uint32_t const index, uint32_t const start, uint32_t const end, uint32_t const nullable,
+              uint32_t const index, uint64_t const expressionAddress, uint32_t const nullable,
               vb::WasmModule const *const ctx) {
   std::string const subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
   std::string variableName = WarpRunner::getString(ctx, variableNamePtr);
   std::string const typeName = WarpRunner::getString(ctx, typeNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
-  pCompiler->asModule_.variableInfo_.addLocal(subProgramName, std::move(variableName), typeName, index, start, end,
+  pCompiler->asModule_.variableInfo_.addLocal(subProgramName, std::move(variableName), typeName, index,
+                                              reinterpret_cast<BinaryenExpressionRef>(expressionAddress),
                                               nullable != 0);
 }
 

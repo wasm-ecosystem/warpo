@@ -108,7 +108,6 @@ Checks: >
   hicpp-signed-bitwise,
   misc-const-correctness,
   misc-definitions-in-headers,
-  misc-misplaced-const,
   misc-redundant-expression,
   misc-unconventional-assign-operator,
   misc-unused-alias-decls,

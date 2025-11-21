@@ -216,6 +216,44 @@ private:
     static_cast<SubType*>(this)->emitDebugLocation(curr);
   }
   void visitPossibleBlockContents(Expression* curr);
+
+  void trackBlockStart(Expression* curr, Function* func) {
+    if constexpr (requires {
+                    static_cast<SubType*>(this)->trackBlockStartImpl(curr,
+                                                                     func);
+                  }) {
+      static_cast<SubType*>(this)->trackBlockStartImpl(curr, func);
+    }
+  }
+
+  void trackBlockEnd(Expression* curr, Function* func) {
+    if constexpr (requires {
+                    static_cast<SubType*>(this)->trackBlockEndImpl(curr, func);
+                  }) {
+      static_cast<SubType*>(this)->trackBlockEndImpl(curr, func);
+    }
+  }
+
+  // RAII class for automatic block end tracking
+  class BlockTracker {
+    BinaryenIRWriter* writer;
+    Expression* expr;
+    Function* func;
+
+  public:
+    BlockTracker(BinaryenIRWriter* writer, Expression* expr, Function* func)
+      : writer(writer), expr(expr), func(func) {
+      writer->trackBlockStart(expr, func);
+    }
+
+    ~BlockTracker() { writer->trackBlockEnd(expr, func); }
+
+    // Delete copy/move to prevent multiple tracking
+    BlockTracker(const BlockTracker&) = delete;
+    BlockTracker& operator=(const BlockTracker&) = delete;
+    BlockTracker(BlockTracker&&) = delete;
+    BlockTracker& operator=(BlockTracker&&) = delete;
+  };
 };
 
 template<typename SubType> void BinaryenIRWriter<SubType>::write() {
@@ -224,7 +262,7 @@ template<typename SubType> void BinaryenIRWriter<SubType>::write() {
   visitPossibleBlockContents(func->body);
   emitFunctionEnd();
 }
-
+class BinaryenIRToBinaryWriter;
 // Emits a node in a position that can contain a list of contents, like an if
 // arm. This will emit the node, but if it is a block with no name, just emit
 // its contents. This is ok to do because a list of contents is ok in the wasm
@@ -234,6 +272,9 @@ template<typename SubType> void BinaryenIRWriter<SubType>::write() {
 // handle in optimization passes and when writing the binary out again).
 template<typename SubType>
 void BinaryenIRWriter<SubType>::visitPossibleBlockContents(Expression* curr) {
+
+  BlockTracker blockTracker(this, curr, func);
+
   auto* block = curr->dynCast<Block>();
   // Even if the block has a name, check if the name is necessary (if it has no
   // uses, it is equivalent to not having one). Scanning the children of the
@@ -288,6 +329,8 @@ void BinaryenIRWriter<SubType>::visit(Expression* curr) {
 
 template<typename SubType>
 void BinaryenIRWriter<SubType>::visitBlock(Block* curr) {
+  BlockTracker blockTracker(this, curr, func);
+
   auto visitChildren = [this](Block* curr, Index from) {
     auto& list = curr->list;
     while (from < list.size()) {
@@ -438,6 +481,8 @@ void BinaryenIRWriter<SubType>::visitTryTable(TryTable* curr) {
 // Binaryen IR to binary writer
 class BinaryenIRToBinaryWriter
   : public BinaryenIRWriter<BinaryenIRToBinaryWriter> {
+  friend class BinaryenIRWriter<BinaryenIRToBinaryWriter>;
+
 public:
   BinaryenIRToBinaryWriter(WasmBinaryWriter& parent,
                            BufferWithRandomAccess& o,
@@ -478,6 +523,14 @@ public:
   }
 
   MappedLocals& getMappedLocals() { return writer.mappedLocals; }
+
+  void trackBlockStartImpl(Expression* curr, Function* func) {
+    parent.trackExpressionStart(curr, func);
+  }
+
+  void trackBlockEndImpl(Expression* curr, Function* func) {
+    parent.trackExpressionEnd(curr, func);
+  }
 
 private:
   WasmBinaryWriter& parent;

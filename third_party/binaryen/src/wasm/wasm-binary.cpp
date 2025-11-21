@@ -1287,9 +1287,10 @@ static void writeBase64VLQ(std::ostream& out, int32_t n) {
     }
     // more VLG digit will follow -- add continuation bit (0x20),
     // base64 codes 'g'..'z', '0'..'9', '+', '/'
-    out << char(digit < 20
-                  ? 'g' + digit
-                  : digit < 30 ? '0' + digit - 20 : digit == 30 ? '+' : '/');
+    out << char(digit < 20    ? 'g' + digit
+                : digit < 30  ? '0' + digit - 20
+                : digit == 30 ? '+'
+                              : '/');
   }
 }
 
@@ -1523,7 +1524,8 @@ void WasmBinaryWriter::trackExpressionStart(Expression* curr, Function* func) {
   // track locations of instructions that have code annotations, as their binary
   // location goes in the custom section.
   if (func && (!func->expressionLocations.empty() ||
-               func->codeAnnotations.count(curr))) {
+               func->codeAnnotations.count(curr) ||
+               (curr->_id == Expression::Id::BlockId))) {
     binaryLocations.expressions[curr] =
       BinaryLocations::Span{BinaryLocation(o.size()), 0};
     binaryLocationTrackedExpressionsForFunc.push_back(curr);
@@ -1533,7 +1535,8 @@ void WasmBinaryWriter::trackExpressionStart(Expression* curr, Function* func) {
 void WasmBinaryWriter::trackExpressionEnd(Expression* curr, Function* func) {
   // TODO: If we need to track the end of annotated code locations, we need to
   //       enable that here.
-  if (func && !func->expressionLocations.empty()) {
+  if (func && (!func->expressionLocations.empty() ||
+               (curr->_id == Expression::Id::BlockId))) {
     auto& span = binaryLocations.expressions.at(curr);
     span.end = o.size();
   }

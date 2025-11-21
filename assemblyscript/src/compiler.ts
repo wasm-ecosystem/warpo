@@ -219,7 +219,7 @@ import {
   liftRequiresExportRuntime,
   lowerRequiresExportRuntime
 } from "./bindings/js";
-import { markDataElementImmutable, addGlobal } from "./warpo";
+import { markDataElementImmutable, addGlobal, addSubProgram } from "./warpo";
 
 /** Features enabled by default. */
 export const defaultFeatures = Feature.MutableGlobals
@@ -1088,6 +1088,7 @@ export class Compiler extends DiagnosticEmitter {
 
     // compile top-level statements within the file's start function
     let startFunction = file.startFunction;
+    addSubProgram(startFunction.internalName, null);
     let startSignature = startFunction.signature;
     let previousBody = this.currentBody;
     let startFunctionBody = new Array<ExpressionRef>();
@@ -2326,13 +2327,7 @@ export class Compiler extends DiagnosticEmitter {
     for (let i = 0; i < numStatements; ++i) {
       let stmt = this.compileStatement(statements[i]);
       switch (getExpressionId(stmt)) {
-        case ExpressionId.Block: {
-          if (!getBlockName(stmt)) {
-            for (let j: Index = 0, k = getBlockChildCount(stmt); j < k; ++j) stmts.push(getBlockChildAt(stmt, j));
-            break;
-          }
-          // fall-through
-        }
+        
         default: stmts.push(stmt);
         case ExpressionId.Nop:
       }
@@ -2684,9 +2679,12 @@ export class Compiler extends DiagnosticEmitter {
     // Finalize
     outerFlow.inherit(flow);
     this.currentFlow = outerFlow;
+    
+    let bodyBlock = module.flatten(bodyStmts);
     let expr = module.if(condExprTrueish,
-      module.flatten(bodyStmts)
+      bodyBlock
     );
+    bodyFlow.addLocalsToBlock(bodyBlock);
     if (possiblyLoops) {
       expr = module.loop(loopLabel, expr);
     }
@@ -2697,7 +2695,10 @@ export class Compiler extends DiagnosticEmitter {
     if (outerFlow.is(FlowFlags.Terminates)) {
       stmts.push(module.unreachable());
     }
-    return module.flatten(stmts);
+
+    let forBlock = module.flatten(stmts);
+    flow.addLocalsToBlock(forBlock);
+    return forBlock;
   }
 
   private compileForOfStatement(
@@ -2782,9 +2783,13 @@ export class Compiler extends DiagnosticEmitter {
       }
       flow.inheritAlternatives(thenFlow, elseFlow); // terminates if both do
       this.currentFlow = flow;
+      let thenRef = module.flatten(thenStmts);
+      let elseRef = module.flatten(elseStmts);
+      thenFlow.addLocalsToBlock(thenRef);
+      elseFlow.addLocalsToBlock(elseRef);
       return module.if(condExprTrueish,
-        module.flatten(thenStmts),
-        module.flatten(elseStmts)
+        thenRef,
+        elseRef
       );
     } else {
       if (thenFlow.isAny(FlowFlags.Terminates | FlowFlags.Breaks)) {

@@ -46,12 +46,20 @@ Currently debug symbols has two parts:
 
 - `DW_AT_type` -> `DW_FORM_ref4` (reference to type DIE)
 
-### tag: DW_TAG_variable
+### tag: DW_TAG_variable (Global)
 
 **hasChildren:** false
 
 - `DW_AT_name` -> `DW_FORM_string`
 - `DW_AT_type` -> `DW_FORM_ref4` (reference to type DIE)
+
+### tag: DW_TAG_variable (Local)
+
+**hasChildren:** false
+
+- `DW_AT_name` -> `DW_FORM_string`
+- `DW_AT_type` -> `DW_FORM_ref4` (reference to type DIE)
+- `DW_AT_location` -> `DW_FORM_data4` (Wasm local index)
 
 ### tag: DW_TAG_formal_parameter
 
@@ -66,5 +74,12 @@ Currently debug symbols has two parts:
 **hasChildren:** true
 
 - `DW_AT_name` -> `DW_FORM_string`
+
+### tag: DW_TAG_lexical_block
+
+**hasChildren:** true
+
+- `DW_AT_low_pc` -> `DW_FORM_addr` (start address)
+- `DW_AT_high_pc` -> `DW_FORM_addr` (end address)
 
 Topology dwarf debug symbol is ![here](./debugSymbol.excalidraw.svg)
