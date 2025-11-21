@@ -3,29 +3,29 @@
 #   "editor.formatOnSaveMode": "modifications",
 #   "editor.defaultFormatter": "vscode.typescript-language-features"
 # }
-assemblyscript
+/assemblyscript
 
 # c++ files
 *.inc
 
-third_party/
+/third_party/
 
 # change the format of these test cases will change the output of the test suite
-tests/frontend/compiler/binary.ts
-tests/frontend/compiler/call-rest-err.ts
-tests/frontend/compiler/constant-assign.ts
-tests/frontend/compiler/constructor-errors.ts
-tests/frontend/compiler/field-initialization-errors.ts
-tests/frontend/compiler/field-initialization.ts
-tests/frontend/compiler/inlining.ts
-tests/frontend/compiler/instanceof.ts
-tests/frontend/compiler/interface-with-initializer.ts
-tests/frontend/compiler/number-warn.ts
-tests/frontend/compiler/number.ts
-tests/frontend/compiler/resolve-binary.ts
-tests/frontend/compiler/resolve-propertyaccess.ts
-tests/frontend/compiler/resolve-unary.ts
-tests/frontend/compiler/std/math.ts
-tests/frontend/compiler/std/operator-overloading.ts
-tests/frontend/compiler/unary-errors.ts
-tests/frontend/compiler/unmanaged-errors.ts
+/tests/frontend/compiler/binary.ts
+/tests/frontend/compiler/call-rest-err.ts
+/tests/frontend/compiler/constant-assign.ts
+/tests/frontend/compiler/constructor-errors.ts
+/tests/frontend/compiler/field-initialization-errors.ts
+/tests/frontend/compiler/field-initialization.ts
+/tests/frontend/compiler/inlining.ts
+/tests/frontend/compiler/instanceof.ts
+/tests/frontend/compiler/interface-with-initializer.ts
+/tests/frontend/compiler/number-warn.ts
+/tests/frontend/compiler/number.ts
+/tests/frontend/compiler/resolve-binary.ts
+/tests/frontend/compiler/resolve-propertyaccess.ts
+/tests/frontend/compiler/resolve-unary.ts
+/tests/frontend/compiler/std/math.ts
+/tests/frontend/compiler/std/operator-overloading.ts
+/tests/frontend/compiler/unary-errors.ts
+/tests/frontend/compiler/unmanaged-errors.ts

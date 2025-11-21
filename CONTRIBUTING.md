@@ -39,11 +39,7 @@ cmake --build build --parallel
 ## Test
 
 ```bash
-npm run test:ut
-npm run test:opt:snapshot
-npm run test:as:snapshot
-npm run test:bootstrap:debug
-npm run test:bootstrap:release
+npm run test
 ```
 
 ## subtree management

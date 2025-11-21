@@ -28,7 +28,8 @@ jobs:
       # enable docs is available
       - run: npm run docs:build
       # test
-      - run: npm run test:ut
+      - run: npm run test:as:ut
+      - run: npm run test:cpp:ut
       - run: npm run test:opt:snapshot -- --debug
       - run: npm run test:as:snapshot
       - run: npm run test:debug_symbol

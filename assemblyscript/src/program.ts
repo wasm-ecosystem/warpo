@@ -3413,9 +3413,9 @@ export class JsonFile extends File {
     if (exports && exports.has(name)) return assert(exports.get(name));
     const jsonObject = this.jsonSource.obj;
     if (jsonObject == null) return null;
-    const index = jsonObject.key.indexOf(name);
+    const index = jsonObject.keys.indexOf(name);
     if (index == -1) return null;
-    const value = jsonObject.value[index];
+    const value = jsonObject.values[index];
     if (value instanceof JsonI64) {
       const global =  new Global(
         name,

@@ -16,8 +16,8 @@ export class JsonUnknown extends JsonValue {
 
 export class JsonObject extends JsonValue {
   constructor(
-    public key: string[],
-    public value: JsonValue[],
+    public keys: string[],
+    public values: JsonValue[],
     range: Range,
   ) {
     super(range);
@@ -73,7 +73,7 @@ export class JsonParser extends DiagnosticEmitter {
     const v = this.parseValue(tn);
     if (v == null) return null;
     if (!(v instanceof JsonObject)) {
-      this.error(DiagnosticCode.Not_implemented_0, tn.range(), "non json object");
+      this.error(DiagnosticCode.Not_implemented_0, tn.range(), "top level scalar value");
       return null;
     }
     if (!tn.skip(Token.EndOfFile)) {
@@ -84,8 +84,8 @@ export class JsonParser extends DiagnosticEmitter {
   }
 
   private parseValue(tn: Tokenizer): JsonValue | null {
-    const start = tn.pos;
     const tok = tn.next();
+    const start = tn.tokenPos;
     if (tok == Token.OpenBrace) {
       return this.parseObject(tn, start);
     }
@@ -95,21 +95,21 @@ export class JsonParser extends DiagnosticEmitter {
     if (tok == Token.StringLiteral) {
       let str = this.parseString(tn);
       if (str == null) return null;
-      return new JsonString(str, tn.range(start));
+      return new JsonString(str, tn.range(start, tn.pos));
     }
     if (tok == Token.IntegerLiteral) {
       let value = tn.readInteger();
-      return new JsonI64(value, tn.range(start));
+      return new JsonI64(value, tn.range(start, tn.pos));
     }
     if (tok == Token.FloatLiteral) {
       let value = tn.readFloat();
-      return new JsonF64(value, tn.range(start));
+      return new JsonF64(value, tn.range(start, tn.pos));
     }
     if (tok == Token.True || tok == Token.False) {
-      return new JsonBool(tok == Token.True, tn.range(start));
+      return new JsonBool(tok == Token.True, tn.range(start, tn.pos));
     }
     if (tok == Token.Null) {
-      return new JsonUnknown(tn.range(start));
+      return new JsonUnknown(tn.range(start, tn.pos));
     }
     this.error(DiagnosticCode.Unexpected_token, tn.range());
     return null;
@@ -128,7 +128,7 @@ export class JsonParser extends DiagnosticEmitter {
     let keys: string[] = []
     let values: JsonValue[] = [];
     if (tn.skip(Token.CloseBrace)) {
-      return new JsonObject(keys, values, tn.range(start));
+      return new JsonObject(keys, values, tn.range(start, tn.pos));
     }
     while (true) {
       if (!tn.skip(Token.StringLiteral)) {
@@ -161,14 +161,14 @@ export class JsonParser extends DiagnosticEmitter {
       this.error(DiagnosticCode._0_expected, tn.range(), "}");
       return null;
     }
-    return new JsonObject(keys, values, tn.range(start));
+    return new JsonObject(keys, values, tn.range(start, tn.pos));
   }
 
   private parseArray(tn: Tokenizer, start: i32): JsonUnknown | null {
     // consumed: [
     // expected: value, ... ]
     if (tn.skip(Token.CloseBracket)) {
-      return new JsonUnknown(tn.range(start));
+      return new JsonUnknown(tn.range(start, tn.pos));
     }
     while (true) {
       let v = this.parseValue(tn);
@@ -181,6 +181,6 @@ export class JsonParser extends DiagnosticEmitter {
       this.error(DiagnosticCode._0_expected, tn.range(), "]");
       return null;
     }
-    return new JsonUnknown(tn.range(start));
+    return new JsonUnknown(tn.range(start, tn.pos));
   }
 }
