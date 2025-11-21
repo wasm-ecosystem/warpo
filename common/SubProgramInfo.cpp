@@ -24,21 +24,19 @@ void SubProgramInfo::addParameter(std::string variableName, std::string_view con
       std::move(variableName),
       typeName,
       index,
-      0U,
-      0U,
+      nullptr,
       nullable,
   });
 }
 
 void SubProgramInfo::addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
-                              uint32_t const start, uint32_t const end, bool const nullable) {
+                              const BinaryenExpressionRef expr, bool const nullable) {
 
   addLocal(LocalInfo{
       std::move(variableName),
       typeName,
       index,
-      start,
-      end,
+      expr,
       nullable,
   });
 }

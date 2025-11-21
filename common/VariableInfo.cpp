@@ -81,13 +81,13 @@ void VariableInfo::addParameter(std::string_view const subProgramName, std::stri
 }
 
 void VariableInfo::addLocal(std::string_view const subProgramName, std::string variableName,
-                            std::string_view const typeName, uint32_t const index, uint32_t const start,
-                            uint32_t const end, bool const nullable) {
+                            std::string_view const typeName, uint32_t const index, BinaryenExpressionRef const expr,
+                            bool const nullable) {
   SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
   std::string_view const normalizedTypeName = TypeNameHelper::normalizeTypeName(typeName);
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
   assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
-  it->second.addLocal(std::move(variableName), internedTypeName, index, start, end, nullable);
+  it->second.addLocal(std::move(variableName), internedTypeName, index, expr, nullable);
 }
 
 } // namespace warpo
@@ -296,23 +296,24 @@ TEST(TestVariableInfo, TestAddLocal) {
 
   // Test global function
   variableInfo.addSubProgram("processData", "");
-  variableInfo.addLocal("processData", "result", "i32", 1, 10, 50, false);
+  variableInfo.addLocal("processData", "result", "i32", 1, nullptr, false);
 
   const SubProgramRegistry &subProgramRegistry = variableInfo.getSubProgramRegistry();
   const std::deque<SubProgramInfo> &globalFunctions = subProgramRegistry.getList();
   ASSERT_EQ(globalFunctions.size(), 1);
 
-  const std::vector<LocalInfo> &locals = globalFunctions[0].getLocals();
+  const SubProgramInfo::LocalsMap &localsMap = globalFunctions[0].getLocals();
+  ASSERT_EQ(localsMap.size(), 1);
+  ASSERT_TRUE(localsMap.count(nullptr) > 0);
+  const std::vector<LocalInfo> &locals = localsMap.at(nullptr);
   ASSERT_EQ(locals.size(), 1);
   EXPECT_EQ(locals[0].getName(), "result");
   EXPECT_EQ(locals[0].getIndex(), 1);
-  EXPECT_EQ(locals[0].getStart(), 10);
-  EXPECT_EQ(locals[0].getEnd(), 50);
 
   // Test class member function
   variableInfo.createClass("Math", "Object", 300);
   variableInfo.addSubProgram("compute", "Math");
-  variableInfo.addLocal("compute", "temp", "i32", 1, 5, 30, false);
+  variableInfo.addLocal("compute", "temp", "i32", 1, nullptr, false);
 
   const VariableInfo::ClassRegistry &classRegistry = variableInfo.getClassRegistry();
   VariableInfo::ClassRegistry::const_iterator const mathIt = classRegistry.find("Math");
@@ -321,12 +322,13 @@ TEST(TestVariableInfo, TestAddLocal) {
   const std::deque<SubProgramInfo> &memberFunctions = mathIt->second.getSubProgramRegistry().getList();
   ASSERT_EQ(memberFunctions.size(), 1);
 
-  const std::vector<LocalInfo> &computeLocals = memberFunctions[0].getLocals();
+  const SubProgramInfo::LocalsMap &computeLocalsMap = memberFunctions[0].getLocals();
+  ASSERT_EQ(computeLocalsMap.size(), 1);
+  ASSERT_TRUE(computeLocalsMap.count(nullptr) > 0);
+  const std::vector<LocalInfo> &computeLocals = computeLocalsMap.at(nullptr);
   ASSERT_EQ(computeLocals.size(), 1);
   EXPECT_EQ(computeLocals[0].getName(), "temp");
   EXPECT_EQ(computeLocals[0].getIndex(), 1);
-  EXPECT_EQ(computeLocals[0].getStart(), 5);
-  EXPECT_EQ(computeLocals[0].getEnd(), 30);
 }
 } // namespace warpo::ut
 #endif
