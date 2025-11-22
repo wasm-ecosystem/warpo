@@ -154,7 +154,7 @@ import {
   builtinVariables_onAccess
 } from "./builtins";
 import { addParameter, addSubProgram } from "./warpo";
-import { JsonF64, JsonI64, JsonString } from "./json";
+import { JsonArray, JsonBool, JsonF64, JsonI64, JsonString, JsonValue, JsonValueKind } from "./json";
 
 // Memory manager constants
 const AL_SIZE = 16;
@@ -3416,45 +3416,41 @@ export class JsonFile extends File {
     const index = jsonObject.keys.indexOf(name);
     if (index == -1) return null;
     const value = jsonObject.values[index];
-    if (value instanceof JsonI64) {
-      const global =  new Global(
-        name,
-        this,
-        DecoratorFlags.Lazy,
-      )
-      global.setConstantIntegerValue((value as JsonI64).value, Type.i64);
-      return global;
-    }
-    if (value instanceof JsonF64) {
-      const global =  new Global(
-        name,
-        this,
-        DecoratorFlags.Lazy,
-      )
-      global.setConstantFloatValue((value as JsonF64).value, Type.f64);
-      return global;
-    }
-    if (value instanceof JsonString) {
+
+    const createGlobal = (name: string, value: JsonValue, parent: Element): Global => {
       const range = value.range;
-      const global = new Global(
-        name,
-        this,
-        DecoratorFlags.Lazy,
-        Node.createVariableDeclaration(
-          Node.createIdentifierExpression(name, range, false),
-          null,
-          CommonFlags.Export,
-          null,
-          Node.createStringLiteralExpression((value as JsonString).value, range),
-          range,
-        )
-      )
-      return global;
-    } else {
-      this.program.error(DiagnosticCode.Not_implemented_0, value.range, "import complex object from json file");
-      return null;
+      let variableDeclaration =  Node.createVariableDeclaration(
+        Node.createIdentifierExpression(name, range, false),
+        null,
+        CommonFlags.Export,
+        null,
+        value.toExpression(),
+        range,
+      );
+      return new Global(name, parent, DecoratorFlags.Lazy, variableDeclaration);
     }
 
+    switch (value.kind) {
+      case JsonValueKind.Bool:
+      case JsonValueKind.I64:
+      case JsonValueKind.F64:
+      case JsonValueKind.String: {
+        return createGlobal(name, value, this);
+      }
+      case JsonValueKind.Array: {
+        const v = value as JsonArray;
+        switch (v.uniqueType) {
+          case JsonValueKind.Bool:
+          case JsonValueKind.I64:
+          case JsonValueKind.F64:
+          case JsonValueKind.String: {
+            return createGlobal(name, value, this);
+          }
+        }
+      }
+    }
+    this.program.error(DiagnosticCode.Not_implemented_0, value.range, "import complex object from json file");
+    return null;
   }
 }
 

@@ -33,7 +33,8 @@ import { name, uuid } from "../package.json";
 Type system in TS support duck typing and `any`. It can support typing of json easier. Unfortunately WARPO does not support this kind flexible typing system.
 This resulted in WARPO being unable to support the import of any type of JSON object.
 
-Under the current limitation, we only support to import scalar type which WARPO can infer the type during compilation time without any type hint in json, include `string`, `number`.
+Under the current limitation, we only support to import scalar type which WARPO can infer the type during compilation time without any type hint in json.
 
-- For `string` JSON type, WARPO will treat it as `string`.
-- For `number` JSON type, if it a integer, WARPO will treat is as `i64`, otherwise `f64`.
+- For JSON string type, WARPO will treat it as `string`.
+- For JSON number type, if it a integer, WARPO will treat is as `i64`, otherwise `f64`.
+- For JSON array type, WARPO will treat it as `Array<inside_type>` only when all elements inside JSON array type are the same type.

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "assemblyscript-unittest-framework/assembly/index";
 import { DiagnosticMessage } from "../../assemblyscript/src/diagnostics";
 import {
+  JsonArray,
   JsonBool,
   JsonF64,
   JsonI64,
@@ -8,6 +9,7 @@ import {
   JsonParser,
   JsonString,
   JsonUnknown,
+  JsonValueKind,
 } from "../../assemblyscript/src/json";
 import { JsonSource, SourceKind } from "../../assemblyscript/src/ast";
 
@@ -25,12 +27,28 @@ class JsonTestHelper {
 }
 
 describe("json parser", () => {
-  test("simple JSON object", () => {
+  test("JSON object", () => {
     let ret = new JsonTestHelper(`{ "name": "test" }`);
 
     expect(ret.obj).notNull();
     expect(ret.obj!.keys[0]).equal("name");
     expect((ret.obj!.values[0] as JsonString).value).equal("test");
+  });
+
+  test("JSON empty object", () => {
+    let ret = new JsonTestHelper(`{}`);
+
+    expect(ret.obj).notNull();
+    expect(ret.obj!.keys.length).equal(0);
+    expect(ret.obj!.values.length).equal(0);
+  });
+
+  test("JSON array", () => {
+    let ret = new JsonTestHelper(`{ "v": [1, 2, 3]}`);
+
+    expect(ret.obj).notNull();
+    expect(ret.obj!.keys[0]).equal("v");
+    expect((ret.obj!.values[0] as JsonArray).uniqueType).equal(JsonValueKind.I64);
   });
 
   test("multiple fields", () => {
@@ -63,7 +81,7 @@ describe("json parser", () => {
 
     expect(ret.obj).notNull();
     expect(ret.obj!.keys[0]).equal("K0");
-    expect(ret.obj!.values[0] instanceof JsonUnknown).equal(true);
+    expect(ret.obj!.values[0] instanceof JsonArray).equal(true);
 
     expect(ret.obj!.keys[1]).equal("K1");
     expect((ret.obj!.values[1] as JsonI64).value).equal(100);
