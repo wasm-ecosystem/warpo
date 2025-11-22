@@ -33,7 +33,6 @@
 #include "wasm-validator.h"
 #include "wasm.h"
 
-#include "src/WasmModule/WasmModule.hpp"
 #include "src/core/runtime/TrapException.hpp"
 
 namespace warpo {
@@ -180,7 +179,7 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
   std::stringstream ss;
   ss << *ret.m.get();
   std::string actual = std::move(ss).str();
-  writeBinaryFile(expectedOutPath.string(), std::move(actual));
+  writeBinaryFile(expectedOutPath.string(), actual);
   return runModuleOnWarp(configJson, tsPath, ret.m);
 }
 
