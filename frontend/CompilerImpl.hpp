@@ -29,7 +29,6 @@ class FrontendCompiler final {
   enum class IsEntry : uint32_t { NO, YES };
 
   WarpRunner r;
-  Pluggable *plugin_;
   ModuleResolver moduleResolver_;
 
   size_t errorCount_ = 0;

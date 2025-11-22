@@ -2,7 +2,6 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <cstdlib>
@@ -119,8 +118,7 @@ FrontendCompiler::~FrontendCompiler() {
   }
 }
 
-FrontendCompiler::FrontendCompiler(Config const &config, Pluggable *plugin)
-    : r{this}, plugin_{plugin}, moduleResolver_(plugin) {
+FrontendCompiler::FrontendCompiler(Config const &config, Pluggable *plugin) : r{this}, moduleResolver_(plugin) {
   if (config.ascWasmPath) [[unlikely]] {
     support::PerfRAII const p{support::PerfItemKind::CompilationHIR_PrepareWASMModule};
     std::string const wasmBytes = readBinaryFile(*config.ascWasmPath);
