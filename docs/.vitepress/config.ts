@@ -47,7 +47,7 @@ export default defineConfig({
           },
           {
             text: "experimental features",
-            link: "/using_language/experimental_features",
+            link: "/using_language/new_features",
           },
         ],
       },
