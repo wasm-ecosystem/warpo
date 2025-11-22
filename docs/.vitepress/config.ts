@@ -1,10 +1,9 @@
 import { readdirSync } from "node:fs";
-import { execSync } from "node:child_process";
 import path from "node:path";
 import { DefaultTheme, defineConfig } from "vitepress";
 
-function listItems(root: string, folder: string): DefaultTheme.SidebarItem[] {
-  return readdirSync(path.join(root, folder))
+function listItems(folder: string): DefaultTheme.SidebarItem[] {
+  return readdirSync(path.join("docs", folder))
     .filter((file) => file.endsWith(".md") && file !== "index.md")
     .map((file) => file.replace(/\.md$/, ""))
     .map((name) => ({
@@ -12,8 +11,6 @@ function listItems(root: string, folder: string): DefaultTheme.SidebarItem[] {
       link: `/${folder}/${name}`,
     }));
 }
-
-const repoUrl = execSync(`git remote get-url origin`, { encoding: "utf-8" }).trim();
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
@@ -46,8 +43,12 @@ export default defineConfig({
             link: "/using_language/current_status",
           },
           {
-            text: "experimental features",
+            text: "new features",
             link: "/using_language/new_features",
+          },
+          {
+            text: "details",
+            items: listItems("using_language/details"),
           },
         ],
       },
@@ -81,27 +82,27 @@ export default defineConfig({
           {
             text: "Lowering Passes",
             link: "/tech/lower/index",
-            items: listItems("docs", "tech/lower"),
+            items: listItems("tech/lower"),
           },
           {
             text: "Builtin Transform",
             link: "/tech/transform/index",
-            items: listItems("docs", "tech/transform"),
+            items: listItems("tech/transform"),
           },
           {
             text: "Optimization Passes",
             link: "/tech/opt/index",
-            items: listItems("docs", "tech/opt"),
+            items: listItems("tech/opt"),
           },
           {
             text: "Debugging Support",
             link: "/tech/debug_symbol/index",
-            items: listItems("docs", "tech/debug_symbol"),
+            items: listItems("tech/debug_symbol"),
           },
           {
             text: "Infrastructure",
             link: "/tech/infra/index",
-            items: listItems("docs", "tech/infra"),
+            items: listItems("tech/infra"),
           },
         ],
       },
