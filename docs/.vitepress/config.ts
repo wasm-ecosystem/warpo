@@ -74,7 +74,7 @@ export default defineConfig({
       {
         text: "Executing WebAssembly",
         link: "/executing_webassembly/index",
-        items: [],
+        items: listItems("executing_webassembly"),
       },
       {
         text: "Technical Details",
