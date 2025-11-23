@@ -5,5 +5,15 @@
   "minor": 2,
   "integer_array": [1, 2, 3],
   "float_array": [1.0, 2.0, 3.0],
-  "string_array": ["one", "two", "three"]
+  "string_array": ["one", "two", "three"],
+  "complex": {
+    "level1": {
+      "same_name": {
+        "same_name": {
+          "int": 1234,
+          "array": [10, 11]
+        }
+      }
+    }
+  }
 }

@@ -1,4 +1,5 @@
-import { Expression, JsonSource, Node } from "./ast";
+import { Expression, JsonSource, Node, Statement, VariableDeclaration } from "./ast";
+import { CommonFlags } from "./common";
 import { DiagnosticCode, DiagnosticEmitter, DiagnosticMessage, Range } from "./diagnostics";
 import { Token, Tokenizer } from "./tokenizer";
 import { CharCode } from "./util";
@@ -13,6 +14,10 @@ export enum JsonValueKind {
   Array,
 }
 
+export function isScalarJsonKind(kind: JsonValueKind): bool {
+  return kind == JsonValueKind.Bool || kind == JsonValueKind.I64 || kind == JsonValueKind.F64 || kind == JsonValueKind.String;
+}
+
 export abstract class JsonValue {
   constructor(
     public range: Range,
@@ -20,6 +25,7 @@ export abstract class JsonValue {
   ) {}
 
   abstract toExpression(): Expression;
+  abstract toStatement(name: string): Statement;
 }
 
 // we don't support full json RFC yet.
@@ -29,6 +35,9 @@ export class JsonUnknown extends JsonValue {
     super(range, JsonValueKind.Unknown);
   }
   override toExpression(): Expression {
+    throw new Error("NYI");
+  }
+  override toStatement(name: string): Statement {
     throw new Error("NYI");
   }
 }
@@ -44,6 +53,16 @@ export class JsonObject extends JsonValue {
   override toExpression(): Expression {
     throw new Error("NYI");
   }
+  override toStatement(name: string): Statement {
+    const len = this.keys.length;
+    let members = new Array<Statement>(len);
+    for (let i = 0; i < len; i++) {
+      members[i] = this.values[i].toStatement(this.keys[i]);
+    }
+    return Node.createNamespaceDeclaration(
+      Node.createIdentifierExpression(name, this.range), null, CommonFlags.Export, members, this.range
+    );
+  }
 }
 
 export class JsonBool extends JsonValue {
@@ -55,6 +74,12 @@ export class JsonBool extends JsonValue {
   }
   override toExpression(): Expression {
     return this.value ? Node.createTrueExpression(this.range) : Node.createFalseExpression(this.range);
+  }
+  override toStatement(name: string): Statement {
+    return Node.createVariableDeclaration(
+      Node.createIdentifierExpression(name, this.range),
+      null, CommonFlags.Export, null, this.toExpression(), this.range
+    );
   }
 }
 
@@ -68,6 +93,12 @@ export class JsonI64 extends JsonValue {
   override toExpression(): Expression {
     return Node.createIntegerLiteralExpression(this.value, this.range);
   }
+  override toStatement(name: string): Statement {
+    return Node.createVariableDeclaration(
+      Node.createIdentifierExpression(name, this.range),
+      null, CommonFlags.Export, null, this.toExpression(), this.range
+    );
+  }
 }
 
 export class JsonF64 extends JsonValue {
@@ -80,6 +111,12 @@ export class JsonF64 extends JsonValue {
   override toExpression(): Expression {
     return Node.createFloatLiteralExpression(this.value, this.range);
   }
+  override toStatement(name: string): Statement {
+    return Node.createVariableDeclaration(
+      Node.createIdentifierExpression(name, this.range),
+      null, CommonFlags.Export, null, this.toExpression(), this.range
+    );
+  }
 }
 
 export class JsonString extends JsonValue {
@@ -91,6 +128,12 @@ export class JsonString extends JsonValue {
   }
   override toExpression(): Expression {
     return Node.createStringLiteralExpression(this.value, this.range);
+  }
+  override toStatement(name: string): Statement {
+    return Node.createVariableDeclaration(
+      Node.createIdentifierExpression(name, this.range),
+      null, CommonFlags.Export, null, this.toExpression(), this.range
+    );
   }
 }
 
@@ -123,6 +166,12 @@ export class JsonArray extends JsonValue {
       elements[i] = this.values[i].toExpression();
     }
     return Node.createArrayLiteralExpression(elements, this.range);
+  }
+  override toStatement(name: string): Statement {
+    return Node.createVariableDeclaration(
+      Node.createIdentifierExpression(name, this.range),
+      null, CommonFlags.Export, null, this.toExpression(), this.range
+    );
   }
 }
 

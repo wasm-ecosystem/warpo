@@ -154,7 +154,7 @@ import {
   builtinVariables_onAccess
 } from "./builtins";
 import { addParameter, addSubProgram } from "./warpo";
-import { JsonArray, JsonBool, JsonF64, JsonI64, JsonString, JsonValue, JsonValueKind } from "./json";
+import { isScalarJsonKind, JsonArray, JsonObject, JsonValue, JsonValueKind } from "./json";
 
 // Memory manager constants
 const AL_SIZE = 16;
@@ -3415,42 +3415,77 @@ export class JsonFile extends File {
     if (jsonObject == null) return null;
     const index = jsonObject.keys.indexOf(name);
     if (index == -1) return null;
-    const value = jsonObject.values[index];
+    const v = jsonObject.values[index];
 
-    const createGlobal = (name: string, value: JsonValue, parent: Element): Global => {
-      const range = value.range;
-      let variableDeclaration =  Node.createVariableDeclaration(
-        Node.createIdentifierExpression(name, range, false),
-        null,
-        CommonFlags.Export,
-        null,
-        value.toExpression(),
-        range,
-      );
-      return new Global(name, parent, DecoratorFlags.Lazy, variableDeclaration);
-    }
-
-    switch (value.kind) {
+    switch (v.kind) {
+      case JsonValueKind.Unknown:
+        this.program.error(DiagnosticCode.Not_implemented_0, v.range, "import complex object from json file")
+        return null;
       case JsonValueKind.Bool:
       case JsonValueKind.I64:
       case JsonValueKind.F64:
-      case JsonValueKind.String: {
-        return createGlobal(name, value, this);
-      }
+      case JsonValueKind.String:
       case JsonValueKind.Array: {
-        const v = value as JsonArray;
-        switch (v.uniqueType) {
-          case JsonValueKind.Bool:
-          case JsonValueKind.I64:
-          case JsonValueKind.F64:
-          case JsonValueKind.String: {
-            return createGlobal(name, value, this);
-          }
-        }
+        return this.convertScalerJsonValue(name, v);
+      }
+      case JsonValueKind.Object: {
+        return this.convertJsonObject(name, v as JsonObject);
       }
     }
-    this.program.error(DiagnosticCode.Not_implemented_0, value.range, "import complex object from json file");
+    unreachable();
     return null;
+  }
+
+  convertJsonValue(name: string, v: JsonValue): DeclaredElement | null {
+    switch(v.kind) {
+      case JsonValueKind.Unknown:
+        this.program.error(DiagnosticCode.Not_implemented_0, v.range, "import complex object from json file")
+        return null;
+      case JsonValueKind.Object:
+        return this.convertJsonObject(name, v as JsonObject);
+      case JsonValueKind.Bool:
+      case JsonValueKind.I64:
+      case JsonValueKind.F64:
+      case JsonValueKind.String:
+      case JsonValueKind.Array:
+        return this.convertScalerJsonValue(name, v);
+    }
+    unreachable();
+    return null;
+  }
+  convertScalerJsonValue(name: string, v: JsonValue): Global | null {
+    const range = v.range;
+    if (v.kind == JsonValueKind.Array && !isScalarJsonKind((v as JsonArray).uniqueType)) {
+      this.program.error(DiagnosticCode.Not_implemented_0, v.range, "import complex object from json file")
+      return null;
+    }
+    let decl = Node.createVariableDeclaration(
+      Node.createIdentifierExpression(name, range),
+      null, CommonFlags.Export, null,
+      v.toExpression(),
+      range
+    );
+    return new Global(name, this, DecoratorFlags.Lazy, decl);
+  }
+  convertJsonObject(name: string, v: JsonObject): Namespace | null {
+    const len = v.keys.length;
+    const range = v.range;
+    let members = new Array<Statement>();
+    let elements = new Array<DeclaredElement>();
+    for (let i = 0; i < len; i++) {
+      let element = this.convertJsonValue(v.keys[i], v.values[i]);
+      if (element == null) continue; // make sure we will not emit too many error
+      members.push(element.declaration);
+      elements.push(element);
+    }
+    let decl = Node.createNamespaceDeclaration(
+      Node.createIdentifierExpression(name, range), null, CommonFlags.Export, members, range
+    );
+    let ns = new Namespace(name, this, decl);
+    for (let i = 0; i < elements.length; i++) {
+      ns.add(elements[i].name, elements[i]);
+    }
+    return ns;
   }
 }
 

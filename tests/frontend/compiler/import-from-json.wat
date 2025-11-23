@@ -19,9 +19,11 @@
  (global $import-from-json.json/integer_array (mut i32) (i32.const 224))
  (global $import-from-json.json/float_array (mut i32) (i32.const 432))
  (global $import-from-json.json/string_array (mut i32) (i32.const 608))
- (global $~lib/memory/__data_end i32 (i32.const 764))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33532))
- (global $~lib/memory/__heap_base i32 (i32.const 33532))
+ (global $import-from-json.json/int (mut i32) (i32.const 1234))
+ (global $import-from-json.json/array (mut i32) (i32.const 816))
+ (global $~lib/memory/__data_end i32 (i32.const 844))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33612))
+ (global $~lib/memory/__heap_base i32 (i32.const 33612))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00i\00m\00p\00o\00r\00t\00-\00f\00r\00o\00m\00-\00j\00s\00o\00n\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00&\00\00\00i\00m\00p\00o\00r\00t\00-\00f\00r\00o\00m\00-\00j\00s\00o\00n\00.\00t\00s\00\00\00\00\00\00\00")
@@ -38,6 +40,8 @@
  (data $12 (i32.const 556) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00\e0\01\00\00\00\02\00\00 \02\00\00")
  (data $13 (i32.const 588) ",\00\00\00\00\00\00\00\00\00\00\00\06\00\00\00\10\00\00\00@\02\00\00@\02\00\00\0c\00\00\00\03\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $14 (i32.const 636) "|\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00^\00\00\00E\00l\00e\00m\00e\00n\00t\00 \00t\00y\00p\00e\00 \00m\00u\00s\00t\00 \00b\00e\00 \00n\00u\00l\00l\00a\00b\00l\00e\00 \00i\00f\00 \00a\00r\00r\00a\00y\00 \00i\00s\00 \00h\00o\00l\00e\00y\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $15 (i32.const 764) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\08\00\00\00\n\00\00\00\0b\00\00\00\00\00\00\00")
+ (data $16 (i32.const 796) ",\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\10\00\00\00\10\03\00\00\10\03\00\00\08\00\00\00\02\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -514,7 +518,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 3)
+     (i32.const 12)
      (i32.const 1)
     )
     (unreachable)
@@ -533,7 +537,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 4)
+     (i32.const 13)
      (i32.const 1)
     )
     (unreachable)
@@ -550,7 +554,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 5)
+     (i32.const 14)
      (i32.const 1)
     )
     (unreachable)
@@ -567,7 +571,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 6)
+     (i32.const 15)
      (i32.const 1)
     )
     (unreachable)
@@ -588,7 +592,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 8)
+     (i32.const 17)
      (i32.const 1)
     )
     (unreachable)
@@ -610,7 +614,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 9)
+     (i32.const 18)
      (i32.const 1)
     )
     (unreachable)
@@ -632,7 +636,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 10)
+     (i32.const 19)
      (i32.const 1)
     )
     (unreachable)
@@ -654,7 +658,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 11)
+     (i32.const 20)
      (i32.const 1)
     )
     (unreachable)
@@ -675,7 +679,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 13)
+     (i32.const 22)
      (i32.const 1)
     )
     (unreachable)
@@ -697,7 +701,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 14)
+     (i32.const 23)
      (i32.const 1)
     )
     (unreachable)
@@ -719,7 +723,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 15)
+     (i32.const 24)
      (i32.const 1)
     )
     (unreachable)
@@ -741,7 +745,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 16)
+     (i32.const 25)
      (i32.const 1)
     )
     (unreachable)
@@ -762,7 +766,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 18)
+     (i32.const 27)
      (i32.const 1)
     )
     (unreachable)
@@ -786,7 +790,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 19)
+     (i32.const 28)
      (i32.const 1)
     )
     (unreachable)
@@ -810,7 +814,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 20)
+     (i32.const 29)
      (i32.const 1)
     )
     (unreachable)
@@ -834,7 +838,89 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 96)
-     (i32.const 21)
+     (i32.const 30)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (global.get $import-from-json.json/int)
+     (i32.const 1234)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 96)
+     (i32.const 32)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/array/Array<i32>#get:length
+      (call $~lib/rt/__tmptostack
+       (global.get $import-from-json.json/array)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 96)
+     (i32.const 33)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/array/Array<i32>#__get
+      (call $~lib/rt/__tmptostack
+       (global.get $import-from-json.json/array)
+      )
+      (i32.const 0)
+     )
+     (i32.const 10)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 96)
+     (i32.const 34)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/array/Array<i32>#__get
+      (call $~lib/rt/__tmptostack
+       (global.get $import-from-json.json/array)
+      )
+      (i32.const 1)
+     )
+     (i32.const 11)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 96)
+     (i32.const 35)
      (i32.const 1)
     )
     (unreachable)

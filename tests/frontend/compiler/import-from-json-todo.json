@@ -1,7 +1,13 @@
 {
   "v": [0, 1, "2"],
+  "complex": {
+    "object": {
+      "v": 123
+    }
+  },
   "stderr": [
     "ERROR AS100: Not implemented: import complex object from json file",
+    "ERROR AS234: Expression does not compile to a value at runtime.",
     "ERROR TS2305: Module 'import-from-json-todo.json' has no exported member 'v'."
   ]
 }

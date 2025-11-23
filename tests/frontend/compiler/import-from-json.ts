@@ -1,4 +1,13 @@
-import { version, name, major, minor, integer_array, float_array, string_array } from "./import-from-json.json";
+import {
+  version,
+  name,
+  major,
+  minor,
+  integer_array,
+  float_array,
+  string_array,
+  complex,
+} from "./import-from-json.json";
 
 assert(name === "import-from-json");
 assert(version === "1.2.4");
@@ -19,3 +28,8 @@ assert(string_array.length === 3);
 assert(string_array[0] === "one");
 assert(string_array[1] === "two");
 assert(string_array[2] === "three");
+
+assert(complex.level1.same_name.same_name.int == 1234);
+assert(complex.level1.same_name.same_name.array.length == 2);
+assert(complex.level1.same_name.same_name.array[0] == 10);
+assert(complex.level1.same_name.same_name.array[1] == 11);
