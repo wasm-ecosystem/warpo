@@ -5,7 +5,6 @@
 #include <vector>
 #include <warpo/support/FileSystem.hpp>
 
-#include "gtest/gtest.h"
 #include "llvm/DebugInfo/DWARF/DWARFContext.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "warpo/frontend/Compiler.hpp"

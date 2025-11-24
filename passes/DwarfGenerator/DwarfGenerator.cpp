@@ -1,8 +1,6 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-#include <fmt/base.h>
-
 #include "AbbrevFactory.hpp"
 #include "DebugStringManager.hpp"
 #include "binaryen/third_party/llvm-project/DWARFVisitor.h"
