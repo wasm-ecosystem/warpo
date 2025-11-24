@@ -83,8 +83,6 @@ void VariableInfo::addParameter(std::string_view const subProgramName, std::stri
 void VariableInfo::addLocal(std::string_view const subProgramName, std::string variableName,
                             std::string_view const typeName, uint32_t const index, uint32_t const scopeId,
                             bool const nullable) {
-  std::cout << "add local to subProgram " << subProgramName << " variableName " << variableName << " scopeId "
-            << scopeId << std::endl;
   SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
   std::string_view const normalizedTypeName = TypeNameHelper::normalizeTypeName(typeName);
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
@@ -95,7 +93,6 @@ void VariableInfo::addLocal(std::string_view const subProgramName, std::string v
 uint32_t VariableInfo::addScope(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr) {
   uint32_t const scopeId = nextScopeId_;
   scopeInfoMap_.emplace(scopeId, ScopeInfo{startExpr, endExpr});
-  std::cout << "add scope " << scopeId << " startExpr " << startExpr << " endExpr " << endExpr << std::endl;
   nextScopeId_++;
   return scopeId;
 }
@@ -305,9 +302,9 @@ TEST(TestVariableInfo, TestAddLocal) {
 
   // Test global function
   variableInfo.addSubProgram("processData", "");
-  BinaryenExpressionRef startExpr = reinterpret_cast<BinaryenExpressionRef>(0x1000);
-  BinaryenExpressionRef endExpr = reinterpret_cast<BinaryenExpressionRef>(0x2000);
-  uint32_t scopeId = variableInfo.addScope(startExpr, endExpr);
+  BinaryenExpressionRef const startExpr = reinterpret_cast<BinaryenExpressionRef>(0x1000);
+  BinaryenExpressionRef const endExpr = reinterpret_cast<BinaryenExpressionRef>(0x2000);
+  uint32_t const scopeId = variableInfo.addScope(startExpr, endExpr);
   variableInfo.addLocal("processData", "result", "i32", 1, scopeId, false);
 
   const SubProgramRegistry &subProgramRegistry = variableInfo.getSubProgramRegistry();
@@ -334,9 +331,9 @@ TEST(TestVariableInfo, TestAddLocal) {
   // Test class member function
   variableInfo.createClass("Math", "Object", 300);
   variableInfo.addSubProgram("compute", "Math");
-  BinaryenExpressionRef startExpr2 = reinterpret_cast<BinaryenExpressionRef>(0x3000);
-  BinaryenExpressionRef endExpr2 = reinterpret_cast<BinaryenExpressionRef>(0x4000);
-  uint32_t scopeId2 = variableInfo.addScope(startExpr2, endExpr2);
+  BinaryenExpressionRef const startExpr2 = reinterpret_cast<BinaryenExpressionRef>(0x3000);
+  BinaryenExpressionRef const endExpr2 = reinterpret_cast<BinaryenExpressionRef>(0x4000);
+  uint32_t const scopeId2 = variableInfo.addScope(startExpr2, endExpr2);
   variableInfo.addLocal("compute", "temp", "i32", 1, scopeId2, false);
 
   const VariableInfo::ClassRegistry &classRegistry = variableInfo.getClassRegistry();
