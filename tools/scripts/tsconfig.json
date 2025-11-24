@@ -2,7 +2,9 @@
   "compilerOptions": {
     "module": "esnext",
     "moduleResolution": "node",
-    "outDir": "../../dist"
+    "target": "esnext",
+    "outDir": "../../dist",
+    "declaration": true
   },
   "include": ["./**/*.ts"]
 }
