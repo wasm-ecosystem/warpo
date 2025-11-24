@@ -640,7 +640,7 @@ export class Type {
       } else {
         let signatureReference = this.getSignature();
         if (signatureReference) {
-          return `(${signatureReference.toString()})`;
+          return `~lib/function/Function<${signatureReference.toString(true)}>`;
         } else {
           return this.kindToString();
         }
