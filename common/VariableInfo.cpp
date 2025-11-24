@@ -81,15 +81,24 @@ void VariableInfo::addParameter(std::string_view const subProgramName, std::stri
 }
 
 void VariableInfo::addLocal(std::string_view const subProgramName, std::string variableName,
-                            std::string_view const typeName, uint32_t const index, BinaryenExpressionRef const expr,
+                            std::string_view const typeName, uint32_t const index, uint32_t const scopeId,
                             bool const nullable) {
+  std::cout << "add local to subProgram " << subProgramName << " variableName " << variableName << " scopeId "
+            << scopeId << std::endl;
   SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
   std::string_view const normalizedTypeName = TypeNameHelper::normalizeTypeName(typeName);
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
   assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
-  it->second.addLocal(std::move(variableName), internedTypeName, index, expr, nullable);
+  it->second.addLocal(std::move(variableName), internedTypeName, index, scopeId, nullable);
 }
 
+uint32_t VariableInfo::addScope(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr) {
+  uint32_t const scopeId = nextScopeId_;
+  scopeInfoMap_.emplace(scopeId, ScopeInfo{startExpr, endExpr});
+  std::cout << "add scope " << scopeId << " startExpr " << startExpr << " endExpr " << endExpr << std::endl;
+  nextScopeId_++;
+  return scopeId;
+}
 } // namespace warpo
 
 #ifdef WARPO_ENABLE_UNIT_TESTS
@@ -296,7 +305,10 @@ TEST(TestVariableInfo, TestAddLocal) {
 
   // Test global function
   variableInfo.addSubProgram("processData", "");
-  variableInfo.addLocal("processData", "result", "i32", 1, nullptr, false);
+  BinaryenExpressionRef startExpr = reinterpret_cast<BinaryenExpressionRef>(0x1000);
+  BinaryenExpressionRef endExpr = reinterpret_cast<BinaryenExpressionRef>(0x2000);
+  uint32_t scopeId = variableInfo.addScope(startExpr, endExpr);
+  variableInfo.addLocal("processData", "result", "i32", 1, scopeId, false);
 
   const SubProgramRegistry &subProgramRegistry = variableInfo.getSubProgramRegistry();
   const std::deque<SubProgramInfo> &globalFunctions = subProgramRegistry.getList();
@@ -304,16 +316,28 @@ TEST(TestVariableInfo, TestAddLocal) {
 
   const SubProgramInfo::LocalsMap &localsMap = globalFunctions[0].getLocals();
   ASSERT_EQ(localsMap.size(), 1);
-  ASSERT_TRUE(localsMap.count(nullptr) > 0);
-  const std::vector<LocalInfo> &locals = localsMap.at(nullptr);
+  ASSERT_TRUE(localsMap.count(scopeId) > 0);
+  const std::vector<LocalInfo> &locals = localsMap.at(scopeId);
   ASSERT_EQ(locals.size(), 1);
   EXPECT_EQ(locals[0].getName(), "result");
   EXPECT_EQ(locals[0].getIndex(), 1);
+  EXPECT_EQ(locals[0].getScopeId(), scopeId);
+
+  // Verify scope info
+  const VariableInfo::ScopeInfoMap &scopeInfoMap = variableInfo.getScopeInfoMap();
+  ASSERT_EQ(scopeInfoMap.size(), 1);
+  ASSERT_TRUE(scopeInfoMap.count(scopeId) > 0);
+  const VariableInfo::ScopeInfo &scopeInfo = scopeInfoMap.at(scopeId);
+  EXPECT_EQ(scopeInfo.getStartExpr(), startExpr);
+  EXPECT_EQ(scopeInfo.getEndExpr(), endExpr);
 
   // Test class member function
   variableInfo.createClass("Math", "Object", 300);
   variableInfo.addSubProgram("compute", "Math");
-  variableInfo.addLocal("compute", "temp", "i32", 1, nullptr, false);
+  BinaryenExpressionRef startExpr2 = reinterpret_cast<BinaryenExpressionRef>(0x3000);
+  BinaryenExpressionRef endExpr2 = reinterpret_cast<BinaryenExpressionRef>(0x4000);
+  uint32_t scopeId2 = variableInfo.addScope(startExpr2, endExpr2);
+  variableInfo.addLocal("compute", "temp", "i32", 1, scopeId2, false);
 
   const VariableInfo::ClassRegistry &classRegistry = variableInfo.getClassRegistry();
   VariableInfo::ClassRegistry::const_iterator const mathIt = classRegistry.find("Math");
@@ -324,11 +348,12 @@ TEST(TestVariableInfo, TestAddLocal) {
 
   const SubProgramInfo::LocalsMap &computeLocalsMap = memberFunctions[0].getLocals();
   ASSERT_EQ(computeLocalsMap.size(), 1);
-  ASSERT_TRUE(computeLocalsMap.count(nullptr) > 0);
-  const std::vector<LocalInfo> &computeLocals = computeLocalsMap.at(nullptr);
+  ASSERT_TRUE(computeLocalsMap.count(scopeId2) > 0);
+  const std::vector<LocalInfo> &computeLocals = computeLocalsMap.at(scopeId2);
   ASSERT_EQ(computeLocals.size(), 1);
   EXPECT_EQ(computeLocals[0].getName(), "temp");
   EXPECT_EQ(computeLocals[0].getIndex(), 1);
+  EXPECT_EQ(computeLocals[0].getScopeId(), scopeId2);
 }
 } // namespace warpo::ut
 #endif

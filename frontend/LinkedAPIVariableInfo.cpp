@@ -69,17 +69,22 @@ void addParameter(uint32_t const subProgramNamePtr, uint32_t const variableNameP
 }
 
 void addLocal(uint32_t const subProgramNamePtr, uint32_t const variableNamePtr, uint32_t const typeNamePtr,
-              uint32_t const index, uint64_t const expressionAddress, uint32_t const nullable,
+              uint32_t const index, uint32_t const scopeIndex, uint32_t const nullable,
               vb::WasmModule const *const ctx) {
   std::string const subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
   std::string variableName = WarpRunner::getString(ctx, variableNamePtr);
   std::string const typeName = WarpRunner::getString(ctx, typeNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
-  pCompiler->asModule_.variableInfo_.addLocal(subProgramName, std::move(variableName), typeName, index,
-                                              reinterpret_cast<BinaryenExpressionRef>(expressionAddress),
+  pCompiler->asModule_.variableInfo_.addLocal(subProgramName, std::move(variableName), typeName, index, scopeIndex,
                                               nullable != 0);
 }
 
+uint32_t addScope(uint64_t const startExprPtr, uint64_t const endExprPtr, vb::WasmModule const *const ctx) {
+  BinaryenExpressionRef const startExpr = reinterpret_cast<BinaryenExpressionRef>(startExprPtr);
+  BinaryenExpressionRef const endExpr = reinterpret_cast<BinaryenExpressionRef>(endExprPtr);
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  return pCompiler->asModule_.variableInfo_.addScope(startExpr, endExpr);
+}
 } // namespace
 
 std::vector<vb::NativeSymbol> createVariableInfoAPI() {
@@ -91,6 +96,7 @@ std::vector<vb::NativeSymbol> createVariableInfoAPI() {
       STATIC_LINK("warpo", "_WarpoAddSubProgram", addSubProgram),
       STATIC_LINK("warpo", "_WarpoAddParameter", addParameter),
       STATIC_LINK("warpo", "_WarpoAddLocal", addLocal),
+      STATIC_LINK("warpo", "_WarpoAddScope", addScope),
   };
 }
 

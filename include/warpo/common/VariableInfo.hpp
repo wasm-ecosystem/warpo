@@ -36,6 +36,16 @@ public:
     std::string_view typeName;
     bool nullable;
   };
+
+  struct ScopeInfo final {
+    BinaryenExpressionRef startExpr;
+    BinaryenExpressionRef endExpr;
+
+    BinaryenExpressionRef getStartExpr() const noexcept { return startExpr; }
+    BinaryenExpressionRef getEndExpr() const noexcept { return endExpr; }
+  };
+
+  using ScopeInfoMap = std::unordered_map<uint32_t, ScopeInfo>;
   using GlobalTypes = std::map<std::string, GlobalTypeInfo>;
 
   void createClass(std::string_view className, std::string parentName, uint32_t const rtid);
@@ -53,13 +63,17 @@ public:
 
   SubProgramRegistry const &getSubProgramRegistry() const noexcept { return subProgramRegistry_; }
 
+  ScopeInfoMap const &getScopeInfoMap() const noexcept { return scopeInfoMap_; }
+
   void addSubProgram(std::string subProgramName, std::string_view const belongClassName);
 
   void addParameter(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
                     uint32_t const index, bool const nullable);
 
+  uint32_t addScope(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr);
+
   void addLocal(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
-                uint32_t const index, BinaryenExpressionRef const expr, bool const nullable);
+                uint32_t const index, uint32_t const scopeId, bool const nullable);
 
 private:
   using SubProgramLookupMap = std::unordered_map<std::string_view, SubProgramInfo &>;
@@ -68,6 +82,8 @@ private:
   StringPool stringPool_;
   SubProgramRegistry subProgramRegistry_;
   SubProgramLookupMap subProgramLookupMap_;
+  ScopeInfoMap scopeInfoMap_;
+  uint32_t nextScopeId_ = 0;
 };
 
 } // namespace warpo

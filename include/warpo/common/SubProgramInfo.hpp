@@ -30,7 +30,7 @@ namespace warpo {
 
 class SubProgramInfo final {
 public:
-  using LocalsMap = std::map<BinaryenExpressionRef, std::vector<LocalInfo>>;
+  using LocalsMap = std::map<uint32_t, std::vector<LocalInfo>>;
 
   explicit inline SubProgramInfo(std::string_view const name) noexcept : name_(name) {}
 
@@ -41,15 +41,15 @@ public:
 
   inline void addParameter(LocalInfo parameter) noexcept { parameters_.push_back(std::move(parameter)); }
   inline void addLocal(LocalInfo local) noexcept {
-    BinaryenExpressionRef const expr = local.getExpr();
-    locals_[expr].push_back(std::move(local));
+    uint32_t const scopeId = local.getScopeId();
+    locals_[scopeId].push_back(std::move(local));
   }
 
   void addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
                     bool const nullable);
 
-  void addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
-                BinaryenExpressionRef const expr, bool const nullable);
+  void addLocal(std::string variableName, std::string_view const typeName, uint32_t const index, uint32_t const scopeId,
+                bool const nullable);
 
 private:
   std::string_view name_;
