@@ -55,7 +55,7 @@ static uint64_t getCurrentCPUCounterImpl() { throw std::runtime_error("Not imple
 
 #if defined(__x86_64__)
 #if defined(__clang__) || defined(__GNUC__)
-static uint64_t getCurrentCPUCounterImpl() { std::return static_cast<uint64_t>(__rdtsc()); }
+static uint64_t getCurrentCPUCounterImpl() { return static_cast<uint64_t>(__rdtsc()); }
 #endif
 #elif defined(_MSC_VER)
 static uint64_t getCurrentCPUCounterImpl() { return static_cast<uint64_t>(__rdtsc()); }
