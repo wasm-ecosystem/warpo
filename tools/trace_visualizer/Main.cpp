@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <exception>
 #include <filesystem>
 #include <fmt/base.h>
 #include <fstream>
@@ -42,23 +43,29 @@ namespace warpo {
 
 #if defined(__aarch64__)
 #if defined(__clang__) || defined(__GNUC__)
-static uint64_t getCurrentCPUCounter() {
+static uint64_t getCurrentCPUCounterImpl() {
   uint64_t result;
-  asm("mrs %0, cntvct_el0" : "=r"(result));
+  asm volatile("mrs %0, cntvct_el0" : "=r"(result));
   return result;
 }
 #elif defined(_MSC_VER)
-static uint64_t getCurrentCPUCounter() { throw std::runtime_error("Not implemented on MSVC for ARM64"); }
+static uint64_t getCurrentCPUCounterImpl() { throw std::runtime_error("Not implemented on MSVC for ARM64"); }
 #endif
 #endif // defined(__aarch64__)
 
 #if defined(__x86_64__)
 #if defined(__clang__) || defined(__GNUC__)
-static uint64_t getCurrentCPUCounter() { return static_cast<uint64_t>(__rdtsc()); }
+static uint64_t getCurrentCPUCounterImpl() { std::return static_cast<uint64_t>(__rdtsc()); }
 #endif
 #elif defined(_MSC_VER)
-static uint64_t getCurrentCPUCounter() { return static_cast<uint64_t>(__rdtsc()); }
+static uint64_t getCurrentCPUCounterImpl() { return static_cast<uint64_t>(__rdtsc()); }
 #endif // defined(__x86_64__)
+
+static uint64_t getCurrentCPUCounter() {
+  std::atomic_signal_fence(std::memory_order_seq_cst);
+  return getCurrentCPUCounterImpl();
+  std::atomic_signal_fence(std::memory_order_seq_cst);
+};
 
 static double measureCountToPerfettoTimestampRate() {
   std::chrono::high_resolution_clock::time_point const startTime = std::chrono::high_resolution_clock::now();
@@ -73,6 +80,10 @@ static double measureCountToPerfettoTimestampRate() {
           std::chrono::duration_cast<std::chrono::duration<double, std::nano>>(endTime - startTime))
           .count();
   uint64_t const elapsedCount = endCount - startCount;
+  if (elapsedCount == 0U) {
+    fmt::println("Elapsed count is zero, cannot measure rate.");
+    std::terminate();
+  }
 
   double const rate = elapsedTimeNs / static_cast<double>(elapsedCount);
   fmt::println("measured count to Perfetto timestamp rate: {} ns/count", rate);
