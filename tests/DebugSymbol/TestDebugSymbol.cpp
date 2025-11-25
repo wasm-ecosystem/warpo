@@ -64,11 +64,12 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
 
 INSTANTIATE_TEST_SUITE_P(DebugSymbolTests, TestDebugSymbol_P,
                          ::testing::ValuesIn({
+                             "TestBaseTypeToString",
                              "TestClassMemberBasic",
-                             "TestTemplateClass",
-                             "TestGlobal",
                              "TestFunctionParameter",
+                             "TestGlobal",
                              "TestLambda",
+                             "TestTemplateClass",
                          }));
 
 int main(int argc, char **argv) {
