@@ -219,7 +219,7 @@ import {
   liftRequiresExportRuntime,
   lowerRequiresExportRuntime
 } from "./bindings/js";
-import { markDataElementImmutable, addGlobal } from "./warpo";
+import { markDataElementImmutable, addGlobal, addSubProgram} from "./warpo";
 
 /** Features enabled by default. */
 export const defaultFeatures = Feature.MutableGlobals
@@ -1089,6 +1089,7 @@ export class Compiler extends DiagnosticEmitter {
     // compile top-level statements within the file's start function
     let startFunction = file.startFunction;
     let startSignature = startFunction.signature;
+    addSubProgram(startFunction.internalName, null);
     let previousBody = this.currentBody;
     let startFunctionBody = new Array<ExpressionRef>();
     this.currentBody = startFunctionBody;
