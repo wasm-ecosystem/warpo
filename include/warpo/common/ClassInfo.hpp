@@ -44,8 +44,6 @@ public:
 
   std::vector<std::string_view> const &getTemplateTypes() const noexcept { return templateTypes_; }
 
-  bool isBasicType() const noexcept;
-
   inline SubProgramInfo &addSubProgram(std::string subProgramName) {
     return classMemberFunctionRegistry_.addSubProgram(std::move(subProgramName));
   }

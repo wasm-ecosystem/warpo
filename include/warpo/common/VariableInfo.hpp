@@ -18,10 +18,10 @@
 
 #include <cstdint>
 #include <map>
+#include <set>
 #include <string>
 #include <string_view>
 #include <unordered_map>
-#include <utility>
 
 #include "ClassInfo.hpp"
 #include "SubProgramInfo.hpp"
@@ -31,6 +31,7 @@ namespace warpo {
 
 class VariableInfo final {
 public:
+  using BaseTypeRegistry = std::set<std::string_view>;
   using ClassRegistry = std::map<std::string_view, ClassInfo>;
   struct GlobalTypeInfo {
     std::string_view typeName;
@@ -48,6 +49,7 @@ public:
   using ScopeInfoMap = std::unordered_map<uint32_t, ScopeInfo>;
   using GlobalTypes = std::map<std::string, GlobalTypeInfo>;
 
+  void createBaseType(std::string_view typeName);
   void createClass(std::string_view className, std::string parentName, uint32_t const rtid);
 
   void addField(std::string_view const className, std::string fieldName, std::string typeName, uint32_t const offset,
@@ -57,6 +59,7 @@ public:
 
   void addGlobalType(std::string variableName, std::string_view const typeName, uint32_t const nullable);
 
+  BaseTypeRegistry const &getBaseTypeRegistry() const noexcept { return baseTypeRegistry_; }
   ClassRegistry const &getClassRegistry() const noexcept { return classRegistry_; }
 
   GlobalTypes const &getGlobalTypes() const noexcept { return globalTypes_; }
@@ -77,6 +80,7 @@ public:
 
 private:
   using SubProgramLookupMap = std::unordered_map<std::string_view, SubProgramInfo &>;
+  BaseTypeRegistry baseTypeRegistry_;
   ClassRegistry classRegistry_;
   GlobalTypes globalTypes_;
   StringPool stringPool_;

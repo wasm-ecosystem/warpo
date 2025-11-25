@@ -153,7 +153,7 @@ import {
   builtinFunctions,
   builtinVariables_onAccess
 } from "./builtins";
-import { addParameter, addSubProgram } from "./warpo";
+import { addParameter, addSubProgram, createBaseType, createClass } from "./warpo";
 import { isScalarJsonKind, JsonArray, JsonObject, JsonValue, JsonValueKind } from "./json";
 
 // Memory manager constants
@@ -1776,6 +1776,7 @@ export class Program extends DiagnosticEmitter {
 
   /** Registers the wrapper class of a non-class type. */
   private registerWrapperClass(type: Type, className: string): void {
+    createBaseType(type.toStringWithoutNullable());
     let wrapperClasses = this.wrapperClasses;
     assert(!type.isInternalReference && !wrapperClasses.has(type));
     let element = assert(this.lookup(className));

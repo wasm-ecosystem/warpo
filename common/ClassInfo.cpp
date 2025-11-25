@@ -13,7 +13,7 @@
 /// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 /// See the License for the specific language governing permissions and
 /// limitations under the License.
-#include <regex>
+
 #include <utility>
 
 #include "warpo/common/ClassInfo.hpp"
@@ -23,11 +23,6 @@ namespace warpo {
 void ClassInfo::addMember(std::string name, std::string_view const type, uint32_t const offsetInClass,
                           bool const nullable) {
   fields_.emplace_back(FieldInfo{std::move(name), type, offsetInClass, nullable});
-}
-
-bool ClassInfo::isBasicType() const noexcept {
-  static const std::regex basicTypePattern(R"(^(f32|f64|u8|i8|u16|i16|u32|i32|u64|i64|usize|isize|bool)$)");
-  return std::regex_match(name_.begin(), name_.end(), basicTypePattern);
 }
 
 } // namespace warpo

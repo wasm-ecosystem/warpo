@@ -15,6 +15,11 @@ namespace warpo::frontend {
 
 namespace {
 
+void createBaseType(uint32_t const typeNamePtr, vb::WasmModule const *const ctx) {
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.createBaseType(WarpRunner::getString(ctx, typeNamePtr));
+}
+
 void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const rtid,
                  vb::WasmModule const *const ctx) {
   // NOLINTNEXTLINE(misc-const-correctness) intentional non-const to allow efficient move
@@ -89,6 +94,7 @@ uint32_t addScope(uint64_t const startExprPtr, uint64_t const endExprPtr, vb::Wa
 
 std::vector<vb::NativeSymbol> createVariableInfoAPI() {
   return std::vector<vb::NativeSymbol>{
+      STATIC_LINK("warpo", "_WarpoCreateBaseType", createBaseType),
       STATIC_LINK("warpo", "_WarpoCreateClass", createClass),
       STATIC_LINK("warpo", "_WarpoAddField", addField),
       STATIC_LINK("warpo", "_WarpoAddTemplateType", addTemplateType),

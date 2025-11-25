@@ -1,31 +1,12 @@
-///
-/// @file VariableInfo.cpp
-/// @copyright Copyright (C) 2025 wasm-ecosystem
-/// SPDX-License-Identifier: Apache-2.0
-/// Licensed under the Apache License, Version 2.0 (the "License");
-/// you may not use this file except in compliance with the License.
-/// You may obtain a copy of the License at
-///
-///     http://www.apache.org/licenses/LICENSE-2.0
-///
-/// Unless required by applicable law or agreed to in writing, software
-/// distributed under the License is distributed on an "AS IS" BASIS,
-/// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-/// See the License for the specific language governing permissions and
-/// limitations under the License.
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 #include <cassert>
 #include <cstring>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <memory>
 #include <unordered_map>
 #include <utility>
-#include <vector>
 
 #include "warpo/common/ClassInfo.hpp"
-#include "warpo/common/FieldInfo.hpp"
-#include "warpo/common/TypeNameHelper.hpp"
 #include "warpo/common/VariableInfo.hpp"
 
 namespace warpo {
@@ -38,8 +19,13 @@ void VariableInfo::addField(std::string_view const className, std::string fieldN
   classIt->second.addMember(std::move(fieldName), internedTypeName, offset, nullable != 0);
 }
 
+void VariableInfo::createBaseType(std::string_view typeName) {
+  std::string_view const internedTypeName = stringPool_.internString(typeName);
+  baseTypeRegistry_.emplace(internedTypeName);
+}
+
 void VariableInfo::createClass(std::string_view const className, std::string const parentName, uint32_t const rtid) {
-  std::string_view const internedClassName = stringPool_.internString(TypeNameHelper::normalizeTypeName(className));
+  std::string_view const internedClassName = stringPool_.internString(className);
   std::string_view const internedParentName = stringPool_.internString(parentName);
   classRegistry_.emplace(internedClassName, ClassInfo{internedClassName, internedParentName, rtid});
 }
@@ -57,9 +43,8 @@ void VariableInfo::addGlobalType(std::string variableName, std::string_view cons
 }
 
 void VariableInfo::addSubProgram(std::string subProgramName, std::string_view const belongClassName) {
-
   if (!belongClassName.empty() && (belongClassName != "<<NULL>>")) {
-    auto classIt = classRegistry_.find(TypeNameHelper::normalizeTypeName(belongClassName));
+    auto classIt = classRegistry_.find(belongClassName);
     assert(classIt != classRegistry_.end() && "Class not found in registry");
     // NOLINTNEXTLINE(misc-const-correctness)
     SubProgramInfo &subProgramInfo = classIt->second.addSubProgram(std::move(subProgramName));
@@ -74,7 +59,7 @@ void VariableInfo::addSubProgram(std::string subProgramName, std::string_view co
 void VariableInfo::addParameter(std::string_view const subProgramName, std::string variableName,
                                 std::string_view const typeName, uint32_t const index, bool const nullable) {
   SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
-  std::string_view const normalizedTypeName = TypeNameHelper::normalizeTypeName(typeName);
+  std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
   assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
   it->second.addParameter(std::move(variableName), internedTypeName, index, nullable);
@@ -84,7 +69,7 @@ void VariableInfo::addLocal(std::string_view const subProgramName, std::string v
                             std::string_view const typeName, uint32_t const index, uint32_t const scopeId,
                             bool const nullable) {
   SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
-  std::string_view const normalizedTypeName = TypeNameHelper::normalizeTypeName(typeName);
+  std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
   assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
   it->second.addLocal(std::move(variableName), internedTypeName, index, scopeId, nullable);
@@ -100,9 +85,20 @@ uint32_t VariableInfo::addScope(BinaryenExpressionRef const startExpr, BinaryenE
 
 #ifdef WARPO_ENABLE_UNIT_TESTS
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 namespace warpo::ut {
+
+TEST(TestVariableInfo, TestCreateBaseType) {
+  VariableInfo variableInfo;
+  variableInfo.createBaseType("i32");
+  variableInfo.createBaseType("u32");
+
+  const VariableInfo::BaseTypeRegistry &baseTypeRegistry = variableInfo.getBaseTypeRegistry();
+  EXPECT_THAT(baseTypeRegistry, ::testing::ElementsAre("i32", "u32"));
+}
+
 TEST(TestVariableInfo, TestCreateClass) {
   VariableInfo variableInfo;
 
