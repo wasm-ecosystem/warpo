@@ -40,7 +40,7 @@ function get_binary(): string | null {
 
 export async function main(options: Option) {
   const binary = get_binary();
-  const ps = spawn(binary, options.argv.slice(2), { stdio: "inherit", env: options.env });
+  const ps = spawn(binary, options.argv, { stdio: "inherit", env: options.env });
   return new Promise<number>((resolve, reject) => {
     function shutdown() {
       ps.kill("SIGTERM");
