@@ -1,6 +1,6 @@
 (module
- (type $0 (func (param i32 i32) (result i32)))
- (type $1 (func (param i32) (result i32)))
+ (type $0 (func (param i32) (result i32)))
+ (type $1 (func (param i32 i32) (result i32)))
  (type $2 (func (param i32 i32)))
  (type $3 (func (param i32 i32 i32) (result i32)))
  (type $4 (func (param i32 i32 i32 i32) (result i32)))
@@ -6452,7 +6452,7 @@
     (call $~lib/builtins/abort
      (i32.const 1616)
      (i32.const 80)
-     (i32.const 330)
+     (i32.const 347)
      (i32.const 18)
     )
     (unreachable)
@@ -10589,12 +10589,19 @@
    (i32.const 10)
   )
  )
+ (func $~lib/function/Function<%28i32%2Ci32%2C~lib/array/Array<i32>%29=>~lib/string/String>#get:index (param $this i32) (result i32)
+  (return
+   (i32.load
+    (local.get $this)
+   )
+  )
+ )
  (func $~lib/array/Array<~lib/string/String>#get:dataStart (param $this i32) (result i32)
   (i32.load offset=4
    (local.get $this)
   )
  )
- (func $~lib/array/Array<i32>#map<~lib/string/String> (param $this i32) (param $fn i32) (result i32)
+ (func $~lib/array/Array<i32>#mapImpl<~lib/string/String> (param $this i32) (param $fnIndex i32) (result i32)
   (local $len i32)
   (local $out i32)
   (local $outStart i32)
@@ -10671,14 +10678,7 @@
         (call $~lib/rt/__tmptostack
          (local.get $this)
         )
-        (i32.load
-         (block (result i32)
-          (global.set $~argumentsLength
-           (i32.const 3)
-          )
-          (local.get $fn)
-         )
-        )
+        (local.get $fnIndex)
        )
       )
      )
@@ -10719,7 +10719,14 @@
    (local.get $value)
   )
  )
- (func $~lib/array/Array<i32>#map<f32> (param $this i32) (param $fn i32) (result i32)
+ (func $~lib/function/Function<%28i32%2Ci32%2C~lib/array/Array<i32>%29=>f32>#get:index (param $this i32) (result i32)
+  (return
+   (i32.load
+    (local.get $this)
+   )
+  )
+ )
+ (func $~lib/array/Array<i32>#mapImpl<f32> (param $this i32) (param $fnIndex i32) (result i32)
   (local $len i32)
   (local $out i32)
   (local $outStart i32)
@@ -10795,14 +10802,7 @@
        (call $~lib/rt/__tmptostack
         (local.get $this)
        )
-       (i32.load
-        (block (result i32)
-         (global.set $~argumentsLength
-          (i32.const 3)
-         )
-         (local.get $fn)
-        )
-       )
+       (local.get $fnIndex)
       )
      )
      (f32.store
@@ -10851,7 +10851,14 @@
    (local.get $value)
   )
  )
- (func $~lib/array/Array<i32>#map<i32> (param $this i32) (param $fn i32) (result i32)
+ (func $~lib/function/Function<%28i32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index (param $this i32) (result i32)
+  (return
+   (i32.load
+    (local.get $this)
+   )
+  )
+ )
+ (func $~lib/array/Array<i32>#mapImpl<i32> (param $this i32) (param $fnIndex i32) (result i32)
   (local $len i32)
   (local $out i32)
   (local $outStart i32)
@@ -10927,14 +10934,7 @@
        (call $~lib/rt/__tmptostack
         (local.get $this)
        )
-       (i32.load
-        (block (result i32)
-         (global.set $~argumentsLength
-          (i32.const 3)
-         )
-         (local.get $fn)
-        )
-       )
+       (local.get $fnIndex)
       )
      )
      (i32.store
@@ -10999,7 +10999,14 @@
    (i32.const 2)
   )
  )
- (func $~lib/array/Array<i32>#filter (param $this i32) (param $fn i32) (result i32)
+ (func $~lib/function/Function<%28i32%2Ci32%2C~lib/array/Array<i32>%29=>bool>#get:index (param $this i32) (result i32)
+  (return
+   (i32.load
+    (local.get $this)
+   )
+  )
+ )
+ (func $~lib/array/Array<i32>#filterImpl (param $this i32) (param $fnIndex i32) (result i32)
   (local $result i32)
   (local $i i32)
   (local $len i32)
@@ -11072,14 +11079,7 @@
        (call $~lib/rt/__tmptostack
         (local.get $this)
        )
-       (i32.load
-        (block (result i32)
-         (global.set $~argumentsLength
-          (i32.const 3)
-         )
-         (local.get $fn)
-        )
-       )
+       (local.get $fnIndex)
       )
       (then
        (drop
@@ -11169,7 +11169,14 @@
    (local.get $current)
   )
  )
- (func $~lib/array/Array<i32>#reduce<i32> (param $this i32) (param $fn i32) (param $initialValue i32) (result i32)
+ (func $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index (param $this i32) (result i32)
+  (return
+   (i32.load
+    (local.get $this)
+   )
+  )
+ )
+ (func $~lib/array/Array<i32>#reduceImpl<i32> (param $this i32) (param $fnIndex i32) (param $initialValue i32) (result i32)
   (local $acc i32)
   (local $i i32)
   (local $len i32)
@@ -11232,14 +11239,7 @@
        (call $~lib/rt/__tmptostack
         (local.get $this)
        )
-       (i32.load
-        (block (result i32)
-         (global.set $~argumentsLength
-          (i32.const 4)
-         )
-         (local.get $fn)
-        )
-       )
+       (local.get $fnIndex)
       )
      )
      (local.set $i
@@ -11276,7 +11276,14 @@
    )
   )
  )
- (func $~lib/array/Array<i32>#reduce<bool> (param $this i32) (param $fn i32) (param $initialValue i32) (result i32)
+ (func $~lib/function/Function<%28bool%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>bool>#get:index (param $this i32) (result i32)
+  (return
+   (i32.load
+    (local.get $this)
+   )
+  )
+ )
+ (func $~lib/array/Array<i32>#reduceImpl<bool> (param $this i32) (param $fnIndex i32) (param $initialValue i32) (result i32)
   (local $acc i32)
   (local $i i32)
   (local $len i32)
@@ -11339,14 +11346,7 @@
        (call $~lib/rt/__tmptostack
         (local.get $this)
        )
-       (i32.load
-        (block (result i32)
-         (global.set $~argumentsLength
-          (i32.const 4)
-         )
-         (local.get $fn)
-        )
-       )
+       (local.get $fnIndex)
       )
      )
      (local.set $i
@@ -11420,7 +11420,7 @@
    (local.get $current)
   )
  )
- (func $~lib/array/Array<i32>#reduceRight<i32> (param $this i32) (param $fn i32) (param $initialValue i32) (result i32)
+ (func $~lib/array/Array<i32>#reduceRightImpl<i32> (param $this i32) (param $fnIndex i32) (param $initialValue i32) (result i32)
   (local $acc i32)
   (local $i i32)
   (local.set $acc
@@ -11463,14 +11463,7 @@
        (call $~lib/rt/__tmptostack
         (local.get $this)
        )
-       (i32.load
-        (block (result i32)
-         (global.set $~argumentsLength
-          (i32.const 4)
-         )
-         (local.get $fn)
-        )
-       )
+       (local.get $fnIndex)
       )
      )
      (local.set $i
@@ -11507,7 +11500,7 @@
    )
   )
  )
- (func $~lib/array/Array<i32>#reduceRight<bool> (param $this i32) (param $fn i32) (param $initialValue i32) (result i32)
+ (func $~lib/array/Array<i32>#reduceRightImpl<bool> (param $this i32) (param $fnIndex i32) (param $initialValue i32) (result i32)
   (local $acc i32)
   (local $i i32)
   (local.set $acc
@@ -11550,14 +11543,7 @@
        (call $~lib/rt/__tmptostack
         (local.get $this)
        )
-       (i32.load
-        (block (result i32)
-         (global.set $~argumentsLength
-          (i32.const 4)
-         )
-         (local.get $fn)
-        )
-       )
+       (local.get $fnIndex)
       )
      )
      (local.set $i
@@ -15198,7 +15184,7 @@
        )
        (if
         (i32.le_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (local.get $a)
           (local.get $b)
           (i32.load
@@ -15248,7 +15234,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (local.get $a)
               (local.get $max)
               (i32.load
@@ -15320,7 +15306,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (local.get $a)
               (local.get $min)
               (i32.load
@@ -15404,7 +15390,7 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
+    (call_indirect (type $1)
      (i32.load
       (i32.add
        (local.get $ptr)
@@ -15450,7 +15436,7 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (i32.load offset=4
             (i32.add
              (local.get $ptr)
@@ -15576,7 +15562,7 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (i32.load offset=4
             (i32.add
              (local.get $ptr)
@@ -15770,7 +15756,7 @@
      )
      (if
       (i32.lt_s
-       (call_indirect (type $0)
+       (call_indirect (type $1)
         (local.get $a)
         (local.get $b)
         (i32.load
@@ -15918,7 +15904,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (local.get $a)
           (local.get $b)
           (i32.load
@@ -15955,7 +15941,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (local.get $a)
           (local.get $b)
           (i32.load
@@ -16001,7 +15987,7 @@
       )
       (local.set $c|9
        (i32.gt_s
-        (call_indirect (type $0)
+        (call_indirect (type $1)
          (local.get $a|7)
          (local.get $b|8)
          (i32.load
@@ -16594,7 +16580,7 @@
        )
        (if
         (i32.le_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (local.get $a)
           (local.get $b)
           (i32.load
@@ -16644,7 +16630,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (local.get $a)
               (local.get $max)
               (i32.load
@@ -16716,7 +16702,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (local.get $a)
               (local.get $min)
               (i32.load
@@ -16800,7 +16786,7 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
+    (call_indirect (type $1)
      (i32.load
       (i32.add
        (local.get $ptr)
@@ -16846,7 +16832,7 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (i32.load offset=4
             (i32.add
              (local.get $ptr)
@@ -16972,7 +16958,7 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (i32.load offset=4
             (i32.add
              (local.get $ptr)
@@ -17166,7 +17152,7 @@
      )
      (if
       (i32.lt_s
-       (call_indirect (type $0)
+       (call_indirect (type $1)
         (local.get $a)
         (local.get $b)
         (i32.load
@@ -17314,7 +17300,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (local.get $a)
           (local.get $b)
           (i32.load
@@ -17351,7 +17337,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (local.get $a)
           (local.get $b)
           (i32.load
@@ -17397,7 +17383,7 @@
       )
       (local.set $c|9
        (i32.gt_s
-        (call_indirect (type $0)
+        (call_indirect (type $1)
          (local.get $a|7)
          (local.get $b|8)
          (i32.load
@@ -18112,7 +18098,7 @@
     (then
      (if
       (i32.gt_s
-       (call_indirect (type $0)
+       (call_indirect (type $1)
         (call $~lib/array/Array<i32>#__get
          (call $~lib/rt/__tmptostack
           (local.get $data)
@@ -18562,7 +18548,7 @@
        )
        (if
         (i32.le_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -18622,7 +18608,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (call $~lib/rt/__tmptostack
                (local.get $a)
               )
@@ -18700,7 +18686,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (call $~lib/rt/__tmptostack
                (local.get $a)
               )
@@ -18788,7 +18774,7 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
+    (call_indirect (type $1)
      (call $~lib/rt/__tmptostack
       (i32.load
        (i32.add
@@ -18838,7 +18824,7 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (call $~lib/rt/__tmptostack
             (i32.load offset=4
              (i32.add
@@ -18970,7 +18956,7 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (call $~lib/rt/__tmptostack
             (i32.load offset=4
              (i32.add
@@ -19172,7 +19158,7 @@
      )
      (if
       (i32.lt_s
-       (call_indirect (type $0)
+       (call_indirect (type $1)
         (call $~lib/rt/__tmptostack
          (local.get $a)
         )
@@ -19328,7 +19314,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -19373,7 +19359,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -19427,7 +19413,7 @@
       )
       (local.set $c|9
        (i32.gt_s
-        (call_indirect (type $0)
+        (call_indirect (type $1)
          (call $~lib/rt/__tmptostack
           (local.get $a|7)
          )
@@ -20515,7 +20501,7 @@
        )
        (if
         (i32.le_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -20575,7 +20561,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (call $~lib/rt/__tmptostack
                (local.get $a)
               )
@@ -20653,7 +20639,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (call $~lib/rt/__tmptostack
                (local.get $a)
               )
@@ -20741,7 +20727,7 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
+    (call_indirect (type $1)
      (call $~lib/rt/__tmptostack
       (i32.load
        (i32.add
@@ -20791,7 +20777,7 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (call $~lib/rt/__tmptostack
             (i32.load offset=4
              (i32.add
@@ -20923,7 +20909,7 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (call $~lib/rt/__tmptostack
             (i32.load offset=4
              (i32.add
@@ -21125,7 +21111,7 @@
      )
      (if
       (i32.lt_s
-       (call_indirect (type $0)
+       (call_indirect (type $1)
         (call $~lib/rt/__tmptostack
          (local.get $a)
         )
@@ -21281,7 +21267,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -21326,7 +21312,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -21380,7 +21366,7 @@
       )
       (local.set $c|9
        (i32.gt_s
-        (call_indirect (type $0)
+        (call_indirect (type $1)
          (call $~lib/rt/__tmptostack
           (local.get $a|7)
          )
@@ -21943,7 +21929,7 @@
     (then
      (if
       (i32.gt_s
-       (call_indirect (type $0)
+       (call_indirect (type $1)
         (call $~lib/rt/__tmptostack
          (call $~lib/array/Array<~lib/array/Array<i32>>#__get
           (call $~lib/rt/__tmptostack
@@ -22428,7 +22414,7 @@
        )
        (if
         (i32.le_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -22488,7 +22474,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (call $~lib/rt/__tmptostack
                (local.get $a)
               )
@@ -22566,7 +22552,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (call $~lib/rt/__tmptostack
                (local.get $a)
               )
@@ -22654,7 +22640,7 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
+    (call_indirect (type $1)
      (call $~lib/rt/__tmptostack
       (i32.load
        (i32.add
@@ -22704,7 +22690,7 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (call $~lib/rt/__tmptostack
             (i32.load offset=4
              (i32.add
@@ -22836,7 +22822,7 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (call $~lib/rt/__tmptostack
             (i32.load offset=4
              (i32.add
@@ -23038,7 +23024,7 @@
      )
      (if
       (i32.lt_s
-       (call_indirect (type $0)
+       (call_indirect (type $1)
         (call $~lib/rt/__tmptostack
          (local.get $a)
         )
@@ -23194,7 +23180,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -23239,7 +23225,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -23293,7 +23279,7 @@
       )
       (local.set $c|9
        (i32.gt_s
-        (call_indirect (type $0)
+        (call_indirect (type $1)
          (call $~lib/rt/__tmptostack
           (local.get $a|7)
          )
@@ -23856,7 +23842,7 @@
     (then
      (if
       (i32.gt_s
-       (call_indirect (type $0)
+       (call_indirect (type $1)
         (call $~lib/rt/__tmptostack
          (call $~lib/array/Array<std/array/Proxy<i32>>#__get
           (call $~lib/rt/__tmptostack
@@ -24042,7 +24028,7 @@
        )
        (if
         (i32.le_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -24102,7 +24088,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (call $~lib/rt/__tmptostack
                (local.get $a)
               )
@@ -24180,7 +24166,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (call $~lib/rt/__tmptostack
                (local.get $a)
               )
@@ -24268,7 +24254,7 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
+    (call_indirect (type $1)
      (call $~lib/rt/__tmptostack
       (i32.load
        (i32.add
@@ -24318,7 +24304,7 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (call $~lib/rt/__tmptostack
             (i32.load offset=4
              (i32.add
@@ -24450,7 +24436,7 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (call $~lib/rt/__tmptostack
             (i32.load offset=4
              (i32.add
@@ -24652,7 +24638,7 @@
      )
      (if
       (i32.lt_s
-       (call_indirect (type $0)
+       (call_indirect (type $1)
         (call $~lib/rt/__tmptostack
          (local.get $a)
         )
@@ -24808,7 +24794,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -24853,7 +24839,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -24907,7 +24893,7 @@
       )
       (local.set $c|9
        (i32.gt_s
-        (call_indirect (type $0)
+        (call_indirect (type $1)
          (call $~lib/rt/__tmptostack
           (local.get $a|7)
          )
@@ -25454,7 +25440,7 @@
     (then
      (if
       (i32.gt_s
-       (call_indirect (type $0)
+       (call_indirect (type $1)
         (call $~lib/rt/__tmptostack
          (call $~lib/array/Array<~lib/string/String|null>#__get
           (call $~lib/rt/__tmptostack
@@ -26589,7 +26575,7 @@
        )
        (if
         (i32.le_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -26649,7 +26635,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (call $~lib/rt/__tmptostack
                (local.get $a)
               )
@@ -26727,7 +26713,7 @@
            )
            (if
             (i32.gt_s
-             (call_indirect (type $0)
+             (call_indirect (type $1)
               (call $~lib/rt/__tmptostack
                (local.get $a)
               )
@@ -26815,7 +26801,7 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
+    (call_indirect (type $1)
      (call $~lib/rt/__tmptostack
       (i32.load
        (i32.add
@@ -26865,7 +26851,7 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (call $~lib/rt/__tmptostack
             (i32.load offset=4
              (i32.add
@@ -26997,7 +26983,7 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
+          (call_indirect (type $1)
            (call $~lib/rt/__tmptostack
             (i32.load offset=4
              (i32.add
@@ -27199,7 +27185,7 @@
      )
      (if
       (i32.lt_s
-       (call_indirect (type $0)
+       (call_indirect (type $1)
         (call $~lib/rt/__tmptostack
          (local.get $a)
         )
@@ -27355,7 +27341,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -27400,7 +27386,7 @@
        )
        (local.set $c
         (i32.gt_s
-         (call_indirect (type $0)
+         (call_indirect (type $1)
           (call $~lib/rt/__tmptostack
            (local.get $a)
           )
@@ -27454,7 +27440,7 @@
       )
       (local.set $c|9
        (i32.gt_s
-        (call_indirect (type $0)
+        (call_indirect (type $1)
          (call $~lib/rt/__tmptostack
           (local.get $a|7)
          )
@@ -28017,7 +28003,7 @@
     (then
      (if
       (i32.gt_s
-       (call_indirect (type $0)
+       (call_indirect (type $1)
         (call $~lib/rt/__tmptostack
          (call $~lib/array/Array<~lib/string/String>#__get
           (call $~lib/rt/__tmptostack
@@ -38022,7 +38008,14 @@
    (local.get $nestedArray)
   )
  )
- (func $~lib/array/Array<~lib/array/Array<i32>>#map<~lib/array/Array<i32>> (param $this i32) (param $fn i32) (result i32)
+ (func $~lib/function/Function<%28~lib/array/Array<i32>%2Ci32%2C~lib/array/Array<~lib/array/Array<i32>>%29=>~lib/array/Array<i32>>#get:index (param $this i32) (result i32)
+  (return
+   (i32.load
+    (local.get $this)
+   )
+  )
+ )
+ (func $~lib/array/Array<~lib/array/Array<i32>>#mapImpl<~lib/array/Array<i32>> (param $this i32) (param $fnIndex i32) (result i32)
   (local $len i32)
   (local $out i32)
   (local $outStart i32)
@@ -38101,14 +38094,7 @@
         (call $~lib/rt/__tmptostack
          (local.get $this)
         )
-        (i32.load
-         (block (result i32)
-          (global.set $~argumentsLength
-           (i32.const 3)
-          )
-          (local.get $fn)
-         )
-        )
+        (local.get $fnIndex)
        )
       )
      )
@@ -38374,78 +38360,78 @@
   (local $every i32)
   (local $some i32)
   (local $i|156 i32)
+  (local $this i32)
+  (local $fn i32)
   (local $arrStr1 i32)
+  (local $this|160 i32)
+  (local $fn|161 i32)
   (local $newArr i32)
+  (local $this|163 i32)
+  (local $fn|164 i32)
+  (local $this|165 i32)
+  (local $fn|166 i32)
+  (local $this|167 i32)
+  (local $fn|168 i32)
+  (local $this|169 i32)
+  (local $fn|170 i32)
   (local $filteredArr i32)
+  (local $this|172 i32)
+  (local $fn|173 i32)
+  (local $this|174 i32)
+  (local $fn|175 i32)
+  (local $this|176 i32)
+  (local $fn|177 i32)
+  (local $this|178 i32)
+  (local $fn|179 i32)
+  (local $initialValue i32)
+  (local $this|181 i32)
+  (local $fn|182 i32)
+  (local $initialValue|183 i32)
+  (local $this|184 i32)
+  (local $fn|185 i32)
+  (local $initialValue|186 i32)
   (local $boolVal i32)
-  (local $boolVal|161 i32)
-  (local $162 i32)
-  (local $163 i32)
-  (local $164 i32)
-  (local $165 i32)
-  (local $166 i32)
-  (local $167 i32)
-  (local $168 i32)
-  (local $169 i32)
-  (local $170 i32)
-  (local $171 i32)
-  (local $172 i32)
-  (local $173 i32)
-  (local $174 i32)
-  (local $175 i32)
-  (local $176 i32)
-  (local $177 i32)
-  (local $178 i32)
-  (local $179 i32)
-  (local $180 i32)
-  (local $181 i32)
-  (local $182 i32)
-  (local $183 i32)
-  (local $184 i32)
-  (local $185 i32)
-  (local $186 i32)
-  (local $187 i32)
-  (local $188 i32)
-  (local $f32ArrayTypedSmall i32)
-  (local $190 i32)
-  (local $191 i32)
-  (local $f32ArrayTyped i32)
-  (local $193 i32)
-  (local $194 i32)
-  (local $f64ArrayTyped i32)
-  (local $196 i32)
-  (local $197 i32)
-  (local $i32ArrayTyped i32)
-  (local $199 i32)
-  (local $200 i32)
-  (local $u32ArrayTyped i32)
-  (local $202 i32)
-  (local $203 i32)
-  (local $reversed0 i32)
-  (local $205 i32)
-  (local $reversed1 i32)
-  (local $207 i32)
-  (local $reversed2 i32)
-  (local $209 i32)
-  (local $reversed4 i32)
-  (local $211 i32)
-  (local $expected4 i32)
-  (local $reversed64 i32)
-  (local $reversed128 i32)
-  (local $reversed1024 i32)
-  (local $reversed10000 i32)
-  (local $randomized512 i32)
-  (local $218 i32)
-  (local $219 i32)
-  (local $randomized64 i32)
-  (local $randomized257 i32)
-  (local $reversedNested512 i32)
-  (local $reversedElements512 i32)
+  (local $this|188 i32)
+  (local $fn|189 i32)
+  (local $initialValue|190 i32)
+  (local $this|191 i32)
+  (local $fn|192 i32)
+  (local $initialValue|193 i32)
+  (local $this|194 i32)
+  (local $fn|195 i32)
+  (local $initialValue|196 i32)
+  (local $this|197 i32)
+  (local $fn|198 i32)
+  (local $initialValue|199 i32)
+  (local $this|200 i32)
+  (local $fn|201 i32)
+  (local $initialValue|202 i32)
+  (local $this|203 i32)
+  (local $fn|204 i32)
+  (local $initialValue|205 i32)
+  (local $this|206 i32)
+  (local $fn|207 i32)
+  (local $initialValue|208 i32)
+  (local $boolVal|209 i32)
+  (local $this|210 i32)
+  (local $fn|211 i32)
+  (local $initialValue|212 i32)
+  (local $this|213 i32)
+  (local $fn|214 i32)
+  (local $initialValue|215 i32)
+  (local $this|216 i32)
+  (local $fn|217 i32)
+  (local $initialValue|218 i32)
+  (local $this|219 i32)
+  (local $fn|220 i32)
+  (local $initialValue|221 i32)
+  (local $222 i32)
+  (local $223 i32)
   (local $224 i32)
-  (local $randomStringsActual i32)
+  (local $225 i32)
   (local $226 i32)
-  (local $randomStringsExpected i32)
-  (local $randomStrings400 i32)
+  (local $227 i32)
+  (local $228 i32)
   (local $229 i32)
   (local $230 i32)
   (local $231 i32)
@@ -38453,65 +38439,127 @@
   (local $233 i32)
   (local $234 i32)
   (local $235 i32)
-  (local $refArr|236 i32)
+  (local $236 i32)
   (local $237 i32)
-  (local $refArr2|238 i32)
+  (local $238 i32)
   (local $239 i32)
-  (local $arr0 i32)
+  (local $240 i32)
   (local $241 i32)
-  (local $arr1 i32)
+  (local $242 i32)
   (local $243 i32)
-  (local $arr2 i32)
+  (local $244 i32)
   (local $245 i32)
-  (local $arr3 i32)
+  (local $246 i32)
   (local $247 i32)
   (local $248 i32)
-  (local $249 i32)
+  (local $f32ArrayTypedSmall i32)
   (local $250 i32)
   (local $251 i32)
-  (local $252 i32)
+  (local $f32ArrayTyped i32)
   (local $253 i32)
   (local $254 i32)
-  (local $arrStr i32)
+  (local $f64ArrayTyped i32)
   (local $256 i32)
   (local $257 i32)
-  (local $258 i32)
+  (local $i32ArrayTyped i32)
   (local $259 i32)
-  (local $subarr32 i32)
-  (local $261 i32)
+  (local $260 i32)
+  (local $u32ArrayTyped i32)
   (local $262 i32)
   (local $263 i32)
-  (local $subarr8 i32)
+  (local $reversed0 i32)
   (local $265 i32)
-  (local $266 i32)
+  (local $reversed1 i32)
   (local $267 i32)
-  (local $subarrU32 i32)
+  (local $reversed2 i32)
   (local $269 i32)
-  (local $270 i32)
+  (local $reversed4 i32)
   (local $271 i32)
-  (local $272 i32)
-  (local $273 i32)
-  (local $plainTarget i32)
-  (local $plainResult i32)
-  (local $i|276 i32)
-  (local $277 i32)
+  (local $expected4 i32)
+  (local $reversed64 i32)
+  (local $reversed128 i32)
+  (local $reversed1024 i32)
+  (local $reversed10000 i32)
+  (local $randomized512 i32)
   (local $278 i32)
   (local $279 i32)
-  (local $280 i32)
-  (local $281 i32)
-  (local $stringTarget i32)
-  (local $stringResult i32)
+  (local $randomized64 i32)
+  (local $randomized257 i32)
+  (local $reversedNested512 i32)
+  (local $reversedElements512 i32)
   (local $284 i32)
-  (local $expected i32)
-  (local $i|286 i32)
-  (local $287 i32)
-  (local $288 i32)
+  (local $randomStringsActual i32)
+  (local $286 i32)
+  (local $randomStringsExpected i32)
+  (local $randomStrings400 i32)
   (local $289 i32)
-  (local $testArray i32)
+  (local $290 i32)
   (local $291 i32)
   (local $292 i32)
   (local $293 i32)
+  (local $294 i32)
+  (local $295 i32)
+  (local $refArr|296 i32)
+  (local $297 i32)
+  (local $refArr2|298 i32)
+  (local $299 i32)
+  (local $arr0 i32)
+  (local $301 i32)
+  (local $arr1 i32)
+  (local $303 i32)
+  (local $arr2 i32)
+  (local $305 i32)
+  (local $arr3 i32)
+  (local $307 i32)
+  (local $308 i32)
+  (local $309 i32)
+  (local $310 i32)
+  (local $311 i32)
+  (local $312 i32)
+  (local $313 i32)
+  (local $314 i32)
+  (local $arrStr i32)
+  (local $316 i32)
+  (local $317 i32)
+  (local $318 i32)
+  (local $319 i32)
+  (local $subarr32 i32)
+  (local $321 i32)
+  (local $322 i32)
+  (local $323 i32)
+  (local $subarr8 i32)
+  (local $325 i32)
+  (local $326 i32)
+  (local $327 i32)
+  (local $subarrU32 i32)
+  (local $329 i32)
+  (local $330 i32)
+  (local $331 i32)
+  (local $332 i32)
+  (local $333 i32)
+  (local $plainTarget i32)
+  (local $plainResult i32)
+  (local $i|336 i32)
+  (local $337 i32)
+  (local $338 i32)
+  (local $339 i32)
+  (local $340 i32)
+  (local $341 i32)
+  (local $stringTarget i32)
+  (local $stringResult i32)
+  (local $344 i32)
+  (local $expected i32)
+  (local $i|346 i32)
+  (local $347 i32)
+  (local $348 i32)
+  (local $349 i32)
+  (local $testArray i32)
+  (local $351 i32)
+  (local $352 i32)
+  (local $353 i32)
   (local $mapTarget i32)
+  (local $this|355 i32)
+  (local $fn|356 i32)
   (local $mapResult i32)
   (drop
    (i32.eq
@@ -46199,24 +46247,56 @@
   (block
    (local.set $arrStr1
     (call $~lib/rt/__localtostack
-     (call $~lib/array/Array<i32>#map<~lib/string/String>
-      (call $~lib/rt/__tmptostack
-       (global.get $std/array/arr)
+     (block $~lib/array/Array<i32>#map<~lib/string/String>|inlined.0 (result i32)
+      (local.set $this
+       (call $~lib/rt/__localtostack
+        (global.get $std/array/arr)
+       )
       )
-      (call $~lib/rt/__tmptostack
-       (i32.const 8272)
+      (local.set $fn
+       (call $~lib/rt/__localtostack
+        (i32.const 8272)
+       )
+      )
+      (br $~lib/array/Array<i32>#map<~lib/string/String>|inlined.0
+       (call $~lib/array/Array<i32>#mapImpl<~lib/string/String>
+        (call $~lib/rt/__tmptostack
+         (local.get $this)
+        )
+        (call $~lib/function/Function<%28i32%2Ci32%2C~lib/array/Array<i32>%29=>~lib/string/String>#get:index
+         (call $~lib/rt/__tmptostack
+          (local.get $fn)
+         )
+        )
+       )
       )
      )
     )
    )
    (local.set $newArr
     (call $~lib/rt/__localtostack
-     (call $~lib/array/Array<i32>#map<f32>
-      (call $~lib/rt/__tmptostack
-       (global.get $std/array/arr)
+     (block $~lib/array/Array<i32>#map<f32>|inlined.0 (result i32)
+      (local.set $this|160
+       (call $~lib/rt/__localtostack
+        (global.get $std/array/arr)
+       )
       )
-      (call $~lib/rt/__tmptostack
-       (i32.const 8304)
+      (local.set $fn|161
+       (call $~lib/rt/__localtostack
+        (i32.const 8304)
+       )
+      )
+      (br $~lib/array/Array<i32>#map<f32>|inlined.0
+       (call $~lib/array/Array<i32>#mapImpl<f32>
+        (call $~lib/rt/__tmptostack
+         (local.get $this|160)
+        )
+        (call $~lib/function/Function<%28i32%2Ci32%2C~lib/array/Array<i32>%29=>f32>#get:index
+         (call $~lib/rt/__tmptostack
+          (local.get $fn|161)
+         )
+        )
+       )
       )
      )
     )
@@ -46275,12 +46355,28 @@
     (i32.const 0)
    )
    (drop
-    (call $~lib/array/Array<i32>#map<i32>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#map<i32>|inlined.0 (result i32)
+     (local.set $this|163
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8336)
+     (local.set $fn|164
+      (call $~lib/rt/__localtostack
+       (i32.const 8336)
+      )
+     )
+     (br $~lib/array/Array<i32>#map<i32>|inlined.0
+      (call $~lib/array/Array<i32>#mapImpl<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|163)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|164)
+        )
+       )
+      )
      )
     )
    )
@@ -46326,12 +46422,28 @@
     (i32.const 0)
    )
    (drop
-    (call $~lib/array/Array<i32>#map<i32>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#map<i32>|inlined.1 (result i32)
+     (local.set $this|165
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8368)
+     (local.set $fn|166
+      (call $~lib/rt/__localtostack
+       (i32.const 8368)
+      )
+     )
+     (br $~lib/array/Array<i32>#map<i32>|inlined.1
+      (call $~lib/array/Array<i32>#mapImpl<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|165)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|166)
+        )
+       )
+      )
      )
     )
    )
@@ -46384,12 +46496,28 @@
     (i32.const 0)
    )
    (drop
-    (call $~lib/array/Array<i32>#map<i32>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#map<i32>|inlined.2 (result i32)
+     (local.set $this|167
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8400)
+     (local.set $fn|168
+      (call $~lib/rt/__localtostack
+       (i32.const 8400)
+      )
+     )
+     (br $~lib/array/Array<i32>#map<i32>|inlined.2
+      (call $~lib/array/Array<i32>#mapImpl<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|167)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|168)
+        )
+       )
+      )
      )
     )
    )
@@ -46451,12 +46579,28 @@
   (block
    (local.set $filteredArr
     (call $~lib/rt/__localtostack
-     (call $~lib/array/Array<i32>#filter
-      (call $~lib/rt/__tmptostack
-       (global.get $std/array/arr)
+     (block $~lib/array/Array<i32>#filter|inlined.0 (result i32)
+      (local.set $this|169
+       (call $~lib/rt/__localtostack
+        (global.get $std/array/arr)
+       )
       )
-      (call $~lib/rt/__tmptostack
-       (i32.const 8432)
+      (local.set $fn|170
+       (call $~lib/rt/__localtostack
+        (i32.const 8432)
+       )
+      )
+      (br $~lib/array/Array<i32>#filter|inlined.0
+       (call $~lib/array/Array<i32>#filterImpl
+        (call $~lib/rt/__tmptostack
+         (local.get $this|169)
+        )
+        (call $~lib/function/Function<%28i32%2Ci32%2C~lib/array/Array<i32>%29=>bool>#get:index
+         (call $~lib/rt/__tmptostack
+          (local.get $fn|170)
+         )
+        )
+       )
       )
      )
     )
@@ -46486,12 +46630,28 @@
     (i32.const 0)
    )
    (drop
-    (call $~lib/array/Array<i32>#filter
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#filter|inlined.1 (result i32)
+     (local.set $this|172
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8464)
+     (local.set $fn|173
+      (call $~lib/rt/__localtostack
+       (i32.const 8464)
+      )
+     )
+     (br $~lib/array/Array<i32>#filter|inlined.1
+      (call $~lib/array/Array<i32>#filterImpl
+       (call $~lib/rt/__tmptostack
+        (local.get $this|172)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2C~lib/array/Array<i32>%29=>bool>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|173)
+        )
+       )
+      )
      )
     )
    )
@@ -46537,12 +46697,28 @@
     (i32.const 0)
    )
    (drop
-    (call $~lib/array/Array<i32>#filter
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#filter|inlined.2 (result i32)
+     (local.set $this|174
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8496)
+     (local.set $fn|175
+      (call $~lib/rt/__localtostack
+       (i32.const 8496)
+      )
+     )
+     (br $~lib/array/Array<i32>#filter|inlined.2
+      (call $~lib/array/Array<i32>#filterImpl
+       (call $~lib/rt/__tmptostack
+        (local.get $this|174)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2C~lib/array/Array<i32>%29=>bool>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|175)
+        )
+       )
+      )
      )
     )
    )
@@ -46595,12 +46771,28 @@
     (i32.const 0)
    )
    (drop
-    (call $~lib/array/Array<i32>#filter
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#filter|inlined.3 (result i32)
+     (local.set $this|176
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8528)
+     (local.set $fn|177
+      (call $~lib/rt/__localtostack
+       (i32.const 8528)
+      )
+     )
+     (br $~lib/array/Array<i32>#filter|inlined.3
+      (call $~lib/array/Array<i32>#filterImpl
+       (call $~lib/rt/__tmptostack
+        (local.get $this|176)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2C~lib/array/Array<i32>%29=>bool>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|177)
+        )
+       )
+      )
      )
     )
    )
@@ -46661,14 +46853,33 @@
   )
   (block
    (global.set $std/array/i
-    (call $~lib/array/Array<i32>#reduce<i32>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#reduce<i32>|inlined.0 (result i32)
+     (local.set $this|178
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8560)
+     (local.set $fn|179
+      (call $~lib/rt/__localtostack
+       (i32.const 8560)
+      )
      )
-     (i32.const 0)
+     (local.set $initialValue
+      (i32.const 0)
+     )
+     (br $~lib/array/Array<i32>#reduce<i32>|inlined.0
+      (call $~lib/array/Array<i32>#reduceImpl<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|178)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|179)
+        )
+       )
+       (local.get $initialValue)
+      )
+     )
     )
    )
    (if
@@ -46689,14 +46900,33 @@
     )
    )
    (global.set $std/array/i
-    (call $~lib/array/Array<i32>#reduce<i32>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#reduce<i32>|inlined.1 (result i32)
+     (local.set $this|181
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8592)
+     (local.set $fn|182
+      (call $~lib/rt/__localtostack
+       (i32.const 8592)
+      )
      )
-     (i32.const 4)
+     (local.set $initialValue|183
+      (i32.const 4)
+     )
+     (br $~lib/array/Array<i32>#reduce<i32>|inlined.1
+      (call $~lib/array/Array<i32>#reduceImpl<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|181)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|182)
+        )
+       )
+       (local.get $initialValue|183)
+      )
+     )
     )
    )
    (if
@@ -46717,14 +46947,33 @@
     )
    )
    (local.set $boolVal
-    (call $~lib/array/Array<i32>#reduce<bool>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#reduce<bool>|inlined.0 (result i32)
+     (local.set $this|184
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8624)
+     (local.set $fn|185
+      (call $~lib/rt/__localtostack
+       (i32.const 8624)
+      )
      )
-     (i32.const 0)
+     (local.set $initialValue|186
+      (i32.const 0)
+     )
+     (br $~lib/array/Array<i32>#reduce<bool>|inlined.0
+      (call $~lib/array/Array<i32>#reduceImpl<bool>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|184)
+       )
+       (call $~lib/function/Function<%28bool%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>bool>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|185)
+        )
+       )
+       (local.get $initialValue|186)
+      )
+     )
     )
    )
    (if
@@ -46748,14 +46997,33 @@
     )
    )
    (local.set $boolVal
-    (call $~lib/array/Array<i32>#reduce<bool>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#reduce<bool>|inlined.1 (result i32)
+     (local.set $this|188
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8656)
+     (local.set $fn|189
+      (call $~lib/rt/__localtostack
+       (i32.const 8656)
+      )
      )
-     (i32.const 0)
+     (local.set $initialValue|190
+      (i32.const 0)
+     )
+     (br $~lib/array/Array<i32>#reduce<bool>|inlined.1
+      (call $~lib/array/Array<i32>#reduceImpl<bool>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|188)
+       )
+       (call $~lib/function/Function<%28bool%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>bool>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|189)
+        )
+       )
+       (local.get $initialValue|190)
+      )
+     )
     )
    )
    (if
@@ -46779,14 +47047,33 @@
     )
    )
    (global.set $std/array/i
-    (call $~lib/array/Array<i32>#reduce<i32>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#reduce<i32>|inlined.2 (result i32)
+     (local.set $this|191
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8688)
+     (local.set $fn|192
+      (call $~lib/rt/__localtostack
+       (i32.const 8688)
+      )
      )
-     (i32.const 0)
+     (local.set $initialValue|193
+      (i32.const 0)
+     )
+     (br $~lib/array/Array<i32>#reduce<i32>|inlined.2
+      (call $~lib/array/Array<i32>#reduceImpl<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|191)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|192)
+        )
+       )
+       (local.get $initialValue|193)
+      )
+     )
     )
    )
    (if
@@ -46828,14 +47115,33 @@
     )
    )
    (global.set $std/array/i
-    (call $~lib/array/Array<i32>#reduce<i32>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#reduce<i32>|inlined.3 (result i32)
+     (local.set $this|194
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8720)
+     (local.set $fn|195
+      (call $~lib/rt/__localtostack
+       (i32.const 8720)
+      )
      )
-     (i32.const 0)
+     (local.set $initialValue|196
+      (i32.const 0)
+     )
+     (br $~lib/array/Array<i32>#reduce<i32>|inlined.3
+      (call $~lib/array/Array<i32>#reduceImpl<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|194)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|195)
+        )
+       )
+       (local.get $initialValue|196)
+      )
+     )
     )
    )
    (if
@@ -46884,14 +47190,33 @@
     )
    )
    (global.set $std/array/i
-    (call $~lib/array/Array<i32>#reduce<i32>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#reduce<i32>|inlined.4 (result i32)
+     (local.set $this|197
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8752)
+     (local.set $fn|198
+      (call $~lib/rt/__localtostack
+       (i32.const 8752)
+      )
      )
-     (i32.const 0)
+     (local.set $initialValue|199
+      (i32.const 0)
+     )
+     (br $~lib/array/Array<i32>#reduce<i32>|inlined.4
+      (call $~lib/array/Array<i32>#reduceImpl<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|197)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|198)
+        )
+       )
+       (local.get $initialValue|199)
+      )
+     )
     )
    )
    (if
@@ -46951,14 +47276,33 @@
   )
   (block
    (global.set $std/array/i
-    (call $~lib/array/Array<i32>#reduceRight<i32>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#reduceRight<i32>|inlined.0 (result i32)
+     (local.set $this|200
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8784)
+     (local.set $fn|201
+      (call $~lib/rt/__localtostack
+       (i32.const 8784)
+      )
      )
-     (i32.const 0)
+     (local.set $initialValue|202
+      (i32.const 0)
+     )
+     (br $~lib/array/Array<i32>#reduceRight<i32>|inlined.0
+      (call $~lib/array/Array<i32>#reduceRightImpl<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|200)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|201)
+        )
+       )
+       (local.get $initialValue|202)
+      )
+     )
     )
    )
    (if
@@ -46979,14 +47323,33 @@
     )
    )
    (global.set $std/array/i
-    (call $~lib/array/Array<i32>#reduceRight<i32>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#reduceRight<i32>|inlined.1 (result i32)
+     (local.set $this|203
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8816)
+     (local.set $fn|204
+      (call $~lib/rt/__localtostack
+       (i32.const 8816)
+      )
      )
-     (i32.const 4)
+     (local.set $initialValue|205
+      (i32.const 4)
+     )
+     (br $~lib/array/Array<i32>#reduceRight<i32>|inlined.1
+      (call $~lib/array/Array<i32>#reduceRightImpl<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|203)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|204)
+        )
+       )
+       (local.get $initialValue|205)
+      )
+     )
     )
    )
    (if
@@ -47006,22 +47369,41 @@
      (unreachable)
     )
    )
-   (local.set $boolVal|161
-    (call $~lib/array/Array<i32>#reduceRight<bool>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+   (local.set $boolVal|209
+    (block $~lib/array/Array<i32>#reduceRight<bool>|inlined.0 (result i32)
+     (local.set $this|206
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8848)
+     (local.set $fn|207
+      (call $~lib/rt/__localtostack
+       (i32.const 8848)
+      )
      )
-     (i32.const 0)
+     (local.set $initialValue|208
+      (i32.const 0)
+     )
+     (br $~lib/array/Array<i32>#reduceRight<bool>|inlined.0
+      (call $~lib/array/Array<i32>#reduceRightImpl<bool>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|206)
+       )
+       (call $~lib/function/Function<%28bool%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>bool>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|207)
+        )
+       )
+       (local.get $initialValue|208)
+      )
+     )
     )
    )
    (if
     (i32.eqz
      (i32.eq
       (i32.ne
-       (local.get $boolVal|161)
+       (local.get $boolVal|209)
        (i32.const 0)
       )
       (i32.const 1)
@@ -47037,22 +47419,41 @@
      (unreachable)
     )
    )
-   (local.set $boolVal|161
-    (call $~lib/array/Array<i32>#reduceRight<bool>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+   (local.set $boolVal|209
+    (block $~lib/array/Array<i32>#reduceRight<bool>|inlined.1 (result i32)
+     (local.set $this|210
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8880)
+     (local.set $fn|211
+      (call $~lib/rt/__localtostack
+       (i32.const 8880)
+      )
      )
-     (i32.const 0)
+     (local.set $initialValue|212
+      (i32.const 0)
+     )
+     (br $~lib/array/Array<i32>#reduceRight<bool>|inlined.1
+      (call $~lib/array/Array<i32>#reduceRightImpl<bool>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|210)
+       )
+       (call $~lib/function/Function<%28bool%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>bool>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|211)
+        )
+       )
+       (local.get $initialValue|212)
+      )
+     )
     )
    )
    (if
     (i32.eqz
      (i32.eq
       (i32.ne
-       (local.get $boolVal|161)
+       (local.get $boolVal|209)
        (i32.const 0)
       )
       (i32.const 0)
@@ -47069,14 +47470,33 @@
     )
    )
    (global.set $std/array/i
-    (call $~lib/array/Array<i32>#reduceRight<i32>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#reduceRight<i32>|inlined.2 (result i32)
+     (local.set $this|213
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8912)
+     (local.set $fn|214
+      (call $~lib/rt/__localtostack
+       (i32.const 8912)
+      )
      )
-     (i32.const 0)
+     (local.set $initialValue|215
+      (i32.const 0)
+     )
+     (br $~lib/array/Array<i32>#reduceRight<i32>|inlined.2
+      (call $~lib/array/Array<i32>#reduceRightImpl<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|213)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|214)
+        )
+       )
+       (local.get $initialValue|215)
+      )
+     )
     )
    )
    (if
@@ -47118,14 +47538,33 @@
     )
    )
    (global.set $std/array/i
-    (call $~lib/array/Array<i32>#reduceRight<i32>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#reduceRight<i32>|inlined.3 (result i32)
+     (local.set $this|216
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8944)
+     (local.set $fn|217
+      (call $~lib/rt/__localtostack
+       (i32.const 8944)
+      )
      )
-     (i32.const 0)
+     (local.set $initialValue|218
+      (i32.const 0)
+     )
+     (br $~lib/array/Array<i32>#reduceRight<i32>|inlined.3
+      (call $~lib/array/Array<i32>#reduceRightImpl<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|216)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|217)
+        )
+       )
+       (local.get $initialValue|218)
+      )
+     )
     )
    )
    (if
@@ -47174,14 +47613,33 @@
     )
    )
    (global.set $std/array/i
-    (call $~lib/array/Array<i32>#reduceRight<i32>
-     (call $~lib/rt/__tmptostack
-      (global.get $std/array/arr)
+    (block $~lib/array/Array<i32>#reduceRight<i32>|inlined.4 (result i32)
+     (local.set $this|219
+      (call $~lib/rt/__localtostack
+       (global.get $std/array/arr)
+      )
      )
-     (call $~lib/rt/__tmptostack
-      (i32.const 8976)
+     (local.set $fn|220
+      (call $~lib/rt/__localtostack
+       (i32.const 8976)
+      )
      )
-     (i32.const 0)
+     (local.set $initialValue|221
+      (i32.const 0)
+     )
+     (br $~lib/array/Array<i32>#reduceRight<i32>|inlined.4
+      (call $~lib/array/Array<i32>#reduceRightImpl<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $this|219)
+       )
+       (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/array/Array<i32>%29=>i32>#get:index
+        (call $~lib/rt/__tmptostack
+         (local.get $fn|220)
+        )
+       )
+       (local.get $initialValue|221)
+      )
+     )
     )
    )
    (if
@@ -47262,7 +47720,7 @@
   )
   (global.set $std/array/inputStabArr
    (block (result i32)
-    (local.set $162
+    (local.set $222
      (call $~lib/rt/__localtostack
       (call $~lib/rt/__newArray
        (i32.const 12)
@@ -47273,10 +47731,10 @@
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $162)
+     (local.get $222)
      (i32.const 0)
      (block (result i32)
-      (local.set $163
+      (local.set $223
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47285,24 +47743,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $163)
+        (local.get $223)
        )
        (i32.const 100)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $163)
+        (local.get $223)
        )
        (i32.const 80)
       )
-      (local.get $163)
+      (local.get $223)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $162)
+     (local.get $222)
      (i32.const 1)
      (block (result i32)
-      (local.set $164
+      (local.set $224
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47311,24 +47769,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $164)
+        (local.get $224)
        )
        (i32.const 90)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $164)
+        (local.get $224)
        )
        (i32.const 90)
       )
-      (local.get $164)
+      (local.get $224)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $162)
+     (local.get $222)
      (i32.const 2)
      (block (result i32)
-      (local.set $165
+      (local.set $225
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47337,24 +47795,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $165)
+        (local.get $225)
        )
        (i32.const 70)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $165)
+        (local.get $225)
        )
        (i32.const 95)
       )
-      (local.get $165)
+      (local.get $225)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $162)
+     (local.get $222)
      (i32.const 3)
      (block (result i32)
-      (local.set $166
+      (local.set $226
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47363,24 +47821,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $166)
+        (local.get $226)
        )
        (i32.const 100)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $166)
+        (local.get $226)
        )
        (i32.const 100)
       )
-      (local.get $166)
+      (local.get $226)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $162)
+     (local.get $222)
      (i32.const 4)
      (block (result i32)
-      (local.set $167
+      (local.set $227
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47389,24 +47847,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $167)
+        (local.get $227)
        )
        (i32.const 80)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $167)
+        (local.get $227)
        )
        (i32.const 110)
       )
-      (local.get $167)
+      (local.get $227)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $162)
+     (local.get $222)
      (i32.const 5)
      (block (result i32)
-      (local.set $168
+      (local.set $228
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47415,24 +47873,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $168)
+        (local.get $228)
        )
        (i32.const 110)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $168)
+        (local.get $228)
        )
        (i32.const 115)
       )
-      (local.get $168)
+      (local.get $228)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $162)
+     (local.get $222)
      (i32.const 6)
      (block (result i32)
-      (local.set $169
+      (local.set $229
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47441,24 +47899,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $169)
+        (local.get $229)
        )
        (i32.const 100)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $169)
+        (local.get $229)
        )
        (i32.const 120)
       )
-      (local.get $169)
+      (local.get $229)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $162)
+     (local.get $222)
      (i32.const 7)
      (block (result i32)
-      (local.set $170
+      (local.set $230
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47467,24 +47925,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $170)
+        (local.get $230)
        )
        (i32.const 70)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $170)
+        (local.get $230)
        )
        (i32.const 125)
       )
-      (local.get $170)
+      (local.get $230)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $162)
+     (local.get $222)
      (i32.const 8)
      (block (result i32)
-      (local.set $171
+      (local.set $231
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47493,24 +47951,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $171)
+        (local.get $231)
        )
        (i32.const 70)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $171)
+        (local.get $231)
        )
        (i32.const 130)
       )
-      (local.get $171)
+      (local.get $231)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $162)
+     (local.get $222)
      (i32.const 9)
      (block (result i32)
-      (local.set $172
+      (local.set $232
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47519,24 +47977,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $172)
+        (local.get $232)
        )
        (i32.const 100)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $172)
+        (local.get $232)
        )
        (i32.const 135)
       )
-      (local.get $172)
+      (local.get $232)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $162)
+     (local.get $222)
      (i32.const 10)
      (block (result i32)
-      (local.set $173
+      (local.set $233
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47545,24 +48003,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $173)
+        (local.get $233)
        )
        (i32.const 75)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $173)
+        (local.get $233)
        )
        (i32.const 140)
       )
-      (local.get $173)
+      (local.get $233)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $162)
+     (local.get $222)
      (i32.const 11)
      (block (result i32)
-      (local.set $174
+      (local.set $234
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47571,25 +48029,25 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $174)
+        (local.get $234)
        )
        (i32.const 70)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $174)
+        (local.get $234)
        )
        (i32.const 140)
       )
-      (local.get $174)
+      (local.get $234)
      )
     )
-    (local.get $162)
+    (local.get $222)
    )
   )
   (global.set $std/array/outputStabArr
    (block (result i32)
-    (local.set $175
+    (local.set $235
      (call $~lib/rt/__localtostack
       (call $~lib/rt/__newArray
        (i32.const 12)
@@ -47600,10 +48058,10 @@
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $175)
+     (local.get $235)
      (i32.const 0)
      (block (result i32)
-      (local.set $176
+      (local.set $236
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47612,24 +48070,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $176)
+        (local.get $236)
        )
        (i32.const 70)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $176)
+        (local.get $236)
        )
        (i32.const 95)
       )
-      (local.get $176)
+      (local.get $236)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $175)
+     (local.get $235)
      (i32.const 1)
      (block (result i32)
-      (local.set $177
+      (local.set $237
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47638,24 +48096,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $177)
+        (local.get $237)
        )
        (i32.const 70)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $177)
+        (local.get $237)
        )
        (i32.const 125)
       )
-      (local.get $177)
+      (local.get $237)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $175)
+     (local.get $235)
      (i32.const 2)
      (block (result i32)
-      (local.set $178
+      (local.set $238
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47664,24 +48122,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $178)
+        (local.get $238)
        )
        (i32.const 70)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $178)
+        (local.get $238)
        )
        (i32.const 130)
       )
-      (local.get $178)
+      (local.get $238)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $175)
+     (local.get $235)
      (i32.const 3)
      (block (result i32)
-      (local.set $179
+      (local.set $239
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47690,24 +48148,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $179)
+        (local.get $239)
        )
        (i32.const 70)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $179)
+        (local.get $239)
        )
        (i32.const 140)
       )
-      (local.get $179)
+      (local.get $239)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $175)
+     (local.get $235)
      (i32.const 4)
      (block (result i32)
-      (local.set $180
+      (local.set $240
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47716,24 +48174,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $180)
+        (local.get $240)
        )
        (i32.const 75)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $180)
+        (local.get $240)
        )
        (i32.const 140)
       )
-      (local.get $180)
+      (local.get $240)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $175)
+     (local.get $235)
      (i32.const 5)
      (block (result i32)
-      (local.set $181
+      (local.set $241
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47742,24 +48200,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $181)
+        (local.get $241)
        )
        (i32.const 80)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $181)
+        (local.get $241)
        )
        (i32.const 110)
       )
-      (local.get $181)
+      (local.get $241)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $175)
+     (local.get $235)
      (i32.const 6)
      (block (result i32)
-      (local.set $182
+      (local.set $242
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47768,24 +48226,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $182)
+        (local.get $242)
        )
        (i32.const 90)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $182)
+        (local.get $242)
        )
        (i32.const 90)
       )
-      (local.get $182)
+      (local.get $242)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $175)
+     (local.get $235)
      (i32.const 7)
      (block (result i32)
-      (local.set $183
+      (local.set $243
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47794,24 +48252,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $183)
+        (local.get $243)
        )
        (i32.const 100)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $183)
+        (local.get $243)
        )
        (i32.const 80)
       )
-      (local.get $183)
+      (local.get $243)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $175)
+     (local.get $235)
      (i32.const 8)
      (block (result i32)
-      (local.set $184
+      (local.set $244
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47820,24 +48278,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $184)
+        (local.get $244)
        )
        (i32.const 100)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $184)
+        (local.get $244)
        )
        (i32.const 100)
       )
-      (local.get $184)
+      (local.get $244)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $175)
+     (local.get $235)
      (i32.const 9)
      (block (result i32)
-      (local.set $185
+      (local.set $245
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47846,24 +48304,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $185)
+        (local.get $245)
        )
        (i32.const 100)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $185)
+        (local.get $245)
        )
        (i32.const 120)
       )
-      (local.get $185)
+      (local.get $245)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $175)
+     (local.get $235)
      (i32.const 10)
      (block (result i32)
-      (local.set $186
+      (local.set $246
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47872,24 +48330,24 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $186)
+        (local.get $246)
        )
        (i32.const 100)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $186)
+        (local.get $246)
        )
        (i32.const 135)
       )
-      (local.get $186)
+      (local.get $246)
      )
     )
     (call $~lib/array/Array<std/array/Dim>#__set
-     (local.get $175)
+     (local.get $235)
      (i32.const 11)
      (block (result i32)
-      (local.set $187
+      (local.set $247
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
          (i32.const 0)
@@ -47898,20 +48356,20 @@
       )
       (call $std/array/Dim#set:height
        (call $~lib/rt/__tmptostack
-        (local.get $187)
+        (local.get $247)
        )
        (i32.const 110)
       )
       (call $std/array/Dim#set:width
        (call $~lib/rt/__tmptostack
-        (local.get $187)
+        (local.get $247)
        )
        (i32.const 115)
       )
-      (local.get $187)
+      (local.get $247)
      )
     )
-    (local.get $175)
+    (local.get $235)
    )
   )
   (block
@@ -48791,10 +49249,10 @@
      (unreachable)
     )
    )
-   (local.set $refArr|236
+   (local.set $refArr|296
     (call $~lib/rt/__localtostack
      (block (result i32)
-      (local.set $235
+      (local.set $295
        (call $~lib/rt/__localtostack
         (call $~lib/rt/__newArray
          (i32.const 3)
@@ -48805,7 +49263,7 @@
        )
       )
       (call $~lib/array/Array<std/array/Ref|null>#__set
-       (local.get $235)
+       (local.get $295)
        (i32.const 0)
        (call $std/array/Ref#constructor
         (i32.const 0)
@@ -48813,14 +49271,14 @@
        )
       )
       (call $~lib/array/Array<std/array/Ref|null>#__set
-       (local.get $235)
+       (local.get $295)
        (i32.const 2)
        (call $std/array/Ref#constructor
         (i32.const 0)
         (i32.const 0)
        )
       )
-      (local.get $235)
+      (local.get $295)
      )
     )
    )
@@ -48830,7 +49288,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/array/Array<std/array/Ref|null>#join
         (call $~lib/rt/__tmptostack
-         (local.get $refArr|236)
+         (local.get $refArr|296)
         )
         (i32.const 10832)
        )
@@ -48848,10 +49306,10 @@
      (unreachable)
     )
    )
-   (local.set $refArr2|238
+   (local.set $refArr2|298
     (call $~lib/rt/__localtostack
      (block (result i32)
-      (local.set $237
+      (local.set $297
        (call $~lib/rt/__localtostack
         (call $~lib/rt/__newArray
          (i32.const 2)
@@ -48862,7 +49320,7 @@
        )
       )
       (call $~lib/array/Array<std/array/Ref>#__set
-       (local.get $237)
+       (local.get $297)
        (i32.const 0)
        (call $std/array/Ref#constructor
         (i32.const 0)
@@ -48870,14 +49328,14 @@
        )
       )
       (call $~lib/array/Array<std/array/Ref>#__set
-       (local.get $237)
+       (local.get $297)
        (i32.const 1)
        (call $std/array/Ref#constructor
         (i32.const 0)
         (i32.const 0)
        )
       )
-      (local.get $237)
+      (local.get $297)
      )
     )
    )
@@ -48887,7 +49345,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/array/Array<std/array/Ref>#join
         (call $~lib/rt/__tmptostack
-         (local.get $refArr2|238)
+         (local.get $refArr2|298)
         )
         (i32.const 10832)
        )
@@ -49299,7 +49757,7 @@
    (local.set $subarr32
     (call $~lib/rt/__localtostack
      (block (result i32)
-      (local.set $257
+      (local.set $317
        (call $~lib/rt/__localtostack
         (call $~lib/rt/__newArray
          (i32.const 2)
@@ -49310,7 +49768,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<i32>>#__set
-       (local.get $257)
+       (local.get $317)
        (i32.const 0)
        (call $~lib/rt/__newArray
         (i32.const 2)
@@ -49320,7 +49778,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<i32>>#__set
-       (local.get $257)
+       (local.get $317)
        (i32.const 1)
        (call $~lib/rt/__newArray
         (i32.const 2)
@@ -49329,7 +49787,7 @@
         (i32.const 14112)
        )
       )
-      (local.get $257)
+      (local.get $317)
      )
     )
    )
@@ -49359,7 +49817,7 @@
    (local.set $subarr8
     (call $~lib/rt/__localtostack
      (block (result i32)
-      (local.set $261
+      (local.set $321
        (call $~lib/rt/__localtostack
         (call $~lib/rt/__newArray
          (i32.const 2)
@@ -49370,7 +49828,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<u8>>#__set
-       (local.get $261)
+       (local.get $321)
        (i32.const 0)
        (call $~lib/rt/__newArray
         (i32.const 2)
@@ -49380,7 +49838,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<u8>>#__set
-       (local.get $261)
+       (local.get $321)
        (i32.const 1)
        (call $~lib/rt/__newArray
         (i32.const 2)
@@ -49389,7 +49847,7 @@
         (i32.const 14224)
        )
       )
-      (local.get $261)
+      (local.get $321)
      )
     )
    )
@@ -49419,7 +49877,7 @@
    (local.set $subarrU32
     (call $~lib/rt/__localtostack
      (block (result i32)
-      (local.set $265
+      (local.set $325
        (call $~lib/rt/__localtostack
         (call $~lib/rt/__newArray
          (i32.const 1)
@@ -49430,10 +49888,10 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<~lib/array/Array<u32>>>#__set
-       (local.get $265)
+       (local.get $325)
        (i32.const 0)
        (block (result i32)
-        (local.set $266
+        (local.set $326
          (call $~lib/rt/__localtostack
           (call $~lib/rt/__newArray
            (i32.const 1)
@@ -49444,7 +49902,7 @@
          )
         )
         (call $~lib/array/Array<~lib/array/Array<u32>>#__set
-         (local.get $266)
+         (local.get $326)
          (i32.const 0)
          (call $~lib/rt/__newArray
           (i32.const 1)
@@ -49453,10 +49911,10 @@
           (i32.const 14256)
          )
         )
-        (local.get $266)
+        (local.get $326)
        )
       )
-      (local.get $265)
+      (local.get $325)
      )
     )
    )
@@ -49488,7 +49946,7 @@
    (local.set $plainTarget
     (call $~lib/rt/__localtostack
      (block (result i32)
-      (local.set $269
+      (local.set $329
        (call $~lib/rt/__localtostack
         (call $~lib/rt/__newArray
          (i32.const 4)
@@ -49499,7 +49957,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<i32>>#__set
-       (local.get $269)
+       (local.get $329)
        (i32.const 0)
        (call $~lib/rt/__newArray
         (i32.const 1)
@@ -49509,7 +49967,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<i32>>#__set
-       (local.get $269)
+       (local.get $329)
        (i32.const 1)
        (call $~lib/rt/__newArray
         (i32.const 3)
@@ -49519,7 +49977,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<i32>>#__set
-       (local.get $269)
+       (local.get $329)
        (i32.const 2)
        (call $~lib/rt/__newArray
         (i32.const 3)
@@ -49529,7 +49987,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<i32>>#__set
-       (local.get $269)
+       (local.get $329)
        (i32.const 3)
        (call $~lib/rt/__newArray
         (i32.const 3)
@@ -49538,7 +49996,7 @@
         (i32.const 14384)
        )
       )
-      (local.get $269)
+      (local.get $329)
      )
     )
    )
@@ -49572,13 +50030,13 @@
      (unreachable)
     )
    )
-   (local.set $i|276
+   (local.set $i|336
     (i32.const 0)
    )
    (loop $for-loop|7
     (if
      (i32.lt_s
-      (local.get $i|276)
+      (local.get $i|336)
       (i32.const 10)
      )
      (then
@@ -49589,9 +50047,9 @@
           (call $~lib/rt/__tmptostack
            (local.get $plainResult)
           )
-          (local.get $i|276)
+          (local.get $i|336)
          )
-         (local.get $i|276)
+         (local.get $i|336)
         )
        )
        (then
@@ -49604,9 +50062,9 @@
         (unreachable)
        )
       )
-      (local.set $i|276
+      (local.set $i|336
        (i32.add
-        (local.get $i|276)
+        (local.get $i|336)
         (i32.const 1)
        )
       )
@@ -49617,7 +50075,7 @@
    (local.set $stringTarget
     (call $~lib/rt/__localtostack
      (block (result i32)
-      (local.set $277
+      (local.set $337
        (call $~lib/rt/__localtostack
         (call $~lib/rt/__newArray
          (i32.const 4)
@@ -49628,7 +50086,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<~lib/string/String|null>>#__set
-       (local.get $277)
+       (local.get $337)
        (i32.const 0)
        (call $~lib/rt/__newArray
         (i32.const 1)
@@ -49638,7 +50096,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<~lib/string/String|null>>#__set
-       (local.get $277)
+       (local.get $337)
        (i32.const 1)
        (call $~lib/rt/__newArray
         (i32.const 3)
@@ -49648,7 +50106,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<~lib/string/String|null>>#__set
-       (local.get $277)
+       (local.get $337)
        (i32.const 2)
        (call $~lib/rt/__newArray
         (i32.const 3)
@@ -49658,7 +50116,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<~lib/string/String|null>>#__set
-       (local.get $277)
+       (local.get $337)
        (i32.const 3)
        (call $~lib/rt/__newArray
         (i32.const 1)
@@ -49667,7 +50125,7 @@
         (i32.const 14736)
        )
       )
-      (local.get $277)
+      (local.get $337)
      )
     )
    )
@@ -49711,13 +50169,13 @@
      (unreachable)
     )
    )
-   (local.set $i|286
+   (local.set $i|346
     (i32.const 0)
    )
    (loop $for-loop|8
     (if
      (i32.lt_s
-      (local.get $i|286)
+      (local.get $i|346)
       (call $~lib/array/Array<~lib/string/String|null>#get:length
        (call $~lib/rt/__tmptostack
         (local.get $expected)
@@ -49733,7 +50191,7 @@
            (call $~lib/rt/__tmptostack
             (local.get $stringResult)
            )
-           (local.get $i|286)
+           (local.get $i|346)
           )
          )
          (call $~lib/rt/__tmptostack
@@ -49741,7 +50199,7 @@
            (call $~lib/rt/__tmptostack
             (local.get $expected)
            )
-           (local.get $i|286)
+           (local.get $i|346)
           )
          )
         )
@@ -49756,9 +50214,9 @@
         (unreachable)
        )
       )
-      (local.set $i|286
+      (local.set $i|346
        (i32.add
-        (local.get $i|286)
+        (local.get $i|346)
         (i32.const 1)
        )
       )
@@ -49769,7 +50227,7 @@
    (local.set $testArray
     (call $~lib/rt/__localtostack
      (block (result i32)
-      (local.set $287
+      (local.set $347
        (call $~lib/rt/__localtostack
         (call $~lib/rt/__newArray
          (i32.const 2)
@@ -49780,7 +50238,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<i32>>#__set
-       (local.get $287)
+       (local.get $347)
        (i32.const 0)
        (call $~lib/rt/__newArray
         (i32.const 0)
@@ -49790,7 +50248,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<i32>>#__set
-       (local.get $287)
+       (local.get $347)
        (i32.const 1)
        (call $~lib/rt/__newArray
         (i32.const 0)
@@ -49799,7 +50257,7 @@
         (i32.const 14864)
        )
       )
-      (local.get $287)
+      (local.get $347)
      )
     )
    )
@@ -49831,7 +50289,7 @@
    (local.set $mapTarget
     (call $~lib/rt/__localtostack
      (block (result i32)
-      (local.set $291
+      (local.set $351
        (call $~lib/rt/__localtostack
         (call $~lib/rt/__newArray
          (i32.const 2)
@@ -49842,7 +50300,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<i32>>#__set
-       (local.get $291)
+       (local.get $351)
        (i32.const 0)
        (call $~lib/rt/__newArray
         (i32.const 1)
@@ -49852,7 +50310,7 @@
        )
       )
       (call $~lib/array/Array<~lib/array/Array<i32>>#__set
-       (local.get $291)
+       (local.get $351)
        (i32.const 1)
        (call $~lib/rt/__newArray
         (i32.const 1)
@@ -49861,7 +50319,7 @@
         (i32.const 14928)
        )
       )
-      (local.get $291)
+      (local.get $351)
      )
     )
    )
@@ -49869,12 +50327,28 @@
     (call $~lib/rt/__localtostack
      (call $~lib/array/Array<~lib/array/Array<i32>>#flat
       (call $~lib/rt/__tmptostack
-       (call $~lib/array/Array<~lib/array/Array<i32>>#map<~lib/array/Array<i32>>
-        (call $~lib/rt/__tmptostack
-         (local.get $mapTarget)
+       (block $~lib/array/Array<~lib/array/Array<i32>>#map<~lib/array/Array<i32>>|inlined.0 (result i32)
+        (local.set $this|355
+         (call $~lib/rt/__localtostack
+          (local.get $mapTarget)
+         )
         )
-        (call $~lib/rt/__tmptostack
-         (i32.const 14960)
+        (local.set $fn|356
+         (call $~lib/rt/__localtostack
+          (i32.const 14960)
+         )
+        )
+        (br $~lib/array/Array<~lib/array/Array<i32>>#map<~lib/array/Array<i32>>|inlined.0
+         (call $~lib/array/Array<~lib/array/Array<i32>>#mapImpl<~lib/array/Array<i32>>
+          (call $~lib/rt/__tmptostack
+           (local.get $this|355)
+          )
+          (call $~lib/function/Function<%28~lib/array/Array<i32>%2Ci32%2C~lib/array/Array<~lib/array/Array<i32>>%29=>~lib/array/Array<i32>>#get:index
+           (call $~lib/rt/__tmptostack
+            (local.get $fn|356)
+           )
+          )
+         )
         )
        )
       )

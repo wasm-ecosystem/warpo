@@ -280,12 +280,16 @@ export class Array<T> {
     }
   }
 
+  @inline
   map<U>(fn: (value: T, index: i32, array: Array<T>) => U): Array<U> {
+    return this.mapImpl<U>(fn.index);
+  }
+  private mapImpl<U>(fnIndex: i32): Array<U> {
     let len = this.length_;
     let out = changetype<Array<U>>(__newArray(len, alignof<U>(), idof<Array<U>>()));
     let outStart = out.dataStart;
     for (let i = 0; i < min(len, this.length_); ++i) {
-      let result = fn(load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this);
+      let result = call_indirect<U>(fnIndex, load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this);
       store<U>(outStart + (<usize>i << alignof<U>()), result);
       if (isManaged<U>()) {
         __link(changetype<usize>(out), changetype<usize>(result), true);
@@ -294,33 +298,46 @@ export class Array<T> {
     return out;
   }
 
+  @inline
   filter(fn: (value: T, index: i32, array: Array<T>) => bool): Array<T> {
+    return this.filterImpl(fn.index);
+  }
+
+  private filterImpl(fnIndex: i32): Array<T> {
     let result = changetype<Array<T>>(__newArray(0, alignof<T>(), idof<Array<T>>()));
     for (let i = 0, len = this.length_; i < min(len, this.length_); ++i) {
       let value = load<T>(this.dataStart + (<usize>i << alignof<T>()));
-      if (fn(value, i, this)) result.push(value);
+      if (call_indirect<bool>(fnIndex, value, i, this)) result.push(value);
     }
     return result;
   }
 
+  @inline
   reduce<U>(
     fn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U,
     initialValue: U
   ): U {
+    return this.reduceImpl(fn.index, initialValue);
+  }
+  private reduceImpl<U>(fnIndex: i32, initialValue: U): U {
     let acc = initialValue;
     for (let i = 0, len = this.length_; i < min(len, this.length_); ++i) {
-      acc = fn(acc, load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this);
+      acc = call_indirect<U>(fnIndex, acc, load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this);
     }
     return acc;
   }
 
+  @inline
   reduceRight<U>(
     fn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U,
     initialValue: U
   ): U {
+    return this.reduceRightImpl(fn.index, initialValue);
+  }
+  private reduceRightImpl<U>(fnIndex: i32, initialValue: U): U {
     let acc = initialValue;
     for (let i = this.length_ - 1; i >= 0; --i) {
-      acc = fn(acc, load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this);
+      acc = call_indirect<U>(fnIndex, acc, load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this);
     }
     return acc;
   }

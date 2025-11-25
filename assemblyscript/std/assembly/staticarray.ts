@@ -280,13 +280,18 @@ export class StaticArray<T> {
     return out;
   }
 
+  @inline
   findIndex(fn: (value: T, index: i32, array: StaticArray<T>) => bool): i32 {
+    return this.findIndexImpl(fn.index);
+  }
+  private findIndexImpl(fnIndex: i32): i32 {
     for (let i = 0, len = this.length; i < len; ++i) {
-      if (fn(load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this)) return i;
+      if (call_indirect<bool>(fnIndex, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this)) return i;
     }
     return -1;
   }
 
+  @inline
   findLastIndex(fn: (value: T, index: i32, array: StaticArray<T>) => bool): i32 {
     for (let i = this.length - 1; i >= 0; --i) {
       if (fn(load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this)) return i;
@@ -294,18 +299,23 @@ export class StaticArray<T> {
     return -1;
   }
 
+  @inline
   forEach(fn: (value: T, index: i32, array: StaticArray<T>) => void): void {
     for (let i = 0, len = this.length; i < len; ++i) {
       fn(load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this);
     }
   }
 
+  @inline
   map<U>(fn: (value: T, index: i32, array: StaticArray<T>) => U): Array<U> {
+    return this.mapImpl<U>(fn.index);
+  }
+  private mapImpl<U>(fnIndex: i32): Array<U> {
     let len = this.length;
     let out = changetype<Array<U>>(__newArray(len, alignof<U>(), idof<Array<U>>()));
     let outStart = out.dataStart;
     for (let i = 0; i < len; ++i) {
-      let result = fn(load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this);
+      let result = call_indirect<U>(fnIndex, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this);
       store<U>(outStart + (<usize>i << alignof<U>()), result);
       if (isManaged<U>()) {
         __link(changetype<usize>(out), changetype<usize>(result), true);
@@ -314,47 +324,67 @@ export class StaticArray<T> {
     return out;
   }
 
+  @inline
   filter(fn: (value: T, index: i32, array: StaticArray<T>) => bool): Array<T> {
+    return this.filterImpl(fn.index);
+  }
+  private filterImpl(fnIndex: i32): Array<T> {
     let result = changetype<Array<T>>(__newArray(0, alignof<T>(), idof<Array<T>>()));
     for (let i = 0, len = this.length; i < len; ++i) {
       let value = load<T>(changetype<usize>(this) + (<usize>i << alignof<T>()));
-      if (fn(value, i, this)) result.push(value);
+      if (call_indirect<bool>(fnIndex, value, i, this)) result.push(value);
     }
     return result;
   }
 
+  @inline
   reduce<U>(
     fn: (previousValue: U, currentValue: T, currentIndex: i32, array: StaticArray<T>) => U,
     initialValue: U
   ): U {
+    return this.reduceImpl<U>(fn.index, initialValue);
+  }
+  private reduceImpl<U>(fnIndex: i32, initialValue: U): U {
     let acc = initialValue;
     for (let i = 0, len = this.length; i < len; ++i) {
-      acc = fn(acc, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this);
+      acc = call_indirect<U>(fnIndex, acc, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this);
     }
     return acc;
   }
 
+  @inline
   reduceRight<U>(
     fn: (previousValue: U, currentValue: T, currentIndex: i32, array: StaticArray<T>) => U,
     initialValue: U
   ): U {
+    return this.reduceRightImpl<U>(fn.index, initialValue);
+  }
+  private reduceRightImpl<U>(fnIndex: i32, initialValue: U): U {
     let acc = initialValue;
     for (let i = this.length - 1; i >= 0; --i) {
-      acc = fn(acc, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this);
+      acc = call_indirect<U>(fnIndex, acc, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this);
     }
     return acc;
   }
 
+  @inline
   every(fn: (value: T, index: i32, array: StaticArray<T>) => bool): bool {
+    return this.everyImpl(fn.index);
+  }
+  private everyImpl(fnIndex: i32): bool {
     for (let i = 0, len = this.length; i < len; ++i) {
-      if (!fn(load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this)) return false;
+      if (!call_indirect<bool>(fnIndex, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this)) return false;
     }
     return true;
   }
 
+  @inline
   some(fn: (value: T, index: i32, array: StaticArray<T>) => bool): bool {
+    return this.someImpl(fn.index);
+  }
+  private someImpl(fnIndex: i32): bool {
     for (let i = 0, len = this.length; i < len; ++i) {
-      if (fn(load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this)) return true;
+      if (call_indirect<bool>(fnIndex, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this)) return true;
     }
     return false;
   }

@@ -19,7 +19,6 @@
  (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Minimal i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
- (global $~argumentsLength (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -81,6 +80,13 @@
    )
   )
  )
+ (func $~lib/function/Function<%28bool%2Cf32%2Ci32%2C~lib/array/Array<f32>%29=>bool>#get:index (param $this i32) (result i32)
+  (return
+   (i32.load
+    (local.get $this)
+   )
+  )
+ )
  (func $~lib/array/Array<f32>#get:length_ (param $this i32) (result i32)
   (i32.load offset=12
    (local.get $this)
@@ -91,7 +97,7 @@
    (local.get $this)
   )
  )
- (func $~lib/array/Array<f32>#reduce<bool> (param $this i32) (param $fn i32) (param $initialValue i32) (result i32)
+ (func $~lib/array/Array<f32>#reduceImpl<bool> (param $this i32) (param $fnIndex i32) (param $initialValue i32) (result i32)
   (local $acc i32)
   (local $i i32)
   (local $len i32)
@@ -154,14 +160,7 @@
        (call $~lib/rt/__tmptostack
         (local.get $this)
        )
-       (i32.load
-        (block (result i32)
-         (global.set $~argumentsLength
-          (i32.const 4)
-         )
-         (local.get $fn)
-        )
-       )
+       (local.get $fnIndex)
       )
      )
      (local.set $i
@@ -3457,7 +3456,10 @@
  )
  (func $start:infer-generic
   (local $0 i32)
-  (local $1 i32)
+  (local $this i32)
+  (local $fn i32)
+  (local $initialValue i32)
+  (local $4 i32)
   (if
    (i32.eqz
     (call $infer-generic/inferCompatible<f64>
@@ -3476,14 +3478,33 @@
    )
   )
   (drop
-   (call $~lib/array/Array<f32>#reduce<bool>
-    (call $~lib/rt/__tmptostack
-     (global.get $infer-generic/arr)
+   (block $~lib/array/Array<f32>#reduce<bool>|inlined.0 (result i32)
+    (local.set $this
+     (call $~lib/rt/__localtostack
+      (global.get $infer-generic/arr)
+     )
     )
-    (call $~lib/rt/__tmptostack
-     (i32.const 176)
+    (local.set $fn
+     (call $~lib/rt/__localtostack
+      (i32.const 176)
+     )
     )
-    (i32.const 0)
+    (local.set $initialValue
+     (i32.const 0)
+    )
+    (br $~lib/array/Array<f32>#reduce<bool>|inlined.0
+     (call $~lib/array/Array<f32>#reduceImpl<bool>
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+      (call $~lib/function/Function<%28bool%2Cf32%2Ci32%2C~lib/array/Array<f32>%29=>bool>#get:index
+       (call $~lib/rt/__tmptostack
+        (local.get $fn)
+       )
+      )
+      (local.get $initialValue)
+     )
+    )
    )
   )
   (if
@@ -3539,7 +3560,7 @@
       (call $infer-generic/inferDefault<infer-generic/Ref>
        (call $~lib/rt/__tmptostack
         (block (result i32)
-         (local.set $1
+         (local.set $4
           (call $~lib/rt/__localtostack
            (call $infer-generic/Ref#constructor
             (i32.const 0)
@@ -3548,11 +3569,11 @@
          )
          (call $infer-generic/Ref#set:x
           (call $~lib/rt/__tmptostack
-           (local.get $1)
+           (local.get $4)
           )
           (i32.const 2)
          )
-         (local.get $1)
+         (local.get $4)
         )
        )
       )
