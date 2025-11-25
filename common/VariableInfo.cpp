@@ -256,7 +256,7 @@ TEST(TestVariableInfo, TestAddParameter) {
   const SubProgramInfo &calculateSum = globalFunctions[0];
   EXPECT_EQ(calculateSum.getName(), "calculateSum");
 
-  const std::vector<LocalInfo> &calcParams = calculateSum.getParameters();
+  const std::vector<ParameterInfo> &calcParams = calculateSum.getParameters();
   ASSERT_EQ(calcParams.size(), 2);
   EXPECT_EQ(calcParams[0].getName(), "a");
   EXPECT_EQ(calcParams[0].getType(), "i32");
@@ -285,7 +285,7 @@ TEST(TestVariableInfo, TestAddParameter) {
   const SubProgramInfo &multiply = memberFunctions[0];
   EXPECT_EQ(multiply.getName(), "multiply");
 
-  const std::vector<LocalInfo> &multiplyParams = multiply.getParameters();
+  const std::vector<ParameterInfo> &multiplyParams = multiply.getParameters();
   ASSERT_EQ(multiplyParams.size(), 2);
   EXPECT_EQ(multiplyParams[0].getName(), "x");
   EXPECT_EQ(multiplyParams[0].getType(), "i32");

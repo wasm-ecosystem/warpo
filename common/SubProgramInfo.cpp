@@ -20,11 +20,10 @@ namespace warpo {
 void SubProgramInfo::addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
                                   bool const nullable) {
 
-  addParameter(LocalInfo{
+  addParameter(ParameterInfo{
       std::move(variableName),
       typeName,
       index,
-      0,
       nullable,
   });
 }

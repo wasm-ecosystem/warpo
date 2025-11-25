@@ -23,6 +23,7 @@
 #include <vector>
 
 #include "LocalInfo.hpp"
+#include "ParameterInfo.hpp"
 #include "TypeNameHelper.hpp"
 #include "binaryen-c.h"
 
@@ -36,10 +37,10 @@ public:
 
   inline std::string_view getName() const noexcept { return name_; }
 
-  inline std::vector<LocalInfo> const &getParameters() const noexcept { return parameters_; }
+  inline std::vector<ParameterInfo> const &getParameters() const noexcept { return parameters_; }
   inline LocalsMap const &getLocals() const noexcept { return locals_; }
 
-  inline void addParameter(LocalInfo parameter) noexcept { parameters_.push_back(std::move(parameter)); }
+  inline void addParameter(ParameterInfo parameter) noexcept { parameters_.push_back(std::move(parameter)); }
   inline void addLocal(LocalInfo local) noexcept {
     uint32_t const scopeId = local.getScopeId();
     locals_[scopeId].push_back(std::move(local));
@@ -53,7 +54,7 @@ public:
 
 private:
   std::string_view name_;
-  std::vector<LocalInfo> parameters_;
+  std::vector<ParameterInfo> parameters_;
   LocalsMap locals_;
 };
 

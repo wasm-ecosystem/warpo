@@ -411,8 +411,8 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
   rootUnit.Entries.push_back(subprogramEntry);
 
   // Add formal parameters
-  std::vector<LocalInfo> const &parameters = subProgram.getParameters();
-  for (LocalInfo const &param : parameters) {
+  std::vector<ParameterInfo> const &parameters = subProgram.getParameters();
+  for (ParameterInfo const &param : parameters) {
     llvm::DWARFYAML::Entry paramEntry;
     paramEntry.AbbrCode = formalParameterAbbrev.Code;
 
