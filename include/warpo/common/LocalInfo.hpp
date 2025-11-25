@@ -21,7 +21,6 @@
 #include <utility>
 
 #include "TypeNameHelper.hpp"
-#include "binaryen-c.h"
 
 namespace warpo {
 
