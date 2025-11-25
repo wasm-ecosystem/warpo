@@ -33,3 +33,7 @@ assert(complex.level1.same_name.same_name.int == 1234);
 assert(complex.level1.same_name.same_name.array.length == 2);
 assert(complex.level1.same_name.same_name.array[0] == 10);
 assert(complex.level1.same_name.same_name.array[1] == 11);
+
+import * as json_obj from "./import-from-json.json";
+
+assert(json_obj.major == 1);

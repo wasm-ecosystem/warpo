@@ -926,6 +926,23 @@
     (unreachable)
    )
   )
+  (if
+   (i32.eqz
+    (i32.eq
+     (global.get $import-from-json.json/major)
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 96)
+     (i32.const 39)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
  )
  (func $~start
   (call $start:import-from-json)

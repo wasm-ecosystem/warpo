@@ -3406,9 +3406,22 @@ export class JsonFile extends File {
     return this.source as JsonSource;
   }
 
+  /** ensure top level declaration exists in {@link File.exports} and update {@link File.aliasNamespaces} */
+  ensure(name: string, element: DeclaredElement | null): DeclaredElement | null {
+    if (element == null) return null;
+    let exports = this.exports;
+    if (!exports) this.exports = exports = new Map();
+    exports.set(name, element);
+    // Also, add to the namespaces that capture our exports
+    for(let i = 0; i < this.aliasNamespaces.length; i++) {
+      let ns = this.aliasNamespaces[i];
+      ns.add(name, element);
+    }
+    return element;
+  }
+
   /** Looks up the export of the specified name. */
   override lookupExport(name: string): DeclaredElement | null {
-    // create a global variable for this JSON property
     let exports = this.exports;
     if (exports && exports.has(name)) return assert(exports.get(name));
     const jsonObject = this.jsonSource.obj;
@@ -3426,14 +3439,15 @@ export class JsonFile extends File {
       case JsonValueKind.F64:
       case JsonValueKind.String:
       case JsonValueKind.Array: {
-        return this.convertScalerJsonValue(name, v);
+        return this.ensure(name, this.convertScalerJsonValue(name, v));
       }
       case JsonValueKind.Object: {
-        return this.convertJsonObject(name, v as JsonObject);
+        return this.ensure(name, this.convertJsonObject(name, v as JsonObject));
       }
+      default:
+        unreachable();
+        return null;
     }
-    unreachable();
-    return null;
   }
 
   convertJsonValue(name: string, v: JsonValue): DeclaredElement | null {
@@ -3449,9 +3463,10 @@ export class JsonFile extends File {
       case JsonValueKind.String:
       case JsonValueKind.Array:
         return this.convertScalerJsonValue(name, v);
+      default:
+        unreachable();
+        return null;
     }
-    unreachable();
-    return null;
   }
   convertScalerJsonValue(name: string, v: JsonValue): Global | null {
     const range = v.range;

@@ -42,6 +42,8 @@ cmake --build build --parallel
 npm run test
 ```
 
+WARPO relies on snapshot test. All of them can be updated by `-u` command line option.
+
 ## subtree management
 
 ### initialize
