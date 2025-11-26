@@ -222,10 +222,10 @@ passes::Config getPassConfig() {
 
 [[nodiscard]] bool compareWithSnapshot(std::string const &actual, std::filesystem::path const &snapshotPath) {
   std::string const expected = readTextFile(snapshotPath);
-  bool const result = expected == actual;
-  if (result)
+  bool const success = expected == actual;
+  if (!success)
     std::cerr << actual << "\n";
-  return result;
+  return success;
 }
 
 [[nodiscard]] bool compareModuleWithSnapshot(wasm::Module &m, std::filesystem::path const &snapshotPath) {
