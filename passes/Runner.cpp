@@ -40,7 +40,7 @@
 #include "wasm-stack.h"
 #include "wasm.h"
 
-namespace warpo {
+namespace warpo::passes {
 
 static void ensureValidate(wasm::Module &m) {
   support::PerfRAII const r{support::PerfItemKind::Validation};
@@ -48,7 +48,7 @@ static void ensureValidate(wasm::Module &m) {
     throw std::logic_error("validate error");
 }
 
-std::unique_ptr<wasm::Module> passes::loadWasm(const std::vector<char> &input) {
+std::unique_ptr<wasm::Module> loadWasm(const std::vector<char> &input) {
   std::unique_ptr<wasm::Module> m{new wasm::Module()};
   wasm::WasmBinaryReader parser(*m, common::Features::fromCLI().toBinaryenFeatureSet(), input);
   parser.read();
@@ -56,7 +56,7 @@ std::unique_ptr<wasm::Module> passes::loadWasm(const std::vector<char> &input) {
   return m;
 }
 
-std::unique_ptr<wasm::Module> passes::loadWat(std::string_view wat) {
+std::unique_ptr<wasm::Module> loadWat(std::string_view wat) {
   std::unique_ptr<wasm::Module> m{new wasm::Module()};
   m->features = common::Features::fromCLI().toBinaryenFeatureSet();
   auto parsed = wasm::WATParser::parseModule(*m, wat);
@@ -66,20 +66,21 @@ std::unique_ptr<wasm::Module> passes::loadWat(std::string_view wat) {
   return m;
 }
 
-void passes::init() { Colors::setEnabled(false); }
-
-static std::unique_ptr<wasm::PassRunner> createPassRunner(wasm::Module *const m) {
+static std::unique_ptr<wasm::PassRunner> createPassRunner(wasm::Module *const m, Config const &config) {
   auto passRunner = std::make_unique<wasm::PassRunner>(m);
-  passRunner->options.shrinkLevel = static_cast<int32_t>(common::getShrinkLevel());
-  passRunner->options.optimizeLevel = static_cast<int32_t>(common::getOptimizationLevel());
+  passRunner->options.shrinkLevel = static_cast<int32_t>(config.shrinkLevel);
+  passRunner->options.optimizeLevel = static_cast<int32_t>(config.optimizeLevel);
   return passRunner;
 }
 
-static void preOptimize(AsModule const &m) {
+static void lowering(AsModule const &m) {
   {
-    support::PerfRAII const r{support::PerfItemKind::Instrument};
-    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get());
-    passRunner->add(std::unique_ptr<wasm::Pass>{passes::createInsertTracePointPass()});
+    support::PerfRAII const r{support::PerfItemKind::Lowering};
+    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), {});
+    if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0)
+      passRunner->add(std::unique_ptr<wasm::Pass>{new gc::OptLower()});
+    else
+      passRunner->add(std::unique_ptr<wasm::Pass>{new gc::FastLower()});
     passRunner->run();
   }
 #ifndef WARPO_RELEASE_BUILD
@@ -87,20 +88,32 @@ static void preOptimize(AsModule const &m) {
 #endif
 }
 
-static void optimize(AsModule const &m) {
+static void preOptimize(AsModule const &m, Config const &config) {
+  {
+    support::PerfRAII const r{support::PerfItemKind::Instrument};
+    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
+    passRunner->add(std::unique_ptr<wasm::Pass>{createInsertTracePointPass()});
+    passRunner->run();
+  }
+#ifndef WARPO_RELEASE_BUILD
+  ensureValidate(*m.get());
+#endif
+}
+
+static void optimize(AsModule const &m, Config const &config) {
   {
     support::PerfRAII const r{support::PerfItemKind::Optimization};
-    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get());
+    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
     passRunner->addDefaultOptimizationPasses();
-    passRunner->add(std::unique_ptr<wasm::Pass>{passes::createAdvancedInliningPass()});
+    passRunner->add(std::unique_ptr<wasm::Pass>{createAdvancedInliningPass()});
     passRunner->run();
   }
   {
     support::PerfRAII const r{support::PerfItemKind::Optimization};
-    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get());
-    passRunner->add(std::unique_ptr<wasm::Pass>{passes::createImmutableLoadEliminatingPass(m.immutableRanges_)});
-    passRunner->add(std::unique_ptr<wasm::Pass>{passes::createExtractMostFrequentlyUsedGlobalsPass()});
-    passRunner->add(std::unique_ptr<wasm::Pass>{passes::createConditionalReturnPass()});
+    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
+    passRunner->add(std::unique_ptr<wasm::Pass>{createImmutableLoadEliminatingPass(m.immutableRanges_)});
+    passRunner->add(std::unique_ptr<wasm::Pass>{createExtractMostFrequentlyUsedGlobalsPass()});
+    passRunner->add(std::unique_ptr<wasm::Pass>{createConditionalReturnPass()});
     passRunner->run();
   }
 #ifndef WARPO_RELEASE_BUILD
@@ -108,7 +121,7 @@ static void optimize(AsModule const &m) {
 #endif
   {
     support::PerfRAII const r{support::PerfItemKind::Optimization};
-    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get());
+    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
     passRunner->setDebug(false);
     passRunner->addDefaultOptimizationPasses();
     passRunner->run();
@@ -118,7 +131,7 @@ static void optimize(AsModule const &m) {
 
 static void addDebugInfoAsCustomSection(AsModule const &m) {
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
-      passes::DwarfGenerator::generateDebugSections(m.variableInfo_);
+      DwarfGenerator::generateDebugSections(m.variableInfo_);
 
   if (!debugSections.empty()) {
     for (auto I = debugSections.begin(); !(I == debugSections.end()); I++) {
@@ -130,47 +143,7 @@ static void addDebugInfoAsCustomSection(AsModule const &m) {
   }
 }
 
-passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
-#ifndef WARPO_RELEASE_BUILD
-  ensureValidate(*m.get());
-#endif
-  lowering(m);
-  preOptimize(m);
-  if (common::getOptimizationLevel() > 0U || common::getShrinkLevel() > 0U)
-    optimize(m);
-
-  // wasm and source map
-  wasm::BufferWithRandomAccess buffer;
-  wasm::PassOptions const options = wasm::PassOptions::getWithoutOptimization();
-  if (common::isEmitDebugInfo()) {
-    addDebugInfoAsCustomSection(m);
-  }
-  wasm::WasmBinaryWriter writer(m.get(), buffer, options);
-  std::stringstream sourceMapStream;
-  if (common::isEmitDebugLine()) {
-    assert(!config.sourceMapURL.empty());
-    writer.setSourceMap(&sourceMapStream, config.sourceMapURL);
-  }
-  writer.setNamesSection(common::isEmitDebugName());
-  writer.setEmitModuleName(common::isEmitDebugName());
-  writer.write();
-
-  // wat
-  std::stringstream ss{};
-  wasm::printStackIR(ss, m.get(), wasm::PassOptions::getWithoutOptimization());
-
-  return {
-      .wat = std::move(ss).str(),
-      .wasm = static_cast<std::vector<uint8_t>>(buffer),
-      .sourceMap = std::move(sourceMapStream).str(),
-  };
-}
-
-passes::Output passes::runOnWat(std::string const &input, Config const &config) {
-  std::unique_ptr<wasm::Module> m = passes::loadWat(input);
-  return runOnModule(AsModule{m.release()}, config);
-}
-
+namespace {
 struct OutputFiles {
   std::filesystem::path wat_;
   std::filesystem::path wasm_;
@@ -197,12 +170,73 @@ struct OutputFiles {
     };
   }
 };
+} // namespace
+
+} // namespace warpo::passes
+
+namespace warpo {
+
+void passes::init() { Colors::setEnabled(false); }
+
+passes::Output passes::runOnWat(std::string const &input, Config const &config) {
+  std::unique_ptr<wasm::Module> m = passes::loadWat(input);
+  return runOnModule(AsModule{m.release()}, config);
+}
+
+passes::Output passes::runOnModule(AsModule const &m) {
+  passes::Config const passesConfig{
+      .optimizeLevel = common::getOptimizationLevel(),
+      .shrinkLevel = common::getShrinkLevel(),
+      .sourceMapURL = "",
+  };
+  return runOnModule(m, passesConfig);
+}
+
+passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
+#ifndef WARPO_RELEASE_BUILD
+  ensureValidate(*m.get());
+#endif
+  lowering(m);
+  preOptimize(m, config);
+  if (config.optimizeLevel > 0U || config.shrinkLevel > 0U)
+    optimize(m, config);
+
+  // wasm and source map
+  wasm::BufferWithRandomAccess buffer;
+  wasm::PassOptions const options = wasm::PassOptions::getWithoutOptimization();
+  if (common::isEmitDebugInfo()) {
+    addDebugInfoAsCustomSection(m);
+  }
+  wasm::WasmBinaryWriter writer(m.get(), buffer, options);
+  std::stringstream sourceMapStream;
+  if (common::isEmitDebugLine() && !config.sourceMapURL.empty()) {
+    writer.setSourceMap(&sourceMapStream, config.sourceMapURL);
+  }
+  writer.setNamesSection(common::isEmitDebugName());
+  writer.setEmitModuleName(common::isEmitDebugName());
+  writer.write();
+
+  // wat
+  std::stringstream ss{};
+  wasm::printStackIR(ss, m.get(), wasm::PassOptions::getWithoutOptimization());
+
+  return {
+      .wat = std::move(ss).str(),
+      .wasm = static_cast<std::vector<uint8_t>>(buffer),
+      .sourceMap = std::move(sourceMapStream).str(),
+  };
+}
 
 void passes::runAndEmit(AsModule const &m, std::filesystem::path const &outputPath) {
   OutputFiles const outputFiles = OutputFiles::create(outputPath);
   ensureFileDirectory(outputFiles.wasm_);
 
-  passes::Output const output = runOnModule(m, passes::Config{.sourceMapURL = getBaseName(outputFiles.sourceMap_)});
+  Config const config{
+      .optimizeLevel = common::getOptimizationLevel(),
+      .shrinkLevel = common::getShrinkLevel(),
+      .sourceMapURL = getBaseName(outputFiles.sourceMap_),
+  };
+  Output const output = runOnModule(m, config);
   writeBinaryFile(outputFiles.wat_, output.wat);
   writeBinaryFile(outputFiles.wasm_, output.wasm);
   if (!outputFiles.sourceMap_.empty() && common::isEmitDebugLine()) {
@@ -222,18 +256,3 @@ void passes::runAndEmit(std::string const &inputPath, std::filesystem::path cons
 }
 
 } // namespace warpo
-
-void warpo::passes::lowering(AsModule const &m) {
-  {
-    support::PerfRAII const r{support::PerfItemKind::Lowering};
-    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get());
-    if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0)
-      passRunner->add(std::unique_ptr<wasm::Pass>{new passes::gc::OptLower()});
-    else
-      passRunner->add(std::unique_ptr<wasm::Pass>{new passes::gc::FastLower()});
-    passRunner->run();
-  }
-#ifndef WARPO_RELEASE_BUILD
-  ensureValidate(*m.get());
-#endif
-}

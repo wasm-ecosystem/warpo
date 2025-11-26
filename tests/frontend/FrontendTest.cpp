@@ -116,22 +116,13 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
 }
 
 [[nodiscard]] TestResult runModuleOnWarp(TestConfigJson const &configJson, std::filesystem::path const &tsPath,
-                                         AsModule const &asModule) {
+                                         AsModule const &asModule, std::vector<uint8_t> const &wasm) {
   bool const hasImportedGlobal = std::ranges::any_of(
       asModule.get()->globals, [](std::unique_ptr<wasm::Global> const &global) { return global->imported(); });
   if (hasImportedGlobal)
     return TestResult::Skip;
   if (configJson.hasNonTrappingF2IFeature())
     return TestResult::Skip;
-
-  // lowering built-in imports
-  passes::lowering(asModule);
-  wasm::BufferWithRandomAccess buffer;
-  wasm::WasmBinaryWriter writer(asModule.get(), buffer, wasm::PassOptions::getWithoutOptimization());
-  writer.setNamesSection(false);
-  writer.setEmitModuleName(false);
-  writer.write();
-  std::vector<uint8_t> wasm{static_cast<std::vector<uint8_t>>(buffer)};
 
   // validate
   if (!wasm::WasmValidator{}.validate(*asModule.get()))
@@ -167,8 +158,22 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
   return TestResult::Success;
 }
 
-[[nodiscard]] TestResult runUpdate(TestConfigJson const &configJson, std::filesystem::path const &tsPath,
-                                   std::filesystem::path const &expectedOutPath) {
+std::filesystem::path getFrontendOutputPath(std::filesystem::path const &tsPath) {
+  return replaceExtension(tsPath, ".wat");
+}
+std::filesystem::path getOptOutputPath(std::filesystem::path const &tsPath) {
+  return replaceExtension(tsPath, ".opt.wat");
+}
+
+passes::Config getPassConfig() {
+  return passes::Config{
+      .optimizeLevel = 3U,
+      .shrinkLevel = 2U,
+      .sourceMapURL = "",
+  };
+}
+
+[[nodiscard]] TestResult runUpdate(TestConfigJson const &configJson, std::filesystem::path const &tsPath) {
   if (configJson.checkErrorMessage())
     return TestResult::Success;
   frontend::CompilationResult const ret = compile(configJson, tsPath);
@@ -179,8 +184,12 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
   std::stringstream ss;
   ss << *ret.m.get();
   std::string const actual = std::move(ss).str();
-  writeBinaryFile(expectedOutPath.string(), actual);
-  return runModuleOnWarp(configJson, tsPath, ret.m);
+  writeBinaryFile(getFrontendOutputPath(tsPath), actual);
+
+  passes::Output output = passes::runOnModule(ret.m, getPassConfig());
+  writeBinaryFile(getOptOutputPath(tsPath), output.wat);
+
+  return runModuleOnWarp(configJson, tsPath, ret.m, output.wasm);
 }
 
 [[nodiscard]] TestResult runCompilationErrorCase(TestConfigJson const &configJson,
@@ -210,22 +219,35 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
   return TestResult::Success;
 }
 
-[[nodiscard]] TestResult runSnapshotCase(TestConfigJson const &configJson, std::filesystem::path const &tsPath,
-                                         std::filesystem::path const &expectedOutPath) {
+[[nodiscard]] bool compareWithSnapshot(std::string const &actual, std::filesystem::path const &snapshotPath) {
+  std::string const expected = readTextFile(snapshotPath);
+  return expected == actual;
+}
+
+[[nodiscard]] bool compareModuleWithSnapshot(wasm::Module &m, std::filesystem::path const &snapshotPath) {
+  std::stringstream ss;
+  ss << m;
+  return compareWithSnapshot(std::move(ss).str(), snapshotPath);
+}
+
+[[nodiscard]] TestResult runSnapshotCase(TestConfigJson const &configJson, std::filesystem::path const &tsPath) {
   frontend::CompilationResult const ret = compile(configJson, tsPath);
   if (ret.m.invalid()) {
     fmt::println("FAILED '{}': expected to compile successfully\nerror message: {}", tsPath.string(), ret.errorMessage);
     return TestResult::Failure;
   }
-  std::stringstream ss;
-  ss << *ret.m.get();
-  std::string const actual = std::move(ss).str();
-  std::string const expected = readTextFile(expectedOutPath.string());
-  if (expected != actual) {
+  if (!compareModuleWithSnapshot(*ret.m.get(), getFrontendOutputPath(tsPath))) {
     fmt::println("FAILED '{}': mismatched wat output", tsPath.string());
     return TestResult::Failure;
   }
-  return runModuleOnWarp(configJson, tsPath, ret.m);
+
+  passes::Output output = passes::runOnModule(ret.m, getPassConfig());
+  if (!compareWithSnapshot(output.wat, getOptOutputPath(tsPath))) {
+    fmt::println("FAILED '{}': mismatched opt wat output", tsPath.string());
+    return TestResult::Failure;
+  }
+
+  return runModuleOnWarp(configJson, tsPath, ret.m, output.wasm);
 }
 
 [[nodiscard]] TestResult run(std::filesystem::path const &tsPath) {
@@ -234,17 +256,22 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
     nlohmann::json const j =
         nlohmann::json::parse(std::filesystem::exists(jsonPath) ? readTextFile(jsonPath.string()) : "{}");
     TestConfigJson const configJson{j};
-    std::filesystem::path const expectedOutPath = replaceExtension(tsPath, ".wat");
     if (updateFlag.get())
-      return runUpdate(configJson, tsPath, expectedOutPath);
+      return runUpdate(configJson, tsPath);
     if (configJson.checkErrorMessage()) {
-      if (std::filesystem::exists(expectedOutPath)) {
-        fmt::println("{} should be removed when --stderr is specified.", expectedOutPath.string());
+      std::filesystem::path const frontendOutputPath = getFrontendOutputPath(tsPath);
+      if (std::filesystem::exists(frontendOutputPath)) {
+        fmt::println("{} should be removed when --stderr is specified.", frontendOutputPath.string());
+        std::abort();
+      }
+      std::filesystem::path const optOutputPath = getOptOutputPath(tsPath);
+      if (std::filesystem::exists(optOutputPath)) {
+        fmt::println("{} should be removed when --stderr is specified.", optOutputPath.string());
         std::abort();
       }
       return runCompilationErrorCase(configJson, tsPath);
     }
-    return runSnapshotCase(configJson, tsPath, expectedOutPath);
+    return runSnapshotCase(configJson, tsPath);
   } catch (std::exception const &e) {
     fmt::println("FAILED '{}': unkown error {}", tsPath.string(), e.what());
     return TestResult::Failure;

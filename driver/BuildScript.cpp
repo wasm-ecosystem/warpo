@@ -52,7 +52,11 @@ BuildScriptRunner::BuildScriptRunner(std::filesystem::path const &buildScriptPat
     fmt::println("{}", result.errorMessage);
     throw std::runtime_error{"compilation 'create.ts' failed"};
   }
-  passes::Config const passesConfig{.sourceMapURL = ""};
+  passes::Config const passesConfig{
+      .optimizeLevel = 0,
+      .shrinkLevel = 0,
+      .sourceMapURL = "",
+  };
   passes::Output output = passes::runOnModule(result.m, passesConfig);
 
   std::vector<vb::NativeSymbol> const &linkedAPI = getLinkedAPI();

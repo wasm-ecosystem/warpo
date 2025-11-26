@@ -21,14 +21,16 @@ struct Output {
 };
 
 struct Config {
+  uint32_t optimizeLevel;
+  uint32_t shrinkLevel;
   std::string sourceMapURL;
 };
 
 void init();
 
-void lowering(AsModule const &m);
-
 Output runOnWat(std::string const &input, Config const &config);
+
+Output runOnModule(AsModule const &m);
 Output runOnModule(AsModule const &m, Config const &config);
 
 void runAndEmit(AsModule const &m, std::filesystem::path const &outputPath);

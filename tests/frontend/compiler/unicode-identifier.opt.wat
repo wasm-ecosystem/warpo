@@ -1,0 +1,10 @@
+(module
+ (global $"unicode-identifier/\f0\a0\9c\8e\f0\a0\9c\b1" (mut i32) (i32.const 0))
+ (global $"unicode-identifier/\c3\80\c3\88" (mut i32) (i32.const 0))
+ (global $"unicode-identifier/\e5\8f\98\e9\87\8f" (mut i32) (i32.const 0))
+ (memory $0 0)
+ (export "\c3\80\c3\88" (global $"unicode-identifier/\c3\80\c3\88"))
+ (export "\e5\8f\98\e9\87\8f" (global $"unicode-identifier/\e5\8f\98\e9\87\8f"))
+ (export "\f0\a0\9c\8e\f0\a0\9c\b1" (global $"unicode-identifier/\f0\a0\9c\8e\f0\a0\9c\b1"))
+ (export "memory" (memory $0))
+)
