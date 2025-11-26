@@ -186,7 +186,7 @@ passes::Config getPassConfig() {
   std::string const actual = std::move(ss).str();
   writeBinaryFile(getFrontendOutputPath(tsPath), actual);
 
-  passes::Output output = passes::runOnModule(ret.m, getPassConfig());
+  passes::Output const output = passes::runOnModule(ret.m, getPassConfig());
   writeBinaryFile(getOptOutputPath(tsPath), output.wat);
 
   return runModuleOnWarp(configJson, tsPath, ret.m, output.wasm);
@@ -241,7 +241,7 @@ passes::Config getPassConfig() {
     return TestResult::Failure;
   }
 
-  passes::Output output = passes::runOnModule(ret.m, getPassConfig());
+  passes::Output const output = passes::runOnModule(ret.m, getPassConfig());
   if (!compareWithSnapshot(output.wat, getOptOutputPath(tsPath))) {
     fmt::println("FAILED '{}': mismatched opt wat output", tsPath.string());
     return TestResult::Failure;
