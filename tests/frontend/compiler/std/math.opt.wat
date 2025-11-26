@@ -45970,7 +45970,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  f32.const nan:0x400000
+  f32.const -nan:0x400000
   f32.const nan:0x400000
   f32.const 0
   call $std/math/check<f32>
@@ -45996,7 +45996,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  f32.const nan:0x400000
+  f32.const -nan:0x400000
   f32.const nan:0x400000
   f32.const 0
   call $std/math/check<f32>
@@ -46009,7 +46009,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  f32.const nan:0x400000
+  f32.const -nan:0x400000
   f32.const nan:0x400000
   f32.const 0
   call $std/math/check<f32>
@@ -46048,7 +46048,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  f32.const nan:0x400000
+  f32.const -nan:0x400000
   f32.const nan:0x400000
   f32.const 0
   call $std/math/check<f32>
@@ -46087,7 +46087,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  f32.const nan:0x400000
+  f32.const -nan:0x400000
   f32.const nan:0x400000
   f32.const 0
   call $std/math/check<f32>
@@ -46126,7 +46126,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  f32.const nan:0x400000
+  f32.const -nan:0x400000
   f32.const nan:0x400000
   f32.const 0
   call $std/math/check<f32>
@@ -46178,7 +46178,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  f32.const nan:0x400000
+  f32.const -nan:0x400000
   f32.const nan:0x400000
   f32.const 0
   call $std/math/check<f32>
@@ -46243,7 +46243,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  f32.const nan:0x400000
+  f32.const -nan:0x400000
   f32.const nan:0x400000
   f32.const 0
   call $std/math/check<f32>
@@ -46269,7 +46269,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  f32.const nan:0x400000
+  f32.const -nan:0x400000
   f32.const nan:0x400000
   f32.const 0
   call $std/math/check<f32>
