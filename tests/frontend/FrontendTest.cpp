@@ -12,6 +12,7 @@
 #include <exception>
 #include <filesystem>
 #include <fmt/base.h>
+#include <iostream>
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <pass.h>
@@ -221,7 +222,10 @@ passes::Config getPassConfig() {
 
 [[nodiscard]] bool compareWithSnapshot(std::string const &actual, std::filesystem::path const &snapshotPath) {
   std::string const expected = readTextFile(snapshotPath);
-  return expected == actual;
+  bool const result = expected == actual;
+  if (result)
+    std::cerr << actual << "\n";
+  return result;
 }
 
 [[nodiscard]] bool compareModuleWithSnapshot(wasm::Module &m, std::filesystem::path const &snapshotPath) {
