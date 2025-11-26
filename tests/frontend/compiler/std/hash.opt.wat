@@ -1,7 +1,6 @@
 (module
  (type $0 (func (param i32)))
  (type $1 (func))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33148))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c")
  (data $0.1 (i32.const 24) "\02")
@@ -33,59 +32,38 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i64.const 0
-  i64.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 380
-  i32.lt_s
+  local.get $0
   if
-   unreachable
-  end
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  local.tee $4
-  if (result i32)
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4
-   i32.add
    local.get $0
-   i32.store align=1
-   local.get $0
+   local.tee $1
    i32.const 20
    i32.sub
    i32.load offset=16
    i32.const -2
    i32.and
-   local.tee $2
+   local.tee $3
    i32.const 16
    i32.ge_u
    if (result i32)
     i32.const 606290984
-    local.set $1
+    local.set $2
     i32.const -2048144777
-    local.set $3
+    local.set $4
     i32.const 1640531535
     local.set $5
-    local.get $0
-    local.get $2
+    local.get $1
+    local.get $3
     i32.add
     i32.const 16
     i32.sub
     local.set $7
     loop $while-continue|0
-     local.get $0
+     local.get $1
      local.get $7
      i32.le_u
      if
+      local.get $2
       local.get $1
-      local.get $0
       i32.load
       i32.const -2048144777
       i32.mul
@@ -94,9 +72,9 @@
       i32.rotl
       i32.const -1640531535
       i32.mul
-      local.set $1
-      local.get $3
-      local.get $0
+      local.set $2
+      local.get $4
+      local.get $1
       i32.load offset=4
       i32.const -2048144777
       i32.mul
@@ -105,9 +83,9 @@
       i32.rotl
       i32.const -1640531535
       i32.mul
-      local.set $3
+      local.set $4
       local.get $6
-      local.get $0
+      local.get $1
       i32.load offset=8
       i32.const -2048144777
       i32.mul
@@ -118,7 +96,7 @@
       i32.mul
       local.set $6
       local.get $5
-      local.get $0
+      local.get $1
       i32.load offset=12
       i32.const -2048144777
       i32.mul
@@ -128,18 +106,18 @@
       i32.const -1640531535
       i32.mul
       local.set $5
-      local.get $0
+      local.get $1
       i32.const 16
       i32.add
-      local.set $0
+      local.set $1
       br $while-continue|0
      end
     end
+    local.get $3
     local.get $2
-    local.get $1
     i32.const 1
     i32.rotl
-    local.get $3
+    local.get $4
     i32.const 7
     i32.rotl
     i32.add
@@ -153,24 +131,24 @@
     i32.add
     i32.add
    else
-    local.get $2
+    local.get $3
     i32.const 374761393
     i32.add
    end
-   local.set $1
-   local.get $2
-   local.get $4
+   local.set $2
+   local.get $0
+   local.get $3
    i32.add
    i32.const 4
    i32.sub
-   local.set $3
+   local.set $4
    loop $while-continue|1
-    local.get $0
-    local.get $3
+    local.get $1
+    local.get $4
     i32.le_u
     if
+     local.get $2
      local.get $1
-     local.get $0
      i32.load
      i32.const -1028477379
      i32.mul
@@ -179,25 +157,25 @@
      i32.rotl
      i32.const 668265263
      i32.mul
-     local.set $1
-     local.get $0
+     local.set $2
+     local.get $1
      i32.const 4
      i32.add
-     local.set $0
+     local.set $1
      br $while-continue|1
     end
    end
-   local.get $2
-   local.get $4
+   local.get $0
+   local.get $3
    i32.add
-   local.set $4
+   local.set $0
    loop $while-continue|2
     local.get $0
-    local.get $4
-    i32.lt_u
+    local.get $1
+    i32.gt_u
     if
+     local.get $2
      local.get $1
-     local.get $0
      i32.load8_u
      i32.const 374761393
      i32.mul
@@ -206,30 +184,15 @@
      i32.rotl
      i32.const -1640531535
      i32.mul
-     local.set $1
-     local.get $0
+     local.set $2
+     local.get $1
      i32.const 1
      i32.add
-     local.set $0
+     local.set $1
      br $while-continue|2
     end
    end
-   local.get $1
-   local.get $1
-   i32.const 15
-   i32.shr_u
-   i32.xor
-   i32.const -2048144777
-   i32.mul
-   local.tee $0
-  else
-   i32.const 0
   end
-  drop
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $~start
   i32.const 0

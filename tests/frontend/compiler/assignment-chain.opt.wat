@@ -1,12 +1,11 @@
 (module
  (type $0 (func))
  (type $1 (func (param i32)))
- (type $2 (func (param i32 i32) (result i32)))
- (type $3 (func (param i32 i32)))
+ (type $2 (func (param i32 i32)))
+ (type $3 (func (param i32 i32) (result i32)))
  (type $4 (func (param i32 i32 i32 i32)))
  (type $5 (func (param i32 i32 i32)))
  (type $6 (func (param i32 i32 i64)))
- (type $7 (func (param i32 f64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33276))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -1514,29 +1513,32 @@
  )
  (func $assignment-chain/normal_assignment_chain
   (local $0 i32)
-  (local $1 i32)
-  i32.const 12
-  call $~lib/rt/__decrease_sp
-  i32.const 8
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 508
+  i32.lt_s
+  if
+   unreachable
+  end
   i32.const 16
   i32.const 4
   call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
   local.set $0
-  i32.const 4
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
   local.get $0
   i32.eqz
   if
    i32.const 0
    i32.const 0
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
    local.set $0
   end
   global.get $~lib/memory/__stack_pointer
@@ -1544,110 +1546,65 @@
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.tee $0
-  i32.const 4
-  call $~lib/rt/__localtostack
-  local.set $1
-  local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i64.const 0
   i64.store offset=8
-  local.get $1
+  local.get $0
   i64.const 0
   i64.store
+ )
+ (func $assignment-chain/setter_assignment_chain
+  (local $0 i32)
   global.get $~lib/memory/__stack_pointer
-  i32.const 12
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 508
+  i32.lt_s
+  if
+   unreachable
+  end
+  i32.const 16
+  i32.const 5
+  call $~lib/rt/itcms/__new
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
+  local.get $0
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 0
+   call $~lib/rt/itcms/__new
+   local.set $0
+  end
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
- )
- (func $assignment-chain/B#set:y (param $0 i32) (param $1 f64)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.get $0
-  i32.const 4
-  call $~lib/rt/__localtostack
   i32.load
   i32.const 1
   i32.add
   i32.store
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.get $1
+  f64.const 1
   f64.store offset=8
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  local.get $0
+  local.get $0
+  i32.load
+  i32.const 1
   i32.add
-  global.set $~lib/memory/__stack_pointer
- )
- (func $assignment-chain/setter_assignment_chain
-  (local $0 i32)
-  i32.const 12
-  call $~lib/rt/__decrease_sp
-  i32.const 8
-  call $~lib/rt/__decrease_sp
-  i32.const 16
-  i32.const 5
-  call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
-  local.set $0
-  i32.const 4
-  call $~lib/rt/__decrease_sp
+  i32.store
   local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
-   local.set $0
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.tee $0
-  i32.const 4
-  call $~lib/rt/__localtostack
-  local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   f64.const 1
-  call $assignment-chain/B#set:y
-  f64.const 1
-  call $assignment-chain/B#set:y
+  f64.store offset=8
   local.get $0
-  i32.const 4
-  call $~lib/rt/__localtostack
   i32.load
   i32.const 2
   i32.ne
@@ -1660,8 +1617,6 @@
    unreachable
   end
   local.get $0
-  i32.const 4
-  call $~lib/rt/__localtostack
   i32.load offset=4
   if
    i32.const 0
@@ -1671,10 +1626,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 12
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $assignment-chain/static_setter_assignment_chain
   global.get $assignment-chain/C._setter_cnt
@@ -1764,29 +1715,5 @@
   call $assignment-chain/normal_assignment_chain
   call $assignment-chain/setter_assignment_chain
   call $assignment-chain/static_setter_assignment_chain
- )
- (func $~lib/rt/__localtostack (param $0 i32) (param $1 i32) (result i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.add
-  local.get $0
-  i32.store align=1
-  local.get $0
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  local.get $0
-  memory.fill
-  global.get $~lib/memory/__stack_pointer
-  i32.const 508
-  i32.lt_s
-  if
-   unreachable
-  end
  )
 )

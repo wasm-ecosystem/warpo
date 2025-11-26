@@ -8,7 +8,7 @@
  (type $6 (func (param i32 i32 i64)))
  (type $7 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33256))
+ (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $export/a i32 (i32.const 1))
  (global $export/b i32 (i32.const 2))
  (global $export/c i32 (i32.const 3))
@@ -18,7 +18,6 @@
  (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
@@ -953,8 +952,6 @@
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   memory.size
   i32.const 16
   i32.shl
@@ -987,8 +984,6 @@
   i32.store
   i32.const 368
   global.set $~lib/rt/itcms/fromSpace
-  i32.const 8
-  call $~lib/rt/__decrease_sp
   global.get $~lib/rt/itcms/total
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
@@ -1073,7 +1068,7 @@
         i32.and
         i32.eq
         if
-         global.get $~lib/memory/__stack_pointer
+         i32.const 33256
          local.set $0
          loop $while-continue|0
           local.get $0
@@ -1456,47 +1451,16 @@
   local.tee $0
   i32.const 0
   i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  local.tee $1
-  local.get $0
-  i32.store align=1
   local.get $0
   i32.const 2
   i32.store
-  local.get $1
-  local.get $0
-  i32.store align=1
   local.get $0
   i32.const 2
   i32.store
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $0
   global.set $reexport/car
-  global.get $~lib/memory/__stack_pointer
   global.get $reexport/car
-  local.tee $0
-  i32.store align=1
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
   i32.load
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
   i32.const 2
   i32.ne
   if
@@ -1505,26 +1469,6 @@
    i32.const 30
    i32.const 1
    call $~lib/builtins/abort
-   unreachable
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  local.get $0
-  memory.fill
-  global.get $~lib/memory/__stack_pointer
-  i32.const 488
-  i32.lt_s
-  if
    unreachable
   end
  )

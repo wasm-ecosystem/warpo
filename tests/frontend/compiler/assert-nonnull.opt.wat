@@ -1,11 +1,9 @@
 (module
  (type $0 (func (param i32) (result i32)))
  (type $1 (func (result i32)))
- (type $2 (func (param i32 i32) (result i32)))
- (type $3 (func (param i32 i32 i32 i32)))
- (type $4 (func (param i32)))
+ (type $2 (func (param i32 i32 i32 i32)))
+ (type $3 (func (param i32 i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33212))
  (memory $0 1)
  (data $0 (i32.const 12) "|")
  (data $0.1 (i32.const 24) "\02\00\00\00^\00\00\00U\00n\00e\00x\00p\00e\00c\00t\00e\00d\00 \00\'\00n\00u\00l\00l\00\'\00 \00(\00n\00o\00t\00 \00a\00s\00s\00i\00g\00n\00e\00d\00 \00o\00r\00 \00f\00a\00i\00l\00e\00d\00 \00c\00a\00s\00t\00)")
@@ -32,14 +30,10 @@
  (export "testObjRet" (func $assert-nonnull/testObjRet))
  (export "memory" (memory $0))
  (func $assert-nonnull/testVar (param $0 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.tee $0
-  i32.eqz
-  if
+  if (result i32)
+   local.get $0
+  else
    i32.const 32
    i32.const 160
    i32.const 2
@@ -47,19 +41,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $assert-nonnull/testObj (param $0 i32) (result i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 4
-  call $~lib/rt/__localtostack
-  local.tee $0
   if (result i32)
    local.get $0
   else
@@ -70,28 +54,15 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $assert-nonnull/testProp (param $0 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.tee $0
-  i32.eqz
-  if
+  if (result i32)
+   local.get $0
+  else
    i32.const 32
    i32.const 160
    i32.const 15
@@ -99,19 +70,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $assert-nonnull/testArr (param $0 i32) (result i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 4
-  call $~lib/rt/__localtostack
-  local.tee $0
   if (result i32)
    local.get $0
   else
@@ -122,14 +83,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=12
   i32.eqz
   if
@@ -141,12 +94,8 @@
    unreachable
   end
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   i32.load
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.tee $0
   i32.eqz
   if
@@ -157,22 +106,10 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $0
  )
- (func $~lib/array/Array<assert-nonnull/Foo|null>#__get (param $0 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
+ (func $assert-nonnull/testElem (param $0 i32) (result i32)
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=12
   i32.eqz
   if
@@ -184,31 +121,12 @@
    unreachable
   end
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   i32.load
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
- )
- (func $assert-nonnull/testElem (param $0 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  call $~lib/array/Array<assert-nonnull/Foo|null>#__get
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.tee $0
-  i32.eqz
-  if
+  if (result i32)
+   local.get $0
+  else
    i32.const 32
    i32.const 160
    i32.const 23
@@ -216,11 +134,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $assert-nonnull/testAll (param $0 i32) (result i32)
   local.get $0
@@ -233,12 +146,7 @@
   call $byn$mgfn-shared$assert-nonnull/testAll
  )
  (func $assert-nonnull/testFn (param $0 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.tee $0
   if (result i32)
    local.get $0
   else
@@ -251,23 +159,11 @@
   end
   i32.load
   call_indirect (type $1)
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $assert-nonnull/testFn2 (param $0 i32) (result i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.tee $0
-  if (result i32)
-   local.get $0
-  else
+  i32.eqz
+  if
    i32.const 32
    i32.const 160
    i32.const 39
@@ -275,25 +171,13 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
-  call $~lib/rt/__localtostack
+  local.get $0
   i32.load
   call_indirect (type $1)
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $assert-nonnull/testRet (param $0 i32) (result i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
   block $folding-inner0
    local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
-   local.tee $0
    if (result i32)
     local.get $0
    else
@@ -301,16 +185,12 @@
    end
    i32.load
    call_indirect (type $1)
-   i32.const 4
-   call $~lib/rt/__localtostack
    local.tee $0
-   i32.eqz
-   br_if $folding-inner0
-   global.get $~lib/memory/__stack_pointer
-   i32.const 8
-   i32.add
-   global.set $~lib/memory/__stack_pointer
-   local.get $0
+   if (result i32)
+    local.get $0
+   else
+    br $folding-inner0
+   end
    return
   end
   i32.const 32
@@ -321,14 +201,8 @@
   unreachable
  )
  (func $assert-nonnull/testObjFn (param $0 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -342,23 +216,11 @@
   end
   i32.load
   call_indirect (type $1)
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $assert-nonnull/testObjRet (param $0 i32) (result i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
   block $folding-inner0
    local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.load offset=4
-   i32.const 0
-   call $~lib/rt/__localtostack
    local.tee $0
    if (result i32)
     local.get $0
@@ -367,16 +229,12 @@
    end
    i32.load
    call_indirect (type $1)
-   i32.const 4
-   call $~lib/rt/__localtostack
    local.tee $0
-   i32.eqz
-   br_if $folding-inner0
-   global.get $~lib/memory/__stack_pointer
-   i32.const 8
-   i32.add
-   global.set $~lib/memory/__stack_pointer
-   local.get $0
+   if (result i32)
+    local.get $0
+   else
+    br $folding-inner0
+   end
    return
   end
   i32.const 32
@@ -386,67 +244,36 @@
   call $~lib/builtins/abort
   unreachable
  )
- (func $~lib/rt/__localtostack (param $0 i32) (param $1 i32) (result i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.add
-  local.get $0
-  i32.store align=1
-  local.get $0
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  local.get $0
-  memory.fill
-  global.get $~lib/memory/__stack_pointer
-  i32.const 444
-  i32.lt_s
-  if
-   unreachable
-  end
- )
  (func $byn$mgfn-shared$assert-nonnull/testAll (param $0 i32) (param $1 i32) (result i32)
-  i32.const 12
-  call $~lib/rt/__decrease_sp
   block $folding-inner0
    local.get $0
-   i32.const 8
-   call $~lib/rt/__localtostack
-   local.tee $0
-   if (result i32)
-    local.get $0
-   else
-    br $folding-inner0
+   i32.eqz
+   br_if $folding-inner0
+   local.get $0
+   i32.load offset=12
+   i32.eqz
+   if
+    i32.const 224
+    i32.const 288
+    i32.const 114
+    i32.const 42
+    call $~lib/builtins/abort
+    unreachable
    end
-   i32.const 4
-   call $~lib/rt/__localtostack
-   call $~lib/array/Array<assert-nonnull/Foo|null>#__get
-   i32.const 4
-   call $~lib/rt/__localtostack
-   local.tee $0
-   if (result i32)
-    local.get $0
-   else
-    br $folding-inner0
-   end
-   i32.const 0
-   call $~lib/rt/__localtostack
+   local.get $0
+   i32.load offset=4
    i32.load
-   i32.const 0
-   call $~lib/rt/__localtostack
    local.tee $0
    i32.eqz
    br_if $folding-inner0
-   global.get $~lib/memory/__stack_pointer
-   i32.const 12
-   i32.add
-   global.set $~lib/memory/__stack_pointer
    local.get $0
+   i32.load
+   local.tee $0
+   if (result i32)
+    local.get $0
+   else
+    br $folding-inner0
+   end
    return
   end
   i32.const 32

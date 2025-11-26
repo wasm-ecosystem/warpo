@@ -1362,8 +1362,7 @@
  )
  (func $while/Ref#constructor (result i32)
   (local $0 i32)
-  (local $1 i32)
-  i32.const 8
+  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   call $~lib/rt/itcms/__new
@@ -1371,39 +1370,18 @@
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  local.get $0
-  i32.store align=1
-  local.get $0
-  local.set $1
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
   i32.eqz
   if
    i32.const 0
    call $~lib/rt/itcms/__new
    local.set $0
-   global.get $~lib/memory/__stack_pointer
-   local.get $0
-   i32.store align=1
-   local.get $0
-   local.set $1
   end
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $1
+  local.get $0
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
@@ -1639,7 +1617,7 @@
   global.set $while/ran
   i32.const 0
   local.set $0
-  loop $while-continue|03
+  loop $while-continue|03 (result i32)
    local.get $0
    i32.const 1
    i32.add
@@ -1647,8 +1625,8 @@
    i32.const 10
    i32.ne
    br_if $while-continue|03
+   local.get $0
   end
-  local.get $0
   i32.const 10
   i32.ne
   if
@@ -1777,21 +1755,21 @@
   i32.const 368
   global.set $~lib/rt/itcms/fromSpace
   i32.const 0
-  local.set $0
-  i32.const 4
+  local.set $1
+  i32.const 8
   call $~lib/rt/__decrease_sp
   call $while/Ref#constructor
-  local.set $1
+  local.set $0
   global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store align=1
+  local.get $0
+  i32.store offset=4 align=1
   loop $while-continue|17
-   local.get $1
+   local.get $0
    if
-    local.get $0
+    local.get $1
     i32.const 1
     i32.add
-    local.tee $0
+    local.tee $1
     i32.const 10
     i32.eq
     if (result i32)
@@ -1801,17 +1779,12 @@
      i32.const 0
     else
      call $while/Ref#constructor
-     local.set $1
-     global.get $~lib/memory/__stack_pointer
-     local.get $1
-     i32.store align=1
-     local.get $1
     end
-    local.set $1
+    local.set $0
     br $while-continue|17
    end
   end
-  local.get $0
+  local.get $1
   i32.const 10
   i32.ne
   if
@@ -1822,7 +1795,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $1
+  local.get $0
   if
    i32.const 0
    i32.const 32
@@ -1834,7 +1807,7 @@
   i32.const 1
   global.set $while/ran
   global.get $~lib/memory/__stack_pointer
-  i32.const 4
+  i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
   i32.const 0
@@ -1859,9 +1832,6 @@
      i32.const 10
      i32.eq
      if
-      global.get $~lib/memory/__stack_pointer
-      i32.const 0
-      i32.store align=1
       i32.const 0
       local.set $1
       br $while-break|0

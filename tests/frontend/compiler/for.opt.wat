@@ -1362,8 +1362,7 @@
  )
  (func $for/Ref#constructor (result i32)
   (local $0 i32)
-  (local $1 i32)
-  i32.const 8
+  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   call $~lib/rt/itcms/__new
@@ -1371,39 +1370,18 @@
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  local.get $0
-  i32.store align=1
-  local.get $0
-  local.set $1
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
   i32.eqz
   if
    i32.const 0
    call $~lib/rt/itcms/__new
    local.set $0
-   global.get $~lib/memory/__stack_pointer
-   local.get $0
-   i32.store align=1
-   local.get $0
-   local.set $1
   end
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $1
+  local.get $0
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
@@ -1752,21 +1730,21 @@
   i32.const 352
   global.set $~lib/rt/itcms/fromSpace
   i32.const 0
-  local.set $0
-  i32.const 4
+  local.set $1
+  i32.const 8
   call $~lib/rt/__decrease_sp
   call $for/Ref#constructor
-  local.set $1
+  local.set $0
   global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store align=1
+  local.get $0
+  i32.store offset=4 align=1
   loop $for-loop|07
-   local.get $1
+   local.get $0
    if
-    local.get $0
+    local.get $1
     i32.const 1
     i32.add
-    local.tee $0
+    local.tee $1
     i32.const 10
     i32.eq
     if (result i32)
@@ -1776,17 +1754,12 @@
      i32.const 0
     else
      call $for/Ref#constructor
-     local.set $1
-     global.get $~lib/memory/__stack_pointer
-     local.get $1
-     i32.store align=1
-     local.get $1
     end
-    local.set $1
+    local.set $0
     br $for-loop|07
    end
   end
-  local.get $0
+  local.get $1
   i32.const 10
   i32.ne
   if
@@ -1797,7 +1770,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $1
+  local.get $0
   if
    i32.const 0
    i32.const 32
@@ -1809,53 +1782,47 @@
   i32.const 1
   global.set $for/ran
   global.get $~lib/memory/__stack_pointer
-  i32.const 4
+  i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
   i32.const 0
   global.set $for/ran
   i32.const 0
-  local.set $0
-  i32.const 4
+  local.set $1
+  i32.const 8
   call $~lib/rt/__decrease_sp
   call $for/Ref#constructor
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store align=1
+  drop
   call $for/Ref#constructor
-  local.set $1
+  local.set $0
   global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store align=1
+  local.get $0
+  i32.store offset=4 align=1
   loop $for-loop|08
    call $for/Ref#constructor
    if
     block $for-break0
-     local.get $0
+     local.get $1
      i32.const 1
      i32.add
-     local.tee $0
+     local.tee $1
      i32.const 10
      i32.eq
      if
-      global.get $~lib/memory/__stack_pointer
       i32.const 0
-      i32.store align=1
-      i32.const 0
-      local.set $1
+      local.set $0
       br $for-break0
      end
      call $for/Ref#constructor
-     local.set $1
+     local.set $0
      global.get $~lib/memory/__stack_pointer
-     local.get $1
+     local.get $0
      i32.store align=1
      br $for-loop|08
     end
    end
   end
-  local.get $0
+  local.get $1
   i32.const 10
   i32.ne
   if
@@ -1866,7 +1833,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $1
+  local.get $0
   if
    i32.const 0
    i32.const 32
@@ -1878,7 +1845,7 @@
   i32.const 1
   global.set $for/ran
   global.get $~lib/memory/__stack_pointer
-  i32.const 4
+  i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/rt/itcms/state

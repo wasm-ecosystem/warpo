@@ -1,26 +1,26 @@
 (module
- (type $0 (func (param i32)))
- (type $1 (func))
- (type $2 (func (param i32 i32) (result i32)))
- (type $3 (func (param i32 f32 i32 i32) (result i32)))
- (type $4 (func (param i32 i32)))
- (type $5 (func (param i32 i32 i32 i32)))
+ (type $0 (func))
+ (type $1 (func (param i32)))
+ (type $2 (func (param i32 i32)))
+ (type $3 (func (param i32 i32) (result i32)))
+ (type $4 (func (param i32 i32 i32 i32)))
+ (type $5 (func (param i32 f32 i32 i32) (result i32)))
  (type $6 (func (param i32 i32 i32)))
  (type $7 (func (param i32 i32 i64)))
  (type $8 (func (param f32) (result f32)))
  (type $9 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33404))
+ (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33404))
  (memory $0 1)
  (data $0 (i32.const 12) "<")
  (data $0.1 (i32.const 24) "\02\00\00\00 \00\00\00i\00n\00f\00e\00r\00-\00g\00e\00n\00e\00r\00i\00c\00.\00t\00s")
@@ -161,7 +161,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$90
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$92
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -185,7 +185,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$90
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$92
      end
      local.get $0
      i32.load offset=8
@@ -1004,7 +1004,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$95 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$97 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1020,7 +1020,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$95
+         br $__inlined_func$~lib/rt/itcms/step$97
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1059,7 +1059,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$95
+           br $__inlined_func$~lib/rt/itcms/step$97
           end
           local.get $2
           i32.load offset=4
@@ -1151,7 +1151,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$95
+        br $__inlined_func$~lib/rt/itcms/step$97
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1250,7 +1250,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$95
+        br $__inlined_func$~lib/rt/itcms/step$97
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1538,25 +1538,10 @@
   local.get $0
  )
  (func $infer-generic/test2 (param $0 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $0
  )
  (func $infer-generic/inferAssert (param $0 i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 4
-  call $~lib/rt/__localtostack
-  local.tee $0
   if (result i32)
    local.get $0
   else
@@ -1567,14 +1552,8 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load
   drop
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $folding-inner0
@@ -1602,103 +1581,51 @@
       call $~lib/rt/itcms/__visit
       return
      end
-     i32.const 4
-     call $~lib/rt/__decrease_sp
      local.get $0
-     i32.const 0
-     call $~lib/rt/__localtostack
      i32.load
      call $~lib/rt/itcms/__visit
-     global.get $~lib/memory/__stack_pointer
-     i32.const 4
-     i32.add
-     global.set $~lib/memory/__stack_pointer
      return
     end
     return
    end
    unreachable
   end
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   call $~lib/rt/itcms/__visit
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $~start
   (local $0 i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
-  (local $4 i32)
-  (local $5 i32)
-  i32.const 20
-  call $~lib/rt/__decrease_sp
-  i32.const 128
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  i32.const 176
-  i32.const 4
-  call $~lib/rt/__localtostack
-  local.set $1
-  local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
-  local.set $2
-  local.get $1
-  i32.const 12
-  call $~lib/rt/__localtostack
+  i32.const 140
   i32.load
-  local.set $4
-  i32.const 0
-  local.set $0
-  i32.const 0
   local.set $1
-  i32.const 8
-  call $~lib/rt/__decrease_sp
-  local.get $2
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.load offset=12
-  local.set $3
   loop $for-loop|0
    local.get $0
-   local.get $3
+   local.get $1
+   i32.const 140
+   i32.load
+   local.tee $2
+   local.get $1
    local.get $2
-   i32.const 0
-   call $~lib/rt/__localtostack
-   i32.load offset=12
-   local.tee $5
-   local.get $3
-   local.get $5
    i32.lt_s
    select
    i32.lt_s
    if
-    local.get $1
-    local.get $2
-    i32.const 4
-    call $~lib/rt/__localtostack
-    i32.load offset=4
+    local.get $3
+    i32.const 132
+    i32.load
     local.get $0
     i32.const 2
     i32.shl
     i32.add
     f32.load
     local.get $0
-    local.get $2
-    i32.const 0
-    call $~lib/rt/__localtostack
-    local.get $4
-    call_indirect (type $3)
-    local.set $1
+    i32.const 128
+    call $start:infer-generic~anonymous|0
+    local.set $3
     local.get $0
     i32.const 1
     i32.add
@@ -1706,10 +1633,6 @@
     br $for-loop|0
    end
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   memory.size
   i32.const 16
   i32.shl
@@ -1742,26 +1665,32 @@
   i32.store
   i32.const 496
   global.set $~lib/rt/itcms/fromSpace
-  i32.const 8
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 636
+  i32.lt_s
+  if
+   unreachable
+  end
   i32.const 4
   i32.const 6
   call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
   local.set $0
-  i32.const 4
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
   local.get $0
   i32.eqz
   if
    i32.const 0
    i32.const 0
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
    local.set $0
   end
   global.get $~lib/memory/__stack_pointer
@@ -1769,52 +1698,7 @@
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 12
-  call $~lib/rt/__localtostack
-  local.tee $0
-  i32.const 16
-  call $~lib/rt/__localtostack
   i32.const 2
   i32.store
-  local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
-  drop
-  global.get $~lib/memory/__stack_pointer
-  i32.const 20
-  i32.add
-  global.set $~lib/memory/__stack_pointer
- )
- (func $~lib/rt/__localtostack (param $0 i32) (param $1 i32) (result i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.add
-  local.get $0
-  i32.store align=1
-  local.get $0
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  local.get $0
-  memory.fill
-  global.get $~lib/memory/__stack_pointer
-  i32.const 636
-  i32.lt_s
-  if
-   unreachable
-  end
  )
 )

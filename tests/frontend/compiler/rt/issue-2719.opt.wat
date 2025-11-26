@@ -1514,9 +1514,19 @@
  )
  (func $rt/issue-2719/issue2719_T#constructor (result i32)
   (local $0 i32)
-  (local $1 i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 504
+  i32.lt_s
+  if
+   unreachable
+  end
   i32.const 4
   i32.const 4
   call $~lib/rt/itcms/__new
@@ -1524,15 +1534,6 @@
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  local.get $0
-  i32.store align=1
-  local.get $0
-  local.set $1
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
   i32.eqz
   if
@@ -1540,24 +1541,12 @@
    i32.const 0
    call $~lib/rt/itcms/__new
    local.set $0
-   global.get $~lib/memory/__stack_pointer
-   local.get $0
-   i32.store align=1
-   local.get $0
-   local.set $1
   end
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $1
+  local.get $0
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
@@ -1590,8 +1579,19 @@
  (func $~start
   (local $0 i32)
   (local $1 i32)
+  global.get $~lib/memory/__stack_pointer
   i32.const 8
-  call $~lib/rt/__decrease_sp
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i64.const 0
+  i64.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 504
+  i32.lt_s
+  if
+   unreachable
+  end
   memory.size
   i32.const 16
   i32.shl
@@ -1628,18 +1628,12 @@
   local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $0
-  i32.store align=1
-  local.get $0
-  local.set $1
+  i32.store offset=4 align=1
   call $rt/issue-2719/issue2719_T#constructor
-  local.set $0
+  local.set $1
   global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  local.get $0
+  local.get $1
   i32.store align=1
-  i32.const 8
-  call $~lib/rt/__decrease_sp
   global.get $~lib/rt/itcms/state
   i32.const 0
   i32.gt_s
@@ -1674,28 +1668,9 @@
   i32.add
   global.set $~lib/rt/itcms/threshold
   call $rt/issue-2719/issue2719_T#constructor
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  local.get $0
-  i32.store align=1
-  local.get $0
   i32.const 100
   i32.store
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store align=1
-  local.get $1
+  local.get $0
   i32.load
   if
    i32.const 0
@@ -1706,28 +1681,8 @@
    unreachable
   end
   global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
   i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  local.get $0
-  memory.fill
-  global.get $~lib/memory/__stack_pointer
-  i32.const 504
-  i32.lt_s
-  if
-   unreachable
-  end
  )
 )

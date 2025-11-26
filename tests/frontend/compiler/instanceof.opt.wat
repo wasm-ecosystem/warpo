@@ -3,14 +3,13 @@
  (type $1 (func (param i32) (result i32)))
  (type $2 (func))
  (type $3 (func (param i32 i32)))
- (type $4 (func (param i32 i32) (result i32)))
- (type $5 (func (param i32 i32 i32 i32)))
- (type $6 (func (param i32 i32 i32)))
- (type $7 (func (param i32 i32 i64)))
- (type $8 (func (result i32)))
- (type $9 (func (param i32 i32 i32) (result i32)))
+ (type $4 (func (param i32 i32 i32 i32)))
+ (type $5 (func (param i32 i32 i32)))
+ (type $6 (func (param i32 i32 i64)))
+ (type $7 (func (param i32 i32) (result i32)))
+ (type $8 (func (param i32 i32 i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $instanceof/z (mut i32) (i32.const 0))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33332))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -35,7 +34,7 @@
  (global $instanceof/w (mut i32) (i32.const 0))
  (global $instanceof/x (mut i32) (i32.const 0))
  (global $instanceof/y (mut i32) (i32.const 0))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33332))
+ (global $instanceof/z (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "<")
  (data $0.1 (i32.const 24) "\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e")
@@ -1462,49 +1461,11 @@
   memory.fill
   local.get $0
  )
- (func $~lib/object/Object#constructor (param $0 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
-   local.set $0
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
- )
  (func $instanceof/Cat#constructor (param $0 i32) (result i32)
   local.get $0
   i32.const 12
   i32.const 13
   call $byn$mgfn-shared$instanceof/Cat#constructor
- )
- (func $instanceof/BlackCat#constructor (result i32)
-  (local $0 i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
-  i32.const 14
-  call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
-  call $instanceof/Cat#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $instanceof/Y#constructor (param $0 i32) (result i32)
   local.get $0
@@ -1513,12 +1474,7 @@
   call $byn$mgfn-shared$instanceof/Cat#constructor
  )
  (func $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>" (param $0 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.tee $0
   if (result i32)
    local.get $0
    i32.const 8
@@ -1547,18 +1503,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>" (param $0 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.tee $0
   if (result i32)
    local.get $0
    i32.const 8
@@ -1588,18 +1535,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>" (param $0 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.tee $0
   if (result i32)
    local.get $0
    i32.const 8
@@ -1624,18 +1562,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>" (param $0 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.tee $0
   if (result i32)
    local.get $0
    i32.const 8
@@ -1664,18 +1593,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Z>" (param $0 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.tee $0
   if (result i32)
    local.get $0
    i32.const 8
@@ -1699,10 +1619,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $~instanceof|instanceof/Cat (param $0 i32) (result i32)
   local.get $0
@@ -1823,8 +1739,6 @@
  )
  (func $~start
   (local $0 i32)
-  i32.const 88
-  call $~lib/rt/__decrease_sp
   memory.size
   i32.const 16
   i32.shl
@@ -1861,56 +1775,46 @@
   i32.const 4
   call $byn$mgfn-shared$instanceof/A#constructor
   global.set $instanceof/a
-  i32.const 8
   call $~lib/rt/__decrease_sp
   i32.const 5
   call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $byn$mgfn-shared$instanceof/A#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  local.get $0
+  i32.store align=1
+  local.get $0
+  i32.const 4
+  call $byn$mgfn-shared$instanceof/A#constructor
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
   global.set $instanceof/b
-  i32.const 8
   call $~lib/rt/__decrease_sp
   i32.const 6
   call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $byn$mgfn-shared$instanceof/A#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  local.get $0
+  i32.store align=1
+  local.get $0
+  i32.const 4
+  call $byn$mgfn-shared$instanceof/A#constructor
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.const 8
   i32.sub
   i32.load
   i32.const 6
   i32.eq
   if
-   i32.const 4
-   call $~lib/rt/__decrease_sp
    global.get $instanceof/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    local.tee $0
    if
     local.get $0
@@ -1919,14 +1823,8 @@
     i32.load
     drop
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4
-   i32.add
-   global.set $~lib/memory/__stack_pointer
   end
   global.get $instanceof/a
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -1957,89 +1855,77 @@
   end
   i32.const 1
   global.set $instanceof/an
-  i32.const 8
   call $~lib/rt/__decrease_sp
   i32.const 7
   call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
   local.set $0
-  i32.const 8
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
   call $~lib/rt/__decrease_sp
   local.get $0
-  if (result i32)
-   local.get $0
-  else
+  i32.eqz
+  if
    i32.const 8
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
+   local.set $0
+   global.get $~lib/memory/__stack_pointer
+   local.get $0
+   i32.store align=1
   end
-  i32.const 4
-  call $~lib/rt/__localtostack
-  call $~lib/object/Object#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
+  local.get $0
+  i32.eqz
+  if
+   i32.const 0
+   call $~lib/rt/itcms/__new
+   local.set $0
+  end
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
   global.set $instanceof/child
-  i32.const 8
   call $~lib/rt/__decrease_sp
   i32.const 9
   call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
   local.set $0
-  i32.const 8
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
   call $~lib/rt/__decrease_sp
   local.get $0
-  if (result i32)
-   local.get $0
-  else
+  i32.eqz
+  if
    i32.const 10
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
+   local.set $0
+   global.get $~lib/memory/__stack_pointer
+   local.get $0
+   i32.store align=1
   end
-  i32.const 4
-  call $~lib/rt/__localtostack
-  call $~lib/object/Object#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
+  local.get $0
+  i32.eqz
+  if
+   i32.const 0
+   call $~lib/rt/itcms/__new
+   local.set $0
+  end
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
   global.set $instanceof/childAsParent
   global.get $instanceof/childAsParent
-  i32.const 4
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2061,8 +1947,6 @@
    unreachable
   end
   global.get $instanceof/childAsParent
-  i32.const 8
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2095,11 +1979,23 @@
   i32.const 0
   call $instanceof/Cat#constructor
   global.set $instanceof/cat
-  call $instanceof/BlackCat#constructor
+  call $~lib/rt/__decrease_sp
+  i32.const 14
+  call $~lib/rt/itcms/__new
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
+  local.get $0
+  call $instanceof/Cat#constructor
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
   global.set $instanceof/blackcat
   global.get $instanceof/animal
-  i32.const 12
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2116,8 +2012,6 @@
    unreachable
   end
   global.get $instanceof/animal
-  i32.const 16
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2134,8 +2028,6 @@
    unreachable
   end
   global.get $instanceof/cat
-  i32.const 20
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2153,8 +2045,6 @@
    unreachable
   end
   global.get $instanceof/cat
-  i32.const 24
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2171,8 +2061,6 @@
    unreachable
   end
   global.get $instanceof/blackcat
-  i32.const 28
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2190,8 +2078,6 @@
    unreachable
   end
   global.get $instanceof/blackcat
-  i32.const 32
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2215,7 +2101,21 @@
   i32.const 0
   call $instanceof/Cat#constructor
   global.set $instanceof/nullableCat
-  call $instanceof/BlackCat#constructor
+  call $~lib/rt/__decrease_sp
+  i32.const 14
+  call $~lib/rt/itcms/__new
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
+  local.get $0
+  call $instanceof/Cat#constructor
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
   global.set $instanceof/nullableBlackcat
   global.get $instanceof/nullableAnimal
   i32.eqz
@@ -2228,8 +2128,6 @@
    unreachable
   end
   global.get $instanceof/nullableAnimal
-  i32.const 36
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2246,8 +2144,6 @@
    unreachable
   end
   global.get $instanceof/nullableAnimal
-  i32.const 40
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2274,8 +2170,6 @@
    unreachable
   end
   global.get $instanceof/nullableCat
-  i32.const 44
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2293,8 +2187,6 @@
    unreachable
   end
   global.get $instanceof/nullableCat
-  i32.const 48
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2321,8 +2213,6 @@
    unreachable
   end
   global.get $instanceof/nullableBlackcat
-  i32.const 52
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2340,8 +2230,6 @@
    unreachable
   end
   global.get $instanceof/nullableBlackcat
-  i32.const 56
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2358,128 +2246,22 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 0
-  i32.const 60
-  call $~lib/rt/__localtostack
-  local.tee $0
-  if (result i32)
-   local.get $0
-   call $~instanceof|instanceof/Cat
-  else
-   i32.const 0
-  end
-  if
-   i32.const 0
-   i32.const 432
-   i32.const 175
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 0
-  i32.const 64
-  call $~lib/rt/__localtostack
-  local.tee $0
-  if (result i32)
-   local.get $0
-   call $~instanceof|instanceof/BlackCat
-  else
-   i32.const 0
-  end
-  if
-   i32.const 0
-   i32.const 432
-   i32.const 176
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 0
-  i32.const 68
-  call $~lib/rt/__localtostack
-  local.tee $0
-  if (result i32)
-   local.get $0
-   call $~instanceof|instanceof/Cat
-  else
-   i32.const 0
-  end
-  if
-   i32.const 0
-   i32.const 432
-   i32.const 179
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 0
-  i32.const 72
-  call $~lib/rt/__localtostack
-  local.tee $0
-  if (result i32)
-   local.get $0
-   call $~instanceof|instanceof/BlackCat
-  else
-   i32.const 0
-  end
-  if
-   i32.const 0
-   i32.const 432
-   i32.const 180
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 0
-  i32.const 76
-  call $~lib/rt/__localtostack
-  local.tee $0
-  if (result i32)
-   local.get $0
-   call $~instanceof|instanceof/Cat
-  else
-   i32.const 0
-  end
-  if
-   i32.const 0
-   i32.const 432
-   i32.const 183
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 0
-  i32.const 80
-  call $~lib/rt/__localtostack
-  local.tee $0
-  if (result i32)
-   local.get $0
-   call $~instanceof|instanceof/BlackCat
-  else
-   i32.const 0
-  end
-  if
-   i32.const 0
-   i32.const 432
-   i32.const 184
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.const 8
   call $~lib/rt/__decrease_sp
   i32.const 15
   call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
-  call $~lib/object/Object#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  local.get $0
+  i32.store align=1
+  local.get $0
+  i32.eqz
+  if
+   i32.const 0
+   call $~lib/rt/itcms/__new
+   local.set $0
+  end
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
@@ -2491,89 +2273,23 @@
   i32.const 0
   call $instanceof/Y#constructor
   global.set $instanceof/y
-  i32.const 8
   call $~lib/rt/__decrease_sp
   i32.const 22
   call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
-  call $instanceof/Y#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  local.get $0
+  i32.store align=1
+  local.get $0
+  call $instanceof/Y#constructor
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
   global.set $instanceof/z
   global.get $instanceof/w
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/w
-  i32.const 84
-  call $~lib/rt/__localtostack
-  local.set $0
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.tee $0
   if (result i32)
    local.get $0
@@ -2594,500 +2310,135 @@
    call $~lib/builtins/abort
    unreachable
   end
+  global.get $instanceof/x
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
+  global.get $instanceof/x
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/x
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/x
+  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
+  global.get $instanceof/x
+  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Z>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Z>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Z>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
+  global.get $instanceof/x
+  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
+  global.get $instanceof/x
+  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
+  global.get $instanceof/x
+  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
+  global.get $instanceof/x
+  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/x
+  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
+  global.get $instanceof/x
+  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/x
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/x
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/y
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
+  global.get $instanceof/z
+  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
+ )
+ (func $~lib/rt/__decrease_sp
   global.get $~lib/memory/__stack_pointer
   i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/w
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/w
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/w
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/w
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Z>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Z>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Z>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicFalse<instanceof/X,instanceof/Y>"
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  drop
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/x
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/X>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/y
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Y>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
-  global.get $instanceof/z
-  i32.const 84
-  call $~lib/rt/__localtostack
-  call $"instanceof/assertDynamicTrue<~lib/object/Object,instanceof/Z>"
-  global.get $~lib/memory/__stack_pointer
-  i32.const 88
-  i32.add
-  global.set $~lib/memory/__stack_pointer
- )
- (func $~lib/rt/__localtostack (param $0 i32) (param $1 i32) (result i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.add
-  local.get $0
-  i32.store align=1
-  local.get $0
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
   i32.const 0
-  local.get $0
-  memory.fill
+  i32.store align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 564
   i32.lt_s
@@ -3096,50 +2447,48 @@
   end
  )
  (func $byn$mgfn-shared$instanceof/A#constructor (param $0 i32) (param $1 i32) (result i32)
-  i32.const 8
   call $~lib/rt/__decrease_sp
   local.get $0
-  if (result i32)
-   local.get $0
-  else
+  i32.eqz
+  if
    local.get $1
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
+   local.set $0
+   global.get $~lib/memory/__stack_pointer
+   local.get $0
+   i32.store align=1
   end
-  i32.const 4
-  call $~lib/rt/__localtostack
-  call $~lib/object/Object#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
+  local.get $0
+  i32.eqz
+  if
+   i32.const 0
+   call $~lib/rt/itcms/__new
+   local.set $0
+  end
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
  )
  (func $byn$mgfn-shared$instanceof/Cat#constructor (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
-  i32.const 8
   call $~lib/rt/__decrease_sp
   local.get $0
-  if (result i32)
-   local.get $0
-  else
+  i32.eqz
+  if
    local.get $2
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
+   local.set $0
+   global.get $~lib/memory/__stack_pointer
+   local.get $0
+   i32.store align=1
   end
-  i32.const 4
-  call $~lib/rt/__localtostack
+  local.get $0
   local.get $1
   call $byn$mgfn-shared$instanceof/A#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0

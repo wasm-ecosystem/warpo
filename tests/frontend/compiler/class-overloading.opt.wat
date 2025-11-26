@@ -3,10 +3,10 @@
  (type $1 (func (param i32) (result i32)))
  (type $2 (func))
  (type $3 (func (param i32 i32)))
- (type $4 (func (param i32 i32) (result i32)))
- (type $5 (func (param i32 i32 i32 i32)))
- (type $6 (func (param i32 i32 i32)))
- (type $7 (func (param i32 i32 i64)))
+ (type $4 (func (param i32 i32 i32 i32)))
+ (type $5 (func (param i32 i32 i32)))
+ (type $6 (func (param i32 i32 i64)))
+ (type $7 (func (param i32 i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $class-overloading/which (mut i32) (i32.const 32))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -194,7 +194,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$100
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$102
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -218,7 +218,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$100
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$102
      end
      local.get $0
      i32.load offset=8
@@ -953,7 +953,7 @@
     local.set $1
     loop $do-loop|0
      local.get $1
-     block $__inlined_func$~lib/rt/itcms/step$105 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$107 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -969,7 +969,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$105
+         br $__inlined_func$~lib/rt/itcms/step$107
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1008,7 +1008,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$105
+           br $__inlined_func$~lib/rt/itcms/step$107
           end
           local.get $1
           i32.load offset=4
@@ -1100,7 +1100,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$105
+        br $__inlined_func$~lib/rt/itcms/step$107
        end
        global.get $~lib/rt/itcms/iter
        local.tee $1
@@ -1199,7 +1199,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$105
+        br $__inlined_func$~lib/rt/itcms/step$107
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1414,66 +1414,42 @@
   memory.fill
   local.get $0
  )
- (func $~lib/object/Object#constructor (param $0 i32) (result i32)
-  i32.const 4
+ (func $class-overloading/B#constructor (param $0 i32) (result i32)
   call $~lib/rt/__decrease_sp
+  local.get $0
+  i32.eqz
+  if
+   i32.const 5
+   call $~lib/rt/itcms/__new
+   local.set $0
+   global.get $~lib/memory/__stack_pointer
+   local.get $0
+   i32.store align=1
+  end
+  call $~lib/rt/__decrease_sp
+  local.get $0
+  i32.eqz
+  if
+   i32.const 4
+   call $~lib/rt/itcms/__new
+   local.set $0
+   global.get $~lib/memory/__stack_pointer
+   local.get $0
+   i32.store align=1
+  end
   local.get $0
   i32.eqz
   if
    i32.const 0
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
    local.set $0
   end
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
- )
- (func $class-overloading/B#constructor (param $0 i32) (result i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
-  local.get $0
-  if (result i32)
-   local.get $0
-  else
-   i32.const 5
-   call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
-  end
-  i32.const 4
-  call $~lib/rt/__localtostack
-  local.set $0
-  i32.const 8
-  call $~lib/rt/__decrease_sp
-  local.get $0
-  if (result i32)
-   local.get $0
-  else
-   i32.const 4
-   call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
-  end
-  i32.const 4
-  call $~lib/rt/__localtostack
-  call $~lib/object/Object#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
@@ -1482,225 +1458,160 @@
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
   local.get $0
   local.get $1
   i32.eq
   if
-   global.get $~lib/memory/__stack_pointer
-   i32.const 8
-   i32.add
-   global.set $~lib/memory/__stack_pointer
    i32.const 1
    return
   end
-  block $folding-inner0
-   local.get $1
-   i32.eqz
-   local.get $0
-   i32.eqz
-   i32.or
-   if
-    br $folding-inner0
-   end
-   local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
-   i32.const 20
-   i32.sub
-   i32.load offset=16
-   i32.const 1
-   i32.shr_u
-   local.set $4
-   local.get $4
-   local.get $1
-   i32.const 0
-   call $~lib/rt/__localtostack
-   i32.const 20
-   i32.sub
-   i32.load offset=16
-   i32.const 1
-   i32.shr_u
-   i32.ne
-   if
-    br $folding-inner0
-   end
-   block $__inlined_func$~lib/util/string/compareImpl$74 (result i32)
-    local.get $0
-    i32.const 0
-    call $~lib/rt/__localtostack
-    local.tee $2
-    i32.const 7
-    i32.and
-    local.get $1
-    i32.const 4
-    call $~lib/rt/__localtostack
-    local.tee $3
-    i32.const 7
-    i32.and
-    i32.or
-    i32.eqz
-    local.get $4
-    local.tee $0
-    i32.const 4
-    i32.ge_u
-    i32.and
-    if
-     loop $do-loop|0
-      local.get $2
-      i64.load
-      local.get $3
-      i64.load
-      i64.eq
-      if
-       local.get $2
-       i32.const 8
-       i32.add
-       local.set $2
-       local.get $3
-       i32.const 8
-       i32.add
-       local.set $3
-       local.get $0
-       i32.const 4
-       i32.sub
-       local.tee $0
-       i32.const 4
-       i32.ge_u
-       br_if $do-loop|0
-      end
-     end
-    end
-    loop $while-continue|1
-     local.get $0
-     local.tee $1
-     i32.const 1
-     i32.sub
-     local.set $0
-     local.get $1
-     if
-      local.get $2
-      i32.load16_u
-      local.tee $1
-      local.get $3
-      i32.load16_u
-      local.tee $4
-      i32.ne
-      if
-       local.get $1
-       local.get $4
-       i32.sub
-       br $__inlined_func$~lib/util/string/compareImpl$74
-      end
-      local.get $2
-      i32.const 2
-      i32.add
-      local.set $2
-      local.get $3
-      i32.const 2
-      i32.add
-      local.set $3
-      br $while-continue|1
-     end
-    end
-    i32.const 0
-   end
-   i32.eqz
-   local.set $0
-   global.get $~lib/memory/__stack_pointer
-   i32.const 8
-   i32.add
-   global.set $~lib/memory/__stack_pointer
-   local.get $0
-   return
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  i32.const 0
- )
- (func $class-overloading/C#a<i32> (param $0 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  drop
-  i32.const 496
-  global.set $class-overloading/which
-  i32.const 496
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 496
-  call $~lib/string/String.__eq
+  local.get $1
   i32.eqz
+  local.get $0
+  i32.eqz
+  i32.or
   if
    i32.const 0
-   i32.const 528
-   i32.const 61
-   i32.const 5
-   call $~lib/builtins/abort
-   unreachable
+   return
   end
-  i32.const 592
-  global.set $class-overloading/which
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
+  local.get $0
+  i32.const 20
+  i32.sub
+  i32.load offset=16
+  i32.const 1
+  i32.shr_u
+  local.tee $3
+  local.get $1
+  i32.const 20
+  i32.sub
+  i32.load offset=16
+  i32.const 1
+  i32.shr_u
+  i32.ne
+  if
+   i32.const 0
+   return
+  end
+  block $__inlined_func$~lib/util/string/compareImpl$74 (result i32)
+   local.get $0
+   local.tee $2
+   i32.const 7
+   i32.and
+   local.get $1
+   i32.const 7
+   i32.and
+   i32.or
+   i32.eqz
+   local.get $3
+   local.tee $0
+   i32.const 4
+   i32.ge_u
+   i32.and
+   if
+    loop $do-loop|0
+     local.get $2
+     i64.load
+     local.get $1
+     i64.load
+     i64.eq
+     if
+      local.get $2
+      i32.const 8
+      i32.add
+      local.set $2
+      local.get $1
+      i32.const 8
+      i32.add
+      local.set $1
+      local.get $0
+      i32.const 4
+      i32.sub
+      local.tee $0
+      i32.const 4
+      i32.ge_u
+      br_if $do-loop|0
+     end
+    end
+   end
+   loop $while-continue|1
+    local.get $0
+    local.tee $3
+    i32.const 1
+    i32.sub
+    local.set $0
+    local.get $3
+    if
+     local.get $2
+     i32.load16_u
+     local.tee $3
+     local.get $1
+     i32.load16_u
+     local.tee $4
+     i32.ne
+     if
+      local.get $3
+      local.get $4
+      i32.sub
+      br $__inlined_func$~lib/util/string/compareImpl$74
+     end
+     local.get $2
+     i32.const 2
+     i32.add
+     local.set $2
+     local.get $1
+     i32.const 2
+     i32.add
+     local.set $1
+     br $while-continue|1
+    end
+   end
+   i32.const 0
+  end
+  i32.eqz
  )
  (func $class-overloading/D#constructor (param $0 i32) (result i32)
-  i32.const 8
   call $~lib/rt/__decrease_sp
   local.get $0
-  if (result i32)
-   local.get $0
-  else
+  i32.eqz
+  if
    i32.const 7
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
+   local.set $0
+   global.get $~lib/memory/__stack_pointer
+   local.get $0
+   i32.store align=1
   end
-  i32.const 4
-  call $~lib/rt/__localtostack
+  local.get $0
   call $class-overloading/B#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
  )
  (func $class-overloading/E#constructor (param $0 i32) (result i32)
-  i32.const 8
   call $~lib/rt/__decrease_sp
   local.get $0
-  if (result i32)
-   local.get $0
-  else
+  i32.eqz
+  if
    i32.const 8
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
+   local.set $0
+   global.get $~lib/memory/__stack_pointer
+   local.get $0
+   i32.store align=1
   end
-  i32.const 4
-  call $~lib/rt/__localtostack
+  local.get $0
   call $class-overloading/D#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
  )
  (func $class-overloading/A#a<i32>@override (param $0 i32)
-  (local $1 i32)
   block $default
    block $case2
     block $case1
@@ -1709,16 +1620,16 @@
       i32.const 8
       i32.sub
       i32.load
-      local.tee $1
+      local.tee $0
       i32.const 5
       i32.eq
-      local.get $1
+      local.get $0
       i32.const 7
       i32.eq
       i32.or
       br_if $case0
       block $tablify|0
-       local.get $1
+       local.get $0
        i32.const 6
        i32.sub
        br_table $case1 $tablify|0 $case0 $case2 $tablify|0
@@ -1729,8 +1640,22 @@
      global.set $class-overloading/which
      return
     end
-    local.get $0
-    call $class-overloading/C#a<i32>
+    i32.const 496
+    global.set $class-overloading/which
+    i32.const 496
+    i32.const 496
+    call $~lib/string/String.__eq
+    i32.eqz
+    if
+     i32.const 0
+     i32.const 528
+     i32.const 61
+     i32.const 5
+     call $~lib/builtins/abort
+     unreachable
+    end
+    i32.const 592
+    global.set $class-overloading/which
     return
    end
    i32.const 624
@@ -1881,8 +1806,6 @@
   if
    i32.const 1
    global.set $~started
-   i32.const 4
-   call $~lib/rt/__decrease_sp
    memory.size
    i32.const 16
    i32.shl
@@ -1919,12 +1842,8 @@
    call $class-overloading/B#constructor
    global.set $class-overloading/a
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#a<i32>@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 496
    call $~lib/string/String.__eq
    i32.eqz
@@ -1939,12 +1858,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#b@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 496
    call $~lib/string/String.__eq
    i32.eqz
@@ -1959,12 +1874,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#b@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 496
    call $~lib/string/String.__eq
    i32.eqz
@@ -1979,12 +1890,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#b@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 496
    call $~lib/string/String.__eq
    i32.eqz
@@ -1996,33 +1903,41 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 8
    call $~lib/rt/__decrease_sp
    i32.const 6
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
-   i32.const 4
-   call $~lib/rt/__localtostack
-   call $class-overloading/B#constructor
-   i32.const 0
-   call $~lib/rt/__localtostack
    local.set $0
    global.get $~lib/memory/__stack_pointer
-   i32.const 8
+   local.get $0
+   i32.store align=1
+   local.get $0
+   call $class-overloading/B#constructor
+   local.set $0
+   global.get $~lib/memory/__stack_pointer
+   i32.const 4
    i32.add
    global.set $~lib/memory/__stack_pointer
    local.get $0
    global.set $class-overloading/c
    i32.const 32
    global.set $class-overloading/which
-   global.get $class-overloading/c
-   i32.const 0
-   call $~lib/rt/__localtostack
-   call $class-overloading/C#a<i32>
-   global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
+   i32.const 496
+   global.set $class-overloading/which
+   i32.const 496
+   i32.const 496
+   call $~lib/string/String.__eq
+   i32.eqz
+   if
+    i32.const 0
+    i32.const 528
+    i32.const 61
+    i32.const 5
+    call $~lib/builtins/abort
+    unreachable
+   end
+   i32.const 592
+   global.set $class-overloading/which
+   i32.const 592
    i32.const 592
    call $~lib/string/String.__eq
    i32.eqz
@@ -2036,15 +1951,9 @@
    end
    i32.const 32
    global.set $class-overloading/which
-   global.get $class-overloading/c
-   i32.const 0
-   call $~lib/rt/__localtostack
-   drop
    i32.const 592
    global.set $class-overloading/which
    i32.const 592
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 592
    call $~lib/string/String.__eq
    i32.eqz
@@ -2058,15 +1967,9 @@
    end
    i32.const 32
    global.set $class-overloading/which
-   global.get $class-overloading/c
-   i32.const 0
-   call $~lib/rt/__localtostack
-   drop
    i32.const 592
    global.set $class-overloading/which
    i32.const 592
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 592
    call $~lib/string/String.__eq
    i32.eqz
@@ -2078,15 +1981,9 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $class-overloading/c
-   i32.const 0
-   call $~lib/rt/__localtostack
-   drop
    i32.const 592
    global.set $class-overloading/which
    i32.const 592
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 592
    call $~lib/string/String.__eq
    i32.eqz
@@ -2104,12 +2001,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#a<i32>@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 496
    call $~lib/string/String.__eq
    i32.eqz
@@ -2124,12 +2017,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#b@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 496
    call $~lib/string/String.__eq
    i32.eqz
@@ -2144,12 +2033,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#b@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 496
    call $~lib/string/String.__eq
    i32.eqz
@@ -2162,12 +2047,8 @@
     unreachable
    end
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#b@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 496
    call $~lib/string/String.__eq
    i32.eqz
@@ -2185,12 +2066,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#a<i32>@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 496
    call $~lib/string/String.__eq
    i32.eqz
@@ -2205,12 +2082,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#b@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 496
    call $~lib/string/String.__eq
    i32.eqz
@@ -2225,12 +2098,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#b@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 496
    call $~lib/string/String.__eq
    i32.eqz
@@ -2243,12 +2112,8 @@
     unreachable
    end
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#b@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 496
    call $~lib/string/String.__eq
    i32.eqz
@@ -2260,20 +2125,18 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 8
    call $~lib/rt/__decrease_sp
    i32.const 9
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
-   i32.const 4
-   call $~lib/rt/__localtostack
-   call $class-overloading/E#constructor
-   i32.const 0
-   call $~lib/rt/__localtostack
    local.set $0
    global.get $~lib/memory/__stack_pointer
-   i32.const 8
+   local.get $0
+   i32.store align=1
+   local.get $0
+   call $class-overloading/E#constructor
+   local.set $0
+   global.get $~lib/memory/__stack_pointer
+   i32.const 4
    i32.add
    global.set $~lib/memory/__stack_pointer
    local.get $0
@@ -2281,12 +2144,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#a<i32>@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 624
    call $~lib/string/String.__eq
    i32.eqz
@@ -2301,12 +2160,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#b@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 624
    call $~lib/string/String.__eq
    i32.eqz
@@ -2321,12 +2176,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#b@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 624
    call $~lib/string/String.__eq
    i32.eqz
@@ -2341,12 +2192,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/a
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/A#b@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 624
    call $~lib/string/String.__eq
    i32.eqz
@@ -2358,20 +2205,22 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 8
    call $~lib/rt/__decrease_sp
    i32.const 11
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
-   i32.const 4
-   call $~lib/rt/__localtostack
-   call $~lib/object/Object#constructor
-   i32.const 0
-   call $~lib/rt/__localtostack
    local.set $0
    global.get $~lib/memory/__stack_pointer
-   i32.const 8
+   local.get $0
+   i32.store align=1
+   local.get $0
+   i32.eqz
+   if
+    i32.const 0
+    call $~lib/rt/itcms/__new
+    local.set $0
+   end
+   global.get $~lib/memory/__stack_pointer
+   i32.const 4
    i32.add
    global.set $~lib/memory/__stack_pointer
    local.get $0
@@ -2379,12 +2228,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/ia
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/IA#foo@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 656
    call $~lib/string/String.__eq
    i32.eqz
@@ -2396,20 +2241,22 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 8
    call $~lib/rt/__decrease_sp
    i32.const 13
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
-   i32.const 4
-   call $~lib/rt/__localtostack
-   call $~lib/object/Object#constructor
-   i32.const 0
-   call $~lib/rt/__localtostack
    local.set $0
    global.get $~lib/memory/__stack_pointer
-   i32.const 8
+   local.get $0
+   i32.store align=1
+   local.get $0
+   i32.eqz
+   if
+    i32.const 0
+    call $~lib/rt/itcms/__new
+    local.set $0
+   end
+   global.get $~lib/memory/__stack_pointer
+   i32.const 4
    i32.add
    global.set $~lib/memory/__stack_pointer
    local.get $0
@@ -2417,12 +2264,8 @@
    i32.const 32
    global.set $class-overloading/which
    global.get $class-overloading/ic
-   i32.const 0
-   call $~lib/rt/__localtostack
    call $class-overloading/IA#foo@override
    global.get $class-overloading/which
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.const 688
    call $~lib/string/String.__eq
    i32.eqz
@@ -2434,111 +2277,95 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 8
+   call $~lib/rt/__decrease_sp
    call $~lib/rt/__decrease_sp
    i32.const 15
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
-   i32.const 4
-   call $~lib/rt/__localtostack
    local.set $0
-   i32.const 8
+   global.get $~lib/memory/__stack_pointer
+   local.get $0
+   i32.store align=1
    call $~lib/rt/__decrease_sp
    local.get $0
-   if (result i32)
-    local.get $0
-   else
+   i32.eqz
+   if
     i32.const 14
     call $~lib/rt/itcms/__new
-    i32.const 0
-    call $~lib/rt/__localtostack
+    local.set $0
+    global.get $~lib/memory/__stack_pointer
+    local.get $0
+    i32.store align=1
    end
-   i32.const 4
-   call $~lib/rt/__localtostack
-   call $~lib/object/Object#constructor
-   i32.const 0
-   call $~lib/rt/__localtostack
-   local.set $0
+   local.get $0
+   i32.eqz
+   if
+    i32.const 0
+    call $~lib/rt/itcms/__new
+    local.set $0
+   end
    global.get $~lib/memory/__stack_pointer
-   i32.const 8
+   i32.const 4
    i32.add
    global.set $~lib/memory/__stack_pointer
-   local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
-   local.set $0
    global.get $~lib/memory/__stack_pointer
-   i32.const 8
+   i32.const 4
    i32.add
    global.set $~lib/memory/__stack_pointer
    local.get $0
    global.set $class-overloading/b2
-   block $__inlined_func$class-overloading/A2#foo@override$83 (result i32)
+   global.get $~lib/memory/__stack_pointer
+   global.get $class-overloading/b2
+   i32.store align=1
+   block $__inlined_func$class-overloading/A2#foo@override$84 (result i32)
     global.get $class-overloading/b2
-    i32.const 0
-    call $~lib/rt/__localtostack
     i32.const 8
     i32.sub
     i32.load
     i32.const 15
     i32.eq
     if
-     i32.const 4
-     call $~lib/rt/__decrease_sp
-     i32.const 8
      call $~lib/rt/__decrease_sp
      i32.const 16
      call $~lib/rt/itcms/__new
-     i32.const 0
-     call $~lib/rt/__localtostack
-     i32.const 4
-     call $~lib/rt/__localtostack
      local.set $0
-     i32.const 8
+     global.get $~lib/memory/__stack_pointer
+     local.get $0
+     i32.store align=1
      call $~lib/rt/__decrease_sp
      local.get $0
-     if (result i32)
-      local.get $0
-     else
+     i32.eqz
+     if
       i32.const 17
       call $~lib/rt/itcms/__new
-      i32.const 0
-      call $~lib/rt/__localtostack
+      local.set $0
+      global.get $~lib/memory/__stack_pointer
+      local.get $0
+      i32.store align=1
      end
-     i32.const 4
-     call $~lib/rt/__localtostack
-     call $~lib/object/Object#constructor
-     i32.const 0
-     call $~lib/rt/__localtostack
-     local.set $0
+     local.get $0
+     i32.eqz
+     if
+      i32.const 0
+      call $~lib/rt/itcms/__new
+      local.set $0
+     end
      global.get $~lib/memory/__stack_pointer
-     i32.const 8
+     i32.const 4
+     i32.add
+     global.set $~lib/memory/__stack_pointer
+     global.get $~lib/memory/__stack_pointer
+     i32.const 4
      i32.add
      global.set $~lib/memory/__stack_pointer
      local.get $0
-     i32.const 0
-     call $~lib/rt/__localtostack
-     local.set $0
-     global.get $~lib/memory/__stack_pointer
-     i32.const 8
-     i32.add
-     global.set $~lib/memory/__stack_pointer
-     local.get $0
-     i32.const 0
-     call $~lib/rt/__localtostack
-     local.set $0
-     i32.const 4
-     call $~lib/rt/__decrease_sp
-     local.get $0
-     i32.const 0
-     call $~lib/rt/__localtostack
      i32.const 8
      i32.sub
      i32.load
      i32.const 16
-     i32.ne
-     if
+     i32.eq
+     if (result i32)
+      i32.const 3
+     else
       i32.const 720
       i32.const 528
       i32.const 201
@@ -2546,16 +2373,7 @@
       call $~lib/builtins/abort
       unreachable
      end
-     global.get $~lib/memory/__stack_pointer
-     i32.const 4
-     i32.add
-     global.set $~lib/memory/__stack_pointer
-     global.get $~lib/memory/__stack_pointer
-     i32.const 4
-     i32.add
-     global.set $~lib/memory/__stack_pointer
-     i32.const 3
-     br $__inlined_func$class-overloading/A2#foo@override$83
+     br $__inlined_func$class-overloading/A2#foo@override$84
     end
     i32.const 720
     i32.const 528
@@ -2566,6 +2384,12 @@
    end
    i32.const 3
    i32.ne
+   local.set $0
+   global.get $~lib/memory/__stack_pointer
+   i32.const 4
+   i32.add
+   global.set $~lib/memory/__stack_pointer
+   local.get $0
    if
     i32.const 0
     i32.const 528
@@ -2574,29 +2398,16 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4
-   i32.add
-   global.set $~lib/memory/__stack_pointer
   end
  )
- (func $~lib/rt/__localtostack (param $0 i32) (param $1 i32) (result i32)
+ (func $~lib/rt/__decrease_sp
   global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.add
-  local.get $0
-  i32.store align=1
-  local.get $0
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
+  i32.const 4
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
   i32.const 0
-  local.get $0
-  memory.fill
+  i32.store align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 844
   i32.lt_s

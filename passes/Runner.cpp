@@ -73,10 +73,10 @@ static std::unique_ptr<wasm::PassRunner> createPassRunner(wasm::Module *const m,
   return passRunner;
 }
 
-static void lowering(AsModule const &m) {
+static void lowering(AsModule const &m, Config const &config) {
   {
     support::PerfRAII const r{support::PerfItemKind::Lowering};
-    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), {});
+    std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
     if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0)
       passRunner->add(std::unique_ptr<wasm::Pass>{new gc::OptLower()});
     else
@@ -196,7 +196,7 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
 #ifndef WARPO_RELEASE_BUILD
   ensureValidate(*m.get());
 #endif
-  lowering(m);
+  lowering(m, config);
   preOptimize(m, config);
   if (config.optimizeLevel > 0U || config.shrinkLevel > 0U)
     optimize(m, config);

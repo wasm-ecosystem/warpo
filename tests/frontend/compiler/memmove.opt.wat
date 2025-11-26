@@ -12,6 +12,7 @@
  (func $memmove/memmove (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
   (local $4 i32)
+  (local $5 i32)
   local.get $0
   local.get $1
   i32.eq
@@ -20,7 +21,7 @@
    return
   end
   local.get $0
-  local.set $4
+  local.set $3
   local.get $0
   local.get $1
   i32.lt_u
@@ -41,7 +42,7 @@
       local.get $2
       i32.eqz
       if
-       local.get $4
+       local.get $3
        return
       end
       local.get $2
@@ -49,17 +50,17 @@
       i32.sub
       local.set $2
       local.get $0
-      local.tee $3
+      local.tee $4
       i32.const 1
       i32.add
       local.set $0
-      local.get $3
       local.get $1
-      local.tee $3
+      local.tee $5
       i32.const 1
       i32.add
       local.set $1
-      local.get $3
+      local.get $4
+      local.get $5
       i32.load8_u
       i32.store8
       br $while-continue|0
@@ -94,17 +95,17 @@
     local.get $2
     if
      local.get $0
-     local.tee $3
+     local.tee $4
      i32.const 1
      i32.add
      local.set $0
-     local.get $3
      local.get $1
-     local.tee $3
+     local.tee $5
      i32.const 1
      i32.add
      local.set $1
-     local.get $3
+     local.get $4
+     local.get $5
      i32.load8_u
      i32.store8
      local.get $2
@@ -133,7 +134,7 @@
       local.get $2
       i32.eqz
       if
-       local.get $4
+       local.get $3
        return
       end
       local.get $0
@@ -188,7 +189,7 @@
     end
    end
   end
-  local.get $4
+  local.get $3
  )
  (func $~start
   i32.const 8

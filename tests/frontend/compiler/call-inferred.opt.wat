@@ -1509,8 +1509,6 @@
   local.get $1
  )
  (func $call-inferred/Foo<i32>#constructor (param $0 i32) (result i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
   local.get $0
   i32.eqz
   if
@@ -1518,22 +1516,10 @@
    i32.const 4
    call $~lib/rt/itcms/__new
    local.set $0
-   global.get $~lib/memory/__stack_pointer
-   local.get $0
-   i32.store align=1
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  local.get $0
-  i32.store align=1
   local.get $0
   i32.const 42
   i32.store
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $0
  )
  (func $~lib/rt/__visit_members (param $0 i32)
@@ -1572,9 +1558,6 @@
  )
  (func $~start
   (local $0 i32)
-  (local $1 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   memory.size
   i32.const 16
   i32.shl
@@ -1609,11 +1592,6 @@
   global.set $~lib/rt/itcms/fromSpace
   i32.const 0
   call $call-inferred/Foo<i32>#constructor
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
   i32.load
   i32.const 42
   i32.ne
@@ -1627,11 +1605,6 @@
   end
   i32.const 0
   call $call-inferred/Foo<i32>#constructor
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
   i32.load
   i32.const 42
   i32.ne
@@ -1643,8 +1616,19 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 8
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 512
+  i32.lt_s
+  if
+   unreachable
+  end
   i32.const 0
   i32.const 5
   call $~lib/rt/itcms/__new
@@ -1652,44 +1636,31 @@
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  local.get $0
-  i32.store align=1
-  local.get $0
-  local.set $1
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
   i32.eqz
   if
    i32.const 0
    i32.const 0
    call $~lib/rt/itcms/__new
-   local.set $0
-   global.get $~lib/memory/__stack_pointer
-   local.get $0
-   i32.store align=1
-   local.get $0
-   local.set $1
+   drop
   end
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
+  i32.const 4
+  i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  local.get $1
+  i32.const 0
   i32.store align=1
-  i32.const 8
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 512
+  i32.lt_s
+  if
+   unreachable
+  end
   i32.const 4
   i32.const 6
   call $~lib/rt/itcms/__new
@@ -1697,24 +1668,13 @@
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  local.get $0
-  i32.store align=1
   local.get $0
   call $call-inferred/Foo<i32>#constructor
   local.set $0
   global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
   local.get $0
   i32.load
   i32.const 42
@@ -1725,26 +1685,6 @@
    i32.const 34
    i32.const 1
    call $~lib/builtins/abort
-   unreachable
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  local.get $0
-  memory.fill
-  global.get $~lib/memory/__stack_pointer
-  i32.const 512
-  i32.lt_s
-  if
    unreachable
   end
  )

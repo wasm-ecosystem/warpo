@@ -40,54 +40,24 @@
  (export "memory" (memory $0))
  (start $~start)
  (func $class/test (param $0 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  drop
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  drop
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load
   drop
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load16_s offset=4
   drop
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load8_s offset=6
   drop
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.const 1
   i32.store
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.const 2
   i32.store16 offset=4
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.const 3
   i32.store8 offset=6
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $0
  )
  (func $~lib/rt/itcms/visitRoots
@@ -1625,133 +1595,113 @@
  (func $class/testGenericInitializer
   (local $0 i32)
   (local $1 i32)
-  i32.const 12
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 544
+  i32.lt_s
+  if
+   unreachable
+  end
   i32.const 4
   i32.const 5
   call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
   local.set $0
-  i32.const 4
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
   local.get $0
   i32.eqz
   if
    i32.const 0
    i32.const 0
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
    local.set $0
   end
   global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
+  i32.store align=1
+  local.get $0
+  global.get $~lib/memory/__stack_pointer
   i32.const 4
-  call $~lib/rt/__localtostack
-  i32.const 16
-  call $~lib/rt/__decrease_sp
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 544
+  i32.lt_s
+  if
+   unreachable
+  end
   i32.const 16
   i32.const 6
   call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.set $0
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
+  local.get $0
   i32.const 32
   i32.const 1
   call $~lib/rt/itcms/__new
-  i32.const 4
-  call $~lib/rt/__localtostack
-  local.set $1
-  local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
-  local.get $1
-  i32.const 12
-  call $~lib/rt/__localtostack
+  local.tee $1
   call $~lib/array/Array<i32>#set:buffer
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   local.get $1
   i32.store offset=4
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 32
   i32.store offset=8
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.store offset=12
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   call $~lib/array/Array<i32>#set:buffer
   global.get $~lib/memory/__stack_pointer
-  i32.const 12
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
  )
  (func $~lib/rt/__visit_members (param $0 i32)
-  block $invalid
-   block $~lib/array/Array<i32>
-    block $class/GenericInitializer<i32>
+  block $folding-inner0
+   block $invalid
+    block
      block $class/Animal<f64>
-      block $~lib/arraybuffer/ArrayBufferView
-       block $~lib/string/String
-        block $~lib/arraybuffer/ArrayBuffer
-         block $~lib/object/Object
-          local.get $0
-          i32.const 8
-          i32.sub
-          i32.load
-          br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $class/Animal<f64> $class/GenericInitializer<i32> $~lib/array/Array<i32> $invalid
-         end
-         return
+      block $~lib/string/String
+       block $~lib/arraybuffer/ArrayBuffer
+        block $~lib/object/Object
+         local.get $0
+         i32.const 8
+         i32.sub
+         i32.load
+         br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $class/Animal<f64> $folding-inner0 $folding-inner0 $invalid
         end
         return
        end
        return
       end
-      local.get $0
-      i32.load
-      call $~lib/rt/itcms/__visit
       return
      end
      return
     end
-    local.get $0
-    i32.load
-    call $~lib/rt/itcms/__visit
-    return
+    unreachable
    end
-   i32.const 4
-   call $~lib/rt/__decrease_sp
-   local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
-   i32.load
-   call $~lib/rt/itcms/__visit
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4
-   i32.add
-   global.set $~lib/memory/__stack_pointer
-   return
+   unreachable
   end
-  unreachable
+  local.get $0
+  i32.load
+  call $~lib/rt/itcms/__visit
  )
  (func $~start
   memory.size
@@ -1786,29 +1736,5 @@
   i32.store
   i32.const 320
   global.set $~lib/rt/itcms/fromSpace
- )
- (func $~lib/rt/__localtostack (param $0 i32) (param $1 i32) (result i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.add
-  local.get $0
-  i32.store align=1
-  local.get $0
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  local.get $0
-  memory.fill
-  global.get $~lib/memory/__stack_pointer
-  i32.const 544
-  i32.lt_s
-  if
-   unreachable
-  end
  )
 )

@@ -1,13 +1,11 @@
 (module
  (type $0 (func))
- (type $1 (func (param i32)))
- (type $2 (func (param i32) (result i32)))
+ (type $1 (func (param i32) (result i32)))
+ (type $2 (func (param i32)))
  (type $3 (func (param i32 i32)))
  (type $4 (func (param i32 i32 i32 i32)))
  (type $5 (func (param i32 i32 i32)))
  (type $6 (func (param i32 i32 i64)))
- (type $7 (func (result i32)))
- (type $8 (func (param i32 i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33316))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -1357,80 +1355,50 @@
   local.get $0
  )
  (func $operator-overload-non-ambiguity/Base#constructor (param $0 i32) (result i32)
-  i32.const 8
   call $~lib/rt/__decrease_sp
   local.get $0
-  if (result i32)
-   local.get $0
-  else
+  i32.eqz
+  if
    i32.const 5
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
+   local.set $0
+   global.get $~lib/memory/__stack_pointer
+   local.get $0
+   i32.store align=1
   end
-  i32.const 4
-  call $~lib/rt/__localtostack
-  local.set $0
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
   i32.eqz
   if
    i32.const 0
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
    local.set $0
   end
   global.get $~lib/memory/__stack_pointer
   i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
  )
- (func $operator-overload-non-ambiguity/T1#constructor (result i32)
+ (func $operator-overload-non-ambiguity/T1#constructor
   (local $0 i32)
-  i32.const 8
   call $~lib/rt/__decrease_sp
   i32.const 7
   call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
   local.set $0
-  i32.const 4
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
   local.get $0
   i32.eqz
   if
    i32.const 0
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
-   local.set $0
+   drop
   end
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
@@ -1471,7 +1439,6 @@
  )
  (func $~start
   (local $0 i32)
-  i32.const 8
   call $~lib/rt/__decrease_sp
   memory.size
   i32.const 16
@@ -1505,76 +1472,52 @@
   i32.store
   i32.const 320
   global.set $~lib/rt/itcms/fromSpace
-  i32.const 8
   call $~lib/rt/__decrease_sp
   i32.const 4
   call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
-  call $operator-overload-non-ambiguity/Base#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
   local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  drop
-  i32.const 8
-  call $~lib/rt/__decrease_sp
-  i32.const 6
-  call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
-  i32.const 4
-  call $~lib/rt/__localtostack
-  call $operator-overload-non-ambiguity/Base#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 4
-  call $~lib/rt/__localtostack
-  drop
-  call $operator-overload-non-ambiguity/T1#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
-  drop
-  call $operator-overload-non-ambiguity/T1#constructor
-  i32.const 0
-  call $~lib/rt/__localtostack
-  drop
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
- )
- (func $~lib/rt/__localtostack (param $0 i32) (param $1 i32) (result i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.add
   local.get $0
   i32.store align=1
   local.get $0
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
+  call $operator-overload-non-ambiguity/Base#constructor
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
   local.get $0
+  i32.store align=1
+  call $~lib/rt/__decrease_sp
+  i32.const 6
+  call $~lib/rt/itcms/__new
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
+  local.get $0
+  call $operator-overload-non-ambiguity/Base#constructor
+  drop
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  call $operator-overload-non-ambiguity/T1#constructor
+  call $operator-overload-non-ambiguity/T1#constructor
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+ )
+ (func $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
   i32.const 0
-  local.get $0
-  memory.fill
+  i32.store align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 548
   i32.lt_s

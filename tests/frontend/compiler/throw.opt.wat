@@ -4,12 +4,11 @@
  (type $2 (func (param i32 i32)))
  (type $3 (func (param i32 i32 i32 i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33492))
+ (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -713,7 +712,7 @@
     i32.and
     i32.eq
     if
-     global.get $~lib/memory/__stack_pointer
+     i32.const 33492
      local.set $0
      loop $while-continue|0
       local.get $0
@@ -1055,11 +1054,6 @@
   end
  )
  (func $throw/doThrow
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 32
-  i32.store align=1
   i32.const 672
   i32.const 144
   i32.const 3
@@ -1094,25 +1088,6 @@
  )
  (func $~start
   (local $0 i32)
-  i32.const 12
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 32
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  i32.const 192
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 12
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  i32.const 20
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 32
-  i32.store align=1
   loop $while-continue|0
    local.get $0
    i32.const 1
@@ -1121,20 +1096,10 @@
    i32.const 10
    i32.lt_s
    if
-    global.get $~lib/memory/__stack_pointer
-    i32.const 4
-    i32.add
-    i32.const 64
-    i32.store align=1
     local.get $0
     i32.const 10
     i32.gt_s
     if
-     global.get $~lib/memory/__stack_pointer
-     i32.const 8
-     i32.add
-     i32.const 192
-     i32.store align=1
      i32.const 224
      i32.const 144
      i32.const 24
@@ -1142,23 +1107,9 @@
      call $~lib/builtins/abort
      unreachable
     end
-    global.get $~lib/memory/__stack_pointer
-    i32.const 12
-    i32.add
-    i32.const 272
-    i32.store align=1
     br $while-continue|0
    end
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 16
-  i32.add
-  i32.const 304
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 20
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   i32.const 324
   i32.const 320
   i32.store
@@ -1204,22 +1155,6 @@
     call $~lib/rt/itcms/step
     br $while-continue|1
    end
-  end
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  local.get $0
-  memory.fill
-  global.get $~lib/memory/__stack_pointer
-  i32.const 724
-  i32.lt_s
-  if
-   unreachable
   end
  )
 )

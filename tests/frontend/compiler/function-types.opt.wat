@@ -6,9 +6,7 @@
  (type $4 (func (param i32 i32 i32) (result i32)))
  (type $5 (func))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 32972))
  (global $function-types/i32Adder (mut i32) (i32.const 0))
- (global $~argumentsLength (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c")
  (data $0.1 (i32.const 24) "\04\00\00\00\08\00\00\00\01")
@@ -40,8 +38,6 @@
   f64.add
  )
  (func $function-types/doAddWithFn<i32> (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
-  i32.const 2
-  global.set $~argumentsLength
   local.get $0
   local.get $1
   local.get $2
@@ -49,25 +45,8 @@
   call_indirect (type $0)
  )
  (func $~start
-  (local $0 i32)
-  (local $1 i32)
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 204
-  i32.lt_s
-  if
-   unreachable
-  end
   i32.const 32
   global.set $function-types/i32Adder
-  i32.const 2
-  global.set $~argumentsLength
   i32.const 1
   i32.const 2
   call $function-types/makeAdder<i32>~anonymous|0
@@ -81,8 +60,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2
-  global.set $~argumentsLength
   i64.const 10
   i64.const 20
   call $function-types/makeAdder<i64>~anonymous|0
@@ -96,8 +73,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2
-  global.set $~argumentsLength
   f64.const 1.5
   f64.const 2.5
   call $function-types/makeAdder<f64>~anonymous|0
@@ -111,13 +86,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  global.get $function-types/i32Adder
-  local.tee $1
-  i32.store align=1
   i32.const 2
   i32.const 3
-  local.get $1
+  global.get $function-types/i32Adder
   call $function-types/doAddWithFn<i32>
   i32.const 5
   i32.ne
@@ -129,8 +100,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2
-  global.set $~argumentsLength
   i32.const 3
   i32.const 4
   call $function-types/makeAdder<i32>~anonymous|0
@@ -144,9 +113,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 192
-  i32.store align=1
   i32.const 4
   i32.const 5
   i32.const 192
@@ -161,52 +127,10 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 2
-  global.set $~argumentsLength
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i64.const 0
-  i64.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 204
-  i32.lt_s
-  if
-   unreachable
-  end
-  block $1of1
-   block $0of1
-    block $outOfRange
-     global.get $~argumentsLength
-     i32.const 2
-     i32.sub
-     br_table $0of1 $1of1 $outOfRange
-    end
-    unreachable
-   end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 32
-   i32.store align=1
-   i32.const 32
-   local.set $0
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  local.get $0
-  i32.store align=1
   i32.const 1
   i32.const 2
-  local.get $0
+  i32.const 32
   call $function-types/doAddWithFn<i32>
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
   i32.const 3
   i32.ne
   if
@@ -217,9 +141,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 32
-  i32.store align=1
   i32.const 1
   i32.const 2
   i32.const 32
@@ -234,9 +155,5 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
 )

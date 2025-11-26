@@ -1,7 +1,7 @@
 (module
- (type $0 (func (param i32 i32) (result i32)))
+ (type $0 (func (param i32 i32 i32) (result i32)))
  (type $1 (func (param i32)))
- (type $2 (func (param i32 i32 i32) (result i32)))
+ (type $2 (func (param i32 i32) (result i32)))
  (type $3 (func (param i32 i32 i32 i32)))
  (type $4 (func))
  (type $5 (func (param i32 i32)))
@@ -9,12 +9,11 @@
  (type $7 (func (param i32 i32) (result i64)))
  (type $8 (func (param i32 i32 i64)))
  (type $9 (func (result i32)))
- (type $10 (func (param i32 i32 i32 i32) (result i32)))
- (type $11 (func (param i32 i32 i32) (result f32)))
- (type $12 (func (param i32 i32) (result f64)))
- (type $13 (func (param i32 f32 i32)))
- (type $14 (func (param i32 f64 i32)))
- (type $15 (func (param i32 i64 i32 i32)))
+ (type $10 (func (param i32 i32 i32) (result f32)))
+ (type $11 (func (param i32 i32) (result f64)))
+ (type $12 (func (param i32 f32 i32)))
+ (type $13 (func (param i32 f64 i32)))
+ (type $14 (func (param i32 i64 i32 i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33516))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -27,7 +26,6 @@
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
- (global $~argumentsLength (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) ",")
  (data $0.1 (i32.const 24) "\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h")
@@ -1589,12 +1587,8 @@
   end
  )
  (func $~lib/typedarray/Uint8Array#__set (param $0 i32) (param $1 i32) (param $2 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $1
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   i32.ge_u
   if
@@ -1607,41 +1601,26 @@
   end
   local.get $1
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   i32.add
   local.get $2
   i32.store8
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
- (func $~lib/dataview/DataView#constructor (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
+ (func $~lib/dataview/DataView#constructor (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
+  (local $3 i32)
   i32.const 12
-  call $~lib/rt/__decrease_sp
+  i32.const 5
+  call $~lib/rt/itcms/__new
+  local.set $3
   local.get $0
-  i32.eqz
-  if
-   i32.const 12
-   i32.const 5
-   call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
-   local.set $0
-  end
-  local.get $1
-  i32.const 4
-  call $~lib/rt/__localtostack
   i32.const 20
   i32.sub
   i32.load offset=16
+  local.get $1
   local.get $2
-  local.get $3
   i32.add
   i32.lt_u
-  local.get $3
+  local.get $2
   i32.const 1073741820
   i32.gt_u
   i32.or
@@ -1653,41 +1632,24 @@
    call $~lib/builtins/abort
    unreachable
   end
+  local.get $3
   local.get $0
-  i32.const 4
-  call $~lib/rt/__localtostack
-  local.get $1
-  i32.const 8
-  call $~lib/rt/__localtostack
   call $~lib/arraybuffer/ArrayBufferView#set:buffer
+  local.get $3
   local.get $0
-  i32.const 4
-  call $~lib/rt/__localtostack
   local.get $1
-  local.get $2
   i32.add
   i32.store offset=4
-  local.get $0
-  i32.const 4
-  call $~lib/rt/__localtostack
   local.get $3
+  local.get $2
   i32.store offset=8
-  global.get $~lib/memory/__stack_pointer
-  i32.const 12
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
+  local.get $3
  )
  (func $~lib/dataview/DataView#getFloat32 (param $0 i32) (param $1 i32) (param $2 i32) (result f32)
-  (local $3 f32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $1
   i32.const 31
   i32.shr_u
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   local.get $1
   i32.const 4
@@ -1706,16 +1668,12 @@
   if (result f32)
    local.get $1
    local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.load offset=4
    i32.add
    f32.load
   else
    local.get $1
    local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.load offset=4
    i32.add
    i32.load
@@ -1732,21 +1690,10 @@
    i32.or
    f32.reinterpret_i32
   end
-  local.set $3
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $3
  )
  (func $~lib/dataview/DataView#getFloat64 (param $0 i32) (param $1 i32) (result f64)
   (local $2 i64)
-  (local $3 f64)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   i32.const 8
   i32.lt_s
@@ -1761,14 +1708,10 @@
   local.get $1
   if (result f64)
    local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.load offset=4
    f64.load
   else
    local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.load offset=4
    i64.load
    local.tee $2
@@ -1797,20 +1740,10 @@
    i64.rotr
    f64.reinterpret_i64
   end
-  local.set $3
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $3
  )
  (func $~lib/dataview/DataView#getInt8 (param $0 i32) (param $1 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $1
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   i32.ge_u
   if
@@ -1823,27 +1756,15 @@
   end
   local.get $1
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   i32.add
   i32.load8_s
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/dataview/DataView#getInt16 (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $1
   i32.const 31
   i32.shr_u
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   local.get $1
   i32.const 2
@@ -1860,17 +1781,10 @@
   end
   local.get $1
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   i32.add
   i32.load16_s
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
+  local.tee $0
   local.get $0
   i32.const 8
   i32.shl
@@ -1884,14 +1798,10 @@
   select
  )
  (func $~lib/dataview/DataView#getInt32 (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $1
   i32.const 31
   i32.shr_u
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   local.get $1
   i32.const 4
@@ -1908,17 +1818,10 @@
   end
   local.get $1
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   i32.add
   i32.load
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
+  local.tee $0
   local.get $0
   i32.const -16711936
   i32.and
@@ -1935,11 +1838,7 @@
  )
  (func $~lib/dataview/DataView#getInt64 (param $0 i32) (param $1 i32) (result i64)
   (local $2 i64)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   i32.const 8
   i32.lt_s
@@ -1952,15 +1851,9 @@
    unreachable
   end
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   i64.load
   local.set $2
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $1
   if (result i64)
    local.get $2
@@ -1992,12 +1885,8 @@
   end
  )
  (func $~lib/dataview/DataView#getUint8 (param $0 i32) (param $1 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $1
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   i32.ge_u
   if
@@ -2010,27 +1899,15 @@
   end
   local.get $1
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   i32.add
   i32.load8_u
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/dataview/DataView#getUint16 (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $1
   i32.const 31
   i32.shr_u
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   local.get $1
   i32.const 2
@@ -2047,17 +1924,10 @@
   end
   local.get $1
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   i32.add
   i32.load16_u
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
+  local.tee $0
   local.get $0
   i32.const 8
   i32.shl
@@ -2071,14 +1941,10 @@
   select
  )
  (func $~lib/dataview/DataView#getUint32 (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $1
   i32.const 31
   i32.shr_u
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   local.get $1
   i32.const 4
@@ -2095,17 +1961,10 @@
   end
   local.get $1
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   i32.add
   i32.load
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
+  local.tee $0
   local.get $0
   i32.const -16711936
   i32.and
@@ -2122,11 +1981,7 @@
  )
  (func $~lib/dataview/DataView#getUint64 (param $0 i32) (param $1 i32) (result i64)
   (local $2 i64)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   i32.const 8
   i32.lt_s
@@ -2139,15 +1994,9 @@
    unreachable
   end
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   i64.load
   local.set $2
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $1
   if (result i64)
    local.get $2
@@ -2179,11 +2028,7 @@
   end
  )
  (func $~lib/dataview/DataView#setFloat32 (param $0 i32) (param $1 f32) (param $2 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   i32.const 4
   i32.lt_s
@@ -2198,15 +2043,11 @@
   local.get $2
   if
    local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.load offset=4
    local.get $1
    f32.store
   else
    local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.load offset=4
    local.get $1
    i32.reinterpret_f32
@@ -2223,18 +2064,10 @@
    i32.or
    i32.store
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $~lib/dataview/DataView#setFloat64 (param $0 i32) (param $1 f64) (param $2 i32)
   (local $3 i64)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   i32.const 8
   i32.lt_s
@@ -2249,15 +2082,11 @@
   local.get $2
   if
    local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.load offset=4
    local.get $1
    f64.store
   else
    local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
    i32.load offset=4
    local.get $1
    i64.reinterpret_f64
@@ -2287,10 +2116,6 @@
    i64.rotr
    i64.store
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $folding-inner0
@@ -2322,8 +2147,7 @@
  (func $~start
   (local $0 i32)
   (local $1 i32)
-  (local $2 i32)
-  i32.const 16
+  i32.const 8
   call $~lib/rt/__decrease_sp
   memory.size
   i32.const 16
@@ -2357,152 +2181,98 @@
   i32.store
   i32.const 432
   global.set $~lib/rt/itcms/fromSpace
-  i32.const 8
+  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 12
   i32.const 4
   call $~lib/rt/itcms/__new
-  i32.const 0
-  call $~lib/rt/__localtostack
+  local.set $1
+  global.get $~lib/memory/__stack_pointer
+  local.get $1
+  i32.store align=1
   i32.const 4
-  call $~lib/rt/__localtostack
-  local.set $0
-  i32.const 16
   call $~lib/rt/__decrease_sp
-  local.get $0
+  local.get $1
   i32.eqz
   if
    i32.const 12
    i32.const 3
    call $~lib/rt/itcms/__new
-   i32.const 0
-   call $~lib/rt/__localtostack
-   local.set $0
+   local.set $1
+   global.get $~lib/memory/__stack_pointer
+   local.get $1
+   i32.store align=1
   end
+  local.get $1
   i32.const 8
   i32.const 1
   call $~lib/rt/itcms/__new
-  i32.const 4
-  call $~lib/rt/__localtostack
-  local.set $1
-  local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
-  local.get $1
-  i32.const 12
-  call $~lib/rt/__localtostack
+  local.tee $0
   call $~lib/arraybuffer/ArrayBufferView#set:buffer
-  local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   local.get $1
-  i32.store offset=4
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
+  i32.store offset=4
+  local.get $1
   i32.const 8
   i32.store offset=8
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.tee $1
   i32.const 4
-  call $~lib/rt/__localtostack
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  local.get $1
+  i32.store offset=4 align=1
+  local.get $1
   i32.const 0
   i32.const 246
   call $~lib/typedarray/Uint8Array#__set
   local.get $1
-  i32.const 4
-  call $~lib/rt/__localtostack
   i32.const 1
   i32.const 224
   call $~lib/typedarray/Uint8Array#__set
   local.get $1
-  i32.const 4
-  call $~lib/rt/__localtostack
   i32.const 2
   i32.const 88
   call $~lib/typedarray/Uint8Array#__set
   local.get $1
-  i32.const 4
-  call $~lib/rt/__localtostack
   i32.const 3
   i32.const 159
   call $~lib/typedarray/Uint8Array#__set
   local.get $1
   i32.const 4
-  call $~lib/rt/__localtostack
-  i32.const 4
   i32.const 130
   call $~lib/typedarray/Uint8Array#__set
   local.get $1
-  i32.const 4
-  call $~lib/rt/__localtostack
   i32.const 5
   i32.const 101
   call $~lib/typedarray/Uint8Array#__set
   local.get $1
-  i32.const 4
-  call $~lib/rt/__localtostack
   i32.const 6
   i32.const 67
   call $~lib/typedarray/Uint8Array#__set
   local.get $1
-  i32.const 4
-  call $~lib/rt/__localtostack
   i32.const 7
   i32.const 95
   call $~lib/typedarray/Uint8Array#__set
-  i32.const 0
+  global.get $~lib/memory/__stack_pointer
   local.get $1
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.load
-  i32.const 4
-  call $~lib/rt/__localtostack
+  local.tee $0
+  i32.store align=1
+  local.get $0
   local.get $1
-  i32.const 8
-  call $~lib/rt/__localtostack
-  local.set $0
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
-  local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
+  local.get $1
   i32.load
   i32.sub
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
   local.get $1
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.load offset=8
   call $~lib/dataview/DataView#constructor
-  i32.const 4
-  call $~lib/rt/__localtostack
   local.tee $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 1
   call $~lib/dataview/DataView#getFloat32
@@ -2517,8 +2287,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   i32.const 1
   call $~lib/dataview/DataView#getFloat32
@@ -2533,8 +2301,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 2
   i32.const 1
   call $~lib/dataview/DataView#getFloat32
@@ -2549,8 +2315,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 3
   i32.const 1
   call $~lib/dataview/DataView#getFloat32
@@ -2565,8 +2329,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 4
   i32.const 1
   call $~lib/dataview/DataView#getFloat32
@@ -2581,8 +2343,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 0
   call $~lib/dataview/DataView#getFloat32
@@ -2597,8 +2357,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   i32.const 0
   call $~lib/dataview/DataView#getFloat32
@@ -2613,8 +2371,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 2
   i32.const 0
   call $~lib/dataview/DataView#getFloat32
@@ -2629,8 +2385,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 3
   i32.const 0
   call $~lib/dataview/DataView#getFloat32
@@ -2645,8 +2399,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 4
   i32.const 0
   call $~lib/dataview/DataView#getFloat32
@@ -2661,8 +2413,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   call $~lib/dataview/DataView#getFloat64
   f64.const 7936550095674706383278551e126
@@ -2676,8 +2426,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   call $~lib/dataview/DataView#getFloat64
   f64.const -411777475818852546741639e241
@@ -2691,8 +2439,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   call $~lib/dataview/DataView#getInt8
   i32.const -10
@@ -2706,8 +2452,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   call $~lib/dataview/DataView#getInt8
   i32.const -32
@@ -2721,8 +2465,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 2
   call $~lib/dataview/DataView#getInt8
   i32.const 88
@@ -2736,8 +2478,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 3
   call $~lib/dataview/DataView#getInt8
   i32.const -97
@@ -2751,8 +2491,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 4
   call $~lib/dataview/DataView#getInt8
   i32.const -126
@@ -2766,8 +2504,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 5
   call $~lib/dataview/DataView#getInt8
   i32.const 101
@@ -2781,8 +2517,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 6
   call $~lib/dataview/DataView#getInt8
   i32.const 67
@@ -2796,8 +2530,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 7
   call $~lib/dataview/DataView#getInt8
   i32.const 95
@@ -2811,8 +2543,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 1
   call $~lib/dataview/DataView#getInt16
@@ -2829,8 +2559,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   i32.const 1
   call $~lib/dataview/DataView#getInt16
@@ -2847,8 +2575,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 2
   i32.const 1
   call $~lib/dataview/DataView#getInt16
@@ -2865,8 +2591,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 3
   i32.const 1
   call $~lib/dataview/DataView#getInt16
@@ -2883,8 +2607,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 4
   i32.const 1
   call $~lib/dataview/DataView#getInt16
@@ -2901,8 +2623,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 5
   i32.const 1
   call $~lib/dataview/DataView#getInt16
@@ -2919,8 +2639,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 6
   i32.const 1
   call $~lib/dataview/DataView#getInt16
@@ -2937,8 +2655,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 0
   call $~lib/dataview/DataView#getInt16
@@ -2955,8 +2671,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   i32.const 0
   call $~lib/dataview/DataView#getInt16
@@ -2973,8 +2687,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 2
   i32.const 0
   call $~lib/dataview/DataView#getInt16
@@ -2991,8 +2703,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 3
   i32.const 0
   call $~lib/dataview/DataView#getInt16
@@ -3009,8 +2719,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 4
   i32.const 0
   call $~lib/dataview/DataView#getInt16
@@ -3027,8 +2735,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 5
   i32.const 0
   call $~lib/dataview/DataView#getInt16
@@ -3045,8 +2751,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 6
   i32.const 0
   call $~lib/dataview/DataView#getInt16
@@ -3063,8 +2767,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 1
   call $~lib/dataview/DataView#getInt32
@@ -3079,8 +2781,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   i32.const 1
   call $~lib/dataview/DataView#getInt32
@@ -3095,8 +2795,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 2
   i32.const 1
   call $~lib/dataview/DataView#getInt32
@@ -3111,8 +2809,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 3
   i32.const 1
   call $~lib/dataview/DataView#getInt32
@@ -3127,8 +2823,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 4
   i32.const 1
   call $~lib/dataview/DataView#getInt32
@@ -3143,8 +2837,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 0
   call $~lib/dataview/DataView#getInt32
@@ -3159,8 +2851,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   i32.const 0
   call $~lib/dataview/DataView#getInt32
@@ -3175,8 +2865,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 2
   i32.const 0
   call $~lib/dataview/DataView#getInt32
@@ -3191,8 +2879,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 3
   i32.const 0
   call $~lib/dataview/DataView#getInt32
@@ -3207,8 +2893,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 4
   i32.const 0
   call $~lib/dataview/DataView#getInt32
@@ -3223,8 +2907,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   call $~lib/dataview/DataView#getInt64
   i64.const 6864441868736323830
@@ -3238,8 +2920,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   call $~lib/dataview/DataView#getInt64
   i64.const -657428103485373601
@@ -3253,8 +2933,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   call $~lib/dataview/DataView#getUint8
   i32.const 246
@@ -3268,8 +2946,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   call $~lib/dataview/DataView#getUint8
   i32.const 224
@@ -3283,8 +2959,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 2
   call $~lib/dataview/DataView#getUint8
   i32.const 88
@@ -3298,8 +2972,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 3
   call $~lib/dataview/DataView#getUint8
   i32.const 159
@@ -3313,8 +2985,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 4
   call $~lib/dataview/DataView#getUint8
   i32.const 130
@@ -3328,8 +2998,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 5
   call $~lib/dataview/DataView#getUint8
   i32.const 101
@@ -3343,8 +3011,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 6
   call $~lib/dataview/DataView#getUint8
   i32.const 67
@@ -3358,8 +3024,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 7
   call $~lib/dataview/DataView#getUint8
   i32.const 95
@@ -3373,8 +3037,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 1
   call $~lib/dataview/DataView#getUint16
@@ -3391,8 +3053,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   i32.const 1
   call $~lib/dataview/DataView#getUint16
@@ -3409,8 +3069,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 2
   i32.const 1
   call $~lib/dataview/DataView#getUint16
@@ -3427,8 +3085,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 3
   i32.const 1
   call $~lib/dataview/DataView#getUint16
@@ -3445,8 +3101,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 4
   i32.const 1
   call $~lib/dataview/DataView#getUint16
@@ -3463,8 +3117,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 5
   i32.const 1
   call $~lib/dataview/DataView#getUint16
@@ -3481,8 +3133,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 6
   i32.const 1
   call $~lib/dataview/DataView#getUint16
@@ -3499,8 +3149,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 0
   call $~lib/dataview/DataView#getUint16
@@ -3517,8 +3165,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   i32.const 0
   call $~lib/dataview/DataView#getUint16
@@ -3535,8 +3181,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 2
   i32.const 0
   call $~lib/dataview/DataView#getUint16
@@ -3553,8 +3197,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 3
   i32.const 0
   call $~lib/dataview/DataView#getUint16
@@ -3571,8 +3213,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 4
   i32.const 0
   call $~lib/dataview/DataView#getUint16
@@ -3589,8 +3229,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 5
   i32.const 0
   call $~lib/dataview/DataView#getUint16
@@ -3607,8 +3245,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 6
   i32.const 0
   call $~lib/dataview/DataView#getUint16
@@ -3625,8 +3261,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 1
   call $~lib/dataview/DataView#getUint32
@@ -3641,8 +3275,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   i32.const 1
   call $~lib/dataview/DataView#getUint32
@@ -3657,8 +3289,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 2
   i32.const 1
   call $~lib/dataview/DataView#getUint32
@@ -3673,8 +3303,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 3
   i32.const 1
   call $~lib/dataview/DataView#getUint32
@@ -3689,8 +3317,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 4
   i32.const 1
   call $~lib/dataview/DataView#getUint32
@@ -3705,8 +3331,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 0
   call $~lib/dataview/DataView#getUint32
@@ -3721,8 +3345,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   i32.const 0
   call $~lib/dataview/DataView#getUint32
@@ -3737,8 +3359,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 2
   i32.const 0
   call $~lib/dataview/DataView#getUint32
@@ -3753,8 +3373,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 3
   i32.const 0
   call $~lib/dataview/DataView#getUint32
@@ -3769,8 +3387,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 4
   i32.const 0
   call $~lib/dataview/DataView#getUint32
@@ -3785,8 +3401,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   call $~lib/dataview/DataView#getUint64
   i64.const 6864441868736323830
@@ -3800,8 +3414,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   call $~lib/dataview/DataView#getUint64
   i64.const -657428103485373601
@@ -3815,14 +3427,10 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   f32.const 1.5976661625240943e-18
   i32.const 1
   call $~lib/dataview/DataView#setFloat32
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 1
   call $~lib/dataview/DataView#getFloat32
@@ -3837,14 +3445,10 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   f32.const 1976281973381696323584
   i32.const 0
   call $~lib/dataview/DataView#setFloat32
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 0
   call $~lib/dataview/DataView#getFloat32
@@ -3859,14 +3463,10 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   f64.const -1094252199637739024055454e124
   i32.const 1
   call $~lib/dataview/DataView#setFloat64
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   call $~lib/dataview/DataView#getFloat64
   f64.const -1094252199637739024055454e124
@@ -3880,14 +3480,10 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   f64.const 6.022586634778589e-103
   i32.const 0
   call $~lib/dataview/DataView#setFloat64
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   call $~lib/dataview/DataView#getFloat64
   f64.const 6.022586634778589e-103
@@ -3901,14 +3497,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
-  local.set $2
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  local.get $2
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   i32.eqz
   if
@@ -3919,19 +3507,11 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $2
-  i32.const 0
-  call $~lib/rt/__localtostack
+  local.get $0
   i32.load offset=4
   i32.const 108
   i32.store8
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   call $~lib/dataview/DataView#getInt8
   i32.const 108
@@ -3945,15 +3525,11 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const -13360
   i32.const 1
   i32.const 116
   call $byn$mgfn-shared$~lib/dataview/DataView#setInt16
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 1
   call $~lib/dataview/DataView#getInt16
@@ -3970,15 +3546,11 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 14689
   i32.const 0
   i32.const 116
   call $byn$mgfn-shared$~lib/dataview/DataView#setInt16
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 0
   call $~lib/dataview/DataView#getInt16
@@ -3995,15 +3567,11 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1204680201
   i32.const 1
   i32.const 123
   call $byn$mgfn-shared$~lib/dataview/DataView#setInt32
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 1
   call $~lib/dataview/DataView#getInt32
@@ -4018,15 +3586,11 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 660673230
   i32.const 0
   i32.const 123
   call $byn$mgfn-shared$~lib/dataview/DataView#setInt32
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 0
   call $~lib/dataview/DataView#getInt32
@@ -4041,15 +3605,11 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i64.const -3290739641816099749
   i32.const 1
   i32.const 167
   call $byn$mgfn-shared$~lib/dataview/DataView#setInt64
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   call $~lib/dataview/DataView#getInt64
   i64.const -3290739641816099749
@@ -4063,15 +3623,11 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i64.const 8178932412950708047
   i32.const 0
   i32.const 167
   call $byn$mgfn-shared$~lib/dataview/DataView#setInt64
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   call $~lib/dataview/DataView#getInt64
   i64.const 8178932412950708047
@@ -4085,14 +3641,6 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
-  local.set $2
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  local.get $2
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   i32.eqz
   if
@@ -4103,19 +3651,11 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $2
-  i32.const 0
-  call $~lib/rt/__localtostack
+  local.get $0
   i32.load offset=4
   i32.const 238
   i32.store8
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   call $~lib/dataview/DataView#getUint8
   i32.const 238
@@ -4129,15 +3669,11 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 58856
   i32.const 1
   i32.const 135
   call $byn$mgfn-shared$~lib/dataview/DataView#setInt16
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 1
   call $~lib/dataview/DataView#getUint16
@@ -4154,15 +3690,11 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 60400
   i32.const 0
   i32.const 135
   call $byn$mgfn-shared$~lib/dataview/DataView#setInt16
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 0
   call $~lib/dataview/DataView#getUint16
@@ -4179,15 +3711,11 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const -846805744
   i32.const 1
   i32.const 142
   call $byn$mgfn-shared$~lib/dataview/DataView#setInt32
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 1
   call $~lib/dataview/DataView#getUint32
@@ -4202,15 +3730,11 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const -1510791631
   i32.const 0
   i32.const 142
   call $byn$mgfn-shared$~lib/dataview/DataView#setInt32
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   i32.const 0
   call $~lib/dataview/DataView#getUint32
@@ -4225,15 +3749,11 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i64.const 2334704782995986958
   i32.const 1
   i32.const 174
   call $byn$mgfn-shared$~lib/dataview/DataView#setInt64
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 1
   call $~lib/dataview/DataView#getUint64
   i64.const 2334704782995986958
@@ -4247,15 +3767,11 @@
    unreachable
   end
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i64.const -7123186897289856329
   i32.const 0
   i32.const 174
   call $byn$mgfn-shared$~lib/dataview/DataView#setInt64
   local.get $0
-  i32.const 8
-  call $~lib/rt/__localtostack
   i32.const 0
   call $~lib/dataview/DataView#getUint64
   i64.const -7123186897289856329
@@ -4268,75 +3784,23 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $1
-  i32.const 12
-  call $~lib/rt/__localtostack
-  i32.load
-  i32.const 8
-  call $~lib/rt/__localtostack
-  local.set $0
-  i32.const 1
-  global.set $~argumentsLength
-  i32.const 0
-  local.set $1
-  i32.const 8
-  call $~lib/rt/__decrease_sp
-  block $2of2
-   block $1of2
-    block $outOfRange
-     global.get $~argumentsLength
-     i32.const 1
-     i32.sub
-     br_table $1of2 $1of2 $2of2 $outOfRange
-    end
-    unreachable
-   end
-   local.get $0
-   i32.const 0
-   call $~lib/rt/__localtostack
-   i32.const 20
-   i32.sub
-   i32.load offset=16
-   local.set $1
-  end
-  i32.const 0
-  i32.const 0
-  call $~lib/rt/__localtostack
-  local.get $0
-  i32.const 4
-  call $~lib/rt/__localtostack
-  i32.const 0
-  local.get $1
-  call $~lib/dataview/DataView#constructor
-  local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 4
-  call $~lib/rt/__localtostack
-  local.tee $1
-  i32.const 8
-  call $~lib/rt/__localtostack
-  local.set $0
-  i32.const 4
-  call $~lib/rt/__decrease_sp
+  local.get $1
+  i32.load
+  local.tee $0
+  i32.store align=1
   local.get $0
   i32.const 0
-  call $~lib/rt/__localtostack
+  local.get $0
+  i32.const 20
+  i32.sub
+  i32.load offset=16
+  call $~lib/dataview/DataView#constructor
+  local.tee $0
   i32.load offset=4
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load
   i32.sub
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
   if
    i32.const 0
    i32.const 672
@@ -4345,9 +3809,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $1
-  i32.const 8
-  call $~lib/rt/__localtostack
+  local.get $0
   i32.load offset=8
   i32.const 8
   i32.ne
@@ -4395,17 +3857,9 @@
   i32.add
   global.set $~lib/rt/itcms/threshold
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
- )
- (func $~lib/rt/__localtostack (param $0 i32) (param $1 i32) (result i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.add
-  local.get $0
-  i32.store align=1
-  local.get $0
  )
  (func $~lib/rt/__decrease_sp (param $0 i32)
   global.get $~lib/memory/__stack_pointer
@@ -4424,11 +3878,7 @@
   end
  )
  (func $byn$mgfn-shared$~lib/dataview/DataView#setInt16 (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   i32.const 2
   i32.lt_s
@@ -4441,8 +3891,6 @@
    unreachable
   end
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   local.get $1
   local.get $1
@@ -4457,17 +3905,9 @@
   local.get $2
   select
   i32.store16
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $byn$mgfn-shared$~lib/dataview/DataView#setInt32 (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   i32.const 4
   i32.lt_s
@@ -4480,8 +3920,6 @@
    unreachable
   end
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   local.get $1
   local.get $1
@@ -4498,17 +3936,9 @@
   local.get $2
   select
   i32.store
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $byn$mgfn-shared$~lib/dataview/DataView#setInt64 (param $0 i32) (param $1 i64) (param $2 i32) (param $3 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=8
   i32.const 8
   i32.lt_s
@@ -4521,8 +3951,6 @@
    unreachable
   end
   local.get $0
-  i32.const 0
-  call $~lib/rt/__localtostack
   i32.load offset=4
   local.get $2
   if (result i64)
@@ -4554,9 +3982,5 @@
    i64.rotr
   end
   i64.store
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
 )

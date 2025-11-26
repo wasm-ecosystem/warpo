@@ -1,21 +1,20 @@
 (module
  (type $0 (func))
- (type $1 (func (param i32)))
- (type $2 (func (result i32)))
+ (type $1 (func (result i32)))
+ (type $2 (func (param i32)))
  (type $3 (func (param i32 i32)))
  (type $4 (func (param i32 i32 i32 i32)))
  (type $5 (func (param i32 i32 i32)))
  (type $6 (func (param i32 i32 i64)))
  (type $7 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33256))
+ (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
@@ -910,7 +909,7 @@
     i32.and
     i32.eq
     if
-     global.get $~lib/memory/__stack_pointer
+     i32.const 33256
      local.set $0
      loop $while-continue|0
       local.get $0
@@ -1152,38 +1151,12 @@
   end
  )
  (func $issues/1225/normal (result i32)
-  (local $0 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
   global.get $issues/1225/x
-  local.tee $0
-  i32.store align=1
-  local.get $0
   i32.load
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $issues/1225/viaThis (result i32)
-  (local $0 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
   global.get $issues/1225/x
-  local.tee $0
-  i32.store align=1
-  local.get $0
   i32.load offset=4
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
@@ -1250,8 +1223,6 @@
   i32.store
   i32.const 320
   global.set $~lib/rt/itcms/fromSpace
-  i32.const 12
-  call $~lib/rt/__decrease_sp
   global.get $~lib/rt/itcms/total
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
@@ -1462,43 +1433,20 @@
   i32.const 0
   i32.const 12
   memory.fill
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  local.tee $1
-  local.get $0
-  i32.store align=1
   local.get $0
   i32.const 4
   i32.store offset=8
-  local.get $1
-  local.get $0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  local.get $0
-  i32.store align=1
   local.get $0
   local.get $0
   i32.load offset=8
   i32.store offset=4
-  local.get $1
-  local.get $0
-  i32.store align=1
   local.get $0
   i32.const 4
   i32.store
-  global.get $~lib/memory/__stack_pointer
-  i32.const 12
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $0
   global.set $issues/1225/x
-  call $issues/1225/normal
+  global.get $issues/1225/x
+  i32.load
   i32.const 4
   i32.ne
   if
@@ -1509,7 +1457,8 @@
    call $~lib/builtins/abort
    unreachable
   end
-  call $issues/1225/viaThis
+  global.get $issues/1225/x
+  i32.load offset=4
   i32.const 4
   i32.ne
   if
@@ -1555,21 +1504,5 @@
   i32.const 1024
   i32.add
   global.set $~lib/rt/itcms/threshold
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  local.get $0
-  memory.fill
-  global.get $~lib/memory/__stack_pointer
-  i32.const 488
-  i32.lt_s
-  if
-   unreachable
-  end
  )
 )

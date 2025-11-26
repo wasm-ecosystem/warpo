@@ -1,7 +1,7 @@
 (module
  (type $0 (func (param i32)))
- (type $1 (func))
- (type $2 (func (param i32 i32)))
+ (type $1 (func (param i32 i32)))
+ (type $2 (func))
  (import "env" "console.assert" (func $~lib/bindings/dom/console.assert (param i32 i32)))
  (import "env" "console.log" (func $~lib/bindings/dom/console.log (param i32)))
  (import "env" "console.debug" (func $~lib/bindings/dom/console.debug (param i32)))
@@ -11,7 +11,6 @@
  (import "env" "console.time" (func $~lib/bindings/dom/console.time (param i32)))
  (import "env" "console.timeLog" (func $~lib/bindings/dom/console.timeLog (param i32)))
  (import "env" "console.timeEnd" (func $~lib/bindings/dom/console.timeEnd (param i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33356))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c")
  (data $0.1 (i32.const 24) "\02\00\00\00\0c\00\00\00w\00h\00o\00o\00p\00s")
@@ -43,163 +42,44 @@
  (data $13.1 (i32.const 568) "\02\00\00\00\08\00\00\001\002\003\004")
  (export "memory" (memory $0))
  (start $~start)
- (func $~lib/console/console.log (param $0 i32)
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  call $~lib/bindings/dom/console.log
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
- )
- (func $~lib/console/console.time (param $0 i32)
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  call $~lib/bindings/dom/console.time
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
- )
  (func $~start
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 32
-  i32.store align=1
   i32.const 0
   i32.const 32
   call $~lib/bindings/dom/console.assert
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 64
-  i32.store align=1
   i32.const 1
   i32.const 64
   call $~lib/bindings/dom/console.assert
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   i32.const 96
-  call $~lib/console/console.log
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 144
-  i32.store align=1
+  call $~lib/bindings/dom/console.log
   i32.const 144
   call $~lib/bindings/dom/console.debug
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 192
-  i32.store align=1
   i32.const 192
   call $~lib/bindings/dom/console.info
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 240
-  i32.store align=1
   i32.const 240
   call $~lib/bindings/dom/console.warn
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 288
-  i32.store align=1
   i32.const 288
   call $~lib/bindings/dom/console.error
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   i32.const 336
-  call $~lib/console/console.time
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 336
-  i32.store align=1
+  call $~lib/bindings/dom/console.time
   i32.const 336
   call $~lib/bindings/dom/console.timeLog
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 336
-  i32.store align=1
   i32.const 336
   call $~lib/bindings/dom/console.timeEnd
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 384
-  i32.store align=1
   i32.const 384
   call $~lib/bindings/dom/console.timeLog
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 384
-  i32.store align=1
   i32.const 384
   call $~lib/bindings/dom/console.timeEnd
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   i32.const 432
-  call $~lib/console/console.time
+  call $~lib/bindings/dom/console.time
   i32.const 432
-  call $~lib/console/console.time
+  call $~lib/bindings/dom/console.time
   i32.const 480
-  call $~lib/console/console.log
+  call $~lib/bindings/dom/console.log
   i32.const 512
-  call $~lib/console/console.log
+  call $~lib/bindings/dom/console.log
   i32.const 544
-  call $~lib/console/console.log
+  call $~lib/bindings/dom/console.log
   i32.const 576
-  call $~lib/console/console.log
- )
- (func $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 588
-  i32.lt_s
-  if
-   unreachable
-  end
+  call $~lib/bindings/dom/console.log
  )
 )

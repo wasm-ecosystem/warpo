@@ -1,7 +1,7 @@
 (module
  (type $0 (func))
- (type $1 (func (param i32)))
- (type $2 (func (param i32) (result i32)))
+ (type $1 (func (param i32) (result i32)))
+ (type $2 (func (param i32)))
  (type $3 (func (param i32 i32)))
  (type $4 (func (param i32 i32) (result i32)))
  (type $5 (func (param i32 i32 i32 i32)))
@@ -1430,24 +1430,12 @@
    end
    unreachable
   end
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
   local.get $0
   i32.load offset=4
   call $~lib/rt/itcms/__visit
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $~start
   (local $0 i32)
-  (local $1 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   call $start:function-call~anonymous|0
   call $start:function-call~anonymous|0
   i32.const 1
@@ -1488,6 +1476,19 @@
    call $~lib/builtins/abort
    unreachable
   end
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 780
+  i32.lt_s
+  if
+   unreachable
+  end
   memory.size
   i32.const 16
   i32.shl
@@ -1520,53 +1521,42 @@
   i32.store
   i32.const 544
   global.set $~lib/rt/itcms/fromSpace
-  i32.const 8
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 780
+  i32.lt_s
+  if
+   unreachable
+  end
   i32.const 7
   call $~lib/rt/itcms/__new
   local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  local.get $0
-  i32.store align=1
-  local.get $0
-  local.set $1
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   local.get $0
   i32.eqz
   if
    i32.const 0
    call $~lib/rt/itcms/__new
    local.set $0
-   global.get $~lib/memory/__stack_pointer
-   local.get $0
-   i32.store align=1
-   local.get $0
-   local.set $1
   end
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $1
+  local.get $0
   global.set $function-call/foo
   global.get $~lib/memory/__stack_pointer
   global.get $function-call/foo
-  local.tee $0
   i32.store align=1
-  local.get $0
+  global.get $function-call/foo
   call $function-call/Foo#fnVoid
   i32.const 1
   call $start:function-call~fn2|4
@@ -1582,40 +1572,25 @@
   end
   global.get $~lib/memory/__stack_pointer
   global.get $function-call/foo
-  local.tee $0
   i32.store align=1
-  local.get $0
+  global.get $function-call/foo
   i32.const 1
   i32.const 2
   call $function-call/Foo#fnRet
   i32.const 3
   i32.ne
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
   if
    i32.const 0
    i32.const 128
    i32.const 34
    i32.const 1
    call $~lib/builtins/abort
-   unreachable
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  local.get $0
-  memory.fill
-  global.get $~lib/memory/__stack_pointer
-  i32.const 780
-  i32.lt_s
-  if
    unreachable
   end
  )
