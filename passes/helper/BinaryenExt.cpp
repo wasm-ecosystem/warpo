@@ -23,8 +23,8 @@ wasm::Expression *findFirstInstruction(wasm::Expression *expr) noexcept {
   }
 
   for (wasm::Index i = 0U; i < numChildren; i++) {
-    wasm::Expression *child = iter.getChild(i);
-    wasm::Expression *result = findFirstInstruction(child);
+    wasm::Expression *const child = iter.getChild(i);
+    wasm::Expression *const result = findFirstInstruction(child);
     if (!shouldSkipExpression(result)) {
       return result;
     }
@@ -49,8 +49,8 @@ wasm::Expression *findLastInstruction(wasm::Expression *expr) noexcept {
   }
 
   for (wasm::Index i = numChildren; i > 0; i--) {
-    wasm::Expression *child = iter.getChild(i - 1U);
-    wasm::Expression *result = findLastInstruction(child);
+    wasm::Expression *const child = iter.getChild(i - 1U);
+    wasm::Expression *const result = findLastInstruction(child);
     if (!shouldSkipExpression(result)) {
       return result;
     }
@@ -64,14 +64,14 @@ getRangeOfScope(warpo::ScopeInfo const &scopeInfo,
                 std::unordered_map<wasm::Expression *, uint32_t> const &exprLocationMap) noexcept {
   wasm::BinaryLocations::Span span{0, 0};
 
-  wasm::Expression *startExpr = scopeInfo.getScopeStartSubTreeRoot();
+  wasm::Expression *const startExpr = scopeInfo.getScopeStartSubTreeRoot();
   assert(startExpr != nullptr);
   wasm::Expression *const firstExpr = findFirstInstruction(startExpr);
   if (firstExpr != nullptr && exprLocationMap.contains(firstExpr)) {
     span.start = exprLocationMap.at(firstExpr);
   }
 
-  wasm::Expression *endExpr = scopeInfo.getScopeEndSubTreeRoot();
+  wasm::Expression *const endExpr = scopeInfo.getScopeEndSubTreeRoot();
   assert(endExpr != nullptr);
   wasm::Expression *const lastExpr = findLastInstruction(endExpr);
   if (lastExpr != nullptr && exprLocationMap.contains(lastExpr)) {
@@ -120,16 +120,16 @@ TEST(TestBinaryenExt, TestFindInstructionsWithEmptyBlocks) {
   wasm::Module module;
   wasm::Builder builder(module);
 
-  wasm::Expression *const const1 = builder.makeConst(wasm::Literal(int32_t(1)));
-  wasm::Expression *const const2 = builder.makeConst(wasm::Literal(int32_t(2)));
+  wasm::Expression *const const1 = builder.makeConst(wasm::Literal(1));
+  wasm::Expression *const const2 = builder.makeConst(wasm::Literal(2));
   wasm::Expression *const add = builder.makeBinary(wasm::BinaryOp::AddInt32, const1, const2);
 
   wasm::Expression *const emptyBlock1Inner = builder.makeBlock({});
   wasm::Expression *const emptyBlock1 = builder.makeBlock({emptyBlock1Inner});
   wasm::Expression *const blockAdd = builder.makeBlock({emptyBlock1, add});
 
-  wasm::Expression *const const3 = builder.makeConst(wasm::Literal(int32_t(3)));
-  wasm::Expression *const const4 = builder.makeConst(wasm::Literal(int32_t(4)));
+  wasm::Expression *const const3 = builder.makeConst(wasm::Literal(3));
+  wasm::Expression *const const4 = builder.makeConst(wasm::Literal(4));
   wasm::Expression *const sub = builder.makeBinary(wasm::BinaryOp::SubInt32, const3, const4);
 
   wasm::Expression *const emptyBlock2Inner = builder.makeBlock({});
