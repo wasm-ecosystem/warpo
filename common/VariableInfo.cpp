@@ -88,6 +88,9 @@ uint32_t VariableInfo::addScope(BinaryenExpressionRef const startExpr, BinaryenE
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "wasm-builder.h"
+#include "wasm.h"
+
 namespace warpo::ut {
 
 TEST(TestVariableInfo, TestCreateBaseType) {
@@ -294,12 +297,42 @@ TEST(TestVariableInfo, TestAddParameter) {
 }
 
 TEST(TestVariableInfo, TestAddLocal) {
-  VariableInfo variableInfo;
+  // Build a real Binaryen expression tree:
+  // block { i32.const 1 + i32.const 2 }  and  block { i32.const 3 - i32.const 4 }
+  wasm::Module module;
+  wasm::Builder builder(module);
 
-  // Test global function
+  // Build: i32.const 1
+  wasm::Expression *const const1 = builder.makeConst(wasm::Literal(int32_t(1)));
+
+  // Build: i32.const 2
+  wasm::Expression *const const2 = builder.makeConst(wasm::Literal(int32_t(2)));
+
+  // Build: i32.add (i32.const 1, i32.const 2)
+  wasm::Expression *const add = builder.makeBinary(wasm::BinaryOp::AddInt32, const1, const2);
+
+  // Wrap add in a block
+  wasm::Expression *const blockAdd = builder.makeBlock({add});
+
+  // Build: i32.const 3
+  wasm::Expression *const const3 = builder.makeConst(wasm::Literal(int32_t(3)));
+
+  // Build: i32.const 4
+  wasm::Expression *const const4 = builder.makeConst(wasm::Literal(int32_t(4)));
+
+  // Build: i32.sub (i32.const 3, i32.const 4)
+  wasm::Expression *const sub = builder.makeBinary(wasm::BinaryOp::SubInt32, const3, const4);
+
+  // Wrap sub in a block
+  wasm::Expression *const blockSub = builder.makeBlock({sub});
+
+  // Test scope with real expression addresses
+  VariableInfo variableInfo;
   variableInfo.addSubProgram("processData", "");
-  BinaryenExpressionRef const startExpr = reinterpret_cast<BinaryenExpressionRef>(0x1000);
-  BinaryenExpressionRef const endExpr = reinterpret_cast<BinaryenExpressionRef>(0x2000);
+
+  // Use blockAdd and blockSub as scope boundaries (real addresses, not dummy pointers)
+  BinaryenExpressionRef const startExpr = reinterpret_cast<BinaryenExpressionRef>(blockAdd);
+  BinaryenExpressionRef const endExpr = reinterpret_cast<BinaryenExpressionRef>(blockSub);
   uint32_t const scopeId = variableInfo.addScope(startExpr, endExpr);
   variableInfo.addLocal("processData", "result", "i32", 1, scopeId, false);
 
@@ -316,13 +349,20 @@ TEST(TestVariableInfo, TestAddLocal) {
   EXPECT_EQ(locals[0].getIndex(), 1);
   EXPECT_EQ(locals[0].getScopeId(), scopeId);
 
-  // Verify scope info
+  // Verify scope info with real expression tree addresses
   const VariableInfo::ScopeInfoMap &scopeInfoMap = variableInfo.getScopeInfoMap();
   ASSERT_EQ(scopeInfoMap.size(), 1);
   ASSERT_TRUE(scopeInfoMap.count(scopeId) > 0);
-  const VariableInfo::ScopeInfo &scopeInfo = scopeInfoMap.at(scopeId);
-  EXPECT_EQ(scopeInfo.getStartExpr(), startExpr);
-  EXPECT_EQ(scopeInfo.getEndExpr(), endExpr);
+  const ScopeInfo &scopeInfo = scopeInfoMap.at(scopeId);
+
+  // Assert that getFirstExpr and getLastExpr return the actual expression addresses
+  EXPECT_EQ(scopeInfo.getFirstExpr(), reinterpret_cast<BinaryenExpressionRef>(const1));
+  // The last instruction in blockSub subtree should be sub (the binary operation itself)
+  EXPECT_EQ(scopeInfo.getLastExpr(), reinterpret_cast<BinaryenExpressionRef>(sub));
+}
+
+TEST(TestVariableInfo, TestAddLocalToClassMemberFunction) {
+  VariableInfo variableInfo;
 
   // Test class member function
   variableInfo.createClass("Math", "Object", 300);

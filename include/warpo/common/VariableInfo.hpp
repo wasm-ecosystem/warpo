@@ -24,6 +24,7 @@
 #include <unordered_map>
 
 #include "ClassInfo.hpp"
+#include "ScopeInfo.hpp"
 #include "SubProgramInfo.hpp"
 #include "SubProgramRegistry.hpp"
 
@@ -36,14 +37,6 @@ public:
   struct GlobalTypeInfo {
     std::string_view typeName;
     bool nullable;
-  };
-
-  struct ScopeInfo final {
-    BinaryenExpressionRef startExpr;
-    BinaryenExpressionRef endExpr;
-
-    BinaryenExpressionRef getStartExpr() const noexcept { return startExpr; }
-    BinaryenExpressionRef getEndExpr() const noexcept { return endExpr; }
   };
 
   using ScopeInfoMap = std::unordered_map<uint32_t, ScopeInfo>;
