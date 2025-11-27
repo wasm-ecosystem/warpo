@@ -303,10 +303,10 @@ TEST(TestVariableInfo, TestAddLocal) {
   wasm::Builder builder(module);
 
   // Build: i32.const 1
-  wasm::Expression *const const1 = builder.makeConst(wasm::Literal(int32_t(1)));
+  wasm::Expression *const const1 = builder.makeConst(wasm::Literal(1));
 
   // Build: i32.const 2
-  wasm::Expression *const const2 = builder.makeConst(wasm::Literal(int32_t(2)));
+  wasm::Expression *const const2 = builder.makeConst(wasm::Literal(2));
 
   // Build: i32.add (i32.const 1, i32.const 2)
   wasm::Expression *const add = builder.makeBinary(wasm::BinaryOp::AddInt32, const1, const2);
@@ -315,10 +315,10 @@ TEST(TestVariableInfo, TestAddLocal) {
   wasm::Expression *const blockAdd = builder.makeBlock({add});
 
   // Build: i32.const 3
-  wasm::Expression *const const3 = builder.makeConst(wasm::Literal(int32_t(3)));
+  wasm::Expression *const const3 = builder.makeConst(wasm::Literal(3));
 
   // Build: i32.const 4
-  wasm::Expression *const const4 = builder.makeConst(wasm::Literal(int32_t(4)));
+  wasm::Expression *const const4 = builder.makeConst(wasm::Literal(4));
 
   // Build: i32.sub (i32.const 3, i32.const 4)
   wasm::Expression *const sub = builder.makeBinary(wasm::BinaryOp::SubInt32, const3, const4);
