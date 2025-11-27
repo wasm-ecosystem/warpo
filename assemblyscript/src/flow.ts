@@ -99,6 +99,8 @@ import {
   BuiltinNames
 } from "./builtins";
 
+import { addLocal, addScope } from "./warpo";
+
 /** Control flow flags indicating specific conditions. */
 export const enum FlowFlags {
   /** No specific conditions. */
@@ -1466,6 +1468,19 @@ export class Flow {
     if (this.is(FlowFlags.ConditionallyAccessesThis)) sb.push("CONDITIONALLY_ACCESSES_THIS");
     if (this.is(FlowFlags.MayReturnNonThis)) sb.push("MAY_RETURN_NONTHIS");
     return `Flow(${this.sourceFunction})[${levels}] ${sb.join(" ")}`;
+  }
+
+  addLocalsToBlock(stmts: ExpressionRef[]): void {
+    if(this.scopedLocals) {
+      let scopedLocals = this.scopedLocals as Map<string, Local>;
+      let keys = Map_keys(scopedLocals);
+      let scopeId = addScope(stmts[0], stmts[stmts.length - 1]);
+      for (let i = 0; i < keys.length; ++i) {
+        let key = unchecked(keys[i]);
+        let local = scopedLocals.get(key) as Local;
+        addLocal(decodeURIComponent(this.targetFunction.internalName), local.name, local.type.toStringWithoutNullable(), local.index, scopeId, local.type.isNullableReference);
+      }
+    }
   }
 }
 
