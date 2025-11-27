@@ -5,9 +5,14 @@
 #pragma once
 
 #include <cassert>
+#include <unordered_map>
 #include <wasm-type.h>
 
 #include "wasm.h"
+
+namespace warpo {
+class ScopeInfo;
+}
 
 namespace warpo::passes {
 
@@ -21,5 +26,16 @@ inline void setAsUnImported(wasm::Function *function) {
   // define function must be exact type, see https://github.com/WebAssembly/binaryen/pull/7993
   function->type = function->type.with(wasm::Exactness::Exact);
 }
+
+///@brief Find the first instruction in an expression subtree, skipping blocks
+wasm::Expression *findFirstInstruction(wasm::Expression *expr) noexcept;
+
+///@brief Find the last instruction in an expression subtree, skipping blocks
+wasm::Expression *findLastInstruction(wasm::Expression *expr) noexcept;
+
+///@brief Get bytecode range for a scope (first instruction start to last instruction end)
+wasm::BinaryLocations::Span
+getRangeOfScope(warpo::ScopeInfo const &scopeInfo,
+                std::unordered_map<wasm::Expression *, uint32_t> const &exprLocationMap) noexcept;
 
 } // namespace warpo::passes

@@ -12,17 +12,11 @@ public:
   inline ScopeInfo(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr) noexcept
       : scopeStartSubTreeRoot_(startExpr), scopeEndSubTreeRoot_(endExpr) {}
 
-  BinaryenExpressionRef getFirstExpr() const noexcept;
-  BinaryenExpressionRef getLastExpr() const noexcept;
+  BinaryenExpressionRef getScopeStartSubTreeRoot() const noexcept { return scopeStartSubTreeRoot_; }
+  BinaryenExpressionRef getScopeEndSubTreeRoot() const noexcept { return scopeEndSubTreeRoot_; }
 
 private:
-  static bool shouldSkipExpression(BinaryenExpressionRef expr) noexcept;
-  static BinaryenExpressionRef findFirstInstruction(BinaryenExpressionRef const expr) noexcept;
-  static BinaryenExpressionRef findLastInstruction(BinaryenExpressionRef const expr) noexcept;
-
   BinaryenExpressionRef scopeStartSubTreeRoot_;
   BinaryenExpressionRef scopeEndSubTreeRoot_;
-  mutable std::optional<BinaryenExpressionRef> firstExpr_;
-  mutable std::optional<BinaryenExpressionRef> lastExpr_;
 };
 } // namespace warpo
