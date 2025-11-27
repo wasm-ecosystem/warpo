@@ -16,6 +16,7 @@ public:
   BinaryenExpressionRef getLastExpr() const noexcept;
 
 private:
+  static bool shouldSkipExpression(BinaryenExpressionRef expr) noexcept;
   static BinaryenExpressionRef findFirstInstruction(BinaryenExpressionRef const expr) noexcept;
   static BinaryenExpressionRef findLastInstruction(BinaryenExpressionRef const expr) noexcept;
 

@@ -388,5 +388,61 @@ TEST(TestVariableInfo, TestAddLocalToClassMemberFunction) {
   EXPECT_EQ(computeLocals[0].getIndex(), 1);
   EXPECT_EQ(computeLocals[0].getScopeId(), scopeId2);
 }
+
+TEST(TestVariableInfo, TestAddLocalWithEmptyBlocks) {
+  // Build a real Binaryen expression tree with empty blocks:
+  // block { block { block {} } (i32.const 1 + i32.const 2) }  and  block { (i32.const 3 - i32.const 4) block { block {}
+  // } }
+  wasm::Module module;
+  wasm::Builder builder(module);
+
+  // Build: i32.const 1
+  wasm::Expression *const const1 = builder.makeConst(wasm::Literal(int32_t(1)));
+
+  // Build: i32.const 2
+  wasm::Expression *const const2 = builder.makeConst(wasm::Literal(int32_t(2)));
+
+  // Build: i32.add (i32.const 1, i32.const 2)
+  wasm::Expression *const add = builder.makeBinary(wasm::BinaryOp::AddInt32, const1, const2);
+
+  // Build nested empty blocks
+  wasm::Expression *const emptyBlock1Inner = builder.makeBlock({});
+  wasm::Expression *const emptyBlock1 = builder.makeBlock({emptyBlock1Inner});
+
+  // Wrap with nested empty block first, then add
+  wasm::Expression *const blockAdd = builder.makeBlock({emptyBlock1, add});
+
+  // Build: i32.const 3
+  wasm::Expression *const const3 = builder.makeConst(wasm::Literal(int32_t(3)));
+
+  // Build: i32.const 4
+  wasm::Expression *const const4 = builder.makeConst(wasm::Literal(int32_t(4)));
+
+  // Build: i32.sub (i32.const 3, i32.const 4)
+  wasm::Expression *const sub = builder.makeBinary(wasm::BinaryOp::SubInt32, const3, const4);
+
+  // Build nested empty blocks
+  wasm::Expression *const emptyBlock2Inner = builder.makeBlock({});
+  wasm::Expression *const emptyBlock2 = builder.makeBlock({emptyBlock2Inner});
+
+  // Wrap with sub first, then nested empty block
+  wasm::Expression *const blockSub = builder.makeBlock({sub, emptyBlock2});
+
+  // Test empty block skipping logic
+  VariableInfo variableInfo;
+  BinaryenExpressionRef const startExpr = reinterpret_cast<BinaryenExpressionRef>(blockAdd);
+  BinaryenExpressionRef const endExpr = reinterpret_cast<BinaryenExpressionRef>(blockSub);
+  uint32_t const scopeId = variableInfo.addScope(startExpr, endExpr);
+
+  const VariableInfo::ScopeInfoMap &scopeInfoMap = variableInfo.getScopeInfoMap();
+  const ScopeInfo &scopeInfo = scopeInfoMap.at(scopeId);
+
+  // Assert that getFirstExpr and getLastExpr skip nested empty blocks
+  // First non-empty child in blockAdd should lead to const1 (skipping nested empty blocks)
+  EXPECT_EQ(scopeInfo.getFirstExpr(), reinterpret_cast<BinaryenExpressionRef>(const1));
+  // Last non-empty child in blockSub should be sub (skipping nested empty blocks)
+  EXPECT_EQ(scopeInfo.getLastExpr(), reinterpret_cast<BinaryenExpressionRef>(sub));
+}
+
 } // namespace warpo::ut
 #endif
