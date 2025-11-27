@@ -1478,7 +1478,7 @@ export class Flow {
       for (let i = 0; i < keys.length; ++i) {
         let key = unchecked(keys[i]);
         let local = scopedLocals.get(key) as Local;
-        addLocal(decodeURIComponent(this.targetFunction.internalName), local.name, local.type.toStringWithoutNullable(), local.index, scopeId, local.type.isNullableReference);
+        addLocal(this.targetFunction.internalName, local.name, local.type.toStringWithoutNullable(), local.index, scopeId, local.type.isNullableReference);
       }
     }
   }

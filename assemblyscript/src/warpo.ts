@@ -46,7 +46,7 @@ export function addParameter(subProgramName: string, variableName: string, typeN
 }
 
 export function addLocal(subProgramName: string, variableName: string, typeName: string, index: u32, scopeId: u32, nullable: bool): void {
-  _WarpoAddLocal(subProgramName, variableName, typeName, index, scopeId, nullable);
+  _WarpoAddLocal(decodeURIComponent(subProgramName), variableName, typeName, index, scopeId, nullable);
 }
 
 export function addScope(startExpression: ExpressionRef, endExpression: ExpressionRef): u32 {
