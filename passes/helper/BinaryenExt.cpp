@@ -18,11 +18,11 @@ wasm::Expression *findFirstInstruction(wasm::Expression *expr) noexcept {
   wasm::ChildIterator iter(expr);
   wasm::Index const numChildren = iter.getNumChildren();
 
-  if (numChildren == 0) {
+  if (numChildren == 0U) {
     return expr;
   }
 
-  for (wasm::Index i = 0; i < numChildren; i++) {
+  for (wasm::Index i = 0U; i < numChildren; i++) {
     wasm::Expression *child = iter.getChild(i);
     wasm::Expression *result = findFirstInstruction(child);
     if (!shouldSkipExpression(result)) {
@@ -65,19 +65,17 @@ getRangeOfScope(warpo::ScopeInfo const &scopeInfo,
   wasm::BinaryLocations::Span span{0, 0};
 
   wasm::Expression *startExpr = scopeInfo.getScopeStartSubTreeRoot();
-  if (startExpr != nullptr) {
-    wasm::Expression *const firstExpr = findFirstInstruction(startExpr);
-    if (firstExpr != nullptr && exprLocationMap.contains(firstExpr)) {
-      span.start = exprLocationMap.at(firstExpr);
-    }
+  assert(startExpr != nullptr);
+  wasm::Expression *const firstExpr = findFirstInstruction(startExpr);
+  if (firstExpr != nullptr && exprLocationMap.contains(firstExpr)) {
+    span.start = exprLocationMap.at(firstExpr);
   }
 
   wasm::Expression *endExpr = scopeInfo.getScopeEndSubTreeRoot();
-  if (endExpr != nullptr) {
-    wasm::Expression *const lastExpr = findLastInstruction(endExpr);
-    if (lastExpr != nullptr && exprLocationMap.contains(lastExpr)) {
-      span.end = exprLocationMap.at(lastExpr);
-    }
+  assert(endExpr != nullptr);
+  wasm::Expression *const lastExpr = findLastInstruction(endExpr);
+  if (lastExpr != nullptr && exprLocationMap.contains(lastExpr)) {
+    span.end = exprLocationMap.at(lastExpr);
   }
 
   return span;

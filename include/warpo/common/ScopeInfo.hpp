@@ -12,8 +12,8 @@ public:
   inline ScopeInfo(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr) noexcept
       : scopeStartSubTreeRoot_(startExpr), scopeEndSubTreeRoot_(endExpr) {}
 
-  BinaryenExpressionRef getScopeStartSubTreeRoot() const noexcept { return scopeStartSubTreeRoot_; }
-  BinaryenExpressionRef getScopeEndSubTreeRoot() const noexcept { return scopeEndSubTreeRoot_; }
+  inline BinaryenExpressionRef getScopeStartSubTreeRoot() const noexcept { return scopeStartSubTreeRoot_; }
+  inline BinaryenExpressionRef getScopeEndSubTreeRoot() const noexcept { return scopeEndSubTreeRoot_; }
 
 private:
   BinaryenExpressionRef scopeStartSubTreeRoot_;
