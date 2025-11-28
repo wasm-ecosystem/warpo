@@ -41,8 +41,8 @@ TEST(IntervalTreeTest, NestedIntervals) {
   // [1,10] should have 2 children: [2,5] and [7,10]
   ASSERT_EQ(roots[0].children.size(), 2);
 
-  auto const &child1 = roots[0].children[0];
-  auto const &child2 = roots[0].children[1];
+  IntervalTree<int>::Node const *const child1 = roots[0].children[0].get();
+  IntervalTree<int>::Node const *const child2 = roots[0].children[1].get();
 
   // [2,5]
   EXPECT_EQ(child1->span.start, 2);
