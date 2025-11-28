@@ -84,11 +84,13 @@ void addLocal(uint32_t const subProgramNamePtr, uint32_t const variableNamePtr, 
                                               nullable != 0);
 }
 
-uint32_t addScope(uint64_t const startExprPtr, uint64_t const endExprPtr, vb::WasmModule const *const ctx) {
+uint32_t addScope(uint32_t const subProgramNamePtr, uint64_t const startExprPtr, uint64_t const endExprPtr,
+                  vb::WasmModule const *const ctx) {
+  std::string const subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
   BinaryenExpressionRef const startExpr = reinterpret_cast<BinaryenExpressionRef>(startExprPtr);
   BinaryenExpressionRef const endExpr = reinterpret_cast<BinaryenExpressionRef>(endExprPtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
-  return pCompiler->asModule_.variableInfo_.addScope(startExpr, endExpr);
+  return pCompiler->asModule_.variableInfo_.addScope(subProgramName, startExpr, endExpr);
 }
 } // namespace
 

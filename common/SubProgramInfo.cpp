@@ -39,4 +39,11 @@ void SubProgramInfo::addLocal(std::string variableName, std::string_view const t
       nullable,
   });
 }
+
+uint32_t SubProgramInfo::addScope(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr) {
+  uint32_t const scopeId = nextScopeId_;
+  scopeInfoMap_.emplace(scopeId, ScopeInfo{startExpr, endExpr});
+  nextScopeId_++;
+  return scopeId;
+}
 } // namespace warpo

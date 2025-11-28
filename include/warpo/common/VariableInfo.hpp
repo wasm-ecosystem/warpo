@@ -39,7 +39,6 @@ public:
     bool nullable;
   };
 
-  using ScopeInfoMap = std::unordered_map<uint32_t, ScopeInfo>;
   using GlobalTypes = std::map<std::string, GlobalTypeInfo>;
 
   void createBaseType(std::string_view typeName);
@@ -59,14 +58,13 @@ public:
 
   SubProgramRegistry const &getSubProgramRegistry() const noexcept { return subProgramRegistry_; }
 
-  ScopeInfoMap const &getScopeInfoMap() const noexcept { return scopeInfoMap_; }
-
   void addSubProgram(std::string subProgramName, std::string_view const belongClassName);
 
   void addParameter(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
                     uint32_t const index, bool const nullable);
 
-  uint32_t addScope(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr);
+  uint32_t addScope(std::string_view const subProgramName, BinaryenExpressionRef const startExpr,
+                    BinaryenExpressionRef const endExpr);
 
   void addLocal(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
                 uint32_t const index, uint32_t const scopeId, bool const nullable);
@@ -79,8 +77,6 @@ private:
   StringPool stringPool_;
   SubProgramRegistry subProgramRegistry_;
   SubProgramLookupMap subProgramLookupMap_;
-  ScopeInfoMap scopeInfoMap_;
-  uint32_t nextScopeId_ = 0;
 };
 
 } // namespace warpo

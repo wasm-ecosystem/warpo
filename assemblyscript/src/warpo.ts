@@ -12,7 +12,7 @@ declare function _WarpoAddGlobal(variableName: string, typeName: string, nullabl
 declare function _WarpoAddSubProgram(subProgramName: string, belongClassName: string | null): void;
 declare function _WarpoAddParameter(subProgramName: string, variableName: string, typeName: string, index: u32, nullable: bool): void;
 declare function _WarpoAddLocal(subProgramName: string, variableName: string, typeName: string, index: u32, scopeId: u32, nullable: bool): void;
-declare function _WarpoAddScope(startExpression: ExpressionRef, endExpression: ExpressionRef): u32;
+declare function _WarpoAddScope(functionName: string, startExpression: ExpressionRef, endExpression: ExpressionRef): u32;
 
 export function markDataElementImmutable(begin: i64, size: i32): void {
   _WarpoMarkDataElementImmutable(i64_low(begin), <u32>size);
@@ -49,6 +49,6 @@ export function addLocal(subProgramName: string, variableName: string, typeName:
   _WarpoAddLocal(decodeURIComponent(subProgramName), variableName, typeName, index, scopeId, nullable);
 }
 
-export function addScope(startExpression: ExpressionRef, endExpression: ExpressionRef): u32 {
-  return _WarpoAddScope(startExpression, endExpression);
+export function addScope(functionName: string, startExpression: ExpressionRef, endExpression: ExpressionRef): u32 {
+  return _WarpoAddScope(decodeURIComponent(functionName), startExpression, endExpression);
 }
