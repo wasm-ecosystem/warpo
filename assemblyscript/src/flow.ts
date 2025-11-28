@@ -1474,7 +1474,7 @@ export class Flow {
     if(this.scopedLocals) {
       let scopedLocals = this.scopedLocals as Map<string, Local>;
       let keys = Map_keys(scopedLocals);
-      let scopeId = addScope(stmts[0], stmts[stmts.length - 1]);
+      let scopeId = addScope(this.targetFunction.internalName, stmts[0], stmts[stmts.length - 1]);
       for (let i = 0; i < keys.length; ++i) {
         let key = unchecked(keys[i]);
         let local = scopedLocals.get(key) as Local;
