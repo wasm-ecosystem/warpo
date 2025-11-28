@@ -5,8 +5,10 @@
 
 #include <algorithm>
 #include <deque>
+#include <memory>
 #include <stack>
 #include <utility>
+#include <vector>
 
 #include "binaryen/src/wasm-binary.h"
 
@@ -17,7 +19,7 @@ public:
   struct Node final {
     wasm::BinaryLocations::Span span;
     T data;
-    std::deque<Node> children;
+    std::vector<std::unique_ptr<Node>> children;
     Node *parent;
 
     template <typename U>
@@ -63,8 +65,8 @@ public:
       } else {
         // Child node - add to parent's children deque
         Node *const parent = stack.top();
-        parent->children.emplace_back(interval.first, std::forward<U>(interval.second));
-        nodePtr = &parent->children.back();
+        parent->children.emplace_back(std::make_unique<Node>(interval.first, std::forward<U>(interval.second)));
+        nodePtr = parent->children.back().get();
         nodePtr->parent = parent;
       }
 
