@@ -104,6 +104,10 @@ export default defineConfig({
             link: "/tech/infra/index",
             items: listItems("tech/infra"),
           },
+          {
+            text: "For Developers",
+            items: listItems("tech/for_dev"),
+          },
         ],
       },
     ],
