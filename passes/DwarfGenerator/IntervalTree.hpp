@@ -1,8 +1,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-#ifndef WARPO_PASSES_DWARF_GENERATOR_INTERVAL_TREE_HPP
-#define WARPO_PASSES_DWARF_GENERATOR_INTERVAL_TREE_HPP
+#pragma once
 
 #include <algorithm>
 #include <deque>
@@ -82,5 +81,3 @@ private:
 };
 
 } // namespace warpo::passes
-
-#endif // WARPO_PASSES_DWARF_GENERATOR_INTERVAL_TREE_HPP
