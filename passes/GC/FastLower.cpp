@@ -69,7 +69,11 @@ struct ToStackReplacer : public wasm::WalkerPass<wasm::PostWalker<ToStackReplace
 
   void visitLocalSet(wasm::LocalSet *expr) {
     using namespace matcher;
-    auto m = isLocalSet(local_set::v(isCall(call::callee(FnLocalToStack))));
+    auto m = isLocalSet(local_set::v(isCall(anyOf({
+        call::callee(FnLocalToStack),
+        // after inlining callee, FnTmpToStack may be set to local directly instead inside call expr.
+        call::callee(FnTmpToStack),
+    }))));
     if (!m(*expr))
       return;
     wasm::Call *const call = expr->value->cast<wasm::Call>();
