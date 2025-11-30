@@ -1887,14 +1887,14 @@
   (local $15 i32)
   (local $16 i32)
   (local $17 i64)
-  block $~lib/util/number/dtoa_impl|inlined.0 (result i32)
+  block $__inlined_func$~lib/util/number/dtoa_impl$1 (result i32)
    i32.const 608
    local.get $0
    f64.promote_f32
    local.tee $9
    f64.const 0
    f64.eq
-   br_if $~lib/util/number/dtoa_impl|inlined.0
+   br_if $__inlined_func$~lib/util/number/dtoa_impl$1
    drop
    local.get $9
    local.get $9
@@ -1906,7 +1906,7 @@
     local.get $9
     local.get $9
     f64.ne
-    br_if $~lib/util/number/dtoa_impl|inlined.0
+    br_if $__inlined_func$~lib/util/number/dtoa_impl$1
     drop
     i32.const 672
     i32.const 720
@@ -1914,7 +1914,7 @@
     f64.const 0
     f64.lt
     select
-    br $~lib/util/number/dtoa_impl|inlined.0
+    br $__inlined_func$~lib/util/number/dtoa_impl$1
    end
    local.get $9
    f64.const 0
@@ -2379,7 +2379,7 @@
         local.tee $4
         i32.load16_u
         local.set $1
-        loop $while-continue|3
+        loop $while-continue|1
          local.get $6
          local.get $10
          i64.lt_u
@@ -2409,7 +2409,7 @@
           i32.const 1
           i32.sub
           local.set $1
-          br $while-continue|3
+          br $while-continue|1
          end
         end
         local.get $4
@@ -2421,7 +2421,7 @@
        br $while-continue|0
       end
      end
-     loop $while-continue|4 (result i32)
+     loop $while-continue|2 (result i32)
       local.get $8
       i64.const 10
       i64.mul
@@ -2468,7 +2468,7 @@
       local.tee $13
       local.get $8
       i64.ge_u
-      br_if $while-continue|4
+      br_if $while-continue|2
       global.get $~lib/util/number/_K
       local.get $11
       i32.add
@@ -2492,7 +2492,7 @@
       local.tee $4
       i32.load16_u
       local.set $1
-      loop $while-continue|6
+      loop $while-continue|11
        local.get $5
        local.get $13
        i64.gt_u
@@ -2522,7 +2522,7 @@
         i32.const 1
         i32.sub
         local.set $1
-        br $while-continue|6
+        br $while-continue|11
        end
       end
       local.get $4

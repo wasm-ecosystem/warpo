@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <utility>
+#include <wasm.h>
 
 #include "VariableInfo.hpp"
 
@@ -71,11 +72,17 @@ struct ImmutableDataElementRanges : private std::set<DataElementRange> {
   bool contains(uint32_t offset, uint32_t size) const;
 };
 
+struct ForceInlineHints : private std::set<wasm::Call *> {
+  using std::set<wasm::Call *>::insert;
+  using std::set<wasm::Call *>::contains;
+};
+
 class AsModule {
   BinaryenModule raw_;
 
 public:
   std::shared_ptr<ImmutableDataElementRanges> immutableRanges_;
+  std::shared_ptr<ForceInlineHints> forceInlineHints_;
   VariableInfo variableInfo_;
   // TODO: more information fields
 

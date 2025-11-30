@@ -1,34 +1,46 @@
 (module
  (type $0 (func (param f64) (result f64)))
- (type $1 (func (param f64 f64 f64 i32) (result i32)))
- (type $2 (func (param f32 f32 f32 i32) (result i32)))
- (type $3 (func (param f32) (result f32)))
+ (type $1 (func (param f32) (result f32)))
+ (type $2 (func (param f64 f64 f64 i32) (result i32)))
+ (type $3 (func (param f32 f32 f32 i32) (result i32)))
  (type $4 (func (param f64 f64) (result f64)))
- (type $5 (func (param f64 f64 f64 f64 i32) (result i32)))
- (type $6 (func (param f32 f32 f32 f32 i32) (result i32)))
- (type $7 (func (param f32 f32) (result f32)))
- (type $8 (func (result f64)))
- (type $9 (func (param i32) (result i32)))
- (type $10 (func (param f64) (result i32)))
- (type $11 (func))
- (type $12 (func (param f64 i32) (result f64)))
- (type $13 (func (param f64 f64 f64) (result f64)))
- (type $14 (func (param i32 i32 i32 i32)))
- (type $15 (func (param f32) (result i32)))
- (type $16 (func (param f32 i32) (result f32)))
- (type $17 (func (param f32 f32 f32) (result f32)))
- (type $18 (func (param f64 i32 f64 f64 i32) (result i32)))
- (type $19 (func (param f32 i32 f32 f32 i32) (result i32)))
- (type $20 (func (param f64 i64) (result i32)))
- (type $21 (func (param f64 f64) (result i32)))
- (type $22 (func (param i64) (result i64)))
- (type $23 (func (param i64)))
- (type $24 (func (result f32)))
- (type $25 (func (param f64 f64 i32) (result f64)))
- (type $26 (func (param f64)))
- (type $27 (func (param i64 i64 i64 i64 i64 i32) (result i32)))
- (type $28 (func (param i64 i64) (result i64)))
- (type $29 (func (param i32 i32) (result i32)))
+ (type $5 (func (param f32 f32) (result f32)))
+ (type $6 (func (param f64 f64 f64 f64 i32) (result i32)))
+ (type $7 (func (param f32 f32 f32 f32 i32) (result i32)))
+ (type $8 (func (param i32) (result i32)))
+ (type $9 (func (param f64) (result i32)))
+ (type $10 (func (param i64 i64) (result i64)))
+ (type $11 (func (param f64 f64 i32) (result f64)))
+ (type $12 (func (param i32) (result f64)))
+ (type $13 (func (result f64)))
+ (type $14 (func (param f32) (result i32)))
+ (type $15 (func (param f64) (result f32)))
+ (type $16 (func (param f64 i64 i64) (result f64)))
+ (type $17 (func (param i64) (result i32)))
+ (type $18 (func (param i32) (result f32)))
+ (type $19 (func (param f64 i32) (result f32)))
+ (type $20 (func (param i64)))
+ (type $21 (func))
+ (type $22 (func (param f64 i32) (result f64)))
+ (type $23 (func (param f64 f64 f64) (result f64)))
+ (type $24 (func (param i32 i32 i32 i32)))
+ (type $25 (func (param f32 i32) (result f32)))
+ (type $26 (func (param f32 f32 f32) (result f32)))
+ (type $27 (func (param f64 i32 f64 f64 i32) (result i32)))
+ (type $28 (func (param f32 i32 f32 f32 i32) (result i32)))
+ (type $29 (func (param f64 i64) (result i32)))
+ (type $30 (func (param f64 i64 i32) (result i32)))
+ (type $31 (func (param f32 i32) (result i32)))
+ (type $32 (func (param f32 i32 i32) (result i32)))
+ (type $33 (func (param i64) (result f64)))
+ (type $34 (func (param i32 f64) (result f64)))
+ (type $35 (func (param f64 f64) (result i32)))
+ (type $36 (func (param i32 f32) (result f32)))
+ (type $37 (func (param i64) (result i64)))
+ (type $38 (func (result f32)))
+ (type $39 (func (param f64)))
+ (type $40 (func (param i64 i64 i64 i64 i64 i32) (result i32)))
+ (type $41 (func (param i32 i32) (result i32)))
  (import "env" "Math.E" (global $~lib/bindings/dom/Math.E f64))
  (import "env" "Math.LN2" (global $~lib/bindings/dom/Math.LN2 f64))
  (import "env" "Math.LN10" (global $~lib/bindings/dom/Math.LN10 f64))
@@ -131,6 +143,19 @@
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
  (start $~start)
+ (func $~lib/math/NativeMath.signbit (param $x f64) (result i32)
+  (return
+   (i64.ne
+    (i64.shr_u
+     (i64.reinterpret_f64
+      (local.get $x)
+     )
+     (i64.const 63)
+    )
+    (i64.const 0)
+   )
+  )
+ )
  (func $std/math/eulp (param $x f64) (result i32)
   (local $u i64)
   (local $e i32)
@@ -316,8 +341,6 @@
   )
  )
  (func $std/math/ulperr (param $got f64) (param $want f64) (param $dwant f64) (result f64)
-  (local $x f64)
-  (local $x|4 f64)
   (if
    (if (result i32)
     (f64.ne
@@ -348,43 +371,11 @@
    (then
     (if
      (i32.eq
-      (i32.ne
-       (block $~lib/math/NativeMath.signbit|inlined.0 (result i32)
-        (local.set $x
-         (local.get $got)
-        )
-        (br $~lib/math/NativeMath.signbit|inlined.0
-         (i64.ne
-          (i64.shr_u
-           (i64.reinterpret_f64
-            (local.get $x)
-           )
-           (i64.const 63)
-          )
-          (i64.const 0)
-         )
-        )
-       )
-       (i32.const 0)
+      (call $~lib/math/NativeMath.signbit
+       (local.get $got)
       )
-      (i32.ne
-       (block $~lib/math/NativeMath.signbit|inlined.1 (result i32)
-        (local.set $x|4
-         (local.get $want)
-        )
-        (br $~lib/math/NativeMath.signbit|inlined.1
-         (i64.ne
-          (i64.shr_u
-           (i64.reinterpret_f64
-            (local.get $x|4)
-           )
-           (i64.const 63)
-          )
-          (i64.const 0)
-         )
-        )
-       )
-       (i32.const 0)
+      (call $~lib/math/NativeMath.signbit
+       (local.get $want)
       )
      )
      (then
@@ -496,6 +487,16 @@
   )
   (return
    (i32.const 1)
+  )
+ )
+ (func $~lib/math/NativeMathf.signbit (param $x f32) (result i32)
+  (return
+   (i32.shr_u
+    (i32.reinterpret_f32
+     (local.get $x)
+    )
+    (i32.const 31)
+   )
   )
  )
  (func $std/math/eulpf (param $x f32) (result i32)
@@ -679,8 +680,6 @@
   )
  )
  (func $std/math/ulperrf (param $got f32) (param $want f32) (param $dwant f32) (result f32)
-  (local $x f32)
-  (local $x|4 f32)
   (if
    (if (result i32)
     (f32.ne
@@ -711,37 +710,11 @@
    (then
     (if
      (i32.eq
-      (i32.ne
-       (block $~lib/math/NativeMathf.signbit|inlined.0 (result i32)
-        (local.set $x
-         (local.get $got)
-        )
-        (br $~lib/math/NativeMathf.signbit|inlined.0
-         (i32.shr_u
-          (i32.reinterpret_f32
-           (local.get $x)
-          )
-          (i32.const 31)
-         )
-        )
-       )
-       (i32.const 0)
+      (call $~lib/math/NativeMathf.signbit
+       (local.get $got)
       )
-      (i32.ne
-       (block $~lib/math/NativeMathf.signbit|inlined.1 (result i32)
-        (local.set $x|4
-         (local.get $want)
-        )
-        (br $~lib/math/NativeMathf.signbit|inlined.1
-         (i32.shr_u
-          (i32.reinterpret_f32
-           (local.get $x|4)
-          )
-          (i32.const 31)
-         )
-        )
-       )
-       (i32.const 0)
+      (call $~lib/math/NativeMathf.signbit
+       (local.get $want)
       )
      )
      (then
@@ -889,20 +862,19 @@
    )
   )
  )
+ (func $~lib/math/NativeMath.abs (param $x f64) (result f64)
+  (return
+   (f64.abs
+    (local.get $x)
+   )
+  )
+ )
  (func $std/math/test_abs (param $value f64) (param $expected f64) (param $error f64) (param $flags i32) (result i32)
-  (local $x f64)
   (return
    (if (result i32)
     (call $std/math/check<f64>
-     (block $~lib/math/NativeMath.abs|inlined.0 (result f64)
-      (local.set $x
-       (local.get $value)
-      )
-      (br $~lib/math/NativeMath.abs|inlined.0
-       (f64.abs
-        (local.get $x)
-       )
-      )
+     (call $~lib/math/NativeMath.abs
+      (local.get $value)
      )
      (local.get $expected)
      (local.get $error)
@@ -924,19 +896,18 @@
    )
   )
  )
+ (func $~lib/math/NativeMathf.abs (param $x f32) (result f32)
+  (return
+   (f32.abs
+    (local.get $x)
+   )
+  )
+ )
  (func $std/math/test_absf (param $value f32) (param $expected f32) (param $error f32) (param $flags i32) (result i32)
-  (local $x f32)
   (return
    (call $std/math/check<f32>
-    (block $~lib/math/NativeMathf.abs|inlined.0 (result f32)
-     (local.set $x
-      (local.get $value)
-     )
-     (br $~lib/math/NativeMathf.abs|inlined.0
-      (f32.abs
-       (local.get $x)
-      )
-     )
+    (call $~lib/math/NativeMathf.abs
+     (local.get $value)
     )
     (local.get $expected)
     (local.get $error)
@@ -1906,8 +1877,7 @@
    )
   )
  )
- (func $~lib/math/NativeMath.log (param $x f64) (result f64)
-  (local $x|1 f64)
+ (func $~lib/util/math/log_lut (param $x f64) (result f64)
   (local $ix i64)
   (local $r f64)
   (local $r2 f64)
@@ -1928,73 +1898,78 @@
   (local $z f64)
   (local $chi f64)
   (local $clo f64)
-  (local $r|22 f64)
+  (local $r|21 f64)
   (local $kd f64)
-  (local $w|24 f64)
-  (local $hi|25 f64)
-  (local $lo|26 f64)
-  (local $r2|27 f64)
-  (drop
-   (i32.lt_s
-    (i32.const 0)
-    (i32.const 1)
+  (local $w|23 f64)
+  (local $hi|24 f64)
+  (local $lo|25 f64)
+  (local $r2|26 f64)
+  (local.set $ix
+   (i64.reinterpret_f64
+    (local.get $x)
    )
   )
-  (return
-   (block $~lib/util/math/log_lut|inlined.0 (result f64)
-    (local.set $x|1
-     (local.get $x)
+  (if
+   (i64.lt_u
+    (i64.sub
+     (local.get $ix)
+     (i64.const 4606619468846596096)
     )
-    (local.set $ix
-     (i64.reinterpret_f64
-      (local.get $x|1)
+    (i64.sub
+     (i64.const 4607473789381378048)
+     (i64.const 4606619468846596096)
+    )
+   )
+   (then
+    (local.set $r
+     (f64.sub
+      (local.get $x)
+      (f64.const 1)
      )
     )
-    (if
-     (i64.lt_u
-      (i64.sub
-       (local.get $ix)
-       (i64.const 4606619468846596096)
-      )
-      (i64.sub
-       (i64.const 4607473789381378048)
-       (i64.const 4606619468846596096)
-      )
+    (local.set $r2
+     (f64.mul
+      (local.get $r)
+      (local.get $r)
      )
-     (then
-      (local.set $r
-       (f64.sub
-        (local.get $x|1)
-        (f64.const 1)
+    )
+    (local.set $r3
+     (f64.mul
+      (local.get $r2)
+      (local.get $r)
+     )
+    )
+    (local.set $y
+     (f64.mul
+      (local.get $r3)
+      (f64.add
+       (f64.add
+        (f64.add
+         (f64.const 0.3333333333333352)
+         (f64.mul
+          (local.get $r)
+          (f64.const -0.24999999999998432)
+         )
+        )
+        (f64.mul
+         (local.get $r2)
+         (f64.const 0.19999999999320328)
+        )
        )
-      )
-      (local.set $r2
-       (f64.mul
-        (local.get $r)
-        (local.get $r)
-       )
-      )
-      (local.set $r3
-       (f64.mul
-        (local.get $r2)
-        (local.get $r)
-       )
-      )
-      (local.set $y
        (f64.mul
         (local.get $r3)
         (f64.add
          (f64.add
           (f64.add
-           (f64.const 0.3333333333333352)
+           (f64.const -0.16666666669929706)
            (f64.mul
             (local.get $r)
-            (f64.const -0.24999999999998432)
+            (f64.const 0.14285715076560868)
            )
           )
           (f64.mul
            (local.get $r2)
-           (f64.const 0.19999999999320328)
+           (f64.const -0.12499997863982555)
           )
          )
          (f64.mul
@@ -2002,416 +1977,411 @@
           (f64.add
            (f64.add
             (f64.add
-             (f64.const -0.16666666669929706)
+             (f64.const 0.11110712032936046)
              (f64.mul
               (local.get $r)
-              (f64.const 0.14285715076560868)
+              (f64.const -0.10000486757818193)
              )
             )
             (f64.mul
              (local.get $r2)
-             (f64.const -0.12499997863982555)
+             (f64.const 0.09181994006195467)
             )
            )
            (f64.mul
             (local.get $r3)
-            (f64.add
-             (f64.add
-              (f64.add
-               (f64.const 0.11110712032936046)
-               (f64.mul
-                (local.get $r)
-                (f64.const -0.10000486757818193)
-               )
-              )
-              (f64.mul
-               (local.get $r2)
-               (f64.const 0.09181994006195467)
-              )
-             )
-             (f64.mul
-              (local.get $r3)
-              (f64.const -0.08328363062289341)
-             )
-            )
+            (f64.const -0.08328363062289341)
            )
           )
          )
         )
        )
       )
-      (local.set $w
+     )
+    )
+    (local.set $w
+     (f64.mul
+      (local.get $r)
+      (f64.const 134217728)
+     )
+    )
+    (local.set $rhi
+     (f64.sub
+      (f64.add
+       (local.get $r)
+       (local.get $w)
+      )
+      (local.get $w)
+     )
+    )
+    (local.set $rlo
+     (f64.sub
+      (local.get $r)
+      (local.get $rhi)
+     )
+    )
+    (local.set $w
+     (f64.mul
+      (f64.mul
+       (local.get $rhi)
+       (local.get $rhi)
+      )
+      (f64.const -0.5)
+     )
+    )
+    (local.set $hi
+     (f64.add
+      (local.get $r)
+      (local.get $w)
+     )
+    )
+    (local.set $lo
+     (f64.add
+      (f64.sub
+       (local.get $r)
+       (local.get $hi)
+      )
+      (local.get $w)
+     )
+    )
+    (local.set $lo
+     (f64.add
+      (local.get $lo)
+      (f64.mul
        (f64.mul
-        (local.get $r)
-        (f64.const 134217728)
-       )
-      )
-      (local.set $rhi
-       (f64.sub
-        (f64.add
-         (local.get $r)
-         (local.get $w)
-        )
-        (local.get $w)
-       )
-      )
-      (local.set $rlo
-       (f64.sub
-        (local.get $r)
-        (local.get $rhi)
-       )
-      )
-      (local.set $w
-       (f64.mul
-        (f64.mul
-         (local.get $rhi)
-         (local.get $rhi)
-        )
         (f64.const -0.5)
+        (local.get $rlo)
        )
-      )
-      (local.set $hi
        (f64.add
+        (local.get $rhi)
         (local.get $r)
-        (local.get $w)
-       )
-      )
-      (local.set $lo
-       (f64.add
-        (f64.sub
-         (local.get $r)
-         (local.get $hi)
-        )
-        (local.get $w)
-       )
-      )
-      (local.set $lo
-       (f64.add
-        (local.get $lo)
-        (f64.mul
-         (f64.mul
-          (f64.const -0.5)
-          (local.get $rlo)
-         )
-         (f64.add
-          (local.get $rhi)
-          (local.get $r)
-         )
-        )
-       )
-      )
-      (br $~lib/util/math/log_lut|inlined.0
-       (f64.add
-        (f64.add
-         (local.get $y)
-         (local.get $lo)
-        )
-        (local.get $hi)
        )
       )
      )
     )
-    (local.set $top
-     (i32.wrap_i64
-      (i64.shr_u
+    (return
+     (f64.add
+      (f64.add
+       (local.get $y)
+       (local.get $lo)
+      )
+      (local.get $hi)
+     )
+    )
+   )
+  )
+  (local.set $top
+   (i32.wrap_i64
+    (i64.shr_u
+     (local.get $ix)
+     (i64.const 48)
+    )
+   )
+  )
+  (if
+   (i32.ge_u
+    (i32.sub
+     (local.get $top)
+     (i32.const 16)
+    )
+    (i32.sub
+     (i32.const 32752)
+     (i32.const 16)
+    )
+   )
+   (then
+    (if
+     (i64.eq
+      (i64.shl
        (local.get $ix)
-       (i64.const 48)
+       (i64.const 1)
+      )
+      (i64.const 0)
+     )
+     (then
+      (return
+       (f64.div
+        (f64.const -1)
+        (f64.mul
+         (local.get $x)
+         (local.get $x)
+        )
+       )
       )
      )
     )
     (if
-     (i32.ge_u
-      (i32.sub
-       (local.get $top)
-       (i32.const 16)
-      )
-      (i32.sub
-       (i32.const 32752)
-       (i32.const 16)
+     (i64.eq
+      (local.get $ix)
+      (i64.reinterpret_f64
+       (f64.const inf)
       )
      )
      (then
-      (if
-       (i64.eq
-        (i64.shl
-         (local.get $ix)
-         (i64.const 1)
-        )
-        (i64.const 0)
-       )
-       (then
-        (br $~lib/util/math/log_lut|inlined.0
-         (f64.div
-          (f64.const -1)
-          (f64.mul
-           (local.get $x|1)
-           (local.get $x|1)
-          )
-         )
-        )
-       )
+      (return
+       (local.get $x)
       )
-      (if
-       (i64.eq
-        (local.get $ix)
-        (i64.reinterpret_f64
-         (f64.const inf)
-        )
-       )
-       (then
-        (br $~lib/util/math/log_lut|inlined.0
-         (local.get $x|1)
-        )
-       )
+     )
+    )
+    (if
+     (if (result i32)
+      (i32.and
+       (local.get $top)
+       (i32.const 32768)
       )
-      (if
-       (if (result i32)
+      (then
+       (i32.const 1)
+      )
+      (else
+       (i32.eq
         (i32.and
          (local.get $top)
-         (i32.const 32768)
+         (i32.const 32752)
         )
-        (then
-         (i32.const 1)
-        )
-        (else
-         (i32.eq
-          (i32.and
-           (local.get $top)
-           (i32.const 32752)
-          )
-          (i32.const 32752)
-         )
-        )
-       )
-       (then
-        (br $~lib/util/math/log_lut|inlined.0
-         (f64.div
-          (f64.sub
-           (local.get $x|1)
-           (local.get $x|1)
-          )
-          (f64.sub
-           (local.get $x|1)
-           (local.get $x|1)
-          )
-         )
-        )
+        (i32.const 32752)
        )
       )
-      (local.set $ix
-       (i64.reinterpret_f64
-        (f64.mul
-         (local.get $x|1)
-         (f64.const 4503599627370496)
+     )
+     (then
+      (return
+       (f64.div
+        (f64.sub
+         (local.get $x)
+         (local.get $x)
         )
-       )
-      )
-      (local.set $ix
-       (i64.sub
-        (local.get $ix)
-        (i64.shl
-         (i64.const 52)
-         (i64.const 52)
+        (f64.sub
+         (local.get $x)
+         (local.get $x)
         )
        )
       )
      )
     )
-    (local.set $tmp
+    (local.set $ix
+     (i64.reinterpret_f64
+      (f64.mul
+       (local.get $x)
+       (f64.const 4503599627370496)
+      )
+     )
+    )
+    (local.set $ix
      (i64.sub
       (local.get $ix)
-      (i64.const 4604367669032910848)
-     )
-    )
-    (local.set $i
-     (i32.wrap_i64
-      (i64.and
-       (i64.shr_u
-        (local.get $tmp)
-        (i64.sub
-         (i64.const 52)
-         (i64.extend_i32_s
-          (i32.const 7)
-         )
-        )
-       )
-       (i64.extend_i32_s
-        (i32.const 127)
-       )
+      (i64.shl
+       (i64.const 52)
+       (i64.const 52)
       )
      )
     )
-    (local.set $k
-     (i64.shr_s
+   )
+  )
+  (local.set $tmp
+   (i64.sub
+    (local.get $ix)
+    (i64.const 4604367669032910848)
+   )
+  )
+  (local.set $i
+   (i32.wrap_i64
+    (i64.and
+     (i64.shr_u
       (local.get $tmp)
+      (i64.sub
+       (i64.const 52)
+       (i64.extend_i32_s
+        (i32.const 7)
+       )
+      )
+     )
+     (i64.extend_i32_s
+      (i32.const 127)
+     )
+    )
+   )
+  )
+  (local.set $k
+   (i64.shr_s
+    (local.get $tmp)
+    (i64.const 52)
+   )
+  )
+  (local.set $iz
+   (i64.sub
+    (local.get $ix)
+    (i64.and
+     (local.get $tmp)
+     (i64.shl
+      (i64.const 4095)
       (i64.const 52)
      )
     )
-    (local.set $iz
-     (i64.sub
-      (local.get $ix)
-      (i64.and
-       (local.get $tmp)
-       (i64.shl
-        (i64.const 4095)
-        (i64.const 52)
-       )
-      )
-     )
-    )
-    (local.set $invc
-     (f64.load
+   )
+  )
+  (local.set $invc
+   (f64.load
+    (i32.add
+     (i32.const 64)
+     (i32.shl
+      (local.get $i)
       (i32.add
-       (i32.const 64)
-       (i32.shl
-        (local.get $i)
-        (i32.add
-         (i32.const 1)
-         (i32.const 3)
-        )
-       )
+       (i32.const 1)
+       (i32.const 3)
       )
      )
     )
-    (local.set $logc
-     (f64.load offset=8
+   )
+  )
+  (local.set $logc
+   (f64.load offset=8
+    (i32.add
+     (i32.const 64)
+     (i32.shl
+      (local.get $i)
       (i32.add
-       (i32.const 64)
-       (i32.shl
-        (local.get $i)
-        (i32.add
-         (i32.const 1)
-         (i32.const 3)
-        )
-       )
+       (i32.const 1)
+       (i32.const 3)
       )
      )
     )
-    (local.set $z
-     (f64.reinterpret_i64
-      (local.get $iz)
-     )
-    )
-    (local.set $chi
-     (f64.load
+   )
+  )
+  (local.set $z
+   (f64.reinterpret_i64
+    (local.get $iz)
+   )
+  )
+  (local.set $chi
+   (f64.load
+    (i32.add
+     (i32.const 2112)
+     (i32.shl
+      (local.get $i)
       (i32.add
-       (i32.const 2112)
-       (i32.shl
-        (local.get $i)
-        (i32.add
-         (i32.const 1)
-         (i32.const 3)
-        )
-       )
+       (i32.const 1)
+       (i32.const 3)
       )
      )
     )
-    (local.set $clo
-     (f64.load offset=8
+   )
+  )
+  (local.set $clo
+   (f64.load offset=8
+    (i32.add
+     (i32.const 2112)
+     (i32.shl
+      (local.get $i)
       (i32.add
-       (i32.const 2112)
-       (i32.shl
-        (local.get $i)
-        (i32.add
-         (i32.const 1)
-         (i32.const 3)
-        )
-       )
+       (i32.const 1)
+       (i32.const 3)
       )
      )
     )
-    (local.set $r|22
-     (f64.mul
-      (f64.sub
-       (f64.sub
-        (local.get $z)
-        (local.get $chi)
-       )
-       (local.get $clo)
-      )
-      (local.get $invc)
+   )
+  )
+  (local.set $r|21
+   (f64.mul
+    (f64.sub
+     (f64.sub
+      (local.get $z)
+      (local.get $chi)
      )
+     (local.get $clo)
     )
-    (local.set $kd
-     (f64.convert_i64_s
-      (local.get $k)
+    (local.get $invc)
+   )
+  )
+  (local.set $kd
+   (f64.convert_i64_s
+    (local.get $k)
+   )
+  )
+  (local.set $w|23
+   (f64.add
+    (f64.mul
+     (local.get $kd)
+     (f64.const 0.6931471805598903)
+    )
+    (local.get $logc)
+   )
+  )
+  (local.set $hi|24
+   (f64.add
+    (local.get $w|23)
+    (local.get $r|21)
+   )
+  )
+  (local.set $lo|25
+   (f64.add
+    (f64.add
+     (f64.sub
+      (local.get $w|23)
+      (local.get $hi|24)
      )
+     (local.get $r|21)
     )
-    (local.set $w|24
+    (f64.mul
+     (local.get $kd)
+     (f64.const 5.497923018708371e-14)
+    )
+   )
+  )
+  (local.set $r2|26
+   (f64.mul
+    (local.get $r|21)
+    (local.get $r|21)
+   )
+  )
+  (return
+   (f64.add
+    (f64.add
      (f64.add
+      (local.get $lo|25)
       (f64.mul
-       (local.get $kd)
-       (f64.const 0.6931471805598903)
-      )
-      (local.get $logc)
-     )
-    )
-    (local.set $hi|25
-     (f64.add
-      (local.get $w|24)
-      (local.get $r|22)
-     )
-    )
-    (local.set $lo|26
-     (f64.add
-      (f64.add
-       (f64.sub
-        (local.get $w|24)
-        (local.get $hi|25)
-       )
-       (local.get $r|22)
-      )
-      (f64.mul
-       (local.get $kd)
-       (f64.const 5.497923018708371e-14)
+       (local.get $r2|26)
+       (f64.const -0.5000000000000001)
       )
      )
-    )
-    (local.set $r2|27
      (f64.mul
-      (local.get $r|22)
-      (local.get $r|22)
-     )
-    )
-    (br $~lib/util/math/log_lut|inlined.0
-     (f64.add
+      (f64.mul
+       (local.get $r|21)
+       (local.get $r2|26)
+      )
       (f64.add
        (f64.add
-        (local.get $lo|26)
+        (f64.const 0.33333333331825593)
         (f64.mul
-         (local.get $r2|27)
-         (f64.const -0.5000000000000001)
+         (local.get $r|21)
+         (f64.const -0.2499999999622955)
         )
        )
        (f64.mul
-        (f64.mul
-         (local.get $r|22)
-         (local.get $r2|27)
-        )
+        (local.get $r2|26)
         (f64.add
-         (f64.add
-          (f64.const 0.33333333331825593)
-          (f64.mul
-           (local.get $r|22)
-           (f64.const -0.2499999999622955)
-          )
-         )
+         (f64.const 0.20000304511814496)
          (f64.mul
-          (local.get $r2|27)
-          (f64.add
-           (f64.const 0.20000304511814496)
-           (f64.mul
-            (local.get $r|22)
-            (f64.const -0.16667054827627667)
-           )
-          )
+          (local.get $r|21)
+          (f64.const -0.16667054827627667)
          )
         )
        )
       )
-      (local.get $hi|25)
      )
     )
+    (local.get $hi|24)
+   )
+  )
+ )
+ (func $~lib/math/NativeMath.log (param $x f64) (result f64)
+  (drop
+   (i32.lt_s
+    (i32.const 0)
+    (i32.const 1)
+   )
+  )
+  (return
+   (call $~lib/util/math/log_lut
+    (local.get $x)
    )
   )
  )
@@ -2881,8 +2851,7 @@
    )
   )
  )
- (func $~lib/math/NativeMathf.log (param $x f32) (result f32)
-  (local $x|1 f32)
+ (func $~lib/util/math/logf_lut (param $x f32) (result f32)
   (local $ux i32)
   (local $tmp i32)
   (local $i i32)
@@ -2895,6 +2864,237 @@
   (local $y0 f64)
   (local $r2 f64)
   (local $y f64)
+  (local.set $ux
+   (i32.reinterpret_f32
+    (local.get $x)
+   )
+  )
+  (if
+   (i32.ge_u
+    (i32.sub
+     (local.get $ux)
+     (i32.const 8388608)
+    )
+    (i32.sub
+     (i32.const 2139095040)
+     (i32.const 8388608)
+    )
+   )
+   (then
+    (if
+     (i32.eq
+      (i32.shl
+       (local.get $ux)
+       (i32.const 1)
+      )
+      (i32.const 0)
+     )
+     (then
+      (return
+       (f32.neg
+        (f32.const inf)
+       )
+      )
+     )
+    )
+    (if
+     (i32.eq
+      (local.get $ux)
+      (i32.const 2139095040)
+     )
+     (then
+      (return
+       (local.get $x)
+      )
+     )
+    )
+    (if
+     (if (result i32)
+      (i32.shr_u
+       (local.get $ux)
+       (i32.const 31)
+      )
+      (then
+       (i32.const 1)
+      )
+      (else
+       (i32.ge_u
+        (i32.shl
+         (local.get $ux)
+         (i32.const 1)
+        )
+        (i32.const -16777216)
+       )
+      )
+     )
+     (then
+      (return
+       (f32.div
+        (f32.sub
+         (local.get $x)
+         (local.get $x)
+        )
+        (f32.sub
+         (local.get $x)
+         (local.get $x)
+        )
+       )
+      )
+     )
+    )
+    (local.set $ux
+     (i32.reinterpret_f32
+      (f32.mul
+       (local.get $x)
+       (f32.const 8388608)
+      )
+     )
+    )
+    (local.set $ux
+     (i32.sub
+      (local.get $ux)
+      (i32.shl
+       (i32.const 23)
+       (i32.const 23)
+      )
+     )
+    )
+   )
+  )
+  (local.set $tmp
+   (i32.sub
+    (local.get $ux)
+    (i32.const 1060306944)
+   )
+  )
+  (local.set $i
+   (i32.and
+    (i32.shr_u
+     (local.get $tmp)
+     (i32.sub
+      (i32.const 23)
+      (i32.const 4)
+     )
+    )
+    (i32.const 15)
+   )
+  )
+  (local.set $k
+   (i32.shr_s
+    (local.get $tmp)
+    (i32.const 23)
+   )
+  )
+  (local.set $iz
+   (i32.sub
+    (local.get $ux)
+    (i32.and
+     (local.get $tmp)
+     (i32.shl
+      (i32.const 511)
+      (i32.const 23)
+     )
+    )
+   )
+  )
+  (local.set $invc
+   (f64.load
+    (i32.add
+     (i32.const 4160)
+     (i32.shl
+      (local.get $i)
+      (i32.add
+       (i32.const 1)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $logc
+   (f64.load offset=8
+    (i32.add
+     (i32.const 4160)
+     (i32.shl
+      (local.get $i)
+      (i32.add
+       (i32.const 1)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $z
+   (f64.promote_f32
+    (f32.reinterpret_i32
+     (local.get $iz)
+    )
+   )
+  )
+  (local.set $r
+   (f64.sub
+    (f64.mul
+     (local.get $z)
+     (local.get $invc)
+    )
+    (f64.const 1)
+   )
+  )
+  (local.set $y0
+   (f64.add
+    (local.get $logc)
+    (f64.mul
+     (f64.convert_i32_s
+      (local.get $k)
+     )
+     (f64.const 0.6931471805599453)
+    )
+   )
+  )
+  (local.set $r2
+   (f64.mul
+    (local.get $r)
+    (local.get $r)
+   )
+  )
+  (local.set $y
+   (f64.add
+    (f64.mul
+     (f64.const 0.333456765744066)
+     (local.get $r)
+    )
+    (f64.const -0.4999997485802103)
+   )
+  )
+  (local.set $y
+   (f64.add
+    (local.get $y)
+    (f64.mul
+     (f64.const -0.25089342214237154)
+     (local.get $r2)
+    )
+   )
+  )
+  (local.set $y
+   (f64.add
+    (f64.mul
+     (local.get $y)
+     (local.get $r2)
+    )
+    (f64.add
+     (local.get $y0)
+     (local.get $r)
+    )
+   )
+  )
+  (return
+   (f32.demote_f64
+    (local.get $y)
+   )
+  )
+ )
+ (func $~lib/math/NativeMathf.log (param $x f32) (result f32)
   (drop
    (i32.lt_s
     (i32.const 0)
@@ -2902,239 +3102,8 @@
    )
   )
   (return
-   (block $~lib/util/math/logf_lut|inlined.0 (result f32)
-    (local.set $x|1
-     (local.get $x)
-    )
-    (local.set $ux
-     (i32.reinterpret_f32
-      (local.get $x|1)
-     )
-    )
-    (if
-     (i32.ge_u
-      (i32.sub
-       (local.get $ux)
-       (i32.const 8388608)
-      )
-      (i32.sub
-       (i32.const 2139095040)
-       (i32.const 8388608)
-      )
-     )
-     (then
-      (if
-       (i32.eq
-        (i32.shl
-         (local.get $ux)
-         (i32.const 1)
-        )
-        (i32.const 0)
-       )
-       (then
-        (br $~lib/util/math/logf_lut|inlined.0
-         (f32.neg
-          (f32.const inf)
-         )
-        )
-       )
-      )
-      (if
-       (i32.eq
-        (local.get $ux)
-        (i32.const 2139095040)
-       )
-       (then
-        (br $~lib/util/math/logf_lut|inlined.0
-         (local.get $x|1)
-        )
-       )
-      )
-      (if
-       (if (result i32)
-        (i32.shr_u
-         (local.get $ux)
-         (i32.const 31)
-        )
-        (then
-         (i32.const 1)
-        )
-        (else
-         (i32.ge_u
-          (i32.shl
-           (local.get $ux)
-           (i32.const 1)
-          )
-          (i32.const -16777216)
-         )
-        )
-       )
-       (then
-        (br $~lib/util/math/logf_lut|inlined.0
-         (f32.div
-          (f32.sub
-           (local.get $x|1)
-           (local.get $x|1)
-          )
-          (f32.sub
-           (local.get $x|1)
-           (local.get $x|1)
-          )
-         )
-        )
-       )
-      )
-      (local.set $ux
-       (i32.reinterpret_f32
-        (f32.mul
-         (local.get $x|1)
-         (f32.const 8388608)
-        )
-       )
-      )
-      (local.set $ux
-       (i32.sub
-        (local.get $ux)
-        (i32.shl
-         (i32.const 23)
-         (i32.const 23)
-        )
-       )
-      )
-     )
-    )
-    (local.set $tmp
-     (i32.sub
-      (local.get $ux)
-      (i32.const 1060306944)
-     )
-    )
-    (local.set $i
-     (i32.and
-      (i32.shr_u
-       (local.get $tmp)
-       (i32.sub
-        (i32.const 23)
-        (i32.const 4)
-       )
-      )
-      (i32.const 15)
-     )
-    )
-    (local.set $k
-     (i32.shr_s
-      (local.get $tmp)
-      (i32.const 23)
-     )
-    )
-    (local.set $iz
-     (i32.sub
-      (local.get $ux)
-      (i32.and
-       (local.get $tmp)
-       (i32.shl
-        (i32.const 511)
-        (i32.const 23)
-       )
-      )
-     )
-    )
-    (local.set $invc
-     (f64.load
-      (i32.add
-       (i32.const 4160)
-       (i32.shl
-        (local.get $i)
-        (i32.add
-         (i32.const 1)
-         (i32.const 3)
-        )
-       )
-      )
-     )
-    )
-    (local.set $logc
-     (f64.load offset=8
-      (i32.add
-       (i32.const 4160)
-       (i32.shl
-        (local.get $i)
-        (i32.add
-         (i32.const 1)
-         (i32.const 3)
-        )
-       )
-      )
-     )
-    )
-    (local.set $z
-     (f64.promote_f32
-      (f32.reinterpret_i32
-       (local.get $iz)
-      )
-     )
-    )
-    (local.set $r
-     (f64.sub
-      (f64.mul
-       (local.get $z)
-       (local.get $invc)
-      )
-      (f64.const 1)
-     )
-    )
-    (local.set $y0
-     (f64.add
-      (local.get $logc)
-      (f64.mul
-       (f64.convert_i32_s
-        (local.get $k)
-       )
-       (f64.const 0.6931471805599453)
-      )
-     )
-    )
-    (local.set $r2
-     (f64.mul
-      (local.get $r)
-      (local.get $r)
-     )
-    )
-    (local.set $y
-     (f64.add
-      (f64.mul
-       (f64.const 0.333456765744066)
-       (local.get $r)
-      )
-      (f64.const -0.4999997485802103)
-     )
-    )
-    (local.set $y
-     (f64.add
-      (local.get $y)
-      (f64.mul
-       (f64.const -0.25089342214237154)
-       (local.get $r2)
-      )
-     )
-    )
-    (local.set $y
-     (f64.add
-      (f64.mul
-       (local.get $y)
-       (local.get $r2)
-      )
-      (f64.add
-       (local.get $y0)
-       (local.get $r)
-      )
-     )
-    )
-    (br $~lib/util/math/logf_lut|inlined.0
-     (f32.demote_f64
-      (local.get $y)
-     )
-    )
+   (call $~lib/util/math/logf_lut
+    (local.get $x)
    )
   )
  )
@@ -6327,20 +6296,19 @@
    )
   )
  )
+ (func $~lib/math/NativeMath.ceil (param $x f64) (result f64)
+  (return
+   (f64.ceil
+    (local.get $x)
+   )
+  )
+ )
  (func $std/math/test_ceil (param $value f64) (param $expected f64) (param $error f64) (param $flags i32) (result i32)
-  (local $x f64)
   (return
    (if (result i32)
     (call $std/math/check<f64>
-     (block $~lib/math/NativeMath.ceil|inlined.0 (result f64)
-      (local.set $x
-       (local.get $value)
-      )
-      (br $~lib/math/NativeMath.ceil|inlined.0
-       (f64.ceil
-        (local.get $x)
-       )
-      )
+     (call $~lib/math/NativeMath.ceil
+      (local.get $value)
      )
      (local.get $expected)
      (local.get $error)
@@ -6362,24 +6330,329 @@
    )
   )
  )
+ (func $~lib/math/NativeMathf.ceil (param $x f32) (result f32)
+  (return
+   (f32.ceil
+    (local.get $x)
+   )
+  )
+ )
  (func $std/math/test_ceilf (param $value f32) (param $expected f32) (param $error f32) (param $flags i32) (result i32)
-  (local $x f32)
   (return
    (call $std/math/check<f32>
-    (block $~lib/math/NativeMathf.ceil|inlined.0 (result f32)
-     (local.set $x
-      (local.get $value)
-     )
-     (br $~lib/math/NativeMathf.ceil|inlined.0
-      (f32.ceil
-       (local.get $x)
-      )
-     )
+    (call $~lib/math/NativeMathf.ceil
+     (local.get $value)
     )
     (local.get $expected)
     (local.get $error)
     (local.get $flags)
    )
+  )
+ )
+ (func $~lib/math/cos_kern (param $x f64) (param $y f64) (result f64)
+  (local $z f64)
+  (local $w f64)
+  (local $r f64)
+  (local $hz f64)
+  (local.set $z
+   (f64.mul
+    (local.get $x)
+    (local.get $x)
+   )
+  )
+  (local.set $w
+   (f64.mul
+    (local.get $z)
+    (local.get $z)
+   )
+  )
+  (local.set $r
+   (f64.add
+    (f64.mul
+     (local.get $z)
+     (f64.add
+      (f64.const 0.0416666666666666)
+      (f64.mul
+       (local.get $z)
+       (f64.add
+        (f64.const -0.001388888888887411)
+        (f64.mul
+         (local.get $z)
+         (f64.const 2.480158728947673e-05)
+        )
+       )
+      )
+     )
+    )
+    (f64.mul
+     (f64.mul
+      (local.get $w)
+      (local.get $w)
+     )
+     (f64.add
+      (f64.const -2.7557314351390663e-07)
+      (f64.mul
+       (local.get $z)
+       (f64.add
+        (f64.const 2.087572321298175e-09)
+        (f64.mul
+         (local.get $z)
+         (f64.const -1.1359647557788195e-11)
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+  (local.set $hz
+   (f64.mul
+    (f64.const 0.5)
+    (local.get $z)
+   )
+  )
+  (local.set $w
+   (f64.sub
+    (f64.const 1)
+    (local.get $hz)
+   )
+  )
+  (return
+   (f64.add
+    (local.get $w)
+    (f64.add
+     (f64.sub
+      (f64.sub
+       (f64.const 1)
+       (local.get $w)
+      )
+      (local.get $hz)
+     )
+     (f64.sub
+      (f64.mul
+       (local.get $z)
+       (local.get $r)
+      )
+      (f64.mul
+       (local.get $x)
+       (local.get $y)
+      )
+     )
+    )
+   )
+  )
+ )
+ (func $~lib/math/umuldi (param $u i64) (param $v i64) (result i64)
+  (local $u1 i64)
+  (local $v1 i64)
+  (local $w0 i64)
+  (local $w1 i64)
+  (local $t i64)
+  (local.set $u1
+   (i64.and
+    (local.get $u)
+    (i64.const 4294967295)
+   )
+  )
+  (local.set $v1
+   (i64.and
+    (local.get $v)
+    (i64.const 4294967295)
+   )
+  )
+  (local.set $u
+   (i64.shr_u
+    (local.get $u)
+    (i64.const 32)
+   )
+  )
+  (local.set $v
+   (i64.shr_u
+    (local.get $v)
+    (i64.const 32)
+   )
+  )
+  (local.set $t
+   (i64.mul
+    (local.get $u1)
+    (local.get $v1)
+   )
+  )
+  (local.set $w0
+   (i64.and
+    (local.get $t)
+    (i64.const 4294967295)
+   )
+  )
+  (local.set $t
+   (i64.add
+    (i64.mul
+     (local.get $u)
+     (local.get $v1)
+    )
+    (i64.shr_u
+     (local.get $t)
+     (i64.const 32)
+    )
+   )
+  )
+  (local.set $w1
+   (i64.shr_u
+    (local.get $t)
+    (i64.const 32)
+   )
+  )
+  (local.set $t
+   (i64.add
+    (i64.mul
+     (local.get $u1)
+     (local.get $v)
+    )
+    (i64.and
+     (local.get $t)
+     (i64.const 4294967295)
+    )
+   )
+  )
+  (global.set $~lib/math/res128_hi
+   (i64.add
+    (i64.add
+     (i64.mul
+      (local.get $u)
+      (local.get $v)
+     )
+     (local.get $w1)
+    )
+    (i64.shr_u
+     (local.get $t)
+     (i64.const 32)
+    )
+   )
+  )
+  (return
+   (i64.add
+    (i64.shl
+     (local.get $t)
+     (i64.const 32)
+    )
+    (local.get $w0)
+   )
+  )
+ )
+ (func $~lib/math/pio2_right (param $q0 i64) (param $q1 i64) (result i64)
+  (local $shift i64)
+  (local $lo i64)
+  (local $hi i64)
+  (local $ahi i64)
+  (local $alo i64)
+  (local $blo i64)
+  (local.set $shift
+   (i64.clz
+    (local.get $q1)
+   )
+  )
+  (local.set $q1
+   (i64.or
+    (i64.shl
+     (local.get $q1)
+     (local.get $shift)
+    )
+    (i64.shr_u
+     (local.get $q0)
+     (i64.sub
+      (i64.const 64)
+      (local.get $shift)
+     )
+    )
+   )
+  )
+  (local.set $q0
+   (i64.shl
+    (local.get $q0)
+    (local.get $shift)
+   )
+  )
+  (local.set $lo
+   (call $~lib/math/umuldi
+    (i64.const -3958705157555305932)
+    (local.get $q1)
+   )
+  )
+  (local.set $hi
+   (global.get $~lib/math/res128_hi)
+  )
+  (local.set $ahi
+   (i64.shr_u
+    (local.get $hi)
+    (i64.const 11)
+   )
+  )
+  (local.set $alo
+   (i64.or
+    (i64.shr_u
+     (local.get $lo)
+     (i64.const 11)
+    )
+    (i64.shl
+     (local.get $hi)
+     (i64.const 53)
+    )
+   )
+  )
+  (local.set $blo
+   (i64.trunc_f64_u
+    (f64.add
+     (f64.mul
+      (f64.mul
+       (f64.const 2.6469779601696886e-23)
+       (f64.convert_i64_u
+        (i64.const -4267615245585081135)
+       )
+      )
+      (f64.convert_i64_u
+       (local.get $q1)
+      )
+     )
+     (f64.mul
+      (f64.mul
+       (f64.const 2.6469779601696886e-23)
+       (f64.convert_i64_u
+        (i64.const -3958705157555305932)
+       )
+      )
+      (f64.convert_i64_u
+       (local.get $q0)
+      )
+     )
+    )
+   )
+  )
+  (global.set $~lib/math/rempio2_y0
+   (f64.convert_i64_u
+    (i64.add
+     (local.get $ahi)
+     (i64.extend_i32_u
+      (i64.lt_u
+       (local.get $lo)
+       (local.get $blo)
+      )
+     )
+    )
+   )
+  )
+  (global.set $~lib/math/rempio2_y1
+   (f64.mul
+    (f64.const 5.421010862427522e-20)
+    (f64.convert_i64_u
+     (i64.add
+      (local.get $alo)
+      (local.get $blo)
+     )
+    )
+   )
+  )
+  (return
+   (local.get $shift)
   )
  )
  (func $~lib/math/pio2_large_quot (param $x f64) (param $u i64) (result i32)
@@ -6396,13 +6669,6 @@
   (local $rshift i64)
   (local $b3 i64)
   (local $significand i64)
-  (local $u|15 i64)
-  (local $v i64)
-  (local $u1 i64)
-  (local $v1 i64)
-  (local $w0 i64)
-  (local $w1 i64)
-  (local $t i64)
   (local $blo i64)
   (local $bhi i64)
   (local $ahi i64)
@@ -6414,21 +6680,6 @@
   (local $slo i64)
   (local $shi i64)
   (local $q i64)
-  (local $q0 i64)
-  (local $q1 i64)
-  (local $shift|35 i64)
-  (local $u|36 i64)
-  (local $v|37 i64)
-  (local $u1|38 i64)
-  (local $v1|39 i64)
-  (local $w0|40 i64)
-  (local $w1|41 i64)
-  (local $t|42 i64)
-  (local $lo i64)
-  (local $hi i64)
-  (local $ahi|45 i64)
-  (local $alo i64)
-  (local $blo|47 i64)
   (local $shifter i64)
   (local $signbit i64)
   (local $coeff f64)
@@ -6560,103 +6811,9 @@
    )
   )
   (local.set $blo
-   (block $~lib/math/umuldi|inlined.0 (result i64)
-    (local.set $u|15
-     (local.get $s1)
-    )
-    (local.set $v
-     (local.get $significand)
-    )
-    (local.set $u1
-     (i64.and
-      (local.get $u|15)
-      (i64.const 4294967295)
-     )
-    )
-    (local.set $v1
-     (i64.and
-      (local.get $v)
-      (i64.const 4294967295)
-     )
-    )
-    (local.set $u|15
-     (i64.shr_u
-      (local.get $u|15)
-      (i64.const 32)
-     )
-    )
-    (local.set $v
-     (i64.shr_u
-      (local.get $v)
-      (i64.const 32)
-     )
-    )
-    (local.set $t
-     (i64.mul
-      (local.get $u1)
-      (local.get $v1)
-     )
-    )
-    (local.set $w0
-     (i64.and
-      (local.get $t)
-      (i64.const 4294967295)
-     )
-    )
-    (local.set $t
-     (i64.add
-      (i64.mul
-       (local.get $u|15)
-       (local.get $v1)
-      )
-      (i64.shr_u
-       (local.get $t)
-       (i64.const 32)
-      )
-     )
-    )
-    (local.set $w1
-     (i64.shr_u
-      (local.get $t)
-      (i64.const 32)
-     )
-    )
-    (local.set $t
-     (i64.add
-      (i64.mul
-       (local.get $u1)
-       (local.get $v)
-      )
-      (i64.and
-       (local.get $t)
-       (i64.const 4294967295)
-      )
-     )
-    )
-    (global.set $~lib/math/res128_hi
-     (i64.add
-      (i64.add
-       (i64.mul
-        (local.get $u|15)
-        (local.get $v)
-       )
-       (local.get $w1)
-      )
-      (i64.shr_u
-       (local.get $t)
-       (i64.const 32)
-      )
-     )
-    )
-    (br $~lib/math/umuldi|inlined.0
-     (i64.add
-      (i64.shl
-       (local.get $t)
-       (i64.const 32)
-      )
-      (local.get $w0)
-     )
-    )
+   (call $~lib/math/umuldi
+    (local.get $s1)
+    (local.get $significand)
    )
   )
   (local.set $bhi
@@ -6743,220 +6900,14 @@
    (i64.sub
     (i64.const 4372995238176751616)
     (i64.shl
-     (block $~lib/math/pio2_right|inlined.0 (result i64)
-      (local.set $q0
-       (i64.xor
-        (local.get $rlo)
-        (local.get $slo)
-       )
+     (call $~lib/math/pio2_right
+      (i64.xor
+       (local.get $rlo)
+       (local.get $slo)
       )
-      (local.set $q1
-       (i64.xor
-        (local.get $rhi)
-        (local.get $shi)
-       )
-      )
-      (local.set $shift|35
-       (i64.clz
-        (local.get $q1)
-       )
-      )
-      (local.set $q1
-       (i64.or
-        (i64.shl
-         (local.get $q1)
-         (local.get $shift|35)
-        )
-        (i64.shr_u
-         (local.get $q0)
-         (i64.sub
-          (i64.const 64)
-          (local.get $shift|35)
-         )
-        )
-       )
-      )
-      (local.set $q0
-       (i64.shl
-        (local.get $q0)
-        (local.get $shift|35)
-       )
-      )
-      (local.set $lo
-       (block $~lib/math/umuldi|inlined.1 (result i64)
-        (local.set $u|36
-         (i64.const -3958705157555305932)
-        )
-        (local.set $v|37
-         (local.get $q1)
-        )
-        (local.set $u1|38
-         (i64.and
-          (local.get $u|36)
-          (i64.const 4294967295)
-         )
-        )
-        (local.set $v1|39
-         (i64.and
-          (local.get $v|37)
-          (i64.const 4294967295)
-         )
-        )
-        (local.set $u|36
-         (i64.shr_u
-          (local.get $u|36)
-          (i64.const 32)
-         )
-        )
-        (local.set $v|37
-         (i64.shr_u
-          (local.get $v|37)
-          (i64.const 32)
-         )
-        )
-        (local.set $t|42
-         (i64.mul
-          (local.get $u1|38)
-          (local.get $v1|39)
-         )
-        )
-        (local.set $w0|40
-         (i64.and
-          (local.get $t|42)
-          (i64.const 4294967295)
-         )
-        )
-        (local.set $t|42
-         (i64.add
-          (i64.mul
-           (local.get $u|36)
-           (local.get $v1|39)
-          )
-          (i64.shr_u
-           (local.get $t|42)
-           (i64.const 32)
-          )
-         )
-        )
-        (local.set $w1|41
-         (i64.shr_u
-          (local.get $t|42)
-          (i64.const 32)
-         )
-        )
-        (local.set $t|42
-         (i64.add
-          (i64.mul
-           (local.get $u1|38)
-           (local.get $v|37)
-          )
-          (i64.and
-           (local.get $t|42)
-           (i64.const 4294967295)
-          )
-         )
-        )
-        (global.set $~lib/math/res128_hi
-         (i64.add
-          (i64.add
-           (i64.mul
-            (local.get $u|36)
-            (local.get $v|37)
-           )
-           (local.get $w1|41)
-          )
-          (i64.shr_u
-           (local.get $t|42)
-           (i64.const 32)
-          )
-         )
-        )
-        (br $~lib/math/umuldi|inlined.1
-         (i64.add
-          (i64.shl
-           (local.get $t|42)
-           (i64.const 32)
-          )
-          (local.get $w0|40)
-         )
-        )
-       )
-      )
-      (local.set $hi
-       (global.get $~lib/math/res128_hi)
-      )
-      (local.set $ahi|45
-       (i64.shr_u
-        (local.get $hi)
-        (i64.const 11)
-       )
-      )
-      (local.set $alo
-       (i64.or
-        (i64.shr_u
-         (local.get $lo)
-         (i64.const 11)
-        )
-        (i64.shl
-         (local.get $hi)
-         (i64.const 53)
-        )
-       )
-      )
-      (local.set $blo|47
-       (i64.trunc_f64_u
-        (f64.add
-         (f64.mul
-          (f64.mul
-           (f64.const 2.6469779601696886e-23)
-           (f64.convert_i64_u
-            (i64.const -4267615245585081135)
-           )
-          )
-          (f64.convert_i64_u
-           (local.get $q1)
-          )
-         )
-         (f64.mul
-          (f64.mul
-           (f64.const 2.6469779601696886e-23)
-           (f64.convert_i64_u
-            (i64.const -3958705157555305932)
-           )
-          )
-          (f64.convert_i64_u
-           (local.get $q0)
-          )
-         )
-        )
-       )
-      )
-      (global.set $~lib/math/rempio2_y0
-       (f64.convert_i64_u
-        (i64.add
-         (local.get $ahi|45)
-         (i64.extend_i32_u
-          (i64.lt_u
-           (local.get $lo)
-           (local.get $blo|47)
-          )
-         )
-        )
-       )
-      )
-      (global.set $~lib/math/rempio2_y1
-       (f64.mul
-        (f64.const 5.421010862427522e-20)
-        (f64.convert_i64_u
-         (i64.add
-          (local.get $alo)
-          (local.get $blo|47)
-         )
-        )
-       )
-      )
-      (br $~lib/math/pio2_right|inlined.0
-       (local.get $shift|35)
+      (i64.xor
+       (local.get $rhi)
+       (local.get $shi)
       )
      )
      (i64.const 52)
@@ -6998,51 +6949,500 @@
    )
   )
  )
+ (func $~lib/math/rempio2 (param $x f64) (param $u i64) (param $sign i32) (result i32)
+  (local $ix i32)
+  (local $q i32)
+  (local $z f64)
+  (local $y0 f64)
+  (local $y1 f64)
+  (local $q|8 f64)
+  (local $r f64)
+  (local $w f64)
+  (local $j i32)
+  (local $y0|12 f64)
+  (local $hi i32)
+  (local $i i32)
+  (local $t f64)
+  (local $t|16 f64)
+  (local $y1|17 f64)
+  (local $q|18 i32)
+  (local.set $ix
+   (i32.and
+    (i32.wrap_i64
+     (i64.shr_u
+      (local.get $u)
+      (i64.const 32)
+     )
+    )
+    (i32.const 2147483647)
+   )
+  )
+  (drop
+   (i32.lt_s
+    (i32.const 0)
+    (i32.const 1)
+   )
+  )
+  (if
+   (i32.lt_u
+    (local.get $ix)
+    (i32.const 1073928572)
+   )
+   (then
+    (local.set $q
+     (i32.const 1)
+    )
+    (if
+     (i32.eqz
+      (local.get $sign)
+     )
+     (then
+      (local.set $z
+       (f64.sub
+        (local.get $x)
+        (f64.const 1.5707963267341256)
+       )
+      )
+      (if
+       (i32.ne
+        (local.get $ix)
+        (i32.const 1073291771)
+       )
+       (then
+        (local.set $y0
+         (f64.sub
+          (local.get $z)
+          (f64.const 6.077100506506192e-11)
+         )
+        )
+        (local.set $y1
+         (f64.sub
+          (f64.sub
+           (local.get $z)
+           (local.get $y0)
+          )
+          (f64.const 6.077100506506192e-11)
+         )
+        )
+       )
+       (else
+        (local.set $z
+         (f64.sub
+          (local.get $z)
+          (f64.const 6.077100506303966e-11)
+         )
+        )
+        (local.set $y0
+         (f64.sub
+          (local.get $z)
+          (f64.const 2.0222662487959506e-21)
+         )
+        )
+        (local.set $y1
+         (f64.sub
+          (f64.sub
+           (local.get $z)
+           (local.get $y0)
+          )
+          (f64.const 2.0222662487959506e-21)
+         )
+        )
+       )
+      )
+     )
+     (else
+      (local.set $z
+       (f64.add
+        (local.get $x)
+        (f64.const 1.5707963267341256)
+       )
+      )
+      (if
+       (i32.ne
+        (local.get $ix)
+        (i32.const 1073291771)
+       )
+       (then
+        (local.set $y0
+         (f64.add
+          (local.get $z)
+          (f64.const 6.077100506506192e-11)
+         )
+        )
+        (local.set $y1
+         (f64.add
+          (f64.sub
+           (local.get $z)
+           (local.get $y0)
+          )
+          (f64.const 6.077100506506192e-11)
+         )
+        )
+       )
+       (else
+        (local.set $z
+         (f64.add
+          (local.get $z)
+          (f64.const 6.077100506303966e-11)
+         )
+        )
+        (local.set $y0
+         (f64.add
+          (local.get $z)
+          (f64.const 2.0222662487959506e-21)
+         )
+        )
+        (local.set $y1
+         (f64.add
+          (f64.sub
+           (local.get $z)
+           (local.get $y0)
+          )
+          (f64.const 2.0222662487959506e-21)
+         )
+        )
+       )
+      )
+      (local.set $q
+       (i32.const -1)
+      )
+     )
+    )
+    (global.set $~lib/math/rempio2_y0
+     (local.get $y0)
+    )
+    (global.set $~lib/math/rempio2_y1
+     (local.get $y1)
+    )
+    (return
+     (local.get $q)
+    )
+   )
+  )
+  (if
+   (i32.lt_u
+    (local.get $ix)
+    (i32.const 1094263291)
+   )
+   (then
+    (local.set $q|8
+     (f64.nearest
+      (f64.mul
+       (local.get $x)
+       (f64.const 0.6366197723675814)
+      )
+     )
+    )
+    (local.set $r
+     (f64.sub
+      (local.get $x)
+      (f64.mul
+       (local.get $q|8)
+       (f64.const 1.5707963267341256)
+      )
+     )
+    )
+    (local.set $w
+     (f64.mul
+      (local.get $q|8)
+      (f64.const 6.077100506506192e-11)
+     )
+    )
+    (local.set $j
+     (i32.shr_u
+      (local.get $ix)
+      (i32.const 20)
+     )
+    )
+    (local.set $y0|12
+     (f64.sub
+      (local.get $r)
+      (local.get $w)
+     )
+    )
+    (local.set $hi
+     (i32.wrap_i64
+      (i64.shr_u
+       (i64.reinterpret_f64
+        (local.get $y0|12)
+       )
+       (i64.const 32)
+      )
+     )
+    )
+    (local.set $i
+     (i32.sub
+      (local.get $j)
+      (i32.and
+       (i32.shr_u
+        (local.get $hi)
+        (i32.const 20)
+       )
+       (i32.const 2047)
+      )
+     )
+    )
+    (if
+     (i32.gt_u
+      (local.get $i)
+      (i32.const 16)
+     )
+     (then
+      (local.set $t
+       (local.get $r)
+      )
+      (local.set $w
+       (f64.mul
+        (local.get $q|8)
+        (f64.const 6.077100506303966e-11)
+       )
+      )
+      (local.set $r
+       (f64.sub
+        (local.get $t)
+        (local.get $w)
+       )
+      )
+      (local.set $w
+       (f64.sub
+        (f64.mul
+         (local.get $q|8)
+         (f64.const 2.0222662487959506e-21)
+        )
+        (f64.sub
+         (f64.sub
+          (local.get $t)
+          (local.get $r)
+         )
+         (local.get $w)
+        )
+       )
+      )
+      (local.set $y0|12
+       (f64.sub
+        (local.get $r)
+        (local.get $w)
+       )
+      )
+      (local.set $hi
+       (i32.wrap_i64
+        (i64.shr_u
+         (i64.reinterpret_f64
+          (local.get $y0|12)
+         )
+         (i64.const 32)
+        )
+       )
+      )
+      (local.set $i
+       (i32.sub
+        (local.get $j)
+        (i32.and
+         (i32.shr_u
+          (local.get $hi)
+          (i32.const 20)
+         )
+         (i32.const 2047)
+        )
+       )
+      )
+      (if
+       (i32.gt_u
+        (local.get $i)
+        (i32.const 49)
+       )
+       (then
+        (local.set $t|16
+         (local.get $r)
+        )
+        (local.set $w
+         (f64.mul
+          (local.get $q|8)
+          (f64.const 2.0222662487111665e-21)
+         )
+        )
+        (local.set $r
+         (f64.sub
+          (local.get $t|16)
+          (local.get $w)
+         )
+        )
+        (local.set $w
+         (f64.sub
+          (f64.mul
+           (local.get $q|8)
+           (f64.const 8.4784276603689e-32)
+          )
+          (f64.sub
+           (f64.sub
+            (local.get $t|16)
+            (local.get $r)
+           )
+           (local.get $w)
+          )
+         )
+        )
+        (local.set $y0|12
+         (f64.sub
+          (local.get $r)
+          (local.get $w)
+         )
+        )
+       )
+      )
+     )
+    )
+    (local.set $y1|17
+     (f64.sub
+      (f64.sub
+       (local.get $r)
+       (local.get $y0|12)
+      )
+      (local.get $w)
+     )
+    )
+    (global.set $~lib/math/rempio2_y0
+     (local.get $y0|12)
+    )
+    (global.set $~lib/math/rempio2_y1
+     (local.get $y1|17)
+    )
+    (return
+     (i32.trunc_f64_s
+      (local.get $q|8)
+     )
+    )
+   )
+  )
+  (local.set $q|18
+   (call $~lib/math/pio2_large_quot
+    (local.get $x)
+    (local.get $u)
+   )
+  )
+  (return
+   (select
+    (i32.sub
+     (i32.const 0)
+     (local.get $q|18)
+    )
+    (local.get $q|18)
+    (local.get $sign)
+   )
+  )
+ )
+ (func $~lib/math/sin_kern (param $x f64) (param $y f64) (param $iy i32) (result f64)
+  (local $z f64)
+  (local $w f64)
+  (local $r f64)
+  (local $v f64)
+  (local.set $z
+   (f64.mul
+    (local.get $x)
+    (local.get $x)
+   )
+  )
+  (local.set $w
+   (f64.mul
+    (local.get $z)
+    (local.get $z)
+   )
+  )
+  (local.set $r
+   (f64.add
+    (f64.add
+     (f64.const 0.00833333333332249)
+     (f64.mul
+      (local.get $z)
+      (f64.add
+       (f64.const -1.984126982985795e-04)
+       (f64.mul
+        (local.get $z)
+        (f64.const 2.7557313707070068e-06)
+       )
+      )
+     )
+    )
+    (f64.mul
+     (f64.mul
+      (local.get $z)
+      (local.get $w)
+     )
+     (f64.add
+      (f64.const -2.5050760253406863e-08)
+      (f64.mul
+       (local.get $z)
+       (f64.const 1.58969099521155e-10)
+      )
+     )
+    )
+   )
+  )
+  (local.set $v
+   (f64.mul
+    (local.get $z)
+    (local.get $x)
+   )
+  )
+  (if
+   (i32.eqz
+    (local.get $iy)
+   )
+   (then
+    (return
+     (f64.add
+      (local.get $x)
+      (f64.mul
+       (local.get $v)
+       (f64.add
+        (f64.const -0.16666666666666632)
+        (f64.mul
+         (local.get $z)
+         (local.get $r)
+        )
+       )
+      )
+     )
+    )
+   )
+   (else
+    (return
+     (f64.sub
+      (local.get $x)
+      (f64.sub
+       (f64.sub
+        (f64.mul
+         (local.get $z)
+         (f64.sub
+          (f64.mul
+           (f64.const 0.5)
+           (local.get $y)
+          )
+          (f64.mul
+           (local.get $v)
+           (local.get $r)
+          )
+         )
+        )
+        (local.get $y)
+       )
+       (f64.mul
+        (local.get $v)
+        (f64.const -0.16666666666666632)
+       )
+      )
+     )
+    )
+   )
+  )
+ )
  (func $~lib/math/NativeMath.cos (param $x f64) (result f64)
   (local $u i64)
   (local $ux i32)
   (local $sign i32)
-  (local $x|4 f64)
-  (local $y f64)
-  (local $z f64)
-  (local $w f64)
-  (local $r f64)
-  (local $hz f64)
-  (local $x|10 f64)
-  (local $u|11 i64)
-  (local $sign|12 i32)
-  (local $ix i32)
-  (local $q i32)
-  (local $z|15 f64)
+  (local $n i32)
   (local $y0 f64)
   (local $y1 f64)
-  (local $q|18 f64)
-  (local $r|19 f64)
-  (local $w|20 f64)
-  (local $j i32)
-  (local $y0|22 f64)
-  (local $hi i32)
-  (local $i i32)
-  (local $t f64)
-  (local $t|26 f64)
-  (local $y1|27 f64)
-  (local $q|28 i32)
-  (local $n i32)
-  (local $y0|30 f64)
-  (local $y1|31 f64)
-  (local $x|32 f64)
-  (local $y|33 f64)
-  (local $iy i32)
-  (local $z|35 f64)
-  (local $w|36 f64)
-  (local $r|37 f64)
-  (local $v f64)
-  (local $x|39 f64)
-  (local $y|40 f64)
-  (local $z|41 f64)
-  (local $w|42 f64)
-  (local $r|43 f64)
-  (local $hz|44 f64)
   (local.set $u
    (i64.reinterpret_f64
     (local.get $x)
@@ -7086,100 +7486,9 @@
      )
     )
     (return
-     (block $~lib/math/cos_kern|inlined.0 (result f64)
-      (local.set $x|4
-       (local.get $x)
-      )
-      (local.set $y
-       (f64.const 0)
-      )
-      (local.set $z
-       (f64.mul
-        (local.get $x|4)
-        (local.get $x|4)
-       )
-      )
-      (local.set $w
-       (f64.mul
-        (local.get $z)
-        (local.get $z)
-       )
-      )
-      (local.set $r
-       (f64.add
-        (f64.mul
-         (local.get $z)
-         (f64.add
-          (f64.const 0.0416666666666666)
-          (f64.mul
-           (local.get $z)
-           (f64.add
-            (f64.const -0.001388888888887411)
-            (f64.mul
-             (local.get $z)
-             (f64.const 2.480158728947673e-05)
-            )
-           )
-          )
-         )
-        )
-        (f64.mul
-         (f64.mul
-          (local.get $w)
-          (local.get $w)
-         )
-         (f64.add
-          (f64.const -2.7557314351390663e-07)
-          (f64.mul
-           (local.get $z)
-           (f64.add
-            (f64.const 2.087572321298175e-09)
-            (f64.mul
-             (local.get $z)
-             (f64.const -1.1359647557788195e-11)
-            )
-           )
-          )
-         )
-        )
-       )
-      )
-      (local.set $hz
-       (f64.mul
-        (f64.const 0.5)
-        (local.get $z)
-       )
-      )
-      (local.set $w
-       (f64.sub
-        (f64.const 1)
-        (local.get $hz)
-       )
-      )
-      (br $~lib/math/cos_kern|inlined.0
-       (f64.add
-        (local.get $w)
-        (f64.add
-         (f64.sub
-          (f64.sub
-           (f64.const 1)
-           (local.get $w)
-          )
-          (local.get $hz)
-         )
-         (f64.sub
-          (f64.mul
-           (local.get $z)
-           (local.get $r)
-          )
-          (f64.mul
-           (local.get $x|4)
-           (local.get $y)
-          )
-         )
-        )
-       )
-      )
+     (call $~lib/math/cos_kern
+      (local.get $x)
+      (f64.const 0)
      )
     )
    )
@@ -7199,386 +7508,16 @@
    )
   )
   (local.set $n
-   (block $~lib/math/rempio2|inlined.0 (result i32)
-    (local.set $x|10
-     (local.get $x)
-    )
-    (local.set $u|11
-     (local.get $u)
-    )
-    (local.set $sign|12
-     (local.get $sign)
-    )
-    (local.set $ix
-     (i32.and
-      (i32.wrap_i64
-       (i64.shr_u
-        (local.get $u|11)
-        (i64.const 32)
-       )
-      )
-      (i32.const 2147483647)
-     )
-    )
-    (drop
-     (i32.lt_s
-      (i32.const 0)
-      (i32.const 1)
-     )
-    )
-    (if
-     (i32.lt_u
-      (local.get $ix)
-      (i32.const 1073928572)
-     )
-     (then
-      (local.set $q
-       (i32.const 1)
-      )
-      (if
-       (i32.eqz
-        (local.get $sign|12)
-       )
-       (then
-        (local.set $z|15
-         (f64.sub
-          (local.get $x|10)
-          (f64.const 1.5707963267341256)
-         )
-        )
-        (if
-         (i32.ne
-          (local.get $ix)
-          (i32.const 1073291771)
-         )
-         (then
-          (local.set $y0
-           (f64.sub
-            (local.get $z|15)
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-          (local.set $y1
-           (f64.sub
-            (f64.sub
-             (local.get $z|15)
-             (local.get $y0)
-            )
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-         )
-         (else
-          (local.set $z|15
-           (f64.sub
-            (local.get $z|15)
-            (f64.const 6.077100506303966e-11)
-           )
-          )
-          (local.set $y0
-           (f64.sub
-            (local.get $z|15)
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-          (local.set $y1
-           (f64.sub
-            (f64.sub
-             (local.get $z|15)
-             (local.get $y0)
-            )
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-         )
-        )
-       )
-       (else
-        (local.set $z|15
-         (f64.add
-          (local.get $x|10)
-          (f64.const 1.5707963267341256)
-         )
-        )
-        (if
-         (i32.ne
-          (local.get $ix)
-          (i32.const 1073291771)
-         )
-         (then
-          (local.set $y0
-           (f64.add
-            (local.get $z|15)
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-          (local.set $y1
-           (f64.add
-            (f64.sub
-             (local.get $z|15)
-             (local.get $y0)
-            )
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-         )
-         (else
-          (local.set $z|15
-           (f64.add
-            (local.get $z|15)
-            (f64.const 6.077100506303966e-11)
-           )
-          )
-          (local.set $y0
-           (f64.add
-            (local.get $z|15)
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-          (local.set $y1
-           (f64.add
-            (f64.sub
-             (local.get $z|15)
-             (local.get $y0)
-            )
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-         )
-        )
-        (local.set $q
-         (i32.const -1)
-        )
-       )
-      )
-      (global.set $~lib/math/rempio2_y0
-       (local.get $y0)
-      )
-      (global.set $~lib/math/rempio2_y1
-       (local.get $y1)
-      )
-      (br $~lib/math/rempio2|inlined.0
-       (local.get $q)
-      )
-     )
-    )
-    (if
-     (i32.lt_u
-      (local.get $ix)
-      (i32.const 1094263291)
-     )
-     (then
-      (local.set $q|18
-       (f64.nearest
-        (f64.mul
-         (local.get $x|10)
-         (f64.const 0.6366197723675814)
-        )
-       )
-      )
-      (local.set $r|19
-       (f64.sub
-        (local.get $x|10)
-        (f64.mul
-         (local.get $q|18)
-         (f64.const 1.5707963267341256)
-        )
-       )
-      )
-      (local.set $w|20
-       (f64.mul
-        (local.get $q|18)
-        (f64.const 6.077100506506192e-11)
-       )
-      )
-      (local.set $j
-       (i32.shr_u
-        (local.get $ix)
-        (i32.const 20)
-       )
-      )
-      (local.set $y0|22
-       (f64.sub
-        (local.get $r|19)
-        (local.get $w|20)
-       )
-      )
-      (local.set $hi
-       (i32.wrap_i64
-        (i64.shr_u
-         (i64.reinterpret_f64
-          (local.get $y0|22)
-         )
-         (i64.const 32)
-        )
-       )
-      )
-      (local.set $i
-       (i32.sub
-        (local.get $j)
-        (i32.and
-         (i32.shr_u
-          (local.get $hi)
-          (i32.const 20)
-         )
-         (i32.const 2047)
-        )
-       )
-      )
-      (if
-       (i32.gt_u
-        (local.get $i)
-        (i32.const 16)
-       )
-       (then
-        (local.set $t
-         (local.get $r|19)
-        )
-        (local.set $w|20
-         (f64.mul
-          (local.get $q|18)
-          (f64.const 6.077100506303966e-11)
-         )
-        )
-        (local.set $r|19
-         (f64.sub
-          (local.get $t)
-          (local.get $w|20)
-         )
-        )
-        (local.set $w|20
-         (f64.sub
-          (f64.mul
-           (local.get $q|18)
-           (f64.const 2.0222662487959506e-21)
-          )
-          (f64.sub
-           (f64.sub
-            (local.get $t)
-            (local.get $r|19)
-           )
-           (local.get $w|20)
-          )
-         )
-        )
-        (local.set $y0|22
-         (f64.sub
-          (local.get $r|19)
-          (local.get $w|20)
-         )
-        )
-        (local.set $hi
-         (i32.wrap_i64
-          (i64.shr_u
-           (i64.reinterpret_f64
-            (local.get $y0|22)
-           )
-           (i64.const 32)
-          )
-         )
-        )
-        (local.set $i
-         (i32.sub
-          (local.get $j)
-          (i32.and
-           (i32.shr_u
-            (local.get $hi)
-            (i32.const 20)
-           )
-           (i32.const 2047)
-          )
-         )
-        )
-        (if
-         (i32.gt_u
-          (local.get $i)
-          (i32.const 49)
-         )
-         (then
-          (local.set $t|26
-           (local.get $r|19)
-          )
-          (local.set $w|20
-           (f64.mul
-            (local.get $q|18)
-            (f64.const 2.0222662487111665e-21)
-           )
-          )
-          (local.set $r|19
-           (f64.sub
-            (local.get $t|26)
-            (local.get $w|20)
-           )
-          )
-          (local.set $w|20
-           (f64.sub
-            (f64.mul
-             (local.get $q|18)
-             (f64.const 8.4784276603689e-32)
-            )
-            (f64.sub
-             (f64.sub
-              (local.get $t|26)
-              (local.get $r|19)
-             )
-             (local.get $w|20)
-            )
-           )
-          )
-          (local.set $y0|22
-           (f64.sub
-            (local.get $r|19)
-            (local.get $w|20)
-           )
-          )
-         )
-        )
-       )
-      )
-      (local.set $y1|27
-       (f64.sub
-        (f64.sub
-         (local.get $r|19)
-         (local.get $y0|22)
-        )
-        (local.get $w|20)
-       )
-      )
-      (global.set $~lib/math/rempio2_y0
-       (local.get $y0|22)
-      )
-      (global.set $~lib/math/rempio2_y1
-       (local.get $y1|27)
-      )
-      (br $~lib/math/rempio2|inlined.0
-       (i32.trunc_f64_s
-        (local.get $q|18)
-       )
-      )
-     )
-    )
-    (local.set $q|28
-     (call $~lib/math/pio2_large_quot
-      (local.get $x|10)
-      (local.get $u|11)
-     )
-    )
-    (br $~lib/math/rempio2|inlined.0
-     (select
-      (i32.sub
-       (i32.const 0)
-       (local.get $q|28)
-      )
-      (local.get $q|28)
-      (local.get $sign|12)
-     )
-    )
+   (call $~lib/math/rempio2
+    (local.get $x)
+    (local.get $u)
+    (local.get $sign)
    )
   )
-  (local.set $y0|30
+  (local.set $y0
    (global.get $~lib/math/rempio2_y0)
   )
-  (local.set $y1|31
+  (local.set $y1
    (global.get $~lib/math/rempio2_y1)
   )
   (local.set $x
@@ -7588,212 +7527,16 @@
      (i32.const 1)
     )
     (then
-     (block $~lib/math/sin_kern|inlined.0 (result f64)
-      (local.set $x|32
-       (local.get $y0|30)
-      )
-      (local.set $y|33
-       (local.get $y1|31)
-      )
-      (local.set $iy
-       (i32.const 1)
-      )
-      (local.set $z|35
-       (f64.mul
-        (local.get $x|32)
-        (local.get $x|32)
-       )
-      )
-      (local.set $w|36
-       (f64.mul
-        (local.get $z|35)
-        (local.get $z|35)
-       )
-      )
-      (local.set $r|37
-       (f64.add
-        (f64.add
-         (f64.const 0.00833333333332249)
-         (f64.mul
-          (local.get $z|35)
-          (f64.add
-           (f64.const -1.984126982985795e-04)
-           (f64.mul
-            (local.get $z|35)
-            (f64.const 2.7557313707070068e-06)
-           )
-          )
-         )
-        )
-        (f64.mul
-         (f64.mul
-          (local.get $z|35)
-          (local.get $w|36)
-         )
-         (f64.add
-          (f64.const -2.5050760253406863e-08)
-          (f64.mul
-           (local.get $z|35)
-           (f64.const 1.58969099521155e-10)
-          )
-         )
-        )
-       )
-      )
-      (local.set $v
-       (f64.mul
-        (local.get $z|35)
-        (local.get $x|32)
-       )
-      )
-      (if
-       (i32.eqz
-        (local.get $iy)
-       )
-       (then
-        (br $~lib/math/sin_kern|inlined.0
-         (f64.add
-          (local.get $x|32)
-          (f64.mul
-           (local.get $v)
-           (f64.add
-            (f64.const -0.16666666666666632)
-            (f64.mul
-             (local.get $z|35)
-             (local.get $r|37)
-            )
-           )
-          )
-         )
-        )
-       )
-       (else
-        (br $~lib/math/sin_kern|inlined.0
-         (f64.sub
-          (local.get $x|32)
-          (f64.sub
-           (f64.sub
-            (f64.mul
-             (local.get $z|35)
-             (f64.sub
-              (f64.mul
-               (f64.const 0.5)
-               (local.get $y|33)
-              )
-              (f64.mul
-               (local.get $v)
-               (local.get $r|37)
-              )
-             )
-            )
-            (local.get $y|33)
-           )
-           (f64.mul
-            (local.get $v)
-            (f64.const -0.16666666666666632)
-           )
-          )
-         )
-        )
-       )
-      )
+     (call $~lib/math/sin_kern
+      (local.get $y0)
+      (local.get $y1)
+      (i32.const 1)
      )
     )
     (else
-     (block $~lib/math/cos_kern|inlined.1 (result f64)
-      (local.set $x|39
-       (local.get $y0|30)
-      )
-      (local.set $y|40
-       (local.get $y1|31)
-      )
-      (local.set $z|41
-       (f64.mul
-        (local.get $x|39)
-        (local.get $x|39)
-       )
-      )
-      (local.set $w|42
-       (f64.mul
-        (local.get $z|41)
-        (local.get $z|41)
-       )
-      )
-      (local.set $r|43
-       (f64.add
-        (f64.mul
-         (local.get $z|41)
-         (f64.add
-          (f64.const 0.0416666666666666)
-          (f64.mul
-           (local.get $z|41)
-           (f64.add
-            (f64.const -0.001388888888887411)
-            (f64.mul
-             (local.get $z|41)
-             (f64.const 2.480158728947673e-05)
-            )
-           )
-          )
-         )
-        )
-        (f64.mul
-         (f64.mul
-          (local.get $w|42)
-          (local.get $w|42)
-         )
-         (f64.add
-          (f64.const -2.7557314351390663e-07)
-          (f64.mul
-           (local.get $z|41)
-           (f64.add
-            (f64.const 2.087572321298175e-09)
-            (f64.mul
-             (local.get $z|41)
-             (f64.const -1.1359647557788195e-11)
-            )
-           )
-          )
-         )
-        )
-       )
-      )
-      (local.set $hz|44
-       (f64.mul
-        (f64.const 0.5)
-        (local.get $z|41)
-       )
-      )
-      (local.set $w|42
-       (f64.sub
-        (f64.const 1)
-        (local.get $hz|44)
-       )
-      )
-      (br $~lib/math/cos_kern|inlined.1
-       (f64.add
-        (local.get $w|42)
-        (f64.add
-         (f64.sub
-          (f64.sub
-           (f64.const 1)
-           (local.get $w|42)
-          )
-          (local.get $hz|44)
-         )
-         (f64.sub
-          (f64.mul
-           (local.get $z|41)
-           (local.get $r|43)
-          )
-          (f64.mul
-           (local.get $x|39)
-           (local.get $y|40)
-          )
-         )
-        )
-       )
-      )
+     (call $~lib/math/cos_kern
+      (local.get $y0)
+      (local.get $y1)
      )
     )
    )
@@ -7845,47 +7588,120 @@
    )
   )
  )
- (func $~lib/math/NativeMathf.cos (param $x f32) (result f32)
-  (local $ux i32)
-  (local $sign i32)
-  (local $x|3 f64)
+ (func $~lib/math/cos_kernf (param $x f64) (result f32)
   (local $z f64)
   (local $w f64)
   (local $r f64)
-  (local $x|7 f64)
-  (local $z|8 f64)
-  (local $w|9 f64)
-  (local $r|10 f64)
-  (local $x|11 f64)
-  (local $z|12 f64)
-  (local $w|13 f64)
-  (local $r|14 f64)
+  (local.set $z
+   (f64.mul
+    (local.get $x)
+    (local.get $x)
+   )
+  )
+  (local.set $w
+   (f64.mul
+    (local.get $z)
+    (local.get $z)
+   )
+  )
+  (local.set $r
+   (f64.add
+    (f64.const -0.001388676377460993)
+    (f64.mul
+     (local.get $z)
+     (f64.const 2.439044879627741e-05)
+    )
+   )
+  )
+  (return
+   (f32.demote_f64
+    (f64.add
+     (f64.add
+      (f64.add
+       (f64.promote_f32
+        (f32.const 1)
+       )
+       (f64.mul
+        (local.get $z)
+        (f64.const -0.499999997251031)
+       )
+      )
+      (f64.mul
+       (local.get $w)
+       (f64.const 0.04166662332373906)
+      )
+     )
+     (f64.mul
+      (f64.mul
+       (local.get $w)
+       (local.get $z)
+      )
+      (local.get $r)
+     )
+    )
+   )
+  )
+ )
+ (func $~lib/math/sin_kernf (param $x f64) (result f32)
+  (local $z f64)
+  (local $w f64)
+  (local $r f64)
   (local $s f64)
-  (local $x|16 f64)
-  (local $z|17 f64)
-  (local $w|18 f64)
-  (local $r|19 f64)
-  (local $s|20 f64)
-  (local $x|21 f64)
-  (local $z|22 f64)
-  (local $w|23 f64)
-  (local $r|24 f64)
-  (local $x|25 f64)
-  (local $z|26 f64)
-  (local $w|27 f64)
-  (local $r|28 f64)
-  (local $s|29 f64)
-  (local $x|30 f64)
-  (local $z|31 f64)
-  (local $w|32 f64)
-  (local $r|33 f64)
-  (local $s|34 f64)
-  (local $x|35 f32)
-  (local $u i32)
-  (local $sign|37 i32)
-  (local $q f64)
-  (local $x|39 f32)
-  (local $u|40 i32)
+  (local.set $z
+   (f64.mul
+    (local.get $x)
+    (local.get $x)
+   )
+  )
+  (local.set $w
+   (f64.mul
+    (local.get $z)
+    (local.get $z)
+   )
+  )
+  (local.set $r
+   (f64.add
+    (f64.const -1.9839334836096632e-04)
+    (f64.mul
+     (local.get $z)
+     (f64.const 2.718311493989822e-06)
+    )
+   )
+  )
+  (local.set $s
+   (f64.mul
+    (local.get $z)
+    (local.get $x)
+   )
+  )
+  (return
+   (f32.demote_f64
+    (f64.add
+     (f64.add
+      (local.get $x)
+      (f64.mul
+       (local.get $s)
+       (f64.add
+        (f64.const -0.16666666641626524)
+        (f64.mul
+         (local.get $z)
+         (f64.const 0.008333329385889463)
+        )
+       )
+      )
+     )
+     (f64.mul
+      (f64.mul
+       (local.get $s)
+       (local.get $w)
+      )
+      (local.get $r)
+     )
+    )
+   )
+  )
+ )
+ (func $~lib/math/pio2f_large_quot (param $x f32) (param $u i32) (result i32)
   (local $offset i32)
   (local $shift i64)
   (local $tblPtr i32)
@@ -7896,20 +7712,235 @@
   (local $hi i64)
   (local $mantissa i64)
   (local $product i64)
-  (local $r|51 i64)
-  (local $q|52 i32)
-  (local $q|53 i32)
+  (local $r i64)
+  (local $q i32)
+  (local.set $offset
+   (i32.sub
+    (i32.shr_s
+     (local.get $u)
+     (i32.const 23)
+    )
+    (i32.const 152)
+   )
+  )
+  (local.set $shift
+   (i64.extend_i32_s
+    (i32.and
+     (local.get $offset)
+     (i32.const 63)
+    )
+   )
+  )
+  (local.set $tblPtr
+   (i32.add
+    (i32.const 4608)
+    (i32.shl
+     (i32.shr_s
+      (local.get $offset)
+      (i32.const 6)
+     )
+     (i32.const 3)
+    )
+   )
+  )
+  (local.set $b0
+   (i64.load
+    (local.get $tblPtr)
+   )
+  )
+  (local.set $b1
+   (i64.load offset=8
+    (local.get $tblPtr)
+   )
+  )
+  (if
+   (i64.gt_u
+    (local.get $shift)
+    (i64.const 32)
+   )
+   (then
+    (local.set $b2
+     (i64.load offset=16
+      (local.get $tblPtr)
+     )
+    )
+    (local.set $lo
+     (i64.shr_u
+      (local.get $b2)
+      (i64.sub
+       (i64.const 96)
+       (local.get $shift)
+      )
+     )
+    )
+    (local.set $lo
+     (i64.or
+      (local.get $lo)
+      (i64.shl
+       (local.get $b1)
+       (i64.sub
+        (local.get $shift)
+        (i64.const 32)
+       )
+      )
+     )
+    )
+   )
+   (else
+    (local.set $lo
+     (i64.shr_u
+      (local.get $b1)
+      (i64.sub
+       (i64.const 32)
+       (local.get $shift)
+      )
+     )
+    )
+   )
+  )
+  (local.set $hi
+   (i64.or
+    (i64.shr_u
+     (local.get $b1)
+     (i64.sub
+      (i64.const 64)
+      (local.get $shift)
+     )
+    )
+    (i64.shl
+     (local.get $b0)
+     (local.get $shift)
+    )
+   )
+  )
+  (local.set $mantissa
+   (i64.extend_i32_s
+    (i32.or
+     (i32.and
+      (local.get $u)
+      (i32.const 8388607)
+     )
+     (i32.const 8388608)
+    )
+   )
+  )
+  (local.set $product
+   (i64.add
+    (i64.mul
+     (local.get $mantissa)
+     (local.get $hi)
+    )
+    (i64.shr_u
+     (i64.mul
+      (local.get $mantissa)
+      (local.get $lo)
+     )
+     (i64.const 32)
+    )
+   )
+  )
+  (local.set $r
+   (i64.shl
+    (local.get $product)
+    (i64.const 2)
+   )
+  )
+  (local.set $q
+   (i32.wrap_i64
+    (i64.add
+     (i64.shr_u
+      (local.get $product)
+      (i64.const 62)
+     )
+     (i64.shr_u
+      (local.get $r)
+      (i64.const 63)
+     )
+    )
+   )
+  )
+  (global.set $~lib/math/rempio2f_y
+   (f64.mul
+    (f64.copysign
+     (f64.const 8.515303950216386e-20)
+     (f64.promote_f32
+      (local.get $x)
+     )
+    )
+    (f64.convert_i64_s
+     (local.get $r)
+    )
+   )
+  )
+  (return
+   (local.get $q)
+  )
+ )
+ (func $~lib/math/rempio2f (param $x f32) (param $u i32) (param $sign i32) (result i32)
+  (local $q f64)
+  (local $q|4 i32)
+  (if
+   (i32.lt_u
+    (local.get $u)
+    (i32.const 1305022427)
+   )
+   (then
+    (local.set $q
+     (f64.nearest
+      (f64.mul
+       (f64.promote_f32
+        (local.get $x)
+       )
+       (f64.const 0.6366197723675814)
+      )
+     )
+    )
+    (global.set $~lib/math/rempio2f_y
+     (f64.sub
+      (f64.sub
+       (f64.promote_f32
+        (local.get $x)
+       )
+       (f64.mul
+        (local.get $q)
+        (f64.const 1.5707963109016418)
+       )
+      )
+      (f64.mul
+       (local.get $q)
+       (f64.const 1.5893254773528196e-08)
+      )
+     )
+    )
+    (return
+     (i32.trunc_f64_s
+      (local.get $q)
+     )
+    )
+   )
+  )
+  (local.set $q|4
+   (call $~lib/math/pio2f_large_quot
+    (local.get $x)
+    (local.get $u)
+   )
+  )
+  (return
+   (select
+    (i32.sub
+     (i32.const 0)
+     (local.get $q|4)
+    )
+    (local.get $q|4)
+    (local.get $sign)
+   )
+  )
+ )
+ (func $~lib/math/NativeMathf.cos (param $x f32) (result f32)
+  (local $ux i32)
+  (local $sign i32)
   (local $n i32)
   (local $y f64)
-  (local $x|56 f64)
-  (local $z|57 f64)
-  (local $w|58 f64)
-  (local $r|59 f64)
-  (local $s|60 f64)
-  (local $x|61 f64)
-  (local $z|62 f64)
-  (local $w|63 f64)
-  (local $r|64 f64)
   (local $t f32)
   (local.set $ux
    (i32.reinterpret_f32
@@ -7946,60 +7977,9 @@
      )
     )
     (return
-     (block $~lib/math/cos_kernf|inlined.0 (result f32)
-      (local.set $x|3
-       (f64.promote_f32
-        (local.get $x)
-       )
-      )
-      (local.set $z
-       (f64.mul
-        (local.get $x|3)
-        (local.get $x|3)
-       )
-      )
-      (local.set $w
-       (f64.mul
-        (local.get $z)
-        (local.get $z)
-       )
-      )
-      (local.set $r
-       (f64.add
-        (f64.const -0.001388676377460993)
-        (f64.mul
-         (local.get $z)
-         (f64.const 2.439044879627741e-05)
-        )
-       )
-      )
-      (br $~lib/math/cos_kernf|inlined.0
-       (f32.demote_f64
-        (f64.add
-         (f64.add
-          (f64.add
-           (f64.promote_f32
-            (f32.const 1)
-           )
-           (f64.mul
-            (local.get $z)
-            (f64.const -0.499999997251031)
-           )
-          )
-          (f64.mul
-           (local.get $w)
-           (f64.const 0.04166662332373906)
-          )
-         )
-         (f64.mul
-          (f64.mul
-           (local.get $w)
-           (local.get $z)
-          )
-          (local.get $r)
-         )
-        )
-       )
+     (call $~lib/math/cos_kernf
+      (f64.promote_f32
+       (local.get $x)
       )
      )
     )
@@ -8026,74 +8006,23 @@
       (then
        (return
         (f32.neg
-         (block $~lib/math/cos_kernf|inlined.1 (result f32)
-          (local.set $x|7
-           (if (result f64)
-            (local.get $sign)
-            (then
-             (f64.add
-              (f64.promote_f32
-               (local.get $x)
-              )
-              (f64.const 3.141592653589793)
-             )
-            )
-            (else
-             (f64.sub
-              (f64.promote_f32
-               (local.get $x)
-              )
-              (f64.const 3.141592653589793)
-             )
-            )
-           )
-          )
-          (local.set $z|8
-           (f64.mul
-            (local.get $x|7)
-            (local.get $x|7)
-           )
-          )
-          (local.set $w|9
-           (f64.mul
-            (local.get $z|8)
-            (local.get $z|8)
-           )
-          )
-          (local.set $r|10
-           (f64.add
-            (f64.const -0.001388676377460993)
-            (f64.mul
-             (local.get $z|8)
-             (f64.const 2.439044879627741e-05)
-            )
-           )
-          )
-          (br $~lib/math/cos_kernf|inlined.1
-           (f32.demote_f64
+         (call $~lib/math/cos_kernf
+          (if (result f64)
+           (local.get $sign)
+           (then
             (f64.add
-             (f64.add
-              (f64.add
-               (f64.promote_f32
-                (f32.const 1)
-               )
-               (f64.mul
-                (local.get $z|8)
-                (f64.const -0.499999997251031)
-               )
-              )
-              (f64.mul
-               (local.get $w|9)
-               (f64.const 0.04166662332373906)
-              )
+             (f64.promote_f32
+              (local.get $x)
              )
-             (f64.mul
-              (f64.mul
-               (local.get $w|9)
-               (local.get $z|8)
-              )
-              (local.get $r|10)
+             (f64.const 3.141592653589793)
+            )
+           )
+           (else
+            (f64.sub
+             (f64.promote_f32
+              (local.get $x)
              )
+             (f64.const 3.141592653589793)
             )
            )
           )
@@ -8106,131 +8035,21 @@
         (if (result f32)
          (local.get $sign)
          (then
-          (block $~lib/math/sin_kernf|inlined.0 (result f32)
-           (local.set $x|11
-            (f64.add
-             (f64.promote_f32
-              (local.get $x)
-             )
-             (f64.const 1.5707963267948966)
+          (call $~lib/math/sin_kernf
+           (f64.add
+            (f64.promote_f32
+             (local.get $x)
             )
-           )
-           (local.set $z|12
-            (f64.mul
-             (local.get $x|11)
-             (local.get $x|11)
-            )
-           )
-           (local.set $w|13
-            (f64.mul
-             (local.get $z|12)
-             (local.get $z|12)
-            )
-           )
-           (local.set $r|14
-            (f64.add
-             (f64.const -1.9839334836096632e-04)
-             (f64.mul
-              (local.get $z|12)
-              (f64.const 2.718311493989822e-06)
-             )
-            )
-           )
-           (local.set $s
-            (f64.mul
-             (local.get $z|12)
-             (local.get $x|11)
-            )
-           )
-           (br $~lib/math/sin_kernf|inlined.0
-            (f32.demote_f64
-             (f64.add
-              (f64.add
-               (local.get $x|11)
-               (f64.mul
-                (local.get $s)
-                (f64.add
-                 (f64.const -0.16666666641626524)
-                 (f64.mul
-                  (local.get $z|12)
-                  (f64.const 0.008333329385889463)
-                 )
-                )
-               )
-              )
-              (f64.mul
-               (f64.mul
-                (local.get $s)
-                (local.get $w|13)
-               )
-               (local.get $r|14)
-              )
-             )
-            )
+            (f64.const 1.5707963267948966)
            )
           )
          )
          (else
-          (block $~lib/math/sin_kernf|inlined.1 (result f32)
-           (local.set $x|16
-            (f64.sub
-             (f64.const 1.5707963267948966)
-             (f64.promote_f32
-              (local.get $x)
-             )
-            )
-           )
-           (local.set $z|17
-            (f64.mul
-             (local.get $x|16)
-             (local.get $x|16)
-            )
-           )
-           (local.set $w|18
-            (f64.mul
-             (local.get $z|17)
-             (local.get $z|17)
-            )
-           )
-           (local.set $r|19
-            (f64.add
-             (f64.const -1.9839334836096632e-04)
-             (f64.mul
-              (local.get $z|17)
-              (f64.const 2.718311493989822e-06)
-             )
-            )
-           )
-           (local.set $s|20
-            (f64.mul
-             (local.get $z|17)
-             (local.get $x|16)
-            )
-           )
-           (br $~lib/math/sin_kernf|inlined.1
-            (f32.demote_f64
-             (f64.add
-              (f64.add
-               (local.get $x|16)
-               (f64.mul
-                (local.get $s|20)
-                (f64.add
-                 (f64.const -0.16666666641626524)
-                 (f64.mul
-                  (local.get $z|17)
-                  (f64.const 0.008333329385889463)
-                 )
-                )
-               )
-              )
-              (f64.mul
-               (f64.mul
-                (local.get $s|20)
-                (local.get $w|18)
-               )
-               (local.get $r|19)
-              )
-             )
+          (call $~lib/math/sin_kernf
+           (f64.sub
+            (f64.const 1.5707963267948966)
+            (f64.promote_f32
+             (local.get $x)
             )
            )
           )
@@ -8254,74 +8073,23 @@
       )
       (then
        (return
-        (block $~lib/math/cos_kernf|inlined.2 (result f32)
-         (local.set $x|21
-          (if (result f64)
-           (local.get $sign)
-           (then
-            (f64.add
-             (f64.promote_f32
-              (local.get $x)
-             )
-             (f64.const 6.283185307179586)
-            )
-           )
-           (else
-            (f64.sub
-             (f64.promote_f32
-              (local.get $x)
-             )
-             (f64.const 6.283185307179586)
-            )
-           )
-          )
-         )
-         (local.set $z|22
-          (f64.mul
-           (local.get $x|21)
-           (local.get $x|21)
-          )
-         )
-         (local.set $w|23
-          (f64.mul
-           (local.get $z|22)
-           (local.get $z|22)
-          )
-         )
-         (local.set $r|24
-          (f64.add
-           (f64.const -0.001388676377460993)
-           (f64.mul
-            (local.get $z|22)
-            (f64.const 2.439044879627741e-05)
-           )
-          )
-         )
-         (br $~lib/math/cos_kernf|inlined.2
-          (f32.demote_f64
+        (call $~lib/math/cos_kernf
+         (if (result f64)
+          (local.get $sign)
+          (then
            (f64.add
-            (f64.add
-             (f64.add
-              (f64.promote_f32
-               (f32.const 1)
-              )
-              (f64.mul
-               (local.get $z|22)
-               (f64.const -0.499999997251031)
-              )
-             )
-             (f64.mul
-              (local.get $w|23)
-              (f64.const 0.04166662332373906)
-             )
+            (f64.promote_f32
+             (local.get $x)
             )
-            (f64.mul
-             (f64.mul
-              (local.get $w|23)
-              (local.get $z|22)
-             )
-             (local.get $r|24)
+            (f64.const 6.283185307179586)
+           )
+          )
+          (else
+           (f64.sub
+            (f64.promote_f32
+             (local.get $x)
             )
+            (f64.const 6.283185307179586)
            )
           )
          )
@@ -8333,134 +8101,24 @@
         (if (result f32)
          (local.get $sign)
          (then
-          (block $~lib/math/sin_kernf|inlined.2 (result f32)
-           (local.set $x|25
-            (f64.sub
-             (f64.promote_f32
-              (f32.neg
-               (local.get $x)
-              )
-             )
-             (f64.const 4.71238898038469)
-            )
-           )
-           (local.set $z|26
-            (f64.mul
-             (local.get $x|25)
-             (local.get $x|25)
-            )
-           )
-           (local.set $w|27
-            (f64.mul
-             (local.get $z|26)
-             (local.get $z|26)
-            )
-           )
-           (local.set $r|28
-            (f64.add
-             (f64.const -1.9839334836096632e-04)
-             (f64.mul
-              (local.get $z|26)
-              (f64.const 2.718311493989822e-06)
+          (call $~lib/math/sin_kernf
+           (f64.sub
+            (f64.promote_f32
+             (f32.neg
+              (local.get $x)
              )
             )
-           )
-           (local.set $s|29
-            (f64.mul
-             (local.get $z|26)
-             (local.get $x|25)
-            )
-           )
-           (br $~lib/math/sin_kernf|inlined.2
-            (f32.demote_f64
-             (f64.add
-              (f64.add
-               (local.get $x|25)
-               (f64.mul
-                (local.get $s|29)
-                (f64.add
-                 (f64.const -0.16666666641626524)
-                 (f64.mul
-                  (local.get $z|26)
-                  (f64.const 0.008333329385889463)
-                 )
-                )
-               )
-              )
-              (f64.mul
-               (f64.mul
-                (local.get $s|29)
-                (local.get $w|27)
-               )
-               (local.get $r|28)
-              )
-             )
-            )
+            (f64.const 4.71238898038469)
            )
           )
          )
          (else
-          (block $~lib/math/sin_kernf|inlined.3 (result f32)
-           (local.set $x|30
-            (f64.sub
-             (f64.promote_f32
-              (local.get $x)
-             )
-             (f64.const 4.71238898038469)
+          (call $~lib/math/sin_kernf
+           (f64.sub
+            (f64.promote_f32
+             (local.get $x)
             )
-           )
-           (local.set $z|31
-            (f64.mul
-             (local.get $x|30)
-             (local.get $x|30)
-            )
-           )
-           (local.set $w|32
-            (f64.mul
-             (local.get $z|31)
-             (local.get $z|31)
-            )
-           )
-           (local.set $r|33
-            (f64.add
-             (f64.const -1.9839334836096632e-04)
-             (f64.mul
-              (local.get $z|31)
-              (f64.const 2.718311493989822e-06)
-             )
-            )
-           )
-           (local.set $s|34
-            (f64.mul
-             (local.get $z|31)
-             (local.get $x|30)
-            )
-           )
-           (br $~lib/math/sin_kernf|inlined.3
-            (f32.demote_f64
-             (f64.add
-              (f64.add
-               (local.get $x|30)
-               (f64.mul
-                (local.get $s|34)
-                (f64.add
-                 (f64.const -0.16666666641626524)
-                 (f64.mul
-                  (local.get $z|31)
-                  (f64.const 0.008333329385889463)
-                 )
-                )
-               )
-              )
-              (f64.mul
-               (f64.mul
-                (local.get $s|34)
-                (local.get $w|32)
-               )
-               (local.get $r|33)
-              )
-             )
-            )
+            (f64.const 4.71238898038469)
            )
           )
          )
@@ -8486,237 +8144,10 @@
    )
   )
   (local.set $n
-   (block $~lib/math/rempio2f|inlined.0 (result i32)
-    (local.set $x|35
-     (local.get $x)
-    )
-    (local.set $u
-     (local.get $ux)
-    )
-    (local.set $sign|37
-     (local.get $sign)
-    )
-    (if
-     (i32.lt_u
-      (local.get $u)
-      (i32.const 1305022427)
-     )
-     (then
-      (local.set $q
-       (f64.nearest
-        (f64.mul
-         (f64.promote_f32
-          (local.get $x|35)
-         )
-         (f64.const 0.6366197723675814)
-        )
-       )
-      )
-      (global.set $~lib/math/rempio2f_y
-       (f64.sub
-        (f64.sub
-         (f64.promote_f32
-          (local.get $x|35)
-         )
-         (f64.mul
-          (local.get $q)
-          (f64.const 1.5707963109016418)
-         )
-        )
-        (f64.mul
-         (local.get $q)
-         (f64.const 1.5893254773528196e-08)
-        )
-       )
-      )
-      (br $~lib/math/rempio2f|inlined.0
-       (i32.trunc_f64_s
-        (local.get $q)
-       )
-      )
-     )
-    )
-    (local.set $q|53
-     (block $~lib/math/pio2f_large_quot|inlined.0 (result i32)
-      (local.set $x|39
-       (local.get $x|35)
-      )
-      (local.set $u|40
-       (local.get $u)
-      )
-      (local.set $offset
-       (i32.sub
-        (i32.shr_s
-         (local.get $u|40)
-         (i32.const 23)
-        )
-        (i32.const 152)
-       )
-      )
-      (local.set $shift
-       (i64.extend_i32_s
-        (i32.and
-         (local.get $offset)
-         (i32.const 63)
-        )
-       )
-      )
-      (local.set $tblPtr
-       (i32.add
-        (i32.const 4608)
-        (i32.shl
-         (i32.shr_s
-          (local.get $offset)
-          (i32.const 6)
-         )
-         (i32.const 3)
-        )
-       )
-      )
-      (local.set $b0
-       (i64.load
-        (local.get $tblPtr)
-       )
-      )
-      (local.set $b1
-       (i64.load offset=8
-        (local.get $tblPtr)
-       )
-      )
-      (if
-       (i64.gt_u
-        (local.get $shift)
-        (i64.const 32)
-       )
-       (then
-        (local.set $b2
-         (i64.load offset=16
-          (local.get $tblPtr)
-         )
-        )
-        (local.set $lo
-         (i64.shr_u
-          (local.get $b2)
-          (i64.sub
-           (i64.const 96)
-           (local.get $shift)
-          )
-         )
-        )
-        (local.set $lo
-         (i64.or
-          (local.get $lo)
-          (i64.shl
-           (local.get $b1)
-           (i64.sub
-            (local.get $shift)
-            (i64.const 32)
-           )
-          )
-         )
-        )
-       )
-       (else
-        (local.set $lo
-         (i64.shr_u
-          (local.get $b1)
-          (i64.sub
-           (i64.const 32)
-           (local.get $shift)
-          )
-         )
-        )
-       )
-      )
-      (local.set $hi
-       (i64.or
-        (i64.shr_u
-         (local.get $b1)
-         (i64.sub
-          (i64.const 64)
-          (local.get $shift)
-         )
-        )
-        (i64.shl
-         (local.get $b0)
-         (local.get $shift)
-        )
-       )
-      )
-      (local.set $mantissa
-       (i64.extend_i32_s
-        (i32.or
-         (i32.and
-          (local.get $u|40)
-          (i32.const 8388607)
-         )
-         (i32.const 8388608)
-        )
-       )
-      )
-      (local.set $product
-       (i64.add
-        (i64.mul
-         (local.get $mantissa)
-         (local.get $hi)
-        )
-        (i64.shr_u
-         (i64.mul
-          (local.get $mantissa)
-          (local.get $lo)
-         )
-         (i64.const 32)
-        )
-       )
-      )
-      (local.set $r|51
-       (i64.shl
-        (local.get $product)
-        (i64.const 2)
-       )
-      )
-      (local.set $q|52
-       (i32.wrap_i64
-        (i64.add
-         (i64.shr_u
-          (local.get $product)
-          (i64.const 62)
-         )
-         (i64.shr_u
-          (local.get $r|51)
-          (i64.const 63)
-         )
-        )
-       )
-      )
-      (global.set $~lib/math/rempio2f_y
-       (f64.mul
-        (f64.copysign
-         (f64.const 8.515303950216386e-20)
-         (f64.promote_f32
-          (local.get $x|39)
-         )
-        )
-        (f64.convert_i64_s
-         (local.get $r|51)
-        )
-       )
-      )
-      (br $~lib/math/pio2f_large_quot|inlined.0
-       (local.get $q|52)
-      )
-     )
-    )
-    (br $~lib/math/rempio2f|inlined.0
-     (select
-      (i32.sub
-       (i32.const 0)
-       (local.get $q|53)
-      )
-      (local.get $q|53)
-      (local.get $sign|37)
-     )
-    )
+   (call $~lib/math/rempio2f
+    (local.get $x)
+    (local.get $ux)
+    (local.get $sign)
    )
   )
   (local.set $y
@@ -8729,119 +8160,13 @@
      (i32.const 1)
     )
     (then
-     (block $~lib/math/sin_kernf|inlined.4 (result f32)
-      (local.set $x|56
-       (local.get $y)
-      )
-      (local.set $z|57
-       (f64.mul
-        (local.get $x|56)
-        (local.get $x|56)
-       )
-      )
-      (local.set $w|58
-       (f64.mul
-        (local.get $z|57)
-        (local.get $z|57)
-       )
-      )
-      (local.set $r|59
-       (f64.add
-        (f64.const -1.9839334836096632e-04)
-        (f64.mul
-         (local.get $z|57)
-         (f64.const 2.718311493989822e-06)
-        )
-       )
-      )
-      (local.set $s|60
-       (f64.mul
-        (local.get $z|57)
-        (local.get $x|56)
-       )
-      )
-      (br $~lib/math/sin_kernf|inlined.4
-       (f32.demote_f64
-        (f64.add
-         (f64.add
-          (local.get $x|56)
-          (f64.mul
-           (local.get $s|60)
-           (f64.add
-            (f64.const -0.16666666641626524)
-            (f64.mul
-             (local.get $z|57)
-             (f64.const 0.008333329385889463)
-            )
-           )
-          )
-         )
-         (f64.mul
-          (f64.mul
-           (local.get $s|60)
-           (local.get $w|58)
-          )
-          (local.get $r|59)
-         )
-        )
-       )
-      )
+     (call $~lib/math/sin_kernf
+      (local.get $y)
      )
     )
     (else
-     (block $~lib/math/cos_kernf|inlined.3 (result f32)
-      (local.set $x|61
-       (local.get $y)
-      )
-      (local.set $z|62
-       (f64.mul
-        (local.get $x|61)
-        (local.get $x|61)
-       )
-      )
-      (local.set $w|63
-       (f64.mul
-        (local.get $z|62)
-        (local.get $z|62)
-       )
-      )
-      (local.set $r|64
-       (f64.add
-        (f64.const -0.001388676377460993)
-        (f64.mul
-         (local.get $z|62)
-         (f64.const 2.439044879627741e-05)
-        )
-       )
-      )
-      (br $~lib/math/cos_kernf|inlined.3
-       (f32.demote_f64
-        (f64.add
-         (f64.add
-          (f64.add
-           (f64.promote_f32
-            (f32.const 1)
-           )
-           (f64.mul
-            (local.get $z|62)
-            (f64.const -0.499999997251031)
-           )
-          )
-          (f64.mul
-           (local.get $w|63)
-           (f64.const 0.04166662332373906)
-          )
-         )
-         (f64.mul
-          (f64.mul
-           (local.get $w|63)
-           (local.get $z|62)
-          )
-          (local.get $r|64)
-         )
-        )
-       )
-      )
+     (call $~lib/math/cos_kernf
+      (local.get $y)
      )
     )
    )
@@ -9353,8 +8678,153 @@
    )
   )
  )
- (func $~lib/math/NativeMath.exp (param $x f64) (result f64)
-  (local $x|1 f64)
+ (func $~lib/util/math/specialcase (param $tmp f64) (param $sbits i64) (param $ki i64) (result f64)
+  (local $scale f64)
+  (local $y f64)
+  (local $one f64)
+  (local $lo f64)
+  (local $hi f64)
+  (if
+   (i32.eqz
+    (i64.ne
+     (i64.and
+      (local.get $ki)
+      (i64.const 2147483648)
+     )
+     (i64.const 0)
+    )
+   )
+   (then
+    (local.set $sbits
+     (i64.sub
+      (local.get $sbits)
+      (i64.shl
+       (i64.const 1009)
+       (i64.const 52)
+      )
+     )
+    )
+    (local.set $scale
+     (f64.reinterpret_i64
+      (local.get $sbits)
+     )
+    )
+    (return
+     (f64.mul
+      (f64.const 5486124068793688683255936e279)
+      (f64.add
+       (local.get $scale)
+       (f64.mul
+        (local.get $scale)
+        (local.get $tmp)
+       )
+      )
+     )
+    )
+   )
+  )
+  (local.set $sbits
+   (i64.add
+    (local.get $sbits)
+    (i64.shl
+     (i64.const 1022)
+     (i64.const 52)
+    )
+   )
+  )
+  (local.set $scale
+   (f64.reinterpret_i64
+    (local.get $sbits)
+   )
+  )
+  (local.set $y
+   (f64.add
+    (local.get $scale)
+    (f64.mul
+     (local.get $scale)
+     (local.get $tmp)
+    )
+   )
+  )
+  (if
+   (f64.lt
+    (f64.abs
+     (local.get $y)
+    )
+    (f64.const 1)
+   )
+   (then
+    (local.set $one
+     (f64.copysign
+      (f64.const 1)
+      (local.get $y)
+     )
+    )
+    (local.set $lo
+     (f64.add
+      (f64.sub
+       (local.get $scale)
+       (local.get $y)
+      )
+      (f64.mul
+       (local.get $scale)
+       (local.get $tmp)
+      )
+     )
+    )
+    (local.set $hi
+     (f64.add
+      (local.get $one)
+      (local.get $y)
+     )
+    )
+    (local.set $lo
+     (f64.add
+      (f64.add
+       (f64.sub
+        (local.get $one)
+        (local.get $hi)
+       )
+       (local.get $y)
+      )
+      (local.get $lo)
+     )
+    )
+    (local.set $y
+     (f64.sub
+      (f64.add
+       (local.get $hi)
+       (local.get $lo)
+      )
+      (local.get $one)
+     )
+    )
+    (if
+     (f64.eq
+      (local.get $y)
+      (f64.const 0)
+     )
+     (then
+      (local.set $y
+       (f64.reinterpret_i64
+        (i64.and
+         (local.get $sbits)
+         (i64.const -9223372036854775808)
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+  (return
+   (f64.mul
+    (local.get $y)
+    (f64.const 2.2250738585072014e-308)
+   )
+  )
+ )
+ (func $~lib/util/math/exp_lut (param $x f64) (result f64)
   (local $ux i64)
   (local $abstop i32)
   (local $z f64)
@@ -9367,15 +8837,255 @@
   (local $sbits i64)
   (local $r2 f64)
   (local $tmp f64)
-  (local $tmp|14 f64)
-  (local $sbits|15 i64)
-  (local $ki|16 i64)
   (local $scale f64)
-  (local $y f64)
-  (local $one f64)
-  (local $lo f64)
-  (local $hi f64)
-  (local $scale|22 f64)
+  (local.set $ux
+   (i64.reinterpret_f64
+    (local.get $x)
+   )
+  )
+  (local.set $abstop
+   (i32.and
+    (i32.wrap_i64
+     (i64.shr_u
+      (local.get $ux)
+      (i64.const 52)
+     )
+    )
+    (i32.const 2047)
+   )
+  )
+  (if
+   (i32.ge_u
+    (i32.sub
+     (local.get $abstop)
+     (i32.const 969)
+    )
+    (i32.const 63)
+   )
+   (then
+    (if
+     (i32.ge_u
+      (i32.sub
+       (local.get $abstop)
+       (i32.const 969)
+      )
+      (i32.const -2147483648)
+     )
+     (then
+      (return
+       (f64.const 1)
+      )
+     )
+    )
+    (if
+     (i32.ge_u
+      (local.get $abstop)
+      (i32.const 1033)
+     )
+     (then
+      (if
+       (i64.eq
+        (local.get $ux)
+        (i64.const -4503599627370496)
+       )
+       (then
+        (return
+         (f64.const 0)
+        )
+       )
+      )
+      (if
+       (i32.ge_u
+        (local.get $abstop)
+        (i32.const 2047)
+       )
+       (then
+        (return
+         (f64.add
+          (f64.const 1)
+          (local.get $x)
+         )
+        )
+       )
+       (else
+        (return
+         (select
+          (f64.const 0)
+          (f64.const inf)
+          (i64.lt_s
+           (local.get $ux)
+           (i64.const 0)
+          )
+         )
+        )
+       )
+      )
+     )
+    )
+    (local.set $abstop
+     (i32.const 0)
+    )
+   )
+  )
+  (local.set $z
+   (f64.mul
+    (f64.const 184.6649652337873)
+    (local.get $x)
+   )
+  )
+  (local.set $kd
+   (f64.add
+    (local.get $z)
+    (f64.const 6755399441055744)
+   )
+  )
+  (local.set $ki
+   (i64.reinterpret_f64
+    (local.get $kd)
+   )
+  )
+  (local.set $kd
+   (f64.sub
+    (local.get $kd)
+    (f64.const 6755399441055744)
+   )
+  )
+  (local.set $r
+   (f64.add
+    (f64.add
+     (local.get $x)
+     (f64.mul
+      (local.get $kd)
+      (f64.const -0.005415212348111709)
+     )
+    )
+    (f64.mul
+     (local.get $kd)
+     (f64.const -1.2864023111638346e-14)
+    )
+   )
+  )
+  (local.set $idx
+   (i32.wrap_i64
+    (i64.shl
+     (i64.and
+      (local.get $ki)
+      (i64.extend_i32_s
+       (i32.const 127)
+      )
+     )
+     (i64.const 1)
+    )
+   )
+  )
+  (local.set $top
+   (i64.shl
+    (local.get $ki)
+    (i64.sub
+     (i64.const 52)
+     (i64.extend_i32_s
+      (i32.const 7)
+     )
+    )
+   )
+  )
+  (local.set $tail
+   (f64.reinterpret_i64
+    (i64.load
+     (i32.add
+      (i32.const 4640)
+      (i32.shl
+       (local.get $idx)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $sbits
+   (i64.add
+    (i64.load offset=8
+     (i32.add
+      (i32.const 4640)
+      (i32.shl
+       (local.get $idx)
+       (i32.const 3)
+      )
+     )
+    )
+    (local.get $top)
+   )
+  )
+  (local.set $r2
+   (f64.mul
+    (local.get $r)
+    (local.get $r)
+   )
+  )
+  (local.set $tmp
+   (f64.add
+    (f64.add
+     (f64.add
+      (local.get $tail)
+      (local.get $r)
+     )
+     (f64.mul
+      (local.get $r2)
+      (f64.add
+       (f64.const 0.49999999999996786)
+       (f64.mul
+        (local.get $r)
+        (f64.const 0.16666666666665886)
+       )
+      )
+     )
+    )
+    (f64.mul
+     (f64.mul
+      (local.get $r2)
+      (local.get $r2)
+     )
+     (f64.add
+      (f64.const 0.0416666808410674)
+      (f64.mul
+       (local.get $r)
+       (f64.const 0.008333335853059549)
+      )
+     )
+    )
+   )
+  )
+  (if
+   (i32.eq
+    (local.get $abstop)
+    (i32.const 0)
+   )
+   (then
+    (return
+     (call $~lib/util/math/specialcase
+      (local.get $tmp)
+      (local.get $sbits)
+      (local.get $ki)
+     )
+    )
+   )
+  )
+  (local.set $scale
+   (f64.reinterpret_i64
+    (local.get $sbits)
+   )
+  )
+  (return
+   (f64.add
+    (local.get $scale)
+    (f64.mul
+     (local.get $scale)
+     (local.get $tmp)
+    )
+   )
+  )
+ )
+ (func $~lib/math/NativeMath.exp (param $x f64) (result f64)
   (drop
    (i32.lt_s
     (i32.const 0)
@@ -9383,401 +9093,47 @@
    )
   )
   (return
-   (block $~lib/util/math/exp_lut|inlined.0 (result f64)
-    (local.set $x|1
-     (local.get $x)
-    )
-    (local.set $ux
-     (i64.reinterpret_f64
-      (local.get $x|1)
-     )
-    )
-    (local.set $abstop
-     (i32.and
-      (i32.wrap_i64
-       (i64.shr_u
-        (local.get $ux)
-        (i64.const 52)
-       )
-      )
-      (i32.const 2047)
-     )
-    )
-    (if
-     (i32.ge_u
-      (i32.sub
-       (local.get $abstop)
-       (i32.const 969)
-      )
-      (i32.const 63)
-     )
-     (then
-      (if
-       (i32.ge_u
-        (i32.sub
-         (local.get $abstop)
-         (i32.const 969)
-        )
-        (i32.const -2147483648)
-       )
-       (then
-        (br $~lib/util/math/exp_lut|inlined.0
-         (f64.const 1)
-        )
-       )
-      )
-      (if
-       (i32.ge_u
-        (local.get $abstop)
-        (i32.const 1033)
-       )
-       (then
-        (if
-         (i64.eq
-          (local.get $ux)
-          (i64.const -4503599627370496)
-         )
-         (then
-          (br $~lib/util/math/exp_lut|inlined.0
-           (f64.const 0)
-          )
-         )
-        )
-        (if
-         (i32.ge_u
-          (local.get $abstop)
-          (i32.const 2047)
-         )
-         (then
-          (br $~lib/util/math/exp_lut|inlined.0
-           (f64.add
-            (f64.const 1)
-            (local.get $x|1)
-           )
-          )
-         )
-         (else
-          (br $~lib/util/math/exp_lut|inlined.0
-           (select
-            (f64.const 0)
-            (f64.const inf)
-            (i64.lt_s
-             (local.get $ux)
-             (i64.const 0)
-            )
-           )
-          )
-         )
-        )
-       )
-      )
-      (local.set $abstop
-       (i32.const 0)
-      )
-     )
-    )
-    (local.set $z
-     (f64.mul
-      (f64.const 184.6649652337873)
-      (local.get $x|1)
-     )
-    )
-    (local.set $kd
-     (f64.add
-      (local.get $z)
-      (f64.const 6755399441055744)
-     )
-    )
-    (local.set $ki
-     (i64.reinterpret_f64
-      (local.get $kd)
-     )
-    )
-    (local.set $kd
-     (f64.sub
-      (local.get $kd)
-      (f64.const 6755399441055744)
-     )
-    )
-    (local.set $r
-     (f64.add
-      (f64.add
-       (local.get $x|1)
-       (f64.mul
-        (local.get $kd)
-        (f64.const -0.005415212348111709)
-       )
-      )
-      (f64.mul
-       (local.get $kd)
-       (f64.const -1.2864023111638346e-14)
-      )
-     )
-    )
-    (local.set $idx
-     (i32.wrap_i64
-      (i64.shl
-       (i64.and
-        (local.get $ki)
-        (i64.extend_i32_s
-         (i32.const 127)
-        )
-       )
-       (i64.const 1)
-      )
-     )
-    )
-    (local.set $top
-     (i64.shl
-      (local.get $ki)
-      (i64.sub
-       (i64.const 52)
-       (i64.extend_i32_s
-        (i32.const 7)
-       )
-      )
-     )
-    )
-    (local.set $tail
-     (f64.reinterpret_i64
-      (i64.load
+   (call $~lib/util/math/exp_lut
+    (local.get $x)
+   )
+  )
+ )
+ (func $~lib/math/expo2 (param $x f64) (param $sign f64) (result f64)
+  (local $scale f64)
+  (local.set $scale
+   (f64.reinterpret_i64
+    (i64.shl
+     (i64.extend_i32_u
+      (i32.shl
        (i32.add
-        (i32.const 4640)
-        (i32.shl
-         (local.get $idx)
-         (i32.const 3)
+        (i32.const 1023)
+        (i32.div_u
+         (i32.const 2043)
+         (i32.const 2)
         )
        )
+       (i32.const 20)
       )
      )
+     (i64.const 32)
     )
-    (local.set $sbits
-     (i64.add
-      (i64.load offset=8
-       (i32.add
-        (i32.const 4640)
-        (i32.shl
-         (local.get $idx)
-         (i32.const 3)
-        )
-       )
+   )
+  )
+  (return
+   (f64.mul
+    (f64.mul
+     (call $~lib/math/NativeMath.exp
+      (f64.sub
+       (local.get $x)
+       (f64.const 1416.0996898839683)
       )
-      (local.get $top)
      )
-    )
-    (local.set $r2
      (f64.mul
-      (local.get $r)
-      (local.get $r)
+      (local.get $sign)
+      (local.get $scale)
      )
     )
-    (local.set $tmp
-     (f64.add
-      (f64.add
-       (f64.add
-        (local.get $tail)
-        (local.get $r)
-       )
-       (f64.mul
-        (local.get $r2)
-        (f64.add
-         (f64.const 0.49999999999996786)
-         (f64.mul
-          (local.get $r)
-          (f64.const 0.16666666666665886)
-         )
-        )
-       )
-      )
-      (f64.mul
-       (f64.mul
-        (local.get $r2)
-        (local.get $r2)
-       )
-       (f64.add
-        (f64.const 0.0416666808410674)
-        (f64.mul
-         (local.get $r)
-         (f64.const 0.008333335853059549)
-        )
-       )
-      )
-     )
-    )
-    (if
-     (i32.eq
-      (local.get $abstop)
-      (i32.const 0)
-     )
-     (then
-      (br $~lib/util/math/exp_lut|inlined.0
-       (block $~lib/util/math/specialcase|inlined.0 (result f64)
-        (local.set $tmp|14
-         (local.get $tmp)
-        )
-        (local.set $sbits|15
-         (local.get $sbits)
-        )
-        (local.set $ki|16
-         (local.get $ki)
-        )
-        (if
-         (i32.eqz
-          (i64.ne
-           (i64.and
-            (local.get $ki|16)
-            (i64.const 2147483648)
-           )
-           (i64.const 0)
-          )
-         )
-         (then
-          (local.set $sbits|15
-           (i64.sub
-            (local.get $sbits|15)
-            (i64.shl
-             (i64.const 1009)
-             (i64.const 52)
-            )
-           )
-          )
-          (local.set $scale
-           (f64.reinterpret_i64
-            (local.get $sbits|15)
-           )
-          )
-          (br $~lib/util/math/specialcase|inlined.0
-           (f64.mul
-            (f64.const 5486124068793688683255936e279)
-            (f64.add
-             (local.get $scale)
-             (f64.mul
-              (local.get $scale)
-              (local.get $tmp|14)
-             )
-            )
-           )
-          )
-         )
-        )
-        (local.set $sbits|15
-         (i64.add
-          (local.get $sbits|15)
-          (i64.shl
-           (i64.const 1022)
-           (i64.const 52)
-          )
-         )
-        )
-        (local.set $scale
-         (f64.reinterpret_i64
-          (local.get $sbits|15)
-         )
-        )
-        (local.set $y
-         (f64.add
-          (local.get $scale)
-          (f64.mul
-           (local.get $scale)
-           (local.get $tmp|14)
-          )
-         )
-        )
-        (if
-         (f64.lt
-          (f64.abs
-           (local.get $y)
-          )
-          (f64.const 1)
-         )
-         (then
-          (local.set $one
-           (f64.copysign
-            (f64.const 1)
-            (local.get $y)
-           )
-          )
-          (local.set $lo
-           (f64.add
-            (f64.sub
-             (local.get $scale)
-             (local.get $y)
-            )
-            (f64.mul
-             (local.get $scale)
-             (local.get $tmp|14)
-            )
-           )
-          )
-          (local.set $hi
-           (f64.add
-            (local.get $one)
-            (local.get $y)
-           )
-          )
-          (local.set $lo
-           (f64.add
-            (f64.add
-             (f64.sub
-              (local.get $one)
-              (local.get $hi)
-             )
-             (local.get $y)
-            )
-            (local.get $lo)
-           )
-          )
-          (local.set $y
-           (f64.sub
-            (f64.add
-             (local.get $hi)
-             (local.get $lo)
-            )
-            (local.get $one)
-           )
-          )
-          (if
-           (f64.eq
-            (local.get $y)
-            (f64.const 0)
-           )
-           (then
-            (local.set $y
-             (f64.reinterpret_i64
-              (i64.and
-               (local.get $sbits|15)
-               (i64.const -9223372036854775808)
-              )
-             )
-            )
-           )
-          )
-         )
-        )
-        (br $~lib/util/math/specialcase|inlined.0
-         (f64.mul
-          (local.get $y)
-          (f64.const 2.2250738585072014e-308)
-         )
-        )
-       )
-      )
-     )
-    )
-    (local.set $scale|22
-     (f64.reinterpret_i64
-      (local.get $sbits)
-     )
-    )
-    (br $~lib/util/math/exp_lut|inlined.0
-     (f64.add
-      (local.get $scale|22)
-      (f64.mul
-       (local.get $scale|22)
-       (local.get $tmp)
-      )
-     )
-    )
+    (local.get $scale)
    )
   )
  )
@@ -9785,9 +9141,6 @@
   (local $u i64)
   (local $w i32)
   (local $t f64)
-  (local $x|4 f64)
-  (local $sign f64)
-  (local $scale f64)
   (local.set $u
    (i64.reinterpret_f64
     (local.get $x)
@@ -9886,49 +9239,9 @@
    )
   )
   (local.set $t
-   (block $~lib/math/expo2|inlined.0 (result f64)
-    (local.set $x|4
-     (local.get $x)
-    )
-    (local.set $sign
-     (f64.const 1)
-    )
-    (local.set $scale
-     (f64.reinterpret_i64
-      (i64.shl
-       (i64.extend_i32_u
-        (i32.shl
-         (i32.add
-          (i32.const 1023)
-          (i32.div_u
-           (i32.const 2043)
-           (i32.const 2)
-          )
-         )
-         (i32.const 20)
-        )
-       )
-       (i64.const 32)
-      )
-     )
-    )
-    (br $~lib/math/expo2|inlined.0
-     (f64.mul
-      (f64.mul
-       (call $~lib/math/NativeMath.exp
-        (f64.sub
-         (local.get $x|4)
-         (f64.const 1416.0996898839683)
-        )
-       )
-       (f64.mul
-        (local.get $sign)
-        (local.get $scale)
-       )
-      )
-      (local.get $scale)
-     )
-    )
+   (call $~lib/math/expo2
+    (local.get $x)
+    (f64.const 1)
    )
   )
   (return
@@ -10406,8 +9719,7 @@
    )
   )
  )
- (func $~lib/math/NativeMathf.exp (param $x f32) (result f32)
-  (local $x|1 f32)
+ (func $~lib/util/math/expf_lut (param $x f32) (result f32)
   (local $xd f64)
   (local $ix i32)
   (local $ux i32)
@@ -10418,6 +9730,191 @@
   (local $s f64)
   (local $y f64)
   (local $t i64)
+  (local.set $xd
+   (f64.promote_f32
+    (local.get $x)
+   )
+  )
+  (local.set $ix
+   (i32.reinterpret_f32
+    (local.get $x)
+   )
+  )
+  (local.set $ux
+   (i32.and
+    (i32.shr_u
+     (local.get $ix)
+     (i32.const 20)
+    )
+    (i32.const 2047)
+   )
+  )
+  (if
+   (i32.ge_u
+    (local.get $ux)
+    (i32.const 1067)
+   )
+   (then
+    (if
+     (i32.eq
+      (local.get $ix)
+      (i32.const -8388608)
+     )
+     (then
+      (return
+       (f32.const 0)
+      )
+     )
+    )
+    (if
+     (i32.ge_u
+      (local.get $ux)
+      (i32.const 2040)
+     )
+     (then
+      (return
+       (f32.add
+        (local.get $x)
+        (local.get $x)
+       )
+      )
+     )
+    )
+    (if
+     (f32.gt
+      (local.get $x)
+      (f32.reinterpret_i32
+       (i32.const 1118925335)
+      )
+     )
+     (then
+      (return
+       (f32.mul
+        (local.get $x)
+        (f32.const 1701411834604692317316873e14)
+       )
+      )
+     )
+    )
+    (if
+     (f32.lt
+      (local.get $x)
+      (f32.reinterpret_i32
+       (i32.const -1026559564)
+      )
+     )
+     (then
+      (return
+       (f32.const 0)
+      )
+     )
+    )
+   )
+  )
+  (local.set $z
+   (f64.mul
+    (f64.const 46.16624130844683)
+    (local.get $xd)
+   )
+  )
+  (local.set $kd
+   (f64.add
+    (local.get $z)
+    (f64.const 6755399441055744)
+   )
+  )
+  (local.set $ki
+   (i64.reinterpret_f64
+    (local.get $kd)
+   )
+  )
+  (local.set $r
+   (f64.sub
+    (local.get $z)
+    (f64.sub
+     (local.get $kd)
+     (f64.const 6755399441055744)
+    )
+   )
+  )
+  (local.set $t
+   (i64.load
+    (i32.add
+     (i32.const 6688)
+     (i32.shl
+      (i32.and
+       (i32.wrap_i64
+        (local.get $ki)
+       )
+       (i32.const 31)
+      )
+      (i32.const 3)
+     )
+    )
+   )
+  )
+  (local.set $t
+   (i64.add
+    (local.get $t)
+    (i64.shl
+     (local.get $ki)
+     (i64.sub
+      (i64.const 52)
+      (i64.extend_i32_s
+       (i32.const 5)
+      )
+     )
+    )
+   )
+  )
+  (local.set $s
+   (f64.reinterpret_i64
+    (local.get $t)
+   )
+  )
+  (local.set $z
+   (f64.add
+    (f64.mul
+     (f64.const 1.6938359250920212e-06)
+     (local.get $r)
+    )
+    (f64.const 2.3459809789509004e-04)
+   )
+  )
+  (local.set $y
+   (f64.add
+    (f64.mul
+     (f64.const 0.021660849396613134)
+     (local.get $r)
+    )
+    (f64.const 1)
+   )
+  )
+  (local.set $y
+   (f64.add
+    (local.get $y)
+    (f64.mul
+     (local.get $z)
+     (f64.mul
+      (local.get $r)
+      (local.get $r)
+     )
+    )
+   )
+  )
+  (local.set $y
+   (f64.mul
+    (local.get $y)
+    (local.get $s)
+   )
+  )
+  (return
+   (f32.demote_f64
+    (local.get $y)
+   )
+  )
+ )
+ (func $~lib/math/NativeMathf.exp (param $x f32) (result f32)
   (drop
    (i32.lt_s
     (i32.const 0)
@@ -10425,193 +9922,42 @@
    )
   )
   (return
-   (block $~lib/util/math/expf_lut|inlined.0 (result f32)
-    (local.set $x|1
-     (local.get $x)
-    )
-    (local.set $xd
-     (f64.promote_f32
-      (local.get $x|1)
-     )
-    )
-    (local.set $ix
-     (i32.reinterpret_f32
-      (local.get $x|1)
-     )
-    )
-    (local.set $ux
-     (i32.and
+   (call $~lib/util/math/expf_lut
+    (local.get $x)
+   )
+  )
+ )
+ (func $~lib/math/expo2f (param $x f32) (param $sign f32) (result f32)
+  (local $scale f32)
+  (local.set $scale
+   (f32.reinterpret_i32
+    (i32.shl
+     (i32.add
+      (i32.const 127)
       (i32.shr_u
-       (local.get $ix)
-       (i32.const 20)
-      )
-      (i32.const 2047)
-     )
-    )
-    (if
-     (i32.ge_u
-      (local.get $ux)
-      (i32.const 1067)
-     )
-     (then
-      (if
-       (i32.eq
-        (local.get $ix)
-        (i32.const -8388608)
-       )
-       (then
-        (br $~lib/util/math/expf_lut|inlined.0
-         (f32.const 0)
-        )
-       )
-      )
-      (if
-       (i32.ge_u
-        (local.get $ux)
-        (i32.const 2040)
-       )
-       (then
-        (br $~lib/util/math/expf_lut|inlined.0
-         (f32.add
-          (local.get $x|1)
-          (local.get $x|1)
-         )
-        )
-       )
-      )
-      (if
-       (f32.gt
-        (local.get $x|1)
-        (f32.reinterpret_i32
-         (i32.const 1118925335)
-        )
-       )
-       (then
-        (br $~lib/util/math/expf_lut|inlined.0
-         (f32.mul
-          (local.get $x|1)
-          (f32.const 1701411834604692317316873e14)
-         )
-        )
-       )
-      )
-      (if
-       (f32.lt
-        (local.get $x|1)
-        (f32.reinterpret_i32
-         (i32.const -1026559564)
-        )
-       )
-       (then
-        (br $~lib/util/math/expf_lut|inlined.0
-         (f32.const 0)
-        )
-       )
+       (i32.const 235)
+       (i32.const 1)
       )
      )
+     (i32.const 23)
     )
-    (local.set $z
-     (f64.mul
-      (f64.const 46.16624130844683)
-      (local.get $xd)
-     )
-    )
-    (local.set $kd
-     (f64.add
-      (local.get $z)
-      (f64.const 6755399441055744)
-     )
-    )
-    (local.set $ki
-     (i64.reinterpret_f64
-      (local.get $kd)
-     )
-    )
-    (local.set $r
-     (f64.sub
-      (local.get $z)
-      (f64.sub
-       (local.get $kd)
-       (f64.const 6755399441055744)
+   )
+  )
+  (return
+   (f32.mul
+    (f32.mul
+     (call $~lib/math/NativeMathf.exp
+      (f32.sub
+       (local.get $x)
+       (f32.const 162.88958740234375)
       )
      )
-    )
-    (local.set $t
-     (i64.load
-      (i32.add
-       (i32.const 6688)
-       (i32.shl
-        (i32.and
-         (i32.wrap_i64
-          (local.get $ki)
-         )
-         (i32.const 31)
-        )
-        (i32.const 3)
-       )
-      )
+     (f32.mul
+      (local.get $sign)
+      (local.get $scale)
      )
     )
-    (local.set $t
-     (i64.add
-      (local.get $t)
-      (i64.shl
-       (local.get $ki)
-       (i64.sub
-        (i64.const 52)
-        (i64.extend_i32_s
-         (i32.const 5)
-        )
-       )
-      )
-     )
-    )
-    (local.set $s
-     (f64.reinterpret_i64
-      (local.get $t)
-     )
-    )
-    (local.set $z
-     (f64.add
-      (f64.mul
-       (f64.const 1.6938359250920212e-06)
-       (local.get $r)
-      )
-      (f64.const 2.3459809789509004e-04)
-     )
-    )
-    (local.set $y
-     (f64.add
-      (f64.mul
-       (f64.const 0.021660849396613134)
-       (local.get $r)
-      )
-      (f64.const 1)
-     )
-    )
-    (local.set $y
-     (f64.add
-      (local.get $y)
-      (f64.mul
-       (local.get $z)
-       (f64.mul
-        (local.get $r)
-        (local.get $r)
-       )
-      )
-     )
-    )
-    (local.set $y
-     (f64.mul
-      (local.get $y)
-      (local.get $s)
-     )
-    )
-    (br $~lib/util/math/expf_lut|inlined.0
-     (f32.demote_f64
-      (local.get $y)
-     )
-    )
+    (local.get $scale)
    )
   )
  )
@@ -10619,9 +9965,6 @@
   (local $u i32)
   (local $t f32)
   (local $t|3 f32)
-  (local $x|4 f32)
-  (local $sign f32)
-  (local $scale f32)
   (local.set $u
    (i32.reinterpret_f32
     (local.get $x)
@@ -10712,44 +10055,9 @@
    )
   )
   (return
-   (block $~lib/math/expo2f|inlined.0 (result f32)
-    (local.set $x|4
-     (local.get $x)
-    )
-    (local.set $sign
-     (f32.const 1)
-    )
-    (local.set $scale
-     (f32.reinterpret_i32
-      (i32.shl
-       (i32.add
-        (i32.const 127)
-        (i32.shr_u
-         (i32.const 235)
-         (i32.const 1)
-        )
-       )
-       (i32.const 23)
-      )
-     )
-    )
-    (br $~lib/math/expo2f|inlined.0
-     (f32.mul
-      (f32.mul
-       (call $~lib/math/NativeMathf.exp
-        (f32.sub
-         (local.get $x|4)
-         (f32.const 162.88958740234375)
-        )
-       )
-       (f32.mul
-        (local.get $sign)
-        (local.get $scale)
-       )
-      )
-      (local.get $scale)
-     )
-    )
+   (call $~lib/math/expo2f
+    (local.get $x)
+    (f32.const 1)
    )
   )
  )
@@ -10843,8 +10151,126 @@
    )
   )
  )
- (func $~lib/math/NativeMath.exp2 (param $x f64) (result f64)
-  (local $x|1 f64)
+ (func $~lib/util/math/specialcase2 (param $tmp f64) (param $sbits i64) (param $ki i64) (result f64)
+  (local $scale f64)
+  (local $y f64)
+  (local $hi f64)
+  (local $lo f64)
+  (if
+   (i64.eq
+    (i64.and
+     (local.get $ki)
+     (i64.const 2147483648)
+    )
+    (i64.const 0)
+   )
+   (then
+    (local.set $sbits
+     (i64.sub
+      (local.get $sbits)
+      (i64.shl
+       (i64.const 1)
+       (i64.const 52)
+      )
+     )
+    )
+    (local.set $scale
+     (f64.reinterpret_i64
+      (local.get $sbits)
+     )
+    )
+    (return
+     (f64.mul
+      (f64.const 2)
+      (f64.add
+       (f64.mul
+        (local.get $scale)
+        (local.get $tmp)
+       )
+       (local.get $scale)
+      )
+     )
+    )
+   )
+  )
+  (local.set $sbits
+   (i64.add
+    (local.get $sbits)
+    (i64.shl
+     (i64.const 1022)
+     (i64.const 52)
+    )
+   )
+  )
+  (local.set $scale
+   (f64.reinterpret_i64
+    (local.get $sbits)
+   )
+  )
+  (local.set $y
+   (f64.add
+    (f64.mul
+     (local.get $scale)
+     (local.get $tmp)
+    )
+    (local.get $scale)
+   )
+  )
+  (if
+   (f64.lt
+    (local.get $y)
+    (f64.const 1)
+   )
+   (then
+    (local.set $lo
+     (f64.add
+      (f64.sub
+       (local.get $scale)
+       (local.get $y)
+      )
+      (f64.mul
+       (local.get $scale)
+       (local.get $tmp)
+      )
+     )
+    )
+    (local.set $hi
+     (f64.add
+      (f64.const 1)
+      (local.get $y)
+     )
+    )
+    (local.set $lo
+     (f64.add
+      (f64.add
+       (f64.sub
+        (f64.const 1)
+        (local.get $hi)
+       )
+       (local.get $y)
+      )
+      (local.get $lo)
+     )
+    )
+    (local.set $y
+     (f64.sub
+      (f64.add
+       (local.get $hi)
+       (local.get $lo)
+      )
+      (f64.const 1)
+     )
+    )
+   )
+  )
+  (return
+   (f64.mul
+    (local.get $y)
+    (f64.const 2.2250738585072014e-308)
+   )
+  )
+ )
+ (func $~lib/util/math/exp2_lut (param $x f64) (result f64)
   (local $ux i64)
   (local $abstop i32)
   (local $kd f64)
@@ -10856,395 +10282,269 @@
   (local $sbits i64)
   (local $r2 f64)
   (local $tmp f64)
-  (local $tmp|13 f64)
-  (local $sbits|14 i64)
-  (local $ki|15 i64)
   (local $scale f64)
-  (local $y f64)
-  (local $hi f64)
-  (local $lo f64)
-  (local $scale|20 f64)
-  (return
-   (block $~lib/util/math/exp2_lut|inlined.0 (result f64)
-    (local.set $x|1
-     (local.get $x)
-    )
-    (local.set $ux
-     (i64.reinterpret_f64
-      (local.get $x|1)
+  (local.set $ux
+   (i64.reinterpret_f64
+    (local.get $x)
+   )
+  )
+  (local.set $abstop
+   (i32.and
+    (i32.wrap_i64
+     (i64.shr_u
+      (local.get $ux)
+      (i64.const 52)
      )
     )
-    (local.set $abstop
-     (i32.and
-      (i32.wrap_i64
-       (i64.shr_u
-        (local.get $ux)
-        (i64.const 52)
-       )
-      )
-      (i32.const 2047)
-     )
+    (i32.const 2047)
+   )
+  )
+  (if
+   (i32.ge_u
+    (i32.sub
+     (local.get $abstop)
+     (i32.const 969)
     )
+    (i32.const 63)
+   )
+   (then
     (if
      (i32.ge_u
       (i32.sub
        (local.get $abstop)
        (i32.const 969)
       )
-      (i32.const 63)
+      (i32.const -2147483648)
+     )
+     (then
+      (return
+       (f64.const 1)
+      )
+     )
+    )
+    (if
+     (i32.ge_u
+      (local.get $abstop)
+      (i32.const 1033)
      )
      (then
       (if
-       (i32.ge_u
-        (i32.sub
-         (local.get $abstop)
-         (i32.const 969)
-        )
-        (i32.const -2147483648)
+       (i64.eq
+        (local.get $ux)
+        (i64.const -4503599627370496)
        )
        (then
-        (br $~lib/util/math/exp2_lut|inlined.0
-         (f64.const 1)
+        (return
+         (f64.const 0)
         )
        )
       )
       (if
        (i32.ge_u
         (local.get $abstop)
-        (i32.const 1033)
+        (i32.const 2047)
        )
        (then
-        (if
-         (i64.eq
-          (local.get $ux)
-          (i64.const -4503599627370496)
-         )
-         (then
-          (br $~lib/util/math/exp2_lut|inlined.0
-           (f64.const 0)
-          )
-         )
-        )
-        (if
-         (i32.ge_u
-          (local.get $abstop)
-          (i32.const 2047)
-         )
-         (then
-          (br $~lib/util/math/exp2_lut|inlined.0
-           (f64.add
-            (f64.const 1)
-            (local.get $x|1)
-           )
-          )
-         )
-        )
-        (if
-         (i64.ge_s
-          (local.get $ux)
-          (i64.const 0)
-         )
-         (then
-          (br $~lib/util/math/exp2_lut|inlined.0
-           (f64.const inf)
-          )
-         )
-         (else
-          (if
-           (i64.ge_u
-            (local.get $ux)
-            (i64.const -4570929321408987136)
-           )
-           (then
-            (br $~lib/util/math/exp2_lut|inlined.0
-             (f64.const 0)
-            )
-           )
-          )
+        (return
+         (f64.add
+          (f64.const 1)
+          (local.get $x)
          )
         )
        )
       )
       (if
-       (i64.gt_u
-        (i64.shl
-         (local.get $ux)
-         (i64.const 1)
-        )
-        (i64.const -9143996093422370816)
+       (i64.ge_s
+        (local.get $ux)
+        (i64.const 0)
        )
        (then
-        (local.set $abstop
-         (i32.const 0)
+        (return
+         (f64.const inf)
         )
        )
-      )
-     )
-    )
-    (local.set $kd
-     (f64.add
-      (local.get $x|1)
-      (f64.const 52776558133248)
-     )
-    )
-    (local.set $ki
-     (i64.reinterpret_f64
-      (local.get $kd)
-     )
-    )
-    (local.set $kd
-     (f64.sub
-      (local.get $kd)
-      (f64.const 52776558133248)
-     )
-    )
-    (local.set $r
-     (f64.sub
-      (local.get $x|1)
-      (local.get $kd)
-     )
-    )
-    (local.set $idx
-     (i32.wrap_i64
-      (i64.shl
-       (i64.and
-        (local.get $ki)
-        (i64.extend_i32_s
-         (i32.const 127)
-        )
-       )
-       (i64.const 1)
-      )
-     )
-    )
-    (local.set $top
-     (i64.shl
-      (local.get $ki)
-      (i64.sub
-       (i64.const 52)
-       (i64.extend_i32_s
-        (i32.const 7)
-       )
-      )
-     )
-    )
-    (local.set $tail
-     (f64.reinterpret_i64
-      (i64.load
-       (i32.add
-        (i32.const 4640)
-        (i32.shl
-         (local.get $idx)
-         (i32.const 3)
-        )
-       )
-      )
-     )
-    )
-    (local.set $sbits
-     (i64.add
-      (i64.load offset=8
-       (i32.add
-        (i32.const 4640)
-        (i32.shl
-         (local.get $idx)
-         (i32.const 3)
-        )
-       )
-      )
-      (local.get $top)
-     )
-    )
-    (local.set $r2
-     (f64.mul
-      (local.get $r)
-      (local.get $r)
-     )
-    )
-    (local.set $tmp
-     (f64.add
-      (f64.add
-       (f64.add
-        (local.get $tail)
-        (f64.mul
-         (local.get $r)
-         (f64.const 0.6931471805599453)
-        )
-       )
-       (f64.mul
-        (local.get $r2)
-        (f64.add
-         (f64.const 0.24022650695909065)
-         (f64.mul
-          (local.get $r)
-          (f64.const 0.0555041086686087)
+       (else
+        (if
+         (i64.ge_u
+          (local.get $ux)
+          (i64.const -4570929321408987136)
          )
-        )
-       )
-      )
-      (f64.mul
-       (f64.mul
-        (local.get $r2)
-        (local.get $r2)
-       )
-       (f64.add
-        (f64.const 0.009618131975721055)
-        (f64.mul
-         (local.get $r)
-         (f64.const 1.3332074570119598e-03)
+         (then
+          (return
+           (f64.const 0)
+          )
+         )
         )
        )
       )
      )
     )
     (if
-     (i32.eq
-      (local.get $abstop)
-      (i32.const 0)
+     (i64.gt_u
+      (i64.shl
+       (local.get $ux)
+       (i64.const 1)
+      )
+      (i64.const -9143996093422370816)
      )
      (then
-      (br $~lib/util/math/exp2_lut|inlined.0
-       (block $~lib/util/math/specialcase2|inlined.0 (result f64)
-        (local.set $tmp|13
-         (local.get $tmp)
-        )
-        (local.set $sbits|14
-         (local.get $sbits)
-        )
-        (local.set $ki|15
-         (local.get $ki)
-        )
-        (if
-         (i64.eq
-          (i64.and
-           (local.get $ki|15)
-           (i64.const 2147483648)
-          )
-          (i64.const 0)
-         )
-         (then
-          (local.set $sbits|14
-           (i64.sub
-            (local.get $sbits|14)
-            (i64.shl
-             (i64.const 1)
-             (i64.const 52)
-            )
-           )
-          )
-          (local.set $scale
-           (f64.reinterpret_i64
-            (local.get $sbits|14)
-           )
-          )
-          (br $~lib/util/math/specialcase2|inlined.0
-           (f64.mul
-            (f64.const 2)
-            (f64.add
-             (f64.mul
-              (local.get $scale)
-              (local.get $tmp|13)
-             )
-             (local.get $scale)
-            )
-           )
-          )
-         )
-        )
-        (local.set $sbits|14
-         (i64.add
-          (local.get $sbits|14)
-          (i64.shl
-           (i64.const 1022)
-           (i64.const 52)
-          )
-         )
-        )
-        (local.set $scale
-         (f64.reinterpret_i64
-          (local.get $sbits|14)
-         )
-        )
-        (local.set $y
-         (f64.add
-          (f64.mul
-           (local.get $scale)
-           (local.get $tmp|13)
-          )
-          (local.get $scale)
-         )
-        )
-        (if
-         (f64.lt
-          (local.get $y)
-          (f64.const 1)
-         )
-         (then
-          (local.set $lo
-           (f64.add
-            (f64.sub
-             (local.get $scale)
-             (local.get $y)
-            )
-            (f64.mul
-             (local.get $scale)
-             (local.get $tmp|13)
-            )
-           )
-          )
-          (local.set $hi
-           (f64.add
-            (f64.const 1)
-            (local.get $y)
-           )
-          )
-          (local.set $lo
-           (f64.add
-            (f64.add
-             (f64.sub
-              (f64.const 1)
-              (local.get $hi)
-             )
-             (local.get $y)
-            )
-            (local.get $lo)
-           )
-          )
-          (local.set $y
-           (f64.sub
-            (f64.add
-             (local.get $hi)
-             (local.get $lo)
-            )
-            (f64.const 1)
-           )
-          )
-         )
-        )
-        (br $~lib/util/math/specialcase2|inlined.0
-         (f64.mul
-          (local.get $y)
-          (f64.const 2.2250738585072014e-308)
-         )
-        )
+      (local.set $abstop
+       (i32.const 0)
+      )
+     )
+    )
+   )
+  )
+  (local.set $kd
+   (f64.add
+    (local.get $x)
+    (f64.const 52776558133248)
+   )
+  )
+  (local.set $ki
+   (i64.reinterpret_f64
+    (local.get $kd)
+   )
+  )
+  (local.set $kd
+   (f64.sub
+    (local.get $kd)
+    (f64.const 52776558133248)
+   )
+  )
+  (local.set $r
+   (f64.sub
+    (local.get $x)
+    (local.get $kd)
+   )
+  )
+  (local.set $idx
+   (i32.wrap_i64
+    (i64.shl
+     (i64.and
+      (local.get $ki)
+      (i64.extend_i32_s
+       (i32.const 127)
+      )
+     )
+     (i64.const 1)
+    )
+   )
+  )
+  (local.set $top
+   (i64.shl
+    (local.get $ki)
+    (i64.sub
+     (i64.const 52)
+     (i64.extend_i32_s
+      (i32.const 7)
+     )
+    )
+   )
+  )
+  (local.set $tail
+   (f64.reinterpret_i64
+    (i64.load
+     (i32.add
+      (i32.const 4640)
+      (i32.shl
+       (local.get $idx)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $sbits
+   (i64.add
+    (i64.load offset=8
+     (i32.add
+      (i32.const 4640)
+      (i32.shl
+       (local.get $idx)
+       (i32.const 3)
+      )
+     )
+    )
+    (local.get $top)
+   )
+  )
+  (local.set $r2
+   (f64.mul
+    (local.get $r)
+    (local.get $r)
+   )
+  )
+  (local.set $tmp
+   (f64.add
+    (f64.add
+     (f64.add
+      (local.get $tail)
+      (f64.mul
+       (local.get $r)
+       (f64.const 0.6931471805599453)
+      )
+     )
+     (f64.mul
+      (local.get $r2)
+      (f64.add
+       (f64.const 0.24022650695909065)
+       (f64.mul
+        (local.get $r)
+        (f64.const 0.0555041086686087)
        )
       )
      )
     )
-    (local.set $scale|20
-     (f64.reinterpret_i64
-      (local.get $sbits)
+    (f64.mul
+     (f64.mul
+      (local.get $r2)
+      (local.get $r2)
      )
-    )
-    (br $~lib/util/math/exp2_lut|inlined.0
      (f64.add
+      (f64.const 0.009618131975721055)
       (f64.mul
-       (local.get $scale|20)
-       (local.get $tmp)
+       (local.get $r)
+       (f64.const 1.3332074570119598e-03)
       )
-      (local.get $scale|20)
      )
     )
+   )
+  )
+  (if
+   (i32.eq
+    (local.get $abstop)
+    (i32.const 0)
+   )
+   (then
+    (return
+     (call $~lib/util/math/specialcase2
+      (local.get $tmp)
+      (local.get $sbits)
+      (local.get $ki)
+     )
+    )
+   )
+  )
+  (local.set $scale
+   (f64.reinterpret_i64
+    (local.get $sbits)
+   )
+  )
+  (return
+   (f64.add
+    (f64.mul
+     (local.get $scale)
+     (local.get $tmp)
+    )
+    (local.get $scale)
+   )
+  )
+ )
+ (func $~lib/math/NativeMath.exp2 (param $x f64) (result f64)
+  (return
+   (call $~lib/util/math/exp2_lut
+    (local.get $x)
    )
   )
  )
@@ -11276,8 +10576,7 @@
    )
   )
  )
- (func $~lib/math/NativeMathf.exp2 (param $x f32) (result f32)
-  (local $x|1 f32)
+ (func $~lib/util/math/exp2f_lut (param $x f32) (result f32)
   (local $xd f64)
   (local $ix i32)
   (local $ux i32)
@@ -11287,181 +10586,181 @@
   (local $t i64)
   (local $y f64)
   (local $s f64)
-  (return
-   (block $~lib/util/math/exp2f_lut|inlined.0 (result f32)
-    (local.set $x|1
-     (local.get $x)
+  (local.set $xd
+   (f64.promote_f32
+    (local.get $x)
+   )
+  )
+  (local.set $ix
+   (i32.reinterpret_f32
+    (local.get $x)
+   )
+  )
+  (local.set $ux
+   (i32.and
+    (i32.shr_u
+     (local.get $ix)
+     (i32.const 20)
     )
-    (local.set $xd
-     (f64.promote_f32
-      (local.get $x|1)
+    (i32.const 2047)
+   )
+  )
+  (if
+   (i32.ge_u
+    (local.get $ux)
+    (i32.const 1072)
+   )
+   (then
+    (if
+     (i32.eq
+      (local.get $ix)
+      (i32.const -8388608)
      )
-    )
-    (local.set $ix
-     (i32.reinterpret_f32
-      (local.get $x|1)
-     )
-    )
-    (local.set $ux
-     (i32.and
-      (i32.shr_u
-       (local.get $ix)
-       (i32.const 20)
+     (then
+      (return
+       (f32.const 0)
       )
-      (i32.const 2047)
      )
     )
     (if
      (i32.ge_u
       (local.get $ux)
-      (i32.const 1072)
+      (i32.const 2040)
      )
      (then
-      (if
-       (i32.eq
-        (local.get $ix)
-        (i32.const -8388608)
-       )
-       (then
-        (br $~lib/util/math/exp2f_lut|inlined.0
-         (f32.const 0)
-        )
-       )
-      )
-      (if
-       (i32.ge_u
-        (local.get $ux)
-        (i32.const 2040)
-       )
-       (then
-        (br $~lib/util/math/exp2f_lut|inlined.0
-         (f32.add
-          (local.get $x|1)
-          (local.get $x|1)
-         )
-        )
-       )
-      )
-      (if
-       (f32.gt
-        (local.get $x|1)
-        (f32.const 0)
-       )
-       (then
-        (br $~lib/util/math/exp2f_lut|inlined.0
-         (f32.mul
-          (local.get $x|1)
-          (f32.const 1701411834604692317316873e14)
-         )
-        )
-       )
-      )
-      (if
-       (f32.le
-        (local.get $x|1)
-        (f32.const -150)
-       )
-       (then
-        (br $~lib/util/math/exp2f_lut|inlined.0
-         (f32.const 0)
-        )
+      (return
+       (f32.add
+        (local.get $x)
+        (local.get $x)
        )
       )
      )
     )
-    (local.set $kd
-     (f64.add
-      (local.get $xd)
-      (f64.const 211106232532992)
+    (if
+     (f32.gt
+      (local.get $x)
+      (f32.const 0)
      )
-    )
-    (local.set $ki
-     (i64.reinterpret_f64
-      (local.get $kd)
-     )
-    )
-    (local.set $r
-     (f64.sub
-      (local.get $xd)
-      (f64.sub
-       (local.get $kd)
-       (f64.const 211106232532992)
-      )
-     )
-    )
-    (local.set $t
-     (i64.load
-      (i32.add
-       (i32.const 6688)
-       (i32.shl
-        (i32.and
-         (i32.wrap_i64
-          (local.get $ki)
-         )
-         (i32.const 31)
-        )
-        (i32.const 3)
+     (then
+      (return
+       (f32.mul
+        (local.get $x)
+        (f32.const 1701411834604692317316873e14)
        )
       )
      )
     )
-    (local.set $t
-     (i64.add
-      (local.get $t)
-      (i64.shl
-       (local.get $ki)
-       (i64.sub
-        (i64.const 52)
-        (i64.extend_i32_s
-         (i32.const 5)
-        )
-       )
+    (if
+     (f32.le
+      (local.get $x)
+      (f32.const -150)
+     )
+     (then
+      (return
+       (f32.const 0)
       )
      )
     )
-    (local.set $s
-     (f64.reinterpret_i64
-      (local.get $t)
+   )
+  )
+  (local.set $kd
+   (f64.add
+    (local.get $xd)
+    (f64.const 211106232532992)
+   )
+  )
+  (local.set $ki
+   (i64.reinterpret_f64
+    (local.get $kd)
+   )
+  )
+  (local.set $r
+   (f64.sub
+    (local.get $xd)
+    (f64.sub
+     (local.get $kd)
+     (f64.const 211106232532992)
+    )
+   )
+  )
+  (local.set $t
+   (i64.load
+    (i32.add
+     (i32.const 6688)
+     (i32.shl
+      (i32.and
+       (i32.wrap_i64
+        (local.get $ki)
+       )
+       (i32.const 31)
+      )
+      (i32.const 3)
      )
     )
-    (local.set $y
+   )
+  )
+  (local.set $t
+   (i64.add
+    (local.get $t)
+    (i64.shl
+     (local.get $ki)
+     (i64.sub
+      (i64.const 52)
+      (i64.extend_i32_s
+       (i32.const 5)
+      )
+     )
+    )
+   )
+  )
+  (local.set $s
+   (f64.reinterpret_i64
+    (local.get $t)
+   )
+  )
+  (local.set $y
+   (f64.add
+    (f64.mul
+     (f64.const 0.6931471806916203)
+     (local.get $r)
+    )
+    (f64.const 1)
+   )
+  )
+  (local.set $y
+   (f64.add
+    (local.get $y)
+    (f64.mul
      (f64.add
       (f64.mul
-       (f64.const 0.6931471806916203)
+       (f64.const 0.05550361559341535)
        (local.get $r)
       )
-      (f64.const 1)
+      (f64.const 0.2402284522445722)
      )
-    )
-    (local.set $y
-     (f64.add
-      (local.get $y)
-      (f64.mul
-       (f64.add
-        (f64.mul
-         (f64.const 0.05550361559341535)
-         (local.get $r)
-        )
-        (f64.const 0.2402284522445722)
-       )
-       (f64.mul
-        (local.get $r)
-        (local.get $r)
-       )
-      )
-     )
-    )
-    (local.set $y
      (f64.mul
-      (local.get $y)
-      (local.get $s)
+      (local.get $r)
+      (local.get $r)
      )
     )
-    (br $~lib/util/math/exp2f_lut|inlined.0
-     (f32.demote_f64
-      (local.get $y)
-     )
-    )
+   )
+  )
+  (local.set $y
+   (f64.mul
+    (local.get $y)
+    (local.get $s)
+   )
+  )
+  (return
+   (f32.demote_f64
+    (local.get $y)
+   )
+  )
+ )
+ (func $~lib/math/NativeMathf.exp2 (param $x f32) (result f32)
+  (return
+   (call $~lib/util/math/exp2f_lut
+    (local.get $x)
    )
   )
  )
@@ -11477,20 +10776,19 @@
    )
   )
  )
+ (func $~lib/math/NativeMath.floor (param $x f64) (result f64)
+  (return
+   (f64.floor
+    (local.get $x)
+   )
+  )
+ )
  (func $std/math/test_floor (param $value f64) (param $expected f64) (param $error f64) (param $flags i32) (result i32)
-  (local $x f64)
   (return
    (if (result i32)
     (call $std/math/check<f64>
-     (block $~lib/math/NativeMath.floor|inlined.0 (result f64)
-      (local.set $x
-       (local.get $value)
-      )
-      (br $~lib/math/NativeMath.floor|inlined.0
-       (f64.floor
-        (local.get $x)
-       )
-      )
+     (call $~lib/math/NativeMath.floor
+      (local.get $value)
      )
      (local.get $expected)
      (local.get $error)
@@ -11512,19 +10810,18 @@
    )
   )
  )
+ (func $~lib/math/NativeMathf.floor (param $x f32) (result f32)
+  (return
+   (f32.floor
+    (local.get $x)
+   )
+  )
+ )
  (func $std/math/test_floorf (param $value f32) (param $expected f32) (param $error f32) (param $flags i32) (result i32)
-  (local $x f32)
   (return
    (call $std/math/check<f32>
-    (block $~lib/math/NativeMathf.floor|inlined.0 (result f32)
-     (local.set $x
-      (local.get $value)
-     )
-     (br $~lib/math/NativeMathf.floor|inlined.0
-      (f32.floor
-       (local.get $x)
-      )
-     )
+    (call $~lib/math/NativeMathf.floor
+     (local.get $value)
     )
     (local.get $expected)
     (local.get $error)
@@ -12873,8 +12170,7 @@
    )
   )
  )
- (func $~lib/math/NativeMath.log2 (param $x f64) (result f64)
-  (local $x|1 f64)
+ (func $~lib/util/math/log2_lut (param $x f64) (result f64)
   (local $ix i64)
   (local $r f64)
   (local $rhi f64)
@@ -12896,16 +12192,509 @@
   (local $kd f64)
   (local $chi f64)
   (local $clo f64)
-  (local $r|23 f64)
-  (local $rhi|24 f64)
-  (local $rlo|25 f64)
+  (local $r|22 f64)
+  (local $rhi|23 f64)
+  (local $rlo|24 f64)
   (local $t1 f64)
   (local $t2 f64)
   (local $t3 f64)
-  (local $hi|29 f64)
-  (local $lo|30 f64)
-  (local $r2|31 f64)
-  (local $p|32 f64)
+  (local $hi|28 f64)
+  (local $lo|29 f64)
+  (local $r2|30 f64)
+  (local $p|31 f64)
+  (local.set $ix
+   (i64.reinterpret_f64
+    (local.get $x)
+   )
+  )
+  (if
+   (i64.lt_u
+    (i64.sub
+     (local.get $ix)
+     (i64.const 4606800540372828160)
+    )
+    (i64.sub
+     (i64.const 4607381812656734208)
+     (i64.const 4606800540372828160)
+    )
+   )
+   (then
+    (local.set $r
+     (f64.sub
+      (local.get $x)
+      (f64.const 1)
+     )
+    )
+    (local.set $rhi
+     (f64.reinterpret_i64
+      (i64.and
+       (i64.reinterpret_f64
+        (local.get $r)
+       )
+       (i64.const -4294967296)
+      )
+     )
+    )
+    (local.set $rlo
+     (f64.sub
+      (local.get $r)
+      (local.get $rhi)
+     )
+    )
+    (local.set $hi
+     (f64.mul
+      (local.get $rhi)
+      (f64.const 1.4426950407214463)
+     )
+    )
+    (local.set $lo
+     (f64.add
+      (f64.mul
+       (local.get $rlo)
+       (f64.const 1.4426950407214463)
+      )
+      (f64.mul
+       (local.get $r)
+       (f64.const 1.6751713164886512e-10)
+      )
+     )
+    )
+    (local.set $r2
+     (f64.mul
+      (local.get $r)
+      (local.get $r)
+     )
+    )
+    (local.set $r4
+     (f64.mul
+      (local.get $r2)
+      (local.get $r2)
+     )
+    )
+    (local.set $p
+     (f64.mul
+      (local.get $r2)
+      (f64.add
+       (f64.const -0.7213475204444817)
+       (f64.mul
+        (local.get $r)
+        (f64.const 0.48089834696298744)
+       )
+      )
+     )
+    )
+    (local.set $y
+     (f64.add
+      (local.get $hi)
+      (local.get $p)
+     )
+    )
+    (local.set $lo
+     (f64.add
+      (local.get $lo)
+      (f64.add
+       (f64.sub
+        (local.get $hi)
+        (local.get $y)
+       )
+       (local.get $p)
+      )
+     )
+    )
+    (local.set $lo
+     (f64.add
+      (local.get $lo)
+      (f64.mul
+       (local.get $r4)
+       (f64.add
+        (f64.add
+         (f64.add
+          (f64.const -0.360673760222145)
+          (f64.mul
+           (local.get $r)
+           (f64.const 0.2885390081805197)
+          )
+         )
+         (f64.mul
+          (local.get $r2)
+          (f64.add
+           (f64.const -0.24044917405728863)
+           (f64.mul
+            (local.get $r)
+            (f64.const 0.2060992861022954)
+           )
+          )
+         )
+        )
+        (f64.mul
+         (local.get $r4)
+         (f64.add
+          (f64.add
+           (f64.const -0.18033596705327856)
+           (f64.mul
+            (local.get $r)
+            (f64.const 0.1603032746063156)
+           )
+          )
+          (f64.mul
+           (local.get $r2)
+           (f64.add
+            (f64.const -0.14483316576701266)
+            (f64.mul
+             (local.get $r)
+             (f64.const 0.13046826811283835)
+            )
+           )
+          )
+         )
+        )
+       )
+      )
+     )
+    )
+    (return
+     (f64.add
+      (local.get $y)
+      (local.get $lo)
+     )
+    )
+   )
+  )
+  (local.set $top
+   (i32.wrap_i64
+    (i64.shr_u
+     (local.get $ix)
+     (i64.const 48)
+    )
+   )
+  )
+  (if
+   (i32.ge_u
+    (i32.sub
+     (local.get $top)
+     (i32.const 16)
+    )
+    (i32.sub
+     (i32.const 32752)
+     (i32.const 16)
+    )
+   )
+   (then
+    (if
+     (i64.eq
+      (i64.shl
+       (local.get $ix)
+       (i64.const 1)
+      )
+      (i64.const 0)
+     )
+     (then
+      (return
+       (f64.div
+        (f64.const -1)
+        (f64.mul
+         (local.get $x)
+         (local.get $x)
+        )
+       )
+      )
+     )
+    )
+    (if
+     (i64.eq
+      (local.get $ix)
+      (i64.const 9218868437227405312)
+     )
+     (then
+      (return
+       (local.get $x)
+      )
+     )
+    )
+    (if
+     (if (result i32)
+      (i32.and
+       (local.get $top)
+       (i32.const 32768)
+      )
+      (then
+       (i32.const 1)
+      )
+      (else
+       (i32.eq
+        (i32.and
+         (local.get $top)
+         (i32.const 32752)
+        )
+        (i32.const 32752)
+       )
+      )
+     )
+     (then
+      (return
+       (f64.div
+        (f64.sub
+         (local.get $x)
+         (local.get $x)
+        )
+        (f64.sub
+         (local.get $x)
+         (local.get $x)
+        )
+       )
+      )
+     )
+    )
+    (local.set $ix
+     (i64.reinterpret_f64
+      (f64.mul
+       (local.get $x)
+       (f64.const 4503599627370496)
+      )
+     )
+    )
+    (local.set $ix
+     (i64.sub
+      (local.get $ix)
+      (i64.shl
+       (i64.const 52)
+       (i64.const 52)
+      )
+     )
+    )
+   )
+  )
+  (local.set $tmp
+   (i64.sub
+    (local.get $ix)
+    (i64.const 4604367669032910848)
+   )
+  )
+  (local.set $i
+   (i32.wrap_i64
+    (i64.and
+     (i64.shr_u
+      (local.get $tmp)
+      (i64.sub
+       (i64.const 52)
+       (i64.extend_i32_s
+        (i32.const 6)
+       )
+      )
+     )
+     (i64.extend_i32_s
+      (i32.const 63)
+     )
+    )
+   )
+  )
+  (local.set $k
+   (i64.shr_s
+    (local.get $tmp)
+    (i64.const 52)
+   )
+  )
+  (local.set $iz
+   (i64.sub
+    (local.get $ix)
+    (i64.and
+     (local.get $tmp)
+     (i64.const -4503599627370496)
+    )
+   )
+  )
+  (local.set $invc
+   (f64.load
+    (i32.add
+     (i32.const 6944)
+     (i32.shl
+      (local.get $i)
+      (i32.add
+       (i32.const 1)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $logc
+   (f64.load offset=8
+    (i32.add
+     (i32.const 6944)
+     (i32.shl
+      (local.get $i)
+      (i32.add
+       (i32.const 1)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $z
+   (f64.reinterpret_i64
+    (local.get $iz)
+   )
+  )
+  (local.set $kd
+   (f64.convert_i64_s
+    (local.get $k)
+   )
+  )
+  (local.set $chi
+   (f64.load
+    (i32.add
+     (i32.const 7968)
+     (i32.shl
+      (local.get $i)
+      (i32.add
+       (i32.const 1)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $clo
+   (f64.load offset=8
+    (i32.add
+     (i32.const 7968)
+     (i32.shl
+      (local.get $i)
+      (i32.add
+       (i32.const 1)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $r|22
+   (f64.mul
+    (f64.sub
+     (f64.sub
+      (local.get $z)
+      (local.get $chi)
+     )
+     (local.get $clo)
+    )
+    (local.get $invc)
+   )
+  )
+  (local.set $rhi|23
+   (f64.reinterpret_i64
+    (i64.and
+     (i64.reinterpret_f64
+      (local.get $r|22)
+     )
+     (i64.const -4294967296)
+    )
+   )
+  )
+  (local.set $rlo|24
+   (f64.sub
+    (local.get $r|22)
+    (local.get $rhi|23)
+   )
+  )
+  (local.set $t1
+   (f64.mul
+    (local.get $rhi|23)
+    (f64.const 1.4426950407214463)
+   )
+  )
+  (local.set $t2
+   (f64.add
+    (f64.mul
+     (local.get $rlo|24)
+     (f64.const 1.4426950407214463)
+    )
+    (f64.mul
+     (local.get $r|22)
+     (f64.const 1.6751713164886512e-10)
+    )
+   )
+  )
+  (local.set $t3
+   (f64.add
+    (local.get $kd)
+    (local.get $logc)
+   )
+  )
+  (local.set $hi|28
+   (f64.add
+    (local.get $t3)
+    (local.get $t1)
+   )
+  )
+  (local.set $lo|29
+   (f64.add
+    (f64.add
+     (f64.sub
+      (local.get $t3)
+      (local.get $hi|28)
+     )
+     (local.get $t1)
+    )
+    (local.get $t2)
+   )
+  )
+  (local.set $r2|30
+   (f64.mul
+    (local.get $r|22)
+    (local.get $r|22)
+   )
+  )
+  (local.set $p|31
+   (f64.add
+    (f64.add
+     (f64.add
+      (f64.const -0.7213475204444882)
+      (f64.mul
+       (local.get $r|22)
+       (f64.const 0.4808983469629985)
+      )
+     )
+     (f64.mul
+      (local.get $r2|30)
+      (f64.add
+       (f64.const -0.36067375954075914)
+       (f64.mul
+        (local.get $r|22)
+        (f64.const 0.2885390073180969)
+       )
+      )
+     )
+    )
+    (f64.mul
+     (f64.mul
+      (local.get $r2|30)
+      (local.get $r2|30)
+     )
+     (f64.add
+      (f64.const -0.2404693555628422)
+      (f64.mul
+       (local.get $r|22)
+       (f64.const 0.2061202382173603)
+      )
+     )
+    )
+   )
+  )
+  (return
+   (f64.add
+    (f64.add
+     (local.get $lo|29)
+     (f64.mul
+      (local.get $r2|30)
+      (local.get $p|31)
+     )
+    )
+    (local.get $hi|28)
+   )
+  )
+ )
+ (func $~lib/math/NativeMath.log2 (param $x f64) (result f64)
   (drop
    (i32.lt_s
     (i32.const 0)
@@ -12913,501 +12702,8 @@
    )
   )
   (return
-   (block $~lib/util/math/log2_lut|inlined.0 (result f64)
-    (local.set $x|1
-     (local.get $x)
-    )
-    (local.set $ix
-     (i64.reinterpret_f64
-      (local.get $x|1)
-     )
-    )
-    (if
-     (i64.lt_u
-      (i64.sub
-       (local.get $ix)
-       (i64.const 4606800540372828160)
-      )
-      (i64.sub
-       (i64.const 4607381812656734208)
-       (i64.const 4606800540372828160)
-      )
-     )
-     (then
-      (local.set $r
-       (f64.sub
-        (local.get $x|1)
-        (f64.const 1)
-       )
-      )
-      (local.set $rhi
-       (f64.reinterpret_i64
-        (i64.and
-         (i64.reinterpret_f64
-          (local.get $r)
-         )
-         (i64.const -4294967296)
-        )
-       )
-      )
-      (local.set $rlo
-       (f64.sub
-        (local.get $r)
-        (local.get $rhi)
-       )
-      )
-      (local.set $hi
-       (f64.mul
-        (local.get $rhi)
-        (f64.const 1.4426950407214463)
-       )
-      )
-      (local.set $lo
-       (f64.add
-        (f64.mul
-         (local.get $rlo)
-         (f64.const 1.4426950407214463)
-        )
-        (f64.mul
-         (local.get $r)
-         (f64.const 1.6751713164886512e-10)
-        )
-       )
-      )
-      (local.set $r2
-       (f64.mul
-        (local.get $r)
-        (local.get $r)
-       )
-      )
-      (local.set $r4
-       (f64.mul
-        (local.get $r2)
-        (local.get $r2)
-       )
-      )
-      (local.set $p
-       (f64.mul
-        (local.get $r2)
-        (f64.add
-         (f64.const -0.7213475204444817)
-         (f64.mul
-          (local.get $r)
-          (f64.const 0.48089834696298744)
-         )
-        )
-       )
-      )
-      (local.set $y
-       (f64.add
-        (local.get $hi)
-        (local.get $p)
-       )
-      )
-      (local.set $lo
-       (f64.add
-        (local.get $lo)
-        (f64.add
-         (f64.sub
-          (local.get $hi)
-          (local.get $y)
-         )
-         (local.get $p)
-        )
-       )
-      )
-      (local.set $lo
-       (f64.add
-        (local.get $lo)
-        (f64.mul
-         (local.get $r4)
-         (f64.add
-          (f64.add
-           (f64.add
-            (f64.const -0.360673760222145)
-            (f64.mul
-             (local.get $r)
-             (f64.const 0.2885390081805197)
-            )
-           )
-           (f64.mul
-            (local.get $r2)
-            (f64.add
-             (f64.const -0.24044917405728863)
-             (f64.mul
-              (local.get $r)
-              (f64.const 0.2060992861022954)
-             )
-            )
-           )
-          )
-          (f64.mul
-           (local.get $r4)
-           (f64.add
-            (f64.add
-             (f64.const -0.18033596705327856)
-             (f64.mul
-              (local.get $r)
-              (f64.const 0.1603032746063156)
-             )
-            )
-            (f64.mul
-             (local.get $r2)
-             (f64.add
-              (f64.const -0.14483316576701266)
-              (f64.mul
-               (local.get $r)
-               (f64.const 0.13046826811283835)
-              )
-             )
-            )
-           )
-          )
-         )
-        )
-       )
-      )
-      (br $~lib/util/math/log2_lut|inlined.0
-       (f64.add
-        (local.get $y)
-        (local.get $lo)
-       )
-      )
-     )
-    )
-    (local.set $top
-     (i32.wrap_i64
-      (i64.shr_u
-       (local.get $ix)
-       (i64.const 48)
-      )
-     )
-    )
-    (if
-     (i32.ge_u
-      (i32.sub
-       (local.get $top)
-       (i32.const 16)
-      )
-      (i32.sub
-       (i32.const 32752)
-       (i32.const 16)
-      )
-     )
-     (then
-      (if
-       (i64.eq
-        (i64.shl
-         (local.get $ix)
-         (i64.const 1)
-        )
-        (i64.const 0)
-       )
-       (then
-        (br $~lib/util/math/log2_lut|inlined.0
-         (f64.div
-          (f64.const -1)
-          (f64.mul
-           (local.get $x|1)
-           (local.get $x|1)
-          )
-         )
-        )
-       )
-      )
-      (if
-       (i64.eq
-        (local.get $ix)
-        (i64.const 9218868437227405312)
-       )
-       (then
-        (br $~lib/util/math/log2_lut|inlined.0
-         (local.get $x|1)
-        )
-       )
-      )
-      (if
-       (if (result i32)
-        (i32.and
-         (local.get $top)
-         (i32.const 32768)
-        )
-        (then
-         (i32.const 1)
-        )
-        (else
-         (i32.eq
-          (i32.and
-           (local.get $top)
-           (i32.const 32752)
-          )
-          (i32.const 32752)
-         )
-        )
-       )
-       (then
-        (br $~lib/util/math/log2_lut|inlined.0
-         (f64.div
-          (f64.sub
-           (local.get $x|1)
-           (local.get $x|1)
-          )
-          (f64.sub
-           (local.get $x|1)
-           (local.get $x|1)
-          )
-         )
-        )
-       )
-      )
-      (local.set $ix
-       (i64.reinterpret_f64
-        (f64.mul
-         (local.get $x|1)
-         (f64.const 4503599627370496)
-        )
-       )
-      )
-      (local.set $ix
-       (i64.sub
-        (local.get $ix)
-        (i64.shl
-         (i64.const 52)
-         (i64.const 52)
-        )
-       )
-      )
-     )
-    )
-    (local.set $tmp
-     (i64.sub
-      (local.get $ix)
-      (i64.const 4604367669032910848)
-     )
-    )
-    (local.set $i
-     (i32.wrap_i64
-      (i64.and
-       (i64.shr_u
-        (local.get $tmp)
-        (i64.sub
-         (i64.const 52)
-         (i64.extend_i32_s
-          (i32.const 6)
-         )
-        )
-       )
-       (i64.extend_i32_s
-        (i32.const 63)
-       )
-      )
-     )
-    )
-    (local.set $k
-     (i64.shr_s
-      (local.get $tmp)
-      (i64.const 52)
-     )
-    )
-    (local.set $iz
-     (i64.sub
-      (local.get $ix)
-      (i64.and
-       (local.get $tmp)
-       (i64.const -4503599627370496)
-      )
-     )
-    )
-    (local.set $invc
-     (f64.load
-      (i32.add
-       (i32.const 6944)
-       (i32.shl
-        (local.get $i)
-        (i32.add
-         (i32.const 1)
-         (i32.const 3)
-        )
-       )
-      )
-     )
-    )
-    (local.set $logc
-     (f64.load offset=8
-      (i32.add
-       (i32.const 6944)
-       (i32.shl
-        (local.get $i)
-        (i32.add
-         (i32.const 1)
-         (i32.const 3)
-        )
-       )
-      )
-     )
-    )
-    (local.set $z
-     (f64.reinterpret_i64
-      (local.get $iz)
-     )
-    )
-    (local.set $kd
-     (f64.convert_i64_s
-      (local.get $k)
-     )
-    )
-    (local.set $chi
-     (f64.load
-      (i32.add
-       (i32.const 7968)
-       (i32.shl
-        (local.get $i)
-        (i32.add
-         (i32.const 1)
-         (i32.const 3)
-        )
-       )
-      )
-     )
-    )
-    (local.set $clo
-     (f64.load offset=8
-      (i32.add
-       (i32.const 7968)
-       (i32.shl
-        (local.get $i)
-        (i32.add
-         (i32.const 1)
-         (i32.const 3)
-        )
-       )
-      )
-     )
-    )
-    (local.set $r|23
-     (f64.mul
-      (f64.sub
-       (f64.sub
-        (local.get $z)
-        (local.get $chi)
-       )
-       (local.get $clo)
-      )
-      (local.get $invc)
-     )
-    )
-    (local.set $rhi|24
-     (f64.reinterpret_i64
-      (i64.and
-       (i64.reinterpret_f64
-        (local.get $r|23)
-       )
-       (i64.const -4294967296)
-      )
-     )
-    )
-    (local.set $rlo|25
-     (f64.sub
-      (local.get $r|23)
-      (local.get $rhi|24)
-     )
-    )
-    (local.set $t1
-     (f64.mul
-      (local.get $rhi|24)
-      (f64.const 1.4426950407214463)
-     )
-    )
-    (local.set $t2
-     (f64.add
-      (f64.mul
-       (local.get $rlo|25)
-       (f64.const 1.4426950407214463)
-      )
-      (f64.mul
-       (local.get $r|23)
-       (f64.const 1.6751713164886512e-10)
-      )
-     )
-    )
-    (local.set $t3
-     (f64.add
-      (local.get $kd)
-      (local.get $logc)
-     )
-    )
-    (local.set $hi|29
-     (f64.add
-      (local.get $t3)
-      (local.get $t1)
-     )
-    )
-    (local.set $lo|30
-     (f64.add
-      (f64.add
-       (f64.sub
-        (local.get $t3)
-        (local.get $hi|29)
-       )
-       (local.get $t1)
-      )
-      (local.get $t2)
-     )
-    )
-    (local.set $r2|31
-     (f64.mul
-      (local.get $r|23)
-      (local.get $r|23)
-     )
-    )
-    (local.set $p|32
-     (f64.add
-      (f64.add
-       (f64.add
-        (f64.const -0.7213475204444882)
-        (f64.mul
-         (local.get $r|23)
-         (f64.const 0.4808983469629985)
-        )
-       )
-       (f64.mul
-        (local.get $r2|31)
-        (f64.add
-         (f64.const -0.36067375954075914)
-         (f64.mul
-          (local.get $r|23)
-          (f64.const 0.2885390073180969)
-         )
-        )
-       )
-      )
-      (f64.mul
-       (f64.mul
-        (local.get $r2|31)
-        (local.get $r2|31)
-       )
-       (f64.add
-        (f64.const -0.2404693555628422)
-        (f64.mul
-         (local.get $r|23)
-         (f64.const 0.2061202382173603)
-        )
-       )
-      )
-     )
-    )
-    (br $~lib/util/math/log2_lut|inlined.0
-     (f64.add
-      (f64.add
-       (local.get $lo|30)
-       (f64.mul
-        (local.get $r2|31)
-        (local.get $p|32)
-       )
-      )
-      (local.get $hi|29)
-     )
-    )
+   (call $~lib/util/math/log2_lut
+    (local.get $x)
    )
   )
  )
@@ -13438,8 +12734,7 @@
    )
   )
  )
- (func $~lib/math/NativeMathf.log2 (param $x f32) (result f32)
-  (local $x|1 f32)
+ (func $~lib/util/math/log2f_lut (param $x f32) (result f32)
   (local $ux i32)
   (local $tmp i32)
   (local $i i32)
@@ -13454,6 +12749,240 @@
   (local $y f64)
   (local $p f64)
   (local $r2 f64)
+  (local.set $ux
+   (i32.reinterpret_f32
+    (local.get $x)
+   )
+  )
+  (if
+   (i32.ge_u
+    (i32.sub
+     (local.get $ux)
+     (i32.const 8388608)
+    )
+    (i32.sub
+     (i32.const 2139095040)
+     (i32.const 8388608)
+    )
+   )
+   (then
+    (if
+     (i32.eq
+      (i32.mul
+       (local.get $ux)
+       (i32.const 2)
+      )
+      (i32.const 0)
+     )
+     (then
+      (return
+       (f32.neg
+        (f32.const inf)
+       )
+      )
+     )
+    )
+    (if
+     (i32.eq
+      (local.get $ux)
+      (i32.const 2139095040)
+     )
+     (then
+      (return
+       (local.get $x)
+      )
+     )
+    )
+    (if
+     (if (result i32)
+      (i32.shr_u
+       (local.get $ux)
+       (i32.const 31)
+      )
+      (then
+       (i32.const 1)
+      )
+      (else
+       (i32.ge_u
+        (i32.mul
+         (local.get $ux)
+         (i32.const 2)
+        )
+        (i32.const -16777216)
+       )
+      )
+     )
+     (then
+      (return
+       (f32.div
+        (f32.sub
+         (local.get $x)
+         (local.get $x)
+        )
+        (f32.sub
+         (local.get $x)
+         (local.get $x)
+        )
+       )
+      )
+     )
+    )
+    (local.set $ux
+     (i32.reinterpret_f32
+      (f32.mul
+       (local.get $x)
+       (f32.const 8388608)
+      )
+     )
+    )
+    (local.set $ux
+     (i32.sub
+      (local.get $ux)
+      (i32.shl
+       (i32.const 23)
+       (i32.const 23)
+      )
+     )
+    )
+   )
+  )
+  (local.set $tmp
+   (i32.sub
+    (local.get $ux)
+    (i32.const 1060306944)
+   )
+  )
+  (local.set $i
+   (i32.and
+    (i32.shr_u
+     (local.get $tmp)
+     (i32.sub
+      (i32.const 23)
+      (i32.const 4)
+     )
+    )
+    (i32.const 15)
+   )
+  )
+  (local.set $top
+   (i32.and
+    (local.get $tmp)
+    (i32.const -8388608)
+   )
+  )
+  (local.set $iz
+   (i32.sub
+    (local.get $ux)
+    (local.get $top)
+   )
+  )
+  (local.set $k
+   (i32.shr_s
+    (local.get $tmp)
+    (i32.const 23)
+   )
+  )
+  (local.set $invc
+   (f64.load
+    (i32.add
+     (i32.const 8992)
+     (i32.shl
+      (local.get $i)
+      (i32.add
+       (i32.const 1)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $logc
+   (f64.load offset=8
+    (i32.add
+     (i32.const 8992)
+     (i32.shl
+      (local.get $i)
+      (i32.add
+       (i32.const 1)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $z
+   (f64.promote_f32
+    (f32.reinterpret_i32
+     (local.get $iz)
+    )
+   )
+  )
+  (local.set $r
+   (f64.sub
+    (f64.mul
+     (local.get $z)
+     (local.get $invc)
+    )
+    (f64.const 1)
+   )
+  )
+  (local.set $y0
+   (f64.add
+    (local.get $logc)
+    (f64.convert_i32_s
+     (local.get $k)
+    )
+   )
+  )
+  (local.set $y
+   (f64.add
+    (f64.mul
+     (f64.const 0.4811247078767291)
+     (local.get $r)
+    )
+    (f64.const -0.7213476299867769)
+   )
+  )
+  (local.set $p
+   (f64.add
+    (f64.mul
+     (f64.const 1.4426950186867042)
+     (local.get $r)
+    )
+    (local.get $y0)
+   )
+  )
+  (local.set $r2
+   (f64.mul
+    (local.get $r)
+    (local.get $r)
+   )
+  )
+  (local.set $y
+   (f64.add
+    (local.get $y)
+    (f64.mul
+     (f64.const -0.36051725506874704)
+     (local.get $r2)
+    )
+   )
+  )
+  (local.set $y
+   (f64.add
+    (f64.mul
+     (local.get $y)
+     (local.get $r2)
+    )
+    (local.get $p)
+   )
+  )
+  (return
+   (f32.demote_f64
+    (local.get $y)
+   )
+  )
+ )
+ (func $~lib/math/NativeMathf.log2 (param $x f32) (result f32)
   (drop
    (i32.lt_s
     (i32.const 0)
@@ -13461,242 +12990,8 @@
    )
   )
   (return
-   (block $~lib/util/math/log2f_lut|inlined.0 (result f32)
-    (local.set $x|1
-     (local.get $x)
-    )
-    (local.set $ux
-     (i32.reinterpret_f32
-      (local.get $x|1)
-     )
-    )
-    (if
-     (i32.ge_u
-      (i32.sub
-       (local.get $ux)
-       (i32.const 8388608)
-      )
-      (i32.sub
-       (i32.const 2139095040)
-       (i32.const 8388608)
-      )
-     )
-     (then
-      (if
-       (i32.eq
-        (i32.mul
-         (local.get $ux)
-         (i32.const 2)
-        )
-        (i32.const 0)
-       )
-       (then
-        (br $~lib/util/math/log2f_lut|inlined.0
-         (f32.neg
-          (f32.const inf)
-         )
-        )
-       )
-      )
-      (if
-       (i32.eq
-        (local.get $ux)
-        (i32.const 2139095040)
-       )
-       (then
-        (br $~lib/util/math/log2f_lut|inlined.0
-         (local.get $x|1)
-        )
-       )
-      )
-      (if
-       (if (result i32)
-        (i32.shr_u
-         (local.get $ux)
-         (i32.const 31)
-        )
-        (then
-         (i32.const 1)
-        )
-        (else
-         (i32.ge_u
-          (i32.mul
-           (local.get $ux)
-           (i32.const 2)
-          )
-          (i32.const -16777216)
-         )
-        )
-       )
-       (then
-        (br $~lib/util/math/log2f_lut|inlined.0
-         (f32.div
-          (f32.sub
-           (local.get $x|1)
-           (local.get $x|1)
-          )
-          (f32.sub
-           (local.get $x|1)
-           (local.get $x|1)
-          )
-         )
-        )
-       )
-      )
-      (local.set $ux
-       (i32.reinterpret_f32
-        (f32.mul
-         (local.get $x|1)
-         (f32.const 8388608)
-        )
-       )
-      )
-      (local.set $ux
-       (i32.sub
-        (local.get $ux)
-        (i32.shl
-         (i32.const 23)
-         (i32.const 23)
-        )
-       )
-      )
-     )
-    )
-    (local.set $tmp
-     (i32.sub
-      (local.get $ux)
-      (i32.const 1060306944)
-     )
-    )
-    (local.set $i
-     (i32.and
-      (i32.shr_u
-       (local.get $tmp)
-       (i32.sub
-        (i32.const 23)
-        (i32.const 4)
-       )
-      )
-      (i32.const 15)
-     )
-    )
-    (local.set $top
-     (i32.and
-      (local.get $tmp)
-      (i32.const -8388608)
-     )
-    )
-    (local.set $iz
-     (i32.sub
-      (local.get $ux)
-      (local.get $top)
-     )
-    )
-    (local.set $k
-     (i32.shr_s
-      (local.get $tmp)
-      (i32.const 23)
-     )
-    )
-    (local.set $invc
-     (f64.load
-      (i32.add
-       (i32.const 8992)
-       (i32.shl
-        (local.get $i)
-        (i32.add
-         (i32.const 1)
-         (i32.const 3)
-        )
-       )
-      )
-     )
-    )
-    (local.set $logc
-     (f64.load offset=8
-      (i32.add
-       (i32.const 8992)
-       (i32.shl
-        (local.get $i)
-        (i32.add
-         (i32.const 1)
-         (i32.const 3)
-        )
-       )
-      )
-     )
-    )
-    (local.set $z
-     (f64.promote_f32
-      (f32.reinterpret_i32
-       (local.get $iz)
-      )
-     )
-    )
-    (local.set $r
-     (f64.sub
-      (f64.mul
-       (local.get $z)
-       (local.get $invc)
-      )
-      (f64.const 1)
-     )
-    )
-    (local.set $y0
-     (f64.add
-      (local.get $logc)
-      (f64.convert_i32_s
-       (local.get $k)
-      )
-     )
-    )
-    (local.set $y
-     (f64.add
-      (f64.mul
-       (f64.const 0.4811247078767291)
-       (local.get $r)
-      )
-      (f64.const -0.7213476299867769)
-     )
-    )
-    (local.set $p
-     (f64.add
-      (f64.mul
-       (f64.const 1.4426950186867042)
-       (local.get $r)
-      )
-      (local.get $y0)
-     )
-    )
-    (local.set $r2
-     (f64.mul
-      (local.get $r)
-      (local.get $r)
-     )
-    )
-    (local.set $y
-     (f64.add
-      (local.get $y)
-      (f64.mul
-       (f64.const -0.36051725506874704)
-       (local.get $r2)
-      )
-     )
-    )
-    (local.set $y
-     (f64.add
-      (f64.mul
-       (local.get $y)
-       (local.get $r2)
-      )
-      (local.get $p)
-     )
-    )
-    (br $~lib/util/math/log2f_lut|inlined.0
-     (f32.demote_f64
-      (local.get $y)
-     )
-    )
+   (call $~lib/util/math/log2f_lut
+    (local.get $x)
    )
   )
  )
@@ -13712,25 +13007,21 @@
    )
   )
  )
+ (func $~lib/math/NativeMath.max (param $value1 f64) (param $value2 f64) (result f64)
+  (return
+   (f64.max
+    (local.get $value1)
+    (local.get $value2)
+   )
+  )
+ )
  (func $std/math/test_max (param $left f64) (param $right f64) (param $expected f64) (param $error f64) (param $flags i32) (result i32)
-  (local $value1 f64)
-  (local $value2 f64)
   (return
    (if (result i32)
     (call $std/math/check<f64>
-     (block $~lib/math/NativeMath.max|inlined.0 (result f64)
-      (local.set $value1
-       (local.get $left)
-      )
-      (local.set $value2
-       (local.get $right)
-      )
-      (br $~lib/math/NativeMath.max|inlined.0
-       (f64.max
-        (local.get $value1)
-        (local.get $value2)
-       )
-      )
+     (call $~lib/math/NativeMath.max
+      (local.get $left)
+      (local.get $right)
      )
      (local.get $expected)
      (local.get $error)
@@ -13753,24 +13044,20 @@
    )
   )
  )
+ (func $~lib/math/NativeMathf.max (param $value1 f32) (param $value2 f32) (result f32)
+  (return
+   (f32.max
+    (local.get $value1)
+    (local.get $value2)
+   )
+  )
+ )
  (func $std/math/test_maxf (param $left f32) (param $right f32) (param $expected f32) (param $error f32) (param $flags i32) (result i32)
-  (local $value1 f32)
-  (local $value2 f32)
   (return
    (call $std/math/check<f32>
-    (block $~lib/math/NativeMathf.max|inlined.0 (result f32)
-     (local.set $value1
-      (local.get $left)
-     )
-     (local.set $value2
-      (local.get $right)
-     )
-     (br $~lib/math/NativeMathf.max|inlined.0
-      (f32.max
-       (local.get $value1)
-       (local.get $value2)
-      )
-     )
+    (call $~lib/math/NativeMathf.max
+     (local.get $left)
+     (local.get $right)
     )
     (local.get $expected)
     (local.get $error)
@@ -13778,25 +13065,21 @@
    )
   )
  )
+ (func $~lib/math/NativeMath.min (param $value1 f64) (param $value2 f64) (result f64)
+  (return
+   (f64.min
+    (local.get $value1)
+    (local.get $value2)
+   )
+  )
+ )
  (func $std/math/test_min (param $left f64) (param $right f64) (param $expected f64) (param $error f64) (param $flags i32) (result i32)
-  (local $value1 f64)
-  (local $value2 f64)
   (return
    (if (result i32)
     (call $std/math/check<f64>
-     (block $~lib/math/NativeMath.min|inlined.0 (result f64)
-      (local.set $value1
-       (local.get $left)
-      )
-      (local.set $value2
-       (local.get $right)
-      )
-      (br $~lib/math/NativeMath.min|inlined.0
-       (f64.min
-        (local.get $value1)
-        (local.get $value2)
-       )
-      )
+     (call $~lib/math/NativeMath.min
+      (local.get $left)
+      (local.get $right)
      )
      (local.get $expected)
      (local.get $error)
@@ -13819,24 +13102,20 @@
    )
   )
  )
+ (func $~lib/math/NativeMathf.min (param $value1 f32) (param $value2 f32) (result f32)
+  (return
+   (f32.min
+    (local.get $value1)
+    (local.get $value2)
+   )
+  )
+ )
  (func $std/math/test_minf (param $left f32) (param $right f32) (param $expected f32) (param $error f32) (param $flags i32) (result i32)
-  (local $value1 f32)
-  (local $value2 f32)
   (return
    (call $std/math/check<f32>
-    (block $~lib/math/NativeMathf.min|inlined.0 (result f32)
-     (local.set $value1
-      (local.get $left)
-     )
-     (local.set $value2
-      (local.get $right)
-     )
-     (br $~lib/math/NativeMathf.min|inlined.0
-      (f32.min
-       (local.get $value1)
-       (local.get $value2)
-      )
-     )
+    (call $~lib/math/NativeMathf.min
+     (local.get $left)
+     (local.get $right)
     )
     (local.get $expected)
     (local.get $error)
@@ -14659,23 +13938,107 @@
    )
   )
  )
- (func $~lib/math/NativeMath.pow (param $x f64) (param $y f64) (result f64)
-  (local $x|2 f64)
-  (local $y|3 f64)
-  (local $sign_bias i32)
-  (local $ix i64)
-  (local $iy i64)
-  (local $topx i64)
-  (local $topy i64)
-  (local $u i64)
-  (local $u|10 i64)
-  (local $x2 f64)
-  (local $iy|12 i64)
+ (func $~lib/util/math/zeroinfnan (param $u i64) (result i32)
+  (return
+   (i64.ge_u
+    (i64.sub
+     (i64.shl
+      (local.get $u)
+      (i64.const 1)
+     )
+     (i64.const 1)
+    )
+    (i64.sub
+     (i64.const -9007199254740992)
+     (i64.const 1)
+    )
+   )
+  )
+ )
+ (func $~lib/util/math/checkint (param $iy i64) (result i32)
   (local $e i64)
-  (local $iy|14 i64)
-  (local $e|15 i64)
-  (local $yint i32)
-  (local $ix|17 i64)
+  (local.set $e
+   (i64.and
+    (i64.shr_u
+     (local.get $iy)
+     (i64.const 52)
+    )
+    (i64.const 2047)
+   )
+  )
+  (if
+   (i64.lt_u
+    (local.get $e)
+    (i64.const 1023)
+   )
+   (then
+    (return
+     (i32.const 0)
+    )
+   )
+  )
+  (if
+   (i64.gt_u
+    (local.get $e)
+    (i64.add
+     (i64.const 1023)
+     (i64.const 52)
+    )
+   )
+   (then
+    (return
+     (i32.const 2)
+    )
+   )
+  )
+  (local.set $e
+   (i64.shl
+    (i64.const 1)
+    (i64.sub
+     (i64.add
+      (i64.const 1023)
+      (i64.const 52)
+     )
+     (local.get $e)
+    )
+   )
+  )
+  (if
+   (i64.ne
+    (i64.and
+     (local.get $iy)
+     (i64.sub
+      (local.get $e)
+      (i64.const 1)
+     )
+    )
+    (i64.const 0)
+   )
+   (then
+    (return
+     (i32.const 0)
+    )
+   )
+  )
+  (if
+   (i64.ne
+    (i64.and
+     (local.get $iy)
+     (local.get $e)
+    )
+    (i64.const 0)
+   )
+   (then
+    (return
+     (i32.const 1)
+    )
+   )
+  )
+  (return
+   (i32.const 2)
+  )
+ )
+ (func $~lib/util/math/log_inline (param $ix i64) (result f64)
   (local $tmp i64)
   (local $i i32)
   (local $k i64)
@@ -14704,45 +14067,1045 @@
   (local $lo4 f64)
   (local $p f64)
   (local $lo f64)
-  (local $y|46 f64)
-  (local $hi|47 f64)
-  (local $lo|48 f64)
+  (local $y f64)
+  (local.set $tmp
+   (i64.sub
+    (local.get $ix)
+    (i64.const 4604531861337669632)
+   )
+  )
+  (local.set $i
+   (i32.wrap_i64
+    (i64.and
+     (i64.shr_u
+      (local.get $tmp)
+      (i64.sub
+       (i64.const 52)
+       (i64.extend_i32_s
+        (i32.const 7)
+       )
+      )
+     )
+     (i64.extend_i32_s
+      (i32.const 127)
+     )
+    )
+   )
+  )
+  (local.set $k
+   (i64.shr_s
+    (local.get $tmp)
+    (i64.const 52)
+   )
+  )
+  (local.set $iz
+   (i64.sub
+    (local.get $ix)
+    (i64.and
+     (local.get $tmp)
+     (i64.shl
+      (i64.const 4095)
+      (i64.const 52)
+     )
+    )
+   )
+  )
+  (local.set $z
+   (f64.reinterpret_i64
+    (local.get $iz)
+   )
+  )
+  (local.set $kd
+   (f64.convert_i64_s
+    (local.get $k)
+   )
+  )
+  (local.set $invc
+   (f64.load
+    (i32.add
+     (i32.const 9248)
+     (i32.shl
+      (local.get $i)
+      (i32.add
+       (i32.const 2)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $logc
+   (f64.load offset=16
+    (i32.add
+     (i32.const 9248)
+     (i32.shl
+      (local.get $i)
+      (i32.add
+       (i32.const 2)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $logctail
+   (f64.load offset=24
+    (i32.add
+     (i32.const 9248)
+     (i32.shl
+      (local.get $i)
+      (i32.add
+       (i32.const 2)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $zhi
+   (f64.reinterpret_i64
+    (i64.and
+     (i64.add
+      (local.get $iz)
+      (i64.const 2147483648)
+     )
+     (i64.const -4294967296)
+    )
+   )
+  )
+  (local.set $zlo
+   (f64.sub
+    (local.get $z)
+    (local.get $zhi)
+   )
+  )
+  (local.set $rhi
+   (f64.sub
+    (f64.mul
+     (local.get $zhi)
+     (local.get $invc)
+    )
+    (f64.const 1)
+   )
+  )
+  (local.set $rlo
+   (f64.mul
+    (local.get $zlo)
+    (local.get $invc)
+   )
+  )
+  (local.set $r
+   (f64.add
+    (local.get $rhi)
+    (local.get $rlo)
+   )
+  )
+  (local.set $t1
+   (f64.add
+    (f64.mul
+     (local.get $kd)
+     (f64.const 0.6931471805598903)
+    )
+    (local.get $logc)
+   )
+  )
+  (local.set $t2
+   (f64.add
+    (local.get $t1)
+    (local.get $r)
+   )
+  )
+  (local.set $lo1
+   (f64.add
+    (f64.mul
+     (local.get $kd)
+     (f64.const 5.497923018708371e-14)
+    )
+    (local.get $logctail)
+   )
+  )
+  (local.set $lo2
+   (f64.add
+    (f64.sub
+     (local.get $t1)
+     (local.get $t2)
+    )
+    (local.get $r)
+   )
+  )
+  (local.set $ar
+   (f64.mul
+    (f64.const -0.5)
+    (local.get $r)
+   )
+  )
+  (local.set $ar2
+   (f64.mul
+    (local.get $r)
+    (local.get $ar)
+   )
+  )
+  (local.set $ar3
+   (f64.mul
+    (local.get $r)
+    (local.get $ar2)
+   )
+  )
+  (local.set $arhi
+   (f64.mul
+    (f64.const -0.5)
+    (local.get $rhi)
+   )
+  )
+  (local.set $arhi2
+   (f64.mul
+    (local.get $rhi)
+    (local.get $arhi)
+   )
+  )
+  (local.set $hi
+   (f64.add
+    (local.get $t2)
+    (local.get $arhi2)
+   )
+  )
+  (local.set $lo3
+   (f64.mul
+    (local.get $rlo)
+    (f64.add
+     (local.get $ar)
+     (local.get $arhi)
+    )
+   )
+  )
+  (local.set $lo4
+   (f64.add
+    (f64.sub
+     (local.get $t2)
+     (local.get $hi)
+    )
+    (local.get $arhi2)
+   )
+  )
+  (local.set $p
+   (f64.mul
+    (local.get $ar3)
+    (f64.add
+     (f64.add
+      (f64.const -0.6666666666666679)
+      (f64.mul
+       (local.get $r)
+       (f64.const 0.5000000000000007)
+      )
+     )
+     (f64.mul
+      (local.get $ar2)
+      (f64.add
+       (f64.add
+        (f64.const 0.7999999995323976)
+        (f64.mul
+         (local.get $r)
+         (f64.const -0.6666666663487739)
+        )
+       )
+       (f64.mul
+        (local.get $ar2)
+        (f64.add
+         (f64.const -1.142909628459501)
+         (f64.mul
+          (local.get $r)
+          (f64.const 1.0000415263675542)
+         )
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+  (local.set $lo
+   (f64.add
+    (f64.add
+     (f64.add
+      (f64.add
+       (local.get $lo1)
+       (local.get $lo2)
+      )
+      (local.get $lo3)
+     )
+     (local.get $lo4)
+    )
+    (local.get $p)
+   )
+  )
+  (local.set $y
+   (f64.add
+    (local.get $hi)
+    (local.get $lo)
+   )
+  )
+  (global.set $~lib/util/math/log_tail
+   (f64.add
+    (f64.sub
+     (local.get $hi)
+     (local.get $y)
+    )
+    (local.get $lo)
+   )
+  )
+  (return
+   (local.get $y)
+  )
+ )
+ (func $~lib/util/math/xflow (param $sign i32) (param $y f64) (result f64)
+  (return
+   (f64.mul
+    (select
+     (f64.neg
+      (local.get $y)
+     )
+     (local.get $y)
+     (local.get $sign)
+    )
+    (local.get $y)
+   )
+  )
+ )
+ (func $~lib/util/math/uflow (param $sign i32) (result f64)
+  (return
+   (call $~lib/util/math/xflow
+    (local.get $sign)
+    (f64.reinterpret_i64
+     (i64.const 1152921504606846976)
+    )
+   )
+  )
+ )
+ (func $~lib/util/math/oflow (param $sign i32) (result f64)
+  (return
+   (call $~lib/util/math/xflow
+    (local.get $sign)
+    (f64.reinterpret_i64
+     (i64.const 8070450532247928832)
+    )
+   )
+  )
+ )
+ (func $~lib/util/math/exp_inline (param $x f64) (param $xtail f64) (param $sign_bias i32) (result f64)
+  (local $abstop i32)
+  (local $ki i64)
+  (local $top i64)
+  (local $sbits i64)
+  (local $idx i32)
+  (local $kd f64)
+  (local $z f64)
+  (local $r f64)
+  (local $r2 f64)
+  (local $scale f64)
+  (local $tail f64)
+  (local $tmp f64)
+  (local $ux i64)
+  (local.set $ux
+   (i64.reinterpret_f64
+    (local.get $x)
+   )
+  )
+  (local.set $abstop
+   (i32.and
+    (i32.wrap_i64
+     (i64.shr_u
+      (local.get $ux)
+      (i64.const 52)
+     )
+    )
+    (i32.const 2047)
+   )
+  )
+  (if
+   (i32.ge_u
+    (i32.sub
+     (local.get $abstop)
+     (i32.const 969)
+    )
+    (i32.const 63)
+   )
+   (then
+    (if
+     (i32.ge_u
+      (i32.sub
+       (local.get $abstop)
+       (i32.const 969)
+      )
+      (i32.const -2147483648)
+     )
+     (then
+      (return
+       (select
+        (f64.const -1)
+        (f64.const 1)
+        (local.get $sign_bias)
+       )
+      )
+     )
+    )
+    (if
+     (i32.ge_u
+      (local.get $abstop)
+      (i32.const 1033)
+     )
+     (then
+      (return
+       (if (result f64)
+        (i64.lt_s
+         (local.get $ux)
+         (i64.const 0)
+        )
+        (then
+         (call $~lib/util/math/uflow
+          (local.get $sign_bias)
+         )
+        )
+        (else
+         (call $~lib/util/math/oflow
+          (local.get $sign_bias)
+         )
+        )
+       )
+      )
+     )
+    )
+    (local.set $abstop
+     (i32.const 0)
+    )
+   )
+  )
+  (local.set $z
+   (f64.mul
+    (f64.const 184.6649652337873)
+    (local.get $x)
+   )
+  )
+  (local.set $kd
+   (f64.add
+    (local.get $z)
+    (f64.const 6755399441055744)
+   )
+  )
+  (local.set $ki
+   (i64.reinterpret_f64
+    (local.get $kd)
+   )
+  )
+  (local.set $kd
+   (f64.sub
+    (local.get $kd)
+    (f64.const 6755399441055744)
+   )
+  )
+  (local.set $r
+   (f64.add
+    (f64.add
+     (local.get $x)
+     (f64.mul
+      (local.get $kd)
+      (f64.const -0.005415212348111709)
+     )
+    )
+    (f64.mul
+     (local.get $kd)
+     (f64.const -1.2864023111638346e-14)
+    )
+   )
+  )
+  (local.set $r
+   (f64.add
+    (local.get $r)
+    (local.get $xtail)
+   )
+  )
+  (local.set $idx
+   (i32.wrap_i64
+    (i64.shl
+     (i64.and
+      (local.get $ki)
+      (i64.extend_i32_s
+       (i32.const 127)
+      )
+     )
+     (i64.const 1)
+    )
+   )
+  )
+  (local.set $top
+   (i64.shl
+    (i64.add
+     (local.get $ki)
+     (i64.extend_i32_u
+      (local.get $sign_bias)
+     )
+    )
+    (i64.sub
+     (i64.const 52)
+     (i64.extend_i32_s
+      (i32.const 7)
+     )
+    )
+   )
+  )
+  (local.set $tail
+   (f64.reinterpret_i64
+    (i64.load
+     (i32.add
+      (i32.const 4640)
+      (i32.shl
+       (local.get $idx)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $sbits
+   (i64.add
+    (i64.load offset=8
+     (i32.add
+      (i32.const 4640)
+      (i32.shl
+       (local.get $idx)
+       (i32.const 3)
+      )
+     )
+    )
+    (local.get $top)
+   )
+  )
+  (local.set $r2
+   (f64.mul
+    (local.get $r)
+    (local.get $r)
+   )
+  )
+  (local.set $tmp
+   (f64.add
+    (f64.add
+     (f64.add
+      (local.get $tail)
+      (local.get $r)
+     )
+     (f64.mul
+      (local.get $r2)
+      (f64.add
+       (f64.const 0.49999999999996786)
+       (f64.mul
+        (local.get $r)
+        (f64.const 0.16666666666665886)
+       )
+      )
+     )
+    )
+    (f64.mul
+     (f64.mul
+      (local.get $r2)
+      (local.get $r2)
+     )
+     (f64.add
+      (f64.const 0.0416666808410674)
+      (f64.mul
+       (local.get $r)
+       (f64.const 0.008333335853059549)
+      )
+     )
+    )
+   )
+  )
+  (if
+   (i32.eq
+    (local.get $abstop)
+    (i32.const 0)
+   )
+   (then
+    (return
+     (call $~lib/util/math/specialcase
+      (local.get $tmp)
+      (local.get $sbits)
+      (local.get $ki)
+     )
+    )
+   )
+  )
+  (local.set $scale
+   (f64.reinterpret_i64
+    (local.get $sbits)
+   )
+  )
+  (return
+   (f64.add
+    (local.get $scale)
+    (f64.mul
+     (local.get $scale)
+     (local.get $tmp)
+    )
+   )
+  )
+ )
+ (func $~lib/util/math/pow_lut (param $x f64) (param $y f64) (result f64)
+  (local $sign_bias i32)
+  (local $ix i64)
+  (local $iy i64)
+  (local $topx i64)
+  (local $topy i64)
+  (local $x2 f64)
+  (local $yint i32)
+  (local $hi f64)
+  (local $lo f64)
   (local $ehi f64)
   (local $elo f64)
   (local $yhi f64)
   (local $ylo f64)
   (local $lhi f64)
   (local $llo f64)
-  (local $x|55 f64)
-  (local $xtail f64)
-  (local $sign_bias|57 i32)
-  (local $abstop i32)
-  (local $ki i64)
-  (local $top i64)
-  (local $sbits i64)
-  (local $idx i32)
-  (local $kd|63 f64)
-  (local $z|64 f64)
-  (local $r|65 f64)
-  (local $r2 f64)
-  (local $scale f64)
-  (local $tail f64)
-  (local $tmp|69 f64)
-  (local $ux i64)
-  (local $sign i32)
-  (local $sign|72 i32)
-  (local $y|73 f64)
-  (local $sign|74 i32)
-  (local $sign|75 i32)
-  (local $y|76 f64)
-  (local $tmp|77 f64)
-  (local $sbits|78 i64)
-  (local $ki|79 i64)
-  (local $scale|80 f64)
-  (local $y|81 f64)
-  (local $one f64)
-  (local $lo|83 f64)
-  (local $hi|84 f64)
+  (local.set $sign_bias
+   (i32.const 0)
+  )
+  (local.set $ix
+   (i64.reinterpret_f64
+    (local.get $x)
+   )
+  )
+  (local.set $iy
+   (i64.reinterpret_f64
+    (local.get $y)
+   )
+  )
+  (local.set $topx
+   (i64.shr_u
+    (local.get $ix)
+    (i64.const 52)
+   )
+  )
+  (local.set $topy
+   (i64.shr_u
+    (local.get $iy)
+    (i64.const 52)
+   )
+  )
+  (if
+   (if (result i32)
+    (i64.ge_u
+     (i64.sub
+      (local.get $topx)
+      (i64.const 1)
+     )
+     (i64.sub
+      (i64.const 2047)
+      (i64.const 1)
+     )
+    )
+    (then
+     (i32.const 1)
+    )
+    (else
+     (i64.ge_u
+      (i64.sub
+       (i64.and
+        (local.get $topy)
+        (i64.const 2047)
+       )
+       (i64.const 958)
+      )
+      (i64.sub
+       (i64.const 1086)
+       (i64.const 958)
+      )
+     )
+    )
+   )
+   (then
+    (if
+     (call $~lib/util/math/zeroinfnan
+      (local.get $iy)
+     )
+     (then
+      (if
+       (i64.eq
+        (i64.shl
+         (local.get $iy)
+         (i64.const 1)
+        )
+        (i64.const 0)
+       )
+       (then
+        (return
+         (f64.const 1)
+        )
+       )
+      )
+      (if
+       (i64.eq
+        (local.get $ix)
+        (i64.const 4607182418800017408)
+       )
+       (then
+        (return
+         (f64.const nan:0x8000000000000)
+        )
+       )
+      )
+      (if
+       (if (result i32)
+        (i64.gt_u
+         (i64.shl
+          (local.get $ix)
+          (i64.const 1)
+         )
+         (i64.const -9007199254740992)
+        )
+        (then
+         (i32.const 1)
+        )
+        (else
+         (i64.gt_u
+          (i64.shl
+           (local.get $iy)
+           (i64.const 1)
+          )
+          (i64.const -9007199254740992)
+         )
+        )
+       )
+       (then
+        (return
+         (f64.add
+          (local.get $x)
+          (local.get $y)
+         )
+        )
+       )
+      )
+      (if
+       (i64.eq
+        (i64.shl
+         (local.get $ix)
+         (i64.const 1)
+        )
+        (i64.const 9214364837600034816)
+       )
+       (then
+        (return
+         (f64.const nan:0x8000000000000)
+        )
+       )
+      )
+      (if
+       (i32.eq
+        (i64.lt_u
+         (i64.shl
+          (local.get $ix)
+          (i64.const 1)
+         )
+         (i64.const 9214364837600034816)
+        )
+        (i32.eqz
+         (i64.ne
+          (i64.shr_u
+           (local.get $iy)
+           (i64.const 63)
+          )
+          (i64.const 0)
+         )
+        )
+       )
+       (then
+        (return
+         (f64.const 0)
+        )
+       )
+      )
+      (return
+       (f64.mul
+        (local.get $y)
+        (local.get $y)
+       )
+      )
+     )
+    )
+    (if
+     (call $~lib/util/math/zeroinfnan
+      (local.get $ix)
+     )
+     (then
+      (local.set $x2
+       (f64.mul
+        (local.get $x)
+        (local.get $x)
+       )
+      )
+      (if
+       (if (result i32)
+        (i32.wrap_i64
+         (i64.shr_u
+          (local.get $ix)
+          (i64.const 63)
+         )
+        )
+        (then
+         (i32.eq
+          (call $~lib/util/math/checkint
+           (local.get $iy)
+          )
+          (i32.const 1)
+         )
+        )
+        (else
+         (i32.const 0)
+        )
+       )
+       (then
+        (local.set $x2
+         (f64.neg
+          (local.get $x2)
+         )
+        )
+       )
+      )
+      (return
+       (if (result f64)
+        (i64.lt_s
+         (local.get $iy)
+         (i64.const 0)
+        )
+        (then
+         (f64.div
+          (f64.const 1)
+          (local.get $x2)
+         )
+        )
+        (else
+         (local.get $x2)
+        )
+       )
+      )
+     )
+    )
+    (if
+     (i64.lt_s
+      (local.get $ix)
+      (i64.const 0)
+     )
+     (then
+      (local.set $yint
+       (call $~lib/util/math/checkint
+        (local.get $iy)
+       )
+      )
+      (if
+       (i32.eq
+        (local.get $yint)
+        (i32.const 0)
+       )
+       (then
+        (return
+         (f64.div
+          (f64.sub
+           (local.get $x)
+           (local.get $x)
+          )
+          (f64.sub
+           (local.get $x)
+           (local.get $x)
+          )
+         )
+        )
+       )
+      )
+      (if
+       (i32.eq
+        (local.get $yint)
+        (i32.const 1)
+       )
+       (then
+        (local.set $sign_bias
+         (i32.const 262144)
+        )
+       )
+      )
+      (local.set $ix
+       (i64.and
+        (local.get $ix)
+        (i64.const 9223372036854775807)
+       )
+      )
+      (local.set $topx
+       (i64.and
+        (local.get $topx)
+        (i64.const 2047)
+       )
+      )
+     )
+    )
+    (if
+     (i64.ge_u
+      (i64.sub
+       (i64.and
+        (local.get $topy)
+        (i64.const 2047)
+       )
+       (i64.const 958)
+      )
+      (i64.sub
+       (i64.const 1086)
+       (i64.const 958)
+      )
+     )
+     (then
+      (if
+       (i64.eq
+        (local.get $ix)
+        (i64.const 4607182418800017408)
+       )
+       (then
+        (return
+         (f64.const 1)
+        )
+       )
+      )
+      (if
+       (i64.lt_u
+        (i64.and
+         (local.get $topy)
+         (i64.const 2047)
+        )
+        (i64.const 958)
+       )
+       (then
+        (return
+         (f64.const 1)
+        )
+       )
+      )
+      (return
+       (if (result f64)
+        (i32.eq
+         (i64.gt_u
+          (local.get $ix)
+          (i64.const 4607182418800017408)
+         )
+         (i64.lt_u
+          (local.get $topy)
+          (i64.const 2048)
+         )
+        )
+        (then
+         (f64.const inf)
+        )
+        (else
+         (f64.const 0)
+        )
+       )
+      )
+     )
+    )
+    (if
+     (i64.eq
+      (local.get $topx)
+      (i64.const 0)
+     )
+     (then
+      (local.set $ix
+       (i64.reinterpret_f64
+        (f64.mul
+         (local.get $x)
+         (f64.const 4503599627370496)
+        )
+       )
+      )
+      (local.set $ix
+       (i64.and
+        (local.get $ix)
+        (i64.const 9223372036854775807)
+       )
+      )
+      (local.set $ix
+       (i64.sub
+        (local.get $ix)
+        (i64.shl
+         (i64.const 52)
+         (i64.const 52)
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+  (local.set $hi
+   (call $~lib/util/math/log_inline
+    (local.get $ix)
+   )
+  )
+  (local.set $lo
+   (global.get $~lib/util/math/log_tail)
+  )
+  (local.set $yhi
+   (f64.reinterpret_i64
+    (i64.and
+     (local.get $iy)
+     (i64.const -134217728)
+    )
+   )
+  )
+  (local.set $ylo
+   (f64.sub
+    (local.get $y)
+    (local.get $yhi)
+   )
+  )
+  (local.set $lhi
+   (f64.reinterpret_i64
+    (i64.and
+     (i64.reinterpret_f64
+      (local.get $hi)
+     )
+     (i64.const -134217728)
+    )
+   )
+  )
+  (local.set $llo
+   (f64.add
+    (f64.sub
+     (local.get $hi)
+     (local.get $lhi)
+    )
+    (local.get $lo)
+   )
+  )
+  (local.set $ehi
+   (f64.mul
+    (local.get $yhi)
+    (local.get $lhi)
+   )
+  )
+  (local.set $elo
+   (f64.add
+    (f64.mul
+     (local.get $ylo)
+     (local.get $lhi)
+    )
+    (f64.mul
+     (local.get $y)
+     (local.get $llo)
+    )
+   )
+  )
+  (return
+   (call $~lib/util/math/exp_inline
+    (local.get $ehi)
+    (local.get $elo)
+    (local.get $sign_bias)
+   )
+  )
+ )
+ (func $~lib/math/NativeMath.pow (param $x f64) (param $y f64) (result f64)
   (if
    (f64.le
     (f64.abs
@@ -14834,1386 +15197,9 @@
    )
   )
   (return
-   (block $~lib/util/math/pow_lut|inlined.0 (result f64)
-    (local.set $x|2
-     (local.get $x)
-    )
-    (local.set $y|3
-     (local.get $y)
-    )
-    (local.set $sign_bias
-     (i32.const 0)
-    )
-    (local.set $ix
-     (i64.reinterpret_f64
-      (local.get $x|2)
-     )
-    )
-    (local.set $iy
-     (i64.reinterpret_f64
-      (local.get $y|3)
-     )
-    )
-    (local.set $topx
-     (i64.shr_u
-      (local.get $ix)
-      (i64.const 52)
-     )
-    )
-    (local.set $topy
-     (i64.shr_u
-      (local.get $iy)
-      (i64.const 52)
-     )
-    )
-    (if
-     (if (result i32)
-      (i64.ge_u
-       (i64.sub
-        (local.get $topx)
-        (i64.const 1)
-       )
-       (i64.sub
-        (i64.const 2047)
-        (i64.const 1)
-       )
-      )
-      (then
-       (i32.const 1)
-      )
-      (else
-       (i64.ge_u
-        (i64.sub
-         (i64.and
-          (local.get $topy)
-          (i64.const 2047)
-         )
-         (i64.const 958)
-        )
-        (i64.sub
-         (i64.const 1086)
-         (i64.const 958)
-        )
-       )
-      )
-     )
-     (then
-      (if
-       (block $~lib/util/math/zeroinfnan|inlined.0 (result i32)
-        (local.set $u
-         (local.get $iy)
-        )
-        (br $~lib/util/math/zeroinfnan|inlined.0
-         (i64.ge_u
-          (i64.sub
-           (i64.shl
-            (local.get $u)
-            (i64.const 1)
-           )
-           (i64.const 1)
-          )
-          (i64.sub
-           (i64.const -9007199254740992)
-           (i64.const 1)
-          )
-         )
-        )
-       )
-       (then
-        (if
-         (i64.eq
-          (i64.shl
-           (local.get $iy)
-           (i64.const 1)
-          )
-          (i64.const 0)
-         )
-         (then
-          (br $~lib/util/math/pow_lut|inlined.0
-           (f64.const 1)
-          )
-         )
-        )
-        (if
-         (i64.eq
-          (local.get $ix)
-          (i64.const 4607182418800017408)
-         )
-         (then
-          (br $~lib/util/math/pow_lut|inlined.0
-           (f64.const nan:0x8000000000000)
-          )
-         )
-        )
-        (if
-         (if (result i32)
-          (i64.gt_u
-           (i64.shl
-            (local.get $ix)
-            (i64.const 1)
-           )
-           (i64.const -9007199254740992)
-          )
-          (then
-           (i32.const 1)
-          )
-          (else
-           (i64.gt_u
-            (i64.shl
-             (local.get $iy)
-             (i64.const 1)
-            )
-            (i64.const -9007199254740992)
-           )
-          )
-         )
-         (then
-          (br $~lib/util/math/pow_lut|inlined.0
-           (f64.add
-            (local.get $x|2)
-            (local.get $y|3)
-           )
-          )
-         )
-        )
-        (if
-         (i64.eq
-          (i64.shl
-           (local.get $ix)
-           (i64.const 1)
-          )
-          (i64.const 9214364837600034816)
-         )
-         (then
-          (br $~lib/util/math/pow_lut|inlined.0
-           (f64.const nan:0x8000000000000)
-          )
-         )
-        )
-        (if
-         (i32.eq
-          (i64.lt_u
-           (i64.shl
-            (local.get $ix)
-            (i64.const 1)
-           )
-           (i64.const 9214364837600034816)
-          )
-          (i32.eqz
-           (i64.ne
-            (i64.shr_u
-             (local.get $iy)
-             (i64.const 63)
-            )
-            (i64.const 0)
-           )
-          )
-         )
-         (then
-          (br $~lib/util/math/pow_lut|inlined.0
-           (f64.const 0)
-          )
-         )
-        )
-        (br $~lib/util/math/pow_lut|inlined.0
-         (f64.mul
-          (local.get $y|3)
-          (local.get $y|3)
-         )
-        )
-       )
-      )
-      (if
-       (block $~lib/util/math/zeroinfnan|inlined.1 (result i32)
-        (local.set $u|10
-         (local.get $ix)
-        )
-        (br $~lib/util/math/zeroinfnan|inlined.1
-         (i64.ge_u
-          (i64.sub
-           (i64.shl
-            (local.get $u|10)
-            (i64.const 1)
-           )
-           (i64.const 1)
-          )
-          (i64.sub
-           (i64.const -9007199254740992)
-           (i64.const 1)
-          )
-         )
-        )
-       )
-       (then
-        (local.set $x2
-         (f64.mul
-          (local.get $x|2)
-          (local.get $x|2)
-         )
-        )
-        (if
-         (if (result i32)
-          (i32.wrap_i64
-           (i64.shr_u
-            (local.get $ix)
-            (i64.const 63)
-           )
-          )
-          (then
-           (i32.eq
-            (block $~lib/util/math/checkint|inlined.0 (result i32)
-             (local.set $iy|12
-              (local.get $iy)
-             )
-             (local.set $e
-              (i64.and
-               (i64.shr_u
-                (local.get $iy|12)
-                (i64.const 52)
-               )
-               (i64.const 2047)
-              )
-             )
-             (if
-              (i64.lt_u
-               (local.get $e)
-               (i64.const 1023)
-              )
-              (then
-               (br $~lib/util/math/checkint|inlined.0
-                (i32.const 0)
-               )
-              )
-             )
-             (if
-              (i64.gt_u
-               (local.get $e)
-               (i64.add
-                (i64.const 1023)
-                (i64.const 52)
-               )
-              )
-              (then
-               (br $~lib/util/math/checkint|inlined.0
-                (i32.const 2)
-               )
-              )
-             )
-             (local.set $e
-              (i64.shl
-               (i64.const 1)
-               (i64.sub
-                (i64.add
-                 (i64.const 1023)
-                 (i64.const 52)
-                )
-                (local.get $e)
-               )
-              )
-             )
-             (if
-              (i64.ne
-               (i64.and
-                (local.get $iy|12)
-                (i64.sub
-                 (local.get $e)
-                 (i64.const 1)
-                )
-               )
-               (i64.const 0)
-              )
-              (then
-               (br $~lib/util/math/checkint|inlined.0
-                (i32.const 0)
-               )
-              )
-             )
-             (if
-              (i64.ne
-               (i64.and
-                (local.get $iy|12)
-                (local.get $e)
-               )
-               (i64.const 0)
-              )
-              (then
-               (br $~lib/util/math/checkint|inlined.0
-                (i32.const 1)
-               )
-              )
-             )
-             (br $~lib/util/math/checkint|inlined.0
-              (i32.const 2)
-             )
-            )
-            (i32.const 1)
-           )
-          )
-          (else
-           (i32.const 0)
-          )
-         )
-         (then
-          (local.set $x2
-           (f64.neg
-            (local.get $x2)
-           )
-          )
-         )
-        )
-        (br $~lib/util/math/pow_lut|inlined.0
-         (if (result f64)
-          (i64.lt_s
-           (local.get $iy)
-           (i64.const 0)
-          )
-          (then
-           (f64.div
-            (f64.const 1)
-            (local.get $x2)
-           )
-          )
-          (else
-           (local.get $x2)
-          )
-         )
-        )
-       )
-      )
-      (if
-       (i64.lt_s
-        (local.get $ix)
-        (i64.const 0)
-       )
-       (then
-        (local.set $yint
-         (block $~lib/util/math/checkint|inlined.1 (result i32)
-          (local.set $iy|14
-           (local.get $iy)
-          )
-          (local.set $e|15
-           (i64.and
-            (i64.shr_u
-             (local.get $iy|14)
-             (i64.const 52)
-            )
-            (i64.const 2047)
-           )
-          )
-          (if
-           (i64.lt_u
-            (local.get $e|15)
-            (i64.const 1023)
-           )
-           (then
-            (br $~lib/util/math/checkint|inlined.1
-             (i32.const 0)
-            )
-           )
-          )
-          (if
-           (i64.gt_u
-            (local.get $e|15)
-            (i64.add
-             (i64.const 1023)
-             (i64.const 52)
-            )
-           )
-           (then
-            (br $~lib/util/math/checkint|inlined.1
-             (i32.const 2)
-            )
-           )
-          )
-          (local.set $e|15
-           (i64.shl
-            (i64.const 1)
-            (i64.sub
-             (i64.add
-              (i64.const 1023)
-              (i64.const 52)
-             )
-             (local.get $e|15)
-            )
-           )
-          )
-          (if
-           (i64.ne
-            (i64.and
-             (local.get $iy|14)
-             (i64.sub
-              (local.get $e|15)
-              (i64.const 1)
-             )
-            )
-            (i64.const 0)
-           )
-           (then
-            (br $~lib/util/math/checkint|inlined.1
-             (i32.const 0)
-            )
-           )
-          )
-          (if
-           (i64.ne
-            (i64.and
-             (local.get $iy|14)
-             (local.get $e|15)
-            )
-            (i64.const 0)
-           )
-           (then
-            (br $~lib/util/math/checkint|inlined.1
-             (i32.const 1)
-            )
-           )
-          )
-          (br $~lib/util/math/checkint|inlined.1
-           (i32.const 2)
-          )
-         )
-        )
-        (if
-         (i32.eq
-          (local.get $yint)
-          (i32.const 0)
-         )
-         (then
-          (br $~lib/util/math/pow_lut|inlined.0
-           (f64.div
-            (f64.sub
-             (local.get $x|2)
-             (local.get $x|2)
-            )
-            (f64.sub
-             (local.get $x|2)
-             (local.get $x|2)
-            )
-           )
-          )
-         )
-        )
-        (if
-         (i32.eq
-          (local.get $yint)
-          (i32.const 1)
-         )
-         (then
-          (local.set $sign_bias
-           (i32.const 262144)
-          )
-         )
-        )
-        (local.set $ix
-         (i64.and
-          (local.get $ix)
-          (i64.const 9223372036854775807)
-         )
-        )
-        (local.set $topx
-         (i64.and
-          (local.get $topx)
-          (i64.const 2047)
-         )
-        )
-       )
-      )
-      (if
-       (i64.ge_u
-        (i64.sub
-         (i64.and
-          (local.get $topy)
-          (i64.const 2047)
-         )
-         (i64.const 958)
-        )
-        (i64.sub
-         (i64.const 1086)
-         (i64.const 958)
-        )
-       )
-       (then
-        (if
-         (i64.eq
-          (local.get $ix)
-          (i64.const 4607182418800017408)
-         )
-         (then
-          (br $~lib/util/math/pow_lut|inlined.0
-           (f64.const 1)
-          )
-         )
-        )
-        (if
-         (i64.lt_u
-          (i64.and
-           (local.get $topy)
-           (i64.const 2047)
-          )
-          (i64.const 958)
-         )
-         (then
-          (br $~lib/util/math/pow_lut|inlined.0
-           (f64.const 1)
-          )
-         )
-        )
-        (br $~lib/util/math/pow_lut|inlined.0
-         (if (result f64)
-          (i32.eq
-           (i64.gt_u
-            (local.get $ix)
-            (i64.const 4607182418800017408)
-           )
-           (i64.lt_u
-            (local.get $topy)
-            (i64.const 2048)
-           )
-          )
-          (then
-           (f64.const inf)
-          )
-          (else
-           (f64.const 0)
-          )
-         )
-        )
-       )
-      )
-      (if
-       (i64.eq
-        (local.get $topx)
-        (i64.const 0)
-       )
-       (then
-        (local.set $ix
-         (i64.reinterpret_f64
-          (f64.mul
-           (local.get $x|2)
-           (f64.const 4503599627370496)
-          )
-         )
-        )
-        (local.set $ix
-         (i64.and
-          (local.get $ix)
-          (i64.const 9223372036854775807)
-         )
-        )
-        (local.set $ix
-         (i64.sub
-          (local.get $ix)
-          (i64.shl
-           (i64.const 52)
-           (i64.const 52)
-          )
-         )
-        )
-       )
-      )
-     )
-    )
-    (local.set $hi|47
-     (block $~lib/util/math/log_inline|inlined.0 (result f64)
-      (local.set $ix|17
-       (local.get $ix)
-      )
-      (local.set $tmp
-       (i64.sub
-        (local.get $ix|17)
-        (i64.const 4604531861337669632)
-       )
-      )
-      (local.set $i
-       (i32.wrap_i64
-        (i64.and
-         (i64.shr_u
-          (local.get $tmp)
-          (i64.sub
-           (i64.const 52)
-           (i64.extend_i32_s
-            (i32.const 7)
-           )
-          )
-         )
-         (i64.extend_i32_s
-          (i32.const 127)
-         )
-        )
-       )
-      )
-      (local.set $k
-       (i64.shr_s
-        (local.get $tmp)
-        (i64.const 52)
-       )
-      )
-      (local.set $iz
-       (i64.sub
-        (local.get $ix|17)
-        (i64.and
-         (local.get $tmp)
-         (i64.shl
-          (i64.const 4095)
-          (i64.const 52)
-         )
-        )
-       )
-      )
-      (local.set $z
-       (f64.reinterpret_i64
-        (local.get $iz)
-       )
-      )
-      (local.set $kd
-       (f64.convert_i64_s
-        (local.get $k)
-       )
-      )
-      (local.set $invc
-       (f64.load
-        (i32.add
-         (i32.const 9248)
-         (i32.shl
-          (local.get $i)
-          (i32.add
-           (i32.const 2)
-           (i32.const 3)
-          )
-         )
-        )
-       )
-      )
-      (local.set $logc
-       (f64.load offset=16
-        (i32.add
-         (i32.const 9248)
-         (i32.shl
-          (local.get $i)
-          (i32.add
-           (i32.const 2)
-           (i32.const 3)
-          )
-         )
-        )
-       )
-      )
-      (local.set $logctail
-       (f64.load offset=24
-        (i32.add
-         (i32.const 9248)
-         (i32.shl
-          (local.get $i)
-          (i32.add
-           (i32.const 2)
-           (i32.const 3)
-          )
-         )
-        )
-       )
-      )
-      (local.set $zhi
-       (f64.reinterpret_i64
-        (i64.and
-         (i64.add
-          (local.get $iz)
-          (i64.const 2147483648)
-         )
-         (i64.const -4294967296)
-        )
-       )
-      )
-      (local.set $zlo
-       (f64.sub
-        (local.get $z)
-        (local.get $zhi)
-       )
-      )
-      (local.set $rhi
-       (f64.sub
-        (f64.mul
-         (local.get $zhi)
-         (local.get $invc)
-        )
-        (f64.const 1)
-       )
-      )
-      (local.set $rlo
-       (f64.mul
-        (local.get $zlo)
-        (local.get $invc)
-       )
-      )
-      (local.set $r
-       (f64.add
-        (local.get $rhi)
-        (local.get $rlo)
-       )
-      )
-      (local.set $t1
-       (f64.add
-        (f64.mul
-         (local.get $kd)
-         (f64.const 0.6931471805598903)
-        )
-        (local.get $logc)
-       )
-      )
-      (local.set $t2
-       (f64.add
-        (local.get $t1)
-        (local.get $r)
-       )
-      )
-      (local.set $lo1
-       (f64.add
-        (f64.mul
-         (local.get $kd)
-         (f64.const 5.497923018708371e-14)
-        )
-        (local.get $logctail)
-       )
-      )
-      (local.set $lo2
-       (f64.add
-        (f64.sub
-         (local.get $t1)
-         (local.get $t2)
-        )
-        (local.get $r)
-       )
-      )
-      (local.set $ar
-       (f64.mul
-        (f64.const -0.5)
-        (local.get $r)
-       )
-      )
-      (local.set $ar2
-       (f64.mul
-        (local.get $r)
-        (local.get $ar)
-       )
-      )
-      (local.set $ar3
-       (f64.mul
-        (local.get $r)
-        (local.get $ar2)
-       )
-      )
-      (local.set $arhi
-       (f64.mul
-        (f64.const -0.5)
-        (local.get $rhi)
-       )
-      )
-      (local.set $arhi2
-       (f64.mul
-        (local.get $rhi)
-        (local.get $arhi)
-       )
-      )
-      (local.set $hi
-       (f64.add
-        (local.get $t2)
-        (local.get $arhi2)
-       )
-      )
-      (local.set $lo3
-       (f64.mul
-        (local.get $rlo)
-        (f64.add
-         (local.get $ar)
-         (local.get $arhi)
-        )
-       )
-      )
-      (local.set $lo4
-       (f64.add
-        (f64.sub
-         (local.get $t2)
-         (local.get $hi)
-        )
-        (local.get $arhi2)
-       )
-      )
-      (local.set $p
-       (f64.mul
-        (local.get $ar3)
-        (f64.add
-         (f64.add
-          (f64.const -0.6666666666666679)
-          (f64.mul
-           (local.get $r)
-           (f64.const 0.5000000000000007)
-          )
-         )
-         (f64.mul
-          (local.get $ar2)
-          (f64.add
-           (f64.add
-            (f64.const 0.7999999995323976)
-            (f64.mul
-             (local.get $r)
-             (f64.const -0.6666666663487739)
-            )
-           )
-           (f64.mul
-            (local.get $ar2)
-            (f64.add
-             (f64.const -1.142909628459501)
-             (f64.mul
-              (local.get $r)
-              (f64.const 1.0000415263675542)
-             )
-            )
-           )
-          )
-         )
-        )
-       )
-      )
-      (local.set $lo
-       (f64.add
-        (f64.add
-         (f64.add
-          (f64.add
-           (local.get $lo1)
-           (local.get $lo2)
-          )
-          (local.get $lo3)
-         )
-         (local.get $lo4)
-        )
-        (local.get $p)
-       )
-      )
-      (local.set $y|46
-       (f64.add
-        (local.get $hi)
-        (local.get $lo)
-       )
-      )
-      (global.set $~lib/util/math/log_tail
-       (f64.add
-        (f64.sub
-         (local.get $hi)
-         (local.get $y|46)
-        )
-        (local.get $lo)
-       )
-      )
-      (br $~lib/util/math/log_inline|inlined.0
-       (local.get $y|46)
-      )
-     )
-    )
-    (local.set $lo|48
-     (global.get $~lib/util/math/log_tail)
-    )
-    (local.set $yhi
-     (f64.reinterpret_i64
-      (i64.and
-       (local.get $iy)
-       (i64.const -134217728)
-      )
-     )
-    )
-    (local.set $ylo
-     (f64.sub
-      (local.get $y|3)
-      (local.get $yhi)
-     )
-    )
-    (local.set $lhi
-     (f64.reinterpret_i64
-      (i64.and
-       (i64.reinterpret_f64
-        (local.get $hi|47)
-       )
-       (i64.const -134217728)
-      )
-     )
-    )
-    (local.set $llo
-     (f64.add
-      (f64.sub
-       (local.get $hi|47)
-       (local.get $lhi)
-      )
-      (local.get $lo|48)
-     )
-    )
-    (local.set $ehi
-     (f64.mul
-      (local.get $yhi)
-      (local.get $lhi)
-     )
-    )
-    (local.set $elo
-     (f64.add
-      (f64.mul
-       (local.get $ylo)
-       (local.get $lhi)
-      )
-      (f64.mul
-       (local.get $y|3)
-       (local.get $llo)
-      )
-     )
-    )
-    (br $~lib/util/math/pow_lut|inlined.0
-     (block $~lib/util/math/exp_inline|inlined.0 (result f64)
-      (local.set $x|55
-       (local.get $ehi)
-      )
-      (local.set $xtail
-       (local.get $elo)
-      )
-      (local.set $sign_bias|57
-       (local.get $sign_bias)
-      )
-      (local.set $ux
-       (i64.reinterpret_f64
-        (local.get $x|55)
-       )
-      )
-      (local.set $abstop
-       (i32.and
-        (i32.wrap_i64
-         (i64.shr_u
-          (local.get $ux)
-          (i64.const 52)
-         )
-        )
-        (i32.const 2047)
-       )
-      )
-      (if
-       (i32.ge_u
-        (i32.sub
-         (local.get $abstop)
-         (i32.const 969)
-        )
-        (i32.const 63)
-       )
-       (then
-        (if
-         (i32.ge_u
-          (i32.sub
-           (local.get $abstop)
-           (i32.const 969)
-          )
-          (i32.const -2147483648)
-         )
-         (then
-          (br $~lib/util/math/exp_inline|inlined.0
-           (select
-            (f64.const -1)
-            (f64.const 1)
-            (local.get $sign_bias|57)
-           )
-          )
-         )
-        )
-        (if
-         (i32.ge_u
-          (local.get $abstop)
-          (i32.const 1033)
-         )
-         (then
-          (br $~lib/util/math/exp_inline|inlined.0
-           (if (result f64)
-            (i64.lt_s
-             (local.get $ux)
-             (i64.const 0)
-            )
-            (then
-             (block $~lib/util/math/uflow|inlined.0 (result f64)
-              (local.set $sign
-               (local.get $sign_bias|57)
-              )
-              (br $~lib/util/math/uflow|inlined.0
-               (block $~lib/util/math/xflow|inlined.0 (result f64)
-                (local.set $sign|72
-                 (local.get $sign)
-                )
-                (local.set $y|73
-                 (f64.reinterpret_i64
-                  (i64.const 1152921504606846976)
-                 )
-                )
-                (br $~lib/util/math/xflow|inlined.0
-                 (f64.mul
-                  (select
-                   (f64.neg
-                    (local.get $y|73)
-                   )
-                   (local.get $y|73)
-                   (local.get $sign|72)
-                  )
-                  (local.get $y|73)
-                 )
-                )
-               )
-              )
-             )
-            )
-            (else
-             (block $~lib/util/math/oflow|inlined.0 (result f64)
-              (local.set $sign|74
-               (local.get $sign_bias|57)
-              )
-              (br $~lib/util/math/oflow|inlined.0
-               (block $~lib/util/math/xflow|inlined.1 (result f64)
-                (local.set $sign|75
-                 (local.get $sign|74)
-                )
-                (local.set $y|76
-                 (f64.reinterpret_i64
-                  (i64.const 8070450532247928832)
-                 )
-                )
-                (br $~lib/util/math/xflow|inlined.1
-                 (f64.mul
-                  (select
-                   (f64.neg
-                    (local.get $y|76)
-                   )
-                   (local.get $y|76)
-                   (local.get $sign|75)
-                  )
-                  (local.get $y|76)
-                 )
-                )
-               )
-              )
-             )
-            )
-           )
-          )
-         )
-        )
-        (local.set $abstop
-         (i32.const 0)
-        )
-       )
-      )
-      (local.set $z|64
-       (f64.mul
-        (f64.const 184.6649652337873)
-        (local.get $x|55)
-       )
-      )
-      (local.set $kd|63
-       (f64.add
-        (local.get $z|64)
-        (f64.const 6755399441055744)
-       )
-      )
-      (local.set $ki
-       (i64.reinterpret_f64
-        (local.get $kd|63)
-       )
-      )
-      (local.set $kd|63
-       (f64.sub
-        (local.get $kd|63)
-        (f64.const 6755399441055744)
-       )
-      )
-      (local.set $r|65
-       (f64.add
-        (f64.add
-         (local.get $x|55)
-         (f64.mul
-          (local.get $kd|63)
-          (f64.const -0.005415212348111709)
-         )
-        )
-        (f64.mul
-         (local.get $kd|63)
-         (f64.const -1.2864023111638346e-14)
-        )
-       )
-      )
-      (local.set $r|65
-       (f64.add
-        (local.get $r|65)
-        (local.get $xtail)
-       )
-      )
-      (local.set $idx
-       (i32.wrap_i64
-        (i64.shl
-         (i64.and
-          (local.get $ki)
-          (i64.extend_i32_s
-           (i32.const 127)
-          )
-         )
-         (i64.const 1)
-        )
-       )
-      )
-      (local.set $top
-       (i64.shl
-        (i64.add
-         (local.get $ki)
-         (i64.extend_i32_u
-          (local.get $sign_bias|57)
-         )
-        )
-        (i64.sub
-         (i64.const 52)
-         (i64.extend_i32_s
-          (i32.const 7)
-         )
-        )
-       )
-      )
-      (local.set $tail
-       (f64.reinterpret_i64
-        (i64.load
-         (i32.add
-          (i32.const 4640)
-          (i32.shl
-           (local.get $idx)
-           (i32.const 3)
-          )
-         )
-        )
-       )
-      )
-      (local.set $sbits
-       (i64.add
-        (i64.load offset=8
-         (i32.add
-          (i32.const 4640)
-          (i32.shl
-           (local.get $idx)
-           (i32.const 3)
-          )
-         )
-        )
-        (local.get $top)
-       )
-      )
-      (local.set $r2
-       (f64.mul
-        (local.get $r|65)
-        (local.get $r|65)
-       )
-      )
-      (local.set $tmp|69
-       (f64.add
-        (f64.add
-         (f64.add
-          (local.get $tail)
-          (local.get $r|65)
-         )
-         (f64.mul
-          (local.get $r2)
-          (f64.add
-           (f64.const 0.49999999999996786)
-           (f64.mul
-            (local.get $r|65)
-            (f64.const 0.16666666666665886)
-           )
-          )
-         )
-        )
-        (f64.mul
-         (f64.mul
-          (local.get $r2)
-          (local.get $r2)
-         )
-         (f64.add
-          (f64.const 0.0416666808410674)
-          (f64.mul
-           (local.get $r|65)
-           (f64.const 0.008333335853059549)
-          )
-         )
-        )
-       )
-      )
-      (if
-       (i32.eq
-        (local.get $abstop)
-        (i32.const 0)
-       )
-       (then
-        (br $~lib/util/math/exp_inline|inlined.0
-         (block $~lib/util/math/specialcase|inlined.1 (result f64)
-          (local.set $tmp|77
-           (local.get $tmp|69)
-          )
-          (local.set $sbits|78
-           (local.get $sbits)
-          )
-          (local.set $ki|79
-           (local.get $ki)
-          )
-          (if
-           (i32.eqz
-            (i64.ne
-             (i64.and
-              (local.get $ki|79)
-              (i64.const 2147483648)
-             )
-             (i64.const 0)
-            )
-           )
-           (then
-            (local.set $sbits|78
-             (i64.sub
-              (local.get $sbits|78)
-              (i64.shl
-               (i64.const 1009)
-               (i64.const 52)
-              )
-             )
-            )
-            (local.set $scale|80
-             (f64.reinterpret_i64
-              (local.get $sbits|78)
-             )
-            )
-            (br $~lib/util/math/specialcase|inlined.1
-             (f64.mul
-              (f64.const 5486124068793688683255936e279)
-              (f64.add
-               (local.get $scale|80)
-               (f64.mul
-                (local.get $scale|80)
-                (local.get $tmp|77)
-               )
-              )
-             )
-            )
-           )
-          )
-          (local.set $sbits|78
-           (i64.add
-            (local.get $sbits|78)
-            (i64.shl
-             (i64.const 1022)
-             (i64.const 52)
-            )
-           )
-          )
-          (local.set $scale|80
-           (f64.reinterpret_i64
-            (local.get $sbits|78)
-           )
-          )
-          (local.set $y|81
-           (f64.add
-            (local.get $scale|80)
-            (f64.mul
-             (local.get $scale|80)
-             (local.get $tmp|77)
-            )
-           )
-          )
-          (if
-           (f64.lt
-            (f64.abs
-             (local.get $y|81)
-            )
-            (f64.const 1)
-           )
-           (then
-            (local.set $one
-             (f64.copysign
-              (f64.const 1)
-              (local.get $y|81)
-             )
-            )
-            (local.set $lo|83
-             (f64.add
-              (f64.sub
-               (local.get $scale|80)
-               (local.get $y|81)
-              )
-              (f64.mul
-               (local.get $scale|80)
-               (local.get $tmp|77)
-              )
-             )
-            )
-            (local.set $hi|84
-             (f64.add
-              (local.get $one)
-              (local.get $y|81)
-             )
-            )
-            (local.set $lo|83
-             (f64.add
-              (f64.add
-               (f64.sub
-                (local.get $one)
-                (local.get $hi|84)
-               )
-               (local.get $y|81)
-              )
-              (local.get $lo|83)
-             )
-            )
-            (local.set $y|81
-             (f64.sub
-              (f64.add
-               (local.get $hi|84)
-               (local.get $lo|83)
-              )
-              (local.get $one)
-             )
-            )
-            (if
-             (f64.eq
-              (local.get $y|81)
-              (f64.const 0)
-             )
-             (then
-              (local.set $y|81
-               (f64.reinterpret_i64
-                (i64.and
-                 (local.get $sbits|78)
-                 (i64.const -9223372036854775808)
-                )
-               )
-              )
-             )
-            )
-           )
-          )
-          (br $~lib/util/math/specialcase|inlined.1
-           (f64.mul
-            (local.get $y|81)
-            (f64.const 2.2250738585072014e-308)
-           )
-          )
-         )
-        )
-       )
-      )
-      (local.set $scale
-       (f64.reinterpret_i64
-        (local.get $sbits)
-       )
-      )
-      (br $~lib/util/math/exp_inline|inlined.0
-       (f64.add
-        (local.get $scale)
-        (f64.mul
-         (local.get $scale)
-         (local.get $tmp|69)
-        )
-       )
-      )
-     )
-    )
+   (call $~lib/util/math/pow_lut
+    (local.get $x)
+    (local.get $y)
    )
   )
  )
@@ -16281,22 +15267,104 @@
    )
   )
  )
- (func $~lib/math/NativeMathf.pow (param $x f32) (param $y f32) (result f32)
-  (local $x|2 f32)
-  (local $y|3 f32)
-  (local $signBias i32)
-  (local $ix i32)
-  (local $iy i32)
-  (local $ny i32)
-  (local $ux i32)
-  (local $ux|9 i32)
-  (local $x2 f32)
-  (local $iy|11 i32)
+ (func $~lib/util/math/zeroinfnanf (param $ux i32) (result i32)
+  (return
+   (i32.ge_u
+    (i32.sub
+     (i32.shl
+      (local.get $ux)
+      (i32.const 1)
+     )
+     (i32.const 1)
+    )
+    (i32.sub
+     (i32.shl
+      (i32.const 2139095040)
+      (i32.const 1)
+     )
+     (i32.const 1)
+    )
+   )
+  )
+ )
+ (func $~lib/util/math/checkintf (param $iy i32) (result i32)
   (local $e i32)
-  (local $iy|13 i32)
-  (local $e|14 i32)
-  (local $yint i32)
-  (local $ux|16 i32)
+  (local.set $e
+   (i32.and
+    (i32.shr_u
+     (local.get $iy)
+     (i32.const 23)
+    )
+    (i32.const 255)
+   )
+  )
+  (if
+   (i32.lt_u
+    (local.get $e)
+    (i32.const 127)
+   )
+   (then
+    (return
+     (i32.const 0)
+    )
+   )
+  )
+  (if
+   (i32.gt_u
+    (local.get $e)
+    (i32.add
+     (i32.const 127)
+     (i32.const 23)
+    )
+   )
+   (then
+    (return
+     (i32.const 2)
+    )
+   )
+  )
+  (local.set $e
+   (i32.shl
+    (i32.const 1)
+    (i32.sub
+     (i32.add
+      (i32.const 127)
+      (i32.const 23)
+     )
+     (local.get $e)
+    )
+   )
+  )
+  (if
+   (i32.and
+    (local.get $iy)
+    (i32.sub
+     (local.get $e)
+     (i32.const 1)
+    )
+   )
+   (then
+    (return
+     (i32.const 0)
+    )
+   )
+  )
+  (if
+   (i32.and
+    (local.get $iy)
+    (local.get $e)
+   )
+   (then
+    (return
+     (i32.const 1)
+    )
+   )
+  )
+  (return
+   (i32.const 2)
+  )
+ )
+ (func $~lib/util/math/log2f_inline (param $ux i32) (result f64)
   (local $tmp i32)
   (local $i i32)
   (local $top i32)
@@ -16307,26 +15375,660 @@
   (local $z f64)
   (local $r f64)
   (local $y0 f64)
-  (local $y|27 f64)
+  (local $y f64)
   (local $p f64)
   (local $q f64)
-  (local $logx f64)
-  (local $ylogx f64)
-  (local $sign i32)
-  (local $sign|33 i32)
-  (local $y|34 f32)
-  (local $sign|35 i32)
-  (local $sign|36 i32)
-  (local $y|37 f32)
-  (local $xd f64)
-  (local $signBias|39 i32)
+  (local.set $tmp
+   (i32.sub
+    (local.get $ux)
+    (i32.const 1060306944)
+   )
+  )
+  (local.set $i
+   (i32.and
+    (i32.shr_u
+     (local.get $tmp)
+     (i32.sub
+      (i32.const 23)
+      (i32.const 4)
+     )
+    )
+    (i32.const 15)
+   )
+  )
+  (local.set $top
+   (i32.and
+    (local.get $tmp)
+    (i32.const -8388608)
+   )
+  )
+  (local.set $uz
+   (i32.sub
+    (local.get $ux)
+    (local.get $top)
+   )
+  )
+  (local.set $k
+   (i32.shr_s
+    (local.get $top)
+    (i32.const 23)
+   )
+  )
+  (local.set $invc
+   (f64.load
+    (i32.add
+     (i32.const 8992)
+     (i32.shl
+      (local.get $i)
+      (i32.add
+       (i32.const 1)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $logc
+   (f64.load offset=8
+    (i32.add
+     (i32.const 8992)
+     (i32.shl
+      (local.get $i)
+      (i32.add
+       (i32.const 1)
+       (i32.const 3)
+      )
+     )
+    )
+   )
+  )
+  (local.set $z
+   (f64.promote_f32
+    (f32.reinterpret_i32
+     (local.get $uz)
+    )
+   )
+  )
+  (local.set $r
+   (f64.sub
+    (f64.mul
+     (local.get $z)
+     (local.get $invc)
+    )
+    (f64.const 1)
+   )
+  )
+  (local.set $y0
+   (f64.add
+    (local.get $logc)
+    (f64.convert_i32_s
+     (local.get $k)
+    )
+   )
+  )
+  (local.set $y
+   (f64.add
+    (f64.mul
+     (f64.const 0.288457581109214)
+     (local.get $r)
+    )
+    (f64.const -0.36092606229713164)
+   )
+  )
+  (local.set $p
+   (f64.add
+    (f64.mul
+     (f64.const 0.480898481472577)
+     (local.get $r)
+    )
+    (f64.const -0.7213474675006291)
+   )
+  )
+  (local.set $q
+   (f64.add
+    (f64.mul
+     (f64.const 1.4426950408774342)
+     (local.get $r)
+    )
+    (local.get $y0)
+   )
+  )
+  (local.set $r
+   (f64.mul
+    (local.get $r)
+    (local.get $r)
+   )
+  )
+  (local.set $q
+   (f64.add
+    (local.get $q)
+    (f64.mul
+     (local.get $p)
+     (local.get $r)
+    )
+   )
+  )
+  (local.set $y
+   (f64.add
+    (f64.mul
+     (local.get $y)
+     (f64.mul
+      (local.get $r)
+      (local.get $r)
+     )
+    )
+    (local.get $q)
+   )
+  )
+  (return
+   (local.get $y)
+  )
+ )
+ (func $~lib/util/math/xflowf (param $sign i32) (param $y f32) (result f32)
+  (return
+   (f32.mul
+    (select
+     (f32.neg
+      (local.get $y)
+     )
+     (local.get $y)
+     (local.get $sign)
+    )
+    (local.get $y)
+   )
+  )
+ )
+ (func $~lib/util/math/oflowf (param $sign i32) (result f32)
+  (return
+   (call $~lib/util/math/xflowf
+    (local.get $sign)
+    (f32.reinterpret_i32
+     (i32.const 1879048192)
+    )
+   )
+  )
+ )
+ (func $~lib/util/math/uflowf (param $sign i32) (result f32)
+  (return
+   (call $~lib/util/math/xflowf
+    (local.get $sign)
+    (f32.reinterpret_i32
+     (i32.const 268435456)
+    )
+   )
+  )
+ )
+ (func $~lib/util/math/exp2f_inline (param $xd f64) (param $signBias i32) (result f32)
   (local $kd f64)
   (local $ki i64)
-  (local $r|42 f64)
+  (local $r f64)
   (local $t i64)
-  (local $z|44 f64)
-  (local $y|45 f64)
+  (local $z f64)
+  (local $y f64)
   (local $s f64)
+  (local.set $kd
+   (f64.add
+    (local.get $xd)
+    (f64.const 211106232532992)
+   )
+  )
+  (local.set $ki
+   (i64.reinterpret_f64
+    (local.get $kd)
+   )
+  )
+  (local.set $r
+   (f64.sub
+    (local.get $xd)
+    (f64.sub
+     (local.get $kd)
+     (f64.const 211106232532992)
+    )
+   )
+  )
+  (local.set $t
+   (i64.load
+    (i32.add
+     (i32.const 6688)
+     (i32.shl
+      (i32.and
+       (i32.wrap_i64
+        (local.get $ki)
+       )
+       (i32.const 31)
+      )
+      (i32.const 3)
+     )
+    )
+   )
+  )
+  (local.set $t
+   (i64.add
+    (local.get $t)
+    (i64.shl
+     (i64.add
+      (local.get $ki)
+      (i64.extend_i32_u
+       (local.get $signBias)
+      )
+     )
+     (i64.sub
+      (i64.const 52)
+      (i64.extend_i32_s
+       (i32.const 5)
+      )
+     )
+    )
+   )
+  )
+  (local.set $s
+   (f64.reinterpret_i64
+    (local.get $t)
+   )
+  )
+  (local.set $z
+   (f64.add
+    (f64.mul
+     (f64.const 0.05550361559341535)
+     (local.get $r)
+    )
+    (f64.const 0.2402284522445722)
+   )
+  )
+  (local.set $y
+   (f64.add
+    (f64.mul
+     (f64.const 0.6931471806916203)
+     (local.get $r)
+    )
+    (f64.const 1)
+   )
+  )
+  (local.set $y
+   (f64.add
+    (local.get $y)
+    (f64.mul
+     (local.get $z)
+     (f64.mul
+      (local.get $r)
+      (local.get $r)
+     )
+    )
+   )
+  )
+  (local.set $y
+   (f64.mul
+    (local.get $y)
+    (local.get $s)
+   )
+  )
+  (return
+   (f32.demote_f64
+    (local.get $y)
+   )
+  )
+ )
+ (func $~lib/util/math/powf_lut (param $x f32) (param $y f32) (result f32)
+  (local $signBias i32)
+  (local $ix i32)
+  (local $iy i32)
+  (local $ny i32)
+  (local $x2 f32)
+  (local $yint i32)
+  (local $logx f64)
+  (local $ylogx f64)
+  (local.set $signBias
+   (i32.const 0)
+  )
+  (local.set $ix
+   (i32.reinterpret_f32
+    (local.get $x)
+   )
+  )
+  (local.set $iy
+   (i32.reinterpret_f32
+    (local.get $y)
+   )
+  )
+  (local.set $ny
+   (i32.const 0)
+  )
+  (if
+   (i32.or
+    (i32.ge_u
+     (i32.sub
+      (local.get $ix)
+      (i32.const 8388608)
+     )
+     (i32.sub
+      (i32.const 2139095040)
+      (i32.const 8388608)
+     )
+    )
+    (local.tee $ny
+     (call $~lib/util/math/zeroinfnanf
+      (local.get $iy)
+     )
+    )
+   )
+   (then
+    (if
+     (local.get $ny)
+     (then
+      (if
+       (i32.eq
+        (i32.shl
+         (local.get $iy)
+         (i32.const 1)
+        )
+        (i32.const 0)
+       )
+       (then
+        (return
+         (f32.const 1)
+        )
+       )
+      )
+      (if
+       (i32.eq
+        (local.get $ix)
+        (i32.const 1065353216)
+       )
+       (then
+        (return
+         (f32.const nan:0x400000)
+        )
+       )
+      )
+      (if
+       (if (result i32)
+        (i32.gt_u
+         (i32.shl
+          (local.get $ix)
+          (i32.const 1)
+         )
+         (i32.shl
+          (i32.const 2139095040)
+          (i32.const 1)
+         )
+        )
+        (then
+         (i32.const 1)
+        )
+        (else
+         (i32.gt_u
+          (i32.shl
+           (local.get $iy)
+           (i32.const 1)
+          )
+          (i32.shl
+           (i32.const 2139095040)
+           (i32.const 1)
+          )
+         )
+        )
+       )
+       (then
+        (return
+         (f32.add
+          (local.get $x)
+          (local.get $y)
+         )
+        )
+       )
+      )
+      (if
+       (i32.eq
+        (i32.shl
+         (local.get $ix)
+         (i32.const 1)
+        )
+        (i32.shl
+         (i32.const 1065353216)
+         (i32.const 1)
+        )
+       )
+       (then
+        (return
+         (f32.const nan:0x400000)
+        )
+       )
+      )
+      (if
+       (i32.eq
+        (i32.lt_u
+         (i32.shl
+          (local.get $ix)
+          (i32.const 1)
+         )
+         (i32.shl
+          (i32.const 1065353216)
+          (i32.const 1)
+         )
+        )
+        (i32.eqz
+         (i32.shr_u
+          (local.get $iy)
+          (i32.const 31)
+         )
+        )
+       )
+       (then
+        (return
+         (f32.const 0)
+        )
+       )
+      )
+      (return
+       (f32.mul
+        (local.get $y)
+        (local.get $y)
+       )
+      )
+     )
+    )
+    (if
+     (call $~lib/util/math/zeroinfnanf
+      (local.get $ix)
+     )
+     (then
+      (local.set $x2
+       (f32.mul
+        (local.get $x)
+        (local.get $x)
+       )
+      )
+      (if
+       (if (result i32)
+        (i32.shr_u
+         (local.get $ix)
+         (i32.const 31)
+        )
+        (then
+         (i32.eq
+          (call $~lib/util/math/checkintf
+           (local.get $iy)
+          )
+          (i32.const 1)
+         )
+        )
+        (else
+         (i32.const 0)
+        )
+       )
+       (then
+        (local.set $x2
+         (f32.neg
+          (local.get $x2)
+         )
+        )
+       )
+      )
+      (return
+       (if (result f32)
+        (i32.lt_s
+         (local.get $iy)
+         (i32.const 0)
+        )
+        (then
+         (f32.div
+          (f32.const 1)
+          (local.get $x2)
+         )
+        )
+        (else
+         (local.get $x2)
+        )
+       )
+      )
+     )
+    )
+    (if
+     (i32.lt_s
+      (local.get $ix)
+      (i32.const 0)
+     )
+     (then
+      (local.set $yint
+       (call $~lib/util/math/checkintf
+        (local.get $iy)
+       )
+      )
+      (if
+       (i32.eq
+        (local.get $yint)
+        (i32.const 0)
+       )
+       (then
+        (return
+         (f32.div
+          (f32.sub
+           (local.get $x)
+           (local.get $x)
+          )
+          (f32.sub
+           (local.get $x)
+           (local.get $x)
+          )
+         )
+        )
+       )
+      )
+      (if
+       (i32.eq
+        (local.get $yint)
+        (i32.const 1)
+       )
+       (then
+        (local.set $signBias
+         (i32.const 65536)
+        )
+       )
+      )
+      (local.set $ix
+       (i32.and
+        (local.get $ix)
+        (i32.const 2147483647)
+       )
+      )
+     )
+    )
+    (if
+     (i32.lt_u
+      (local.get $ix)
+      (i32.const 8388608)
+     )
+     (then
+      (local.set $ix
+       (i32.reinterpret_f32
+        (f32.mul
+         (local.get $x)
+         (f32.const 8388608)
+        )
+       )
+      )
+      (local.set $ix
+       (i32.and
+        (local.get $ix)
+        (i32.const 2147483647)
+       )
+      )
+      (local.set $ix
+       (i32.sub
+        (local.get $ix)
+        (i32.shl
+         (i32.const 23)
+         (i32.const 23)
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+  (local.set $logx
+   (call $~lib/util/math/log2f_inline
+    (local.get $ix)
+   )
+  )
+  (local.set $ylogx
+   (f64.mul
+    (f64.promote_f32
+     (local.get $y)
+    )
+    (local.get $logx)
+   )
+  )
+  (if
+   (i64.ge_u
+    (i64.and
+     (i64.shr_u
+      (i64.reinterpret_f64
+       (local.get $ylogx)
+      )
+      (i64.const 47)
+     )
+     (i64.const 65535)
+    )
+    (i64.const 32959)
+   )
+   (then
+    (if
+     (f64.gt
+      (local.get $ylogx)
+      (f64.const 127.99999995700433)
+     )
+     (then
+      (return
+       (call $~lib/util/math/oflowf
+        (local.get $signBias)
+       )
+      )
+     )
+    )
+    (if
+     (f64.le
+      (local.get $ylogx)
+      (f64.const -150)
+     )
+     (then
+      (return
+       (call $~lib/util/math/uflowf
+        (local.get $signBias)
+       )
+      )
+     )
+    )
+   )
+  )
+  (return
+   (call $~lib/util/math/exp2f_inline
+    (local.get $ylogx)
+    (local.get $signBias)
+   )
+  )
+ )
+ (func $~lib/math/NativeMathf.pow (param $x f32) (param $y f32) (result f32)
   (if
    (f32.le
     (f32.abs
@@ -16418,862 +16120,9 @@
    )
   )
   (return
-   (block $~lib/util/math/powf_lut|inlined.0 (result f32)
-    (local.set $x|2
-     (local.get $x)
-    )
-    (local.set $y|3
-     (local.get $y)
-    )
-    (local.set $signBias
-     (i32.const 0)
-    )
-    (local.set $ix
-     (i32.reinterpret_f32
-      (local.get $x|2)
-     )
-    )
-    (local.set $iy
-     (i32.reinterpret_f32
-      (local.get $y|3)
-     )
-    )
-    (local.set $ny
-     (i32.const 0)
-    )
-    (if
-     (i32.or
-      (i32.ge_u
-       (i32.sub
-        (local.get $ix)
-        (i32.const 8388608)
-       )
-       (i32.sub
-        (i32.const 2139095040)
-        (i32.const 8388608)
-       )
-      )
-      (local.tee $ny
-       (i32.ne
-        (block $~lib/util/math/zeroinfnanf|inlined.0 (result i32)
-         (local.set $ux
-          (local.get $iy)
-         )
-         (br $~lib/util/math/zeroinfnanf|inlined.0
-          (i32.ge_u
-           (i32.sub
-            (i32.shl
-             (local.get $ux)
-             (i32.const 1)
-            )
-            (i32.const 1)
-           )
-           (i32.sub
-            (i32.shl
-             (i32.const 2139095040)
-             (i32.const 1)
-            )
-            (i32.const 1)
-           )
-          )
-         )
-        )
-        (i32.const 0)
-       )
-      )
-     )
-     (then
-      (if
-       (local.get $ny)
-       (then
-        (if
-         (i32.eq
-          (i32.shl
-           (local.get $iy)
-           (i32.const 1)
-          )
-          (i32.const 0)
-         )
-         (then
-          (br $~lib/util/math/powf_lut|inlined.0
-           (f32.const 1)
-          )
-         )
-        )
-        (if
-         (i32.eq
-          (local.get $ix)
-          (i32.const 1065353216)
-         )
-         (then
-          (br $~lib/util/math/powf_lut|inlined.0
-           (f32.const nan:0x400000)
-          )
-         )
-        )
-        (if
-         (if (result i32)
-          (i32.gt_u
-           (i32.shl
-            (local.get $ix)
-            (i32.const 1)
-           )
-           (i32.shl
-            (i32.const 2139095040)
-            (i32.const 1)
-           )
-          )
-          (then
-           (i32.const 1)
-          )
-          (else
-           (i32.gt_u
-            (i32.shl
-             (local.get $iy)
-             (i32.const 1)
-            )
-            (i32.shl
-             (i32.const 2139095040)
-             (i32.const 1)
-            )
-           )
-          )
-         )
-         (then
-          (br $~lib/util/math/powf_lut|inlined.0
-           (f32.add
-            (local.get $x|2)
-            (local.get $y|3)
-           )
-          )
-         )
-        )
-        (if
-         (i32.eq
-          (i32.shl
-           (local.get $ix)
-           (i32.const 1)
-          )
-          (i32.shl
-           (i32.const 1065353216)
-           (i32.const 1)
-          )
-         )
-         (then
-          (br $~lib/util/math/powf_lut|inlined.0
-           (f32.const nan:0x400000)
-          )
-         )
-        )
-        (if
-         (i32.eq
-          (i32.lt_u
-           (i32.shl
-            (local.get $ix)
-            (i32.const 1)
-           )
-           (i32.shl
-            (i32.const 1065353216)
-            (i32.const 1)
-           )
-          )
-          (i32.eqz
-           (i32.shr_u
-            (local.get $iy)
-            (i32.const 31)
-           )
-          )
-         )
-         (then
-          (br $~lib/util/math/powf_lut|inlined.0
-           (f32.const 0)
-          )
-         )
-        )
-        (br $~lib/util/math/powf_lut|inlined.0
-         (f32.mul
-          (local.get $y|3)
-          (local.get $y|3)
-         )
-        )
-       )
-      )
-      (if
-       (block $~lib/util/math/zeroinfnanf|inlined.1 (result i32)
-        (local.set $ux|9
-         (local.get $ix)
-        )
-        (br $~lib/util/math/zeroinfnanf|inlined.1
-         (i32.ge_u
-          (i32.sub
-           (i32.shl
-            (local.get $ux|9)
-            (i32.const 1)
-           )
-           (i32.const 1)
-          )
-          (i32.sub
-           (i32.shl
-            (i32.const 2139095040)
-            (i32.const 1)
-           )
-           (i32.const 1)
-          )
-         )
-        )
-       )
-       (then
-        (local.set $x2
-         (f32.mul
-          (local.get $x|2)
-          (local.get $x|2)
-         )
-        )
-        (if
-         (if (result i32)
-          (i32.shr_u
-           (local.get $ix)
-           (i32.const 31)
-          )
-          (then
-           (i32.eq
-            (block $~lib/util/math/checkintf|inlined.0 (result i32)
-             (local.set $iy|11
-              (local.get $iy)
-             )
-             (local.set $e
-              (i32.and
-               (i32.shr_u
-                (local.get $iy|11)
-                (i32.const 23)
-               )
-               (i32.const 255)
-              )
-             )
-             (if
-              (i32.lt_u
-               (local.get $e)
-               (i32.const 127)
-              )
-              (then
-               (br $~lib/util/math/checkintf|inlined.0
-                (i32.const 0)
-               )
-              )
-             )
-             (if
-              (i32.gt_u
-               (local.get $e)
-               (i32.add
-                (i32.const 127)
-                (i32.const 23)
-               )
-              )
-              (then
-               (br $~lib/util/math/checkintf|inlined.0
-                (i32.const 2)
-               )
-              )
-             )
-             (local.set $e
-              (i32.shl
-               (i32.const 1)
-               (i32.sub
-                (i32.add
-                 (i32.const 127)
-                 (i32.const 23)
-                )
-                (local.get $e)
-               )
-              )
-             )
-             (if
-              (i32.and
-               (local.get $iy|11)
-               (i32.sub
-                (local.get $e)
-                (i32.const 1)
-               )
-              )
-              (then
-               (br $~lib/util/math/checkintf|inlined.0
-                (i32.const 0)
-               )
-              )
-             )
-             (if
-              (i32.and
-               (local.get $iy|11)
-               (local.get $e)
-              )
-              (then
-               (br $~lib/util/math/checkintf|inlined.0
-                (i32.const 1)
-               )
-              )
-             )
-             (br $~lib/util/math/checkintf|inlined.0
-              (i32.const 2)
-             )
-            )
-            (i32.const 1)
-           )
-          )
-          (else
-           (i32.const 0)
-          )
-         )
-         (then
-          (local.set $x2
-           (f32.neg
-            (local.get $x2)
-           )
-          )
-         )
-        )
-        (br $~lib/util/math/powf_lut|inlined.0
-         (if (result f32)
-          (i32.lt_s
-           (local.get $iy)
-           (i32.const 0)
-          )
-          (then
-           (f32.div
-            (f32.const 1)
-            (local.get $x2)
-           )
-          )
-          (else
-           (local.get $x2)
-          )
-         )
-        )
-       )
-      )
-      (if
-       (i32.lt_s
-        (local.get $ix)
-        (i32.const 0)
-       )
-       (then
-        (local.set $yint
-         (block $~lib/util/math/checkintf|inlined.1 (result i32)
-          (local.set $iy|13
-           (local.get $iy)
-          )
-          (local.set $e|14
-           (i32.and
-            (i32.shr_u
-             (local.get $iy|13)
-             (i32.const 23)
-            )
-            (i32.const 255)
-           )
-          )
-          (if
-           (i32.lt_u
-            (local.get $e|14)
-            (i32.const 127)
-           )
-           (then
-            (br $~lib/util/math/checkintf|inlined.1
-             (i32.const 0)
-            )
-           )
-          )
-          (if
-           (i32.gt_u
-            (local.get $e|14)
-            (i32.add
-             (i32.const 127)
-             (i32.const 23)
-            )
-           )
-           (then
-            (br $~lib/util/math/checkintf|inlined.1
-             (i32.const 2)
-            )
-           )
-          )
-          (local.set $e|14
-           (i32.shl
-            (i32.const 1)
-            (i32.sub
-             (i32.add
-              (i32.const 127)
-              (i32.const 23)
-             )
-             (local.get $e|14)
-            )
-           )
-          )
-          (if
-           (i32.and
-            (local.get $iy|13)
-            (i32.sub
-             (local.get $e|14)
-             (i32.const 1)
-            )
-           )
-           (then
-            (br $~lib/util/math/checkintf|inlined.1
-             (i32.const 0)
-            )
-           )
-          )
-          (if
-           (i32.and
-            (local.get $iy|13)
-            (local.get $e|14)
-           )
-           (then
-            (br $~lib/util/math/checkintf|inlined.1
-             (i32.const 1)
-            )
-           )
-          )
-          (br $~lib/util/math/checkintf|inlined.1
-           (i32.const 2)
-          )
-         )
-        )
-        (if
-         (i32.eq
-          (local.get $yint)
-          (i32.const 0)
-         )
-         (then
-          (br $~lib/util/math/powf_lut|inlined.0
-           (f32.div
-            (f32.sub
-             (local.get $x|2)
-             (local.get $x|2)
-            )
-            (f32.sub
-             (local.get $x|2)
-             (local.get $x|2)
-            )
-           )
-          )
-         )
-        )
-        (if
-         (i32.eq
-          (local.get $yint)
-          (i32.const 1)
-         )
-         (then
-          (local.set $signBias
-           (i32.const 65536)
-          )
-         )
-        )
-        (local.set $ix
-         (i32.and
-          (local.get $ix)
-          (i32.const 2147483647)
-         )
-        )
-       )
-      )
-      (if
-       (i32.lt_u
-        (local.get $ix)
-        (i32.const 8388608)
-       )
-       (then
-        (local.set $ix
-         (i32.reinterpret_f32
-          (f32.mul
-           (local.get $x|2)
-           (f32.const 8388608)
-          )
-         )
-        )
-        (local.set $ix
-         (i32.and
-          (local.get $ix)
-          (i32.const 2147483647)
-         )
-        )
-        (local.set $ix
-         (i32.sub
-          (local.get $ix)
-          (i32.shl
-           (i32.const 23)
-           (i32.const 23)
-          )
-         )
-        )
-       )
-      )
-     )
-    )
-    (local.set $logx
-     (block $~lib/util/math/log2f_inline|inlined.0 (result f64)
-      (local.set $ux|16
-       (local.get $ix)
-      )
-      (local.set $tmp
-       (i32.sub
-        (local.get $ux|16)
-        (i32.const 1060306944)
-       )
-      )
-      (local.set $i
-       (i32.and
-        (i32.shr_u
-         (local.get $tmp)
-         (i32.sub
-          (i32.const 23)
-          (i32.const 4)
-         )
-        )
-        (i32.const 15)
-       )
-      )
-      (local.set $top
-       (i32.and
-        (local.get $tmp)
-        (i32.const -8388608)
-       )
-      )
-      (local.set $uz
-       (i32.sub
-        (local.get $ux|16)
-        (local.get $top)
-       )
-      )
-      (local.set $k
-       (i32.shr_s
-        (local.get $top)
-        (i32.const 23)
-       )
-      )
-      (local.set $invc
-       (f64.load
-        (i32.add
-         (i32.const 8992)
-         (i32.shl
-          (local.get $i)
-          (i32.add
-           (i32.const 1)
-           (i32.const 3)
-          )
-         )
-        )
-       )
-      )
-      (local.set $logc
-       (f64.load offset=8
-        (i32.add
-         (i32.const 8992)
-         (i32.shl
-          (local.get $i)
-          (i32.add
-           (i32.const 1)
-           (i32.const 3)
-          )
-         )
-        )
-       )
-      )
-      (local.set $z
-       (f64.promote_f32
-        (f32.reinterpret_i32
-         (local.get $uz)
-        )
-       )
-      )
-      (local.set $r
-       (f64.sub
-        (f64.mul
-         (local.get $z)
-         (local.get $invc)
-        )
-        (f64.const 1)
-       )
-      )
-      (local.set $y0
-       (f64.add
-        (local.get $logc)
-        (f64.convert_i32_s
-         (local.get $k)
-        )
-       )
-      )
-      (local.set $y|27
-       (f64.add
-        (f64.mul
-         (f64.const 0.288457581109214)
-         (local.get $r)
-        )
-        (f64.const -0.36092606229713164)
-       )
-      )
-      (local.set $p
-       (f64.add
-        (f64.mul
-         (f64.const 0.480898481472577)
-         (local.get $r)
-        )
-        (f64.const -0.7213474675006291)
-       )
-      )
-      (local.set $q
-       (f64.add
-        (f64.mul
-         (f64.const 1.4426950408774342)
-         (local.get $r)
-        )
-        (local.get $y0)
-       )
-      )
-      (local.set $r
-       (f64.mul
-        (local.get $r)
-        (local.get $r)
-       )
-      )
-      (local.set $q
-       (f64.add
-        (local.get $q)
-        (f64.mul
-         (local.get $p)
-         (local.get $r)
-        )
-       )
-      )
-      (local.set $y|27
-       (f64.add
-        (f64.mul
-         (local.get $y|27)
-         (f64.mul
-          (local.get $r)
-          (local.get $r)
-         )
-        )
-        (local.get $q)
-       )
-      )
-      (br $~lib/util/math/log2f_inline|inlined.0
-       (local.get $y|27)
-      )
-     )
-    )
-    (local.set $ylogx
-     (f64.mul
-      (f64.promote_f32
-       (local.get $y|3)
-      )
-      (local.get $logx)
-     )
-    )
-    (if
-     (i64.ge_u
-      (i64.and
-       (i64.shr_u
-        (i64.reinterpret_f64
-         (local.get $ylogx)
-        )
-        (i64.const 47)
-       )
-       (i64.const 65535)
-      )
-      (i64.const 32959)
-     )
-     (then
-      (if
-       (f64.gt
-        (local.get $ylogx)
-        (f64.const 127.99999995700433)
-       )
-       (then
-        (br $~lib/util/math/powf_lut|inlined.0
-         (block $~lib/util/math/oflowf|inlined.0 (result f32)
-          (local.set $sign
-           (local.get $signBias)
-          )
-          (br $~lib/util/math/oflowf|inlined.0
-           (block $~lib/util/math/xflowf|inlined.0 (result f32)
-            (local.set $sign|33
-             (local.get $sign)
-            )
-            (local.set $y|34
-             (f32.reinterpret_i32
-              (i32.const 1879048192)
-             )
-            )
-            (br $~lib/util/math/xflowf|inlined.0
-             (f32.mul
-              (select
-               (f32.neg
-                (local.get $y|34)
-               )
-               (local.get $y|34)
-               (local.get $sign|33)
-              )
-              (local.get $y|34)
-             )
-            )
-           )
-          )
-         )
-        )
-       )
-      )
-      (if
-       (f64.le
-        (local.get $ylogx)
-        (f64.const -150)
-       )
-       (then
-        (br $~lib/util/math/powf_lut|inlined.0
-         (block $~lib/util/math/uflowf|inlined.0 (result f32)
-          (local.set $sign|35
-           (local.get $signBias)
-          )
-          (br $~lib/util/math/uflowf|inlined.0
-           (block $~lib/util/math/xflowf|inlined.1 (result f32)
-            (local.set $sign|36
-             (local.get $sign|35)
-            )
-            (local.set $y|37
-             (f32.reinterpret_i32
-              (i32.const 268435456)
-             )
-            )
-            (br $~lib/util/math/xflowf|inlined.1
-             (f32.mul
-              (select
-               (f32.neg
-                (local.get $y|37)
-               )
-               (local.get $y|37)
-               (local.get $sign|36)
-              )
-              (local.get $y|37)
-             )
-            )
-           )
-          )
-         )
-        )
-       )
-      )
-     )
-    )
-    (br $~lib/util/math/powf_lut|inlined.0
-     (block $~lib/util/math/exp2f_inline|inlined.0 (result f32)
-      (local.set $xd
-       (local.get $ylogx)
-      )
-      (local.set $signBias|39
-       (local.get $signBias)
-      )
-      (local.set $kd
-       (f64.add
-        (local.get $xd)
-        (f64.const 211106232532992)
-       )
-      )
-      (local.set $ki
-       (i64.reinterpret_f64
-        (local.get $kd)
-       )
-      )
-      (local.set $r|42
-       (f64.sub
-        (local.get $xd)
-        (f64.sub
-         (local.get $kd)
-         (f64.const 211106232532992)
-        )
-       )
-      )
-      (local.set $t
-       (i64.load
-        (i32.add
-         (i32.const 6688)
-         (i32.shl
-          (i32.and
-           (i32.wrap_i64
-            (local.get $ki)
-           )
-           (i32.const 31)
-          )
-          (i32.const 3)
-         )
-        )
-       )
-      )
-      (local.set $t
-       (i64.add
-        (local.get $t)
-        (i64.shl
-         (i64.add
-          (local.get $ki)
-          (i64.extend_i32_u
-           (local.get $signBias|39)
-          )
-         )
-         (i64.sub
-          (i64.const 52)
-          (i64.extend_i32_s
-           (i32.const 5)
-          )
-         )
-        )
-       )
-      )
-      (local.set $s
-       (f64.reinterpret_i64
-        (local.get $t)
-       )
-      )
-      (local.set $z|44
-       (f64.add
-        (f64.mul
-         (f64.const 0.05550361559341535)
-         (local.get $r|42)
-        )
-        (f64.const 0.2402284522445722)
-       )
-      )
-      (local.set $y|45
-       (f64.add
-        (f64.mul
-         (f64.const 0.6931471806916203)
-         (local.get $r|42)
-        )
-        (f64.const 1)
-       )
-      )
-      (local.set $y|45
-       (f64.add
-        (local.get $y|45)
-        (f64.mul
-         (local.get $z|44)
-         (f64.mul
-          (local.get $r|42)
-          (local.get $r|42)
-         )
-        )
-       )
-      )
-      (local.set $y|45
-       (f64.mul
-        (local.get $y|45)
-        (local.get $s)
-       )
-      )
-      (br $~lib/util/math/exp2f_inline|inlined.0
-       (f32.demote_f64
-        (local.get $y|45)
-       )
-      )
-     )
-    )
+   (call $~lib/util/math/powf_lut
+    (local.get $x)
+    (local.get $y)
    )
   )
  )
@@ -17507,8 +16356,12 @@
    )
   )
  )
+ (func $~lib/math/NativeMathf.seedRandom (param $value i64)
+  (call $~lib/math/NativeMath.seedRandom
+   (local.get $value)
+  )
+ )
  (func $~lib/math/NativeMathf.random (result f32)
-  (local $value i64)
   (local $s0 i32)
   (local $s1 i32)
   (local $r i32)
@@ -17517,14 +16370,9 @@
     (global.get $~lib/math/random_seeded)
    )
    (then
-    (block $~lib/math/NativeMathf.seedRandom|inlined.1
-     (local.set $value
-      (i64.reinterpret_f64
-       (call $~lib/builtins/seed)
-      )
-     )
-     (call $~lib/math/NativeMath.seedRandom
-      (local.get $value)
+    (call $~lib/math/NativeMathf.seedRandom
+     (i64.reinterpret_f64
+      (call $~lib/builtins/seed)
      )
     )
    )
@@ -18732,48 +17580,9 @@
   (local $u i64)
   (local $ux i32)
   (local $sign i32)
-  (local $x|4 f64)
-  (local $y f64)
-  (local $iy i32)
-  (local $z f64)
-  (local $w f64)
-  (local $r f64)
-  (local $v f64)
-  (local $x|11 f64)
-  (local $u|12 i64)
-  (local $sign|13 i32)
-  (local $ix i32)
-  (local $q i32)
-  (local $z|16 f64)
+  (local $n i32)
   (local $y0 f64)
   (local $y1 f64)
-  (local $q|19 f64)
-  (local $r|20 f64)
-  (local $w|21 f64)
-  (local $j i32)
-  (local $y0|23 f64)
-  (local $hi i32)
-  (local $i i32)
-  (local $t f64)
-  (local $t|27 f64)
-  (local $y1|28 f64)
-  (local $q|29 i32)
-  (local $n i32)
-  (local $y0|31 f64)
-  (local $y1|32 f64)
-  (local $x|33 f64)
-  (local $y|34 f64)
-  (local $z|35 f64)
-  (local $w|36 f64)
-  (local $r|37 f64)
-  (local $hz f64)
-  (local $x|39 f64)
-  (local $y|40 f64)
-  (local $iy|41 i32)
-  (local $z|42 f64)
-  (local $w|43 f64)
-  (local $r|44 f64)
-  (local $v|45 f64)
   (local.set $u
    (i64.reinterpret_f64
     (local.get $x)
@@ -18817,115 +17626,10 @@
      )
     )
     (return
-     (block $~lib/math/sin_kern|inlined.1 (result f64)
-      (local.set $x|4
-       (local.get $x)
-      )
-      (local.set $y
-       (f64.const 0)
-      )
-      (local.set $iy
-       (i32.const 0)
-      )
-      (local.set $z
-       (f64.mul
-        (local.get $x|4)
-        (local.get $x|4)
-       )
-      )
-      (local.set $w
-       (f64.mul
-        (local.get $z)
-        (local.get $z)
-       )
-      )
-      (local.set $r
-       (f64.add
-        (f64.add
-         (f64.const 0.00833333333332249)
-         (f64.mul
-          (local.get $z)
-          (f64.add
-           (f64.const -1.984126982985795e-04)
-           (f64.mul
-            (local.get $z)
-            (f64.const 2.7557313707070068e-06)
-           )
-          )
-         )
-        )
-        (f64.mul
-         (f64.mul
-          (local.get $z)
-          (local.get $w)
-         )
-         (f64.add
-          (f64.const -2.5050760253406863e-08)
-          (f64.mul
-           (local.get $z)
-           (f64.const 1.58969099521155e-10)
-          )
-         )
-        )
-       )
-      )
-      (local.set $v
-       (f64.mul
-        (local.get $z)
-        (local.get $x|4)
-       )
-      )
-      (if
-       (i32.eqz
-        (local.get $iy)
-       )
-       (then
-        (br $~lib/math/sin_kern|inlined.1
-         (f64.add
-          (local.get $x|4)
-          (f64.mul
-           (local.get $v)
-           (f64.add
-            (f64.const -0.16666666666666632)
-            (f64.mul
-             (local.get $z)
-             (local.get $r)
-            )
-           )
-          )
-         )
-        )
-       )
-       (else
-        (br $~lib/math/sin_kern|inlined.1
-         (f64.sub
-          (local.get $x|4)
-          (f64.sub
-           (f64.sub
-            (f64.mul
-             (local.get $z)
-             (f64.sub
-              (f64.mul
-               (f64.const 0.5)
-               (local.get $y)
-              )
-              (f64.mul
-               (local.get $v)
-               (local.get $r)
-              )
-             )
-            )
-            (local.get $y)
-           )
-           (f64.mul
-            (local.get $v)
-            (f64.const -0.16666666666666632)
-           )
-          )
-         )
-        )
-       )
-      )
+     (call $~lib/math/sin_kern
+      (local.get $x)
+      (f64.const 0)
+      (i32.const 0)
      )
     )
    )
@@ -18945,386 +17649,16 @@
    )
   )
   (local.set $n
-   (block $~lib/math/rempio2|inlined.1 (result i32)
-    (local.set $x|11
-     (local.get $x)
-    )
-    (local.set $u|12
-     (local.get $u)
-    )
-    (local.set $sign|13
-     (local.get $sign)
-    )
-    (local.set $ix
-     (i32.and
-      (i32.wrap_i64
-       (i64.shr_u
-        (local.get $u|12)
-        (i64.const 32)
-       )
-      )
-      (i32.const 2147483647)
-     )
-    )
-    (drop
-     (i32.lt_s
-      (i32.const 0)
-      (i32.const 1)
-     )
-    )
-    (if
-     (i32.lt_u
-      (local.get $ix)
-      (i32.const 1073928572)
-     )
-     (then
-      (local.set $q
-       (i32.const 1)
-      )
-      (if
-       (i32.eqz
-        (local.get $sign|13)
-       )
-       (then
-        (local.set $z|16
-         (f64.sub
-          (local.get $x|11)
-          (f64.const 1.5707963267341256)
-         )
-        )
-        (if
-         (i32.ne
-          (local.get $ix)
-          (i32.const 1073291771)
-         )
-         (then
-          (local.set $y0
-           (f64.sub
-            (local.get $z|16)
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-          (local.set $y1
-           (f64.sub
-            (f64.sub
-             (local.get $z|16)
-             (local.get $y0)
-            )
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-         )
-         (else
-          (local.set $z|16
-           (f64.sub
-            (local.get $z|16)
-            (f64.const 6.077100506303966e-11)
-           )
-          )
-          (local.set $y0
-           (f64.sub
-            (local.get $z|16)
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-          (local.set $y1
-           (f64.sub
-            (f64.sub
-             (local.get $z|16)
-             (local.get $y0)
-            )
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-         )
-        )
-       )
-       (else
-        (local.set $z|16
-         (f64.add
-          (local.get $x|11)
-          (f64.const 1.5707963267341256)
-         )
-        )
-        (if
-         (i32.ne
-          (local.get $ix)
-          (i32.const 1073291771)
-         )
-         (then
-          (local.set $y0
-           (f64.add
-            (local.get $z|16)
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-          (local.set $y1
-           (f64.add
-            (f64.sub
-             (local.get $z|16)
-             (local.get $y0)
-            )
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-         )
-         (else
-          (local.set $z|16
-           (f64.add
-            (local.get $z|16)
-            (f64.const 6.077100506303966e-11)
-           )
-          )
-          (local.set $y0
-           (f64.add
-            (local.get $z|16)
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-          (local.set $y1
-           (f64.add
-            (f64.sub
-             (local.get $z|16)
-             (local.get $y0)
-            )
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-         )
-        )
-        (local.set $q
-         (i32.const -1)
-        )
-       )
-      )
-      (global.set $~lib/math/rempio2_y0
-       (local.get $y0)
-      )
-      (global.set $~lib/math/rempio2_y1
-       (local.get $y1)
-      )
-      (br $~lib/math/rempio2|inlined.1
-       (local.get $q)
-      )
-     )
-    )
-    (if
-     (i32.lt_u
-      (local.get $ix)
-      (i32.const 1094263291)
-     )
-     (then
-      (local.set $q|19
-       (f64.nearest
-        (f64.mul
-         (local.get $x|11)
-         (f64.const 0.6366197723675814)
-        )
-       )
-      )
-      (local.set $r|20
-       (f64.sub
-        (local.get $x|11)
-        (f64.mul
-         (local.get $q|19)
-         (f64.const 1.5707963267341256)
-        )
-       )
-      )
-      (local.set $w|21
-       (f64.mul
-        (local.get $q|19)
-        (f64.const 6.077100506506192e-11)
-       )
-      )
-      (local.set $j
-       (i32.shr_u
-        (local.get $ix)
-        (i32.const 20)
-       )
-      )
-      (local.set $y0|23
-       (f64.sub
-        (local.get $r|20)
-        (local.get $w|21)
-       )
-      )
-      (local.set $hi
-       (i32.wrap_i64
-        (i64.shr_u
-         (i64.reinterpret_f64
-          (local.get $y0|23)
-         )
-         (i64.const 32)
-        )
-       )
-      )
-      (local.set $i
-       (i32.sub
-        (local.get $j)
-        (i32.and
-         (i32.shr_u
-          (local.get $hi)
-          (i32.const 20)
-         )
-         (i32.const 2047)
-        )
-       )
-      )
-      (if
-       (i32.gt_u
-        (local.get $i)
-        (i32.const 16)
-       )
-       (then
-        (local.set $t
-         (local.get $r|20)
-        )
-        (local.set $w|21
-         (f64.mul
-          (local.get $q|19)
-          (f64.const 6.077100506303966e-11)
-         )
-        )
-        (local.set $r|20
-         (f64.sub
-          (local.get $t)
-          (local.get $w|21)
-         )
-        )
-        (local.set $w|21
-         (f64.sub
-          (f64.mul
-           (local.get $q|19)
-           (f64.const 2.0222662487959506e-21)
-          )
-          (f64.sub
-           (f64.sub
-            (local.get $t)
-            (local.get $r|20)
-           )
-           (local.get $w|21)
-          )
-         )
-        )
-        (local.set $y0|23
-         (f64.sub
-          (local.get $r|20)
-          (local.get $w|21)
-         )
-        )
-        (local.set $hi
-         (i32.wrap_i64
-          (i64.shr_u
-           (i64.reinterpret_f64
-            (local.get $y0|23)
-           )
-           (i64.const 32)
-          )
-         )
-        )
-        (local.set $i
-         (i32.sub
-          (local.get $j)
-          (i32.and
-           (i32.shr_u
-            (local.get $hi)
-            (i32.const 20)
-           )
-           (i32.const 2047)
-          )
-         )
-        )
-        (if
-         (i32.gt_u
-          (local.get $i)
-          (i32.const 49)
-         )
-         (then
-          (local.set $t|27
-           (local.get $r|20)
-          )
-          (local.set $w|21
-           (f64.mul
-            (local.get $q|19)
-            (f64.const 2.0222662487111665e-21)
-           )
-          )
-          (local.set $r|20
-           (f64.sub
-            (local.get $t|27)
-            (local.get $w|21)
-           )
-          )
-          (local.set $w|21
-           (f64.sub
-            (f64.mul
-             (local.get $q|19)
-             (f64.const 8.4784276603689e-32)
-            )
-            (f64.sub
-             (f64.sub
-              (local.get $t|27)
-              (local.get $r|20)
-             )
-             (local.get $w|21)
-            )
-           )
-          )
-          (local.set $y0|23
-           (f64.sub
-            (local.get $r|20)
-            (local.get $w|21)
-           )
-          )
-         )
-        )
-       )
-      )
-      (local.set $y1|28
-       (f64.sub
-        (f64.sub
-         (local.get $r|20)
-         (local.get $y0|23)
-        )
-        (local.get $w|21)
-       )
-      )
-      (global.set $~lib/math/rempio2_y0
-       (local.get $y0|23)
-      )
-      (global.set $~lib/math/rempio2_y1
-       (local.get $y1|28)
-      )
-      (br $~lib/math/rempio2|inlined.1
-       (i32.trunc_f64_s
-        (local.get $q|19)
-       )
-      )
-     )
-    )
-    (local.set $q|29
-     (call $~lib/math/pio2_large_quot
-      (local.get $x|11)
-      (local.get $u|12)
-     )
-    )
-    (br $~lib/math/rempio2|inlined.1
-     (select
-      (i32.sub
-       (i32.const 0)
-       (local.get $q|29)
-      )
-      (local.get $q|29)
-      (local.get $sign|13)
-     )
-    )
+   (call $~lib/math/rempio2
+    (local.get $x)
+    (local.get $u)
+    (local.get $sign)
    )
   )
-  (local.set $y0|31
+  (local.set $y0
    (global.get $~lib/math/rempio2_y0)
   )
-  (local.set $y1|32
+  (local.set $y1
    (global.get $~lib/math/rempio2_y1)
   )
   (local.set $x
@@ -19334,212 +17668,16 @@
      (i32.const 1)
     )
     (then
-     (block $~lib/math/cos_kern|inlined.2 (result f64)
-      (local.set $x|33
-       (local.get $y0|31)
-      )
-      (local.set $y|34
-       (local.get $y1|32)
-      )
-      (local.set $z|35
-       (f64.mul
-        (local.get $x|33)
-        (local.get $x|33)
-       )
-      )
-      (local.set $w|36
-       (f64.mul
-        (local.get $z|35)
-        (local.get $z|35)
-       )
-      )
-      (local.set $r|37
-       (f64.add
-        (f64.mul
-         (local.get $z|35)
-         (f64.add
-          (f64.const 0.0416666666666666)
-          (f64.mul
-           (local.get $z|35)
-           (f64.add
-            (f64.const -0.001388888888887411)
-            (f64.mul
-             (local.get $z|35)
-             (f64.const 2.480158728947673e-05)
-            )
-           )
-          )
-         )
-        )
-        (f64.mul
-         (f64.mul
-          (local.get $w|36)
-          (local.get $w|36)
-         )
-         (f64.add
-          (f64.const -2.7557314351390663e-07)
-          (f64.mul
-           (local.get $z|35)
-           (f64.add
-            (f64.const 2.087572321298175e-09)
-            (f64.mul
-             (local.get $z|35)
-             (f64.const -1.1359647557788195e-11)
-            )
-           )
-          )
-         )
-        )
-       )
-      )
-      (local.set $hz
-       (f64.mul
-        (f64.const 0.5)
-        (local.get $z|35)
-       )
-      )
-      (local.set $w|36
-       (f64.sub
-        (f64.const 1)
-        (local.get $hz)
-       )
-      )
-      (br $~lib/math/cos_kern|inlined.2
-       (f64.add
-        (local.get $w|36)
-        (f64.add
-         (f64.sub
-          (f64.sub
-           (f64.const 1)
-           (local.get $w|36)
-          )
-          (local.get $hz)
-         )
-         (f64.sub
-          (f64.mul
-           (local.get $z|35)
-           (local.get $r|37)
-          )
-          (f64.mul
-           (local.get $x|33)
-           (local.get $y|34)
-          )
-         )
-        )
-       )
-      )
+     (call $~lib/math/cos_kern
+      (local.get $y0)
+      (local.get $y1)
      )
     )
     (else
-     (block $~lib/math/sin_kern|inlined.2 (result f64)
-      (local.set $x|39
-       (local.get $y0|31)
-      )
-      (local.set $y|40
-       (local.get $y1|32)
-      )
-      (local.set $iy|41
-       (i32.const 1)
-      )
-      (local.set $z|42
-       (f64.mul
-        (local.get $x|39)
-        (local.get $x|39)
-       )
-      )
-      (local.set $w|43
-       (f64.mul
-        (local.get $z|42)
-        (local.get $z|42)
-       )
-      )
-      (local.set $r|44
-       (f64.add
-        (f64.add
-         (f64.const 0.00833333333332249)
-         (f64.mul
-          (local.get $z|42)
-          (f64.add
-           (f64.const -1.984126982985795e-04)
-           (f64.mul
-            (local.get $z|42)
-            (f64.const 2.7557313707070068e-06)
-           )
-          )
-         )
-        )
-        (f64.mul
-         (f64.mul
-          (local.get $z|42)
-          (local.get $w|43)
-         )
-         (f64.add
-          (f64.const -2.5050760253406863e-08)
-          (f64.mul
-           (local.get $z|42)
-           (f64.const 1.58969099521155e-10)
-          )
-         )
-        )
-       )
-      )
-      (local.set $v|45
-       (f64.mul
-        (local.get $z|42)
-        (local.get $x|39)
-       )
-      )
-      (if
-       (i32.eqz
-        (local.get $iy|41)
-       )
-       (then
-        (br $~lib/math/sin_kern|inlined.2
-         (f64.add
-          (local.get $x|39)
-          (f64.mul
-           (local.get $v|45)
-           (f64.add
-            (f64.const -0.16666666666666632)
-            (f64.mul
-             (local.get $z|42)
-             (local.get $r|44)
-            )
-           )
-          )
-         )
-        )
-       )
-       (else
-        (br $~lib/math/sin_kern|inlined.2
-         (f64.sub
-          (local.get $x|39)
-          (f64.sub
-           (f64.sub
-            (f64.mul
-             (local.get $z|42)
-             (f64.sub
-              (f64.mul
-               (f64.const 0.5)
-               (local.get $y|40)
-              )
-              (f64.mul
-               (local.get $v|45)
-               (local.get $r|44)
-              )
-             )
-            )
-            (local.get $y|40)
-           )
-           (f64.mul
-            (local.get $v|45)
-            (f64.const -0.16666666666666632)
-           )
-          )
-         )
-        )
-       )
-      )
+     (call $~lib/math/sin_kern
+      (local.get $y0)
+      (local.get $y1)
+      (i32.const 1)
      )
     )
    )
@@ -19591,67 +17729,8 @@
  (func $~lib/math/NativeMathf.sin (param $x f32) (result f32)
   (local $ux i32)
   (local $sign i32)
-  (local $x|3 f64)
-  (local $z f64)
-  (local $w f64)
-  (local $r f64)
-  (local $s f64)
-  (local $x|8 f64)
-  (local $z|9 f64)
-  (local $w|10 f64)
-  (local $r|11 f64)
-  (local $x|12 f64)
-  (local $z|13 f64)
-  (local $w|14 f64)
-  (local $r|15 f64)
-  (local $x|16 f64)
-  (local $z|17 f64)
-  (local $w|18 f64)
-  (local $r|19 f64)
-  (local $s|20 f64)
-  (local $x|21 f64)
-  (local $z|22 f64)
-  (local $w|23 f64)
-  (local $r|24 f64)
-  (local $x|25 f64)
-  (local $z|26 f64)
-  (local $w|27 f64)
-  (local $r|28 f64)
-  (local $x|29 f64)
-  (local $z|30 f64)
-  (local $w|31 f64)
-  (local $r|32 f64)
-  (local $s|33 f64)
-  (local $x|34 f32)
-  (local $u i32)
-  (local $sign|36 i32)
-  (local $q f64)
-  (local $x|38 f32)
-  (local $u|39 i32)
-  (local $offset i32)
-  (local $shift i64)
-  (local $tblPtr i32)
-  (local $b0 i64)
-  (local $b1 i64)
-  (local $lo i64)
-  (local $b2 i64)
-  (local $hi i64)
-  (local $mantissa i64)
-  (local $product i64)
-  (local $r|50 i64)
-  (local $q|51 i32)
-  (local $q|52 i32)
   (local $n i32)
   (local $y f64)
-  (local $x|55 f64)
-  (local $z|56 f64)
-  (local $w|57 f64)
-  (local $r|58 f64)
-  (local $x|59 f64)
-  (local $z|60 f64)
-  (local $w|61 f64)
-  (local $r|62 f64)
-  (local $s|63 f64)
   (local $t f32)
   (local.set $ux
    (i32.reinterpret_f32
@@ -19688,64 +17767,9 @@
      )
     )
     (return
-     (block $~lib/math/sin_kernf|inlined.5 (result f32)
-      (local.set $x|3
-       (f64.promote_f32
-        (local.get $x)
-       )
-      )
-      (local.set $z
-       (f64.mul
-        (local.get $x|3)
-        (local.get $x|3)
-       )
-      )
-      (local.set $w
-       (f64.mul
-        (local.get $z)
-        (local.get $z)
-       )
-      )
-      (local.set $r
-       (f64.add
-        (f64.const -1.9839334836096632e-04)
-        (f64.mul
-         (local.get $z)
-         (f64.const 2.718311493989822e-06)
-        )
-       )
-      )
-      (local.set $s
-       (f64.mul
-        (local.get $z)
-        (local.get $x|3)
-       )
-      )
-      (br $~lib/math/sin_kernf|inlined.5
-       (f32.demote_f64
-        (f64.add
-         (f64.add
-          (local.get $x|3)
-          (f64.mul
-           (local.get $s)
-           (f64.add
-            (f64.const -0.16666666641626524)
-            (f64.mul
-             (local.get $z)
-             (f64.const 0.008333329385889463)
-            )
-           )
-          )
-         )
-         (f64.mul
-          (f64.mul
-           (local.get $s)
-           (local.get $w)
-          )
-          (local.get $r)
-         )
-        )
-       )
+     (call $~lib/math/sin_kernf
+      (f64.promote_f32
+       (local.get $x)
       )
      )
     )
@@ -19775,125 +17799,23 @@
          (local.get $sign)
          (then
           (f32.neg
-           (block $~lib/math/cos_kernf|inlined.4 (result f32)
-            (local.set $x|8
-             (f64.add
-              (f64.promote_f32
-               (local.get $x)
-              )
-              (f64.const 1.5707963267948966)
-             )
-            )
-            (local.set $z|9
-             (f64.mul
-              (local.get $x|8)
-              (local.get $x|8)
-             )
-            )
-            (local.set $w|10
-             (f64.mul
-              (local.get $z|9)
-              (local.get $z|9)
-             )
-            )
-            (local.set $r|11
-             (f64.add
-              (f64.const -0.001388676377460993)
-              (f64.mul
-               (local.get $z|9)
-               (f64.const 2.439044879627741e-05)
-              )
-             )
-            )
-            (br $~lib/math/cos_kernf|inlined.4
-             (f32.demote_f64
-              (f64.add
-               (f64.add
-                (f64.add
-                 (f64.promote_f32
-                  (f32.const 1)
-                 )
-                 (f64.mul
-                  (local.get $z|9)
-                  (f64.const -0.499999997251031)
-                 )
-                )
-                (f64.mul
-                 (local.get $w|10)
-                 (f64.const 0.04166662332373906)
-                )
-               )
-               (f64.mul
-                (f64.mul
-                 (local.get $w|10)
-                 (local.get $z|9)
-                )
-                (local.get $r|11)
-               )
-              )
-             )
-            )
-           )
-          )
-         )
-         (else
-          (block $~lib/math/cos_kernf|inlined.5 (result f32)
-           (local.set $x|12
-            (f64.sub
+           (call $~lib/math/cos_kernf
+            (f64.add
              (f64.promote_f32
               (local.get $x)
              )
              (f64.const 1.5707963267948966)
             )
            )
-           (local.set $z|13
-            (f64.mul
-             (local.get $x|12)
-             (local.get $x|12)
+          )
+         )
+         (else
+          (call $~lib/math/cos_kernf
+           (f64.sub
+            (f64.promote_f32
+             (local.get $x)
             )
-           )
-           (local.set $w|14
-            (f64.mul
-             (local.get $z|13)
-             (local.get $z|13)
-            )
-           )
-           (local.set $r|15
-            (f64.add
-             (f64.const -0.001388676377460993)
-             (f64.mul
-              (local.get $z|13)
-              (f64.const 2.439044879627741e-05)
-             )
-            )
-           )
-           (br $~lib/math/cos_kernf|inlined.5
-            (f32.demote_f64
-             (f64.add
-              (f64.add
-               (f64.add
-                (f64.promote_f32
-                 (f32.const 1)
-                )
-                (f64.mul
-                 (local.get $z|13)
-                 (f64.const -0.499999997251031)
-                )
-               )
-               (f64.mul
-                (local.get $w|14)
-                (f64.const 0.04166662332373906)
-               )
-              )
-              (f64.mul
-               (f64.mul
-                (local.get $w|14)
-                (local.get $z|13)
-               )
-               (local.get $r|15)
-              )
-             )
-            )
+            (f64.const 1.5707963267948966)
            )
           )
          )
@@ -19902,79 +17824,24 @@
       )
      )
      (return
-      (block $~lib/math/sin_kernf|inlined.6 (result f32)
-       (local.set $x|16
-        (f64.neg
-         (if (result f64)
-          (local.get $sign)
-          (then
-           (f64.add
-            (f64.promote_f32
-             (local.get $x)
-            )
-            (f64.const 3.141592653589793)
-           )
-          )
-          (else
-           (f64.sub
-            (f64.promote_f32
-             (local.get $x)
-            )
-            (f64.const 3.141592653589793)
-           )
-          )
-         )
-        )
-       )
-       (local.set $z|17
-        (f64.mul
-         (local.get $x|16)
-         (local.get $x|16)
-        )
-       )
-       (local.set $w|18
-        (f64.mul
-         (local.get $z|17)
-         (local.get $z|17)
-        )
-       )
-       (local.set $r|19
-        (f64.add
-         (f64.const -1.9839334836096632e-04)
-         (f64.mul
-          (local.get $z|17)
-          (f64.const 2.718311493989822e-06)
-         )
-        )
-       )
-       (local.set $s|20
-        (f64.mul
-         (local.get $z|17)
-         (local.get $x|16)
-        )
-       )
-       (br $~lib/math/sin_kernf|inlined.6
-        (f32.demote_f64
-         (f64.add
+      (call $~lib/math/sin_kernf
+       (f64.neg
+        (if (result f64)
+         (local.get $sign)
+         (then
           (f64.add
-           (local.get $x|16)
-           (f64.mul
-            (local.get $s|20)
-            (f64.add
-             (f64.const -0.16666666641626524)
-             (f64.mul
-              (local.get $z|17)
-              (f64.const 0.008333329385889463)
-             )
-            )
+           (f64.promote_f32
+            (local.get $x)
            )
+           (f64.const 3.141592653589793)
           )
-          (f64.mul
-           (f64.mul
-            (local.get $s|20)
-            (local.get $w|18)
+         )
+         (else
+          (f64.sub
+           (f64.promote_f32
+            (local.get $x)
            )
-           (local.get $r|19)
+           (f64.const 3.141592653589793)
           )
          )
         )
@@ -19999,125 +17866,23 @@
         (if (result f32)
          (local.get $sign)
          (then
-          (block $~lib/math/cos_kernf|inlined.6 (result f32)
-           (local.set $x|21
-            (f64.add
-             (f64.promote_f32
-              (local.get $x)
-             )
-             (f64.const 4.71238898038469)
+          (call $~lib/math/cos_kernf
+           (f64.add
+            (f64.promote_f32
+             (local.get $x)
             )
-           )
-           (local.set $z|22
-            (f64.mul
-             (local.get $x|21)
-             (local.get $x|21)
-            )
-           )
-           (local.set $w|23
-            (f64.mul
-             (local.get $z|22)
-             (local.get $z|22)
-            )
-           )
-           (local.set $r|24
-            (f64.add
-             (f64.const -0.001388676377460993)
-             (f64.mul
-              (local.get $z|22)
-              (f64.const 2.439044879627741e-05)
-             )
-            )
-           )
-           (br $~lib/math/cos_kernf|inlined.6
-            (f32.demote_f64
-             (f64.add
-              (f64.add
-               (f64.add
-                (f64.promote_f32
-                 (f32.const 1)
-                )
-                (f64.mul
-                 (local.get $z|22)
-                 (f64.const -0.499999997251031)
-                )
-               )
-               (f64.mul
-                (local.get $w|23)
-                (f64.const 0.04166662332373906)
-               )
-              )
-              (f64.mul
-               (f64.mul
-                (local.get $w|23)
-                (local.get $z|22)
-               )
-               (local.get $r|24)
-              )
-             )
-            )
+            (f64.const 4.71238898038469)
            )
           )
          )
          (else
           (f32.neg
-           (block $~lib/math/cos_kernf|inlined.7 (result f32)
-            (local.set $x|25
-             (f64.sub
-              (f64.promote_f32
-               (local.get $x)
-              )
-              (f64.const 4.71238898038469)
+           (call $~lib/math/cos_kernf
+            (f64.sub
+             (f64.promote_f32
+              (local.get $x)
              )
-            )
-            (local.set $z|26
-             (f64.mul
-              (local.get $x|25)
-              (local.get $x|25)
-             )
-            )
-            (local.set $w|27
-             (f64.mul
-              (local.get $z|26)
-              (local.get $z|26)
-             )
-            )
-            (local.set $r|28
-             (f64.add
-              (f64.const -0.001388676377460993)
-              (f64.mul
-               (local.get $z|26)
-               (f64.const 2.439044879627741e-05)
-              )
-             )
-            )
-            (br $~lib/math/cos_kernf|inlined.7
-             (f32.demote_f64
-              (f64.add
-               (f64.add
-                (f64.add
-                 (f64.promote_f32
-                  (f32.const 1)
-                 )
-                 (f64.mul
-                  (local.get $z|26)
-                  (f64.const -0.499999997251031)
-                 )
-                )
-                (f64.mul
-                 (local.get $w|27)
-                 (f64.const 0.04166662332373906)
-                )
-               )
-               (f64.mul
-                (f64.mul
-                 (local.get $w|27)
-                 (local.get $z|26)
-                )
-                (local.get $r|28)
-               )
-              )
-             )
+             (f64.const 4.71238898038469)
             )
            )
           )
@@ -20127,78 +17892,23 @@
       )
      )
      (return
-      (block $~lib/math/sin_kernf|inlined.7 (result f32)
-       (local.set $x|29
-        (if (result f64)
-         (local.get $sign)
-         (then
-          (f64.add
-           (f64.promote_f32
-            (local.get $x)
-           )
-           (f64.const 6.283185307179586)
-          )
-         )
-         (else
-          (f64.sub
-           (f64.promote_f32
-            (local.get $x)
-           )
-           (f64.const 6.283185307179586)
-          )
-         )
-        )
-       )
-       (local.set $z|30
-        (f64.mul
-         (local.get $x|29)
-         (local.get $x|29)
-        )
-       )
-       (local.set $w|31
-        (f64.mul
-         (local.get $z|30)
-         (local.get $z|30)
-        )
-       )
-       (local.set $r|32
-        (f64.add
-         (f64.const -1.9839334836096632e-04)
-         (f64.mul
-          (local.get $z|30)
-          (f64.const 2.718311493989822e-06)
-         )
-        )
-       )
-       (local.set $s|33
-        (f64.mul
-         (local.get $z|30)
-         (local.get $x|29)
-        )
-       )
-       (br $~lib/math/sin_kernf|inlined.7
-        (f32.demote_f64
+      (call $~lib/math/sin_kernf
+       (if (result f64)
+        (local.get $sign)
+        (then
          (f64.add
-          (f64.add
-           (local.get $x|29)
-           (f64.mul
-            (local.get $s|33)
-            (f64.add
-             (f64.const -0.16666666641626524)
-             (f64.mul
-              (local.get $z|30)
-              (f64.const 0.008333329385889463)
-             )
-            )
-           )
+          (f64.promote_f32
+           (local.get $x)
           )
-          (f64.mul
-           (f64.mul
-            (local.get $s|33)
-            (local.get $w|31)
-           )
-           (local.get $r|32)
+          (f64.const 6.283185307179586)
+         )
+        )
+        (else
+         (f64.sub
+          (f64.promote_f32
+           (local.get $x)
           )
+          (f64.const 6.283185307179586)
          )
         )
        )
@@ -20222,237 +17932,10 @@
    )
   )
   (local.set $n
-   (block $~lib/math/rempio2f|inlined.1 (result i32)
-    (local.set $x|34
-     (local.get $x)
-    )
-    (local.set $u
-     (local.get $ux)
-    )
-    (local.set $sign|36
-     (local.get $sign)
-    )
-    (if
-     (i32.lt_u
-      (local.get $u)
-      (i32.const 1305022427)
-     )
-     (then
-      (local.set $q
-       (f64.nearest
-        (f64.mul
-         (f64.promote_f32
-          (local.get $x|34)
-         )
-         (f64.const 0.6366197723675814)
-        )
-       )
-      )
-      (global.set $~lib/math/rempio2f_y
-       (f64.sub
-        (f64.sub
-         (f64.promote_f32
-          (local.get $x|34)
-         )
-         (f64.mul
-          (local.get $q)
-          (f64.const 1.5707963109016418)
-         )
-        )
-        (f64.mul
-         (local.get $q)
-         (f64.const 1.5893254773528196e-08)
-        )
-       )
-      )
-      (br $~lib/math/rempio2f|inlined.1
-       (i32.trunc_f64_s
-        (local.get $q)
-       )
-      )
-     )
-    )
-    (local.set $q|52
-     (block $~lib/math/pio2f_large_quot|inlined.1 (result i32)
-      (local.set $x|38
-       (local.get $x|34)
-      )
-      (local.set $u|39
-       (local.get $u)
-      )
-      (local.set $offset
-       (i32.sub
-        (i32.shr_s
-         (local.get $u|39)
-         (i32.const 23)
-        )
-        (i32.const 152)
-       )
-      )
-      (local.set $shift
-       (i64.extend_i32_s
-        (i32.and
-         (local.get $offset)
-         (i32.const 63)
-        )
-       )
-      )
-      (local.set $tblPtr
-       (i32.add
-        (i32.const 4608)
-        (i32.shl
-         (i32.shr_s
-          (local.get $offset)
-          (i32.const 6)
-         )
-         (i32.const 3)
-        )
-       )
-      )
-      (local.set $b0
-       (i64.load
-        (local.get $tblPtr)
-       )
-      )
-      (local.set $b1
-       (i64.load offset=8
-        (local.get $tblPtr)
-       )
-      )
-      (if
-       (i64.gt_u
-        (local.get $shift)
-        (i64.const 32)
-       )
-       (then
-        (local.set $b2
-         (i64.load offset=16
-          (local.get $tblPtr)
-         )
-        )
-        (local.set $lo
-         (i64.shr_u
-          (local.get $b2)
-          (i64.sub
-           (i64.const 96)
-           (local.get $shift)
-          )
-         )
-        )
-        (local.set $lo
-         (i64.or
-          (local.get $lo)
-          (i64.shl
-           (local.get $b1)
-           (i64.sub
-            (local.get $shift)
-            (i64.const 32)
-           )
-          )
-         )
-        )
-       )
-       (else
-        (local.set $lo
-         (i64.shr_u
-          (local.get $b1)
-          (i64.sub
-           (i64.const 32)
-           (local.get $shift)
-          )
-         )
-        )
-       )
-      )
-      (local.set $hi
-       (i64.or
-        (i64.shr_u
-         (local.get $b1)
-         (i64.sub
-          (i64.const 64)
-          (local.get $shift)
-         )
-        )
-        (i64.shl
-         (local.get $b0)
-         (local.get $shift)
-        )
-       )
-      )
-      (local.set $mantissa
-       (i64.extend_i32_s
-        (i32.or
-         (i32.and
-          (local.get $u|39)
-          (i32.const 8388607)
-         )
-         (i32.const 8388608)
-        )
-       )
-      )
-      (local.set $product
-       (i64.add
-        (i64.mul
-         (local.get $mantissa)
-         (local.get $hi)
-        )
-        (i64.shr_u
-         (i64.mul
-          (local.get $mantissa)
-          (local.get $lo)
-         )
-         (i64.const 32)
-        )
-       )
-      )
-      (local.set $r|50
-       (i64.shl
-        (local.get $product)
-        (i64.const 2)
-       )
-      )
-      (local.set $q|51
-       (i32.wrap_i64
-        (i64.add
-         (i64.shr_u
-          (local.get $product)
-          (i64.const 62)
-         )
-         (i64.shr_u
-          (local.get $r|50)
-          (i64.const 63)
-         )
-        )
-       )
-      )
-      (global.set $~lib/math/rempio2f_y
-       (f64.mul
-        (f64.copysign
-         (f64.const 8.515303950216386e-20)
-         (f64.promote_f32
-          (local.get $x|38)
-         )
-        )
-        (f64.convert_i64_s
-         (local.get $r|50)
-        )
-       )
-      )
-      (br $~lib/math/pio2f_large_quot|inlined.1
-       (local.get $q|51)
-      )
-     )
-    )
-    (br $~lib/math/rempio2f|inlined.1
-     (select
-      (i32.sub
-       (i32.const 0)
-       (local.get $q|52)
-      )
-      (local.get $q|52)
-      (local.get $sign|36)
-     )
-    )
+   (call $~lib/math/rempio2f
+    (local.get $x)
+    (local.get $ux)
+    (local.get $sign)
    )
   )
   (local.set $y
@@ -20465,119 +17948,13 @@
      (i32.const 1)
     )
     (then
-     (block $~lib/math/cos_kernf|inlined.8 (result f32)
-      (local.set $x|55
-       (local.get $y)
-      )
-      (local.set $z|56
-       (f64.mul
-        (local.get $x|55)
-        (local.get $x|55)
-       )
-      )
-      (local.set $w|57
-       (f64.mul
-        (local.get $z|56)
-        (local.get $z|56)
-       )
-      )
-      (local.set $r|58
-       (f64.add
-        (f64.const -0.001388676377460993)
-        (f64.mul
-         (local.get $z|56)
-         (f64.const 2.439044879627741e-05)
-        )
-       )
-      )
-      (br $~lib/math/cos_kernf|inlined.8
-       (f32.demote_f64
-        (f64.add
-         (f64.add
-          (f64.add
-           (f64.promote_f32
-            (f32.const 1)
-           )
-           (f64.mul
-            (local.get $z|56)
-            (f64.const -0.499999997251031)
-           )
-          )
-          (f64.mul
-           (local.get $w|57)
-           (f64.const 0.04166662332373906)
-          )
-         )
-         (f64.mul
-          (f64.mul
-           (local.get $w|57)
-           (local.get $z|56)
-          )
-          (local.get $r|58)
-         )
-        )
-       )
-      )
+     (call $~lib/math/cos_kernf
+      (local.get $y)
      )
     )
     (else
-     (block $~lib/math/sin_kernf|inlined.8 (result f32)
-      (local.set $x|59
-       (local.get $y)
-      )
-      (local.set $z|60
-       (f64.mul
-        (local.get $x|59)
-        (local.get $x|59)
-       )
-      )
-      (local.set $w|61
-       (f64.mul
-        (local.get $z|60)
-        (local.get $z|60)
-       )
-      )
-      (local.set $r|62
-       (f64.add
-        (f64.const -1.9839334836096632e-04)
-        (f64.mul
-         (local.get $z|60)
-         (f64.const 2.718311493989822e-06)
-        )
-       )
-      )
-      (local.set $s|63
-       (f64.mul
-        (local.get $z|60)
-        (local.get $x|59)
-       )
-      )
-      (br $~lib/math/sin_kernf|inlined.8
-       (f32.demote_f64
-        (f64.add
-         (f64.add
-          (local.get $x|59)
-          (f64.mul
-           (local.get $s|63)
-           (f64.add
-            (f64.const -0.16666666641626524)
-            (f64.mul
-             (local.get $z|60)
-             (f64.const 0.008333329385889463)
-            )
-           )
-          )
-         )
-         (f64.mul
-          (f64.mul
-           (local.get $s|63)
-           (local.get $w|61)
-          )
-          (local.get $r|62)
-         )
-        )
-       )
-      )
+     (call $~lib/math/sin_kernf
+      (local.get $y)
      )
     )
    )
@@ -20617,9 +17994,6 @@
   (local $w i32)
   (local $h f64)
   (local $t f64)
-  (local $x|6 f64)
-  (local $sign f64)
-  (local $scale f64)
   (local.set $u
    (i64.and
     (i64.reinterpret_f64
@@ -20722,51 +18096,11 @@
    )
   )
   (return
-   (block $~lib/math/expo2|inlined.1 (result f64)
-    (local.set $x|6
-     (local.get $a)
-    )
-    (local.set $sign
-     (f64.mul
-      (f64.const 2)
-      (local.get $h)
-     )
-    )
-    (local.set $scale
-     (f64.reinterpret_i64
-      (i64.shl
-       (i64.extend_i32_u
-        (i32.shl
-         (i32.add
-          (i32.const 1023)
-          (i32.div_u
-           (i32.const 2043)
-           (i32.const 2)
-          )
-         )
-         (i32.const 20)
-        )
-       )
-       (i64.const 32)
-      )
-     )
-    )
-    (br $~lib/math/expo2|inlined.1
-     (f64.mul
-      (f64.mul
-       (call $~lib/math/NativeMath.exp
-        (f64.sub
-         (local.get $x|6)
-         (f64.const 1416.0996898839683)
-        )
-       )
-       (f64.mul
-        (local.get $sign)
-        (local.get $scale)
-       )
-      )
-      (local.get $scale)
-     )
+   (call $~lib/math/expo2
+    (local.get $a)
+    (f64.mul
+     (f64.const 2)
+     (local.get $h)
     )
    )
   )
@@ -20803,9 +18137,6 @@
   (local $a f32)
   (local $h f32)
   (local $t f32)
-  (local $x|5 f32)
-  (local $sign f32)
-  (local $scale f32)
   (local.set $u
    (i32.and
     (i32.reinterpret_f32
@@ -20900,46 +18231,11 @@
    )
   )
   (return
-   (block $~lib/math/expo2f|inlined.1 (result f32)
-    (local.set $x|5
-     (local.get $a)
-    )
-    (local.set $sign
-     (f32.mul
-      (f32.const 2)
-      (local.get $h)
-     )
-    )
-    (local.set $scale
-     (f32.reinterpret_i32
-      (i32.shl
-       (i32.add
-        (i32.const 127)
-        (i32.shr_u
-         (i32.const 235)
-         (i32.const 1)
-        )
-       )
-       (i32.const 23)
-      )
-     )
-    )
-    (br $~lib/math/expo2f|inlined.1
-     (f32.mul
-      (f32.mul
-       (call $~lib/math/NativeMathf.exp
-        (f32.sub
-         (local.get $x|5)
-         (f32.const 162.88958740234375)
-        )
-       )
-       (f32.mul
-        (local.get $sign)
-        (local.get $scale)
-       )
-      )
-      (local.get $scale)
-     )
+   (call $~lib/math/expo2f
+    (local.get $a)
+    (f32.mul
+     (f32.const 2)
+     (local.get $h)
     )
    )
   )
@@ -20956,20 +18252,19 @@
    )
   )
  )
+ (func $~lib/math/NativeMath.sqrt (param $x f64) (result f64)
+  (return
+   (f64.sqrt
+    (local.get $x)
+   )
+  )
+ )
  (func $std/math/test_sqrt (param $value f64) (param $expected f64) (param $error f64) (param $flags i32) (result i32)
-  (local $x f64)
   (return
    (if (result i32)
     (call $std/math/check<f64>
-     (block $~lib/math/NativeMath.sqrt|inlined.0 (result f64)
-      (local.set $x
-       (local.get $value)
-      )
-      (br $~lib/math/NativeMath.sqrt|inlined.0
-       (f64.sqrt
-        (local.get $x)
-       )
-      )
+     (call $~lib/math/NativeMath.sqrt
+      (local.get $value)
      )
      (local.get $expected)
      (local.get $error)
@@ -20991,19 +18286,18 @@
    )
   )
  )
+ (func $~lib/math/NativeMathf.sqrt (param $x f32) (result f32)
+  (return
+   (f32.sqrt
+    (local.get $x)
+   )
+  )
+ )
  (func $std/math/test_sqrtf (param $value f32) (param $expected f32) (param $error f32) (param $flags i32) (result i32)
-  (local $x f32)
   (return
    (call $std/math/check<f32>
-    (block $~lib/math/NativeMathf.sqrt|inlined.0 (result f32)
-     (local.set $x
-      (local.get $value)
-     )
-     (br $~lib/math/NativeMathf.sqrt|inlined.0
-      (f32.sqrt
-       (local.get $x)
-      )
-     )
+    (call $~lib/math/NativeMathf.sqrt
+     (local.get $value)
     )
     (local.get $expected)
     (local.get $error)
@@ -21338,25 +18632,6 @@
   (local $u i64)
   (local $ux i32)
   (local $sign i32)
-  (local $x|4 f64)
-  (local $u|5 i64)
-  (local $sign|6 i32)
-  (local $ix i32)
-  (local $q i32)
-  (local $z f64)
-  (local $y0 f64)
-  (local $y1 f64)
-  (local $q|12 f64)
-  (local $r f64)
-  (local $w f64)
-  (local $j i32)
-  (local $y0|16 f64)
-  (local $hi i32)
-  (local $i i32)
-  (local $t f64)
-  (local $t|20 f64)
-  (local $y1|21 f64)
-  (local $q|22 i32)
   (local $n i32)
   (local.set $u
    (i64.reinterpret_f64
@@ -21424,380 +18699,10 @@
    )
   )
   (local.set $n
-   (block $~lib/math/rempio2|inlined.2 (result i32)
-    (local.set $x|4
-     (local.get $x)
-    )
-    (local.set $u|5
-     (local.get $u)
-    )
-    (local.set $sign|6
-     (local.get $sign)
-    )
-    (local.set $ix
-     (i32.and
-      (i32.wrap_i64
-       (i64.shr_u
-        (local.get $u|5)
-        (i64.const 32)
-       )
-      )
-      (i32.const 2147483647)
-     )
-    )
-    (drop
-     (i32.lt_s
-      (i32.const 0)
-      (i32.const 1)
-     )
-    )
-    (if
-     (i32.lt_u
-      (local.get $ix)
-      (i32.const 1073928572)
-     )
-     (then
-      (local.set $q
-       (i32.const 1)
-      )
-      (if
-       (i32.eqz
-        (local.get $sign|6)
-       )
-       (then
-        (local.set $z
-         (f64.sub
-          (local.get $x|4)
-          (f64.const 1.5707963267341256)
-         )
-        )
-        (if
-         (i32.ne
-          (local.get $ix)
-          (i32.const 1073291771)
-         )
-         (then
-          (local.set $y0
-           (f64.sub
-            (local.get $z)
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-          (local.set $y1
-           (f64.sub
-            (f64.sub
-             (local.get $z)
-             (local.get $y0)
-            )
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-         )
-         (else
-          (local.set $z
-           (f64.sub
-            (local.get $z)
-            (f64.const 6.077100506303966e-11)
-           )
-          )
-          (local.set $y0
-           (f64.sub
-            (local.get $z)
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-          (local.set $y1
-           (f64.sub
-            (f64.sub
-             (local.get $z)
-             (local.get $y0)
-            )
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-         )
-        )
-       )
-       (else
-        (local.set $z
-         (f64.add
-          (local.get $x|4)
-          (f64.const 1.5707963267341256)
-         )
-        )
-        (if
-         (i32.ne
-          (local.get $ix)
-          (i32.const 1073291771)
-         )
-         (then
-          (local.set $y0
-           (f64.add
-            (local.get $z)
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-          (local.set $y1
-           (f64.add
-            (f64.sub
-             (local.get $z)
-             (local.get $y0)
-            )
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-         )
-         (else
-          (local.set $z
-           (f64.add
-            (local.get $z)
-            (f64.const 6.077100506303966e-11)
-           )
-          )
-          (local.set $y0
-           (f64.add
-            (local.get $z)
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-          (local.set $y1
-           (f64.add
-            (f64.sub
-             (local.get $z)
-             (local.get $y0)
-            )
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-         )
-        )
-        (local.set $q
-         (i32.const -1)
-        )
-       )
-      )
-      (global.set $~lib/math/rempio2_y0
-       (local.get $y0)
-      )
-      (global.set $~lib/math/rempio2_y1
-       (local.get $y1)
-      )
-      (br $~lib/math/rempio2|inlined.2
-       (local.get $q)
-      )
-     )
-    )
-    (if
-     (i32.lt_u
-      (local.get $ix)
-      (i32.const 1094263291)
-     )
-     (then
-      (local.set $q|12
-       (f64.nearest
-        (f64.mul
-         (local.get $x|4)
-         (f64.const 0.6366197723675814)
-        )
-       )
-      )
-      (local.set $r
-       (f64.sub
-        (local.get $x|4)
-        (f64.mul
-         (local.get $q|12)
-         (f64.const 1.5707963267341256)
-        )
-       )
-      )
-      (local.set $w
-       (f64.mul
-        (local.get $q|12)
-        (f64.const 6.077100506506192e-11)
-       )
-      )
-      (local.set $j
-       (i32.shr_u
-        (local.get $ix)
-        (i32.const 20)
-       )
-      )
-      (local.set $y0|16
-       (f64.sub
-        (local.get $r)
-        (local.get $w)
-       )
-      )
-      (local.set $hi
-       (i32.wrap_i64
-        (i64.shr_u
-         (i64.reinterpret_f64
-          (local.get $y0|16)
-         )
-         (i64.const 32)
-        )
-       )
-      )
-      (local.set $i
-       (i32.sub
-        (local.get $j)
-        (i32.and
-         (i32.shr_u
-          (local.get $hi)
-          (i32.const 20)
-         )
-         (i32.const 2047)
-        )
-       )
-      )
-      (if
-       (i32.gt_u
-        (local.get $i)
-        (i32.const 16)
-       )
-       (then
-        (local.set $t
-         (local.get $r)
-        )
-        (local.set $w
-         (f64.mul
-          (local.get $q|12)
-          (f64.const 6.077100506303966e-11)
-         )
-        )
-        (local.set $r
-         (f64.sub
-          (local.get $t)
-          (local.get $w)
-         )
-        )
-        (local.set $w
-         (f64.sub
-          (f64.mul
-           (local.get $q|12)
-           (f64.const 2.0222662487959506e-21)
-          )
-          (f64.sub
-           (f64.sub
-            (local.get $t)
-            (local.get $r)
-           )
-           (local.get $w)
-          )
-         )
-        )
-        (local.set $y0|16
-         (f64.sub
-          (local.get $r)
-          (local.get $w)
-         )
-        )
-        (local.set $hi
-         (i32.wrap_i64
-          (i64.shr_u
-           (i64.reinterpret_f64
-            (local.get $y0|16)
-           )
-           (i64.const 32)
-          )
-         )
-        )
-        (local.set $i
-         (i32.sub
-          (local.get $j)
-          (i32.and
-           (i32.shr_u
-            (local.get $hi)
-            (i32.const 20)
-           )
-           (i32.const 2047)
-          )
-         )
-        )
-        (if
-         (i32.gt_u
-          (local.get $i)
-          (i32.const 49)
-         )
-         (then
-          (local.set $t|20
-           (local.get $r)
-          )
-          (local.set $w
-           (f64.mul
-            (local.get $q|12)
-            (f64.const 2.0222662487111665e-21)
-           )
-          )
-          (local.set $r
-           (f64.sub
-            (local.get $t|20)
-            (local.get $w)
-           )
-          )
-          (local.set $w
-           (f64.sub
-            (f64.mul
-             (local.get $q|12)
-             (f64.const 8.4784276603689e-32)
-            )
-            (f64.sub
-             (f64.sub
-              (local.get $t|20)
-              (local.get $r)
-             )
-             (local.get $w)
-            )
-           )
-          )
-          (local.set $y0|16
-           (f64.sub
-            (local.get $r)
-            (local.get $w)
-           )
-          )
-         )
-        )
-       )
-      )
-      (local.set $y1|21
-       (f64.sub
-        (f64.sub
-         (local.get $r)
-         (local.get $y0|16)
-        )
-        (local.get $w)
-       )
-      )
-      (global.set $~lib/math/rempio2_y0
-       (local.get $y0|16)
-      )
-      (global.set $~lib/math/rempio2_y1
-       (local.get $y1|21)
-      )
-      (br $~lib/math/rempio2|inlined.2
-       (i32.trunc_f64_s
-        (local.get $q|12)
-       )
-      )
-     )
-    )
-    (local.set $q|22
-     (call $~lib/math/pio2_large_quot
-      (local.get $x|4)
-      (local.get $u|5)
-     )
-    )
-    (br $~lib/math/rempio2|inlined.2
-     (select
-      (i32.sub
-       (i32.const 0)
-       (local.get $q|22)
-      )
-      (local.get $q|22)
-      (local.get $sign|6)
-     )
-    )
+   (call $~lib/math/rempio2
+    (local.get $x)
+    (local.get $u)
+    (local.get $sign)
    )
   )
   (return
@@ -21844,78 +18749,106 @@
    )
   )
  )
- (func $~lib/math/NativeMathf.tan (param $x f32) (result f32)
-  (local $ux i32)
-  (local $sign i32)
-  (local $x|3 f64)
-  (local $odd i32)
+ (func $~lib/math/tan_kernf (param $x f64) (param $odd i32) (result f32)
   (local $z f64)
   (local $r f64)
   (local $t f64)
   (local $w f64)
   (local $s f64)
   (local $u f64)
-  (local $x|11 f64)
-  (local $odd|12 i32)
-  (local $z|13 f64)
-  (local $r|14 f64)
-  (local $t|15 f64)
-  (local $w|16 f64)
-  (local $s|17 f64)
-  (local $u|18 f64)
-  (local $x|19 f64)
-  (local $odd|20 i32)
-  (local $z|21 f64)
-  (local $r|22 f64)
-  (local $t|23 f64)
-  (local $w|24 f64)
-  (local $s|25 f64)
-  (local $u|26 f64)
-  (local $x|27 f64)
-  (local $odd|28 i32)
-  (local $z|29 f64)
-  (local $r|30 f64)
-  (local $t|31 f64)
-  (local $w|32 f64)
-  (local $s|33 f64)
-  (local $u|34 f64)
-  (local $x|35 f64)
-  (local $odd|36 i32)
-  (local $z|37 f64)
-  (local $r|38 f64)
-  (local $t|39 f64)
-  (local $w|40 f64)
-  (local $s|41 f64)
-  (local $u|42 f64)
-  (local $x|43 f32)
-  (local $u|44 i32)
-  (local $sign|45 i32)
-  (local $q f64)
-  (local $x|47 f32)
-  (local $u|48 i32)
-  (local $offset i32)
-  (local $shift i64)
-  (local $tblPtr i32)
-  (local $b0 i64)
-  (local $b1 i64)
-  (local $lo i64)
-  (local $b2 i64)
-  (local $hi i64)
-  (local $mantissa i64)
-  (local $product i64)
-  (local $r|59 i64)
-  (local $q|60 i32)
-  (local $q|61 i32)
+  (local.set $z
+   (f64.mul
+    (local.get $x)
+    (local.get $x)
+   )
+  )
+  (local.set $r
+   (f64.add
+    (f64.const 0.002974357433599673)
+    (f64.mul
+     (local.get $z)
+     (f64.const 0.009465647849436732)
+    )
+   )
+  )
+  (local.set $t
+   (f64.add
+    (f64.const 0.05338123784456704)
+    (f64.mul
+     (local.get $z)
+     (f64.const 0.024528318116654728)
+    )
+   )
+  )
+  (local.set $w
+   (f64.mul
+    (local.get $z)
+    (local.get $z)
+   )
+  )
+  (local.set $s
+   (f64.mul
+    (local.get $z)
+    (local.get $x)
+   )
+  )
+  (local.set $u
+   (f64.add
+    (f64.const 0.3333313950307914)
+    (f64.mul
+     (local.get $z)
+     (f64.const 0.13339200271297674)
+    )
+   )
+  )
+  (local.set $r
+   (f64.add
+    (f64.add
+     (local.get $x)
+     (f64.mul
+      (local.get $s)
+      (local.get $u)
+     )
+    )
+    (f64.mul
+     (f64.mul
+      (local.get $s)
+      (local.get $w)
+     )
+     (f64.add
+      (local.get $t)
+      (f64.mul
+       (local.get $w)
+       (local.get $r)
+      )
+     )
+    )
+   )
+  )
+  (return
+   (f32.demote_f64
+    (if (result f64)
+     (local.get $odd)
+     (then
+      (f64.div
+       (f64.promote_f32
+        (f32.const -1)
+       )
+       (local.get $r)
+      )
+     )
+     (else
+      (local.get $r)
+     )
+    )
+   )
+  )
+ )
+ (func $~lib/math/NativeMathf.tan (param $x f32) (result f32)
+  (local $ux i32)
+  (local $sign i32)
   (local $n i32)
   (local $y f64)
-  (local $x|64 f64)
-  (local $odd|65 i32)
-  (local $z|66 f64)
-  (local $r|67 f64)
-  (local $t|68 f64)
-  (local $w|69 f64)
-  (local $s|70 f64)
-  (local $u|71 f64)
   (local.set $ux
    (i32.reinterpret_f32
     (local.get $x)
@@ -21951,102 +18884,11 @@
      )
     )
     (return
-     (block $~lib/math/tan_kernf|inlined.0 (result f32)
-      (local.set $x|3
-       (f64.promote_f32
-        (local.get $x)
-       )
+     (call $~lib/math/tan_kernf
+      (f64.promote_f32
+       (local.get $x)
       )
-      (local.set $odd
-       (i32.const 0)
-      )
-      (local.set $z
-       (f64.mul
-        (local.get $x|3)
-        (local.get $x|3)
-       )
-      )
-      (local.set $r
-       (f64.add
-        (f64.const 0.002974357433599673)
-        (f64.mul
-         (local.get $z)
-         (f64.const 0.009465647849436732)
-        )
-       )
-      )
-      (local.set $t
-       (f64.add
-        (f64.const 0.05338123784456704)
-        (f64.mul
-         (local.get $z)
-         (f64.const 0.024528318116654728)
-        )
-       )
-      )
-      (local.set $w
-       (f64.mul
-        (local.get $z)
-        (local.get $z)
-       )
-      )
-      (local.set $s
-       (f64.mul
-        (local.get $z)
-        (local.get $x|3)
-       )
-      )
-      (local.set $u
-       (f64.add
-        (f64.const 0.3333313950307914)
-        (f64.mul
-         (local.get $z)
-         (f64.const 0.13339200271297674)
-        )
-       )
-      )
-      (local.set $r
-       (f64.add
-        (f64.add
-         (local.get $x|3)
-         (f64.mul
-          (local.get $s)
-          (local.get $u)
-         )
-        )
-        (f64.mul
-         (f64.mul
-          (local.get $s)
-          (local.get $w)
-         )
-         (f64.add
-          (local.get $t)
-          (f64.mul
-           (local.get $w)
-           (local.get $r)
-          )
-         )
-        )
-       )
-      )
-      (br $~lib/math/tan_kernf|inlined.0
-       (f32.demote_f64
-        (if (result f64)
-         (local.get $odd)
-         (then
-          (f64.div
-           (f64.promote_f32
-            (f32.const -1)
-           )
-           (local.get $r)
-          )
-         )
-         (else
-          (local.get $r)
-         )
-        )
-       )
-      )
+      (i32.const 0)
      )
     )
    )
@@ -22071,235 +18913,53 @@
       )
       (then
        (return
-        (block $~lib/math/tan_kernf|inlined.1 (result f32)
-         (local.set $x|11
-          (if (result f64)
-           (local.get $sign)
-           (then
-            (f64.add
-             (f64.promote_f32
-              (local.get $x)
-             )
-             (f64.const 1.5707963267948966)
-            )
-           )
-           (else
-            (f64.sub
-             (f64.promote_f32
-              (local.get $x)
-             )
-             (f64.const 1.5707963267948966)
-            )
-           )
-          )
-         )
-         (local.set $odd|12
-          (i32.const 1)
-         )
-         (local.set $z|13
-          (f64.mul
-           (local.get $x|11)
-           (local.get $x|11)
-          )
-         )
-         (local.set $r|14
-          (f64.add
-           (f64.const 0.002974357433599673)
-           (f64.mul
-            (local.get $z|13)
-            (f64.const 0.009465647849436732)
-           )
-          )
-         )
-         (local.set $t|15
-          (f64.add
-           (f64.const 0.05338123784456704)
-           (f64.mul
-            (local.get $z|13)
-            (f64.const 0.024528318116654728)
-           )
-          )
-         )
-         (local.set $w|16
-          (f64.mul
-           (local.get $z|13)
-           (local.get $z|13)
-          )
-         )
-         (local.set $s|17
-          (f64.mul
-           (local.get $z|13)
-           (local.get $x|11)
-          )
-         )
-         (local.set $u|18
-          (f64.add
-           (f64.const 0.3333313950307914)
-           (f64.mul
-            (local.get $z|13)
-            (f64.const 0.13339200271297674)
-           )
-          )
-         )
-         (local.set $r|14
-          (f64.add
+        (call $~lib/math/tan_kernf
+         (if (result f64)
+          (local.get $sign)
+          (then
            (f64.add
-            (local.get $x|11)
-            (f64.mul
-             (local.get $s|17)
-             (local.get $u|18)
+            (f64.promote_f32
+             (local.get $x)
             )
+            (f64.const 1.5707963267948966)
            )
-           (f64.mul
-            (f64.mul
-             (local.get $s|17)
-             (local.get $w|16)
+          )
+          (else
+           (f64.sub
+            (f64.promote_f32
+             (local.get $x)
             )
-            (f64.add
-             (local.get $t|15)
-             (f64.mul
-              (local.get $w|16)
-              (local.get $r|14)
-             )
-            )
+            (f64.const 1.5707963267948966)
            )
           )
          )
-         (br $~lib/math/tan_kernf|inlined.1
-          (f32.demote_f64
-           (if (result f64)
-            (local.get $odd|12)
-            (then
-             (f64.div
-              (f64.promote_f32
-               (f32.const -1)
-              )
-              (local.get $r|14)
-             )
-            )
-            (else
-             (local.get $r|14)
-            )
-           )
-          )
-         )
+         (i32.const 1)
         )
        )
       )
       (else
        (return
-        (block $~lib/math/tan_kernf|inlined.2 (result f32)
-         (local.set $x|19
-          (if (result f64)
-           (local.get $sign)
-           (then
-            (f64.add
-             (f64.promote_f32
-              (local.get $x)
-             )
-             (f64.const 3.141592653589793)
-            )
-           )
-           (else
-            (f64.sub
-             (f64.promote_f32
-              (local.get $x)
-             )
-             (f64.const 3.141592653589793)
-            )
-           )
-          )
-         )
-         (local.set $odd|20
-          (i32.const 0)
-         )
-         (local.set $z|21
-          (f64.mul
-           (local.get $x|19)
-           (local.get $x|19)
-          )
-         )
-         (local.set $r|22
-          (f64.add
-           (f64.const 0.002974357433599673)
-           (f64.mul
-            (local.get $z|21)
-            (f64.const 0.009465647849436732)
-           )
-          )
-         )
-         (local.set $t|23
-          (f64.add
-           (f64.const 0.05338123784456704)
-           (f64.mul
-            (local.get $z|21)
-            (f64.const 0.024528318116654728)
-           )
-          )
-         )
-         (local.set $w|24
-          (f64.mul
-           (local.get $z|21)
-           (local.get $z|21)
-          )
-         )
-         (local.set $s|25
-          (f64.mul
-           (local.get $z|21)
-           (local.get $x|19)
-          )
-         )
-         (local.set $u|26
-          (f64.add
-           (f64.const 0.3333313950307914)
-           (f64.mul
-            (local.get $z|21)
-            (f64.const 0.13339200271297674)
-           )
-          )
-         )
-         (local.set $r|22
-          (f64.add
+        (call $~lib/math/tan_kernf
+         (if (result f64)
+          (local.get $sign)
+          (then
            (f64.add
-            (local.get $x|19)
-            (f64.mul
-             (local.get $s|25)
-             (local.get $u|26)
+            (f64.promote_f32
+             (local.get $x)
             )
+            (f64.const 3.141592653589793)
            )
-           (f64.mul
-            (f64.mul
-             (local.get $s|25)
-             (local.get $w|24)
+          )
+          (else
+           (f64.sub
+            (f64.promote_f32
+             (local.get $x)
             )
-            (f64.add
-             (local.get $t|23)
-             (f64.mul
-              (local.get $w|24)
-              (local.get $r|22)
-             )
-            )
+            (f64.const 3.141592653589793)
            )
           )
          )
-         (br $~lib/math/tan_kernf|inlined.2
-          (f32.demote_f64
-           (if (result f64)
-            (local.get $odd|20)
-            (then
-             (f64.div
-              (f64.promote_f32
-               (f32.const -1)
-              )
-              (local.get $r|22)
-             )
-            )
-            (else
-             (local.get $r|22)
-            )
-           )
-          )
-         )
+         (i32.const 0)
         )
        )
       )
@@ -22319,235 +18979,53 @@
       )
       (then
        (return
-        (block $~lib/math/tan_kernf|inlined.3 (result f32)
-         (local.set $x|27
-          (if (result f64)
-           (local.get $sign)
-           (then
-            (f64.add
-             (f64.promote_f32
-              (local.get $x)
-             )
-             (f64.const 4.71238898038469)
-            )
-           )
-           (else
-            (f64.sub
-             (f64.promote_f32
-              (local.get $x)
-             )
-             (f64.const 4.71238898038469)
-            )
-           )
-          )
-         )
-         (local.set $odd|28
-          (i32.const 1)
-         )
-         (local.set $z|29
-          (f64.mul
-           (local.get $x|27)
-           (local.get $x|27)
-          )
-         )
-         (local.set $r|30
-          (f64.add
-           (f64.const 0.002974357433599673)
-           (f64.mul
-            (local.get $z|29)
-            (f64.const 0.009465647849436732)
-           )
-          )
-         )
-         (local.set $t|31
-          (f64.add
-           (f64.const 0.05338123784456704)
-           (f64.mul
-            (local.get $z|29)
-            (f64.const 0.024528318116654728)
-           )
-          )
-         )
-         (local.set $w|32
-          (f64.mul
-           (local.get $z|29)
-           (local.get $z|29)
-          )
-         )
-         (local.set $s|33
-          (f64.mul
-           (local.get $z|29)
-           (local.get $x|27)
-          )
-         )
-         (local.set $u|34
-          (f64.add
-           (f64.const 0.3333313950307914)
-           (f64.mul
-            (local.get $z|29)
-            (f64.const 0.13339200271297674)
-           )
-          )
-         )
-         (local.set $r|30
-          (f64.add
+        (call $~lib/math/tan_kernf
+         (if (result f64)
+          (local.get $sign)
+          (then
            (f64.add
-            (local.get $x|27)
-            (f64.mul
-             (local.get $s|33)
-             (local.get $u|34)
+            (f64.promote_f32
+             (local.get $x)
             )
+            (f64.const 4.71238898038469)
            )
-           (f64.mul
-            (f64.mul
-             (local.get $s|33)
-             (local.get $w|32)
+          )
+          (else
+           (f64.sub
+            (f64.promote_f32
+             (local.get $x)
             )
-            (f64.add
-             (local.get $t|31)
-             (f64.mul
-              (local.get $w|32)
-              (local.get $r|30)
-             )
-            )
+            (f64.const 4.71238898038469)
            )
           )
          )
-         (br $~lib/math/tan_kernf|inlined.3
-          (f32.demote_f64
-           (if (result f64)
-            (local.get $odd|28)
-            (then
-             (f64.div
-              (f64.promote_f32
-               (f32.const -1)
-              )
-              (local.get $r|30)
-             )
-            )
-            (else
-             (local.get $r|30)
-            )
-           )
-          )
-         )
+         (i32.const 1)
         )
        )
       )
       (else
        (return
-        (block $~lib/math/tan_kernf|inlined.4 (result f32)
-         (local.set $x|35
-          (if (result f64)
-           (local.get $sign)
-           (then
-            (f64.add
-             (f64.promote_f32
-              (local.get $x)
-             )
-             (f64.const 6.283185307179586)
-            )
-           )
-           (else
-            (f64.sub
-             (f64.promote_f32
-              (local.get $x)
-             )
-             (f64.const 6.283185307179586)
-            )
-           )
-          )
-         )
-         (local.set $odd|36
-          (i32.const 0)
-         )
-         (local.set $z|37
-          (f64.mul
-           (local.get $x|35)
-           (local.get $x|35)
-          )
-         )
-         (local.set $r|38
-          (f64.add
-           (f64.const 0.002974357433599673)
-           (f64.mul
-            (local.get $z|37)
-            (f64.const 0.009465647849436732)
-           )
-          )
-         )
-         (local.set $t|39
-          (f64.add
-           (f64.const 0.05338123784456704)
-           (f64.mul
-            (local.get $z|37)
-            (f64.const 0.024528318116654728)
-           )
-          )
-         )
-         (local.set $w|40
-          (f64.mul
-           (local.get $z|37)
-           (local.get $z|37)
-          )
-         )
-         (local.set $s|41
-          (f64.mul
-           (local.get $z|37)
-           (local.get $x|35)
-          )
-         )
-         (local.set $u|42
-          (f64.add
-           (f64.const 0.3333313950307914)
-           (f64.mul
-            (local.get $z|37)
-            (f64.const 0.13339200271297674)
-           )
-          )
-         )
-         (local.set $r|38
-          (f64.add
+        (call $~lib/math/tan_kernf
+         (if (result f64)
+          (local.get $sign)
+          (then
            (f64.add
-            (local.get $x|35)
-            (f64.mul
-             (local.get $s|41)
-             (local.get $u|42)
+            (f64.promote_f32
+             (local.get $x)
             )
+            (f64.const 6.283185307179586)
            )
-           (f64.mul
-            (f64.mul
-             (local.get $s|41)
-             (local.get $w|40)
+          )
+          (else
+           (f64.sub
+            (f64.promote_f32
+             (local.get $x)
             )
-            (f64.add
-             (local.get $t|39)
-             (f64.mul
-              (local.get $w|40)
-              (local.get $r|38)
-             )
-            )
+            (f64.const 6.283185307179586)
            )
           )
          )
-         (br $~lib/math/tan_kernf|inlined.4
-          (f32.demote_f64
-           (if (result f64)
-            (local.get $odd|36)
-            (then
-             (f64.div
-              (f64.promote_f32
-               (f32.const -1)
-              )
-              (local.get $r|38)
-             )
-            )
-            (else
-             (local.get $r|38)
-            )
-           )
-          )
-         )
+         (i32.const 0)
         )
        )
       )
@@ -22570,339 +19048,21 @@
    )
   )
   (local.set $n
-   (block $~lib/math/rempio2f|inlined.2 (result i32)
-    (local.set $x|43
-     (local.get $x)
-    )
-    (local.set $u|44
-     (local.get $ux)
-    )
-    (local.set $sign|45
-     (local.get $sign)
-    )
-    (if
-     (i32.lt_u
-      (local.get $u|44)
-      (i32.const 1305022427)
-     )
-     (then
-      (local.set $q
-       (f64.nearest
-        (f64.mul
-         (f64.promote_f32
-          (local.get $x|43)
-         )
-         (f64.const 0.6366197723675814)
-        )
-       )
-      )
-      (global.set $~lib/math/rempio2f_y
-       (f64.sub
-        (f64.sub
-         (f64.promote_f32
-          (local.get $x|43)
-         )
-         (f64.mul
-          (local.get $q)
-          (f64.const 1.5707963109016418)
-         )
-        )
-        (f64.mul
-         (local.get $q)
-         (f64.const 1.5893254773528196e-08)
-        )
-       )
-      )
-      (br $~lib/math/rempio2f|inlined.2
-       (i32.trunc_f64_s
-        (local.get $q)
-       )
-      )
-     )
-    )
-    (local.set $q|61
-     (block $~lib/math/pio2f_large_quot|inlined.2 (result i32)
-      (local.set $x|47
-       (local.get $x|43)
-      )
-      (local.set $u|48
-       (local.get $u|44)
-      )
-      (local.set $offset
-       (i32.sub
-        (i32.shr_s
-         (local.get $u|48)
-         (i32.const 23)
-        )
-        (i32.const 152)
-       )
-      )
-      (local.set $shift
-       (i64.extend_i32_s
-        (i32.and
-         (local.get $offset)
-         (i32.const 63)
-        )
-       )
-      )
-      (local.set $tblPtr
-       (i32.add
-        (i32.const 4608)
-        (i32.shl
-         (i32.shr_s
-          (local.get $offset)
-          (i32.const 6)
-         )
-         (i32.const 3)
-        )
-       )
-      )
-      (local.set $b0
-       (i64.load
-        (local.get $tblPtr)
-       )
-      )
-      (local.set $b1
-       (i64.load offset=8
-        (local.get $tblPtr)
-       )
-      )
-      (if
-       (i64.gt_u
-        (local.get $shift)
-        (i64.const 32)
-       )
-       (then
-        (local.set $b2
-         (i64.load offset=16
-          (local.get $tblPtr)
-         )
-        )
-        (local.set $lo
-         (i64.shr_u
-          (local.get $b2)
-          (i64.sub
-           (i64.const 96)
-           (local.get $shift)
-          )
-         )
-        )
-        (local.set $lo
-         (i64.or
-          (local.get $lo)
-          (i64.shl
-           (local.get $b1)
-           (i64.sub
-            (local.get $shift)
-            (i64.const 32)
-           )
-          )
-         )
-        )
-       )
-       (else
-        (local.set $lo
-         (i64.shr_u
-          (local.get $b1)
-          (i64.sub
-           (i64.const 32)
-           (local.get $shift)
-          )
-         )
-        )
-       )
-      )
-      (local.set $hi
-       (i64.or
-        (i64.shr_u
-         (local.get $b1)
-         (i64.sub
-          (i64.const 64)
-          (local.get $shift)
-         )
-        )
-        (i64.shl
-         (local.get $b0)
-         (local.get $shift)
-        )
-       )
-      )
-      (local.set $mantissa
-       (i64.extend_i32_s
-        (i32.or
-         (i32.and
-          (local.get $u|48)
-          (i32.const 8388607)
-         )
-         (i32.const 8388608)
-        )
-       )
-      )
-      (local.set $product
-       (i64.add
-        (i64.mul
-         (local.get $mantissa)
-         (local.get $hi)
-        )
-        (i64.shr_u
-         (i64.mul
-          (local.get $mantissa)
-          (local.get $lo)
-         )
-         (i64.const 32)
-        )
-       )
-      )
-      (local.set $r|59
-       (i64.shl
-        (local.get $product)
-        (i64.const 2)
-       )
-      )
-      (local.set $q|60
-       (i32.wrap_i64
-        (i64.add
-         (i64.shr_u
-          (local.get $product)
-          (i64.const 62)
-         )
-         (i64.shr_u
-          (local.get $r|59)
-          (i64.const 63)
-         )
-        )
-       )
-      )
-      (global.set $~lib/math/rempio2f_y
-       (f64.mul
-        (f64.copysign
-         (f64.const 8.515303950216386e-20)
-         (f64.promote_f32
-          (local.get $x|47)
-         )
-        )
-        (f64.convert_i64_s
-         (local.get $r|59)
-        )
-       )
-      )
-      (br $~lib/math/pio2f_large_quot|inlined.2
-       (local.get $q|60)
-      )
-     )
-    )
-    (br $~lib/math/rempio2f|inlined.2
-     (select
-      (i32.sub
-       (i32.const 0)
-       (local.get $q|61)
-      )
-      (local.get $q|61)
-      (local.get $sign|45)
-     )
-    )
+   (call $~lib/math/rempio2f
+    (local.get $x)
+    (local.get $ux)
+    (local.get $sign)
    )
   )
   (local.set $y
    (global.get $~lib/math/rempio2f_y)
   )
   (return
-   (block $~lib/math/tan_kernf|inlined.5 (result f32)
-    (local.set $x|64
-     (local.get $y)
-    )
-    (local.set $odd|65
-     (i32.and
-      (local.get $n)
-      (i32.const 1)
-     )
-    )
-    (local.set $z|66
-     (f64.mul
-      (local.get $x|64)
-      (local.get $x|64)
-     )
-    )
-    (local.set $r|67
-     (f64.add
-      (f64.const 0.002974357433599673)
-      (f64.mul
-       (local.get $z|66)
-       (f64.const 0.009465647849436732)
-      )
-     )
-    )
-    (local.set $t|68
-     (f64.add
-      (f64.const 0.05338123784456704)
-      (f64.mul
-       (local.get $z|66)
-       (f64.const 0.024528318116654728)
-      )
-     )
-    )
-    (local.set $w|69
-     (f64.mul
-      (local.get $z|66)
-      (local.get $z|66)
-     )
-    )
-    (local.set $s|70
-     (f64.mul
-      (local.get $z|66)
-      (local.get $x|64)
-     )
-    )
-    (local.set $u|71
-     (f64.add
-      (f64.const 0.3333313950307914)
-      (f64.mul
-       (local.get $z|66)
-       (f64.const 0.13339200271297674)
-      )
-     )
-    )
-    (local.set $r|67
-     (f64.add
-      (f64.add
-       (local.get $x|64)
-       (f64.mul
-        (local.get $s|70)
-        (local.get $u|71)
-       )
-      )
-      (f64.mul
-       (f64.mul
-        (local.get $s|70)
-        (local.get $w|69)
-       )
-       (f64.add
-        (local.get $t|68)
-        (f64.mul
-         (local.get $w|69)
-         (local.get $r|67)
-        )
-       )
-      )
-     )
-    )
-    (br $~lib/math/tan_kernf|inlined.5
-     (f32.demote_f64
-      (if (result f64)
-       (local.get $odd|65)
-       (then
-        (f64.div
-         (f64.promote_f32
-          (f32.const -1)
-         )
-         (local.get $r|67)
-        )
-       )
-       (else
-        (local.get $r|67)
-       )
-      )
-     )
+   (call $~lib/math/tan_kernf
+    (local.get $y)
+    (i32.and
+     (local.get $n)
+     (i32.const 1)
     )
    )
   )
@@ -23237,20 +19397,19 @@
    )
   )
  )
+ (func $~lib/math/NativeMath.trunc (param $x f64) (result f64)
+  (return
+   (f64.trunc
+    (local.get $x)
+   )
+  )
+ )
  (func $std/math/test_trunc (param $value f64) (param $expected f64) (param $error f64) (param $flags i32) (result i32)
-  (local $x f64)
   (return
    (if (result i32)
     (call $std/math/check<f64>
-     (block $~lib/math/NativeMath.trunc|inlined.0 (result f64)
-      (local.set $x
-       (local.get $value)
-      )
-      (br $~lib/math/NativeMath.trunc|inlined.0
-       (f64.trunc
-        (local.get $x)
-       )
-      )
+     (call $~lib/math/NativeMath.trunc
+      (local.get $value)
      )
      (local.get $expected)
      (local.get $error)
@@ -23272,19 +19431,18 @@
    )
   )
  )
+ (func $~lib/math/NativeMathf.trunc (param $x f32) (result f32)
+  (return
+   (f32.trunc
+    (local.get $x)
+   )
+  )
+ )
  (func $std/math/test_truncf (param $value f32) (param $expected f32) (param $error f32) (param $flags i32) (result i32)
-  (local $x f32)
   (return
    (call $std/math/check<f32>
-    (block $~lib/math/NativeMathf.trunc|inlined.0 (result f32)
-     (local.set $x
-      (local.get $value)
-     )
-     (br $~lib/math/NativeMathf.trunc|inlined.0
-      (f32.trunc
-       (local.get $x)
-      )
-     )
+    (call $~lib/math/NativeMathf.trunc
+     (local.get $value)
     )
     (local.get $expected)
     (local.get $error)
@@ -23296,56 +19454,11 @@
   (local $u i64)
   (local $ux i32)
   (local $sign i32)
-  (local $x|4 f64)
-  (local $y f64)
-  (local $iy i32)
-  (local $z f64)
-  (local $w f64)
-  (local $r f64)
-  (local $v f64)
-  (local $x|11 f64)
-  (local $y|12 f64)
-  (local $z|13 f64)
-  (local $w|14 f64)
-  (local $r|15 f64)
-  (local $hz f64)
   (local $xx f64)
-  (local $x|18 f64)
-  (local $u|19 i64)
-  (local $sign|20 i32)
-  (local $ix i32)
-  (local $q i32)
-  (local $z|23 f64)
+  (local $n i32)
   (local $y0 f64)
   (local $y1 f64)
-  (local $q|26 f64)
-  (local $r|27 f64)
-  (local $w|28 f64)
-  (local $j i32)
-  (local $y0|30 f64)
-  (local $hi i32)
-  (local $i i32)
-  (local $t f64)
-  (local $t|34 f64)
-  (local $y1|35 f64)
-  (local $q|36 i32)
-  (local $n i32)
-  (local $y0|38 f64)
-  (local $y1|39 f64)
-  (local $x|40 f64)
-  (local $y|41 f64)
-  (local $iy|42 i32)
-  (local $z|43 f64)
-  (local $w|44 f64)
-  (local $r|45 f64)
-  (local $v|46 f64)
   (local $s f64)
-  (local $x|48 f64)
-  (local $y|49 f64)
-  (local $z|50 f64)
-  (local $w|51 f64)
-  (local $r|52 f64)
-  (local $hz|53 f64)
   (local $c f64)
   (local $sin f64)
   (local $cos f64)
@@ -23396,212 +19509,16 @@
      )
     )
     (global.set $~lib/math/NativeMath.sincos_sin
-     (block $~lib/math/sin_kern|inlined.3 (result f64)
-      (local.set $x|4
-       (local.get $x)
-      )
-      (local.set $y
-       (f64.const 0)
-      )
-      (local.set $iy
-       (i32.const 0)
-      )
-      (local.set $z
-       (f64.mul
-        (local.get $x|4)
-        (local.get $x|4)
-       )
-      )
-      (local.set $w
-       (f64.mul
-        (local.get $z)
-        (local.get $z)
-       )
-      )
-      (local.set $r
-       (f64.add
-        (f64.add
-         (f64.const 0.00833333333332249)
-         (f64.mul
-          (local.get $z)
-          (f64.add
-           (f64.const -1.984126982985795e-04)
-           (f64.mul
-            (local.get $z)
-            (f64.const 2.7557313707070068e-06)
-           )
-          )
-         )
-        )
-        (f64.mul
-         (f64.mul
-          (local.get $z)
-          (local.get $w)
-         )
-         (f64.add
-          (f64.const -2.5050760253406863e-08)
-          (f64.mul
-           (local.get $z)
-           (f64.const 1.58969099521155e-10)
-          )
-         )
-        )
-       )
-      )
-      (local.set $v
-       (f64.mul
-        (local.get $z)
-        (local.get $x|4)
-       )
-      )
-      (if
-       (i32.eqz
-        (local.get $iy)
-       )
-       (then
-        (br $~lib/math/sin_kern|inlined.3
-         (f64.add
-          (local.get $x|4)
-          (f64.mul
-           (local.get $v)
-           (f64.add
-            (f64.const -0.16666666666666632)
-            (f64.mul
-             (local.get $z)
-             (local.get $r)
-            )
-           )
-          )
-         )
-        )
-       )
-       (else
-        (br $~lib/math/sin_kern|inlined.3
-         (f64.sub
-          (local.get $x|4)
-          (f64.sub
-           (f64.sub
-            (f64.mul
-             (local.get $z)
-             (f64.sub
-              (f64.mul
-               (f64.const 0.5)
-               (local.get $y)
-              )
-              (f64.mul
-               (local.get $v)
-               (local.get $r)
-              )
-             )
-            )
-            (local.get $y)
-           )
-           (f64.mul
-            (local.get $v)
-            (f64.const -0.16666666666666632)
-           )
-          )
-         )
-        )
-       )
-      )
+     (call $~lib/math/sin_kern
+      (local.get $x)
+      (f64.const 0)
+      (i32.const 0)
      )
     )
     (global.set $~lib/math/NativeMath.sincos_cos
-     (block $~lib/math/cos_kern|inlined.3 (result f64)
-      (local.set $x|11
-       (local.get $x)
-      )
-      (local.set $y|12
-       (f64.const 0)
-      )
-      (local.set $z|13
-       (f64.mul
-        (local.get $x|11)
-        (local.get $x|11)
-       )
-      )
-      (local.set $w|14
-       (f64.mul
-        (local.get $z|13)
-        (local.get $z|13)
-       )
-      )
-      (local.set $r|15
-       (f64.add
-        (f64.mul
-         (local.get $z|13)
-         (f64.add
-          (f64.const 0.0416666666666666)
-          (f64.mul
-           (local.get $z|13)
-           (f64.add
-            (f64.const -0.001388888888887411)
-            (f64.mul
-             (local.get $z|13)
-             (f64.const 2.480158728947673e-05)
-            )
-           )
-          )
-         )
-        )
-        (f64.mul
-         (f64.mul
-          (local.get $w|14)
-          (local.get $w|14)
-         )
-         (f64.add
-          (f64.const -2.7557314351390663e-07)
-          (f64.mul
-           (local.get $z|13)
-           (f64.add
-            (f64.const 2.087572321298175e-09)
-            (f64.mul
-             (local.get $z|13)
-             (f64.const -1.1359647557788195e-11)
-            )
-           )
-          )
-         )
-        )
-       )
-      )
-      (local.set $hz
-       (f64.mul
-        (f64.const 0.5)
-        (local.get $z|13)
-       )
-      )
-      (local.set $w|14
-       (f64.sub
-        (f64.const 1)
-        (local.get $hz)
-       )
-      )
-      (br $~lib/math/cos_kern|inlined.3
-       (f64.add
-        (local.get $w|14)
-        (f64.add
-         (f64.sub
-          (f64.sub
-           (f64.const 1)
-           (local.get $w|14)
-          )
-          (local.get $hz)
-         )
-         (f64.sub
-          (f64.mul
-           (local.get $z|13)
-           (local.get $r|15)
-          )
-          (f64.mul
-           (local.get $x|11)
-           (local.get $y|12)
-          )
-         )
-        )
-       )
-      )
+     (call $~lib/math/cos_kern
+      (local.get $x)
+      (f64.const 0)
      )
     )
     (return)
@@ -23629,595 +19546,29 @@
    )
   )
   (local.set $n
-   (block $~lib/math/rempio2|inlined.3 (result i32)
-    (local.set $x|18
-     (local.get $x)
-    )
-    (local.set $u|19
-     (local.get $u)
-    )
-    (local.set $sign|20
-     (local.get $sign)
-    )
-    (local.set $ix
-     (i32.and
-      (i32.wrap_i64
-       (i64.shr_u
-        (local.get $u|19)
-        (i64.const 32)
-       )
-      )
-      (i32.const 2147483647)
-     )
-    )
-    (drop
-     (i32.lt_s
-      (i32.const 0)
-      (i32.const 1)
-     )
-    )
-    (if
-     (i32.lt_u
-      (local.get $ix)
-      (i32.const 1073928572)
-     )
-     (then
-      (local.set $q
-       (i32.const 1)
-      )
-      (if
-       (i32.eqz
-        (local.get $sign|20)
-       )
-       (then
-        (local.set $z|23
-         (f64.sub
-          (local.get $x|18)
-          (f64.const 1.5707963267341256)
-         )
-        )
-        (if
-         (i32.ne
-          (local.get $ix)
-          (i32.const 1073291771)
-         )
-         (then
-          (local.set $y0
-           (f64.sub
-            (local.get $z|23)
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-          (local.set $y1
-           (f64.sub
-            (f64.sub
-             (local.get $z|23)
-             (local.get $y0)
-            )
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-         )
-         (else
-          (local.set $z|23
-           (f64.sub
-            (local.get $z|23)
-            (f64.const 6.077100506303966e-11)
-           )
-          )
-          (local.set $y0
-           (f64.sub
-            (local.get $z|23)
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-          (local.set $y1
-           (f64.sub
-            (f64.sub
-             (local.get $z|23)
-             (local.get $y0)
-            )
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-         )
-        )
-       )
-       (else
-        (local.set $z|23
-         (f64.add
-          (local.get $x|18)
-          (f64.const 1.5707963267341256)
-         )
-        )
-        (if
-         (i32.ne
-          (local.get $ix)
-          (i32.const 1073291771)
-         )
-         (then
-          (local.set $y0
-           (f64.add
-            (local.get $z|23)
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-          (local.set $y1
-           (f64.add
-            (f64.sub
-             (local.get $z|23)
-             (local.get $y0)
-            )
-            (f64.const 6.077100506506192e-11)
-           )
-          )
-         )
-         (else
-          (local.set $z|23
-           (f64.add
-            (local.get $z|23)
-            (f64.const 6.077100506303966e-11)
-           )
-          )
-          (local.set $y0
-           (f64.add
-            (local.get $z|23)
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-          (local.set $y1
-           (f64.add
-            (f64.sub
-             (local.get $z|23)
-             (local.get $y0)
-            )
-            (f64.const 2.0222662487959506e-21)
-           )
-          )
-         )
-        )
-        (local.set $q
-         (i32.const -1)
-        )
-       )
-      )
-      (global.set $~lib/math/rempio2_y0
-       (local.get $y0)
-      )
-      (global.set $~lib/math/rempio2_y1
-       (local.get $y1)
-      )
-      (br $~lib/math/rempio2|inlined.3
-       (local.get $q)
-      )
-     )
-    )
-    (if
-     (i32.lt_u
-      (local.get $ix)
-      (i32.const 1094263291)
-     )
-     (then
-      (local.set $q|26
-       (f64.nearest
-        (f64.mul
-         (local.get $x|18)
-         (f64.const 0.6366197723675814)
-        )
-       )
-      )
-      (local.set $r|27
-       (f64.sub
-        (local.get $x|18)
-        (f64.mul
-         (local.get $q|26)
-         (f64.const 1.5707963267341256)
-        )
-       )
-      )
-      (local.set $w|28
-       (f64.mul
-        (local.get $q|26)
-        (f64.const 6.077100506506192e-11)
-       )
-      )
-      (local.set $j
-       (i32.shr_u
-        (local.get $ix)
-        (i32.const 20)
-       )
-      )
-      (local.set $y0|30
-       (f64.sub
-        (local.get $r|27)
-        (local.get $w|28)
-       )
-      )
-      (local.set $hi
-       (i32.wrap_i64
-        (i64.shr_u
-         (i64.reinterpret_f64
-          (local.get $y0|30)
-         )
-         (i64.const 32)
-        )
-       )
-      )
-      (local.set $i
-       (i32.sub
-        (local.get $j)
-        (i32.and
-         (i32.shr_u
-          (local.get $hi)
-          (i32.const 20)
-         )
-         (i32.const 2047)
-        )
-       )
-      )
-      (if
-       (i32.gt_u
-        (local.get $i)
-        (i32.const 16)
-       )
-       (then
-        (local.set $t
-         (local.get $r|27)
-        )
-        (local.set $w|28
-         (f64.mul
-          (local.get $q|26)
-          (f64.const 6.077100506303966e-11)
-         )
-        )
-        (local.set $r|27
-         (f64.sub
-          (local.get $t)
-          (local.get $w|28)
-         )
-        )
-        (local.set $w|28
-         (f64.sub
-          (f64.mul
-           (local.get $q|26)
-           (f64.const 2.0222662487959506e-21)
-          )
-          (f64.sub
-           (f64.sub
-            (local.get $t)
-            (local.get $r|27)
-           )
-           (local.get $w|28)
-          )
-         )
-        )
-        (local.set $y0|30
-         (f64.sub
-          (local.get $r|27)
-          (local.get $w|28)
-         )
-        )
-        (local.set $hi
-         (i32.wrap_i64
-          (i64.shr_u
-           (i64.reinterpret_f64
-            (local.get $y0|30)
-           )
-           (i64.const 32)
-          )
-         )
-        )
-        (local.set $i
-         (i32.sub
-          (local.get $j)
-          (i32.and
-           (i32.shr_u
-            (local.get $hi)
-            (i32.const 20)
-           )
-           (i32.const 2047)
-          )
-         )
-        )
-        (if
-         (i32.gt_u
-          (local.get $i)
-          (i32.const 49)
-         )
-         (then
-          (local.set $t|34
-           (local.get $r|27)
-          )
-          (local.set $w|28
-           (f64.mul
-            (local.get $q|26)
-            (f64.const 2.0222662487111665e-21)
-           )
-          )
-          (local.set $r|27
-           (f64.sub
-            (local.get $t|34)
-            (local.get $w|28)
-           )
-          )
-          (local.set $w|28
-           (f64.sub
-            (f64.mul
-             (local.get $q|26)
-             (f64.const 8.4784276603689e-32)
-            )
-            (f64.sub
-             (f64.sub
-              (local.get $t|34)
-              (local.get $r|27)
-             )
-             (local.get $w|28)
-            )
-           )
-          )
-          (local.set $y0|30
-           (f64.sub
-            (local.get $r|27)
-            (local.get $w|28)
-           )
-          )
-         )
-        )
-       )
-      )
-      (local.set $y1|35
-       (f64.sub
-        (f64.sub
-         (local.get $r|27)
-         (local.get $y0|30)
-        )
-        (local.get $w|28)
-       )
-      )
-      (global.set $~lib/math/rempio2_y0
-       (local.get $y0|30)
-      )
-      (global.set $~lib/math/rempio2_y1
-       (local.get $y1|35)
-      )
-      (br $~lib/math/rempio2|inlined.3
-       (i32.trunc_f64_s
-        (local.get $q|26)
-       )
-      )
-     )
-    )
-    (local.set $q|36
-     (call $~lib/math/pio2_large_quot
-      (local.get $x|18)
-      (local.get $u|19)
-     )
-    )
-    (br $~lib/math/rempio2|inlined.3
-     (select
-      (i32.sub
-       (i32.const 0)
-       (local.get $q|36)
-      )
-      (local.get $q|36)
-      (local.get $sign|20)
-     )
-    )
+   (call $~lib/math/rempio2
+    (local.get $x)
+    (local.get $u)
+    (local.get $sign)
    )
   )
-  (local.set $y0|38
+  (local.set $y0
    (global.get $~lib/math/rempio2_y0)
   )
-  (local.set $y1|39
+  (local.set $y1
    (global.get $~lib/math/rempio2_y1)
   )
   (local.set $s
-   (block $~lib/math/sin_kern|inlined.4 (result f64)
-    (local.set $x|40
-     (local.get $y0|38)
-    )
-    (local.set $y|41
-     (local.get $y1|39)
-    )
-    (local.set $iy|42
-     (i32.const 1)
-    )
-    (local.set $z|43
-     (f64.mul
-      (local.get $x|40)
-      (local.get $x|40)
-     )
-    )
-    (local.set $w|44
-     (f64.mul
-      (local.get $z|43)
-      (local.get $z|43)
-     )
-    )
-    (local.set $r|45
-     (f64.add
-      (f64.add
-       (f64.const 0.00833333333332249)
-       (f64.mul
-        (local.get $z|43)
-        (f64.add
-         (f64.const -1.984126982985795e-04)
-         (f64.mul
-          (local.get $z|43)
-          (f64.const 2.7557313707070068e-06)
-         )
-        )
-       )
-      )
-      (f64.mul
-       (f64.mul
-        (local.get $z|43)
-        (local.get $w|44)
-       )
-       (f64.add
-        (f64.const -2.5050760253406863e-08)
-        (f64.mul
-         (local.get $z|43)
-         (f64.const 1.58969099521155e-10)
-        )
-       )
-      )
-     )
-    )
-    (local.set $v|46
-     (f64.mul
-      (local.get $z|43)
-      (local.get $x|40)
-     )
-    )
-    (if
-     (i32.eqz
-      (local.get $iy|42)
-     )
-     (then
-      (br $~lib/math/sin_kern|inlined.4
-       (f64.add
-        (local.get $x|40)
-        (f64.mul
-         (local.get $v|46)
-         (f64.add
-          (f64.const -0.16666666666666632)
-          (f64.mul
-           (local.get $z|43)
-           (local.get $r|45)
-          )
-         )
-        )
-       )
-      )
-     )
-     (else
-      (br $~lib/math/sin_kern|inlined.4
-       (f64.sub
-        (local.get $x|40)
-        (f64.sub
-         (f64.sub
-          (f64.mul
-           (local.get $z|43)
-           (f64.sub
-            (f64.mul
-             (f64.const 0.5)
-             (local.get $y|41)
-            )
-            (f64.mul
-             (local.get $v|46)
-             (local.get $r|45)
-            )
-           )
-          )
-          (local.get $y|41)
-         )
-         (f64.mul
-          (local.get $v|46)
-          (f64.const -0.16666666666666632)
-         )
-        )
-       )
-      )
-     )
-    )
+   (call $~lib/math/sin_kern
+    (local.get $y0)
+    (local.get $y1)
+    (i32.const 1)
    )
   )
   (local.set $c
-   (block $~lib/math/cos_kern|inlined.4 (result f64)
-    (local.set $x|48
-     (local.get $y0|38)
-    )
-    (local.set $y|49
-     (local.get $y1|39)
-    )
-    (local.set $z|50
-     (f64.mul
-      (local.get $x|48)
-      (local.get $x|48)
-     )
-    )
-    (local.set $w|51
-     (f64.mul
-      (local.get $z|50)
-      (local.get $z|50)
-     )
-    )
-    (local.set $r|52
-     (f64.add
-      (f64.mul
-       (local.get $z|50)
-       (f64.add
-        (f64.const 0.0416666666666666)
-        (f64.mul
-         (local.get $z|50)
-         (f64.add
-          (f64.const -0.001388888888887411)
-          (f64.mul
-           (local.get $z|50)
-           (f64.const 2.480158728947673e-05)
-          )
-         )
-        )
-       )
-      )
-      (f64.mul
-       (f64.mul
-        (local.get $w|51)
-        (local.get $w|51)
-       )
-       (f64.add
-        (f64.const -2.7557314351390663e-07)
-        (f64.mul
-         (local.get $z|50)
-         (f64.add
-          (f64.const 2.087572321298175e-09)
-          (f64.mul
-           (local.get $z|50)
-           (f64.const -1.1359647557788195e-11)
-          )
-         )
-        )
-       )
-      )
-     )
-    )
-    (local.set $hz|53
-     (f64.mul
-      (f64.const 0.5)
-      (local.get $z|50)
-     )
-    )
-    (local.set $w|51
-     (f64.sub
-      (f64.const 1)
-      (local.get $hz|53)
-     )
-    )
-    (br $~lib/math/cos_kern|inlined.4
-     (f64.add
-      (local.get $w|51)
-      (f64.add
-       (f64.sub
-        (f64.sub
-         (f64.const 1)
-         (local.get $w|51)
-        )
-        (local.get $hz|53)
-       )
-       (f64.sub
-        (f64.mul
-         (local.get $z|50)
-         (local.get $r|52)
-        )
-        (f64.mul
-         (local.get $x|48)
-         (local.get $y|49)
-        )
-       )
-      )
-     )
-    )
+   (call $~lib/math/cos_kern
+    (local.get $y0)
+    (local.get $y1)
    )
   )
   (local.set $sin
@@ -25255,25 +20606,8 @@
   (local $4 f64)
   (local $i i32)
   (local $r f64)
-  (local $value i64)
-  (local $i|8 i32)
-  (local $r|9 f32)
-  (local $x f64)
-  (local $x|11 f64)
-  (local $x|12 f64)
-  (local $x|13 f64)
-  (local $x|14 f64)
-  (local $x|15 f64)
-  (local $x|16 f64)
-  (local $x|17 f64)
-  (local $x|18 f32)
-  (local $x|19 f32)
-  (local $x|20 f32)
-  (local $x|21 f32)
-  (local $x|22 f32)
-  (local $x|23 f32)
-  (local $x|24 f32)
-  (local $x|25 f32)
+  (local $i|7 i32)
+  (local $r|8 f32)
   (drop
    (f64.eq
     (global.get $~lib/math/NativeMath.E)
@@ -67569,42 +62903,37 @@
     )
    )
   )
-  (block $~lib/math/NativeMathf.seedRandom|inlined.0
-   (local.set $value
-    (i64.reinterpret_f64
-     (call $~lib/bindings/dom/Math.random)
-    )
-   )
-   (call $~lib/math/NativeMath.seedRandom
-    (local.get $value)
+  (call $~lib/math/NativeMathf.seedRandom
+   (i64.reinterpret_f64
+    (call $~lib/bindings/dom/Math.random)
    )
   )
   (block
-   (local.set $i|8
+   (local.set $i|7
     (i32.const 0)
    )
    (loop $for-loop|1
     (if
      (f64.lt
       (f64.convert_i32_s
-       (local.get $i|8)
+       (local.get $i|7)
       )
       (f64.const 1e6)
      )
      (then
-      (local.set $r|9
+      (local.set $r|8
        (call $~lib/math/NativeMathf.random)
       )
       (if
        (i32.eqz
         (if (result i32)
          (f32.ge
-          (local.get $r|9)
+          (local.get $r|8)
           (f32.const 0)
          )
          (then
           (f32.lt
-           (local.get $r|9)
+           (local.get $r|8)
            (f32.const 1)
           )
          )
@@ -67623,9 +62952,9 @@
         (unreachable)
        )
       )
-      (local.set $i|8
+      (local.set $i|7
        (i32.add
-        (local.get $i|8)
+        (local.get $i|7)
         (i32.const 1)
        )
       )
@@ -69109,372 +64438,316 @@
     (unreachable)
    )
   )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMath.signbit|inlined.2 (result i32)
-      (local.set $x
-       (f64.const 0)
-      )
-      (br $~lib/math/NativeMath.signbit|inlined.2
-       (i64.ne
-        (i64.shr_u
-         (i64.reinterpret_f64
-          (local.get $x)
-         )
-         (i64.const 63)
-        )
-        (i64.const 0)
-       )
-      )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMath.signbit
+      (f64.const 0)
      )
      (i32.const 0)
     )
-    (i32.const 0)
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 3134)
+     (i32.const 1)
+    )
+    (unreachable)
    )
   )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMath.signbit|inlined.3 (result i32)
-      (local.set $x|11
-       (f64.const -0)
-      )
-      (br $~lib/math/NativeMath.signbit|inlined.3
-       (i64.ne
-        (i64.shr_u
-         (i64.reinterpret_f64
-          (local.get $x|11)
-         )
-         (i64.const 63)
-        )
-        (i64.const 0)
-       )
-      )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMath.signbit
+      (f64.const -0)
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 3135)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMath.signbit
+      (f64.const 1)
      )
      (i32.const 0)
     )
-    (i32.const 1)
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 3136)
+     (i32.const 1)
+    )
+    (unreachable)
    )
   )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMath.signbit|inlined.4 (result i32)
-      (local.set $x|12
-       (f64.const 1)
-      )
-      (br $~lib/math/NativeMath.signbit|inlined.4
-       (i64.ne
-        (i64.shr_u
-         (i64.reinterpret_f64
-          (local.get $x|12)
-         )
-         (i64.const 63)
-        )
-        (i64.const 0)
-       )
-      )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMath.signbit
+      (f64.const -1)
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 3137)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMath.signbit
+      (f64.const nan:0x8000000000000)
      )
      (i32.const 0)
     )
-    (i32.const 0)
    )
-  )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMath.signbit|inlined.5 (result i32)
-      (local.set $x|13
-       (f64.const -1)
-      )
-      (br $~lib/math/NativeMath.signbit|inlined.5
-       (i64.ne
-        (i64.shr_u
-         (i64.reinterpret_f64
-          (local.get $x|13)
-         )
-         (i64.const 63)
-        )
-        (i64.const 0)
-       )
-      )
-     )
+   (then
+    (call $~lib/builtins/abort
      (i32.const 0)
+     (i32.const 32)
+     (i32.const 3138)
+     (i32.const 1)
     )
-    (i32.const 1)
+    (unreachable)
    )
   )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMath.signbit|inlined.6 (result i32)
-      (local.set $x|14
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMath.signbit
+      (f64.neg
        (f64.const nan:0x8000000000000)
       )
-      (br $~lib/math/NativeMath.signbit|inlined.6
-       (i64.ne
-        (i64.shr_u
-         (i64.reinterpret_f64
-          (local.get $x|14)
-         )
-         (i64.const 63)
-        )
-        (i64.const 0)
-       )
-      )
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 3139)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMath.signbit
+      (f64.const inf)
      )
      (i32.const 0)
     )
-    (i32.const 0)
    )
-  )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMath.signbit|inlined.7 (result i32)
-      (local.set $x|15
-       (f64.neg
-        (f64.const nan:0x8000000000000)
-       )
-      )
-      (br $~lib/math/NativeMath.signbit|inlined.7
-       (i64.ne
-        (i64.shr_u
-         (i64.reinterpret_f64
-          (local.get $x|15)
-         )
-         (i64.const 63)
-        )
-        (i64.const 0)
-       )
-      )
-     )
+   (then
+    (call $~lib/builtins/abort
      (i32.const 0)
+     (i32.const 32)
+     (i32.const 3140)
+     (i32.const 1)
     )
-    (i32.const 1)
+    (unreachable)
    )
   )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMath.signbit|inlined.8 (result i32)
-      (local.set $x|16
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMath.signbit
+      (f64.neg
        (f64.const inf)
       )
-      (br $~lib/math/NativeMath.signbit|inlined.8
-       (i64.ne
-        (i64.shr_u
-         (i64.reinterpret_f64
-          (local.get $x|16)
-         )
-         (i64.const 63)
-        )
-        (i64.const 0)
-       )
-      )
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 3141)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMathf.signbit
+      (f32.const 0)
      )
      (i32.const 0)
     )
-    (i32.const 0)
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 3147)
+     (i32.const 1)
+    )
+    (unreachable)
    )
   )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMath.signbit|inlined.9 (result i32)
-      (local.set $x|17
-       (f64.neg
-        (f64.const inf)
-       )
-      )
-      (br $~lib/math/NativeMath.signbit|inlined.9
-       (i64.ne
-        (i64.shr_u
-         (i64.reinterpret_f64
-          (local.get $x|17)
-         )
-         (i64.const 63)
-        )
-        (i64.const 0)
-       )
-      )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMathf.signbit
+      (f32.const -0)
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 3148)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMathf.signbit
+      (f32.const 1)
      )
      (i32.const 0)
     )
-    (i32.const 1)
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 3149)
+     (i32.const 1)
+    )
+    (unreachable)
    )
   )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMathf.signbit|inlined.2 (result i32)
-      (local.set $x|18
-       (f32.const 0)
-      )
-      (br $~lib/math/NativeMathf.signbit|inlined.2
-       (i32.shr_u
-        (i32.reinterpret_f32
-         (local.get $x|18)
-        )
-        (i32.const 31)
-       )
-      )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMathf.signbit
+      (f32.const -1)
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 3150)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMathf.signbit
+      (f32.const nan:0x400000)
      )
      (i32.const 0)
     )
-    (i32.const 0)
    )
-  )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMathf.signbit|inlined.3 (result i32)
-      (local.set $x|19
-       (f32.const -0)
-      )
-      (br $~lib/math/NativeMathf.signbit|inlined.3
-       (i32.shr_u
-        (i32.reinterpret_f32
-         (local.get $x|19)
-        )
-        (i32.const 31)
-       )
-      )
-     )
+   (then
+    (call $~lib/builtins/abort
      (i32.const 0)
+     (i32.const 32)
+     (i32.const 3151)
+     (i32.const 1)
     )
-    (i32.const 1)
+    (unreachable)
    )
   )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMathf.signbit|inlined.4 (result i32)
-      (local.set $x|20
-       (f32.const 1)
-      )
-      (br $~lib/math/NativeMathf.signbit|inlined.4
-       (i32.shr_u
-        (i32.reinterpret_f32
-         (local.get $x|20)
-        )
-        (i32.const 31)
-       )
-      )
-     )
-     (i32.const 0)
-    )
-    (i32.const 0)
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMathf.signbit|inlined.5 (result i32)
-      (local.set $x|21
-       (f32.const -1)
-      )
-      (br $~lib/math/NativeMathf.signbit|inlined.5
-       (i32.shr_u
-        (i32.reinterpret_f32
-         (local.get $x|21)
-        )
-        (i32.const 31)
-       )
-      )
-     )
-     (i32.const 0)
-    )
-    (i32.const 1)
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMathf.signbit|inlined.6 (result i32)
-      (local.set $x|22
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMathf.signbit
+      (f32.neg
        (f32.const nan:0x400000)
       )
-      (br $~lib/math/NativeMathf.signbit|inlined.6
-       (i32.shr_u
-        (i32.reinterpret_f32
-         (local.get $x|22)
-        )
-        (i32.const 31)
-       )
-      )
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 3152)
+     (i32.const 1)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMathf.signbit
+      (f32.const inf)
      )
      (i32.const 0)
     )
-    (i32.const 0)
    )
-  )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMathf.signbit|inlined.7 (result i32)
-      (local.set $x|23
-       (f32.neg
-        (f32.const nan:0x400000)
-       )
-      )
-      (br $~lib/math/NativeMathf.signbit|inlined.7
-       (i32.shr_u
-        (i32.reinterpret_f32
-         (local.get $x|23)
-        )
-        (i32.const 31)
-       )
-      )
-     )
+   (then
+    (call $~lib/builtins/abort
      (i32.const 0)
+     (i32.const 32)
+     (i32.const 3153)
+     (i32.const 1)
     )
-    (i32.const 1)
+    (unreachable)
    )
   )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMathf.signbit|inlined.8 (result i32)
-      (local.set $x|24
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/math/NativeMathf.signbit
+      (f32.neg
        (f32.const inf)
       )
-      (br $~lib/math/NativeMathf.signbit|inlined.8
-       (i32.shr_u
-        (i32.reinterpret_f32
-         (local.get $x|24)
-        )
-        (i32.const 31)
-       )
-      )
      )
-     (i32.const 0)
+     (i32.const 1)
     )
-    (i32.const 0)
    )
-  )
-  (drop
-   (i32.eq
-    (i32.ne
-     (block $~lib/math/NativeMathf.signbit|inlined.9 (result i32)
-      (local.set $x|25
-       (f32.neg
-        (f32.const inf)
-       )
-      )
-      (br $~lib/math/NativeMathf.signbit|inlined.9
-       (i32.shr_u
-        (i32.reinterpret_f32
-         (local.get $x|25)
-        )
-        (i32.const 31)
-       )
-      )
-     )
+   (then
+    (call $~lib/builtins/abort
      (i32.const 0)
+     (i32.const 32)
+     (i32.const 3154)
+     (i32.const 1)
     )
-    (i32.const 1)
+    (unreachable)
    )
   )
   (if

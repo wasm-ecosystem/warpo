@@ -2288,12 +2288,12 @@
        i32.const 64056
        i32.le_u
        if
-        block $~lib/util/casemap/bsearch|inlined.0 (result i32)
+        block $__inlined_func$~lib/util/casemap/bsearch$3 (result i32)
          local.get $10
          local.set $3
          i32.const 0
          local.set $4
-         loop $while-continue|1
+         loop $while-continue|0
           local.get $3
           local.get $4
           i32.ge_s
@@ -2317,7 +2317,7 @@
            local.get $8
            local.get $9
            i32.eqz
-           br_if $~lib/util/casemap/bsearch|inlined.0
+           br_if $__inlined_func$~lib/util/casemap/bsearch$3
            drop
            local.get $9
            i32.const 31
@@ -2333,7 +2333,7 @@
             i32.sub
             local.set $3
            end
-           br $while-continue|1
+           br $while-continue|0
           end
          end
          i32.const -1
@@ -2724,7 +2724,7 @@
         i32.const 1
         i32.gt_u
         if (result i32)
-         block $~lib/util/string/isFinalSigma|inlined.0 (result i32)
+         block $__inlined_func$~lib/util/string/isFinalSigma$3 (result i32)
           i32.const 0
           local.set $6
           local.get $5
@@ -2738,17 +2738,17 @@
           i32.ge_s
           select
           local.set $8
-          loop $while-continue|1
+          loop $while-continue|0
            local.get $1
            local.get $8
            i32.gt_s
            if
-            block $~lib/util/string/codePointBefore|inlined.0 (result i32)
+            block $__inlined_func$~lib/util/string/codePointBefore$1 (result i32)
              i32.const -1
              local.get $1
              i32.const 0
              i32.le_s
-             br_if $~lib/util/string/codePointBefore|inlined.0
+             br_if $__inlined_func$~lib/util/string/codePointBefore$1
              drop
              local.get $0
              local.get $1
@@ -2793,7 +2793,7 @@
               i32.and
               i32.const 55296
               i32.eq
-              br_if $~lib/util/string/codePointBefore|inlined.0
+              br_if $__inlined_func$~lib/util/string/codePointBefore$1
               drop
              end
              i32.const 65533
@@ -2831,7 +2831,7 @@
               i32.const 1
              else
               i32.const 0
-              br $~lib/util/string/isFinalSigma|inlined.0
+              br $__inlined_func$~lib/util/string/isFinalSigma$3
              end
              local.set $6
             end
@@ -2843,13 +2843,13 @@
             i32.add
             i32.sub
             local.set $1
-            br $while-continue|1
+            br $while-continue|0
            end
           end
           i32.const 0
           local.get $6
           i32.eqz
-          br_if $~lib/util/string/isFinalSigma|inlined.0
+          br_if $__inlined_func$~lib/util/string/isFinalSigma$3
           drop
           local.get $5
           i32.const 1
@@ -2864,7 +2864,7 @@
           i32.lt_s
           select
           local.set $6
-          loop $while-continue|2
+          loop $while-continue|1
            local.get $1
            local.get $6
            i32.lt_s
@@ -2929,7 +2929,7 @@
               i32.const 0
              end
              i32.eqz
-             br $~lib/util/string/isFinalSigma|inlined.0
+             br $__inlined_func$~lib/util/string/isFinalSigma$3
             end
             local.get $1
             local.get $2
@@ -2939,7 +2939,7 @@
             i32.add
             i32.add
             local.set $1
-            br $while-continue|2
+            br $while-continue|1
            end
           end
           i32.const 1

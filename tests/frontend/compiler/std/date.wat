@@ -5,23 +5,24 @@
  (type $3 (func (param i32 i32 i32) (result i32)))
  (type $4 (func (param i32 i32 i32)))
  (type $5 (func (param i32)))
- (type $6 (func))
- (type $7 (func (param i32 i32 i32 i32)))
- (type $8 (func (param i64) (result i32)))
- (type $9 (func (param i32 i32 i32) (result i64)))
- (type $10 (func (param i32 i32 i32 i32 i32 i32 i32) (result i64)))
- (type $11 (func (param i32 i32 i64) (result i32)))
- (type $12 (func (result i32)))
- (type $13 (func (param i32 i64)))
- (type $14 (func (param i32 i64) (result i32)))
- (type $15 (func (param i32) (result i64)))
- (type $16 (func (param i32 i64) (result i64)))
- (type $17 (func (param i32 i32 i32 i64) (result i64)))
- (type $18 (func (param i32 i64 i32)))
- (type $19 (func (param i64 i32) (result i32)))
- (type $20 (func (param i32 i64 i32 i32)))
- (type $21 (func (param i32 i32 i32 i32 i32) (result i32)))
- (type $22 (func (param i32 i32 i32 i32) (result i32)))
+ (type $6 (func (param i32 i32 i32 i32)))
+ (type $7 (func))
+ (type $8 (func (param i32 i32 i32 i32 i32 i32 i32) (result i64)))
+ (type $9 (func (param i64) (result i32)))
+ (type $10 (func (param i64 i64) (result i64)))
+ (type $11 (func (param i32) (result i64)))
+ (type $12 (func (param i32 i32 i32) (result i64)))
+ (type $13 (func (param i32 i32 i64) (result i32)))
+ (type $14 (func (result i32)))
+ (type $15 (func (param i32 i64)))
+ (type $16 (func (param i32 i64) (result i32)))
+ (type $17 (func (param i32 i64) (result i64)))
+ (type $18 (func (param i32 i32 i32 i64) (result i64)))
+ (type $19 (func (param i32 i64 i32)))
+ (type $20 (func (param i64 i32) (result i32)))
+ (type $21 (func (param i32 i64 i32 i32)))
+ (type $22 (func (param i32 i32 i32 i32 i32) (result i32)))
+ (type $23 (func (param i32 i32 i32 i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -173,9 +174,32 @@
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
  (export "_start" (func $~start))
+ (func $~lib/date/floorDiv<i32> (param $a i32) (param $b i32) (result i32)
+  (return
+   (i32.div_s
+    (i32.sub
+     (local.get $a)
+     (if (result i32)
+      (i32.lt_s
+       (local.get $a)
+       (i32.const 0)
+      )
+      (then
+       (i32.sub
+        (local.get $b)
+        (i32.const 1)
+       )
+      )
+      (else
+       (i32.const 0)
+      )
+     )
+    )
+    (local.get $b)
+   )
+  )
+ )
  (func $~lib/date/daysSinceEpoch (param $y i32) (param $m i32) (param $d i32) (result i64)
-  (local $a i32)
-  (local $b i32)
   (local $era i32)
   (local $yoe i32)
   (local $doy i32)
@@ -190,36 +214,9 @@
    )
   )
   (local.set $era
-   (block $~lib/date/floorDiv<i32>|inlined.0 (result i32)
-    (local.set $a
-     (local.get $y)
-    )
-    (local.set $b
-     (i32.const 400)
-    )
-    (br $~lib/date/floorDiv<i32>|inlined.0
-     (i32.div_s
-      (i32.sub
-       (local.get $a)
-       (if (result i32)
-        (i32.lt_s
-         (local.get $a)
-         (i32.const 0)
-        )
-        (then
-         (i32.sub
-          (local.get $b)
-          (i32.const 1)
-         )
-        )
-        (else
-         (i32.const 0)
-        )
-       )
-      )
-      (local.get $b)
-     )
-    )
+   (call $~lib/date/floorDiv<i32>
+    (local.get $y)
+    (i32.const 400)
    )
   )
   (local.set $yoe
@@ -359,12 +356,92 @@
    )
   )
  )
+ (func $~lib/date/Date.UTC (param $year i32) (param $month i32) (param $day i32) (param $hour i32) (param $minute i32) (param $second i32) (param $millisecond i32) (result i64)
+  (local $ms i64)
+  (if
+   (if (result i32)
+    (i32.ge_s
+     (local.get $year)
+     (i32.const 0)
+    )
+    (then
+     (i32.le_s
+      (local.get $year)
+      (i32.const 99)
+     )
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (local.set $year
+     (i32.add
+      (local.get $year)
+      (i32.const 1900)
+     )
+    )
+   )
+  )
+  (local.set $ms
+   (call $~lib/date/epochMillis
+    (local.get $year)
+    (i32.add
+     (local.get $month)
+     (i32.const 1)
+    )
+    (local.get $day)
+    (local.get $hour)
+    (local.get $minute)
+    (local.get $second)
+    (local.get $millisecond)
+   )
+  )
+  (if
+   (call $~lib/date/invalidDate
+    (local.get $ms)
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 32)
+     (i32.const 80)
+     (i32.const 36)
+     (i32.const 26)
+    )
+    (unreachable)
+   )
+  )
+  (return
+   (local.get $ms)
+  )
+ )
+ (func $~lib/date/floorDiv<i64> (param $a i64) (param $b i64) (result i64)
+  (return
+   (i64.div_s
+    (i64.sub
+     (local.get $a)
+     (if (result i64)
+      (i64.lt_s
+       (local.get $a)
+       (i64.const 0)
+      )
+      (then
+       (i64.sub
+        (local.get $b)
+        (i64.const 1)
+       )
+      )
+      (else
+       (i64.const 0)
+      )
+     )
+    )
+    (local.get $b)
+   )
+  )
+ )
  (func $~lib/date/dateFromEpoch (param $ms i64) (result i32)
-  (local $a i64)
-  (local $b i64)
   (local $da i32)
-  (local $a|4 i32)
-  (local $b|5 i32)
   (local $q0 i32)
   (local $r1 i32)
   (local $u1 i64)
@@ -377,37 +454,10 @@
     (i32.add
      (i32.mul
       (i32.wrap_i64
-       (block $~lib/date/floorDiv<i64>|inlined.0 (result i64)
-        (local.set $a
-         (local.get $ms)
-        )
-        (local.set $b
-         (i64.extend_i32_s
-          (i32.const 86400000)
-         )
-        )
-        (br $~lib/date/floorDiv<i64>|inlined.0
-         (i64.div_s
-          (i64.sub
-           (local.get $a)
-           (if (result i64)
-            (i64.lt_s
-             (local.get $a)
-             (i64.const 0)
-            )
-            (then
-             (i64.sub
-              (local.get $b)
-              (i64.const 1)
-             )
-            )
-            (else
-             (i64.const 0)
-            )
-           )
-          )
-          (local.get $b)
-         )
+       (call $~lib/date/floorDiv<i64>
+        (local.get $ms)
+        (i64.extend_i32_s
+         (i32.const 86400000)
         )
        )
       )
@@ -422,36 +472,9 @@
    )
   )
   (local.set $q0
-   (block $~lib/date/floorDiv<i32>|inlined.1 (result i32)
-    (local.set $a|4
-     (local.get $da)
-    )
-    (local.set $b|5
-     (i32.const 146097)
-    )
-    (br $~lib/date/floorDiv<i32>|inlined.1
-     (i32.div_s
-      (i32.sub
-       (local.get $a|4)
-       (if (result i32)
-        (i32.lt_s
-         (local.get $a|4)
-         (i32.const 0)
-        )
-        (then
-         (i32.sub
-          (local.get $b|5)
-          (i32.const 1)
-         )
-        )
-        (else
-         (i32.const 0)
-        )
-       )
-      )
-      (local.get $b|5)
-     )
-    )
+   (call $~lib/date/floorDiv<i32>
+    (local.get $da)
+    (i32.const 146097)
    )
   )
   (local.set $r1
@@ -1055,6 +1078,49 @@
    (local.get $flMap)
   )
  )
+ (func $~lib/rt/tlsf/SETTAIL (param $root i32) (param $tail i32)
+  (i32.store offset=1568
+   (local.get $root)
+   (local.get $tail)
+  )
+ )
+ (func $~lib/rt/tlsf/SETSL (param $root i32) (param $fl i32) (param $slMap i32)
+  (i32.store offset=4
+   (i32.add
+    (local.get $root)
+    (i32.shl
+     (local.get $fl)
+     (i32.const 2)
+    )
+   )
+   (local.get $slMap)
+  )
+ )
+ (func $~lib/rt/tlsf/SETHEAD (param $root i32) (param $fl i32) (param $sl i32) (param $head i32)
+  (i32.store offset=96
+   (i32.add
+    (local.get $root)
+    (i32.shl
+     (i32.add
+      (i32.shl
+       (local.get $fl)
+       (i32.const 4)
+      )
+      (local.get $sl)
+     )
+     (i32.const 2)
+    )
+   )
+   (local.get $head)
+  )
+ )
+ (func $~lib/rt/tlsf/GETTAIL (param $root i32) (result i32)
+  (return
+   (i32.load offset=1568
+    (local.get $root)
+   )
+  )
+ )
  (func $~lib/rt/common/BLOCK#set:mmInfo (param $this i32) (param $mmInfo i32)
   (i32.store
    (local.get $this)
@@ -1073,6 +1139,25 @@
    (local.get $next)
   )
  )
+ (func $~lib/rt/tlsf/GETRIGHT (param $block i32) (result i32)
+  (return
+   (i32.add
+    (i32.add
+     (local.get $block)
+     (i32.const 4)
+    )
+    (i32.and
+     (call $~lib/rt/common/BLOCK#get:mmInfo
+      (local.get $block)
+     )
+     (i32.xor
+      (i32.const 3)
+      (i32.const -1)
+     )
+    )
+   )
+  )
+ )
  (func $~lib/rt/tlsf/Block#get:prev (param $this i32) (result i32)
   (i32.load offset=4
    (local.get $this)
@@ -1081,6 +1166,38 @@
  (func $~lib/rt/tlsf/Block#get:next (param $this i32) (result i32)
   (i32.load offset=8
    (local.get $this)
+  )
+ )
+ (func $~lib/rt/tlsf/GETHEAD (param $root i32) (param $fl i32) (param $sl i32) (result i32)
+  (return
+   (i32.load offset=96
+    (i32.add
+     (local.get $root)
+     (i32.shl
+      (i32.add
+       (i32.shl
+        (local.get $fl)
+        (i32.const 4)
+       )
+       (local.get $sl)
+      )
+      (i32.const 2)
+     )
+    )
+   )
+  )
+ )
+ (func $~lib/rt/tlsf/GETSL (param $root i32) (param $fl i32) (result i32)
+  (return
+   (i32.load offset=4
+    (i32.add
+     (local.get $root)
+     (i32.shl
+      (local.get $fl)
+      (i32.const 2)
+     )
+    )
+   )
   )
  )
  (func $~lib/rt/tlsf/Root#get:flMap (param $this i32) (result i32)
@@ -1098,19 +1215,7 @@
   (local $boundedSize i32)
   (local $prev i32)
   (local $next i32)
-  (local $root|11 i32)
-  (local $fl|12 i32)
-  (local $sl|13 i32)
-  (local $root|14 i32)
-  (local $fl|15 i32)
-  (local $sl|16 i32)
-  (local $head i32)
-  (local $root|18 i32)
-  (local $fl|19 i32)
   (local $slMap i32)
-  (local $root|21 i32)
-  (local $fl|22 i32)
-  (local $slMap|23 i32)
   (local.set $blockInfo
    (call $~lib/rt/common/BLOCK#get:mmInfo
     (local.get $block)
@@ -1292,65 +1397,18 @@
   (if
    (i32.eq
     (local.get $block)
-    (block $~lib/rt/tlsf/GETHEAD|inlined.0 (result i32)
-     (local.set $root|11
-      (local.get $root)
-     )
-     (local.set $fl|12
-      (local.get $fl)
-     )
-     (local.set $sl|13
-      (local.get $sl)
-     )
-     (br $~lib/rt/tlsf/GETHEAD|inlined.0
-      (i32.load offset=96
-       (i32.add
-        (local.get $root|11)
-        (i32.shl
-         (i32.add
-          (i32.shl
-           (local.get $fl|12)
-           (i32.const 4)
-          )
-          (local.get $sl|13)
-         )
-         (i32.const 2)
-        )
-       )
-      )
-     )
+    (call $~lib/rt/tlsf/GETHEAD
+     (local.get $root)
+     (local.get $fl)
+     (local.get $sl)
     )
    )
    (then
-    (block $~lib/rt/tlsf/SETHEAD|inlined.1
-     (local.set $root|14
-      (local.get $root)
-     )
-     (local.set $fl|15
-      (local.get $fl)
-     )
-     (local.set $sl|16
-      (local.get $sl)
-     )
-     (local.set $head
-      (local.get $next)
-     )
-     (i32.store offset=96
-      (i32.add
-       (local.get $root|14)
-       (i32.shl
-        (i32.add
-         (i32.shl
-          (local.get $fl|15)
-          (i32.const 4)
-         )
-         (local.get $sl|16)
-        )
-        (i32.const 2)
-       )
-      )
-      (local.get $head)
-     )
+    (call $~lib/rt/tlsf/SETHEAD
+     (local.get $root)
+     (local.get $fl)
+     (local.get $sl)
+     (local.get $next)
     )
     (if
      (i32.eqz
@@ -1358,56 +1416,25 @@
      )
      (then
       (local.set $slMap
-       (block $~lib/rt/tlsf/GETSL|inlined.0 (result i32)
-        (local.set $root|18
-         (local.get $root)
-        )
-        (local.set $fl|19
-         (local.get $fl)
-        )
-        (br $~lib/rt/tlsf/GETSL|inlined.0
-         (i32.load offset=4
-          (i32.add
-           (local.get $root|18)
-           (i32.shl
-            (local.get $fl|19)
-            (i32.const 2)
-           )
-          )
-         )
-        )
-       )
-      )
-      (block $~lib/rt/tlsf/SETSL|inlined.1
-       (local.set $root|21
+       (call $~lib/rt/tlsf/GETSL
         (local.get $root)
-       )
-       (local.set $fl|22
         (local.get $fl)
        )
-       (local.set $slMap|23
-        (local.tee $slMap
-         (i32.and
-          (local.get $slMap)
-          (i32.xor
-           (i32.shl
-            (i32.const 1)
-            (local.get $sl)
-           )
-           (i32.const -1)
+      )
+      (call $~lib/rt/tlsf/SETSL
+       (local.get $root)
+       (local.get $fl)
+       (local.tee $slMap
+        (i32.and
+         (local.get $slMap)
+         (i32.xor
+          (i32.shl
+           (i32.const 1)
+           (local.get $sl)
           )
+          (i32.const -1)
          )
         )
-       )
-       (i32.store offset=4
-        (i32.add
-         (local.get $root|21)
-         (i32.shl
-          (local.get $fl|22)
-          (i32.const 2)
-         )
-        )
-        (local.get $slMap|23)
        )
       )
       (if
@@ -1437,34 +1464,29 @@
    )
   )
  )
+ (func $~lib/rt/tlsf/GETFREELEFT (param $block i32) (result i32)
+  (return
+   (i32.load
+    (i32.sub
+     (local.get $block)
+     (i32.const 4)
+    )
+   )
+  )
+ )
  (func $~lib/rt/tlsf/insertBlock (param $root i32) (param $block i32)
   (local $blockInfo i32)
-  (local $block|3 i32)
   (local $right i32)
   (local $rightInfo i32)
-  (local $block|6 i32)
-  (local $block|7 i32)
   (local $left i32)
   (local $leftInfo i32)
   (local $size i32)
   (local $fl i32)
   (local $sl i32)
-  (local $13 i32)
-  (local $14 i32)
+  (local $10 i32)
+  (local $11 i32)
   (local $boundedSize i32)
-  (local $root|16 i32)
-  (local $fl|17 i32)
-  (local $sl|18 i32)
   (local $head i32)
-  (local $root|20 i32)
-  (local $fl|21 i32)
-  (local $sl|22 i32)
-  (local $head|23 i32)
-  (local $root|24 i32)
-  (local $fl|25 i32)
-  (local $root|26 i32)
-  (local $fl|27 i32)
-  (local $slMap i32)
   (drop
    (i32.const 1)
   )
@@ -1508,27 +1530,8 @@
    )
   )
   (local.set $right
-   (block $~lib/rt/tlsf/GETRIGHT|inlined.0 (result i32)
-    (local.set $block|3
-     (local.get $block)
-    )
-    (br $~lib/rt/tlsf/GETRIGHT|inlined.0
-     (i32.add
-      (i32.add
-       (local.get $block|3)
-       (i32.const 4)
-      )
-      (i32.and
-       (call $~lib/rt/common/BLOCK#get:mmInfo
-        (local.get $block|3)
-       )
-       (i32.xor
-        (i32.const 3)
-        (i32.const -1)
-       )
-      )
-     )
-    )
+   (call $~lib/rt/tlsf/GETRIGHT
+    (local.get $block)
    )
   )
   (local.set $rightInfo
@@ -1565,27 +1568,8 @@
      )
     )
     (local.set $right
-     (block $~lib/rt/tlsf/GETRIGHT|inlined.1 (result i32)
-      (local.set $block|6
-       (local.get $block)
-      )
-      (br $~lib/rt/tlsf/GETRIGHT|inlined.1
-       (i32.add
-        (i32.add
-         (local.get $block|6)
-         (i32.const 4)
-        )
-        (i32.and
-         (call $~lib/rt/common/BLOCK#get:mmInfo
-          (local.get $block|6)
-         )
-         (i32.xor
-          (i32.const 3)
-          (i32.const -1)
-         )
-        )
-       )
-      )
+     (call $~lib/rt/tlsf/GETRIGHT
+      (local.get $block)
      )
     )
     (local.set $rightInfo
@@ -1602,18 +1586,8 @@
    )
    (then
     (local.set $left
-     (block $~lib/rt/tlsf/GETFREELEFT|inlined.0 (result i32)
-      (local.set $block|7
-       (local.get $block)
-      )
-      (br $~lib/rt/tlsf/GETFREELEFT|inlined.0
-       (i32.load
-        (i32.sub
-         (local.get $block|7)
-         (i32.const 4)
-        )
-       )
-      )
+     (call $~lib/rt/tlsf/GETFREELEFT
+      (local.get $block)
      )
     )
     (local.set $leftInfo
@@ -1756,15 +1730,15 @@
    (else
     (local.set $boundedSize
      (select
-      (local.tee $13
+      (local.tee $10
        (local.get $size)
       )
-      (local.tee $14
+      (local.tee $11
        (i32.const 1073741820)
       )
       (i32.lt_u
-       (local.get $13)
-       (local.get $14)
+       (local.get $10)
+       (local.get $11)
       )
      )
     )
@@ -1834,33 +1808,10 @@
    )
   )
   (local.set $head
-   (block $~lib/rt/tlsf/GETHEAD|inlined.1 (result i32)
-    (local.set $root|16
-     (local.get $root)
-    )
-    (local.set $fl|17
-     (local.get $fl)
-    )
-    (local.set $sl|18
-     (local.get $sl)
-    )
-    (br $~lib/rt/tlsf/GETHEAD|inlined.1
-     (i32.load offset=96
-      (i32.add
-       (local.get $root|16)
-       (i32.shl
-        (i32.add
-         (i32.shl
-          (local.get $fl|17)
-          (i32.const 4)
-         )
-         (local.get $sl|18)
-        )
-        (i32.const 2)
-       )
-      )
-     )
-    )
+   (call $~lib/rt/tlsf/GETHEAD
+    (local.get $root)
+    (local.get $fl)
+    (local.get $sl)
    )
   )
   (call $~lib/rt/tlsf/Block#set:prev
@@ -1880,35 +1831,11 @@
     )
    )
   )
-  (block $~lib/rt/tlsf/SETHEAD|inlined.2
-   (local.set $root|20
-    (local.get $root)
-   )
-   (local.set $fl|21
-    (local.get $fl)
-   )
-   (local.set $sl|22
-    (local.get $sl)
-   )
-   (local.set $head|23
-    (local.get $block)
-   )
-   (i32.store offset=96
-    (i32.add
-     (local.get $root|20)
-     (i32.shl
-      (i32.add
-       (i32.shl
-        (local.get $fl|21)
-        (i32.const 4)
-       )
-       (local.get $sl|22)
-      )
-      (i32.const 2)
-     )
-    )
-    (local.get $head|23)
-   )
+  (call $~lib/rt/tlsf/SETHEAD
+   (local.get $root)
+   (local.get $fl)
+   (local.get $sl)
+   (local.get $block)
   )
   (call $~lib/rt/tlsf/Root#set:flMap
    (local.get $root)
@@ -1922,62 +1849,28 @@
     )
    )
   )
-  (block $~lib/rt/tlsf/SETSL|inlined.2
-   (local.set $root|26
-    (local.get $root)
-   )
-   (local.set $fl|27
-    (local.get $fl)
-   )
-   (local.set $slMap
-    (i32.or
-     (block $~lib/rt/tlsf/GETSL|inlined.1 (result i32)
-      (local.set $root|24
-       (local.get $root)
-      )
-      (local.set $fl|25
-       (local.get $fl)
-      )
-      (br $~lib/rt/tlsf/GETSL|inlined.1
-       (i32.load offset=4
-        (i32.add
-         (local.get $root|24)
-         (i32.shl
-          (local.get $fl|25)
-          (i32.const 2)
-         )
-        )
-       )
-      )
-     )
-     (i32.shl
-      (i32.const 1)
-      (local.get $sl)
-     )
+  (call $~lib/rt/tlsf/SETSL
+   (local.get $root)
+   (local.get $fl)
+   (i32.or
+    (call $~lib/rt/tlsf/GETSL
+     (local.get $root)
+     (local.get $fl)
     )
-   )
-   (i32.store offset=4
-    (i32.add
-     (local.get $root|26)
-     (i32.shl
-      (local.get $fl|27)
-      (i32.const 2)
-     )
+    (i32.shl
+     (i32.const 1)
+     (local.get $sl)
     )
-    (local.get $slMap)
    )
   )
  )
  (func $~lib/rt/tlsf/addMemory (param $root i32) (param $start i32) (param $endU64 i64) (result i32)
   (local $end i32)
-  (local $root|4 i32)
   (local $tail i32)
   (local $tailInfo i32)
   (local $size i32)
   (local $leftSize i32)
   (local $left i32)
-  (local $root|10 i32)
-  (local $tail|11 i32)
   (local.set $end
    (i32.wrap_i64
     (local.get $endU64)
@@ -2033,15 +1926,8 @@
    )
   )
   (local.set $tail
-   (block $~lib/rt/tlsf/GETTAIL|inlined.0 (result i32)
-    (local.set $root|4
-     (local.get $root)
-    )
-    (br $~lib/rt/tlsf/GETTAIL|inlined.0
-     (i32.load offset=1568
-      (local.get $root|4)
-     )
-    )
+   (call $~lib/rt/tlsf/GETTAIL
+    (local.get $root)
    )
   )
   (local.set $tailInfo
@@ -2197,17 +2083,9 @@
     (i32.const 2)
    )
   )
-  (block $~lib/rt/tlsf/SETTAIL|inlined.1
-   (local.set $root|10
-    (local.get $root)
-   )
-   (local.set $tail|11
-    (local.get $tail)
-   )
-   (i32.store offset=1568
-    (local.get $root|10)
-    (local.get $tail|11)
-   )
+  (call $~lib/rt/tlsf/SETTAIL
+   (local.get $root)
+   (local.get $tail)
   )
   (call $~lib/rt/tlsf/insertBlock
    (local.get $root)
@@ -2222,17 +2100,8 @@
   (local $pagesBefore i32)
   (local $pagesNeeded i32)
   (local $root i32)
-  (local $root|4 i32)
-  (local $tail i32)
   (local $fl i32)
-  (local $root|7 i32)
-  (local $fl|8 i32)
-  (local $slMap i32)
   (local $sl i32)
-  (local $root|11 i32)
-  (local $fl|12 i32)
-  (local $sl|13 i32)
-  (local $head i32)
   (local $memStart i32)
   (drop
    (i32.const 0)
@@ -2302,17 +2171,9 @@
    (local.get $root)
    (i32.const 0)
   )
-  (block $~lib/rt/tlsf/SETTAIL|inlined.0
-   (local.set $root|4
-    (local.get $root)
-   )
-   (local.set $tail
-    (i32.const 0)
-   )
-   (i32.store offset=1568
-    (local.get $root|4)
-    (local.get $tail)
-   )
+  (call $~lib/rt/tlsf/SETTAIL
+   (local.get $root)
+   (i32.const 0)
   )
   (local.set $fl
    (i32.const 0)
@@ -2324,26 +2185,10 @@
      (i32.const 23)
     )
     (then
-     (block $~lib/rt/tlsf/SETSL|inlined.0
-      (local.set $root|7
-       (local.get $root)
-      )
-      (local.set $fl|8
-       (local.get $fl)
-      )
-      (local.set $slMap
-       (i32.const 0)
-      )
-      (i32.store offset=4
-       (i32.add
-        (local.get $root|7)
-        (i32.shl
-         (local.get $fl|8)
-         (i32.const 2)
-        )
-       )
-       (local.get $slMap)
-      )
+     (call $~lib/rt/tlsf/SETSL
+      (local.get $root)
+      (local.get $fl)
+      (i32.const 0)
      )
      (local.set $sl
       (i32.const 0)
@@ -2355,35 +2200,11 @@
         (i32.const 16)
        )
        (then
-        (block $~lib/rt/tlsf/SETHEAD|inlined.0
-         (local.set $root|11
-          (local.get $root)
-         )
-         (local.set $fl|12
-          (local.get $fl)
-         )
-         (local.set $sl|13
-          (local.get $sl)
-         )
-         (local.set $head
-          (i32.const 0)
-         )
-         (i32.store offset=96
-          (i32.add
-           (local.get $root|11)
-           (i32.shl
-            (i32.add
-             (i32.shl
-              (local.get $fl|12)
-              (i32.const 4)
-             )
-             (local.get $sl|13)
-            )
-            (i32.const 2)
-           )
-          )
-          (local.get $head)
-         )
+        (call $~lib/rt/tlsf/SETHEAD
+         (local.get $root)
+         (local.get $fl)
+         (local.get $sl)
+         (i32.const 0)
         )
         (local.set $sl
          (i32.add
@@ -3017,19 +2838,9 @@
   (local $fl i32)
   (local $sl i32)
   (local $requestSize i32)
-  (local $root|5 i32)
-  (local $fl|6 i32)
   (local $slMap i32)
   (local $head i32)
   (local $flMap i32)
-  (local $root|10 i32)
-  (local $fl|11 i32)
-  (local $root|12 i32)
-  (local $fl|13 i32)
-  (local $sl|14 i32)
-  (local $root|15 i32)
-  (local $fl|16 i32)
-  (local $sl|17 i32)
   (if
    (i32.lt_u
     (local.get $size)
@@ -3125,24 +2936,9 @@
   )
   (local.set $slMap
    (i32.and
-    (block $~lib/rt/tlsf/GETSL|inlined.2 (result i32)
-     (local.set $root|5
-      (local.get $root)
-     )
-     (local.set $fl|6
-      (local.get $fl)
-     )
-     (br $~lib/rt/tlsf/GETSL|inlined.2
-      (i32.load offset=4
-       (i32.add
-        (local.get $root|5)
-        (i32.shl
-         (local.get $fl|6)
-         (i32.const 2)
-        )
-       )
-      )
-     )
+    (call $~lib/rt/tlsf/GETSL
+     (local.get $root)
+     (local.get $fl)
     )
     (i32.shl
      (i32.xor
@@ -3194,24 +2990,9 @@
        )
       )
       (local.set $slMap
-       (block $~lib/rt/tlsf/GETSL|inlined.3 (result i32)
-        (local.set $root|10
-         (local.get $root)
-        )
-        (local.set $fl|11
-         (local.get $fl)
-        )
-        (br $~lib/rt/tlsf/GETSL|inlined.3
-         (i32.load offset=4
-          (i32.add
-           (local.get $root|10)
-           (i32.shl
-            (local.get $fl|11)
-            (i32.const 2)
-           )
-          )
-         )
-        )
+       (call $~lib/rt/tlsf/GETSL
+        (local.get $root)
+        (local.get $fl)
        )
       )
       (drop
@@ -3232,34 +3013,11 @@
        )
       )
       (local.set $head
-       (block $~lib/rt/tlsf/GETHEAD|inlined.2 (result i32)
-        (local.set $root|12
-         (local.get $root)
-        )
-        (local.set $fl|13
-         (local.get $fl)
-        )
-        (local.set $sl|14
-         (i32.ctz
-          (local.get $slMap)
-         )
-        )
-        (br $~lib/rt/tlsf/GETHEAD|inlined.2
-         (i32.load offset=96
-          (i32.add
-           (local.get $root|12)
-           (i32.shl
-            (i32.add
-             (i32.shl
-              (local.get $fl|13)
-              (i32.const 4)
-             )
-             (local.get $sl|14)
-            )
-            (i32.const 2)
-           )
-          )
-         )
+       (call $~lib/rt/tlsf/GETHEAD
+        (local.get $root)
+        (local.get $fl)
+        (i32.ctz
+         (local.get $slMap)
         )
        )
       )
@@ -3268,34 +3026,11 @@
    )
    (else
     (local.set $head
-     (block $~lib/rt/tlsf/GETHEAD|inlined.3 (result i32)
-      (local.set $root|15
-       (local.get $root)
-      )
-      (local.set $fl|16
-       (local.get $fl)
-      )
-      (local.set $sl|17
-       (i32.ctz
-        (local.get $slMap)
-       )
-      )
-      (br $~lib/rt/tlsf/GETHEAD|inlined.3
-       (i32.load offset=96
-        (i32.add
-         (local.get $root|15)
-         (i32.shl
-          (i32.add
-           (i32.shl
-            (local.get $fl|16)
-            (i32.const 4)
-           )
-           (local.get $sl|17)
-          )
-          (i32.const 2)
-         )
-        )
-       )
+     (call $~lib/rt/tlsf/GETHEAD
+      (local.get $root)
+      (local.get $fl)
+      (i32.ctz
+       (local.get $slMap)
       )
      )
     )
@@ -3307,10 +3042,9 @@
  )
  (func $~lib/rt/tlsf/growMemory (param $root i32) (param $size i32)
   (local $pagesBefore i32)
-  (local $root|3 i32)
   (local $pagesNeeded i32)
+  (local $4 i32)
   (local $5 i32)
-  (local $6 i32)
   (local $pagesWanted i32)
   (local $pagesAfter i32)
   (drop
@@ -3345,15 +3079,8 @@
        )
        (i32.const 4)
       )
-      (block $~lib/rt/tlsf/GETTAIL|inlined.1 (result i32)
-       (local.set $root|3
-        (local.get $root)
-       )
-       (br $~lib/rt/tlsf/GETTAIL|inlined.1
-        (i32.load offset=1568
-         (local.get $root|3)
-        )
-       )
+      (call $~lib/rt/tlsf/GETTAIL
+       (local.get $root)
       )
      )
     )
@@ -3376,15 +3103,15 @@
   )
   (local.set $pagesWanted
    (select
-    (local.tee $5
+    (local.tee $4
      (local.get $pagesBefore)
     )
-    (local.tee $6
+    (local.tee $5
      (local.get $pagesNeeded)
     )
     (i32.gt_s
+     (local.get $4)
      (local.get $5)
-     (local.get $6)
     )
    )
   )
@@ -3432,8 +3159,6 @@
   (local $blockInfo i32)
   (local $remaining i32)
   (local $spare i32)
-  (local $block|6 i32)
-  (local $block|7 i32)
   (local.set $blockInfo
    (call $~lib/rt/common/BLOCK#get:mmInfo
     (local.get $block)
@@ -3531,51 +3256,13 @@
      )
     )
     (call $~lib/rt/common/BLOCK#set:mmInfo
-     (block $~lib/rt/tlsf/GETRIGHT|inlined.3 (result i32)
-      (local.set $block|7
-       (local.get $block)
-      )
-      (br $~lib/rt/tlsf/GETRIGHT|inlined.3
-       (i32.add
-        (i32.add
-         (local.get $block|7)
-         (i32.const 4)
-        )
-        (i32.and
-         (call $~lib/rt/common/BLOCK#get:mmInfo
-          (local.get $block|7)
-         )
-         (i32.xor
-          (i32.const 3)
-          (i32.const -1)
-         )
-        )
-       )
-      )
+     (call $~lib/rt/tlsf/GETRIGHT
+      (local.get $block)
      )
      (i32.and
       (call $~lib/rt/common/BLOCK#get:mmInfo
-       (block $~lib/rt/tlsf/GETRIGHT|inlined.2 (result i32)
-        (local.set $block|6
-         (local.get $block)
-        )
-        (br $~lib/rt/tlsf/GETRIGHT|inlined.2
-         (i32.add
-          (i32.add
-           (local.get $block|6)
-           (i32.const 4)
-          )
-          (i32.and
-           (call $~lib/rt/common/BLOCK#get:mmInfo
-            (local.get $block|6)
-           )
-           (i32.xor
-            (i32.const 3)
-            (i32.const -1)
-           )
-          )
-         )
-        )
+       (call $~lib/rt/tlsf/GETRIGHT
+        (local.get $block)
        )
       )
       (i32.xor
@@ -3855,6 +3542,15 @@
    (local.get $this)
   )
  )
+ (func $~lib/date/Date#getTime (param $this i32) (result i64)
+  (return
+   (call $~lib/date/Date#get:epochMillis
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+ )
  (func $~lib/date/Date#setTime (param $this i32) (param $time i64) (result i64)
   (if
    (call $~lib/date/invalidDate
@@ -3905,9 +3601,30 @@
    (local.get $this)
   )
  )
+ (func $~lib/date/Date#getUTCFullYear (param $this i32) (result i32)
+  (return
+   (call $~lib/date/Date#get:year
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+ )
  (func $~lib/date/Date#get:month (param $this i32) (result i32)
   (i32.load offset=4
    (local.get $this)
+  )
+ )
+ (func $~lib/date/Date#getUTCMonth (param $this i32) (result i32)
+  (return
+   (i32.sub
+    (call $~lib/date/Date#get:month
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.const 1)
+   )
   )
  )
  (func $~lib/date/Date#get:day (param $this i32) (result i32)
@@ -3915,48 +3632,53 @@
    (local.get $this)
   )
  )
- (func $~lib/date/Date#getUTCHours (param $this i32) (result i32)
-  (local $a i64)
-  (local $b i64)
+ (func $~lib/date/Date#getUTCDate (param $this i32) (result i32)
+  (return
+   (call $~lib/date/Date#get:day
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+ )
+ (func $~lib/date/euclidRem<i64> (param $a i64) (param $b i64) (result i64)
   (local $m i64)
+  (local.set $m
+   (i64.rem_s
+    (local.get $a)
+    (local.get $b)
+   )
+  )
+  (return
+   (i64.add
+    (local.get $m)
+    (if (result i64)
+     (i64.lt_s
+      (local.get $m)
+      (i64.const 0)
+     )
+     (then
+      (local.get $b)
+     )
+     (else
+      (i64.const 0)
+     )
+    )
+   )
+  )
+ )
+ (func $~lib/date/Date#getUTCHours (param $this i32) (result i32)
   (return
    (i32.div_s
     (i32.wrap_i64
-     (block $~lib/date/euclidRem<i64>|inlined.0 (result i64)
-      (local.set $a
-       (call $~lib/date/Date#get:epochMillis
-        (call $~lib/rt/__tmptostack
-         (local.get $this)
-        )
+     (call $~lib/date/euclidRem<i64>
+      (call $~lib/date/Date#get:epochMillis
+       (call $~lib/rt/__tmptostack
+        (local.get $this)
        )
       )
-      (local.set $b
-       (i64.extend_i32_s
-        (i32.const 86400000)
-       )
-      )
-      (local.set $m
-       (i64.rem_s
-        (local.get $a)
-        (local.get $b)
-       )
-      )
-      (br $~lib/date/euclidRem<i64>|inlined.0
-       (i64.add
-        (local.get $m)
-        (if (result i64)
-         (i64.lt_s
-          (local.get $m)
-          (i64.const 0)
-         )
-         (then
-          (local.get $b)
-         )
-         (else
-          (i64.const 0)
-         )
-        )
-       )
+      (i64.extend_i32_s
+       (i32.const 86400000)
       )
      )
     )
@@ -3965,47 +3687,17 @@
   )
  )
  (func $~lib/date/Date#getUTCMinutes (param $this i32) (result i32)
-  (local $a i64)
-  (local $b i64)
-  (local $m i64)
   (return
    (i32.div_s
     (i32.wrap_i64
-     (block $~lib/date/euclidRem<i64>|inlined.1 (result i64)
-      (local.set $a
-       (call $~lib/date/Date#get:epochMillis
-        (call $~lib/rt/__tmptostack
-         (local.get $this)
-        )
+     (call $~lib/date/euclidRem<i64>
+      (call $~lib/date/Date#get:epochMillis
+       (call $~lib/rt/__tmptostack
+        (local.get $this)
        )
       )
-      (local.set $b
-       (i64.extend_i32_s
-        (i32.const 3600000)
-       )
-      )
-      (local.set $m
-       (i64.rem_s
-        (local.get $a)
-        (local.get $b)
-       )
-      )
-      (br $~lib/date/euclidRem<i64>|inlined.1
-       (i64.add
-        (local.get $m)
-        (if (result i64)
-         (i64.lt_s
-          (local.get $m)
-          (i64.const 0)
-         )
-         (then
-          (local.get $b)
-         )
-         (else
-          (i64.const 0)
-         )
-        )
-       )
+      (i64.extend_i32_s
+       (i32.const 3600000)
       )
      )
     )
@@ -4014,47 +3706,17 @@
   )
  )
  (func $~lib/date/Date#getUTCSeconds (param $this i32) (result i32)
-  (local $a i64)
-  (local $b i64)
-  (local $m i64)
   (return
    (i32.div_s
     (i32.wrap_i64
-     (block $~lib/date/euclidRem<i64>|inlined.2 (result i64)
-      (local.set $a
-       (call $~lib/date/Date#get:epochMillis
-        (call $~lib/rt/__tmptostack
-         (local.get $this)
-        )
+     (call $~lib/date/euclidRem<i64>
+      (call $~lib/date/Date#get:epochMillis
+       (call $~lib/rt/__tmptostack
+        (local.get $this)
        )
       )
-      (local.set $b
-       (i64.extend_i32_s
-        (i32.const 60000)
-       )
-      )
-      (local.set $m
-       (i64.rem_s
-        (local.get $a)
-        (local.get $b)
-       )
-      )
-      (br $~lib/date/euclidRem<i64>|inlined.2
-       (i64.add
-        (local.get $m)
-        (if (result i64)
-         (i64.lt_s
-          (local.get $m)
-          (i64.const 0)
-         )
-         (then
-          (local.get $b)
-         )
-         (else
-          (i64.const 0)
-         )
-        )
-       )
+      (i64.extend_i32_s
+       (i32.const 60000)
       )
      )
     )
@@ -4063,46 +3725,16 @@
   )
  )
  (func $~lib/date/Date#getUTCMilliseconds (param $this i32) (result i32)
-  (local $a i64)
-  (local $b i64)
-  (local $m i64)
   (return
    (i32.wrap_i64
-    (block $~lib/date/euclidRem<i64>|inlined.3 (result i64)
-     (local.set $a
-      (call $~lib/date/Date#get:epochMillis
-       (call $~lib/rt/__tmptostack
-        (local.get $this)
-       )
+    (call $~lib/date/euclidRem<i64>
+     (call $~lib/date/Date#get:epochMillis
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
       )
      )
-     (local.set $b
-      (i64.extend_i32_s
-       (i32.const 1000)
-      )
-     )
-     (local.set $m
-      (i64.rem_s
-       (local.get $a)
-       (local.get $b)
-      )
-     )
-     (br $~lib/date/euclidRem<i64>|inlined.3
-      (i64.add
-       (local.get $m)
-       (if (result i64)
-        (i64.lt_s
-         (local.get $m)
-         (i64.const 0)
-        )
-        (then
-         (local.get $b)
-        )
-        (else
-         (i64.const 0)
-        )
-       )
-      )
+     (i64.extend_i32_s
+      (i32.const 1000)
      )
     )
    )
@@ -4222,9 +3854,6 @@
   )
  )
  (func $~lib/date/join (param $year i32) (param $month i32) (param $day i32) (param $ms i64) (result i64)
-  (local $a i64)
-  (local $b i64)
-  (local $m i64)
   (return
    (i64.add
     (i64.mul
@@ -4237,37 +3866,10 @@
       (i32.const 86400000)
      )
     )
-    (block $~lib/date/euclidRem<i64>|inlined.4 (result i64)
-     (local.set $a
-      (local.get $ms)
-     )
-     (local.set $b
-      (i64.extend_i32_s
-       (i32.const 86400000)
-      )
-     )
-     (local.set $m
-      (i64.rem_s
-       (local.get $a)
-       (local.get $b)
-      )
-     )
-     (br $~lib/date/euclidRem<i64>|inlined.4
-      (i64.add
-       (local.get $m)
-       (if (result i64)
-        (i64.lt_s
-         (local.get $m)
-         (i64.const 0)
-        )
-        (then
-         (local.get $b)
-        )
-        (else
-         (i64.const 0)
-        )
-       )
-      )
+    (call $~lib/date/euclidRem<i64>
+     (local.get $ms)
+     (i64.extend_i32_s
+      (i32.const 86400000)
      )
     )
    )
@@ -4424,16 +4026,33 @@
    )
   )
  )
- (func $~lib/date/dayOfWeek (param $year i32) (param $month i32) (param $day i32) (result i32)
-  (local $a i32)
-  (local $b i32)
-  (local $a|5 i32)
-  (local $b|6 i32)
-  (local $a|7 i32)
-  (local $b|8 i32)
-  (local $a|9 i32)
-  (local $b|10 i32)
+ (func $~lib/date/euclidRem<i32> (param $a i32) (param $b i32) (result i32)
   (local $m i32)
+  (local.set $m
+   (i32.rem_s
+    (local.get $a)
+    (local.get $b)
+   )
+  )
+  (return
+   (i32.add
+    (local.get $m)
+    (if (result i32)
+     (i32.lt_s
+      (local.get $m)
+      (i32.const 0)
+     )
+     (then
+      (local.get $b)
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+  )
+ )
+ (func $~lib/date/dayOfWeek (param $year i32) (param $month i32) (param $day i32) (result i32)
   (local.set $year
    (i32.sub
     (local.get $year)
@@ -4448,99 +4067,18 @@
     (local.get $year)
     (i32.add
      (i32.sub
-      (block $~lib/date/floorDiv<i32>|inlined.2 (result i32)
-       (local.set $a
-        (local.get $year)
-       )
-       (local.set $b
-        (i32.const 4)
-       )
-       (br $~lib/date/floorDiv<i32>|inlined.2
-        (i32.div_s
-         (i32.sub
-          (local.get $a)
-          (if (result i32)
-           (i32.lt_s
-            (local.get $a)
-            (i32.const 0)
-           )
-           (then
-            (i32.sub
-             (local.get $b)
-             (i32.const 1)
-            )
-           )
-           (else
-            (i32.const 0)
-           )
-          )
-         )
-         (local.get $b)
-        )
-       )
+      (call $~lib/date/floorDiv<i32>
+       (local.get $year)
+       (i32.const 4)
       )
-      (block $~lib/date/floorDiv<i32>|inlined.3 (result i32)
-       (local.set $a|5
-        (local.get $year)
-       )
-       (local.set $b|6
-        (i32.const 100)
-       )
-       (br $~lib/date/floorDiv<i32>|inlined.3
-        (i32.div_s
-         (i32.sub
-          (local.get $a|5)
-          (if (result i32)
-           (i32.lt_s
-            (local.get $a|5)
-            (i32.const 0)
-           )
-           (then
-            (i32.sub
-             (local.get $b|6)
-             (i32.const 1)
-            )
-           )
-           (else
-            (i32.const 0)
-           )
-          )
-         )
-         (local.get $b|6)
-        )
-       )
+      (call $~lib/date/floorDiv<i32>
+       (local.get $year)
+       (i32.const 100)
       )
      )
-     (block $~lib/date/floorDiv<i32>|inlined.4 (result i32)
-      (local.set $a|7
-       (local.get $year)
-      )
-      (local.set $b|8
-       (i32.const 400)
-      )
-      (br $~lib/date/floorDiv<i32>|inlined.4
-       (i32.div_s
-        (i32.sub
-         (local.get $a|7)
-         (if (result i32)
-          (i32.lt_s
-           (local.get $a|7)
-           (i32.const 0)
-          )
-          (then
-           (i32.sub
-            (local.get $b|8)
-            (i32.const 1)
-           )
-          )
-          (else
-           (i32.const 0)
-          )
-         )
-        )
-        (local.get $b|8)
-       )
-      )
+     (call $~lib/date/floorDiv<i32>
+      (local.get $year)
+      (i32.const 400)
      )
     )
    )
@@ -4557,40 +4095,34 @@
    )
   )
   (return
-   (block $~lib/date/euclidRem<i32>|inlined.0 (result i32)
-    (local.set $a|9
+   (call $~lib/date/euclidRem<i32>
+    (i32.add
      (i32.add
-      (i32.add
-       (local.get $year)
-       (local.get $month)
-      )
-      (local.get $day)
+      (local.get $year)
+      (local.get $month)
+     )
+     (local.get $day)
+    )
+    (i32.const 7)
+   )
+  )
+ )
+ (func $~lib/date/Date#getUTCDay (param $this i32) (result i32)
+  (return
+   (call $~lib/date/dayOfWeek
+    (call $~lib/date/Date#get:year
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
      )
     )
-    (local.set $b|10
-     (i32.const 7)
-    )
-    (local.set $m
-     (i32.rem_s
-      (local.get $a|9)
-      (local.get $b|10)
+    (call $~lib/date/Date#get:month
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
      )
     )
-    (br $~lib/date/euclidRem<i32>|inlined.0
-     (i32.add
-      (local.get $m)
-      (if (result i32)
-       (i32.lt_s
-        (local.get $m)
-        (i32.const 0)
-       )
-       (then
-        (local.get $b|10)
-       )
-       (else
-        (i32.const 0)
-       )
-      )
+    (call $~lib/date/Date#get:day
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
      )
     )
    )
@@ -4882,6 +4414,19 @@
    )
   )
  )
+ (func $~lib/util/number/utoa32_dec_core (param $buffer i32) (param $num i32) (param $offset i32)
+  (drop
+   (i32.ge_s
+    (i32.const 0)
+    (i32.const 1)
+   )
+  )
+  (call $~lib/util/number/utoa32_dec_lut
+   (local.get $buffer)
+   (local.get $num)
+   (local.get $offset)
+  )
+ )
  (func $~lib/util/number/utoa_hex_lut (param $buffer i32) (param $num i64) (param $offset i32)
   (block $while-break|0
    (loop $while-continue|0
@@ -4954,24 +4499,38 @@
    )
   )
  )
+ (func $~lib/util/number/utoa32_hex_core (param $buffer i32) (param $num i32) (param $offset i32)
+  (drop
+   (i32.ge_s
+    (i32.const 0)
+    (i32.const 1)
+   )
+  )
+  (call $~lib/util/number/utoa_hex_lut
+   (local.get $buffer)
+   (i64.extend_i32_u
+    (local.get $num)
+   )
+   (local.get $offset)
+  )
+ )
+ (func $~lib/util/number/isPowerOf2<i32> (param $value i32) (result i32)
+  (return
+   (i32.eq
+    (i32.popcnt
+     (local.get $value)
+    )
+    (i32.const 1)
+   )
+  )
+ )
  (func $~lib/util/number/ulog_base (param $num i64) (param $base i32) (result i32)
-  (local $value i32)
   (local $b64 i64)
   (local $b i64)
   (local $e i32)
   (if
-   (block $~lib/util/number/isPowerOf2<i32>|inlined.0 (result i32)
-    (local.set $value
-     (local.get $base)
-    )
-    (br $~lib/util/number/isPowerOf2<i32>|inlined.0
-     (i32.eq
-      (i32.popcnt
-       (local.get $value)
-      )
-      (i32.const 1)
-     )
-    )
+   (call $~lib/util/number/isPowerOf2<i32>
+    (local.get $base)
    )
    (then
     (return
@@ -5210,15 +4769,9 @@
   (local $sign i32)
   (local $out i32)
   (local $decimals i32)
-  (local $buffer i32)
-  (local $num i32)
-  (local $offset i32)
-  (local $decimals|8 i32)
-  (local $buffer|9 i32)
-  (local $num|10 i32)
-  (local $offset|11 i32)
+  (local $decimals|5 i32)
   (local $val32 i32)
-  (local $decimals|13 i32)
+  (local $decimals|7 i32)
   (if
    (if (result i32)
     (i32.lt_s
@@ -5300,30 +4853,13 @@
       )
      )
     )
-    (block $~lib/util/number/utoa32_dec_core|inlined.0
-     (local.set $buffer
-      (i32.add
-       (local.get $out)
-       (local.get $sign)
-      )
+    (call $~lib/util/number/utoa32_dec_core
+     (i32.add
+      (local.get $out)
+      (local.get $sign)
      )
-     (local.set $num
-      (local.get $value)
-     )
-     (local.set $offset
-      (local.get $decimals)
-     )
-     (drop
-      (i32.ge_s
-       (i32.const 0)
-       (i32.const 1)
-      )
-     )
-     (call $~lib/util/number/utoa32_dec_lut
-      (local.get $buffer)
-      (local.get $num)
-      (local.get $offset)
-     )
+     (local.get $value)
+     (local.get $decimals)
     )
    )
    (else
@@ -5333,7 +4869,7 @@
       (i32.const 16)
      )
      (then
-      (local.set $decimals|8
+      (local.set $decimals|5
        (i32.add
         (i32.shr_s
          (i32.sub
@@ -5352,7 +4888,7 @@
         (call $~lib/rt/itcms/__new
          (i32.add
           (i32.shl
-           (local.get $decimals|8)
+           (local.get $decimals|5)
            (i32.const 1)
           )
           (local.get $sign)
@@ -5361,39 +4897,20 @@
         )
        )
       )
-      (block $~lib/util/number/utoa32_hex_core|inlined.0
-       (local.set $buffer|9
-        (i32.add
-         (local.get $out)
-         (local.get $sign)
-        )
+      (call $~lib/util/number/utoa32_hex_core
+       (i32.add
+        (local.get $out)
+        (local.get $sign)
        )
-       (local.set $num|10
-        (local.get $value)
-       )
-       (local.set $offset|11
-        (local.get $decimals|8)
-       )
-       (drop
-        (i32.ge_s
-         (i32.const 0)
-         (i32.const 1)
-        )
-       )
-       (call $~lib/util/number/utoa_hex_lut
-        (local.get $buffer|9)
-        (i64.extend_i32_u
-         (local.get $num|10)
-        )
-        (local.get $offset|11)
-       )
+       (local.get $value)
+       (local.get $decimals|5)
       )
      )
      (else
       (local.set $val32
        (local.get $value)
       )
-      (local.set $decimals|13
+      (local.set $decimals|7
        (call $~lib/util/number/ulog_base
         (i64.extend_i32_u
          (local.get $val32)
@@ -5406,7 +4923,7 @@
         (call $~lib/rt/itcms/__new
          (i32.add
           (i32.shl
-           (local.get $decimals|13)
+           (local.get $decimals|7)
            (i32.const 1)
           )
           (local.get $sign)
@@ -5423,7 +4940,7 @@
        (i64.extend_i32_u
         (local.get $val32)
        )
-       (local.get $decimals|13)
+       (local.get $decimals|7)
        (local.get $radix)
       )
      )
@@ -8249,6 +7766,16 @@
    )
   )
  )
+ (func $~lib/builtins/i32.parse (param $value i32) (param $radix i32) (result i32)
+  (return
+   (call $~lib/util/string/strtol<i32>
+    (call $~lib/rt/__tmptostack
+     (local.get $value)
+    )
+    (local.get $radix)
+   )
+  )
+ )
  (func $~lib/rt/__newArray (param $length i32) (param $alignLog2 i32) (param $id i32) (param $data i32) (result i32)
   (local $bufferSize i32)
   (local $buffer i32)
@@ -9469,40 +8996,18 @@
   (local $i i32)
   (local $c i32)
   (local $posColon i32)
-  (local $value i32)
-  (local $radix i32)
   (local $offsetHours i32)
-  (local $value|15 i32)
-  (local $radix|16 i32)
   (local $offsetMinutes i32)
-  (local $value|18 i32)
-  (local $radix|19 i32)
-  (local $offsetHours|20 i32)
+  (local $offsetHours|14 i32)
   (local $timeParts i32)
   (local $len i32)
-  (local $value|23 i32)
-  (local $radix|24 i32)
-  (local $value|25 i32)
-  (local $radix|26 i32)
   (local $secAndFrac i32)
   (local $posDot i32)
-  (local $value|29 i32)
-  (local $radix|30 i32)
-  (local $value|31 i32)
-  (local $radix|32 i32)
-  (local $value|33 i32)
-  (local $radix|34 i32)
   (local $parts i32)
-  (local $value|36 i32)
-  (local $radix|37 i32)
   (local $year i32)
   (local $month i32)
   (local $day i32)
-  (local $len|41 i32)
-  (local $value|42 i32)
-  (local $radix|43 i32)
-  (local $value|44 i32)
-  (local $radix|45 i32)
+  (local $len|23 i32)
   (if
    (i32.eqz
     (call $~lib/string/String#get:length
@@ -9690,66 +9195,42 @@
              )
              (then
               (local.set $offsetHours
-               (block $~lib/builtins/i32.parse|inlined.0 (result i32)
-                (local.set $value
-                 (call $~lib/rt/__localtostack
-                  (call $~lib/string/String#substring
-                   (call $~lib/rt/__tmptostack
-                    (local.get $timeString)
-                   )
-                   (i32.add
-                    (local.get $i)
-                    (i32.const 1)
-                   )
-                   (local.get $posColon)
-                  )
-                 )
-                )
-                (local.set $radix
-                 (i32.const 0)
-                )
-                (br $~lib/builtins/i32.parse|inlined.0
-                 (call $~lib/util/string/strtol<i32>
+               (call $~lib/builtins/i32.parse
+                (call $~lib/rt/__tmptostack
+                 (call $~lib/string/String#substring
                   (call $~lib/rt/__tmptostack
-                   (local.get $value)
+                   (local.get $timeString)
                   )
-                  (local.get $radix)
+                  (i32.add
+                   (local.get $i)
+                   (i32.const 1)
+                  )
+                  (local.get $posColon)
                  )
                 )
+                (i32.const 0)
                )
               )
               (local.set $offsetMinutes
-               (block $~lib/builtins/i32.parse|inlined.1 (result i32)
-                (local.set $value|15
-                 (call $~lib/rt/__localtostack
-                  (call $~lib/string/String#substring@varargs
-                   (call $~lib/rt/__tmptostack
-                    (local.get $timeString)
-                   )
-                   (i32.add
-                    (local.get $posColon)
+               (call $~lib/builtins/i32.parse
+                (call $~lib/rt/__tmptostack
+                 (call $~lib/string/String#substring@varargs
+                  (call $~lib/rt/__tmptostack
+                   (local.get $timeString)
+                  )
+                  (i32.add
+                   (local.get $posColon)
+                   (i32.const 1)
+                  )
+                  (block (result i32)
+                   (global.set $~argumentsLength
                     (i32.const 1)
                    )
-                   (block (result i32)
-                    (global.set $~argumentsLength
-                     (i32.const 1)
-                    )
-                    (i32.const 0)
-                   )
+                   (i32.const 0)
                   )
                  )
                 )
-                (local.set $radix|16
-                 (i32.const 0)
-                )
-                (br $~lib/builtins/i32.parse|inlined.1
-                 (call $~lib/util/string/strtol<i32>
-                  (call $~lib/rt/__tmptostack
-                   (local.get $value|15)
-                  )
-                  (local.get $radix|16)
-                 )
-                )
+                (i32.const 0)
                )
               )
               (local.set $offsetMs
@@ -9766,43 +9247,31 @@
               )
              )
              (else
-              (local.set $offsetHours|20
-               (block $~lib/builtins/i32.parse|inlined.2 (result i32)
-                (local.set $value|18
-                 (call $~lib/rt/__localtostack
-                  (call $~lib/string/String#substring@varargs
-                   (call $~lib/rt/__tmptostack
-                    (local.get $timeString)
-                   )
-                   (i32.add
-                    (local.get $i)
+              (local.set $offsetHours|14
+               (call $~lib/builtins/i32.parse
+                (call $~lib/rt/__tmptostack
+                 (call $~lib/string/String#substring@varargs
+                  (call $~lib/rt/__tmptostack
+                   (local.get $timeString)
+                  )
+                  (i32.add
+                   (local.get $i)
+                   (i32.const 1)
+                  )
+                  (block (result i32)
+                   (global.set $~argumentsLength
                     (i32.const 1)
                    )
-                   (block (result i32)
-                    (global.set $~argumentsLength
-                     (i32.const 1)
-                    )
-                    (i32.const 0)
-                   )
+                   (i32.const 0)
                   )
                  )
                 )
-                (local.set $radix|19
-                 (i32.const 0)
-                )
-                (br $~lib/builtins/i32.parse|inlined.2
-                 (call $~lib/util/string/strtol<i32>
-                  (call $~lib/rt/__tmptostack
-                   (local.get $value|18)
-                  )
-                  (local.get $radix|19)
-                 )
-                )
+                (i32.const 0)
                )
               )
               (local.set $offsetMs
                (i32.mul
-                (local.get $offsetHours|20)
+                (local.get $offsetHours|14)
                 (i32.const 3600000)
                )
               )
@@ -9888,53 +9357,29 @@
      )
     )
     (local.set $hour
-     (block $~lib/builtins/i32.parse|inlined.3 (result i32)
-      (local.set $value|23
-       (call $~lib/rt/__localtostack
-        (call $~lib/array/Array<~lib/string/String>#__get
-         (call $~lib/rt/__tmptostack
-          (local.get $timeParts)
-         )
-         (i32.const 0)
-        )
-       )
-      )
-      (local.set $radix|24
-       (i32.const 0)
-      )
-      (br $~lib/builtins/i32.parse|inlined.3
-       (call $~lib/util/string/strtol<i32>
+     (call $~lib/builtins/i32.parse
+      (call $~lib/rt/__tmptostack
+       (call $~lib/array/Array<~lib/string/String>#__get
         (call $~lib/rt/__tmptostack
-         (local.get $value|23)
+         (local.get $timeParts)
         )
-        (local.get $radix|24)
+        (i32.const 0)
        )
       )
+      (i32.const 0)
      )
     )
     (local.set $min
-     (block $~lib/builtins/i32.parse|inlined.4 (result i32)
-      (local.set $value|25
-       (call $~lib/rt/__localtostack
-        (call $~lib/array/Array<~lib/string/String>#__get
-         (call $~lib/rt/__tmptostack
-          (local.get $timeParts)
-         )
-         (i32.const 1)
-        )
-       )
-      )
-      (local.set $radix|26
-       (i32.const 0)
-      )
-      (br $~lib/builtins/i32.parse|inlined.4
-       (call $~lib/util/string/strtol<i32>
+     (call $~lib/builtins/i32.parse
+      (call $~lib/rt/__tmptostack
+       (call $~lib/array/Array<~lib/string/String>#__get
         (call $~lib/rt/__tmptostack
-         (local.get $value|25)
+         (local.get $timeParts)
         )
-        (local.get $radix|26)
+        (i32.const 1)
        )
       )
+      (i32.const 0)
      )
     )
     (if
@@ -9969,86 +9414,50 @@
        )
        (then
         (local.set $sec
-         (block $~lib/builtins/i32.parse|inlined.5 (result i32)
-          (local.set $value|29
-           (call $~lib/rt/__localtostack
-            (call $~lib/string/String#substring
-             (call $~lib/rt/__tmptostack
-              (local.get $secAndFrac)
-             )
-             (i32.const 0)
-             (local.get $posDot)
-            )
-           )
-          )
-          (local.set $radix|30
-           (i32.const 0)
-          )
-          (br $~lib/builtins/i32.parse|inlined.5
-           (call $~lib/util/string/strtol<i32>
+         (call $~lib/builtins/i32.parse
+          (call $~lib/rt/__tmptostack
+           (call $~lib/string/String#substring
             (call $~lib/rt/__tmptostack
-             (local.get $value|29)
+             (local.get $secAndFrac)
             )
-            (local.get $radix|30)
+            (i32.const 0)
+            (local.get $posDot)
            )
           )
+          (i32.const 0)
          )
         )
         (local.set $ms
-         (block $~lib/builtins/i32.parse|inlined.6 (result i32)
-          (local.set $value|31
-           (call $~lib/rt/__localtostack
-            (call $~lib/string/String#padEnd
-             (call $~lib/rt/__tmptostack
-              (call $~lib/string/String#substr
-               (call $~lib/rt/__tmptostack
-                (local.get $secAndFrac)
-               )
-               (i32.add
-                (local.get $posDot)
-                (i32.const 1)
-               )
-               (i32.const 3)
-              )
-             )
-             (i32.const 3)
-             (i32.const 848)
-            )
-           )
-          )
-          (local.set $radix|32
-           (i32.const 0)
-          )
-          (br $~lib/builtins/i32.parse|inlined.6
-           (call $~lib/util/string/strtol<i32>
+         (call $~lib/builtins/i32.parse
+          (call $~lib/rt/__tmptostack
+           (call $~lib/string/String#padEnd
             (call $~lib/rt/__tmptostack
-             (local.get $value|31)
+             (call $~lib/string/String#substr
+              (call $~lib/rt/__tmptostack
+               (local.get $secAndFrac)
+              )
+              (i32.add
+               (local.get $posDot)
+               (i32.const 1)
+              )
+              (i32.const 3)
+             )
             )
-            (local.get $radix|32)
+            (i32.const 3)
+            (i32.const 848)
            )
           )
+          (i32.const 0)
          )
         )
        )
        (else
         (local.set $sec
-         (block $~lib/builtins/i32.parse|inlined.7 (result i32)
-          (local.set $value|33
-           (call $~lib/rt/__localtostack
-            (local.get $secAndFrac)
-           )
+         (call $~lib/builtins/i32.parse
+          (call $~lib/rt/__tmptostack
+           (local.get $secAndFrac)
           )
-          (local.set $radix|34
-           (i32.const 0)
-          )
-          (br $~lib/builtins/i32.parse|inlined.7
-           (call $~lib/util/string/strtol<i32>
-            (call $~lib/rt/__tmptostack
-             (local.get $value|33)
-            )
-            (local.get $radix|34)
-           )
-          )
+          (i32.const 0)
          )
         )
        )
@@ -10074,28 +9483,16 @@
    )
   )
   (local.set $year
-   (block $~lib/builtins/i32.parse|inlined.8 (result i32)
-    (local.set $value|36
-     (call $~lib/rt/__localtostack
-      (call $~lib/array/Array<~lib/string/String>#__get
-       (call $~lib/rt/__tmptostack
-        (local.get $parts)
-       )
-       (i32.const 0)
-      )
-     )
-    )
-    (local.set $radix|37
-     (i32.const 0)
-    )
-    (br $~lib/builtins/i32.parse|inlined.8
-     (call $~lib/util/string/strtol<i32>
+   (call $~lib/builtins/i32.parse
+    (call $~lib/rt/__tmptostack
+     (call $~lib/array/Array<~lib/string/String>#__get
       (call $~lib/rt/__tmptostack
-       (local.get $value|36)
+       (local.get $parts)
       )
-      (local.get $radix|37)
+      (i32.const 0)
      )
     )
+    (i32.const 0)
    )
   )
   (local.set $month
@@ -10104,7 +9501,7 @@
   (local.set $day
    (i32.const 1)
   )
-  (local.set $len|41
+  (local.set $len|23
    (call $~lib/array/Array<~lib/string/String>#get:length
     (call $~lib/rt/__tmptostack
      (local.get $parts)
@@ -10113,64 +9510,40 @@
   )
   (if
    (i32.ge_s
-    (local.get $len|41)
+    (local.get $len|23)
     (i32.const 2)
    )
    (then
     (local.set $month
-     (block $~lib/builtins/i32.parse|inlined.9 (result i32)
-      (local.set $value|42
-       (call $~lib/rt/__localtostack
-        (call $~lib/array/Array<~lib/string/String>#__get
-         (call $~lib/rt/__tmptostack
-          (local.get $parts)
-         )
-         (i32.const 1)
-        )
-       )
-      )
-      (local.set $radix|43
-       (i32.const 0)
-      )
-      (br $~lib/builtins/i32.parse|inlined.9
-       (call $~lib/util/string/strtol<i32>
+     (call $~lib/builtins/i32.parse
+      (call $~lib/rt/__tmptostack
+       (call $~lib/array/Array<~lib/string/String>#__get
         (call $~lib/rt/__tmptostack
-         (local.get $value|42)
+         (local.get $parts)
         )
-        (local.get $radix|43)
+        (i32.const 1)
        )
       )
+      (i32.const 0)
      )
     )
     (if
      (i32.ge_s
-      (local.get $len|41)
+      (local.get $len|23)
       (i32.const 3)
      )
      (then
       (local.set $day
-       (block $~lib/builtins/i32.parse|inlined.10 (result i32)
-        (local.set $value|44
-         (call $~lib/rt/__localtostack
-          (call $~lib/array/Array<~lib/string/String>#__get
-           (call $~lib/rt/__tmptostack
-            (local.get $parts)
-           )
-           (i32.const 2)
-          )
-         )
-        )
-        (local.set $radix|45
-         (i32.const 0)
-        )
-        (br $~lib/builtins/i32.parse|inlined.10
-         (call $~lib/util/string/strtol<i32>
+       (call $~lib/builtins/i32.parse
+        (call $~lib/rt/__tmptostack
+         (call $~lib/array/Array<~lib/string/String>#__get
           (call $~lib/rt/__tmptostack
-           (local.get $value|44)
+           (local.get $parts)
           )
-          (local.get $radix|45)
+          (i32.const 2)
          )
         )
+        (i32.const 0)
        )
       )
      )
@@ -10198,252 +9571,38 @@
   )
  )
  (func $start:std/date
-  (local $year i32)
-  (local $month i32)
-  (local $day i32)
-  (local $hour i32)
-  (local $minute i32)
-  (local $second i32)
-  (local $millisecond i32)
-  (local $ms i64)
-  (local $year|8 i32)
-  (local $month|9 i32)
-  (local $day|10 i32)
-  (local $hour|11 i32)
-  (local $minute|12 i32)
-  (local $second|13 i32)
-  (local $millisecond|14 i32)
-  (local $ms|15 i64)
-  (local $year|16 i32)
-  (local $month|17 i32)
-  (local $day|18 i32)
-  (local $hour|19 i32)
-  (local $minute|20 i32)
-  (local $second|21 i32)
-  (local $millisecond|22 i32)
-  (local $ms|23 i64)
-  (local $year|24 i32)
-  (local $month|25 i32)
-  (local $day|26 i32)
-  (local $hour|27 i32)
-  (local $minute|28 i32)
-  (local $second|29 i32)
-  (local $millisecond|30 i32)
-  (local $ms|31 i64)
-  (local $year|32 i32)
-  (local $month|33 i32)
-  (local $day|34 i32)
-  (local $hour|35 i32)
-  (local $minute|36 i32)
-  (local $second|37 i32)
-  (local $millisecond|38 i32)
-  (local $ms|39 i64)
-  (local $year|40 i32)
-  (local $month|41 i32)
-  (local $day|42 i32)
-  (local $hour|43 i32)
-  (local $minute|44 i32)
-  (local $second|45 i32)
-  (local $millisecond|46 i32)
-  (local $ms|47 i64)
-  (local $year|48 i32)
-  (local $month|49 i32)
-  (local $day|50 i32)
-  (local $hour|51 i32)
-  (local $minute|52 i32)
-  (local $second|53 i32)
-  (local $millisecond|54 i32)
-  (local $ms|55 i64)
   (local $creationTime i64)
   (local $date i32)
-  (local $this i32)
-  (local $this|59 i32)
-  (local $date|60 i32)
-  (local $this|61 i32)
-  (local $this|62 i32)
-  (local $this|63 i32)
-  (local $date|64 i32)
-  (local $this|65 i32)
-  (local $this|66 i32)
-  (local $this|67 i32)
-  (local $date|68 i32)
-  (local $this|69 i32)
-  (local $this|70 i32)
-  (local $this|71 i32)
-  (local $this|72 i32)
-  (local $date|73 i32)
-  (local $this|74 i32)
-  (local $this|75 i32)
-  (local $date|76 i32)
-  (local $this|77 i32)
-  (local $this|78 i32)
-  (local $date|79 i32)
-  (local $this|80 i32)
-  (local $this|81 i32)
-  (local $date|82 i32)
-  (local $this|83 i32)
-  (local $this|84 i32)
-  (local $this|85 i32)
-  (local $this|86 i32)
-  (local $this|87 i32)
-  (local $this|88 i32)
-  (local $this|89 i32)
-  (local $this|90 i32)
-  (local $this|91 i32)
-  (local $this|92 i32)
-  (local $this|93 i32)
-  (local $this|94 i32)
-  (local $this|95 i32)
-  (local $this|96 i32)
-  (local $this|97 i32)
-  (local $this|98 i32)
-  (local $this|99 i32)
-  (local $this|100 i32)
-  (local $this|101 i32)
-  (local $this|102 i32)
-  (local $this|103 i32)
-  (local $this|104 i32)
-  (local $this|105 i32)
-  (local $this|106 i32)
-  (local $date|107 i32)
-  (local $this|108 i32)
-  (local $this|109 i32)
-  (local $this|110 i32)
-  (local $this|111 i32)
-  (local $this|112 i32)
-  (local $this|113 i32)
-  (local $this|114 i32)
-  (local $this|115 i32)
-  (local $this|116 i32)
-  (local $this|117 i32)
-  (local $date|118 i32)
-  (local $this|119 i32)
-  (local $this|120 i32)
-  (local $this|121 i32)
-  (local $this|122 i32)
-  (local $date|123 i32)
-  (local $date|124 i32)
-  (local $date|125 i32)
-  (local $date|126 i32)
-  (local $date|127 i32)
-  (local $this|128 i32)
-  (local $this|129 i32)
-  (local $this|130 i32)
-  (local $this|131 i32)
-  (local $this|132 i32)
-  (local $this|133 i32)
-  (local $this|134 i32)
-  (local $this|135 i32)
-  (local $this|136 i32)
-  (local $this|137 i32)
-  (local $this|138 i32)
-  (local $this|139 i32)
-  (local $this|140 i32)
-  (local $this|141 i32)
-  (local $this|142 i32)
-  (local $this|143 i32)
-  (local $this|144 i32)
-  (local $this|145 i32)
-  (local $this|146 i32)
-  (local $this|147 i32)
-  (local $this|148 i32)
+  (local $date|2 i32)
+  (local $date|3 i32)
+  (local $date|4 i32)
+  (local $date|5 i32)
+  (local $date|6 i32)
+  (local $date|7 i32)
+  (local $date|8 i32)
+  (local $date|9 i32)
+  (local $date|10 i32)
+  (local $date|11 i32)
+  (local $date|12 i32)
+  (local $date|13 i32)
+  (local $date|14 i32)
+  (local $date|15 i32)
   (local $minDate i32)
   (local $maxDate i32)
-  (local $this|151 i32)
-  (local $this|152 i32)
-  (local $this|153 i32)
-  (local $this|154 i32)
-  (local $this|155 i32)
-  (local $this|156 i32)
-  (local $this|157 i32)
-  (local $this|158 i32)
   (local $maxDateDec i32)
   (local $minDateInc i32)
-  (local $this|161 i32)
-  (local $this|162 i32)
-  (local $this|163 i32)
   (block
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date.UTC|inlined.0 (result i64)
-       (local.set $year
-        (i32.const 1970)
-       )
-       (local.set $month
-        (i32.const 0)
-       )
-       (local.set $day
-        (i32.const 1)
-       )
-       (local.set $hour
-        (i32.const 0)
-       )
-       (local.set $minute
-        (i32.const 0)
-       )
-       (local.set $second
-        (i32.const 0)
-       )
-       (local.set $millisecond
-        (i32.const 0)
-       )
-       (if
-        (if (result i32)
-         (i32.ge_s
-          (local.get $year)
-          (i32.const 0)
-         )
-         (then
-          (i32.le_s
-           (local.get $year)
-           (i32.const 99)
-          )
-         )
-         (else
-          (i32.const 0)
-         )
-        )
-        (then
-         (local.set $year
-          (i32.add
-           (local.get $year)
-           (i32.const 1900)
-          )
-         )
-        )
-       )
-       (local.set $ms
-        (call $~lib/date/epochMillis
-         (local.get $year)
-         (i32.add
-          (local.get $month)
-          (i32.const 1)
-         )
-         (local.get $day)
-         (local.get $hour)
-         (local.get $minute)
-         (local.get $second)
-         (local.get $millisecond)
-        )
-       )
-       (if
-        (call $~lib/date/invalidDate
-         (local.get $ms)
-        )
-        (then
-         (call $~lib/builtins/abort
-          (i32.const 32)
-          (i32.const 80)
-          (i32.const 36)
-          (i32.const 26)
-         )
-         (unreachable)
-        )
-       )
-       (br $~lib/date/Date.UTC|inlined.0
-        (local.get $ms)
-       )
+      (call $~lib/date/Date.UTC
+       (i32.const 1970)
+       (i32.const 0)
+       (i32.const 1)
+       (i32.const 0)
+       (i32.const 0)
+       (i32.const 0)
+       (i32.const 0)
       )
       (i64.const 0)
      )
@@ -10461,84 +9620,14 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date.UTC|inlined.1 (result i64)
-       (local.set $year|8
-        (i32.const 1970)
-       )
-       (local.set $month|9
-        (i32.const 0)
-       )
-       (local.set $day|10
-        (i32.const 1)
-       )
-       (local.set $hour|11
-        (i32.const 0)
-       )
-       (local.set $minute|12
-        (i32.const 0)
-       )
-       (local.set $second|13
-        (i32.const 0)
-       )
-       (local.set $millisecond|14
-        (i32.const 0)
-       )
-       (if
-        (if (result i32)
-         (i32.ge_s
-          (local.get $year|8)
-          (i32.const 0)
-         )
-         (then
-          (i32.le_s
-           (local.get $year|8)
-           (i32.const 99)
-          )
-         )
-         (else
-          (i32.const 0)
-         )
-        )
-        (then
-         (local.set $year|8
-          (i32.add
-           (local.get $year|8)
-           (i32.const 1900)
-          )
-         )
-        )
-       )
-       (local.set $ms|15
-        (call $~lib/date/epochMillis
-         (local.get $year|8)
-         (i32.add
-          (local.get $month|9)
-          (i32.const 1)
-         )
-         (local.get $day|10)
-         (local.get $hour|11)
-         (local.get $minute|12)
-         (local.get $second|13)
-         (local.get $millisecond|14)
-        )
-       )
-       (if
-        (call $~lib/date/invalidDate
-         (local.get $ms|15)
-        )
-        (then
-         (call $~lib/builtins/abort
-          (i32.const 32)
-          (i32.const 80)
-          (i32.const 36)
-          (i32.const 26)
-         )
-         (unreachable)
-        )
-       )
-       (br $~lib/date/Date.UTC|inlined.1
-        (local.get $ms|15)
-       )
+      (call $~lib/date/Date.UTC
+       (i32.const 1970)
+       (i32.const 0)
+       (i32.const 1)
+       (i32.const 0)
+       (i32.const 0)
+       (i32.const 0)
+       (i32.const 0)
       )
       (i64.const 0)
      )
@@ -10556,84 +9645,14 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date.UTC|inlined.2 (result i64)
-       (local.set $year|16
-        (i32.const 70)
-       )
-       (local.set $month|17
-        (i32.const 0)
-       )
-       (local.set $day|18
-        (i32.const 1)
-       )
-       (local.set $hour|19
-        (i32.const 0)
-       )
-       (local.set $minute|20
-        (i32.const 0)
-       )
-       (local.set $second|21
-        (i32.const 0)
-       )
-       (local.set $millisecond|22
-        (i32.const 0)
-       )
-       (if
-        (if (result i32)
-         (i32.ge_s
-          (local.get $year|16)
-          (i32.const 0)
-         )
-         (then
-          (i32.le_s
-           (local.get $year|16)
-           (i32.const 99)
-          )
-         )
-         (else
-          (i32.const 0)
-         )
-        )
-        (then
-         (local.set $year|16
-          (i32.add
-           (local.get $year|16)
-           (i32.const 1900)
-          )
-         )
-        )
-       )
-       (local.set $ms|23
-        (call $~lib/date/epochMillis
-         (local.get $year|16)
-         (i32.add
-          (local.get $month|17)
-          (i32.const 1)
-         )
-         (local.get $day|18)
-         (local.get $hour|19)
-         (local.get $minute|20)
-         (local.get $second|21)
-         (local.get $millisecond|22)
-        )
-       )
-       (if
-        (call $~lib/date/invalidDate
-         (local.get $ms|23)
-        )
-        (then
-         (call $~lib/builtins/abort
-          (i32.const 32)
-          (i32.const 80)
-          (i32.const 36)
-          (i32.const 26)
-         )
-         (unreachable)
-        )
-       )
-       (br $~lib/date/Date.UTC|inlined.2
-        (local.get $ms|23)
-       )
+      (call $~lib/date/Date.UTC
+       (i32.const 70)
+       (i32.const 0)
+       (i32.const 1)
+       (i32.const 0)
+       (i32.const 0)
+       (i32.const 0)
+       (i32.const 0)
       )
       (i64.const 0)
      )
@@ -10651,84 +9670,14 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date.UTC|inlined.3 (result i64)
-       (local.set $year|24
-        (i32.const 90)
-       )
-       (local.set $month|25
-        (i32.const 0)
-       )
-       (local.set $day|26
-        (i32.const 1)
-       )
-       (local.set $hour|27
-        (i32.const 0)
-       )
-       (local.set $minute|28
-        (i32.const 0)
-       )
-       (local.set $second|29
-        (i32.const 0)
-       )
-       (local.set $millisecond|30
-        (i32.const 0)
-       )
-       (if
-        (if (result i32)
-         (i32.ge_s
-          (local.get $year|24)
-          (i32.const 0)
-         )
-         (then
-          (i32.le_s
-           (local.get $year|24)
-           (i32.const 99)
-          )
-         )
-         (else
-          (i32.const 0)
-         )
-        )
-        (then
-         (local.set $year|24
-          (i32.add
-           (local.get $year|24)
-           (i32.const 1900)
-          )
-         )
-        )
-       )
-       (local.set $ms|31
-        (call $~lib/date/epochMillis
-         (local.get $year|24)
-         (i32.add
-          (local.get $month|25)
-          (i32.const 1)
-         )
-         (local.get $day|26)
-         (local.get $hour|27)
-         (local.get $minute|28)
-         (local.get $second|29)
-         (local.get $millisecond|30)
-        )
-       )
-       (if
-        (call $~lib/date/invalidDate
-         (local.get $ms|31)
-        )
-        (then
-         (call $~lib/builtins/abort
-          (i32.const 32)
-          (i32.const 80)
-          (i32.const 36)
-          (i32.const 26)
-         )
-         (unreachable)
-        )
-       )
-       (br $~lib/date/Date.UTC|inlined.3
-        (local.get $ms|31)
-       )
+      (call $~lib/date/Date.UTC
+       (i32.const 90)
+       (i32.const 0)
+       (i32.const 1)
+       (i32.const 0)
+       (i32.const 0)
+       (i32.const 0)
+       (i32.const 0)
       )
       (i64.const 631152000000)
      )
@@ -10746,84 +9695,14 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date.UTC|inlined.4 (result i64)
-       (local.set $year|32
-        (i32.const -90)
-       )
-       (local.set $month|33
-        (i32.const 0)
-       )
-       (local.set $day|34
-        (i32.const 1)
-       )
-       (local.set $hour|35
-        (i32.const 0)
-       )
-       (local.set $minute|36
-        (i32.const 0)
-       )
-       (local.set $second|37
-        (i32.const 0)
-       )
-       (local.set $millisecond|38
-        (i32.const 0)
-       )
-       (if
-        (if (result i32)
-         (i32.ge_s
-          (local.get $year|32)
-          (i32.const 0)
-         )
-         (then
-          (i32.le_s
-           (local.get $year|32)
-           (i32.const 99)
-          )
-         )
-         (else
-          (i32.const 0)
-         )
-        )
-        (then
-         (local.set $year|32
-          (i32.add
-           (local.get $year|32)
-           (i32.const 1900)
-          )
-         )
-        )
-       )
-       (local.set $ms|39
-        (call $~lib/date/epochMillis
-         (local.get $year|32)
-         (i32.add
-          (local.get $month|33)
-          (i32.const 1)
-         )
-         (local.get $day|34)
-         (local.get $hour|35)
-         (local.get $minute|36)
-         (local.get $second|37)
-         (local.get $millisecond|38)
-        )
-       )
-       (if
-        (call $~lib/date/invalidDate
-         (local.get $ms|39)
-        )
-        (then
-         (call $~lib/builtins/abort
-          (i32.const 32)
-          (i32.const 80)
-          (i32.const 36)
-          (i32.const 26)
-         )
-         (unreachable)
-        )
-       )
-       (br $~lib/date/Date.UTC|inlined.4
-        (local.get $ms|39)
-       )
+      (call $~lib/date/Date.UTC
+       (i32.const -90)
+       (i32.const 0)
+       (i32.const 1)
+       (i32.const 0)
+       (i32.const 0)
+       (i32.const 0)
+       (i32.const 0)
       )
       (i64.const -65007360000000)
      )
@@ -10841,84 +9720,14 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date.UTC|inlined.5 (result i64)
-       (local.set $year|40
-        (i32.const 2018)
-       )
-       (local.set $month|41
-        (i32.const 10)
-       )
-       (local.set $day|42
-        (i32.const 10)
-       )
-       (local.set $hour|43
-        (i32.const 11)
-       )
-       (local.set $minute|44
-        (i32.const 0)
-       )
-       (local.set $second|45
-        (i32.const 0)
-       )
-       (local.set $millisecond|46
-        (i32.const 1)
-       )
-       (if
-        (if (result i32)
-         (i32.ge_s
-          (local.get $year|40)
-          (i32.const 0)
-         )
-         (then
-          (i32.le_s
-           (local.get $year|40)
-           (i32.const 99)
-          )
-         )
-         (else
-          (i32.const 0)
-         )
-        )
-        (then
-         (local.set $year|40
-          (i32.add
-           (local.get $year|40)
-           (i32.const 1900)
-          )
-         )
-        )
-       )
-       (local.set $ms|47
-        (call $~lib/date/epochMillis
-         (local.get $year|40)
-         (i32.add
-          (local.get $month|41)
-          (i32.const 1)
-         )
-         (local.get $day|42)
-         (local.get $hour|43)
-         (local.get $minute|44)
-         (local.get $second|45)
-         (local.get $millisecond|46)
-        )
-       )
-       (if
-        (call $~lib/date/invalidDate
-         (local.get $ms|47)
-        )
-        (then
-         (call $~lib/builtins/abort
-          (i32.const 32)
-          (i32.const 80)
-          (i32.const 36)
-          (i32.const 26)
-         )
-         (unreachable)
-        )
-       )
-       (br $~lib/date/Date.UTC|inlined.5
-        (local.get $ms|47)
-       )
+      (call $~lib/date/Date.UTC
+       (i32.const 2018)
+       (i32.const 10)
+       (i32.const 10)
+       (i32.const 11)
+       (i32.const 0)
+       (i32.const 0)
+       (i32.const 1)
       )
       (i64.const 1541847600001)
      )
@@ -10936,84 +9745,14 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date.UTC|inlined.6 (result i64)
-       (local.set $year|48
-        (i32.const 275760)
-       )
-       (local.set $month|49
-        (i32.const 8)
-       )
-       (local.set $day|50
-        (i32.const 13)
-       )
-       (local.set $hour|51
-        (i32.const 0)
-       )
-       (local.set $minute|52
-        (i32.const 0)
-       )
-       (local.set $second|53
-        (i32.const 0)
-       )
-       (local.set $millisecond|54
-        (i32.const 0)
-       )
-       (if
-        (if (result i32)
-         (i32.ge_s
-          (local.get $year|48)
-          (i32.const 0)
-         )
-         (then
-          (i32.le_s
-           (local.get $year|48)
-           (i32.const 99)
-          )
-         )
-         (else
-          (i32.const 0)
-         )
-        )
-        (then
-         (local.set $year|48
-          (i32.add
-           (local.get $year|48)
-           (i32.const 1900)
-          )
-         )
-        )
-       )
-       (local.set $ms|55
-        (call $~lib/date/epochMillis
-         (local.get $year|48)
-         (i32.add
-          (local.get $month|49)
-          (i32.const 1)
-         )
-         (local.get $day|50)
-         (local.get $hour|51)
-         (local.get $minute|52)
-         (local.get $second|53)
-         (local.get $millisecond|54)
-        )
-       )
-       (if
-        (call $~lib/date/invalidDate
-         (local.get $ms|55)
-        )
-        (then
-         (call $~lib/builtins/abort
-          (i32.const 32)
-          (i32.const 80)
-          (i32.const 36)
-          (i32.const 26)
-         )
-         (unreachable)
-        )
-       )
-       (br $~lib/date/Date.UTC|inlined.6
-        (local.get $ms|55)
-       )
+      (call $~lib/date/Date.UTC
+       (i32.const 275760)
+       (i32.const 8)
+       (i32.const 13)
+       (i32.const 0)
+       (i32.const 0)
+       (i32.const 0)
+       (i32.const 0)
       )
       (i64.const 8640000000000000)
      )
@@ -11071,18 +9810,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.0 (result i64)
-       (local.set $this
-        (call $~lib/rt/__localtostack
-         (local.get $date)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.0
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date)
        )
       )
       (local.get $creationTime)
@@ -11112,18 +9842,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.1 (result i64)
-       (local.set $this|59
-        (call $~lib/rt/__localtostack
-         (local.get $date)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.1
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|59)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date)
        )
       )
       (i64.add
@@ -11144,7 +9865,7 @@
    )
   )
   (block
-   (local.set $date|60
+   (local.set $date|2
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -11155,18 +9876,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCFullYear|inlined.0 (result i32)
-       (local.set $this|61
-        (call $~lib/rt/__localtostack
-         (local.get $date|60)
-        )
-       )
-       (br $~lib/date/Date#getUTCFullYear|inlined.0
-        (call $~lib/date/Date#get:year
-         (call $~lib/rt/__tmptostack
-          (local.get $this|61)
-         )
-        )
+      (call $~lib/date/Date#getUTCFullYear
+       (call $~lib/rt/__tmptostack
+        (local.get $date|2)
        )
       )
       (i32.const 189512)
@@ -11185,21 +9897,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCMonth|inlined.0 (result i32)
-       (local.set $this|62
-        (call $~lib/rt/__localtostack
-         (local.get $date|60)
-        )
-       )
-       (br $~lib/date/Date#getUTCMonth|inlined.0
-        (i32.sub
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|62)
-          )
-         )
-         (i32.const 1)
-        )
+      (call $~lib/date/Date#getUTCMonth
+       (call $~lib/rt/__tmptostack
+        (local.get $date|2)
        )
       )
       (i32.const 11)
@@ -11218,18 +9918,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDate|inlined.0 (result i32)
-       (local.set $this|63
-        (call $~lib/rt/__localtostack
-         (local.get $date|60)
-        )
-       )
-       (br $~lib/date/Date#getUTCDate|inlined.0
-        (call $~lib/date/Date#get:day
-         (call $~lib/rt/__tmptostack
-          (local.get $this|63)
-         )
-        )
+      (call $~lib/date/Date#getUTCDate
+       (call $~lib/rt/__tmptostack
+        (local.get $date|2)
        )
       )
       (i32.const 14)
@@ -11250,7 +9941,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCHours
        (call $~lib/rt/__tmptostack
-        (local.get $date|60)
+        (local.get $date|2)
        )
       )
       (i32.const 22)
@@ -11271,7 +9962,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMinutes
        (call $~lib/rt/__tmptostack
-        (local.get $date|60)
+        (local.get $date|2)
        )
       )
       (i32.const 9)
@@ -11292,7 +9983,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCSeconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|60)
+        (local.get $date|2)
        )
       )
       (i32.const 43)
@@ -11313,7 +10004,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMilliseconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|60)
+        (local.get $date|2)
        )
       )
       (i32.const 706)
@@ -11331,7 +10022,7 @@
    )
   )
   (block
-   (local.set $date|64
+   (local.set $date|3
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -11342,18 +10033,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCFullYear|inlined.1 (result i32)
-       (local.set $this|65
-        (call $~lib/rt/__localtostack
-         (local.get $date|64)
-        )
-       )
-       (br $~lib/date/Date#getUTCFullYear|inlined.1
-        (call $~lib/date/Date#get:year
-         (call $~lib/rt/__tmptostack
-          (local.get $this|65)
-         )
-        )
+      (call $~lib/date/Date#getUTCFullYear
+       (call $~lib/rt/__tmptostack
+        (local.get $date|3)
        )
       )
       (i32.const 1973)
@@ -11372,21 +10054,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCMonth|inlined.1 (result i32)
-       (local.set $this|66
-        (call $~lib/rt/__localtostack
-         (local.get $date|64)
-        )
-       )
-       (br $~lib/date/Date#getUTCMonth|inlined.1
-        (i32.sub
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|66)
-          )
-         )
-         (i32.const 1)
-        )
+      (call $~lib/date/Date#getUTCMonth
+       (call $~lib/rt/__tmptostack
+        (local.get $date|3)
        )
       )
       (i32.const 11)
@@ -11405,18 +10075,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDate|inlined.1 (result i32)
-       (local.set $this|67
-        (call $~lib/rt/__localtostack
-         (local.get $date|64)
-        )
-       )
-       (br $~lib/date/Date#getUTCDate|inlined.1
-        (call $~lib/date/Date#get:day
-         (call $~lib/rt/__tmptostack
-          (local.get $this|67)
-         )
-        )
+      (call $~lib/date/Date#getUTCDate
+       (call $~lib/rt/__tmptostack
+        (local.get $date|3)
        )
       )
       (i32.const 4)
@@ -11437,7 +10098,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCHours
        (call $~lib/rt/__tmptostack
-        (local.get $date|64)
+        (local.get $date|3)
        )
       )
       (i32.const 1)
@@ -11458,7 +10119,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMinutes
        (call $~lib/rt/__tmptostack
-        (local.get $date|64)
+        (local.get $date|3)
        )
       )
       (i32.const 3)
@@ -11479,7 +10140,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCSeconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|64)
+        (local.get $date|3)
        )
       )
       (i32.const 11)
@@ -11500,7 +10161,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMilliseconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|64)
+        (local.get $date|3)
        )
       )
       (i32.const 274)
@@ -11518,7 +10179,7 @@
    )
   )
   (block
-   (local.set $date|68
+   (local.set $date|4
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -11531,7 +10192,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMilliseconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|68)
+        (local.get $date|4)
        )
       )
       (i32.const 984)
@@ -11549,7 +10210,7 @@
    )
    (call $~lib/date/Date#setUTCMilliseconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|68)
+     (local.get $date|4)
     )
     (i32.const 12)
    )
@@ -11558,7 +10219,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMilliseconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|68)
+        (local.get $date|4)
        )
       )
       (i32.const 12)
@@ -11576,7 +10237,7 @@
    )
    (call $~lib/date/Date#setUTCMilliseconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|68)
+     (local.get $date|4)
     )
     (i32.const 568)
    )
@@ -11585,7 +10246,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMilliseconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|68)
+        (local.get $date|4)
        )
       )
       (i32.const 568)
@@ -11603,25 +10264,16 @@
    )
    (call $~lib/date/Date#setUTCMilliseconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|68)
+     (local.get $date|4)
     )
     (i32.const 0)
    )
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.2 (result i64)
-       (local.set $this|69
-        (call $~lib/rt/__localtostack
-         (local.get $date|68)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.2
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|69)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|4)
        )
       )
       (i64.const 399464523963000)
@@ -11639,25 +10291,16 @@
    )
    (call $~lib/date/Date#setUTCMilliseconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|68)
+     (local.get $date|4)
     )
     (i32.const 999)
    )
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.3 (result i64)
-       (local.set $this|70
-        (call $~lib/rt/__localtostack
-         (local.get $date|68)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.3
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|70)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|4)
        )
       )
       (i64.const 399464523963999)
@@ -11675,7 +10318,7 @@
    )
    (call $~lib/date/Date#setUTCMilliseconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|68)
+     (local.get $date|4)
     )
     (i32.const 2000)
    )
@@ -11684,7 +10327,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMilliseconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|68)
+        (local.get $date|4)
        )
       )
       (i32.const 0)
@@ -11703,18 +10346,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.4 (result i64)
-       (local.set $this|71
-        (call $~lib/rt/__localtostack
-         (local.get $date|68)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.4
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|71)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|4)
        )
       )
       (i64.const 399464523965000)
@@ -11732,7 +10366,7 @@
    )
    (call $~lib/date/Date#setUTCMilliseconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|68)
+     (local.get $date|4)
     )
     (i32.const -2000)
    )
@@ -11741,7 +10375,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMilliseconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|68)
+        (local.get $date|4)
        )
       )
       (i32.const 0)
@@ -11760,18 +10394,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.5 (result i64)
-       (local.set $this|72
-        (call $~lib/rt/__localtostack
-         (local.get $date|68)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.5
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|72)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|4)
        )
       )
       (i64.const 399464523963000)
@@ -11789,7 +10414,7 @@
    )
   )
   (block
-   (local.set $date|73
+   (local.set $date|5
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -11802,7 +10427,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCSeconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|73)
+        (local.get $date|5)
        )
       )
       (i32.const 31)
@@ -11820,7 +10445,7 @@
    )
    (call $~lib/date/Date#setUTCSeconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|73)
+     (local.get $date|5)
     )
     (i32.const 12)
    )
@@ -11829,7 +10454,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCSeconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|73)
+        (local.get $date|5)
        )
       )
       (i32.const 12)
@@ -11847,7 +10472,7 @@
    )
    (call $~lib/date/Date#setUTCSeconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|73)
+     (local.get $date|5)
     )
     (i32.const 50)
    )
@@ -11856,7 +10481,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCSeconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|73)
+        (local.get $date|5)
        )
       )
       (i32.const 50)
@@ -11874,25 +10499,16 @@
    )
    (call $~lib/date/Date#setUTCSeconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|73)
+     (local.get $date|5)
     )
     (i32.const 0)
    )
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.6 (result i64)
-       (local.set $this|74
-        (call $~lib/rt/__localtostack
-         (local.get $date|73)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.6
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|74)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|5)
        )
       )
       (i64.const 372027318300986)
@@ -11910,25 +10526,16 @@
    )
    (call $~lib/date/Date#setUTCSeconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|73)
+     (local.get $date|5)
     )
     (i32.const 59)
    )
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.7 (result i64)
-       (local.set $this|75
-        (call $~lib/rt/__localtostack
-         (local.get $date|73)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.7
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|75)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|5)
        )
       )
       (i64.const 372027318359986)
@@ -11946,7 +10553,7 @@
    )
   )
   (block
-   (local.set $date|76
+   (local.set $date|6
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -11959,7 +10566,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMinutes
        (call $~lib/rt/__tmptostack
-        (local.get $date|76)
+        (local.get $date|6)
        )
       )
       (i32.const 45)
@@ -11977,7 +10584,7 @@
    )
    (call $~lib/date/Date#setUTCMinutes
     (call $~lib/rt/__tmptostack
-     (local.get $date|76)
+     (local.get $date|6)
     )
     (i32.const 12)
    )
@@ -11986,7 +10593,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMinutes
        (call $~lib/rt/__tmptostack
-        (local.get $date|76)
+        (local.get $date|6)
        )
       )
       (i32.const 12)
@@ -12004,7 +10611,7 @@
    )
    (call $~lib/date/Date#setUTCMinutes
     (call $~lib/rt/__tmptostack
-     (local.get $date|76)
+     (local.get $date|6)
     )
     (i32.const 50)
    )
@@ -12013,7 +10620,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMinutes
        (call $~lib/rt/__tmptostack
-        (local.get $date|76)
+        (local.get $date|6)
        )
       )
       (i32.const 50)
@@ -12031,25 +10638,16 @@
    )
    (call $~lib/date/Date#setUTCMinutes
     (call $~lib/rt/__tmptostack
-     (local.get $date|76)
+     (local.get $date|6)
     )
     (i32.const 0)
    )
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.8 (result i64)
-       (local.set $this|77
-        (call $~lib/rt/__localtostack
-         (local.get $date|76)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.8
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|77)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|6)
        )
       )
       (i64.const 372027315631986)
@@ -12067,25 +10665,16 @@
    )
    (call $~lib/date/Date#setUTCMinutes
     (call $~lib/rt/__tmptostack
-     (local.get $date|76)
+     (local.get $date|6)
     )
     (i32.const 59)
    )
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.9 (result i64)
-       (local.set $this|78
-        (call $~lib/rt/__localtostack
-         (local.get $date|76)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.9
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|78)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|6)
        )
       )
       (i64.const 372027319171986)
@@ -12103,7 +10692,7 @@
    )
   )
   (block
-   (local.set $date|79
+   (local.set $date|7
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -12116,7 +10705,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCHours
        (call $~lib/rt/__tmptostack
-        (local.get $date|79)
+        (local.get $date|7)
        )
       )
       (i32.const 17)
@@ -12134,7 +10723,7 @@
    )
    (call $~lib/date/Date#setUTCHours
     (call $~lib/rt/__tmptostack
-     (local.get $date|79)
+     (local.get $date|7)
     )
     (i32.const 12)
    )
@@ -12143,7 +10732,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCHours
        (call $~lib/rt/__tmptostack
-        (local.get $date|79)
+        (local.get $date|7)
        )
       )
       (i32.const 12)
@@ -12161,7 +10750,7 @@
    )
    (call $~lib/date/Date#setUTCHours
     (call $~lib/rt/__tmptostack
-     (local.get $date|79)
+     (local.get $date|7)
     )
     (i32.const 2)
    )
@@ -12170,7 +10759,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCHours
        (call $~lib/rt/__tmptostack
-        (local.get $date|79)
+        (local.get $date|7)
        )
       )
       (i32.const 2)
@@ -12188,25 +10777,16 @@
    )
    (call $~lib/date/Date#setUTCHours
     (call $~lib/rt/__tmptostack
-     (local.get $date|79)
+     (local.get $date|7)
     )
     (i32.const 0)
    )
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.10 (result i64)
-       (local.set $this|80
-        (call $~lib/rt/__localtostack
-         (local.get $date|79)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.10
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|80)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|7)
        )
       )
       (i64.const 372027257131986)
@@ -12224,25 +10804,16 @@
    )
    (call $~lib/date/Date#setUTCHours
     (call $~lib/rt/__tmptostack
-     (local.get $date|79)
+     (local.get $date|7)
     )
     (i32.const 23)
    )
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.11 (result i64)
-       (local.set $this|81
-        (call $~lib/rt/__localtostack
-         (local.get $date|79)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.11
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|81)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|7)
        )
       )
       (i64.const 372027339931986)
@@ -12260,7 +10831,7 @@
    )
   )
   (block
-   (local.set $date|82
+   (local.set $date|8
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -12271,18 +10842,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCFullYear|inlined.2 (result i32)
-       (local.set $this|83
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getUTCFullYear|inlined.2
-        (call $~lib/date/Date#get:year
-         (call $~lib/rt/__tmptostack
-          (local.get $this|83)
-         )
-        )
+      (call $~lib/date/Date#getUTCFullYear
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i32.const 1973)
@@ -12301,21 +10863,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCMonth|inlined.2 (result i32)
-       (local.set $this|84
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getUTCMonth|inlined.2
-        (i32.sub
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|84)
-          )
-         )
-         (i32.const 1)
-        )
+      (call $~lib/date/Date#getUTCMonth
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i32.const 11)
@@ -12333,25 +10883,16 @@
    )
    (call $~lib/date/Date#setUTCDate
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 12)
    )
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDate|inlined.2 (result i32)
-       (local.set $this|85
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getUTCDate|inlined.2
-        (call $~lib/date/Date#get:day
-         (call $~lib/rt/__tmptostack
-          (local.get $this|85)
-         )
-        )
+      (call $~lib/date/Date#getUTCDate
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i32.const 12)
@@ -12369,25 +10910,16 @@
    )
    (call $~lib/date/Date#setUTCDate
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 2)
    )
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDate|inlined.3 (result i32)
-       (local.set $this|86
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getUTCDate|inlined.3
-        (call $~lib/date/Date#get:day
-         (call $~lib/rt/__tmptostack
-          (local.get $this|86)
-         )
-        )
+      (call $~lib/date/Date#getUTCDate
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i32.const 2)
@@ -12405,19 +10937,19 @@
    )
    (call $~lib/date/Date#setUTCDate
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 1)
    )
    (call $~lib/date/Date#setUTCDate
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 30)
    )
    (call $~lib/date/Date#setUTCMonth@varargs
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 0)
     (block (result i32)
@@ -12429,25 +10961,25 @@
    )
    (call $~lib/date/Date#setUTCDate
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 1)
    )
    (call $~lib/date/Date#setUTCDate
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 31)
    )
    (call $~lib/date/Date#setUTCFullYear
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 2024)
    )
    (call $~lib/date/Date#setUTCMonth@varargs
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 1)
     (block (result i32)
@@ -12460,21 +10992,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCMonth|inlined.3 (result i32)
-       (local.set $this|87
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getUTCMonth|inlined.3
-        (i32.sub
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|87)
-          )
-         )
-         (i32.const 1)
-        )
+      (call $~lib/date/Date#getUTCMonth
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i32.const 2)
@@ -12492,19 +11012,19 @@
    )
    (call $~lib/date/Date#setUTCDate
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 1)
    )
    (call $~lib/date/Date#setUTCDate
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 29)
    )
    (call $~lib/date/Date#setUTCMonth@varargs
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 1)
     (block (result i32)
@@ -12517,18 +11037,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.12 (result i64)
-       (local.set $this|88
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.12
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|88)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i64.const 1709168591274)
@@ -12547,21 +11058,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCMonth|inlined.4 (result i32)
-       (local.set $this|89
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getUTCMonth|inlined.4
-        (i32.sub
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|89)
-          )
-         )
-         (i32.const 1)
-        )
+      (call $~lib/date/Date#getUTCMonth
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i32.const 1)
@@ -12580,18 +11079,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDate|inlined.4 (result i32)
-       (local.set $this|90
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getUTCDate|inlined.4
-        (call $~lib/date/Date#get:day
-         (call $~lib/rt/__tmptostack
-          (local.get $this|90)
-         )
-        )
+      (call $~lib/date/Date#getUTCDate
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i32.const 29)
@@ -12612,7 +11102,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMinutes
        (call $~lib/rt/__tmptostack
-        (local.get $date|82)
+        (local.get $date|8)
        )
       )
       (i32.const 3)
@@ -12633,7 +11123,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCSeconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|82)
+        (local.get $date|8)
        )
       )
       (i32.const 11)
@@ -12654,7 +11144,7 @@
      (i32.eq
       (call $~lib/date/Date#getUTCMilliseconds
        (call $~lib/rt/__tmptostack
-        (local.get $date|82)
+        (local.get $date|8)
        )
       )
       (i32.const 274)
@@ -12670,7 +11160,7 @@
      (unreachable)
     )
    )
-   (local.set $date|82
+   (local.set $date|8
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -12680,25 +11170,16 @@
    )
    (call $~lib/date/Date#setUTCDate
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 20)
    )
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.13 (result i64)
-       (local.set $this|91
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.13
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|91)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i64.const 1363748399999)
@@ -12716,25 +11197,16 @@
    )
    (call $~lib/date/Date#setUTCDate
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 1)
    )
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.14 (result i64)
-       (local.set $this|92
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.14
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|92)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i64.const 1362106799999)
@@ -12752,25 +11224,16 @@
    )
    (call $~lib/date/Date#setUTCMilliseconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 1000)
    )
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.15 (result i64)
-       (local.set $this|93
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.15
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|93)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i64.const 1362106800000)
@@ -12788,7 +11251,7 @@
    )
    (call $~lib/date/Date#setUTCMilliseconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.mul
      (i32.mul
@@ -12801,18 +11264,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.16 (result i64)
-       (local.set $this|94
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.16
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|94)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i64.const 1362110400000)
@@ -12830,7 +11284,7 @@
    )
    (call $~lib/date/Date#setUTCMilliseconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.add
      (i32.mul
@@ -12846,18 +11300,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.17 (result i64)
-       (local.set $this|95
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.17
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|95)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i64.const 1362114000001)
@@ -12875,7 +11320,7 @@
    )
    (call $~lib/date/Date#setUTCMilliseconds
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.add
      (i32.mul
@@ -12891,18 +11336,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.18 (result i64)
-       (local.set $this|96
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.18
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|96)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i64.const 1362117600001)
@@ -12918,7 +11354,7 @@
      (unreachable)
     )
    )
-   (local.set $date|82
+   (local.set $date|8
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -12928,25 +11364,16 @@
    )
    (call $~lib/date/Date#setUTCDate
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const -2208)
    )
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.19 (result i64)
-       (local.set $this|97
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.19
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|97)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i64.const -67301808726)
@@ -12962,7 +11389,7 @@
      (unreachable)
     )
    )
-   (local.set $date|82
+   (local.set $date|8
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -12972,25 +11399,16 @@
    )
    (call $~lib/date/Date#setUTCDate
     (call $~lib/rt/__tmptostack
-     (local.get $date|82)
+     (local.get $date|8)
     )
     (i32.const 2208)
    )
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.20 (result i64)
-       (local.set $this|98
-        (call $~lib/rt/__localtostack
-         (local.get $date|82)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.20
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|98)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|8)
        )
       )
       (i64.const 314240591274)
@@ -13011,32 +11429,11 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDay|inlined.0 (result i32)
-       (local.set $this|99
-        (call $~lib/rt/__localtostack
-         (call $~lib/date/Date#constructor
-          (i32.const 0)
-          (i64.const 1467763200000)
-         )
-        )
-       )
-       (br $~lib/date/Date#getUTCDay|inlined.0
-        (call $~lib/date/dayOfWeek
-         (call $~lib/date/Date#get:year
-          (call $~lib/rt/__tmptostack
-           (local.get $this|99)
-          )
-         )
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|99)
-          )
-         )
-         (call $~lib/date/Date#get:day
-          (call $~lib/rt/__tmptostack
-           (local.get $this|99)
-          )
-         )
+      (call $~lib/date/Date#getUTCDay
+       (call $~lib/rt/__tmptostack
+        (call $~lib/date/Date#constructor
+         (i32.const 0)
+         (i64.const 1467763200000)
         )
        )
       )
@@ -13056,34 +11453,13 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDay|inlined.1 (result i32)
-       (local.set $this|100
-        (call $~lib/rt/__localtostack
-         (call $~lib/date/Date#constructor
-          (i32.const 0)
-          (i64.sub
-           (i64.const 1467763200000)
-           (i64.const 1)
-          )
-         )
-        )
-       )
-       (br $~lib/date/Date#getUTCDay|inlined.1
-        (call $~lib/date/dayOfWeek
-         (call $~lib/date/Date#get:year
-          (call $~lib/rt/__tmptostack
-           (local.get $this|100)
-          )
-         )
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|100)
-          )
-         )
-         (call $~lib/date/Date#get:day
-          (call $~lib/rt/__tmptostack
-           (local.get $this|100)
-          )
+      (call $~lib/date/Date#getUTCDay
+       (call $~lib/rt/__tmptostack
+        (call $~lib/date/Date#constructor
+         (i32.const 0)
+         (i64.sub
+          (i64.const 1467763200000)
+          (i64.const 1)
          )
         )
        )
@@ -13104,37 +11480,16 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDay|inlined.2 (result i32)
-       (local.set $this|101
-        (call $~lib/rt/__localtostack
-         (call $~lib/date/Date#constructor
-          (i32.const 0)
-          (i64.sub
-           (i64.add
-            (i64.const 1467763200000)
-            (i64.const 86400000)
-           )
-           (i64.const 1)
+      (call $~lib/date/Date#getUTCDay
+       (call $~lib/rt/__tmptostack
+        (call $~lib/date/Date#constructor
+         (i32.const 0)
+         (i64.sub
+          (i64.add
+           (i64.const 1467763200000)
+           (i64.const 86400000)
           )
-         )
-        )
-       )
-       (br $~lib/date/Date#getUTCDay|inlined.2
-        (call $~lib/date/dayOfWeek
-         (call $~lib/date/Date#get:year
-          (call $~lib/rt/__tmptostack
-           (local.get $this|101)
-          )
-         )
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|101)
-          )
-         )
-         (call $~lib/date/Date#get:day
-          (call $~lib/rt/__tmptostack
-           (local.get $this|101)
-          )
+          (i64.const 1)
          )
         )
        )
@@ -13155,34 +11510,13 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDay|inlined.3 (result i32)
-       (local.set $this|102
-        (call $~lib/rt/__localtostack
-         (call $~lib/date/Date#constructor
-          (i32.const 0)
-          (i64.add
-           (i64.const 1467763200000)
-           (i64.const 86400000)
-          )
-         )
-        )
-       )
-       (br $~lib/date/Date#getUTCDay|inlined.3
-        (call $~lib/date/dayOfWeek
-         (call $~lib/date/Date#get:year
-          (call $~lib/rt/__tmptostack
-           (local.get $this|102)
-          )
-         )
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|102)
-          )
-         )
-         (call $~lib/date/Date#get:day
-          (call $~lib/rt/__tmptostack
-           (local.get $this|102)
-          )
+      (call $~lib/date/Date#getUTCDay
+       (call $~lib/rt/__tmptostack
+        (call $~lib/date/Date#constructor
+         (i32.const 0)
+         (i64.add
+          (i64.const 1467763200000)
+          (i64.const 86400000)
          )
         )
        )
@@ -13203,32 +11537,11 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDay|inlined.4 (result i32)
-       (local.set $this|103
-        (call $~lib/rt/__localtostack
-         (call $~lib/date/Date#constructor
-          (i32.const 0)
-          (i64.const 1468022400000)
-         )
-        )
-       )
-       (br $~lib/date/Date#getUTCDay|inlined.4
-        (call $~lib/date/dayOfWeek
-         (call $~lib/date/Date#get:year
-          (call $~lib/rt/__tmptostack
-           (local.get $this|103)
-          )
-         )
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|103)
-          )
-         )
-         (call $~lib/date/Date#get:day
-          (call $~lib/rt/__tmptostack
-           (local.get $this|103)
-          )
-         )
+      (call $~lib/date/Date#getUTCDay
+       (call $~lib/rt/__tmptostack
+        (call $~lib/date/Date#constructor
+         (i32.const 0)
+         (i64.const 1468022400000)
         )
        )
       )
@@ -13248,34 +11561,13 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDay|inlined.5 (result i32)
-       (local.set $this|104
-        (call $~lib/rt/__localtostack
-         (call $~lib/date/Date#constructor
-          (i32.const 0)
-          (i64.sub
-           (i64.const 1468022400000)
-           (i64.const 1)
-          )
-         )
-        )
-       )
-       (br $~lib/date/Date#getUTCDay|inlined.5
-        (call $~lib/date/dayOfWeek
-         (call $~lib/date/Date#get:year
-          (call $~lib/rt/__tmptostack
-           (local.get $this|104)
-          )
-         )
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|104)
-          )
-         )
-         (call $~lib/date/Date#get:day
-          (call $~lib/rt/__tmptostack
-           (local.get $this|104)
-          )
+      (call $~lib/date/Date#getUTCDay
+       (call $~lib/rt/__tmptostack
+        (call $~lib/date/Date#constructor
+         (i32.const 0)
+         (i64.sub
+          (i64.const 1468022400000)
+          (i64.const 1)
          )
         )
        )
@@ -13296,37 +11588,16 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDay|inlined.6 (result i32)
-       (local.set $this|105
-        (call $~lib/rt/__localtostack
-         (call $~lib/date/Date#constructor
-          (i32.const 0)
-          (i64.sub
-           (i64.add
-            (i64.const 1468022400000)
-            (i64.const 86400000)
-           )
-           (i64.const 1)
+      (call $~lib/date/Date#getUTCDay
+       (call $~lib/rt/__tmptostack
+        (call $~lib/date/Date#constructor
+         (i32.const 0)
+         (i64.sub
+          (i64.add
+           (i64.const 1468022400000)
+           (i64.const 86400000)
           )
-         )
-        )
-       )
-       (br $~lib/date/Date#getUTCDay|inlined.6
-        (call $~lib/date/dayOfWeek
-         (call $~lib/date/Date#get:year
-          (call $~lib/rt/__tmptostack
-           (local.get $this|105)
-          )
-         )
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|105)
-          )
-         )
-         (call $~lib/date/Date#get:day
-          (call $~lib/rt/__tmptostack
-           (local.get $this|105)
-          )
+          (i64.const 1)
          )
         )
        )
@@ -13347,34 +11618,13 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDay|inlined.7 (result i32)
-       (local.set $this|106
-        (call $~lib/rt/__localtostack
-         (call $~lib/date/Date#constructor
-          (i32.const 0)
-          (i64.add
-           (i64.const 1468022400000)
-           (i64.const 86400000)
-          )
-         )
-        )
-       )
-       (br $~lib/date/Date#getUTCDay|inlined.7
-        (call $~lib/date/dayOfWeek
-         (call $~lib/date/Date#get:year
-          (call $~lib/rt/__tmptostack
-           (local.get $this|106)
-          )
-         )
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|106)
-          )
-         )
-         (call $~lib/date/Date#get:day
-          (call $~lib/rt/__tmptostack
-           (local.get $this|106)
-          )
+      (call $~lib/date/Date#getUTCDay
+       (call $~lib/rt/__tmptostack
+        (call $~lib/date/Date#constructor
+         (i32.const 0)
+         (i64.add
+          (i64.const 1468022400000)
+          (i64.const 86400000)
          )
         )
        )
@@ -13394,7 +11644,7 @@
    )
   )
   (block
-   (local.set $date|107
+   (local.set $date|9
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -13405,21 +11655,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCMonth|inlined.5 (result i32)
-       (local.set $this|108
-        (call $~lib/rt/__localtostack
-         (local.get $date|107)
-        )
-       )
-       (br $~lib/date/Date#getUTCMonth|inlined.5
-        (i32.sub
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|108)
-          )
-         )
-         (i32.const 1)
-        )
+      (call $~lib/date/Date#getUTCMonth
+       (call $~lib/rt/__tmptostack
+        (local.get $date|9)
        )
       )
       (i32.const 3)
@@ -13437,7 +11675,7 @@
    )
    (call $~lib/date/Date#setUTCMonth@varargs
     (call $~lib/rt/__tmptostack
-     (local.get $date|107)
+     (local.get $date|9)
     )
     (i32.const 10)
     (block (result i32)
@@ -13450,21 +11688,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCMonth|inlined.6 (result i32)
-       (local.set $this|109
-        (call $~lib/rt/__localtostack
-         (local.get $date|107)
-        )
-       )
-       (br $~lib/date/Date#getUTCMonth|inlined.6
-        (i32.sub
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|109)
-          )
-         )
-         (i32.const 1)
-        )
+      (call $~lib/date/Date#getUTCMonth
+       (call $~lib/rt/__tmptostack
+        (local.get $date|9)
        )
       )
       (i32.const 10)
@@ -13482,7 +11708,7 @@
    )
    (call $~lib/date/Date#setUTCMonth@varargs
     (call $~lib/rt/__tmptostack
-     (local.get $date|107)
+     (local.get $date|9)
     )
     (i32.const 2)
     (block (result i32)
@@ -13495,21 +11721,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCMonth|inlined.7 (result i32)
-       (local.set $this|110
-        (call $~lib/rt/__localtostack
-         (local.get $date|107)
-        )
-       )
-       (br $~lib/date/Date#getUTCMonth|inlined.7
-        (i32.sub
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|110)
-          )
-         )
-         (i32.const 1)
-        )
+      (call $~lib/date/Date#getUTCMonth
+       (call $~lib/rt/__tmptostack
+        (local.get $date|9)
        )
       )
       (i32.const 2)
@@ -13528,18 +11742,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.21 (result i64)
-       (local.set $this|111
-        (call $~lib/rt/__localtostack
-         (local.get $date|107)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.21
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|111)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|9)
        )
       )
       (i64.const 7899941177818720)
@@ -13557,7 +11762,7 @@
    )
    (call $~lib/date/Date#setUTCMonth@varargs
     (call $~lib/rt/__tmptostack
-     (local.get $date|107)
+     (local.get $date|9)
     )
     (i32.const 0)
     (block (result i32)
@@ -13570,18 +11775,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.22 (result i64)
-       (local.set $this|112
-        (call $~lib/rt/__localtostack
-         (local.get $date|107)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.22
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|112)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|9)
        )
       )
       (i64.const 7899936080218720)
@@ -13599,7 +11795,7 @@
    )
    (call $~lib/date/Date#setUTCMonth@varargs
     (call $~lib/rt/__tmptostack
-     (local.get $date|107)
+     (local.get $date|9)
     )
     (i32.const 11)
     (block (result i32)
@@ -13612,18 +11808,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.23 (result i64)
-       (local.set $this|113
-        (call $~lib/rt/__localtostack
-         (local.get $date|107)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.23
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|113)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|9)
        )
       )
       (i64.const 7899964937818720)
@@ -13641,7 +11828,7 @@
    )
    (call $~lib/date/Date#setUTCMonth@varargs
     (call $~lib/rt/__tmptostack
-     (local.get $date|107)
+     (local.get $date|9)
     )
     (i32.const -1)
     (block (result i32)
@@ -13654,21 +11841,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCMonth|inlined.8 (result i32)
-       (local.set $this|114
-        (call $~lib/rt/__localtostack
-         (local.get $date|107)
-        )
-       )
-       (br $~lib/date/Date#getUTCMonth|inlined.8
-        (i32.sub
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|114)
-          )
-         )
-         (i32.const 1)
-        )
+      (call $~lib/date/Date#getUTCMonth
+       (call $~lib/rt/__tmptostack
+        (local.get $date|9)
        )
       )
       (i32.const 11)
@@ -13687,18 +11862,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.24 (result i64)
-       (local.set $this|115
-        (call $~lib/rt/__localtostack
-         (local.get $date|107)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.24
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|115)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|9)
        )
       )
       (i64.const 7899933401818720)
@@ -13716,7 +11882,7 @@
    )
    (call $~lib/date/Date#setUTCMonth@varargs
     (call $~lib/rt/__tmptostack
-     (local.get $date|107)
+     (local.get $date|9)
     )
     (i32.const 12)
     (block (result i32)
@@ -13729,21 +11895,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCMonth|inlined.9 (result i32)
-       (local.set $this|116
-        (call $~lib/rt/__localtostack
-         (local.get $date|107)
-        )
-       )
-       (br $~lib/date/Date#getUTCMonth|inlined.9
-        (i32.sub
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|116)
-          )
-         )
-         (i32.const 1)
-        )
+      (call $~lib/date/Date#getUTCMonth
+       (call $~lib/rt/__tmptostack
+        (local.get $date|9)
        )
       )
       (i32.const 0)
@@ -13762,18 +11916,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.25 (result i64)
-       (local.set $this|117
-        (call $~lib/rt/__localtostack
-         (local.get $date|107)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.25
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|117)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|9)
        )
       )
       (i64.const 7899936080218720)
@@ -13791,7 +11936,7 @@
    )
   )
   (block
-   (local.set $date|118
+   (local.set $date|10
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -13802,18 +11947,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCFullYear|inlined.3 (result i32)
-       (local.set $this|119
-        (call $~lib/rt/__localtostack
-         (local.get $date|118)
-        )
-       )
-       (br $~lib/date/Date#getUTCFullYear|inlined.3
-        (call $~lib/date/Date#get:year
-         (call $~lib/rt/__tmptostack
-          (local.get $this|119)
-         )
-        )
+      (call $~lib/date/Date#getUTCFullYear
+       (call $~lib/rt/__tmptostack
+        (local.get $date|10)
        )
       )
       (i32.const 253616)
@@ -13831,25 +11967,16 @@
    )
    (call $~lib/date/Date#setUTCFullYear
     (call $~lib/rt/__tmptostack
-     (local.get $date|118)
+     (local.get $date|10)
     )
     (i32.const 1976)
    )
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCFullYear|inlined.4 (result i32)
-       (local.set $this|120
-        (call $~lib/rt/__localtostack
-         (local.get $date|118)
-        )
-       )
-       (br $~lib/date/Date#getUTCFullYear|inlined.4
-        (call $~lib/date/Date#get:year
-         (call $~lib/rt/__tmptostack
-          (local.get $this|120)
-         )
-        )
+      (call $~lib/date/Date#getUTCFullYear
+       (call $~lib/rt/__tmptostack
+        (local.get $date|10)
        )
       )
       (i32.const 1976)
@@ -13867,25 +11994,16 @@
    )
    (call $~lib/date/Date#setUTCFullYear
     (call $~lib/rt/__tmptostack
-     (local.get $date|118)
+     (local.get $date|10)
     )
     (i32.const 20212)
    )
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCFullYear|inlined.5 (result i32)
-       (local.set $this|121
-        (call $~lib/rt/__localtostack
-         (local.get $date|118)
-        )
-       )
-       (br $~lib/date/Date#getUTCFullYear|inlined.5
-        (call $~lib/date/Date#get:year
-         (call $~lib/rt/__tmptostack
-          (local.get $this|121)
-         )
-        )
+      (call $~lib/date/Date#getUTCFullYear
+       (call $~lib/rt/__tmptostack
+        (local.get $date|10)
        )
       )
       (i32.const 20212)
@@ -13903,25 +12021,16 @@
    )
    (call $~lib/date/Date#setUTCFullYear
     (call $~lib/rt/__tmptostack
-     (local.get $date|118)
+     (local.get $date|10)
     )
     (i32.const 71)
    )
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCFullYear|inlined.6 (result i32)
-       (local.set $this|122
-        (call $~lib/rt/__localtostack
-         (local.get $date|118)
-        )
-       )
-       (br $~lib/date/Date#getUTCFullYear|inlined.6
-        (call $~lib/date/Date#get:year
-         (call $~lib/rt/__tmptostack
-          (local.get $this|122)
-         )
-        )
+      (call $~lib/date/Date#getUTCFullYear
+       (call $~lib/rt/__tmptostack
+        (local.get $date|10)
        )
       )
       (i32.const 71)
@@ -13939,7 +12048,7 @@
    )
   )
   (block
-   (local.set $date|123
+   (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -13953,7 +12062,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toISOString
         (call $~lib/rt/__tmptostack
-         (local.get $date|123)
+         (local.get $date|11)
         )
        )
       )
@@ -13970,7 +12079,7 @@
      (unreachable)
     )
    )
-   (local.set $date|123
+   (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -13987,7 +12096,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toISOString
         (call $~lib/rt/__tmptostack
-         (local.get $date|123)
+         (local.get $date|11)
         )
        )
       )
@@ -14004,7 +12113,7 @@
      (unreachable)
     )
    )
-   (local.set $date|123
+   (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14018,7 +12127,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toISOString
         (call $~lib/rt/__tmptostack
-         (local.get $date|123)
+         (local.get $date|11)
         )
        )
       )
@@ -14035,7 +12144,7 @@
      (unreachable)
     )
    )
-   (local.set $date|123
+   (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14049,7 +12158,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toISOString
         (call $~lib/rt/__tmptostack
-         (local.get $date|123)
+         (local.get $date|11)
         )
        )
       )
@@ -14066,7 +12175,7 @@
      (unreachable)
     )
    )
-   (local.set $date|123
+   (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14080,7 +12189,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toISOString
         (call $~lib/rt/__tmptostack
-         (local.get $date|123)
+         (local.get $date|11)
         )
        )
       )
@@ -14097,7 +12206,7 @@
      (unreachable)
     )
    )
-   (local.set $date|123
+   (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14111,7 +12220,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toISOString
         (call $~lib/rt/__tmptostack
-         (local.get $date|123)
+         (local.get $date|11)
         )
        )
       )
@@ -14128,7 +12237,7 @@
      (unreachable)
     )
    )
-   (local.set $date|123
+   (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14142,7 +12251,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toISOString
         (call $~lib/rt/__tmptostack
-         (local.get $date|123)
+         (local.get $date|11)
         )
        )
       )
@@ -14159,7 +12268,7 @@
      (unreachable)
     )
    )
-   (local.set $date|123
+   (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14173,7 +12282,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toISOString
         (call $~lib/rt/__tmptostack
-         (local.get $date|123)
+         (local.get $date|11)
         )
        )
       )
@@ -14190,7 +12299,7 @@
      (unreachable)
     )
    )
-   (local.set $date|123
+   (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14204,7 +12313,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toISOString
         (call $~lib/rt/__tmptostack
-         (local.get $date|123)
+         (local.get $date|11)
         )
        )
       )
@@ -14223,7 +12332,7 @@
    )
   )
   (block
-   (local.set $date|124
+   (local.set $date|12
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14237,7 +12346,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toDateString
         (call $~lib/rt/__tmptostack
-         (local.get $date|124)
+         (local.get $date|12)
         )
        )
       )
@@ -14254,7 +12363,7 @@
      (unreachable)
     )
    )
-   (local.set $date|124
+   (local.set $date|12
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14268,7 +12377,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toDateString
         (call $~lib/rt/__tmptostack
-         (local.get $date|124)
+         (local.get $date|12)
         )
        )
       )
@@ -14285,7 +12394,7 @@
      (unreachable)
     )
    )
-   (local.set $date|124
+   (local.set $date|12
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14299,7 +12408,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toDateString
         (call $~lib/rt/__tmptostack
-         (local.get $date|124)
+         (local.get $date|12)
         )
        )
       )
@@ -14318,7 +12427,7 @@
    )
   )
   (block
-   (local.set $date|125
+   (local.set $date|13
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14332,7 +12441,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toTimeString
         (call $~lib/rt/__tmptostack
-         (local.get $date|125)
+         (local.get $date|13)
         )
        )
       )
@@ -14349,7 +12458,7 @@
      (unreachable)
     )
    )
-   (local.set $date|125
+   (local.set $date|13
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14363,7 +12472,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toTimeString
         (call $~lib/rt/__tmptostack
-         (local.get $date|125)
+         (local.get $date|13)
         )
        )
       )
@@ -14382,7 +12491,7 @@
    )
   )
   (block
-   (local.set $date|126
+   (local.set $date|14
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14396,7 +12505,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toUTCString
         (call $~lib/rt/__tmptostack
-         (local.get $date|126)
+         (local.get $date|14)
         )
        )
       )
@@ -14413,7 +12522,7 @@
      (unreachable)
     )
    )
-   (local.set $date|126
+   (local.set $date|14
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14427,7 +12536,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toUTCString
         (call $~lib/rt/__tmptostack
-         (local.get $date|126)
+         (local.get $date|14)
         )
        )
       )
@@ -14444,7 +12553,7 @@
      (unreachable)
     )
    )
-   (local.set $date|126
+   (local.set $date|14
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
       (i32.const 0)
@@ -14458,7 +12567,7 @@
       (call $~lib/rt/__tmptostack
        (call $~lib/date/Date#toUTCString
         (call $~lib/rt/__tmptostack
-         (local.get $date|126)
+         (local.get $date|14)
         )
        )
       )
@@ -14477,7 +12586,7 @@
    )
   )
   (block
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 5664)
@@ -14487,18 +12596,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.26 (result i64)
-       (local.set $this|128
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.26
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|128)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192067200000)
@@ -14514,7 +12614,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 5936)
@@ -14524,18 +12624,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.27 (result i64)
-       (local.set $this|129
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.27
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|129)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192067200000)
@@ -14551,7 +12642,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 5984)
@@ -14561,18 +12652,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.28 (result i64)
-       (local.set $this|130
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.28
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|130)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 11860387200000)
@@ -14588,7 +12670,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6032)
@@ -14598,18 +12680,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.29 (result i64)
-       (local.set $this|131
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.29
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|131)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192112496000)
@@ -14625,7 +12698,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6096)
@@ -14635,18 +12708,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.30 (result i64)
-       (local.set $this|132
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.30
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|132)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192112496456)
@@ -14662,7 +12726,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6176)
@@ -14672,18 +12736,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.31 (result i64)
-       (local.set $this|133
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.31
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|133)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192112496456)
@@ -14699,7 +12754,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6256)
@@ -14709,18 +12764,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.32 (result i64)
-       (local.set $this|134
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.32
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|134)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192141296456)
@@ -14736,7 +12782,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6336)
@@ -14746,18 +12792,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.33 (result i64)
-       (local.set $this|135
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.33
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|135)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192092696456)
@@ -14773,7 +12810,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6416)
@@ -14783,18 +12820,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.34 (result i64)
-       (local.set $this|136
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.34
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|136)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192112496450)
@@ -14810,7 +12838,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6480)
@@ -14820,18 +12848,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.35 (result i64)
-       (local.set $this|137
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.35
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|137)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192112496450)
@@ -14847,7 +12866,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6560)
@@ -14857,18 +12876,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.36 (result i64)
-       (local.set $this|138
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.36
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|138)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192112496450)
@@ -14884,7 +12894,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6640)
@@ -14894,18 +12904,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.37 (result i64)
-       (local.set $this|139
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.37
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|139)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192112496456)
@@ -14921,7 +12922,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6720)
@@ -14931,18 +12932,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.38 (result i64)
-       (local.set $this|140
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.38
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|140)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192112496456)
@@ -14958,7 +12950,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6800)
@@ -14968,18 +12960,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.39 (result i64)
-       (local.set $this|141
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.39
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|141)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192112496456)
@@ -14995,7 +12978,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6896)
@@ -15005,18 +12988,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.40 (result i64)
-       (local.set $this|142
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.40
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|142)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const -62167219200000)
@@ -15032,7 +13006,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6928)
@@ -15042,18 +13016,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.41 (result i64)
-       (local.set $this|143
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.41
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|143)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const -62135596800000)
@@ -15069,7 +13034,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6960)
@@ -15079,18 +13044,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.42 (result i64)
-       (local.set $this|144
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.42
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|144)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 189302400000)
@@ -15106,7 +13062,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6992)
@@ -15116,18 +13072,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.43 (result i64)
-       (local.set $this|145
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.43
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|145)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 191980800000)
@@ -15143,7 +13090,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 5664)
@@ -15153,18 +13100,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.44 (result i64)
-       (local.set $this|146
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.44
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|146)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192067200000)
@@ -15180,7 +13118,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 7040)
@@ -15190,18 +13128,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.45 (result i64)
-       (local.set $this|147
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.45
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|147)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192112440000)
@@ -15217,7 +13146,7 @@
      (unreachable)
     )
    )
-   (local.set $date|127
+   (local.set $date|15
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date.fromString
       (i32.const 6032)
@@ -15227,18 +13156,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.46 (result i64)
-       (local.set $this|148
-        (call $~lib/rt/__localtostack
-         (local.get $date|127)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.46
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|148)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $date|15)
        )
       )
       (i64.const 192112496000)
@@ -15275,18 +13195,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.47 (result i64)
-       (local.set $this|151
-        (call $~lib/rt/__localtostack
-         (local.get $minDate)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.47
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|151)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $minDate)
        )
       )
       (i64.const -8640000000000000)
@@ -15305,18 +13216,9 @@
    (if
     (i32.eqz
      (i64.eq
-      (block $~lib/date/Date#getTime|inlined.48 (result i64)
-       (local.set $this|152
-        (call $~lib/rt/__localtostack
-         (local.get $maxDate)
-        )
-       )
-       (br $~lib/date/Date#getTime|inlined.48
-        (call $~lib/date/Date#get:epochMillis
-         (call $~lib/rt/__tmptostack
-          (local.get $this|152)
-         )
-        )
+      (call $~lib/date/Date#getTime
+       (call $~lib/rt/__tmptostack
+        (local.get $maxDate)
        )
       )
       (i64.const 8640000000000000)
@@ -15335,18 +13237,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCFullYear|inlined.7 (result i32)
-       (local.set $this|153
-        (call $~lib/rt/__localtostack
-         (local.get $minDate)
-        )
-       )
-       (br $~lib/date/Date#getUTCFullYear|inlined.7
-        (call $~lib/date/Date#get:year
-         (call $~lib/rt/__tmptostack
-          (local.get $this|153)
-         )
-        )
+      (call $~lib/date/Date#getUTCFullYear
+       (call $~lib/rt/__tmptostack
+        (local.get $minDate)
        )
       )
       (i32.const -271821)
@@ -15365,18 +13258,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCFullYear|inlined.8 (result i32)
-       (local.set $this|154
-        (call $~lib/rt/__localtostack
-         (local.get $maxDate)
-        )
-       )
-       (br $~lib/date/Date#getUTCFullYear|inlined.8
-        (call $~lib/date/Date#get:year
-         (call $~lib/rt/__tmptostack
-          (local.get $this|154)
-         )
-        )
+      (call $~lib/date/Date#getUTCFullYear
+       (call $~lib/rt/__tmptostack
+        (local.get $maxDate)
        )
       )
       (i32.const 275760)
@@ -15395,21 +13279,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCMonth|inlined.10 (result i32)
-       (local.set $this|155
-        (call $~lib/rt/__localtostack
-         (local.get $minDate)
-        )
-       )
-       (br $~lib/date/Date#getUTCMonth|inlined.10
-        (i32.sub
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|155)
-          )
-         )
-         (i32.const 1)
-        )
+      (call $~lib/date/Date#getUTCMonth
+       (call $~lib/rt/__tmptostack
+        (local.get $minDate)
        )
       )
       (i32.const 3)
@@ -15428,21 +13300,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCMonth|inlined.11 (result i32)
-       (local.set $this|156
-        (call $~lib/rt/__localtostack
-         (local.get $maxDate)
-        )
-       )
-       (br $~lib/date/Date#getUTCMonth|inlined.11
-        (i32.sub
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|156)
-          )
-         )
-         (i32.const 1)
-        )
+      (call $~lib/date/Date#getUTCMonth
+       (call $~lib/rt/__tmptostack
+        (local.get $maxDate)
        )
       )
       (i32.const 8)
@@ -15461,18 +13321,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDate|inlined.5 (result i32)
-       (local.set $this|157
-        (call $~lib/rt/__localtostack
-         (local.get $minDate)
-        )
-       )
-       (br $~lib/date/Date#getUTCDate|inlined.5
-        (call $~lib/date/Date#get:day
-         (call $~lib/rt/__tmptostack
-          (local.get $this|157)
-         )
-        )
+      (call $~lib/date/Date#getUTCDate
+       (call $~lib/rt/__tmptostack
+        (local.get $minDate)
        )
       )
       (i32.const 20)
@@ -15491,18 +13342,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDate|inlined.6 (result i32)
-       (local.set $this|158
-        (call $~lib/rt/__localtostack
-         (local.get $maxDate)
-        )
-       )
-       (br $~lib/date/Date#getUTCDate|inlined.6
-        (call $~lib/date/Date#get:day
-         (call $~lib/rt/__tmptostack
-          (local.get $this|158)
-         )
-        )
+      (call $~lib/date/Date#getUTCDate
+       (call $~lib/rt/__tmptostack
+        (local.get $maxDate)
        )
       )
       (i32.const 13)
@@ -15589,18 +13431,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCFullYear|inlined.9 (result i32)
-       (local.set $this|161
-        (call $~lib/rt/__localtostack
-         (local.get $minDateInc)
-        )
-       )
-       (br $~lib/date/Date#getUTCFullYear|inlined.9
-        (call $~lib/date/Date#get:year
-         (call $~lib/rt/__tmptostack
-          (local.get $this|161)
-         )
-        )
+      (call $~lib/date/Date#getUTCFullYear
+       (call $~lib/rt/__tmptostack
+        (local.get $minDateInc)
        )
       )
       (i32.const -271821)
@@ -15619,21 +13452,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCMonth|inlined.12 (result i32)
-       (local.set $this|162
-        (call $~lib/rt/__localtostack
-         (local.get $minDateInc)
-        )
-       )
-       (br $~lib/date/Date#getUTCMonth|inlined.12
-        (i32.sub
-         (call $~lib/date/Date#get:month
-          (call $~lib/rt/__tmptostack
-           (local.get $this|162)
-          )
-         )
-         (i32.const 1)
-        )
+      (call $~lib/date/Date#getUTCMonth
+       (call $~lib/rt/__tmptostack
+        (local.get $minDateInc)
        )
       )
       (i32.const 3)
@@ -15652,18 +13473,9 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/date/Date#getUTCDate|inlined.7 (result i32)
-       (local.set $this|163
-        (call $~lib/rt/__localtostack
-         (local.get $minDateInc)
-        )
-       )
-       (br $~lib/date/Date#getUTCDate|inlined.7
-        (call $~lib/date/Date#get:day
-         (call $~lib/rt/__tmptostack
-          (local.get $this|163)
-         )
-        )
+      (call $~lib/date/Date#getUTCDate
+       (call $~lib/rt/__tmptostack
+        (local.get $minDateInc)
        )
       )
       (i32.const 20)

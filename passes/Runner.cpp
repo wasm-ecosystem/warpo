@@ -22,6 +22,7 @@
 #include "GC/FastLower.hpp"
 #include "GC/OptLower.hpp"
 #include "ImmutableLoadEliminating.hpp"
+#include "InlinedDecoratorLower.hpp"
 #include "InsertTracePoint.hpp"
 #include "Runner.hpp"
 #include "binaryen-c.h"
@@ -77,6 +78,7 @@ static void lowering(AsModule const &m, Config const &config) {
   {
     support::PerfRAII const r{support::PerfItemKind::Lowering};
     std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
+    passRunner->add(std::unique_ptr<wasm::Pass>{createInlinedDecoratorLower(m.forceInlineHints_)});
     if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0)
       passRunner->add(std::unique_ptr<wasm::Pass>{new gc::OptLower()});
     else

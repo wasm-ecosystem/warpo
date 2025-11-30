@@ -1143,7 +1143,7 @@
   (local $5 f64)
   (local $6 i64)
   (local $7 i32)
-  block $~lib/util/math/log_lut|inlined.0 (result f64)
+  block $__inlined_func$~lib/util/math/log_lut$1 (result f64)
    local.get $0
    i64.reinterpret_f64
    local.tee $4
@@ -1234,7 +1234,7 @@
     f64.add
     local.get $5
     f64.add
-    br $~lib/util/math/log_lut|inlined.0
+    br $__inlined_func$~lib/util/math/log_lut$1
    end
    local.get $4
    i64.const 48
@@ -1255,13 +1255,13 @@
     i64.const 1
     i64.shl
     i64.eqz
-    br_if $~lib/util/math/log_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/log_lut$1
     drop
     local.get $0
     local.get $4
     i64.const 9218868437227405312
     i64.eq
-    br_if $~lib/util/math/log_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/log_lut$1
     drop
     local.get $0
     local.get $0
@@ -1279,7 +1279,7 @@
     i32.const 32768
     i32.and
     select
-    br_if $~lib/util/math/log_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/log_lut$1
     drop
     local.get $0
     f64.const 4503599627370496
@@ -1629,7 +1629,7 @@
   (local $4 f64)
   (local $5 f32)
   (local $6 i32)
-  block $~lib/util/math/logf_lut|inlined.0 (result f32)
+  block $__inlined_func$~lib/util/math/logf_lut$1 (result f32)
    local.get $0
    i32.reinterpret_f32
    local.tee $1
@@ -1644,13 +1644,13 @@
     i32.shl
     local.tee $2
     i32.eqz
-    br_if $~lib/util/math/logf_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/logf_lut$1
     drop
     local.get $0
     local.get $1
     i32.const 2139095040
     i32.eq
-    br_if $~lib/util/math/logf_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/logf_lut$1
     drop
     local.get $0
     local.get $0
@@ -1665,7 +1665,7 @@
     i32.const -16777216
     i32.ge_u
     i32.or
-    br_if $~lib/util/math/logf_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/logf_lut$1
     drop
     local.get $0
     f32.const 8388608
@@ -3798,7 +3798,7 @@
    f64.sub
    return
   end
-  block $~lib/math/rempio2|inlined.0 (result i32)
+  block $__inlined_func$~lib/math/rempio2$2 (result i32)
    local.get $5
    i32.const 31
    i32.shr_u
@@ -3887,7 +3887,7 @@
     local.get $1
     global.set $~lib/math/rempio2_y1
     local.get $8
-    br $~lib/math/rempio2|inlined.0
+    br $__inlined_func$~lib/math/rempio2$2
    end
    local.get $2
    i32.const 1094263291
@@ -3990,7 +3990,7 @@
     global.set $~lib/math/rempio2_y1
     local.get $4
     i32.trunc_f64_s
-    br $~lib/math/rempio2|inlined.0
+    br $__inlined_func$~lib/math/rempio2$2
    end
    i32.const 0
    local.get $7
@@ -4398,7 +4398,7 @@
    i32.ge_u
    br_if $__inlined_func$~lib/math/NativeMathf.cos$16
    drop
-   block $~lib/math/rempio2f|inlined.0 (result i32)
+   block $__inlined_func$~lib/math/rempio2f$8 (result i32)
     local.get $5
     i32.const 1305022427
     i32.lt_u
@@ -4421,7 +4421,7 @@
      global.set $~lib/math/rempio2f_y
      local.get $3
      i32.trunc_f64_s
-     br $~lib/math/rempio2f|inlined.0
+     br $__inlined_func$~lib/math/rempio2f$8
     end
     local.get $5
     i32.const 23
@@ -4872,7 +4872,7 @@
   (local $6 i32)
   (local $7 f64)
   (local $8 f64)
-  block $~lib/util/math/exp_lut|inlined.0 (result f64)
+  block $__inlined_func$~lib/util/math/exp_lut$1 (result f64)
    local.get $0
    i64.reinterpret_f64
    local.tee $2
@@ -4893,7 +4893,7 @@
     i32.sub
     i32.const -2147483648
     i32.ge_u
-    br_if $~lib/util/math/exp_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/exp_lut$1
     drop
     local.get $3
     i32.const 1033
@@ -4903,7 +4903,7 @@
      local.get $2
      i64.const -4503599627370496
      i64.eq
-     br_if $~lib/util/math/exp_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/exp_lut$1
      drop
      local.get $0
      f64.const 1
@@ -4911,7 +4911,7 @@
      local.get $3
      i32.const 2047
      i32.ge_u
-     br_if $~lib/util/math/exp_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/exp_lut$1
      drop
      f64.const 0
      f64.const inf
@@ -4919,7 +4919,7 @@
      i64.const 0
      i64.lt_s
      select
-     br $~lib/util/math/exp_lut|inlined.0
+     br $__inlined_func$~lib/util/math/exp_lut$1
     end
     i32.const 0
     local.set $3
@@ -4994,7 +4994,7 @@
    local.get $3
    i32.eqz
    if
-    block $~lib/util/math/specialcase|inlined.0 (result f64)
+    block $__inlined_func$~lib/util/math/specialcase$1 (result f64)
      local.get $4
      i64.const 2147483648
      i64.and
@@ -5011,7 +5011,7 @@
       f64.add
       f64.const 5486124068793688683255936e279
       f64.mul
-      br $~lib/util/math/specialcase|inlined.0
+      br $__inlined_func$~lib/util/math/specialcase$1
      end
      local.get $2
      i64.const 4602678819172646912
@@ -5067,7 +5067,7 @@
      f64.const 2.2250738585072014e-308
      f64.mul
     end
-    br $~lib/util/math/exp_lut|inlined.0
+    br $__inlined_func$~lib/util/math/exp_lut$1
    end
    local.get $2
    f64.reinterpret_i64
@@ -5412,7 +5412,7 @@
   (local $3 i32)
   (local $4 i32)
   (local $5 f64)
-  block $~lib/util/math/expf_lut|inlined.0 (result f32)
+  block $__inlined_func$~lib/util/math/expf_lut$1 (result f32)
    local.get $0
    i32.reinterpret_f32
    local.tee $3
@@ -5428,7 +5428,7 @@
     local.get $3
     i32.const -8388608
     i32.eq
-    br_if $~lib/util/math/expf_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/expf_lut$1
     drop
     local.get $0
     local.get $0
@@ -5436,7 +5436,7 @@
     local.get $4
     i32.const 2040
     i32.ge_u
-    br_if $~lib/util/math/expf_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/expf_lut$1
     drop
     local.get $0
     f32.const 1701411834604692317316873e14
@@ -5444,13 +5444,13 @@
     local.get $0
     f32.const 88.72283172607422
     f32.gt
-    br_if $~lib/util/math/expf_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/expf_lut$1
     drop
     f32.const 0
     local.get $0
     f32.const -103.97207641601562
     f32.lt
-    br_if $~lib/util/math/expf_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/expf_lut$1
     drop
    end
    local.get $0
@@ -5619,7 +5619,7 @@
   (local $8 i64)
   (local $9 i32)
   (local $10 f64)
-  block $~lib/util/math/exp2_lut|inlined.0 (result f64)
+  block $__inlined_func$~lib/util/math/exp2_lut$1 (result f64)
    local.get $0
    i64.reinterpret_f64
    local.tee $5
@@ -5640,7 +5640,7 @@
     i32.sub
     i32.const -2147483648
     i32.ge_u
-    br_if $~lib/util/math/exp2_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/exp2_lut$1
     drop
     local.get $6
     i32.const 1033
@@ -5650,7 +5650,7 @@
      local.get $5
      i64.const -4503599627370496
      i64.eq
-     br_if $~lib/util/math/exp2_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/exp2_lut$1
      drop
      local.get $0
      f64.const 1
@@ -5658,19 +5658,19 @@
      local.get $6
      i32.const 2047
      i32.ge_u
-     br_if $~lib/util/math/exp2_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/exp2_lut$1
      drop
      f64.const inf
      local.get $5
      i64.const 0
      i64.ge_s
-     br_if $~lib/util/math/exp2_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/exp2_lut$1
      drop
      f64.const 0
      local.get $5
      i64.const -4570929321408987136
      i64.ge_u
-     br_if $~lib/util/math/exp2_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/exp2_lut$1
      drop
     end
     local.get $6
@@ -5746,7 +5746,7 @@
    local.get $6
    i32.eqz
    if
-    block $~lib/util/math/specialcase2|inlined.0 (result f64)
+    block $__inlined_func$~lib/util/math/specialcase2$1 (result f64)
      local.get $8
      i64.const 2147483648
      i64.and
@@ -5763,7 +5763,7 @@
       f64.add
       f64.const 2
       f64.mul
-      br $~lib/util/math/specialcase2|inlined.0
+      br $__inlined_func$~lib/util/math/specialcase2$1
      end
      local.get $5
      i64.const 4602678819172646912
@@ -5804,7 +5804,7 @@
      f64.const 2.2250738585072014e-308
      f64.mul
     end
-    br $~lib/util/math/exp2_lut|inlined.0
+    br $__inlined_func$~lib/util/math/exp2_lut$1
    end
    local.get $5
    f64.reinterpret_i64
@@ -5834,7 +5834,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 f64)
-  block $~lib/util/math/exp2f_lut|inlined.0 (result f32)
+  block $__inlined_func$~lib/util/math/exp2f_lut$1 (result f32)
    local.get $0
    i32.reinterpret_f32
    local.tee $5
@@ -5850,7 +5850,7 @@
     local.get $5
     i32.const -8388608
     i32.eq
-    br_if $~lib/util/math/exp2f_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/exp2f_lut$1
     drop
     local.get $0
     local.get $0
@@ -5858,7 +5858,7 @@
     local.get $6
     i32.const 2040
     i32.ge_u
-    br_if $~lib/util/math/exp2f_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/exp2f_lut$1
     drop
     local.get $0
     f32.const 1701411834604692317316873e14
@@ -5866,13 +5866,13 @@
     local.get $0
     f32.const 0
     f32.gt
-    br_if $~lib/util/math/exp2f_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/exp2f_lut$1
     drop
     f32.const 0
     local.get $0
     f32.const -150
     f32.le
-    br_if $~lib/util/math/exp2f_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/exp2f_lut$1
     drop
    end
    local.get $0
@@ -6644,7 +6644,7 @@
   (local $11 f64)
   (local $12 f64)
   (local $13 i32)
-  block $~lib/util/math/log2_lut|inlined.0 (result f64)
+  block $__inlined_func$~lib/util/math/log2_lut$1 (result f64)
    local.get $0
    i64.reinterpret_f64
    local.tee $6
@@ -6731,7 +6731,7 @@
     f64.mul
     f64.add
     f64.add
-    br $~lib/util/math/log2_lut|inlined.0
+    br $__inlined_func$~lib/util/math/log2_lut$1
    end
    local.get $6
    i64.const 48
@@ -6752,13 +6752,13 @@
     i64.const 1
     i64.shl
     i64.eqz
-    br_if $~lib/util/math/log2_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/log2_lut$1
     drop
     local.get $0
     local.get $6
     i64.const 9218868437227405312
     i64.eq
-    br_if $~lib/util/math/log2_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/log2_lut$1
     drop
     local.get $0
     local.get $0
@@ -6776,7 +6776,7 @@
     i32.const 32768
     i32.and
     select
-    br_if $~lib/util/math/log2_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/log2_lut$1
     drop
     local.get $0
     f64.const 4503599627370496
@@ -6906,7 +6906,7 @@
   (local $6 f64)
   (local $7 f32)
   (local $8 i32)
-  block $~lib/util/math/log2f_lut|inlined.0 (result f32)
+  block $__inlined_func$~lib/util/math/log2f_lut$1 (result f32)
    local.get $0
    i32.reinterpret_f32
    local.tee $3
@@ -6921,13 +6921,13 @@
     i32.shl
     local.tee $4
     i32.eqz
-    br_if $~lib/util/math/log2f_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/log2f_lut$1
     drop
     local.get $0
     local.get $3
     i32.const 2139095040
     i32.eq
-    br_if $~lib/util/math/log2f_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/log2f_lut$1
     drop
     local.get $0
     local.get $0
@@ -6942,7 +6942,7 @@
     i32.const -16777216
     i32.ge_u
     i32.or
-    br_if $~lib/util/math/log2f_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/log2f_lut$1
     drop
     local.get $0
     f32.const 8388608
@@ -7538,7 +7538,7 @@
     return
    end
   end
-  block $~lib/util/math/pow_lut|inlined.0 (result f64)
+  block $__inlined_func$~lib/util/math/pow_lut$1 (result f64)
    local.get $1
    i64.reinterpret_f64
    local.tee $4
@@ -7575,13 +7575,13 @@
      f64.const 1
      local.get $6
      i64.eqz
-     br_if $~lib/util/math/pow_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/pow_lut$1
      drop
      f64.const nan:0x8000000000000
      local.get $2
      i64.const 4607182418800017408
      i64.eq
-     br_if $~lib/util/math/pow_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/pow_lut$1
      drop
      local.get $0
      local.get $1
@@ -7596,13 +7596,13 @@
      i64.const -9007199254740992
      i64.gt_u
      i32.or
-     br_if $~lib/util/math/pow_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/pow_lut$1
      drop
      f64.const nan:0x8000000000000
      local.get $2
      i64.const 9214364837600034816
      i64.eq
-     br_if $~lib/util/math/pow_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/pow_lut$1
      drop
      f64.const 0
      local.get $4
@@ -7613,12 +7613,12 @@
      i64.const 9214364837600034816
      i64.lt_u
      i32.eq
-     br_if $~lib/util/math/pow_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/pow_lut$1
      drop
      local.get $1
      local.get $1
      f64.mul
-     br $~lib/util/math/pow_lut|inlined.0
+     br $__inlined_func$~lib/util/math/pow_lut$1
     end
     local.get $2
     i64.const 1
@@ -7640,7 +7640,7 @@
      i64.shr_u
      i32.wrap_i64
      if (result i32)
-      block $~lib/util/math/checkint|inlined.0 (result i32)
+      block $__inlined_func$~lib/util/math/checkint$3 (result i32)
        i32.const 0
        local.get $4
        i64.const 52
@@ -7650,13 +7650,13 @@
        local.tee $2
        i64.const 1023
        i64.lt_u
-       br_if $~lib/util/math/checkint|inlined.0
+       br_if $__inlined_func$~lib/util/math/checkint$3
        drop
        i32.const 2
        local.get $2
        i64.const 1075
        i64.gt_u
-       br_if $~lib/util/math/checkint|inlined.0
+       br_if $__inlined_func$~lib/util/math/checkint$3
        drop
        i32.const 0
        local.get $4
@@ -7671,7 +7671,7 @@
        i64.and
        i64.const 0
        i64.ne
-       br_if $~lib/util/math/checkint|inlined.0
+       br_if $__inlined_func$~lib/util/math/checkint$3
        drop
        i32.const 1
        local.get $2
@@ -7679,7 +7679,7 @@
        i64.and
        i64.const 0
        i64.ne
-       br_if $~lib/util/math/checkint|inlined.0
+       br_if $__inlined_func$~lib/util/math/checkint$3
        drop
        i32.const 2
       end
@@ -7696,7 +7696,7 @@
      i64.const 0
      i64.lt_s
      select
-     br $~lib/util/math/pow_lut|inlined.0
+     br $__inlined_func$~lib/util/math/pow_lut$1
     end
     local.get $2
     i64.const 0
@@ -7708,7 +7708,7 @@
      local.tee $3
      local.get $3
      f64.div
-     block $~lib/util/math/checkint|inlined.1 (result i32)
+     block $__inlined_func$~lib/util/math/checkint$4 (result i32)
       i32.const 0
       local.get $4
       i64.const 52
@@ -7718,13 +7718,13 @@
       local.tee $6
       i64.const 1023
       i64.lt_u
-      br_if $~lib/util/math/checkint|inlined.1
+      br_if $__inlined_func$~lib/util/math/checkint$4
       drop
       i32.const 2
       local.get $6
       i64.const 1075
       i64.gt_u
-      br_if $~lib/util/math/checkint|inlined.1
+      br_if $__inlined_func$~lib/util/math/checkint$4
       drop
       i32.const 0
       local.get $4
@@ -7739,7 +7739,7 @@
       i64.and
       i64.const 0
       i64.ne
-      br_if $~lib/util/math/checkint|inlined.1
+      br_if $__inlined_func$~lib/util/math/checkint$4
       drop
       i32.const 1
       local.get $4
@@ -7747,13 +7747,13 @@
       i64.and
       i64.const 0
       i64.ne
-      br_if $~lib/util/math/checkint|inlined.1
+      br_if $__inlined_func$~lib/util/math/checkint$4
       drop
       i32.const 2
      end
      local.tee $7
      i32.eqz
-     br_if $~lib/util/math/pow_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/pow_lut$1
      drop
      local.get $10
      i64.const 2047
@@ -7784,13 +7784,13 @@
      local.get $2
      i64.const 4607182418800017408
      i64.eq
-     br_if $~lib/util/math/pow_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/pow_lut$1
      drop
      f64.const 1
      local.get $6
      i64.const 958
      i64.lt_u
-     br_if $~lib/util/math/pow_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/pow_lut$1
      drop
      f64.const inf
      f64.const 0
@@ -7802,7 +7802,7 @@
      i64.gt_u
      i32.eq
      select
-     br $~lib/util/math/pow_lut|inlined.0
+     br $__inlined_func$~lib/util/math/pow_lut$1
     end
     local.get $0
     f64.const 4503599627370496
@@ -7972,7 +7972,7 @@
    f64.mul
    f64.add
    local.set $1
-   block $~lib/util/math/exp_inline|inlined.0 (result f64)
+   block $__inlined_func$~lib/util/math/exp_inline$6 (result f64)
     local.get $12
     local.get $3
     f64.mul
@@ -7999,7 +7999,7 @@
      i32.sub
      i32.const -2147483648
      i32.ge_u
-     br_if $~lib/util/math/exp_inline|inlined.0
+     br_if $__inlined_func$~lib/util/math/exp_inline$6
      drop
      f64.const -0
      f64.const 0
@@ -8016,7 +8016,7 @@
      local.get $5
      i32.const 1033
      i32.ge_u
-     br_if $~lib/util/math/exp_inline|inlined.0
+     br_if $__inlined_func$~lib/util/math/exp_inline$6
      drop
      i32.const 0
      local.set $5
@@ -8096,7 +8096,7 @@
     local.get $5
     i32.eqz
     if
-     block $~lib/util/math/specialcase|inlined.1 (result f64)
+     block $__inlined_func$~lib/util/math/specialcase$3 (result f64)
       local.get $4
       i64.const 2147483648
       i64.and
@@ -8113,7 +8113,7 @@
        f64.add
        f64.const 5486124068793688683255936e279
        f64.mul
-       br $~lib/util/math/specialcase|inlined.1
+       br $__inlined_func$~lib/util/math/specialcase$3
       end
       local.get $2
       i64.const 4602678819172646912
@@ -8169,7 +8169,7 @@
       f64.const 2.2250738585072014e-308
       f64.mul
      end
-     br $~lib/util/math/exp_inline|inlined.0
+     br $__inlined_func$~lib/util/math/exp_inline$6
     end
     local.get $2
     f64.reinterpret_i64
@@ -8259,7 +8259,7 @@
     return
    end
   end
-  block $~lib/util/math/powf_lut|inlined.0 (result f32)
+  block $__inlined_func$~lib/util/math/powf_lut$1 (result f32)
    local.get $1
    f64.promote_f32
    local.get $1
@@ -8289,13 +8289,13 @@
      i32.shl
      local.tee $5
      i32.eqz
-     br_if $~lib/util/math/powf_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/powf_lut$1
      drop
      f32.const nan:0x400000
      local.get $2
      i32.const 1065353216
      i32.eq
-     br_if $~lib/util/math/powf_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/powf_lut$1
      drop
      local.get $0
      local.get $1
@@ -8310,13 +8310,13 @@
      i32.const -16777216
      i32.gt_u
      i32.or
-     br_if $~lib/util/math/powf_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/powf_lut$1
      drop
      f32.const nan:0x400000
      local.get $2
      i32.const 2130706432
      i32.eq
-     br_if $~lib/util/math/powf_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/powf_lut$1
      drop
      f32.const 0
      local.get $3
@@ -8327,12 +8327,12 @@
      i32.const 2130706432
      i32.lt_u
      i32.eq
-     br_if $~lib/util/math/powf_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/powf_lut$1
      drop
      local.get $1
      local.get $1
      f32.mul
-     br $~lib/util/math/powf_lut|inlined.0
+     br $__inlined_func$~lib/util/math/powf_lut$1
     end
     local.get $2
     i32.const 1
@@ -8353,7 +8353,7 @@
      i32.const 31
      i32.shr_u
      if (result i32)
-      block $~lib/util/math/checkintf|inlined.0 (result i32)
+      block $__inlined_func$~lib/util/math/checkintf$3 (result i32)
        i32.const 0
        local.get $3
        i32.const 23
@@ -8363,13 +8363,13 @@
        local.tee $2
        i32.const 127
        i32.lt_u
-       br_if $~lib/util/math/checkintf|inlined.0
+       br_if $__inlined_func$~lib/util/math/checkintf$3
        drop
        i32.const 2
        local.get $2
        i32.const 150
        i32.gt_u
-       br_if $~lib/util/math/checkintf|inlined.0
+       br_if $__inlined_func$~lib/util/math/checkintf$3
        drop
        i32.const 0
        local.get $3
@@ -8382,13 +8382,13 @@
        i32.const 1
        i32.sub
        i32.and
-       br_if $~lib/util/math/checkintf|inlined.0
+       br_if $__inlined_func$~lib/util/math/checkintf$3
        drop
        i32.const 1
        local.get $2
        local.get $3
        i32.and
-       br_if $~lib/util/math/checkintf|inlined.0
+       br_if $__inlined_func$~lib/util/math/checkintf$3
        drop
        i32.const 2
       end
@@ -8405,7 +8405,7 @@
      i32.const 0
      i32.lt_s
      select
-     br $~lib/util/math/powf_lut|inlined.0
+     br $__inlined_func$~lib/util/math/powf_lut$1
     end
     local.get $2
     i32.const 0
@@ -8417,7 +8417,7 @@
      local.tee $1
      local.get $1
      f32.div
-     block $~lib/util/math/checkintf|inlined.1 (result i32)
+     block $__inlined_func$~lib/util/math/checkintf$4 (result i32)
       i32.const 0
       local.get $3
       i32.const 23
@@ -8427,13 +8427,13 @@
       local.tee $5
       i32.const 127
       i32.lt_u
-      br_if $~lib/util/math/checkintf|inlined.1
+      br_if $__inlined_func$~lib/util/math/checkintf$4
       drop
       i32.const 2
       local.get $5
       i32.const 150
       i32.gt_u
-      br_if $~lib/util/math/checkintf|inlined.1
+      br_if $__inlined_func$~lib/util/math/checkintf$4
       drop
       i32.const 0
       local.get $3
@@ -8446,19 +8446,19 @@
       i32.const 1
       i32.sub
       i32.and
-      br_if $~lib/util/math/checkintf|inlined.1
+      br_if $__inlined_func$~lib/util/math/checkintf$4
       drop
       i32.const 1
       local.get $3
       local.get $5
       i32.and
-      br_if $~lib/util/math/checkintf|inlined.1
+      br_if $__inlined_func$~lib/util/math/checkintf$4
       drop
       i32.const 2
      end
      local.tee $3
      i32.eqz
-     br_if $~lib/util/math/powf_lut|inlined.0
+     br_if $__inlined_func$~lib/util/math/powf_lut$1
      drop
      i32.const 65536
      i32.const 0
@@ -8564,7 +8564,7 @@
     local.get $4
     f64.const 127.99999995700433
     f64.gt
-    br_if $~lib/util/math/powf_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/powf_lut$1
     drop
     f32.const -0
     f32.const 0
@@ -8573,7 +8573,7 @@
     local.get $4
     f64.const -150
     f64.le
-    br_if $~lib/util/math/powf_lut|inlined.0
+    br_if $__inlined_func$~lib/util/math/powf_lut$1
     drop
    end
    local.get $4
@@ -9375,7 +9375,7 @@
    f64.sub
    return
   end
-  block $~lib/math/rempio2|inlined.1 (result i32)
+  block $__inlined_func$~lib/math/rempio2$2 (result i32)
    local.get $5
    i32.const 31
    i32.shr_u
@@ -9464,7 +9464,7 @@
     local.get $1
     global.set $~lib/math/rempio2_y1
     local.get $7
-    br $~lib/math/rempio2|inlined.1
+    br $__inlined_func$~lib/math/rempio2$2
    end
    local.get $2
    i32.const 1094263291
@@ -9567,7 +9567,7 @@
     global.set $~lib/math/rempio2_y1
     local.get $3
     i32.trunc_f64_s
-    br $~lib/math/rempio2|inlined.1
+    br $__inlined_func$~lib/math/rempio2$2
    end
    i32.const 0
    local.get $6
@@ -10018,7 +10018,7 @@
    i32.ge_u
    br_if $__inlined_func$~lib/math/NativeMathf.sin$34
    drop
-   block $~lib/math/rempio2f|inlined.1 (result i32)
+   block $__inlined_func$~lib/math/rempio2f$8 (result i32)
     local.get $5
     i32.const 1305022427
     i32.lt_u
@@ -10041,7 +10041,7 @@
      global.set $~lib/math/rempio2f_y
      local.get $3
      i32.trunc_f64_s
-     br $~lib/math/rempio2f|inlined.1
+     br $__inlined_func$~lib/math/rempio2f$8
     end
     local.get $5
     i32.const 23
@@ -10614,7 +10614,7 @@
    f64.sub
    return
   end
-  block $~lib/math/rempio2|inlined.2 (result i32)
+  block $__inlined_func$~lib/math/rempio2$1 (result i32)
    local.get $5
    i32.const 31
    i32.shr_u
@@ -10703,7 +10703,7 @@
     local.get $0
     global.set $~lib/math/rempio2_y1
     local.get $7
-    br $~lib/math/rempio2|inlined.2
+    br $__inlined_func$~lib/math/rempio2$1
    end
    local.get $2
    i32.const 1094263291
@@ -10806,7 +10806,7 @@
     global.set $~lib/math/rempio2_y1
     local.get $4
     i32.trunc_f64_s
-    br $~lib/math/rempio2|inlined.2
+    br $__inlined_func$~lib/math/rempio2$1
    end
    i32.const 0
    local.get $6
@@ -11145,7 +11145,7 @@
    i32.ge_u
    br_if $__inlined_func$~lib/math/NativeMathf.tan$37
    drop
-   block $~lib/math/rempio2f|inlined.2 (result i32)
+   block $__inlined_func$~lib/math/rempio2f$6 (result i32)
     local.get $6
     i32.const 1305022427
     i32.lt_u
@@ -11168,7 +11168,7 @@
      global.set $~lib/math/rempio2f_y
      local.get $3
      i32.trunc_f64_s
-     br $~lib/math/rempio2f|inlined.2
+     br $__inlined_func$~lib/math/rempio2f$6
     end
     local.get $6
     i32.const 23
@@ -11631,7 +11631,7 @@
     global.set $~lib/math/NativeMath.sincos_cos
     br $__inlined_func$~lib/math/NativeMath.sincos$40
    end
-   block $~lib/math/rempio2|inlined.3 (result i32)
+   block $__inlined_func$~lib/math/rempio2$3 (result i32)
     local.get $10
     i32.const 31
     i32.shr_u
@@ -11720,7 +11720,7 @@
      local.get $6
      global.set $~lib/math/rempio2_y1
      local.get $12
-     br $~lib/math/rempio2|inlined.3
+     br $__inlined_func$~lib/math/rempio2$3
     end
     local.get $8
     i32.const 1094263291
@@ -11823,7 +11823,7 @@
      global.set $~lib/math/rempio2_y1
      local.get $7
      i32.trunc_f64_s
-     br $~lib/math/rempio2|inlined.3
+     br $__inlined_func$~lib/math/rempio2$3
     end
     i32.const 0
     local.get $0

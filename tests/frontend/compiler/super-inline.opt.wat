@@ -146,7 +146,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$78
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$79
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -170,7 +170,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$78
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$79
      end
      local.get $0
      i32.load offset=8
@@ -905,7 +905,7 @@
     local.set $1
     loop $do-loop|0
      local.get $1
-     block $__inlined_func$~lib/rt/itcms/step$83 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$84 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -921,7 +921,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$83
+         br $__inlined_func$~lib/rt/itcms/step$84
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -960,7 +960,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$83
+           br $__inlined_func$~lib/rt/itcms/step$84
           end
           local.get $1
           i32.load offset=4
@@ -1052,7 +1052,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$83
+        br $__inlined_func$~lib/rt/itcms/step$84
        end
        global.get $~lib/rt/itcms/iter
        local.tee $1
@@ -1151,7 +1151,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$83
+        br $__inlined_func$~lib/rt/itcms/step$84
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1471,15 +1471,11 @@
   i32.const 0
   call $super-inline/Foo#constructor
   global.set $super-inline/foo
-  block $__inlined_func$super-inline/Foo#a@override$73
-   global.get $super-inline/foo
-   i32.const 8
-   i32.sub
-   i32.load
-   i32.const 5
-   i32.eq
-   br_if $__inlined_func$super-inline/Foo#a@override$73
-  end
+  global.get $super-inline/foo
+  i32.const 8
+  i32.sub
+  i32.load
+  drop
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.sub

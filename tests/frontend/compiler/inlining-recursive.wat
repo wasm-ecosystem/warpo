@@ -14,18 +14,12 @@
  (export "baz" (func $inlining-recursive/baz))
  (export "memory" (memory $0))
  (func $inlining-recursive/foo
-  (block $inlining-recursive/foo|inlined.0
-   (call $inlining-recursive/foo)
-  )
+  (call $inlining-recursive/foo)
  )
  (func $inlining-recursive/baz
   (call $inlining-recursive/bar)
  )
  (func $inlining-recursive/bar
-  (block $inlining-recursive/baz|inlined.0
-   (block $inlining-recursive/bar|inlined.0
-    (call $inlining-recursive/baz)
-   )
-  )
+  (call $inlining-recursive/baz)
  )
 )

@@ -218,21 +218,6 @@ export class Flow {
     return flow;
   }
 
-  /** Creates an inline flow, compiling `inlineFunction` into `targetFunction`. */
-  static createInline(targetFunction: Function, inlineFunction: Function): Flow {
-    // Note that `targetFunction` and `inlineFunction` can be the same function
-    // when it is inlined into itself.
-    let flow = new Flow(targetFunction, inlineFunction);
-    flow.inlineReturnLabel = `${inlineFunction.internalName}|inlined.${(inlineFunction.nextInlineId++)}`;
-    if (inlineFunction.is(CommonFlags.Constructor)) {
-      flow.initThisFieldFlags();
-    }
-    if (targetFunction.program.options.uncheckedBehavior === UncheckedBehavior.Always) {
-      flow.set(FlowFlags.UncheckedContext);
-    }
-    return flow;
-  }
-
   private constructor(
     /** Target function this flow generates code into. */
     public targetFunction: Function,

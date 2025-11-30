@@ -41,6 +41,8 @@ public:
     assert(it != this->end());
     return it->second;
   }
+
+  using std::map<wasm::Index, DynBitset>::contains;
 };
 
 void MergeSSA::runOnFunction(wasm::Module *const m, wasm::Function *const func) {
@@ -64,6 +66,9 @@ void MergeSSA::runOnFunction(wasm::Module *const m, wasm::Function *const func) 
         // this expr are unreachable, so CFG will not contain it.
         // we just skip this node and let other optimization handle it.
         // FIXME: maybe we should do pre-opt to remove the dead code?
+        continue;
+      // sometimes local.get is come from tmp local to stack. ignore this cases.
+      if (!localIndexToSSA.contains(localIndex))
         continue;
       Liveness const localgetLiveness = liveness.value();
 

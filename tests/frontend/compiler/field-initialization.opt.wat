@@ -1,7 +1,7 @@
 (module
- (type $0 (func (param i32)))
+ (type $0 (func))
  (type $1 (func (param i32 i32)))
- (type $2 (func))
+ (type $2 (func (param i32)))
  (type $3 (func (param i32 i32) (result i32)))
  (type $4 (func (param i32) (result i32)))
  (type $5 (func (param i32 i32 i32 i32)))
@@ -1598,7 +1598,6 @@
   call $~lib/rt/itcms/__link
  )
  (func $field-initialization/Inherit_Base#constructor (param $0 i32) (result i32)
-  i32.const 4
   call $~lib/rt/__decrease_sp
   local.get $0
   i32.eqz
@@ -1629,7 +1628,6 @@
   local.get $0
  )
  (func $field-initialization/SomeObject#constructor (param $0 i32) (result i32)
-  i32.const 4
   call $~lib/rt/__decrease_sp
   local.get $0
   i32.eqz
@@ -1867,7 +1865,6 @@
   i32.store
   i32.const 320
   global.set $~lib/rt/itcms/fromSpace
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 4
@@ -1897,7 +1894,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 5
@@ -1923,7 +1919,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 6
@@ -1958,7 +1953,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 7
@@ -1993,7 +1987,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 8
@@ -2067,7 +2060,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 12
@@ -2096,7 +2088,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 13
@@ -2125,7 +2116,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 8
   call $~lib/rt/__decrease_sp
   i32.const 0
   i32.const 1
@@ -2164,7 +2154,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 16
@@ -2193,7 +2182,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 17
@@ -2222,7 +2210,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 18
@@ -2249,7 +2236,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 20
@@ -2410,7 +2396,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 12
   i32.const 22
@@ -2474,7 +2459,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 12
   i32.const 22
@@ -2543,7 +2527,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 23
@@ -2572,9 +2555,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store offset=4 align=1
   i32.const 4
   i32.const 24
   call $~lib/rt/itcms/__new
@@ -2598,9 +2578,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store offset=4 align=1
   i32.const 4
   i32.const 25
   call $~lib/rt/itcms/__new
@@ -2618,7 +2595,7 @@
   i32.eqz
   local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
@@ -2631,15 +2608,14 @@
    unreachable
   end
  )
- (func $~lib/rt/__decrease_sp (param $0 i32)
+ (func $~lib/rt/__decrease_sp
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  i32.const 4
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
   i32.const 0
-  local.get $0
-  memory.fill
+  i32.store align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 876
   i32.lt_s

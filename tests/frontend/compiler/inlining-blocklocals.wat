@@ -1,7 +1,8 @@
 (module
  (type $0 (func))
  (type $1 (func (param i32) (result i32)))
- (type $2 (func (param i32 i32 i32 i32)))
+ (type $2 (func (param i32 i32 i32)))
+ (type $3 (func (param i32 i32 i32 i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -18,59 +19,52 @@
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
  (start $~start)
+ (func $inlining-blocklocals/theCall (param $a i32) (param $b i32) (param $c i32)
+  (global.set $inlining-blocklocals/theCall_a
+   (local.get $a)
+  )
+  (global.set $inlining-blocklocals/theCall_b
+   (local.get $b)
+  )
+  (global.set $inlining-blocklocals/theCall_c
+   (local.get $c)
+  )
+ )
  (func $inlining-blocklocals/test
   (local $a i32)
   (local $1 i32)
   (local $2 i32)
-  (local $a|3 i32)
-  (local $b i32)
-  (local $c i32)
   (local.set $a
    (i32.const 1)
   )
-  (block $inlining-blocklocals/theCall|inlined.0
-   (local.set $a|3
-    (block (result i32)
-     (local.set $a
-      (i32.add
-       (local.tee $1
-        (local.get $a)
-       )
-       (i32.const 1)
-      )
-     )
-     (local.get $1)
-    )
-   )
-   (local.set $b
-    (block (result i32)
-     (global.set $inlining-blocklocals/b
-      (i32.add
-       (local.tee $2
-        (global.get $inlining-blocklocals/b)
-       )
-       (i32.const 1)
-      )
-     )
-     (local.get $2)
-    )
-   )
-   (local.set $c
-    (local.tee $a
+  (call $inlining-blocklocals/theCall
+   (block (result i32)
+    (local.set $a
      (i32.add
-      (local.get $a)
+      (local.tee $1
+       (local.get $a)
+      )
       (i32.const 1)
      )
     )
+    (local.get $1)
    )
-   (global.set $inlining-blocklocals/theCall_a
-    (local.get $a|3)
+   (block (result i32)
+    (global.set $inlining-blocklocals/b
+     (i32.add
+      (local.tee $2
+       (global.get $inlining-blocklocals/b)
+      )
+      (i32.const 1)
+     )
+    )
+    (local.get $2)
    )
-   (global.set $inlining-blocklocals/theCall_b
-    (local.get $b)
-   )
-   (global.set $inlining-blocklocals/theCall_c
-    (local.get $c)
+   (local.tee $a
+    (i32.add
+     (local.get $a)
+     (i32.const 1)
+    )
    )
   )
   (if

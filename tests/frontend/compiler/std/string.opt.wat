@@ -4427,11 +4427,11 @@
    local.get $8
    select
    local.set $12
-   block $~lib/util/string/scientific|inlined.0 (result f64)
+   block $__inlined_func$~lib/util/string/scientific$2 (result f64)
     f64.const 0
     local.get $2
     i64.eqz
-    block $~lib/util/string/parseExp|inlined.0 (result i32)
+    block $__inlined_func$~lib/util/string/parseExp$1 (result i32)
      i32.const 1
      local.set $8
      i32.const 0
@@ -4443,7 +4443,7 @@
      i32.or
      i32.const 101
      i32.ne
-     br_if $~lib/util/string/parseExp|inlined.0
+     br_if $__inlined_func$~lib/util/string/parseExp$1
      drop
      i32.const 0
      local.get $1
@@ -4451,7 +4451,7 @@
      i32.sub
      local.tee $4
      i32.eqz
-     br_if $~lib/util/string/parseExp|inlined.0
+     br_if $__inlined_func$~lib/util/string/parseExp$1
      drop
      local.get $0
      i32.const 2
@@ -4468,7 +4468,7 @@
       i32.sub
       local.tee $4
       i32.eqz
-      br_if $~lib/util/string/parseExp|inlined.0
+      br_if $__inlined_func$~lib/util/string/parseExp$1
       drop
       i32.const -1
       local.set $8
@@ -4488,7 +4488,7 @@
        i32.sub
        local.tee $4
        i32.eqz
-       br_if $~lib/util/string/parseExp|inlined.0
+       br_if $__inlined_func$~lib/util/string/parseExp$1
        drop
        local.get $0
        i32.const 2
@@ -4500,7 +4500,7 @@
       end
      end
      local.set $1
-     loop $while-continue|4
+     loop $while-continue|01
       local.get $1
       i32.const 48
       i32.eq
@@ -4511,7 +4511,7 @@
        i32.sub
        local.tee $4
        i32.eqz
-       br_if $~lib/util/string/parseExp|inlined.0
+       br_if $__inlined_func$~lib/util/string/parseExp$1
        drop
        local.get $0
        i32.const 2
@@ -4519,14 +4519,14 @@
        local.tee $0
        i32.load16_u
        local.set $1
-       br $while-continue|4
+       br $while-continue|01
       end
      end
      local.get $1
      i32.const 48
      i32.sub
      local.set $1
-     loop $for-loop|5
+     loop $for-loop|1
       local.get $1
       i32.const 10
       i32.lt_u
@@ -4540,7 +4540,7 @@
        local.get $3
        i32.const 3200
        i32.ge_s
-       br_if $~lib/util/string/parseExp|inlined.0
+       br_if $__inlined_func$~lib/util/string/parseExp$1
        drop
        local.get $3
        i32.const 10
@@ -4560,7 +4560,7 @@
        i32.const 48
        i32.sub
        local.set $1
-       br $for-loop|5
+       br $for-loop|1
       end
      end
      local.get $3
@@ -4580,20 +4580,20 @@
     i32.const -342
     i32.lt_s
     i32.or
-    br_if $~lib/util/string/scientific|inlined.0
+    br_if $__inlined_func$~lib/util/string/scientific$2
     drop
     f64.const inf
     local.get $0
     i32.const 308
     i32.gt_s
-    br_if $~lib/util/string/scientific|inlined.0
+    br_if $__inlined_func$~lib/util/string/scientific$2
     drop
     local.get $2
     f64.convert_i64_u
     local.tee $11
     local.get $0
     i32.eqz
-    br_if $~lib/util/string/scientific|inlined.0
+    br_if $__inlined_func$~lib/util/string/scientific$2
     drop
     local.get $0
     i32.const 37
@@ -4645,7 +4645,7 @@
       i32.add
       f64.load
       f64.mul
-      br $~lib/util/string/scientific|inlined.0
+      br $__inlined_func$~lib/util/string/scientific$2
      end
      local.get $11
      i32.const 0
@@ -4673,7 +4673,7 @@
       local.get $5
       i64.sub
       local.set $5
-      loop $for-loop|6
+      loop $for-loop|0
        local.get $0
        i32.const -14
        i32.le_s
@@ -4708,7 +4708,7 @@
         i32.const 14
         i32.add
         local.set $0
-        br $for-loop|6
+        br $for-loop|0
        end
       end
       local.get $2
@@ -4758,7 +4758,7 @@
       i64.extend_i32_s
       i64.add
       global.set $~lib/util/string/__fixmulShift
-      loop $for-loop|7
+      loop $for-loop|00
        local.get $0
        i32.const 13
        i32.ge_s
@@ -4814,7 +4814,7 @@
         i32.const 13
         i32.sub
         local.set $0
-        br $for-loop|7
+        br $for-loop|00
        end
       end
       local.get $0
@@ -8174,7 +8174,7 @@
        local.tee $3
        i32.load16_u
        local.set $2
-       loop $while-continue|3
+       loop $while-continue|1
         local.get $4
         local.get $9
         i64.lt_u
@@ -8204,7 +8204,7 @@
          i32.const 1
          i32.sub
          local.set $2
-         br $while-continue|3
+         br $while-continue|1
         end
        end
        local.get $3
@@ -8216,7 +8216,7 @@
       br $while-continue|0
      end
     end
-    loop $while-continue|4 (result i32)
+    loop $while-continue|2 (result i32)
      local.get $6
      i64.const 10
      i64.mul
@@ -8263,7 +8263,7 @@
      local.tee $5
      local.get $6
      i64.ge_u
-     br_if $while-continue|4
+     br_if $while-continue|2
      global.get $~lib/util/number/_K
      local.get $10
      i32.add
@@ -8287,7 +8287,7 @@
      local.tee $3
      i32.load16_u
      local.set $2
-     loop $while-continue|6
+     loop $while-continue|11
       local.get $4
       local.get $5
       i64.gt_u
@@ -8317,7 +8317,7 @@
        i32.const 1
        i32.sub
        local.set $2
-       br $while-continue|6
+       br $while-continue|11
       end
      end
      local.get $3
@@ -8575,12 +8575,12 @@
  (func $~lib/util/number/dtoa<f64> (param $0 f64) (result i32)
   (local $1 i32)
   (local $2 i32)
-  block $~lib/util/number/dtoa_impl|inlined.0 (result i32)
+  block $__inlined_func$~lib/util/number/dtoa_impl$1 (result i32)
    i32.const 22256
    local.get $0
    f64.const 0
    f64.eq
-   br_if $~lib/util/number/dtoa_impl|inlined.0
+   br_if $__inlined_func$~lib/util/number/dtoa_impl$1
    drop
    local.get $0
    local.get $0
@@ -8592,7 +8592,7 @@
     local.get $0
     local.get $0
     f64.ne
-    br_if $~lib/util/number/dtoa_impl|inlined.0
+    br_if $__inlined_func$~lib/util/number/dtoa_impl$1
     drop
     i32.const 7936
     i32.const 22288
@@ -8600,7 +8600,7 @@
     f64.const 0
     f64.lt
     select
-    br $~lib/util/number/dtoa_impl|inlined.0
+    br $__inlined_func$~lib/util/number/dtoa_impl$1
    end
    local.get $0
    i32.const 0
@@ -8621,14 +8621,14 @@
   (local $1 f64)
   (local $2 i32)
   (local $3 i32)
-  block $~lib/util/number/dtoa_impl|inlined.1 (result i32)
+  block $__inlined_func$~lib/util/number/dtoa_impl$1 (result i32)
    i32.const 22256
    local.get $0
    f64.promote_f32
    local.tee $1
    f64.const 0
    f64.eq
-   br_if $~lib/util/number/dtoa_impl|inlined.1
+   br_if $__inlined_func$~lib/util/number/dtoa_impl$1
    drop
    local.get $1
    local.get $1
@@ -8640,7 +8640,7 @@
     local.get $1
     local.get $1
     f64.ne
-    br_if $~lib/util/number/dtoa_impl|inlined.1
+    br_if $__inlined_func$~lib/util/number/dtoa_impl$1
     drop
     i32.const 7936
     i32.const 22288
@@ -8648,7 +8648,7 @@
     f64.const 0
     f64.lt
     select
-    br $~lib/util/number/dtoa_impl|inlined.1
+    br $__inlined_func$~lib/util/number/dtoa_impl$1
    end
    local.get $1
    i32.const 1
@@ -10147,7 +10147,8 @@
   end
   i32.const 2128
   call $~lib/util/string/strtob
-  i32.eqz
+  i32.const 1
+  i32.ne
   if
    i32.const 0
    i32.const 96
@@ -10158,7 +10159,8 @@
   end
   i32.const 2176
   call $~lib/util/string/strtob
-  i32.eqz
+  i32.const 1
+  i32.ne
   if
    i32.const 0
    i32.const 96

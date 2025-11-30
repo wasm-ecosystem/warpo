@@ -2246,7 +2246,7 @@
        local.tee $2
        i32.load16_u
        local.set $0
-       loop $while-continue|3
+       loop $while-continue|1
         local.get $5
         local.get $11
         i64.lt_u
@@ -2276,7 +2276,7 @@
          i32.const 1
          i32.sub
          local.set $0
-         br $while-continue|3
+         br $while-continue|1
         end
        end
        local.get $2
@@ -2288,7 +2288,7 @@
       br $while-continue|0
      end
     end
-    loop $while-continue|4 (result i32)
+    loop $while-continue|2 (result i32)
      local.get $9
      i64.const 10
      i64.mul
@@ -2335,7 +2335,7 @@
      local.tee $7
      local.get $9
      i64.ge_u
-     br_if $while-continue|4
+     br_if $while-continue|2
      global.get $~lib/util/number/_K
      local.get $6
      i32.add
@@ -2359,7 +2359,7 @@
      local.tee $2
      i32.load16_u
      local.set $0
-     loop $while-continue|6
+     loop $while-continue|11
       local.get $3
       local.get $7
       i64.gt_u
@@ -2389,7 +2389,7 @@
        i32.const 1
        i32.sub
        local.set $0
-       br $while-continue|6
+       br $while-continue|11
       end
      end
      local.get $2

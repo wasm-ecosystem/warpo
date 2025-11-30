@@ -219,7 +219,7 @@ import {
   liftRequiresExportRuntime,
   lowerRequiresExportRuntime
 } from "./bindings/js";
-import { markDataElementImmutable, addGlobal, addSubProgram} from "./warpo";
+import { markDataElementImmutable, addGlobal, addSubProgram, markCallInlined} from "./warpo";
 
 /** Features enabled by default. */
 export const defaultFeatures = Feature.MutableGlobals
@@ -456,8 +456,6 @@ export class Compiler extends DiagnosticEmitter {
   builtinArgumentsLength: GlobalRef = 0;
   /** Requires runtime features. */
   runtimeFeatures: RuntimeFeatures = RuntimeFeatures.None;
-  /** Current inline functions stack. */
-  inlineStack: Function[] = [];
   /** Lazily compiled functions. */
   lazyFunctions: Set<Function> = new Set();
   /** Pending instanceof helpers and their names. */
@@ -6386,34 +6384,6 @@ export class Compiler extends DiagnosticEmitter {
       assert(parent.kind == ElementKind.Class);
       this.checkFieldInitialization(<Class>parent, reportNode);
     }
-
-    // Inline if explicitly requested
-    let inlineRequested = instance.hasDecorator(DecoratorFlags.Inline) || this.currentFlow.is(FlowFlags.InlineContext);
-    if (inlineRequested && (!instance.is(CommonFlags.Overridden) || reportNode.isAccessOnSuper)) {
-      assert(!instance.is(CommonFlags.Stub)); // doesn't make sense
-      let inlineStack = this.inlineStack;
-      if (inlineStack.includes(instance)) {
-        this.warning(
-          DiagnosticCode.Function_0_cannot_be_inlined_into_itself,
-          reportNode.range, instance.internalName
-        );
-      } else {
-        let parameterTypes = signature.parameterTypes;
-        assert(numArguments <= parameterTypes.length);
-        // compile argument expressions *before* pushing to the inline stack
-        // otherwise, the arguments may not be inlined, e.g. `abc(abc(123))`
-        let args = new Array<ExpressionRef>(numArguments);
-        for (let i = 0; i < numArguments; ++i) {
-          args[i] = this.compileExpression(argumentExpressions[i], parameterTypes[i], Constraints.ConvImplicit);
-        }
-        // make the inlined call
-        inlineStack.push(instance);
-        let expr = this.makeCallInline(instance, args, thisArg, (constraints & Constraints.WillDrop) != 0);
-        inlineStack.pop();
-        return expr;
-      }
-    }
-
     // Otherwise compile to just a call
     let numArgumentsInclThis = thisArg ? numArguments + 1 : numArguments;
     let operands = new Array<ExpressionRef>(numArgumentsInclThis);
@@ -6430,89 +6400,6 @@ export class Compiler extends DiagnosticEmitter {
     }
     assert(index == numArgumentsInclThis);
     return this.makeCallDirect(instance, operands, reportNode, (constraints & Constraints.WillDrop) != 0);
-  }
-
-  makeCallInline(
-    instance: Function,
-    operands: ExpressionRef[] | null,
-    thisArg: ExpressionRef = 0,
-    immediatelyDropped: bool = false
-  ): ExpressionRef {
-    let module = this.module;
-    let numArguments = operands ? operands.length : 0;
-    let signature = instance.signature;
-    let parameterTypes = signature.parameterTypes;
-    let numParameters = parameterTypes.length;
-
-    // Create a new inline flow and use it to compile the function as a block
-    let previousFlow = this.currentFlow;
-    let flow = Flow.createInline(previousFlow.targetFunction, instance);
-    let body: ExpressionRef[] = [];
-
-    if (thisArg) {
-      let parent = assert(instance.parent);
-      assert(parent.kind == ElementKind.Class);
-      let classInstance = <Class>parent;
-      let thisType = assert(instance.signature.thisType);
-      let thisLocal = flow.addScopedLocal(CommonNames.this_, thisType);
-      body.push(
-        module.local_set(thisLocal.index, thisArg, thisType.isManaged)
-      );
-      flow.setLocalFlag(thisLocal.index, LocalFlags.Initialized);
-      let base = classInstance.base;
-      if (base) flow.addScopedAlias(CommonNames.super_, base.type, thisLocal.index);
-    } else {
-      assert(!instance.signature.thisType);
-    }
-    for (let i = 0; i < numArguments; ++i) {
-      let paramExpr = operands![i];
-      let paramType = parameterTypes[i];
-      let argumentLocal = flow.addScopedLocal(instance.getParameterName(i), paramType);
-      // inlining is aware of wrap/nonnull states:
-      if (!previousFlow.canOverflow(paramExpr, paramType)) flow.setLocalFlag(argumentLocal.index, LocalFlags.Wrapped);
-      if (flow.isNonnull(paramExpr, paramType)) flow.setLocalFlag(argumentLocal.index, LocalFlags.NonNull);
-      body.push(
-        module.local_set(argumentLocal.index, paramExpr, paramType.isManaged)
-      );
-      flow.setLocalFlag(argumentLocal.index, LocalFlags.Initialized);
-    }
-
-    // Compile omitted arguments with final argument locals blocked. Doesn't need to take care of
-    // side-effects within earlier expressions because these already happened on set.
-    this.currentFlow = flow;
-    let isConstructor = instance.is(CommonFlags.Constructor);
-    if (isConstructor) flow.set(FlowFlags.CtorParamContext);
-    for (let i = numArguments; i < numParameters; ++i) {
-      let initType = parameterTypes[i];
-      let initExpr = this.compileExpression(
-        assert(instance.prototype.functionTypeNode.parameters[i].initializer),
-        initType,
-        Constraints.ConvImplicit
-      );
-      let argumentLocal = flow.addScopedLocal(instance.getParameterName(i), initType);
-      body.push(
-        this.makeLocalAssignment(argumentLocal, initExpr, initType, false)
-      );
-    }
-    flow.unset(FlowFlags.CtorParamContext);
-
-    // Compile the called function's body in the scope of the inlined flow
-    this.compileFunctionBody(instance, body);
-
-    // If a constructor, perform field init checks on its flow directly
-    if (isConstructor) {
-      let parent = instance.parent;
-      assert(parent.kind == ElementKind.Class);
-      this.checkFieldInitializationInFlow(<Class>parent, flow);
-    }
-
-    // Free any new scoped locals and reset to the original flow
-    let returnType = flow.returnType;
-    this.currentFlow = previousFlow;
-
-    // Create an outer block that we can break to when returning a value out of order
-    this.currentType = returnType;
-    return module.block(flow.inlineReturnLabel, body, returnType.toRef());
   }
 
   /** Makes sure that the arguments length helper global is present. */
@@ -6875,34 +6762,12 @@ export class Compiler extends DiagnosticEmitter {
     reportNode: Node,
     immediatelyDropped: bool = false
   ): ExpressionRef {
-    if (instance.hasDecorator(DecoratorFlags.Inline)) {
-      if (!instance.is(CommonFlags.Overridden)) {
-        assert(!instance.is(CommonFlags.Stub)); // doesn't make sense
-        let inlineStack = this.inlineStack;
-        if (inlineStack.includes(instance)) {
-          this.warning(
-            DiagnosticCode.Function_0_cannot_be_inlined_into_itself,
-            reportNode.range, instance.internalName
-          );
-        } else {
-          inlineStack.push(instance);
-          let expr: ExpressionRef;
-          if (instance.is(CommonFlags.Instance)) {
-            let theOperands = assert(operands);
-            assert(theOperands.length);
-            expr = this.makeCallInline(instance, theOperands.slice(1), theOperands[0], immediatelyDropped);
-          } else {
-            expr = this.makeCallInline(instance, operands, 0, immediatelyDropped);
-          }
-          inlineStack.pop();
-          return expr;
-        }
-      } else {
-        this.warning(
-          DiagnosticCode.Function_0_is_virtual_and_will_not_be_inlined,
-          reportNode.range, instance.internalName
-        );
-      }
+    const shouldInlined = instance.hasDecorator(DecoratorFlags.Inline) || this.currentFlow.is(FlowFlags.InlineContext);
+    if (shouldInlined && instance.is(CommonFlags.Overridden)) {
+      this.warning(
+        DiagnosticCode.Function_0_is_virtual_and_will_not_be_inlined,
+        reportNode.range, instance.internalName
+      );
     }
     let module = this.module;
     let numOperands = operands ? operands.length : 0;
@@ -6973,6 +6838,7 @@ export class Compiler extends DiagnosticEmitter {
         ], lastOperandType.toRef());
         this.operandsTostack(instance.signature, operands);
         let expr = module.call(instance.internalName, operands, returnTypeRef);
+        if (shouldInlined) markCallInlined(expr);
         if (returnType != Type.void && immediatelyDropped) {
           expr = module.drop(expr);
           this.currentType = Type.void;
@@ -6990,6 +6856,7 @@ export class Compiler extends DiagnosticEmitter {
 
     if (operands) this.operandsTostack(instance.signature, operands);
     let expr = module.call(instance.internalName, operands, returnType.toRef());
+    if (shouldInlined) markCallInlined(expr);
     this.currentType = returnType;
     return expr;
   }
@@ -8851,11 +8718,7 @@ export class Compiler extends DiagnosticEmitter {
     if (!classInstance) return module.unreachable();
     if (contextualType == Type.void) constraints |= Constraints.WillDrop;
     let ctor = this.ensureConstructor(classInstance, expression);
-    if (!ctor.hasDecorator(DecoratorFlags.Inline)) {
-      // Inlined ctors haven't been compiled yet and are checked upon inline
-      // compilation of their body instead.
-      this.checkFieldInitialization(classInstance, expression);
-    }
+    this.checkFieldInitialization(classInstance, expression);
     return this.compileInstantiate(ctor, expression.args, constraints, expression);
   }
 
@@ -8868,10 +8731,10 @@ export class Compiler extends DiagnosticEmitter {
   ): Function {
     let instance = classInstance.constructorInstance;
     if (instance) {
+      // There is a custom constructor or the default constructor has already been compiled.
       // shortcut if already compiled
       if (instance.is(CommonFlags.Compiled)) return instance;
-      // do not attempt to compile if inlined anyway
-      if (!instance.hasDecorator(DecoratorFlags.Inline)) this.compileFunction(instance);
+      this.compileFunction(instance);
     } else {
       // clone base constructor if a derived class. note that we cannot just
       // call the base ctor since the derived class may have additional fields.

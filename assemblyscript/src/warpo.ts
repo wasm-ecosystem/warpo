@@ -1,6 +1,7 @@
 import { ExpressionRef } from "./module";
 
 declare function _WarpoMarkDataElementImmutable(begin: u32, size: u32): void;
+declare function _WarpoMarkCallInlined(expr: ExpressionRef): void;
 
 declare function _WarpoCreateBaseType(typeName: string): void;
 declare function _WarpoCreateClass(className: string, parentClassName: string | null, rtid: u32): void;
@@ -16,6 +17,10 @@ declare function _WarpoAddScope(functionName: string, startExpression: Expressio
 
 export function markDataElementImmutable(begin: i64, size: i32): void {
   _WarpoMarkDataElementImmutable(i64_low(begin), <u32>size);
+}
+
+export function markCallInlined(expr: ExpressionRef): void {
+  _WarpoMarkCallInlined(expr);
 }
 
 export function createBaseType(typeName: string): void {

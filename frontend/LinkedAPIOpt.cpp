@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <cassert>
+#include <memory>
 
 #include "CompilerImpl.hpp"
 #include "LinkedAPI.hpp"
@@ -18,11 +19,18 @@ FrontendCompiler *getFrontendCompiler(vb::WasmModule *ctx) {
   return static_cast<FrontendCompiler *>(ctx->getContext());
 }
 
-void markDataElementImmutableForLink(uint32_t offset, uint32_t size, [[maybe_unused]] vb::WasmModule *ctx) {
+void markDataElementImmutableForLink(uint32_t offset, uint32_t size, vb::WasmModule *ctx) {
   AsModule *const m = &getFrontendCompiler(ctx)->asModule_;
   if (m->immutableRanges_ == nullptr)
     m->immutableRanges_ = std::make_shared<ImmutableDataElementRanges>();
   m->immutableRanges_->insert({offset, offset + size});
+}
+
+void markCallInlinedForLink(uint64_t callExpr, vb::WasmModule *ctx) {
+  AsModule *const m = &getFrontendCompiler(ctx)->asModule_;
+  if (m->forceInlineHints_ == nullptr)
+    m->forceInlineHints_ = std::make_shared<ForceInlineHints>();
+  m->forceInlineHints_->insert(reinterpret_cast<wasm::Call *>(callExpr));
 }
 
 } // namespace
@@ -30,6 +38,7 @@ void markDataElementImmutableForLink(uint32_t offset, uint32_t size, [[maybe_unu
 std::vector<vb::NativeSymbol> createOptAPI() {
   return std::vector<vb::NativeSymbol>{
       STATIC_LINK("warpo", "_WarpoMarkDataElementImmutable", markDataElementImmutableForLink),
+      STATIC_LINK("warpo", "_WarpoMarkCallInlined", markCallInlinedForLink),
   };
 }
 

@@ -3,8 +3,8 @@
  (type $1 (func (param i32 i32)))
  (type $2 (func (param i32 i32) (result i32)))
  (type $3 (func (param i32 i32 i32) (result i32)))
- (type $4 (func (param i32 i32 i32 i32) (result i32)))
- (type $5 (func (param i32 i32 i32)))
+ (type $4 (func (param i32 i32 i32)))
+ (type $5 (func (param i32 i32 i32 i32) (result i32)))
  (type $6 (func (param i32)))
  (type $7 (func))
  (type $8 (func (param i32 i32 i32 i32)))
@@ -716,6 +716,49 @@
    (local.get $flMap)
   )
  )
+ (func $~lib/rt/tlsf/SETTAIL (param $root i32) (param $tail i32)
+  (i32.store offset=1568
+   (local.get $root)
+   (local.get $tail)
+  )
+ )
+ (func $~lib/rt/tlsf/SETSL (param $root i32) (param $fl i32) (param $slMap i32)
+  (i32.store offset=4
+   (i32.add
+    (local.get $root)
+    (i32.shl
+     (local.get $fl)
+     (i32.const 2)
+    )
+   )
+   (local.get $slMap)
+  )
+ )
+ (func $~lib/rt/tlsf/SETHEAD (param $root i32) (param $fl i32) (param $sl i32) (param $head i32)
+  (i32.store offset=96
+   (i32.add
+    (local.get $root)
+    (i32.shl
+     (i32.add
+      (i32.shl
+       (local.get $fl)
+       (i32.const 4)
+      )
+      (local.get $sl)
+     )
+     (i32.const 2)
+    )
+   )
+   (local.get $head)
+  )
+ )
+ (func $~lib/rt/tlsf/GETTAIL (param $root i32) (result i32)
+  (return
+   (i32.load offset=1568
+    (local.get $root)
+   )
+  )
+ )
  (func $~lib/rt/common/BLOCK#set:mmInfo (param $this i32) (param $mmInfo i32)
   (i32.store
    (local.get $this)
@@ -734,6 +777,25 @@
    (local.get $next)
   )
  )
+ (func $~lib/rt/tlsf/GETRIGHT (param $block i32) (result i32)
+  (return
+   (i32.add
+    (i32.add
+     (local.get $block)
+     (i32.const 4)
+    )
+    (i32.and
+     (call $~lib/rt/common/BLOCK#get:mmInfo
+      (local.get $block)
+     )
+     (i32.xor
+      (i32.const 3)
+      (i32.const -1)
+     )
+    )
+   )
+  )
+ )
  (func $~lib/rt/tlsf/Block#get:prev (param $this i32) (result i32)
   (i32.load offset=4
    (local.get $this)
@@ -742,6 +804,38 @@
  (func $~lib/rt/tlsf/Block#get:next (param $this i32) (result i32)
   (i32.load offset=8
    (local.get $this)
+  )
+ )
+ (func $~lib/rt/tlsf/GETHEAD (param $root i32) (param $fl i32) (param $sl i32) (result i32)
+  (return
+   (i32.load offset=96
+    (i32.add
+     (local.get $root)
+     (i32.shl
+      (i32.add
+       (i32.shl
+        (local.get $fl)
+        (i32.const 4)
+       )
+       (local.get $sl)
+      )
+      (i32.const 2)
+     )
+    )
+   )
+  )
+ )
+ (func $~lib/rt/tlsf/GETSL (param $root i32) (param $fl i32) (result i32)
+  (return
+   (i32.load offset=4
+    (i32.add
+     (local.get $root)
+     (i32.shl
+      (local.get $fl)
+      (i32.const 2)
+     )
+    )
+   )
   )
  )
  (func $~lib/rt/tlsf/Root#get:flMap (param $this i32) (result i32)
@@ -759,19 +853,7 @@
   (local $boundedSize i32)
   (local $prev i32)
   (local $next i32)
-  (local $root|11 i32)
-  (local $fl|12 i32)
-  (local $sl|13 i32)
-  (local $root|14 i32)
-  (local $fl|15 i32)
-  (local $sl|16 i32)
-  (local $head i32)
-  (local $root|18 i32)
-  (local $fl|19 i32)
   (local $slMap i32)
-  (local $root|21 i32)
-  (local $fl|22 i32)
-  (local $slMap|23 i32)
   (local.set $blockInfo
    (call $~lib/rt/common/BLOCK#get:mmInfo
     (local.get $block)
@@ -953,65 +1035,18 @@
   (if
    (i32.eq
     (local.get $block)
-    (block $~lib/rt/tlsf/GETHEAD|inlined.0 (result i32)
-     (local.set $root|11
-      (local.get $root)
-     )
-     (local.set $fl|12
-      (local.get $fl)
-     )
-     (local.set $sl|13
-      (local.get $sl)
-     )
-     (br $~lib/rt/tlsf/GETHEAD|inlined.0
-      (i32.load offset=96
-       (i32.add
-        (local.get $root|11)
-        (i32.shl
-         (i32.add
-          (i32.shl
-           (local.get $fl|12)
-           (i32.const 4)
-          )
-          (local.get $sl|13)
-         )
-         (i32.const 2)
-        )
-       )
-      )
-     )
+    (call $~lib/rt/tlsf/GETHEAD
+     (local.get $root)
+     (local.get $fl)
+     (local.get $sl)
     )
    )
    (then
-    (block $~lib/rt/tlsf/SETHEAD|inlined.1
-     (local.set $root|14
-      (local.get $root)
-     )
-     (local.set $fl|15
-      (local.get $fl)
-     )
-     (local.set $sl|16
-      (local.get $sl)
-     )
-     (local.set $head
-      (local.get $next)
-     )
-     (i32.store offset=96
-      (i32.add
-       (local.get $root|14)
-       (i32.shl
-        (i32.add
-         (i32.shl
-          (local.get $fl|15)
-          (i32.const 4)
-         )
-         (local.get $sl|16)
-        )
-        (i32.const 2)
-       )
-      )
-      (local.get $head)
-     )
+    (call $~lib/rt/tlsf/SETHEAD
+     (local.get $root)
+     (local.get $fl)
+     (local.get $sl)
+     (local.get $next)
     )
     (if
      (i32.eqz
@@ -1019,56 +1054,25 @@
      )
      (then
       (local.set $slMap
-       (block $~lib/rt/tlsf/GETSL|inlined.0 (result i32)
-        (local.set $root|18
-         (local.get $root)
-        )
-        (local.set $fl|19
-         (local.get $fl)
-        )
-        (br $~lib/rt/tlsf/GETSL|inlined.0
-         (i32.load offset=4
-          (i32.add
-           (local.get $root|18)
-           (i32.shl
-            (local.get $fl|19)
-            (i32.const 2)
-           )
-          )
-         )
-        )
-       )
-      )
-      (block $~lib/rt/tlsf/SETSL|inlined.1
-       (local.set $root|21
+       (call $~lib/rt/tlsf/GETSL
         (local.get $root)
-       )
-       (local.set $fl|22
         (local.get $fl)
        )
-       (local.set $slMap|23
-        (local.tee $slMap
-         (i32.and
-          (local.get $slMap)
-          (i32.xor
-           (i32.shl
-            (i32.const 1)
-            (local.get $sl)
-           )
-           (i32.const -1)
+      )
+      (call $~lib/rt/tlsf/SETSL
+       (local.get $root)
+       (local.get $fl)
+       (local.tee $slMap
+        (i32.and
+         (local.get $slMap)
+         (i32.xor
+          (i32.shl
+           (i32.const 1)
+           (local.get $sl)
           )
+          (i32.const -1)
          )
         )
-       )
-       (i32.store offset=4
-        (i32.add
-         (local.get $root|21)
-         (i32.shl
-          (local.get $fl|22)
-          (i32.const 2)
-         )
-        )
-        (local.get $slMap|23)
        )
       )
       (if
@@ -1098,34 +1102,29 @@
    )
   )
  )
+ (func $~lib/rt/tlsf/GETFREELEFT (param $block i32) (result i32)
+  (return
+   (i32.load
+    (i32.sub
+     (local.get $block)
+     (i32.const 4)
+    )
+   )
+  )
+ )
  (func $~lib/rt/tlsf/insertBlock (param $root i32) (param $block i32)
   (local $blockInfo i32)
-  (local $block|3 i32)
   (local $right i32)
   (local $rightInfo i32)
-  (local $block|6 i32)
-  (local $block|7 i32)
   (local $left i32)
   (local $leftInfo i32)
   (local $size i32)
   (local $fl i32)
   (local $sl i32)
-  (local $13 i32)
-  (local $14 i32)
+  (local $10 i32)
+  (local $11 i32)
   (local $boundedSize i32)
-  (local $root|16 i32)
-  (local $fl|17 i32)
-  (local $sl|18 i32)
   (local $head i32)
-  (local $root|20 i32)
-  (local $fl|21 i32)
-  (local $sl|22 i32)
-  (local $head|23 i32)
-  (local $root|24 i32)
-  (local $fl|25 i32)
-  (local $root|26 i32)
-  (local $fl|27 i32)
-  (local $slMap i32)
   (drop
    (i32.const 1)
   )
@@ -1169,27 +1168,8 @@
    )
   )
   (local.set $right
-   (block $~lib/rt/tlsf/GETRIGHT|inlined.0 (result i32)
-    (local.set $block|3
-     (local.get $block)
-    )
-    (br $~lib/rt/tlsf/GETRIGHT|inlined.0
-     (i32.add
-      (i32.add
-       (local.get $block|3)
-       (i32.const 4)
-      )
-      (i32.and
-       (call $~lib/rt/common/BLOCK#get:mmInfo
-        (local.get $block|3)
-       )
-       (i32.xor
-        (i32.const 3)
-        (i32.const -1)
-       )
-      )
-     )
-    )
+   (call $~lib/rt/tlsf/GETRIGHT
+    (local.get $block)
    )
   )
   (local.set $rightInfo
@@ -1226,27 +1206,8 @@
      )
     )
     (local.set $right
-     (block $~lib/rt/tlsf/GETRIGHT|inlined.1 (result i32)
-      (local.set $block|6
-       (local.get $block)
-      )
-      (br $~lib/rt/tlsf/GETRIGHT|inlined.1
-       (i32.add
-        (i32.add
-         (local.get $block|6)
-         (i32.const 4)
-        )
-        (i32.and
-         (call $~lib/rt/common/BLOCK#get:mmInfo
-          (local.get $block|6)
-         )
-         (i32.xor
-          (i32.const 3)
-          (i32.const -1)
-         )
-        )
-       )
-      )
+     (call $~lib/rt/tlsf/GETRIGHT
+      (local.get $block)
      )
     )
     (local.set $rightInfo
@@ -1263,18 +1224,8 @@
    )
    (then
     (local.set $left
-     (block $~lib/rt/tlsf/GETFREELEFT|inlined.0 (result i32)
-      (local.set $block|7
-       (local.get $block)
-      )
-      (br $~lib/rt/tlsf/GETFREELEFT|inlined.0
-       (i32.load
-        (i32.sub
-         (local.get $block|7)
-         (i32.const 4)
-        )
-       )
-      )
+     (call $~lib/rt/tlsf/GETFREELEFT
+      (local.get $block)
      )
     )
     (local.set $leftInfo
@@ -1417,15 +1368,15 @@
    (else
     (local.set $boundedSize
      (select
-      (local.tee $13
+      (local.tee $10
        (local.get $size)
       )
-      (local.tee $14
+      (local.tee $11
        (i32.const 1073741820)
       )
       (i32.lt_u
-       (local.get $13)
-       (local.get $14)
+       (local.get $10)
+       (local.get $11)
       )
      )
     )
@@ -1495,33 +1446,10 @@
    )
   )
   (local.set $head
-   (block $~lib/rt/tlsf/GETHEAD|inlined.1 (result i32)
-    (local.set $root|16
-     (local.get $root)
-    )
-    (local.set $fl|17
-     (local.get $fl)
-    )
-    (local.set $sl|18
-     (local.get $sl)
-    )
-    (br $~lib/rt/tlsf/GETHEAD|inlined.1
-     (i32.load offset=96
-      (i32.add
-       (local.get $root|16)
-       (i32.shl
-        (i32.add
-         (i32.shl
-          (local.get $fl|17)
-          (i32.const 4)
-         )
-         (local.get $sl|18)
-        )
-        (i32.const 2)
-       )
-      )
-     )
-    )
+   (call $~lib/rt/tlsf/GETHEAD
+    (local.get $root)
+    (local.get $fl)
+    (local.get $sl)
    )
   )
   (call $~lib/rt/tlsf/Block#set:prev
@@ -1541,35 +1469,11 @@
     )
    )
   )
-  (block $~lib/rt/tlsf/SETHEAD|inlined.2
-   (local.set $root|20
-    (local.get $root)
-   )
-   (local.set $fl|21
-    (local.get $fl)
-   )
-   (local.set $sl|22
-    (local.get $sl)
-   )
-   (local.set $head|23
-    (local.get $block)
-   )
-   (i32.store offset=96
-    (i32.add
-     (local.get $root|20)
-     (i32.shl
-      (i32.add
-       (i32.shl
-        (local.get $fl|21)
-        (i32.const 4)
-       )
-       (local.get $sl|22)
-      )
-      (i32.const 2)
-     )
-    )
-    (local.get $head|23)
-   )
+  (call $~lib/rt/tlsf/SETHEAD
+   (local.get $root)
+   (local.get $fl)
+   (local.get $sl)
+   (local.get $block)
   )
   (call $~lib/rt/tlsf/Root#set:flMap
    (local.get $root)
@@ -1583,62 +1487,28 @@
     )
    )
   )
-  (block $~lib/rt/tlsf/SETSL|inlined.2
-   (local.set $root|26
-    (local.get $root)
-   )
-   (local.set $fl|27
-    (local.get $fl)
-   )
-   (local.set $slMap
-    (i32.or
-     (block $~lib/rt/tlsf/GETSL|inlined.1 (result i32)
-      (local.set $root|24
-       (local.get $root)
-      )
-      (local.set $fl|25
-       (local.get $fl)
-      )
-      (br $~lib/rt/tlsf/GETSL|inlined.1
-       (i32.load offset=4
-        (i32.add
-         (local.get $root|24)
-         (i32.shl
-          (local.get $fl|25)
-          (i32.const 2)
-         )
-        )
-       )
-      )
-     )
-     (i32.shl
-      (i32.const 1)
-      (local.get $sl)
-     )
+  (call $~lib/rt/tlsf/SETSL
+   (local.get $root)
+   (local.get $fl)
+   (i32.or
+    (call $~lib/rt/tlsf/GETSL
+     (local.get $root)
+     (local.get $fl)
     )
-   )
-   (i32.store offset=4
-    (i32.add
-     (local.get $root|26)
-     (i32.shl
-      (local.get $fl|27)
-      (i32.const 2)
-     )
+    (i32.shl
+     (i32.const 1)
+     (local.get $sl)
     )
-    (local.get $slMap)
    )
   )
  )
  (func $~lib/rt/tlsf/addMemory (param $root i32) (param $start i32) (param $endU64 i64) (result i32)
   (local $end i32)
-  (local $root|4 i32)
   (local $tail i32)
   (local $tailInfo i32)
   (local $size i32)
   (local $leftSize i32)
   (local $left i32)
-  (local $root|10 i32)
-  (local $tail|11 i32)
   (local.set $end
    (i32.wrap_i64
     (local.get $endU64)
@@ -1694,15 +1564,8 @@
    )
   )
   (local.set $tail
-   (block $~lib/rt/tlsf/GETTAIL|inlined.0 (result i32)
-    (local.set $root|4
-     (local.get $root)
-    )
-    (br $~lib/rt/tlsf/GETTAIL|inlined.0
-     (i32.load offset=1568
-      (local.get $root|4)
-     )
-    )
+   (call $~lib/rt/tlsf/GETTAIL
+    (local.get $root)
    )
   )
   (local.set $tailInfo
@@ -1858,17 +1721,9 @@
     (i32.const 2)
    )
   )
-  (block $~lib/rt/tlsf/SETTAIL|inlined.1
-   (local.set $root|10
-    (local.get $root)
-   )
-   (local.set $tail|11
-    (local.get $tail)
-   )
-   (i32.store offset=1568
-    (local.get $root|10)
-    (local.get $tail|11)
-   )
+  (call $~lib/rt/tlsf/SETTAIL
+   (local.get $root)
+   (local.get $tail)
   )
   (call $~lib/rt/tlsf/insertBlock
    (local.get $root)
@@ -1883,17 +1738,8 @@
   (local $pagesBefore i32)
   (local $pagesNeeded i32)
   (local $root i32)
-  (local $root|4 i32)
-  (local $tail i32)
   (local $fl i32)
-  (local $root|7 i32)
-  (local $fl|8 i32)
-  (local $slMap i32)
   (local $sl i32)
-  (local $root|11 i32)
-  (local $fl|12 i32)
-  (local $sl|13 i32)
-  (local $head i32)
   (local $memStart i32)
   (drop
    (i32.const 0)
@@ -1963,17 +1809,9 @@
    (local.get $root)
    (i32.const 0)
   )
-  (block $~lib/rt/tlsf/SETTAIL|inlined.0
-   (local.set $root|4
-    (local.get $root)
-   )
-   (local.set $tail
-    (i32.const 0)
-   )
-   (i32.store offset=1568
-    (local.get $root|4)
-    (local.get $tail)
-   )
+  (call $~lib/rt/tlsf/SETTAIL
+   (local.get $root)
+   (i32.const 0)
   )
   (local.set $fl
    (i32.const 0)
@@ -1985,26 +1823,10 @@
      (i32.const 23)
     )
     (then
-     (block $~lib/rt/tlsf/SETSL|inlined.0
-      (local.set $root|7
-       (local.get $root)
-      )
-      (local.set $fl|8
-       (local.get $fl)
-      )
-      (local.set $slMap
-       (i32.const 0)
-      )
-      (i32.store offset=4
-       (i32.add
-        (local.get $root|7)
-        (i32.shl
-         (local.get $fl|8)
-         (i32.const 2)
-        )
-       )
-       (local.get $slMap)
-      )
+     (call $~lib/rt/tlsf/SETSL
+      (local.get $root)
+      (local.get $fl)
+      (i32.const 0)
      )
      (local.set $sl
       (i32.const 0)
@@ -2016,35 +1838,11 @@
         (i32.const 16)
        )
        (then
-        (block $~lib/rt/tlsf/SETHEAD|inlined.0
-         (local.set $root|11
-          (local.get $root)
-         )
-         (local.set $fl|12
-          (local.get $fl)
-         )
-         (local.set $sl|13
-          (local.get $sl)
-         )
-         (local.set $head
-          (i32.const 0)
-         )
-         (i32.store offset=96
-          (i32.add
-           (local.get $root|11)
-           (i32.shl
-            (i32.add
-             (i32.shl
-              (local.get $fl|12)
-              (i32.const 4)
-             )
-             (local.get $sl|13)
-            )
-            (i32.const 2)
-           )
-          )
-          (local.get $head)
-         )
+        (call $~lib/rt/tlsf/SETHEAD
+         (local.get $root)
+         (local.get $fl)
+         (local.get $sl)
+         (i32.const 0)
         )
         (local.set $sl
          (i32.add
@@ -2678,19 +2476,9 @@
   (local $fl i32)
   (local $sl i32)
   (local $requestSize i32)
-  (local $root|5 i32)
-  (local $fl|6 i32)
   (local $slMap i32)
   (local $head i32)
   (local $flMap i32)
-  (local $root|10 i32)
-  (local $fl|11 i32)
-  (local $root|12 i32)
-  (local $fl|13 i32)
-  (local $sl|14 i32)
-  (local $root|15 i32)
-  (local $fl|16 i32)
-  (local $sl|17 i32)
   (if
    (i32.lt_u
     (local.get $size)
@@ -2786,24 +2574,9 @@
   )
   (local.set $slMap
    (i32.and
-    (block $~lib/rt/tlsf/GETSL|inlined.2 (result i32)
-     (local.set $root|5
-      (local.get $root)
-     )
-     (local.set $fl|6
-      (local.get $fl)
-     )
-     (br $~lib/rt/tlsf/GETSL|inlined.2
-      (i32.load offset=4
-       (i32.add
-        (local.get $root|5)
-        (i32.shl
-         (local.get $fl|6)
-         (i32.const 2)
-        )
-       )
-      )
-     )
+    (call $~lib/rt/tlsf/GETSL
+     (local.get $root)
+     (local.get $fl)
     )
     (i32.shl
      (i32.xor
@@ -2855,24 +2628,9 @@
        )
       )
       (local.set $slMap
-       (block $~lib/rt/tlsf/GETSL|inlined.3 (result i32)
-        (local.set $root|10
-         (local.get $root)
-        )
-        (local.set $fl|11
-         (local.get $fl)
-        )
-        (br $~lib/rt/tlsf/GETSL|inlined.3
-         (i32.load offset=4
-          (i32.add
-           (local.get $root|10)
-           (i32.shl
-            (local.get $fl|11)
-            (i32.const 2)
-           )
-          )
-         )
-        )
+       (call $~lib/rt/tlsf/GETSL
+        (local.get $root)
+        (local.get $fl)
        )
       )
       (drop
@@ -2893,34 +2651,11 @@
        )
       )
       (local.set $head
-       (block $~lib/rt/tlsf/GETHEAD|inlined.2 (result i32)
-        (local.set $root|12
-         (local.get $root)
-        )
-        (local.set $fl|13
-         (local.get $fl)
-        )
-        (local.set $sl|14
-         (i32.ctz
-          (local.get $slMap)
-         )
-        )
-        (br $~lib/rt/tlsf/GETHEAD|inlined.2
-         (i32.load offset=96
-          (i32.add
-           (local.get $root|12)
-           (i32.shl
-            (i32.add
-             (i32.shl
-              (local.get $fl|13)
-              (i32.const 4)
-             )
-             (local.get $sl|14)
-            )
-            (i32.const 2)
-           )
-          )
-         )
+       (call $~lib/rt/tlsf/GETHEAD
+        (local.get $root)
+        (local.get $fl)
+        (i32.ctz
+         (local.get $slMap)
         )
        )
       )
@@ -2929,34 +2664,11 @@
    )
    (else
     (local.set $head
-     (block $~lib/rt/tlsf/GETHEAD|inlined.3 (result i32)
-      (local.set $root|15
-       (local.get $root)
-      )
-      (local.set $fl|16
-       (local.get $fl)
-      )
-      (local.set $sl|17
-       (i32.ctz
-        (local.get $slMap)
-       )
-      )
-      (br $~lib/rt/tlsf/GETHEAD|inlined.3
-       (i32.load offset=96
-        (i32.add
-         (local.get $root|15)
-         (i32.shl
-          (i32.add
-           (i32.shl
-            (local.get $fl|16)
-            (i32.const 4)
-           )
-           (local.get $sl|17)
-          )
-          (i32.const 2)
-         )
-        )
-       )
+     (call $~lib/rt/tlsf/GETHEAD
+      (local.get $root)
+      (local.get $fl)
+      (i32.ctz
+       (local.get $slMap)
       )
      )
     )
@@ -2968,10 +2680,9 @@
  )
  (func $~lib/rt/tlsf/growMemory (param $root i32) (param $size i32)
   (local $pagesBefore i32)
-  (local $root|3 i32)
   (local $pagesNeeded i32)
+  (local $4 i32)
   (local $5 i32)
-  (local $6 i32)
   (local $pagesWanted i32)
   (local $pagesAfter i32)
   (drop
@@ -3006,15 +2717,8 @@
        )
        (i32.const 4)
       )
-      (block $~lib/rt/tlsf/GETTAIL|inlined.1 (result i32)
-       (local.set $root|3
-        (local.get $root)
-       )
-       (br $~lib/rt/tlsf/GETTAIL|inlined.1
-        (i32.load offset=1568
-         (local.get $root|3)
-        )
-       )
+      (call $~lib/rt/tlsf/GETTAIL
+       (local.get $root)
       )
      )
     )
@@ -3037,15 +2741,15 @@
   )
   (local.set $pagesWanted
    (select
-    (local.tee $5
+    (local.tee $4
      (local.get $pagesBefore)
     )
-    (local.tee $6
+    (local.tee $5
      (local.get $pagesNeeded)
     )
     (i32.gt_s
+     (local.get $4)
      (local.get $5)
-     (local.get $6)
     )
    )
   )
@@ -3093,8 +2797,6 @@
   (local $blockInfo i32)
   (local $remaining i32)
   (local $spare i32)
-  (local $block|6 i32)
-  (local $block|7 i32)
   (local.set $blockInfo
    (call $~lib/rt/common/BLOCK#get:mmInfo
     (local.get $block)
@@ -3192,51 +2894,13 @@
      )
     )
     (call $~lib/rt/common/BLOCK#set:mmInfo
-     (block $~lib/rt/tlsf/GETRIGHT|inlined.3 (result i32)
-      (local.set $block|7
-       (local.get $block)
-      )
-      (br $~lib/rt/tlsf/GETRIGHT|inlined.3
-       (i32.add
-        (i32.add
-         (local.get $block|7)
-         (i32.const 4)
-        )
-        (i32.and
-         (call $~lib/rt/common/BLOCK#get:mmInfo
-          (local.get $block|7)
-         )
-         (i32.xor
-          (i32.const 3)
-          (i32.const -1)
-         )
-        )
-       )
-      )
+     (call $~lib/rt/tlsf/GETRIGHT
+      (local.get $block)
      )
      (i32.and
       (call $~lib/rt/common/BLOCK#get:mmInfo
-       (block $~lib/rt/tlsf/GETRIGHT|inlined.2 (result i32)
-        (local.set $block|6
-         (local.get $block)
-        )
-        (br $~lib/rt/tlsf/GETRIGHT|inlined.2
-         (i32.add
-          (i32.add
-           (local.get $block|6)
-           (i32.const 4)
-          )
-          (i32.and
-           (call $~lib/rt/common/BLOCK#get:mmInfo
-            (local.get $block|6)
-           )
-           (i32.xor
-            (i32.const 3)
-            (i32.const -1)
-           )
-          )
-         )
-        )
+       (call $~lib/rt/tlsf/GETRIGHT
+        (local.get $block)
        )
       )
       (i32.xor
@@ -6535,6 +6199,20 @@
    (local.get $out)
   )
  )
+ (func $~lib/staticarray/StaticArray<i32>#map<i32> (param $this i32) (param $fn i32) (result i32)
+  (return
+   (call $~lib/staticarray/StaticArray<i32>#mapImpl<i32>
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (call $~lib/function/Function<%28i32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>i32>#get:index
+     (call $~lib/rt/__tmptostack
+      (local.get $fn)
+     )
+    )
+   )
+  )
+ )
  (func $start:std/staticarray~anonymous|1 (param $x i32) (param $$1 i32) (param $$2 i32)
   (local $3 i32)
   (local $4 i32)
@@ -6549,6 +6227,62 @@
     (i32.gt_s
      (local.get $3)
      (local.get $4)
+    )
+   )
+  )
+ )
+ (func $~lib/staticarray/StaticArray<i32>#forEach (param $this i32) (param $fn i32)
+  (local $i i32)
+  (local $len i32)
+  (block
+   (local.set $i
+    (i32.const 0)
+   )
+   (local.set $len
+    (call $~lib/staticarray/StaticArray<i32>#get:length
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (loop $for-loop|0
+   (if
+    (i32.lt_s
+     (local.get $i)
+     (local.get $len)
+    )
+    (then
+     (call_indirect (type $4)
+      (i32.load
+       (i32.add
+        (local.get $this)
+        (i32.shl
+         (local.get $i)
+         (i32.const 2)
+        )
+       )
+      )
+      (local.get $i)
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+      (i32.load
+       (block (result i32)
+        (global.set $~argumentsLength
+         (i32.const 3)
+        )
+        (local.get $fn)
+       )
+      )
+     )
+     (local.set $i
+      (i32.add
+       (local.get $i)
+       (i32.const 1)
+      )
+     )
+     (br $for-loop|0)
     )
    )
   )
@@ -6924,6 +6658,20 @@
    (local.get $result)
   )
  )
+ (func $~lib/staticarray/StaticArray<i32>#filter (param $this i32) (param $fn i32) (result i32)
+  (return
+   (call $~lib/staticarray/StaticArray<i32>#filterImpl
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (call $~lib/function/Function<%28i32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>bool>#get:index
+     (call $~lib/rt/__tmptostack
+      (local.get $fn)
+     )
+    )
+   )
+  )
+ )
  (func $start:std/staticarray~anonymous|3 (param $x i32) (param $y i32) (param $$2 i32) (param $$3 i32) (result i32)
   (i32.add
    (local.get $x)
@@ -6964,7 +6712,7 @@
     )
     (then
      (local.set $acc
-      (call_indirect (type $4)
+      (call_indirect (type $5)
        (local.get $acc)
        (i32.load
         (i32.add
@@ -6994,6 +6742,21 @@
   )
   (return
    (local.get $acc)
+  )
+ )
+ (func $~lib/staticarray/StaticArray<i32>#reduce<i32> (param $this i32) (param $fn i32) (param $initialValue i32) (result i32)
+  (return
+   (call $~lib/staticarray/StaticArray<i32>#reduceImpl<i32>
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>i32>#get:index
+     (call $~lib/rt/__tmptostack
+      (local.get $fn)
+     )
+    )
+    (local.get $initialValue)
+   )
   )
  )
  (func $start:std/staticarray~anonymous|4 (param $x i32) (param $y i32) (param $$2 i32) (param $$3 i32) (result i32)
@@ -7026,7 +6789,7 @@
     )
     (then
      (local.set $acc
-      (call_indirect (type $4)
+      (call_indirect (type $5)
        (local.get $acc)
        (i32.load
         (i32.add
@@ -7056,6 +6819,21 @@
   )
   (return
    (local.get $acc)
+  )
+ )
+ (func $~lib/staticarray/StaticArray<i32>#reduceRight<i32> (param $this i32) (param $fn i32) (param $initialValue i32) (result i32)
+  (return
+   (call $~lib/staticarray/StaticArray<i32>#reduceRightImpl<i32>
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>i32>#get:index
+     (call $~lib/rt/__tmptostack
+      (local.get $fn)
+     )
+    )
+    (local.get $initialValue)
+   )
   )
  )
  (func $start:std/staticarray~anonymous|5 (param $x i32) (param $$1 i32) (param $$2 i32) (result i32)
@@ -7121,6 +6899,20 @@
   )
   (return
    (i32.const 0)
+  )
+ )
+ (func $~lib/staticarray/StaticArray<i32>#some (param $this i32) (param $fn i32) (result i32)
+  (return
+   (call $~lib/staticarray/StaticArray<i32>#someImpl
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (call $~lib/function/Function<%28i32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>bool>#get:index
+     (call $~lib/rt/__tmptostack
+      (local.get $fn)
+     )
+    )
+   )
   )
  )
  (func $start:std/staticarray~anonymous|6 (param $x i32) (param $$1 i32) (param $$2 i32) (result i32)
@@ -7196,6 +6988,20 @@
    (i32.const 1)
   )
  )
+ (func $~lib/staticarray/StaticArray<i32>#every (param $this i32) (param $fn i32) (result i32)
+  (return
+   (call $~lib/staticarray/StaticArray<i32>#everyImpl
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (call $~lib/function/Function<%28i32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>bool>#get:index
+     (call $~lib/rt/__tmptostack
+      (local.get $fn)
+     )
+    )
+   )
+  )
+ )
  (func $start:std/staticarray~anonymous|8 (param $x i32) (param $$1 i32) (param $$2 i32) (result i32)
   (i32.gt_s
    (local.get $x)
@@ -7267,6 +7073,20 @@
    (i32.const -1)
   )
  )
+ (func $~lib/staticarray/StaticArray<i32>#findIndex (param $this i32) (param $fn i32) (result i32)
+  (return
+   (call $~lib/staticarray/StaticArray<i32>#findIndexImpl
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (call $~lib/function/Function<%28i32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>bool>#get:index
+     (call $~lib/rt/__tmptostack
+      (local.get $fn)
+     )
+    )
+   )
+  )
+ )
  (func $start:std/staticarray~anonymous|10 (param $x i32) (param $$1 i32) (param $$2 i32) (result i32)
   (i32.eq
    (local.get $x)
@@ -7277,6 +7097,69 @@
   (i32.eq
    (local.get $x)
    (i32.const 2)
+  )
+ )
+ (func $~lib/staticarray/StaticArray<i32>#findLastIndex (param $this i32) (param $fn i32) (result i32)
+  (local $i i32)
+  (local.set $i
+   (i32.sub
+    (call $~lib/staticarray/StaticArray<i32>#get:length
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.const 1)
+   )
+  )
+  (loop $for-loop|0
+   (if
+    (i32.ge_s
+     (local.get $i)
+     (i32.const 0)
+    )
+    (then
+     (if
+      (call_indirect (type $3)
+       (i32.load
+        (i32.add
+         (local.get $this)
+         (i32.shl
+          (local.get $i)
+          (i32.const 2)
+         )
+        )
+       )
+       (local.get $i)
+       (call $~lib/rt/__tmptostack
+        (local.get $this)
+       )
+       (i32.load
+        (block (result i32)
+         (global.set $~argumentsLength
+          (i32.const 3)
+         )
+         (local.get $fn)
+        )
+       )
+      )
+      (then
+       (return
+        (local.get $i)
+       )
+      )
+     )
+     (local.set $i
+      (i32.sub
+       (local.get $i)
+       (i32.const 1)
+      )
+     )
+     (br $for-loop|0)
+    )
+   )
+  )
+  (return
+   (i32.const -1)
   )
  )
  (func $start:std/staticarray~anonymous|12 (param $x i32) (param $$1 i32) (param $$2 i32) (result i32)
@@ -7554,6 +7437,16 @@
        (br $for-loop|0)
       )
      )
+    )
+   )
+  )
+ )
+ (func $~lib/util/sort/log2u (param $n i32) (result i32)
+  (return
+   (i32.sub
+    (i32.const 31)
+    (i32.clz
+     (local.get $n)
     )
    )
   )
@@ -8089,7 +7982,6 @@
   (local $a|7 i32)
   (local $b|8 i32)
   (local $c|9 i32)
-  (local $n i32)
   (local $lgPlus2 i32)
   (local $lgPlus2Size i32)
   (local $leftRunStartBuf i32)
@@ -8099,20 +7991,20 @@
   (local $hi i32)
   (local $endA i32)
   (local $lenA i32)
+  (local $19 i32)
   (local $20 i32)
-  (local $21 i32)
   (local $top i32)
   (local $startA i32)
   (local $startB i32)
   (local $endB i32)
   (local $lenB i32)
+  (local $26 i32)
   (local $27 i32)
-  (local $28 i32)
   (local $k i32)
-  (local $i|30 i32)
+  (local $i|29 i32)
   (local $start i32)
-  (local $i|32 i32)
-  (local $start|33 i32)
+  (local $i|31 i32)
+  (local $start|32 i32)
   (if
    (i32.le_s
     (local.get $len)
@@ -8301,18 +8193,8 @@
   )
   (local.set $lgPlus2
    (i32.add
-    (block $~lib/util/sort/log2u|inlined.0 (result i32)
-     (local.set $n
-      (local.get $len)
-     )
-     (br $~lib/util/sort/log2u|inlined.0
-      (i32.sub
-       (i32.const 31)
-       (i32.clz
-        (local.get $n)
-       )
-      )
-     )
+    (call $~lib/util/sort/log2u
+     (local.get $len)
     )
     (i32.const 2)
    )
@@ -8405,18 +8287,18 @@
    (then
     (local.set $endA
      (select
-      (local.tee $20
+      (local.tee $19
        (local.get $hi)
       )
-      (local.tee $21
+      (local.tee $20
        (i32.sub
         (i32.const 32)
         (i32.const 1)
        )
       )
       (i32.lt_s
+       (local.get $19)
        (local.get $20)
-       (local.get $21)
       )
      )
     )
@@ -8478,10 +8360,10 @@
        (then
         (local.set $endB
          (select
-          (local.tee $27
+          (local.tee $26
            (local.get $hi)
           )
-          (local.tee $28
+          (local.tee $27
            (i32.sub
             (i32.add
              (local.get $startB)
@@ -8491,8 +8373,8 @@
            )
           )
           (i32.lt_s
+           (local.get $26)
            (local.get $27)
-           (local.get $28)
           )
          )
         )
@@ -8516,13 +8398,13 @@
         (local.get $endB)
        )
       )
-      (local.set $i|30
+      (local.set $i|29
        (local.get $top)
       )
       (loop $for-loop|3
        (if
         (i32.gt_u
-         (local.get $i|30)
+         (local.get $i|29)
          (local.get $k)
         )
         (then
@@ -8531,7 +8413,7 @@
            (i32.add
             (local.get $leftRunStartBuf)
             (i32.shl
-             (local.get $i|30)
+             (local.get $i|29)
              (i32.const 2)
             )
            )
@@ -8551,7 +8433,7 @@
               (i32.add
                (local.get $leftRunEndBuf)
                (i32.shl
-                (local.get $i|30)
+                (local.get $i|29)
                 (i32.const 2)
                )
               )
@@ -8571,7 +8453,7 @@
             (i32.add
              (local.get $leftRunStartBuf)
              (i32.shl
-              (local.get $i|30)
+              (local.get $i|29)
               (i32.const 2)
              )
             )
@@ -8579,9 +8461,9 @@
            )
           )
          )
-         (local.set $i|30
+         (local.set $i|29
           (i32.sub
-           (local.get $i|30)
+           (local.get $i|29)
            (i32.const 1)
           )
          )
@@ -8623,22 +8505,22 @@
     )
    )
   )
-  (local.set $i|32
+  (local.set $i|31
    (local.get $top)
   )
   (loop $for-loop|4
    (if
     (i32.ne
-     (local.get $i|32)
+     (local.get $i|31)
      (i32.const 0)
     )
     (then
-     (local.set $start|33
+     (local.set $start|32
       (i32.load
        (i32.add
         (local.get $leftRunStartBuf)
         (i32.shl
-         (local.get $i|32)
+         (local.get $i|31)
          (i32.const 2)
         )
        )
@@ -8646,19 +8528,19 @@
      )
      (if
       (i32.ne
-       (local.get $start|33)
+       (local.get $start|32)
        (i32.const -1)
       )
       (then
        (call $~lib/util/sort/mergeRuns<i32>
         (local.get $ptr)
-        (local.get $start|33)
+        (local.get $start|32)
         (i32.add
          (i32.load
           (i32.add
            (local.get $leftRunEndBuf)
            (i32.shl
-            (local.get $i|32)
+            (local.get $i|31)
             (i32.const 2)
            )
           )
@@ -8673,9 +8555,9 @@
        )
       )
      )
-     (local.set $i|32
+     (local.set $i|31
       (i32.sub
-       (local.get $i|32)
+       (local.get $i|31)
        (i32.const 1)
       )
      )
@@ -8712,6 +8594,22 @@
    (local.get $b)
   )
  )
+ (func $~lib/util/sort/COMPARATOR<i32> (result i32)
+  (drop
+   (i32.const 1)
+  )
+  (block
+   (drop
+    (i32.le_u
+     (i32.const 4)
+     (i32.const 4)
+    )
+   )
+   (return
+    (i32.const 2848)
+   )
+  )
+ )
  (func $~lib/staticarray/StaticArray<i32>#sort@varargs (param $this i32) (param $comparator i32) (result i32)
   (block $1of1
    (block $0of1
@@ -8724,22 +8622,7 @@
    )
    (local.set $comparator
     (call $~lib/rt/__localtostack
-     (block $~lib/util/sort/COMPARATOR<i32>|inlined.0 (result i32)
-      (drop
-       (i32.const 1)
-      )
-      (block
-       (drop
-        (i32.le_u
-         (i32.const 4)
-         (i32.const 4)
-        )
-       )
-       (br $~lib/util/sort/COMPARATOR<i32>|inlined.0
-        (i32.const 2848)
-       )
-      )
-     )
+     (call $~lib/util/sort/COMPARATOR<i32>)
     )
    )
   )
@@ -8871,44 +8754,12 @@
   (local $numbers|43 i32)
   (local $44 i32)
   (local $numbers|45 i32)
-  (local $this i32)
-  (local $fn i32)
   (local $incNums i32)
-  (local $this|49 i32)
-  (local $fn|50 i32)
-  (local $i|51 i32)
-  (local $len i32)
-  (local $this|53 i32)
-  (local $fn|54 i32)
   (local $filtered i32)
-  (local $this|56 i32)
-  (local $fn|57 i32)
-  (local $initialValue i32)
   (local $sum1 i32)
-  (local $this|60 i32)
-  (local $fn|61 i32)
-  (local $initialValue|62 i32)
   (local $sum2 i32)
-  (local $this|64 i32)
-  (local $fn|65 i32)
-  (local $this|66 i32)
-  (local $fn|67 i32)
-  (local $this|68 i32)
-  (local $fn|69 i32)
-  (local $this|70 i32)
-  (local $fn|71 i32)
-  (local $this|72 i32)
-  (local $fn|73 i32)
-  (local $this|74 i32)
-  (local $fn|75 i32)
-  (local $this|76 i32)
-  (local $fn|77 i32)
-  (local $i|78 i32)
-  (local $this|79 i32)
-  (local $fn|80 i32)
-  (local $i|81 i32)
-  (local $82 i32)
-  (local $array|83 i32)
+  (local $50 i32)
+  (local $array|51 i32)
   (if
    (i32.eqz
     (i32.eq
@@ -11064,28 +10915,12 @@
    )
    (local.set $incNums
     (call $~lib/rt/__localtostack
-     (block $~lib/staticarray/StaticArray<i32>#map<i32>|inlined.0 (result i32)
-      (local.set $this
-       (call $~lib/rt/__localtostack
-        (local.get $numbers|45)
-       )
+     (call $~lib/staticarray/StaticArray<i32>#map<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $numbers|45)
       )
-      (local.set $fn
-       (call $~lib/rt/__localtostack
-        (i32.const 2384)
-       )
-      )
-      (br $~lib/staticarray/StaticArray<i32>#map<i32>|inlined.0
-       (call $~lib/staticarray/StaticArray<i32>#mapImpl<i32>
-        (call $~lib/rt/__tmptostack
-         (local.get $this)
-        )
-        (call $~lib/function/Function<%28i32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>i32>#get:index
-         (call $~lib/rt/__tmptostack
-          (local.get $fn)
-         )
-        )
-       )
+      (call $~lib/rt/__tmptostack
+       (i32.const 2384)
       )
      )
     )
@@ -11156,68 +10991,12 @@
      (unreachable)
     )
    )
-   (block $~lib/staticarray/StaticArray<i32>#forEach|inlined.0
-    (local.set $this|49
-     (call $~lib/rt/__localtostack
-      (local.get $numbers|45)
-     )
+   (call $~lib/staticarray/StaticArray<i32>#forEach
+    (call $~lib/rt/__tmptostack
+     (local.get $numbers|45)
     )
-    (local.set $fn|50
-     (call $~lib/rt/__localtostack
-      (i32.const 2416)
-     )
-    )
-    (block
-     (local.set $i|51
-      (i32.const 0)
-     )
-     (local.set $len
-      (call $~lib/staticarray/StaticArray<i32>#get:length
-       (call $~lib/rt/__tmptostack
-        (local.get $this|49)
-       )
-      )
-     )
-    )
-    (loop $for-loop|3
-     (if
-      (i32.lt_s
-       (local.get $i|51)
-       (local.get $len)
-      )
-      (then
-       (call_indirect (type $5)
-        (i32.load
-         (i32.add
-          (local.get $this|49)
-          (i32.shl
-           (local.get $i|51)
-           (i32.const 2)
-          )
-         )
-        )
-        (local.get $i|51)
-        (call $~lib/rt/__tmptostack
-         (local.get $this|49)
-        )
-        (i32.load
-         (block (result i32)
-          (global.set $~argumentsLength
-           (i32.const 3)
-          )
-          (local.get $fn|50)
-         )
-        )
-       )
-       (local.set $i|51
-        (i32.add
-         (local.get $i|51)
-         (i32.const 1)
-        )
-       )
-       (br $for-loop|3)
-      )
-     )
+    (call $~lib/rt/__tmptostack
+     (i32.const 2416)
     )
    )
    (if
@@ -11239,28 +11018,12 @@
    )
    (local.set $filtered
     (call $~lib/rt/__localtostack
-     (block $~lib/staticarray/StaticArray<i32>#filter|inlined.0 (result i32)
-      (local.set $this|53
-       (call $~lib/rt/__localtostack
-        (local.get $numbers|45)
-       )
+     (call $~lib/staticarray/StaticArray<i32>#filter
+      (call $~lib/rt/__tmptostack
+       (local.get $numbers|45)
       )
-      (local.set $fn|54
-       (call $~lib/rt/__localtostack
-        (i32.const 2448)
-       )
-      )
-      (br $~lib/staticarray/StaticArray<i32>#filter|inlined.0
-       (call $~lib/staticarray/StaticArray<i32>#filterImpl
-        (call $~lib/rt/__tmptostack
-         (local.get $this|53)
-        )
-        (call $~lib/function/Function<%28i32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>bool>#get:index
-         (call $~lib/rt/__tmptostack
-          (local.get $fn|54)
-         )
-        )
-       )
+      (call $~lib/rt/__tmptostack
+       (i32.const 2448)
       )
      )
     )
@@ -11331,33 +11094,14 @@
     )
    )
    (local.set $sum1
-    (block $~lib/staticarray/StaticArray<i32>#reduce<i32>|inlined.0 (result i32)
-     (local.set $this|56
-      (call $~lib/rt/__localtostack
-       (local.get $numbers|45)
-      )
+    (call $~lib/staticarray/StaticArray<i32>#reduce<i32>
+     (call $~lib/rt/__tmptostack
+      (local.get $numbers|45)
      )
-     (local.set $fn|57
-      (call $~lib/rt/__localtostack
-       (i32.const 2480)
-      )
+     (call $~lib/rt/__tmptostack
+      (i32.const 2480)
      )
-     (local.set $initialValue
-      (i32.const 0)
-     )
-     (br $~lib/staticarray/StaticArray<i32>#reduce<i32>|inlined.0
-      (call $~lib/staticarray/StaticArray<i32>#reduceImpl<i32>
-       (call $~lib/rt/__tmptostack
-        (local.get $this|56)
-       )
-       (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>i32>#get:index
-        (call $~lib/rt/__tmptostack
-         (local.get $fn|57)
-        )
-       )
-       (local.get $initialValue)
-      )
-     )
+     (i32.const 0)
     )
    )
    (if
@@ -11378,33 +11122,14 @@
     )
    )
    (local.set $sum2
-    (block $~lib/staticarray/StaticArray<i32>#reduceRight<i32>|inlined.0 (result i32)
-     (local.set $this|60
-      (call $~lib/rt/__localtostack
-       (local.get $numbers|45)
-      )
+    (call $~lib/staticarray/StaticArray<i32>#reduceRight<i32>
+     (call $~lib/rt/__tmptostack
+      (local.get $numbers|45)
      )
-     (local.set $fn|61
-      (call $~lib/rt/__localtostack
-       (i32.const 2512)
-      )
+     (call $~lib/rt/__tmptostack
+      (i32.const 2512)
      )
-     (local.set $initialValue|62
-      (i32.const 0)
-     )
-     (br $~lib/staticarray/StaticArray<i32>#reduceRight<i32>|inlined.0
-      (call $~lib/staticarray/StaticArray<i32>#reduceRightImpl<i32>
-       (call $~lib/rt/__tmptostack
-        (local.get $this|60)
-       )
-       (call $~lib/function/Function<%28i32%2Ci32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>i32>#get:index
-        (call $~lib/rt/__tmptostack
-         (local.get $fn|61)
-        )
-       )
-       (local.get $initialValue|62)
-      )
-     )
+     (i32.const 0)
     )
    )
    (if
@@ -11426,32 +11151,13 @@
    )
    (if
     (i32.eqz
-     (i32.ne
-      (block $~lib/staticarray/StaticArray<i32>#some|inlined.0 (result i32)
-       (local.set $this|64
-        (call $~lib/rt/__localtostack
-         (local.get $numbers|45)
-        )
-       )
-       (local.set $fn|65
-        (call $~lib/rt/__localtostack
-         (i32.const 2544)
-        )
-       )
-       (br $~lib/staticarray/StaticArray<i32>#some|inlined.0
-        (call $~lib/staticarray/StaticArray<i32>#someImpl
-         (call $~lib/rt/__tmptostack
-          (local.get $this|64)
-         )
-         (call $~lib/function/Function<%28i32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>bool>#get:index
-          (call $~lib/rt/__tmptostack
-           (local.get $fn|65)
-          )
-         )
-        )
-       )
+     (call $~lib/staticarray/StaticArray<i32>#some
+      (call $~lib/rt/__tmptostack
+       (local.get $numbers|45)
       )
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (i32.const 2544)
+      )
      )
     )
     (then
@@ -11467,28 +11173,12 @@
    (if
     (i32.eqz
      (i32.eqz
-      (block $~lib/staticarray/StaticArray<i32>#some|inlined.1 (result i32)
-       (local.set $this|66
-        (call $~lib/rt/__localtostack
-         (local.get $numbers|45)
-        )
+      (call $~lib/staticarray/StaticArray<i32>#some
+       (call $~lib/rt/__tmptostack
+        (local.get $numbers|45)
        )
-       (local.set $fn|67
-        (call $~lib/rt/__localtostack
-         (i32.const 2576)
-        )
-       )
-       (br $~lib/staticarray/StaticArray<i32>#some|inlined.1
-        (call $~lib/staticarray/StaticArray<i32>#someImpl
-         (call $~lib/rt/__tmptostack
-          (local.get $this|66)
-         )
-         (call $~lib/function/Function<%28i32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>bool>#get:index
-          (call $~lib/rt/__tmptostack
-           (local.get $fn|67)
-          )
-         )
-        )
+       (call $~lib/rt/__tmptostack
+        (i32.const 2576)
        )
       )
      )
@@ -11505,32 +11195,13 @@
    )
    (if
     (i32.eqz
-     (i32.ne
-      (block $~lib/staticarray/StaticArray<i32>#every|inlined.0 (result i32)
-       (local.set $this|68
-        (call $~lib/rt/__localtostack
-         (local.get $numbers|45)
-        )
-       )
-       (local.set $fn|69
-        (call $~lib/rt/__localtostack
-         (i32.const 2608)
-        )
-       )
-       (br $~lib/staticarray/StaticArray<i32>#every|inlined.0
-        (call $~lib/staticarray/StaticArray<i32>#everyImpl
-         (call $~lib/rt/__tmptostack
-          (local.get $this|68)
-         )
-         (call $~lib/function/Function<%28i32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>bool>#get:index
-          (call $~lib/rt/__tmptostack
-           (local.get $fn|69)
-          )
-         )
-        )
-       )
+     (call $~lib/staticarray/StaticArray<i32>#every
+      (call $~lib/rt/__tmptostack
+       (local.get $numbers|45)
       )
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (i32.const 2608)
+      )
      )
     )
     (then
@@ -11546,28 +11217,12 @@
    (if
     (i32.eqz
      (i32.eqz
-      (block $~lib/staticarray/StaticArray<i32>#every|inlined.1 (result i32)
-       (local.set $this|70
-        (call $~lib/rt/__localtostack
-         (local.get $numbers|45)
-        )
+      (call $~lib/staticarray/StaticArray<i32>#every
+       (call $~lib/rt/__tmptostack
+        (local.get $numbers|45)
        )
-       (local.set $fn|71
-        (call $~lib/rt/__localtostack
-         (i32.const 2640)
-        )
-       )
-       (br $~lib/staticarray/StaticArray<i32>#every|inlined.1
-        (call $~lib/staticarray/StaticArray<i32>#everyImpl
-         (call $~lib/rt/__tmptostack
-          (local.get $this|70)
-         )
-         (call $~lib/function/Function<%28i32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>bool>#get:index
-          (call $~lib/rt/__tmptostack
-           (local.get $fn|71)
-          )
-         )
-        )
+       (call $~lib/rt/__tmptostack
+        (i32.const 2640)
        )
       )
      )
@@ -11585,28 +11240,12 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/staticarray/StaticArray<i32>#findIndex|inlined.0 (result i32)
-       (local.set $this|72
-        (call $~lib/rt/__localtostack
-         (local.get $numbers|45)
-        )
+      (call $~lib/staticarray/StaticArray<i32>#findIndex
+       (call $~lib/rt/__tmptostack
+        (local.get $numbers|45)
        )
-       (local.set $fn|73
-        (call $~lib/rt/__localtostack
-         (i32.const 2672)
-        )
-       )
-       (br $~lib/staticarray/StaticArray<i32>#findIndex|inlined.0
-        (call $~lib/staticarray/StaticArray<i32>#findIndexImpl
-         (call $~lib/rt/__tmptostack
-          (local.get $this|72)
-         )
-         (call $~lib/function/Function<%28i32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>bool>#get:index
-          (call $~lib/rt/__tmptostack
-           (local.get $fn|73)
-          )
-         )
-        )
+       (call $~lib/rt/__tmptostack
+        (i32.const 2672)
        )
       )
       (i32.const 1)
@@ -11625,28 +11264,12 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/staticarray/StaticArray<i32>#findIndex|inlined.1 (result i32)
-       (local.set $this|74
-        (call $~lib/rt/__localtostack
-         (local.get $numbers|45)
-        )
+      (call $~lib/staticarray/StaticArray<i32>#findIndex
+       (call $~lib/rt/__tmptostack
+        (local.get $numbers|45)
        )
-       (local.set $fn|75
-        (call $~lib/rt/__localtostack
-         (i32.const 2704)
-        )
-       )
-       (br $~lib/staticarray/StaticArray<i32>#findIndex|inlined.1
-        (call $~lib/staticarray/StaticArray<i32>#findIndexImpl
-         (call $~lib/rt/__tmptostack
-          (local.get $this|74)
-         )
-         (call $~lib/function/Function<%28i32%2Ci32%2C~lib/staticarray/StaticArray<i32>%29=>bool>#get:index
-          (call $~lib/rt/__tmptostack
-           (local.get $fn|75)
-          )
-         )
-        )
+       (call $~lib/rt/__tmptostack
+        (i32.const 2704)
        )
       )
       (i32.const -1)
@@ -11665,76 +11288,12 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/staticarray/StaticArray<i32>#findLastIndex|inlined.0 (result i32)
-       (local.set $this|76
-        (call $~lib/rt/__localtostack
-         (local.get $numbers|45)
-        )
+      (call $~lib/staticarray/StaticArray<i32>#findLastIndex
+       (call $~lib/rt/__tmptostack
+        (local.get $numbers|45)
        )
-       (local.set $fn|77
-        (call $~lib/rt/__localtostack
-         (i32.const 2736)
-        )
-       )
-       (local.set $i|78
-        (i32.sub
-         (call $~lib/staticarray/StaticArray<i32>#get:length
-          (call $~lib/rt/__tmptostack
-           (local.get $this|76)
-          )
-         )
-         (i32.const 1)
-        )
-       )
-       (loop $for-loop|4
-        (if
-         (i32.ge_s
-          (local.get $i|78)
-          (i32.const 0)
-         )
-         (then
-          (if
-           (call_indirect (type $3)
-            (i32.load
-             (i32.add
-              (local.get $this|76)
-              (i32.shl
-               (local.get $i|78)
-               (i32.const 2)
-              )
-             )
-            )
-            (local.get $i|78)
-            (call $~lib/rt/__tmptostack
-             (local.get $this|76)
-            )
-            (i32.load
-             (block (result i32)
-              (global.set $~argumentsLength
-               (i32.const 3)
-              )
-              (local.get $fn|77)
-             )
-            )
-           )
-           (then
-            (br $~lib/staticarray/StaticArray<i32>#findLastIndex|inlined.0
-             (local.get $i|78)
-            )
-           )
-          )
-          (local.set $i|78
-           (i32.sub
-            (local.get $i|78)
-            (i32.const 1)
-           )
-          )
-          (br $for-loop|4)
-         )
-        )
-       )
-       (br $~lib/staticarray/StaticArray<i32>#findLastIndex|inlined.0
-        (i32.const -1)
+       (call $~lib/rt/__tmptostack
+        (i32.const 2736)
        )
       )
       (i32.const 1)
@@ -11753,76 +11312,12 @@
    (if
     (i32.eqz
      (i32.eq
-      (block $~lib/staticarray/StaticArray<i32>#findLastIndex|inlined.1 (result i32)
-       (local.set $this|79
-        (call $~lib/rt/__localtostack
-         (local.get $numbers|45)
-        )
+      (call $~lib/staticarray/StaticArray<i32>#findLastIndex
+       (call $~lib/rt/__tmptostack
+        (local.get $numbers|45)
        )
-       (local.set $fn|80
-        (call $~lib/rt/__localtostack
-         (i32.const 2768)
-        )
-       )
-       (local.set $i|81
-        (i32.sub
-         (call $~lib/staticarray/StaticArray<i32>#get:length
-          (call $~lib/rt/__tmptostack
-           (local.get $this|79)
-          )
-         )
-         (i32.const 1)
-        )
-       )
-       (loop $for-loop|5
-        (if
-         (i32.ge_s
-          (local.get $i|81)
-          (i32.const 0)
-         )
-         (then
-          (if
-           (call_indirect (type $3)
-            (i32.load
-             (i32.add
-              (local.get $this|79)
-              (i32.shl
-               (local.get $i|81)
-               (i32.const 2)
-              )
-             )
-            )
-            (local.get $i|81)
-            (call $~lib/rt/__tmptostack
-             (local.get $this|79)
-            )
-            (i32.load
-             (block (result i32)
-              (global.set $~argumentsLength
-               (i32.const 3)
-              )
-              (local.get $fn|80)
-             )
-            )
-           )
-           (then
-            (br $~lib/staticarray/StaticArray<i32>#findLastIndex|inlined.1
-             (local.get $i|81)
-            )
-           )
-          )
-          (local.set $i|81
-           (i32.sub
-            (local.get $i|81)
-            (i32.const 1)
-           )
-          )
-          (br $for-loop|5)
-         )
-        )
-       )
-       (br $~lib/staticarray/StaticArray<i32>#findLastIndex|inlined.1
-        (i32.const -1)
+       (call $~lib/rt/__tmptostack
+        (i32.const 2768)
        )
       )
       (i32.const -1)
@@ -11840,7 +11335,7 @@
    )
   )
   (block
-   (local.set $array|83
+   (local.set $array|51
     (call $~lib/rt/__localtostack
      (call $~lib/rt/__newBuffer
       (i32.const 16)
@@ -11852,7 +11347,7 @@
    (drop
     (call $~lib/staticarray/StaticArray<i32>#sort@varargs
      (call $~lib/rt/__tmptostack
-      (local.get $array|83)
+      (local.get $array|51)
      )
      (block (result i32)
       (global.set $~argumentsLength
@@ -11867,7 +11362,7 @@
      (i32.eq
       (call $~lib/staticarray/StaticArray<i32>#__get
        (call $~lib/rt/__tmptostack
-        (local.get $array|83)
+        (local.get $array|51)
        )
        (i32.const 0)
       )
@@ -11889,7 +11384,7 @@
      (i32.eq
       (call $~lib/staticarray/StaticArray<i32>#__get
        (call $~lib/rt/__tmptostack
-        (local.get $array|83)
+        (local.get $array|51)
        )
        (i32.const 1)
       )
@@ -11911,7 +11406,7 @@
      (i32.eq
       (call $~lib/staticarray/StaticArray<i32>#__get
        (call $~lib/rt/__tmptostack
-        (local.get $array|83)
+        (local.get $array|51)
        )
        (i32.const 2)
       )
@@ -11933,7 +11428,7 @@
      (i32.eq
       (call $~lib/staticarray/StaticArray<i32>#__get
        (call $~lib/rt/__tmptostack
-        (local.get $array|83)
+        (local.get $array|51)
        )
        (i32.const 3)
       )
