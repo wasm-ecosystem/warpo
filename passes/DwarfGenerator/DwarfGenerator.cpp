@@ -547,7 +547,7 @@ void DwarfGenerator::addSubProgramWithParameters(
         }
       }
 
-      void onExitScope(std::pair<wasm::BinaryLocations::Span, uint32_t> const &) override {
+      void onExitScope([[maybe_unused]] std::pair<wasm::BinaryLocations::Span, uint32_t> const &scope) override {
         // Add terminator for lexical block children
         llvm::DWARFYAML::Entry blockTerminator;
         blockTerminator.AbbrCode = 0U;
