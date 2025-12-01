@@ -57,16 +57,22 @@ ChosenActions createChosenActions(wasm::Module &m) {
   return actions;
 }
 
+// assume there are inline hints like:
+//   f1 call f2
+//   f2 call f3
+// then we should inline f2 call f3 first, then inline f1 call f2 (with version inlined f3).
 // do postorder traversal to resolve the deps.
 // so that force inlined function can be inlined step by step.
-class ChosenActionsLayer {
+class ChosenActionsSteps {
   ChosenActions actions_;
+  // func name -> pending inline call count in this func.
+  // should be erased when all inline calls in this func are processed. (second never be 0)
   std::unordered_map<wasm::Name, size_t> pendingInlineCallCountInEachFunc_;
 
 public:
-  std::vector<ChosenActions> layeredActions_;
+  std::vector<ChosenActions> actionSteps_;
 
-  explicit ChosenActionsLayer(ChosenActions actions) : actions_(std::move(actions)) {
+  explicit ChosenActionsSteps(ChosenActions actions) : actions_(std::move(actions)) {
     pendingInlineCallCountInEachFunc_.reserve(actions_.size());
     for (auto it = actions_.begin(); it != actions_.end();) {
       if (it->second.empty()) {
@@ -88,33 +94,33 @@ public:
     }
   }
 
-  void run() {
+  void analyze() {
     while (!pendingInlineCallCountInEachFunc_.empty()) {
       if (support::isDebug(PASS_NAME))
         fmt::println("[" PASS_NAME "] start new loop");
       if (support::isDebug(PASS_NAME))
         for (auto const [name, cnt] : pendingInlineCallCountInEachFunc_)
           fmt::println("[" PASS_NAME "]   pending inline '{}' deps {} other fn", name.str, cnt);
-      std::set<wasm::Name> currentLayer;
+      std::set<wasm::Name> currentStep;
       for (auto &[callerSiteFuncName, actions] : actions_) {
         if (support::isDebug(PASS_NAME)) {
           fmt::println("[" PASS_NAME "]   check '{}' whether can be processed", callerSiteFuncName.str);
         }
         bool const canBeInlined = all_of(actions, [&](InliningAction const &action) -> bool {
           // no deps
+          bool const has = pendingInlineCallCountInEachFunc_.contains(action.contents->name);
           if (support::isDebug(PASS_NAME)) {
-            bool const has = pendingInlineCallCountInEachFunc_.contains(action.contents->name);
             fmt::println("[" PASS_NAME "]     sub fn '{}' {} processed", action.contents->name.str,
                          has ? "didn't" : "did");
           }
-          return !pendingInlineCallCountInEachFunc_.contains(action.contents->name);
+          return !has;
         });
         if (canBeInlined) {
-          currentLayer.insert(callerSiteFuncName);
+          currentStep.insert(callerSiteFuncName);
         }
       }
 
-      if (currentLayer.empty()) {
+      if (currentStep.empty()) {
         // must be recursive inline, give up
         std::stringstream ss;
         for (auto const &[name, _] : pendingInlineCallCountInEachFunc_)
@@ -123,20 +129,20 @@ public:
         break;
       }
 
-      // construct layered action
-      ChosenActions currentLayeredActions;
-      for (wasm::Name const &callerSiteFuncName : currentLayer) {
-        currentLayeredActions.insert_or_assign(callerSiteFuncName, std::move(actions_.at(callerSiteFuncName)));
+      // construct action step
+      ChosenActions currentActionStep;
+      for (wasm::Name const &callerSiteFuncName : currentStep) {
+        currentActionStep.insert_or_assign(callerSiteFuncName, std::move(actions_.at(callerSiteFuncName)));
         actions_.erase(callerSiteFuncName);
         if (support::isDebug(PASS_NAME)) {
           fmt::println("[" PASS_NAME "]   process inline in fn '{}'", callerSiteFuncName.str);
-          for (auto action : currentLayeredActions.at(callerSiteFuncName))
+          for (auto action : currentActionStep.at(callerSiteFuncName))
             fmt::println("[" PASS_NAME "]     will inline fn '{}'", action.contents->name.str);
         }
       }
-      layeredActions_.push_back(std::move(currentLayeredActions));
+      actionSteps_.push_back(std::move(currentActionStep));
       // update deps
-      for (wasm::Name const &callerSiteFuncName : currentLayer) {
+      for (wasm::Name const &callerSiteFuncName : currentStep) {
         pendingInlineCallCountInEachFunc_.erase(callerSiteFuncName);
       }
     }
@@ -165,10 +171,10 @@ public:
     runner.add(std::unique_ptr<wasm::Pass>{new InlineFinder(*forceInlineHints_, actions)});
     runner.run();
 
-    ChosenActionsLayer layer{std::move(actions)};
-    layer.run();
-
-    for (ChosenActions const &subActions : layer.layeredActions_) {
+    ChosenActionsSteps steps{std::move(actions)};
+    steps.analyze();
+    // inline step by step
+    for (ChosenActions const &subActions : steps.actionSteps_) {
       wasm::PassUtils::FuncSet const relevantFuncs = createPassFunctionSet(*m, subActions);
       wasm::PassUtils::FilteredPassRunner runner{m, relevantFuncs, getPassRunner()->options};
       runner.setIsNested(true);
@@ -214,14 +220,14 @@ struct InlinedDecoratorLowerTest : public ::testing::Test {
   }
 };
 
-TEST_F(InlinedDecoratorLowerTest, ChosenActionsLayerEmpty) {
+TEST_F(InlinedDecoratorLowerTest, ChosenActionsStepsEmpty) {
   actions.insert_or_assign("f", std::vector<InliningAction>{});
-  ChosenActionsLayer layer{std::move(actions)};
-  layer.run();
-  EXPECT_TRUE(layer.layeredActions_.empty());
+  ChosenActionsSteps steps{std::move(actions)};
+  steps.analyze();
+  EXPECT_TRUE(steps.actionSteps_.empty());
 }
 
-TEST_F(InlinedDecoratorLowerTest, ChosenActionsLayerBase) {
+TEST_F(InlinedDecoratorLowerTest, ChosenActionsStepsBase) {
   ChosenActions actions{};
   std::string_view const caller = "f1";
   std::string_view const callee = "f2";
@@ -229,15 +235,15 @@ TEST_F(InlinedDecoratorLowerTest, ChosenActionsLayerBase) {
   wasm::Expression **const callSite = allocExpr();
   actions[caller].push_back(InliningAction{callSite, ensureFunc(callee), false});
 
-  ChosenActionsLayer layer{std::move(actions)};
-  layer.run();
-  ASSERT_EQ(layer.layeredActions_.size(), 1);
-  ASSERT_EQ(layer.layeredActions_[0].size(), 1U);
-  ASSERT_EQ(layer.layeredActions_[0].at(caller).size(), 1);
-  EXPECT_EQ(layer.layeredActions_[0].at(caller)[0].callSite, callSite);
+  ChosenActionsSteps steps{std::move(actions)};
+  steps.analyze();
+  ASSERT_EQ(steps.actionSteps_.size(), 1);
+  ASSERT_EQ(steps.actionSteps_[0].size(), 1U);
+  ASSERT_EQ(steps.actionSteps_[0].at(caller).size(), 1);
+  EXPECT_EQ(steps.actionSteps_[0].at(caller)[0].callSite, callSite);
 }
 
-TEST_F(InlinedDecoratorLowerTest, ChosenActionsLayerNest) {
+TEST_F(InlinedDecoratorLowerTest, ChosenActionsStepsNest) {
   ChosenActions actions{};
   // f1 -> f2 -> f3
   std::string_view const f1 = "f1";
@@ -249,20 +255,20 @@ TEST_F(InlinedDecoratorLowerTest, ChosenActionsLayerNest) {
   actions[f1].push_back(InliningAction{f1CallF2, ensureFunc(f2), false});
   actions[f2].push_back(InliningAction{f2CallF3, ensureFunc(f3), false});
 
-  ChosenActionsLayer layer{std::move(actions)};
-  layer.run();
-  ASSERT_EQ(layer.layeredActions_.size(), 2U);
+  ChosenActionsSteps steps{std::move(actions)};
+  steps.analyze();
+  ASSERT_EQ(steps.actionSteps_.size(), 2U);
 
-  ASSERT_EQ(layer.layeredActions_[0].size(), 1U);
-  ASSERT_EQ(layer.layeredActions_[0].at(f2).size(), 1);
-  EXPECT_EQ(layer.layeredActions_[0].at(f2)[0].callSite, f2CallF3);
+  ASSERT_EQ(steps.actionSteps_[0].size(), 1U);
+  ASSERT_EQ(steps.actionSteps_[0].at(f2).size(), 1);
+  EXPECT_EQ(steps.actionSteps_[0].at(f2)[0].callSite, f2CallF3);
 
-  ASSERT_EQ(layer.layeredActions_[1].size(), 1U);
-  ASSERT_EQ(layer.layeredActions_[1].at(f1).size(), 1);
-  EXPECT_EQ(layer.layeredActions_[1].at(f1)[0].callSite, f1CallF2);
+  ASSERT_EQ(steps.actionSteps_[1].size(), 1U);
+  ASSERT_EQ(steps.actionSteps_[1].at(f1).size(), 1);
+  EXPECT_EQ(steps.actionSteps_[1].at(f1)[0].callSite, f1CallF2);
 }
 
-TEST_F(InlinedDecoratorLowerTest, ChosenActionsLayerParallel) {
+TEST_F(InlinedDecoratorLowerTest, ChosenActionsStepsParallel) {
   ChosenActions actions{};
   // f1 -> f2 -> f3
   std::string_view const f1 = "f1";
@@ -280,21 +286,21 @@ TEST_F(InlinedDecoratorLowerTest, ChosenActionsLayerParallel) {
   wasm::Expression **const f4CallF5 = allocExpr();
   actions[f4].push_back(InliningAction{f4CallF5, ensureFunc(f5), false});
 
-  ChosenActionsLayer layer{std::move(actions)};
-  layer.run();
-  ASSERT_EQ(layer.layeredActions_.size(), 2U);
-  ASSERT_EQ(layer.layeredActions_[0].size(), 2U);
-  ASSERT_EQ(layer.layeredActions_[0].at(f2).size(), 1U);
-  EXPECT_EQ(layer.layeredActions_[0].at(f2)[0].callSite, f2CallF3);
-  ASSERT_EQ(layer.layeredActions_[0].at(f4).size(), 1U);
-  EXPECT_EQ(layer.layeredActions_[0].at(f4)[0].callSite, f4CallF5);
+  ChosenActionsSteps steps{std::move(actions)};
+  steps.analyze();
+  ASSERT_EQ(steps.actionSteps_.size(), 2U);
+  ASSERT_EQ(steps.actionSteps_[0].size(), 2U);
+  ASSERT_EQ(steps.actionSteps_[0].at(f2).size(), 1U);
+  EXPECT_EQ(steps.actionSteps_[0].at(f2)[0].callSite, f2CallF3);
+  ASSERT_EQ(steps.actionSteps_[0].at(f4).size(), 1U);
+  EXPECT_EQ(steps.actionSteps_[0].at(f4)[0].callSite, f4CallF5);
 
-  ASSERT_EQ(layer.layeredActions_[1].size(), 1U);
-  ASSERT_EQ(layer.layeredActions_[1].at(f1).size(), 1U);
-  EXPECT_EQ(layer.layeredActions_[1].at(f1)[0].callSite, f1CallF2);
+  ASSERT_EQ(steps.actionSteps_[1].size(), 1U);
+  ASSERT_EQ(steps.actionSteps_[1].at(f1).size(), 1U);
+  EXPECT_EQ(steps.actionSteps_[1].at(f1)[0].callSite, f1CallF2);
 }
 
-TEST_F(InlinedDecoratorLowerTest, ChosenActionsLayerRecursive) {
+TEST_F(InlinedDecoratorLowerTest, ChosenActionsStepsRecursive) {
   ChosenActions actions{};
   // f1 -> f2 -> f3 -> f1
   // f1 -> f4
@@ -312,9 +318,9 @@ TEST_F(InlinedDecoratorLowerTest, ChosenActionsLayerRecursive) {
   actions[f2].push_back(InliningAction{f2CallF3, ensureFunc(f3), false});
   actions[f3].push_back(InliningAction{f3CallF1, ensureFunc(f1), false});
 
-  ChosenActionsLayer layer{std::move(actions)};
-  layer.run();
-  ASSERT_EQ(layer.layeredActions_.size(), 0U);
+  ChosenActionsSteps steps{std::move(actions)};
+  steps.analyze();
+  ASSERT_EQ(steps.actionSteps_.size(), 0U);
 }
 
 } // namespace warpo::passes::ut
