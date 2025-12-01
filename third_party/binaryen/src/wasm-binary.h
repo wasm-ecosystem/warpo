@@ -1467,6 +1467,10 @@ public:
 
   void writeMemoryOrder(MemoryOrder order, bool isRMW = false);
 
+  std::unordered_map<Expression*, size_t*> const& getExpressionOffsets() const {
+    return expressionOffsets;
+  }
+
 private:
   Module* wasm;
   BufferWithRandomAccess& o;
@@ -1495,8 +1499,9 @@ private:
   //
   // A null DebugLocation* indicates we have no debug information for that
   // location.
-  std::vector<std::pair<size_t, const Function::DebugLocation*>>
+  std::deque<std::pair<size_t, const Function::DebugLocation*>>
     sourceMapLocations;
+  std::unordered_map<Expression*, size_t*> expressionOffsets;
   size_t sourceMapLocationsSizeAtSectionStart;
   Function::DebugLocation lastDebugLocation;
 

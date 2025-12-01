@@ -36,6 +36,6 @@ wasm::Expression *findLastInstruction(wasm::Expression *expr) noexcept;
 ///@brief Get bytecode range for a scope (first instruction start to last instruction end)
 wasm::BinaryLocations::Span
 getRangeOfScope(warpo::ScopeInfo const &scopeInfo,
-                std::unordered_map<wasm::Expression *, uint32_t> const &exprLocationMap) noexcept;
+                std::unordered_map<wasm::Expression *, size_t *> const &expressionOffsets) noexcept;
 
 } // namespace warpo::passes

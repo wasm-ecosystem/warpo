@@ -1514,6 +1514,7 @@ void WasmBinaryWriter::writeSourceMapLocation(Expression* curr,
   if (iter != debugLocations.end() && iter->second) {
     // There is debug information here, write it out.
     writeDebugLocation(*(iter->second));
+    expressionOffsets[curr] = &(sourceMapLocations.back().first);
   } else {
     // This expression has no debug location.
     writeNoDebugLocation();
