@@ -18,7 +18,7 @@
 struct InstrSimplifier : public wasm::WalkerPass<wasm::PostWalker<InstrSimplifier>> {
   void visitDrop(wasm::Drop *curr) {
     // (drop (load ...))
-    if (wasm::Load *load = curr->value->dynCast<wasm::Load>(); load != nullptr) {
+    if (wasm::Load *const load = curr->value->dynCast<wasm::Load>(); load != nullptr) {
       wasm::EffectAnalyzer::SideEffects const sideEffects = getSideEffects(load->ptr);
       wasm::Builder builder{*getModule()};
       if (sideEffects == wasm::EffectAnalyzer::SideEffects::None) {
