@@ -25,6 +25,7 @@
 namespace warpo::passes {
 namespace {
 
+// find all inline hints and record them as actions
 struct InlineFinder : public wasm::WalkerPass<wasm::PostWalker<InlineFinder>> {
   ForceInlineHints const &forceInlineHints_;
   ChosenActions &actions_;
@@ -50,6 +51,7 @@ public:
   }
 };
 
+// pre-fill all functions to support function parallel pass.
 ChosenActions createChosenActions(wasm::Module &m) {
   ChosenActions actions{};
   wasm::ModuleUtils::iterDefinedFunctions(
