@@ -301,9 +301,10 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo,
     rootUnit.Entries.push_back(baseTypeEntry);
   }
 
-  for (std::pair<std::string_view const, ClassInfo> const &classRegistryEntry : classRegistry) {
-    std::string_view const &className = classRegistryEntry.first;
-    ClassInfo const &classInfo = classRegistryEntry.second;
+  DwarfGenerator::AbbrevCodes const abbrevCodes{subprogramAbbrev.Code, formalParameterAbbrev.Code,
+                                                lexicalBlockAbbrev.Code, localVariableAbbrev.Code};
+
+  for (auto const &[className, classInfo] : classRegistry) {
     llvm::DWARFYAML::Entry classEntry;
     classEntry.AbbrCode = classAbbrev.Code;
 
@@ -362,8 +363,7 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo,
     SubProgramRegistry const &memberFunctions = classInfo.getSubProgramRegistry();
     std::deque<SubProgramInfo> const &memberFunctionList = memberFunctions.getList();
     for (SubProgramInfo const &subProgram : memberFunctionList) {
-      addSubProgramWithParameters(subProgram, rootUnit, subprogramAbbrev, formalParameterAbbrev, lexicalBlockAbbrev,
-                                  localVariableAbbrev, expressionOffsets, typeRefFixups);
+      addSubProgramWithParameters(subProgram, rootUnit, abbrevCodes, expressionOffsets, typeRefFixups);
     }
 
     // Add terminator for class children
@@ -398,8 +398,7 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo,
   SubProgramRegistry const &globalFunctions = variableInfo.getSubProgramRegistry();
   std::deque<SubProgramInfo> const &globalFunctionList = globalFunctions.getList();
   for (SubProgramInfo const &subProgram : globalFunctionList) {
-    addSubProgramWithParameters(subProgram, rootUnit, subprogramAbbrev, formalParameterAbbrev, lexicalBlockAbbrev,
-                                localVariableAbbrev, expressionOffsets, typeRefFixups);
+    addSubProgramWithParameters(subProgram, rootUnit, abbrevCodes, expressionOffsets, typeRefFixups);
   }
 
   compileUnits.push_back(rootUnit);
@@ -439,13 +438,11 @@ std::string DwarfGenerator::dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::Memo
 }
 
 void DwarfGenerator::addSubProgramWithParameters(
-    SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit, llvm::DWARFYAML::Abbrev const &subprogramAbbrev,
-    llvm::DWARFYAML::Abbrev const &formalParameterAbbrev, llvm::DWARFYAML::Abbrev const &lexicalBlockAbbrev,
-    llvm::DWARFYAML::Abbrev const &localVariableAbbrev,
+    SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit, DwarfGenerator::AbbrevCodes const &abbrevCodes,
     std::unordered_map<wasm::Expression *, size_t *> const &expressionOffsets,
     std::vector<TypeRefFixup> &typeRefFixups) {
   llvm::DWARFYAML::Entry subprogramEntry;
-  subprogramEntry.AbbrCode = subprogramAbbrev.Code;
+  subprogramEntry.AbbrCode = abbrevCodes.subprogram;
 
   llvm::DWARFYAML::FormValue subprogramNameValue;
   std::string_view const subProgramName = subProgram.getName();
@@ -458,7 +455,7 @@ void DwarfGenerator::addSubProgramWithParameters(
   std::vector<ParameterInfo> const &parameters = subProgram.getParameters();
   for (ParameterInfo const &param : parameters) {
     llvm::DWARFYAML::Entry paramEntry;
-    paramEntry.AbbrCode = formalParameterAbbrev.Code;
+    paramEntry.AbbrCode = abbrevCodes.formalParameter;
 
     llvm::DWARFYAML::FormValue paramNameValue;
     std::string_view const paramName = param.getName();
@@ -497,16 +494,15 @@ void DwarfGenerator::addSubProgramWithParameters(
     // Visitor that builds DWARF entries directly
     class DwarfScopeVisitor : public IntervalVisitor<uint32_t> {
     public:
-      DwarfScopeVisitor(llvm::DWARFYAML::Unit &unit, llvm::DWARFYAML::Abbrev const &blockAbbrev,
-                        llvm::DWARFYAML::Abbrev const &localVarAbbrev, SubProgramInfo::LocalsMap const &locals,
-                        std::vector<TypeRefFixup> &fixups)
-          : rootUnit_(unit), lexicalBlockAbbrev_(blockAbbrev), localVariableAbbrev_(localVarAbbrev), localsMap_(locals),
-            typeRefFixups_(fixups) {}
+      DwarfScopeVisitor(llvm::DWARFYAML::Unit &unit, uint32_t blockAbbrevCode, uint32_t localVarAbbrevCode,
+                        SubProgramInfo::LocalsMap const &locals, std::vector<TypeRefFixup> &fixups)
+          : rootUnit_(unit), lexicalBlockAbbrevCode_(blockAbbrevCode), localVariableAbbrevCode_(localVarAbbrevCode),
+            localsMap_(locals), typeRefFixups_(fixups) {}
 
       void onEnterScope(std::pair<wasm::BinaryLocations::Span, uint32_t> const &interval) override {
         // Add lexical block entry
         llvm::DWARFYAML::Entry blockEntry;
-        blockEntry.AbbrCode = lexicalBlockAbbrev_.Code;
+        blockEntry.AbbrCode = lexicalBlockAbbrevCode_;
 
         llvm::DWARFYAML::FormValue blockLowPcValue;
         blockLowPcValue.Value = interval.first.start;
@@ -524,7 +520,7 @@ void DwarfGenerator::addSubProgramWithParameters(
           std::vector<LocalInfo> const &locals = localsIt->second;
           for (LocalInfo const &local : locals) {
             llvm::DWARFYAML::Entry localEntry;
-            localEntry.AbbrCode = localVariableAbbrev_.Code;
+            localEntry.AbbrCode = localVariableAbbrevCode_;
 
             llvm::DWARFYAML::FormValue localNameValue;
             std::string_view const localName = local.getName();
@@ -556,13 +552,13 @@ void DwarfGenerator::addSubProgramWithParameters(
 
     private:
       llvm::DWARFYAML::Unit &rootUnit_;
-      llvm::DWARFYAML::Abbrev const &lexicalBlockAbbrev_;
-      llvm::DWARFYAML::Abbrev const &localVariableAbbrev_;
+      uint32_t lexicalBlockAbbrevCode_;
+      uint32_t localVariableAbbrevCode_;
       SubProgramInfo::LocalsMap const &localsMap_;
       std::vector<TypeRefFixup> &typeRefFixups_;
     };
 
-    DwarfScopeVisitor visitor(rootUnit, lexicalBlockAbbrev, localVariableAbbrev, localsMap, typeRefFixups);
+    DwarfScopeVisitor visitor(rootUnit, abbrevCodes.lexicalBlock, abbrevCodes.localVariable, localsMap, typeRefFixups);
     IntervalTreeBuilder<uint32_t>::process(std::move(intervals), visitor);
   }
 

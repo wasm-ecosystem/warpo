@@ -49,8 +49,6 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
 
   wasm::PassRunner runner(compileResult.m.get());
   runner.add("propagate-debug-locs");
-  // The parser should not be responsible for validation.
-  runner.setIsNested(true);
   runner.run();
 
   wasm::WasmBinaryWriter writer(compileResult.m.get(), buffer, options);

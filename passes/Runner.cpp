@@ -207,8 +207,6 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
   if (common::isEmitDebugInfo()) {
     wasm::PassRunner runner(m.get());
     runner.add("propagate-debug-locs");
-    // The parser should not be responsible for validation.
-    runner.setIsNested(true);
     runner.run();
   }
 
