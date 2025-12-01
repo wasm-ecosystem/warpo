@@ -316,7 +316,7 @@ static inline M<wasm::Block> at(size_t n, M<wasm::Expression> &&m) {
 
 namespace warpo::passes::matcher {
 
-inline void isMatchedImpl(M<wasm::Expression> &m, wasm::Expression *expr, const char *file, int line) {
+inline void isMatchedImpl(M<wasm::Expression> const &m, wasm::Expression *expr, const char *file, int line) {
   if (expr == nullptr)
     GTEST_FAIL_AT(file, line) << "expr is nullptr";
   if (!m(*expr)) {
@@ -326,7 +326,7 @@ inline void isMatchedImpl(M<wasm::Expression> &m, wasm::Expression *expr, const 
   }
 }
 
-inline void isNotMatchedImpl(M<wasm::Expression> &m, wasm::Expression *expr, const char *file, int line) {
+inline void isNotMatchedImpl(M<wasm::Expression> const &m, wasm::Expression *expr, const char *file, int line) {
   if (expr == nullptr)
     GTEST_FAIL_AT(file, line) << "expr is nullptr";
   if (m(*expr)) {
