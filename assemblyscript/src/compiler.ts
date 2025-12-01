@@ -2367,7 +2367,7 @@ export class Compiler extends DiagnosticEmitter {
       );
       return this.module.unreachable();
     }
-    let element = new TypeDefinition(name, flow.sourceFunction, statement, DecoratorFlags.None);
+    let element = new TypeDefinition(name, flow.targetFunction, statement, DecoratorFlags.None);
     flow.addScopedTypeAlias(name, element);
     return this.module.nop();
   }
@@ -2812,12 +2812,12 @@ export class Compiler extends DiagnosticEmitter {
     let valueExpression = statement.value;
     if (valueExpression) {
       let constraints = Constraints.ConvImplicit;
-      if (flow.sourceFunction.is(CommonFlags.ModuleExport)) constraints |= Constraints.MustWrap;
+      if (flow.targetFunction.is(CommonFlags.ModuleExport)) constraints |= Constraints.MustWrap;
 
       expr = this.compileExpression(valueExpression, returnType, constraints);
       if (!flow.canOverflow(expr, returnType)) flow.set(FlowFlags.ReturnsWrapped);
       if (flow.isNonnull(expr, returnType)) flow.set(FlowFlags.ReturnsNonNull);
-      if (flow.sourceFunction.is(CommonFlags.Constructor) && valueExpression.kind != NodeKind.This) {
+      if (flow.targetFunction.is(CommonFlags.Constructor) && valueExpression.kind != NodeKind.This) {
         flow.set(FlowFlags.MayReturnNonThis);
       }
     } else if (returnType != Type.void) {
@@ -2831,16 +2831,6 @@ export class Compiler extends DiagnosticEmitter {
 
     // Remember that this flow returns
     flow.set(FlowFlags.Returns | FlowFlags.Terminates);
-
-    // Handle inline return
-    if (flow.isInline) {
-      let inlineReturnLabel = assert(flow.inlineReturnLabel);
-      return expr
-        ? this.currentType == Type.void
-          ? module.block(null, [ expr, module.br(inlineReturnLabel) ])
-          : module.br(inlineReturnLabel, 0, expr)
-        : module.br(inlineReturnLabel);
-    }
 
     // Otherwise emit a normal return
     return expr
@@ -3040,7 +3030,7 @@ export class Compiler extends DiagnosticEmitter {
       if (typeNode) {
         type = resolver.resolveType( // reports
           typeNode, flow,
-          flow.sourceFunction,
+          flow.targetFunction,
           cloneMap(flow.contextualTypeArguments)
         );
         if (!type) continue;
@@ -3159,8 +3149,7 @@ export class Compiler extends DiagnosticEmitter {
       if (!isStatic) {
         let local: Local;
         if (
-          declaration.isAny(CommonFlags.Let | CommonFlags.Const) ||
-          flow.isInline
+          declaration.isAny(CommonFlags.Let | CommonFlags.Const)
         ) { // here: not top-level
           let existingLocal = flow.getScopedLocal(name);
           if (existingLocal) {
@@ -3793,7 +3782,7 @@ export class Compiler extends DiagnosticEmitter {
         let flow = this.currentFlow;
         let toType = this.resolver.resolveType( // reports
           assert(expression.toType), flow,
-          flow.sourceFunction,
+          flow.targetFunction,
           cloneMap(flow.contextualTypeArguments)
         );
         if (!toType) return this.module.unreachable();
@@ -5836,7 +5825,7 @@ export class Compiler extends DiagnosticEmitter {
         let propertyInstance = <Property>target;
         if (propertyInstance.isField) {
           // Cannot assign to readonly fields except in constructors if there's no initializer
-          let isConstructor = flow.sourceFunction.is(CommonFlags.Constructor);
+          let isConstructor = flow.targetFunction.is(CommonFlags.Constructor);
           if (propertyInstance.is(CommonFlags.Readonly)) {
             let initializerNode = propertyInstance.initializerNode;
             if (!isConstructor || initializerNode) {
@@ -6057,7 +6046,7 @@ export class Compiler extends DiagnosticEmitter {
     // handle call to super
     if (expression.expression.kind == NodeKind.Super) {
       let flow = this.currentFlow;
-      let sourceFunction = flow.sourceFunction;
+      let sourceFunction = flow.targetFunction;
       if (!sourceFunction.is(CommonFlags.Constructor)) {
         this.error(
           DiagnosticCode.Super_calls_are_not_permitted_outside_constructors_or_in_nested_functions_inside_constructors,
@@ -6225,7 +6214,7 @@ export class Compiler extends DiagnosticEmitter {
         assert(typeParameterNodes),
         typeArgumentNodes,
         this.currentFlow,
-        this.currentFlow.sourceFunction.parent,
+        this.currentFlow.targetFunction.parent,
         cloneMap(this.currentFlow.contextualTypeArguments), // don't update
         expression
       );
@@ -6378,7 +6367,7 @@ export class Compiler extends DiagnosticEmitter {
     numArguments = argumentExpressions.length;
 
     // handle call on `this` in constructors
-    let sourceFunction = this.currentFlow.sourceFunction;
+    let sourceFunction = this.currentFlow.targetFunction;
     if (sourceFunction.is(CommonFlags.Constructor) && reportNode.isAccessOnThis) {
       let parent = sourceFunction.parent;
       assert(parent.kind == ElementKind.Class);
@@ -7041,7 +7030,7 @@ export class Compiler extends DiagnosticEmitter {
     let declaration = expression.declaration.clone(); // generic contexts can have multiple
     assert(!declaration.typeParameters); // function expression cannot be generic
     let flow = this.currentFlow;
-    let sourceFunction = flow.sourceFunction;
+    let sourceFunction = flow.targetFunction;
     let isNamed = declaration.name.text.length > 0;
     let isSemanticallyAnonymous = !isNamed || contextualType != Type.void;
     let prototype = new FunctionPrototype(
@@ -7219,7 +7208,7 @@ export class Compiler extends DiagnosticEmitter {
   ): ExpressionRef {
     let module = this.module;
     let flow = this.currentFlow;
-    let sourceFunction = flow.sourceFunction;
+    let sourceFunction = flow.targetFunction;
 
     // check special keywords first
     switch (expression.kind) {
@@ -7296,17 +7285,6 @@ export class Compiler extends DiagnosticEmitter {
               DiagnosticCode._super_must_be_called_before_accessing_a_property_of_super_in_the_constructor_of_a_derived_class,
               expression.range
             );
-          }
-        }
-        if (flow.isInline) {
-          let scopedThis = flow.lookupLocal(CommonNames.this_);
-          if (scopedThis) {
-            let scopedThisClass = assert(scopedThis.type.getClass());
-            let base = scopedThisClass.base;
-            if (base) {
-              this.currentType = base.type;
-              return module.local_get(scopedThis.index, base.type.toRef());
-            }
           }
         }
         if (sourceFunction.is(CommonFlags.Instance)) {
@@ -7517,7 +7495,7 @@ export class Compiler extends DiagnosticEmitter {
     if (isType.kind == NodeKind.NamedType) {
       let namedType = <NamedTypeNode>isType;
       if (!(namedType.isNullable || namedType.hasTypeArguments)) {
-        let element = this.resolver.resolveTypeName(namedType.name, flow, flow.sourceFunction, ReportMode.Swallow);
+        let element = this.resolver.resolveTypeName(namedType.name, flow, flow.targetFunction, ReportMode.Swallow);
         if (element && element.kind == ElementKind.ClassPrototype) {
           let prototype = <ClassPrototype>element;
           if (prototype.is(CommonFlags.Generic)) {
@@ -7530,7 +7508,7 @@ export class Compiler extends DiagnosticEmitter {
     // Fall back to `instanceof TYPE`
     let expectedType = this.resolver.resolveType(
       expression.isType, flow,
-      flow.sourceFunction,
+      flow.targetFunction,
       cloneMap(flow.contextualTypeArguments)
     );
     if (!expectedType) {
@@ -8673,7 +8651,7 @@ export class Compiler extends DiagnosticEmitter {
     let flow = this.currentFlow;
 
     // obtain the class being instantiated
-    let target = this.resolver.resolveTypeName(expression.typeName, flow, flow.sourceFunction);
+    let target = this.resolver.resolveTypeName(expression.typeName, flow, flow.targetFunction);
     if (!target) return module.unreachable();
     if (target.kind != ElementKind.ClassPrototype) {
       this.error(
@@ -8710,7 +8688,7 @@ export class Compiler extends DiagnosticEmitter {
         classPrototype,
         typeArguments,
         flow,
-        flow.sourceFunction.parent, // relative to caller
+        flow.targetFunction.parent, // relative to caller
         cloneMap(flow.contextualTypeArguments),
         expression
       );
@@ -9004,7 +8982,7 @@ export class Compiler extends DiagnosticEmitter {
         let propertyInstance = <Property>target;
         if (propertyInstance.isField) {
           if (
-            flow.sourceFunction.is(CommonFlags.Constructor) &&
+            flow.targetFunction.is(CommonFlags.Constructor) &&
             assert(thisExpression).kind == NodeKind.This &&
             !flow.isThisFieldFlag(propertyInstance, FieldFlags.Initialized) &&
             !propertyInstance.is(CommonFlags.DefinitelyAssigned)
@@ -10273,8 +10251,7 @@ export class Compiler extends DiagnosticEmitter {
 
     let module = this.module;
     let flow = this.currentFlow;
-    let isInline = flow.isInline;
-    let thisLocalIndex = isInline ? flow.lookupLocal(CommonNames.this_)!.index : 0;
+    const thisLocalIndex = 0;
     let sizeTypeRef = this.options.sizeTypeRef;
     let nonParameterFields: Property[] | null = null;
 
@@ -10305,9 +10282,7 @@ export class Compiler extends DiagnosticEmitter {
       let expr = this.makeCallDirect(setterInstance, [
         module.local_get(thisLocalIndex, sizeTypeRef),
         module.local_get(
-          isInline
-            ? flow.lookupLocal(property.name)!.index
-            : 1 + parameterIndex, // `this` is local 0
+          1 + parameterIndex, // `this` is local 0
           fieldTypeRef
         )
       ], setterInstance.identifierNode, true);

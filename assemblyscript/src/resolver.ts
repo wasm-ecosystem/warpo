@@ -594,7 +594,7 @@ export class Resolver extends DiagnosticEmitter {
       return this.resolveFunctionInclTypeArguments(
         prototype,
         typeArguments,
-        ctxFlow.sourceFunction,
+        ctxFlow.targetFunction,
         cloneMap(ctxFlow.contextualTypeArguments), // don't inherit
         node,
         reportMode
@@ -950,7 +950,7 @@ export class Resolver extends DiagnosticEmitter {
       case NodeKind.True: {
         return this.lookupIdentifierExpression(
           <IdentifierExpression>node,
-          ctxFlow, ctxFlow.sourceFunction, reportMode
+          ctxFlow, ctxFlow.targetFunction, reportMode
         );
       }
       case NodeKind.This: {
@@ -1087,7 +1087,7 @@ export class Resolver extends DiagnosticEmitter {
       case NodeKind.True: {
         return this.resolveIdentifierExpression(
           <IdentifierExpression>node,
-          ctxFlow, ctxType, ctxFlow.sourceFunction, reportMode
+          ctxFlow, ctxType, ctxFlow.targetFunction, reportMode
         );
       }
       case NodeKind.This: {
@@ -1156,7 +1156,7 @@ export class Resolver extends DiagnosticEmitter {
     /** Flow to search for scoped locals. */
     ctxFlow: Flow,
     /** Element to search. */
-    ctxElement: Element = ctxFlow.sourceFunction, // differs for enums and namespaces
+    ctxElement: Element = ctxFlow.targetFunction, // differs for enums and namespaces
     /** How to proceed with eventual diagnostics. */
     reportMode: ReportMode = ReportMode.Report
   ): Element | null {
@@ -1211,7 +1211,7 @@ export class Resolver extends DiagnosticEmitter {
     /** Contextual type. */
     ctxType: Type = Type.auto,
     /** Element to search. */
-    ctxElement: Element = ctxFlow.sourceFunction, // differs for enums and namespaces
+    ctxElement: Element = ctxFlow.targetFunction, // differs for enums and namespaces
     /** How to proceed with eventual diagnostics. */
     reportMode: ReportMode = ReportMode.Report
   ): Type | null {
@@ -1660,7 +1660,7 @@ export class Resolver extends DiagnosticEmitter {
         let type = this.resolveType(
           assert(node.toType), // must be set if not NONNULL
           null,
-          ctxFlow.sourceFunction,
+          ctxFlow.targetFunction,
           ctxFlow.contextualTypeArguments,
           reportMode
         );
@@ -1717,7 +1717,7 @@ export class Resolver extends DiagnosticEmitter {
         return this.resolveType(
           assert(node.toType),
           null,
-          ctxFlow.sourceFunction,
+          ctxFlow.targetFunction,
           ctxFlow.contextualTypeArguments,
           reportMode
         );
@@ -2169,15 +2169,7 @@ export class Resolver extends DiagnosticEmitter {
     /** How to proceed with eventual diagnostics. */
     reportMode: ReportMode = ReportMode.Report
   ): Element | null {
-    if (ctxFlow.isInline) {
-      let thisLocal = ctxFlow.lookupLocal(CommonNames.this_);
-      if (thisLocal) {
-        this.currentThisExpression = null;
-        this.currentElementExpression = null;
-        return thisLocal;
-      }
-    }
-    let parent = ctxFlow.sourceFunction.parent;
+    let parent = ctxFlow.targetFunction.parent;
     if (parent) {
       this.currentThisExpression = null;
       this.currentElementExpression = null;
@@ -2228,15 +2220,7 @@ export class Resolver extends DiagnosticEmitter {
     /** How to proceed with eventual diagnostics. */
     reportMode: ReportMode = ReportMode.Report
   ): Element | null {
-    if (ctxFlow.isInline) {
-      let superLocal = ctxFlow.lookupLocal(CommonNames.super_);
-      if (superLocal) {
-        this.currentThisExpression = null;
-        this.currentElementExpression = null;
-        return superLocal;
-      }
-    }
-    let parent: Element | null = ctxFlow.sourceFunction.parent;
+    let parent: Element | null = ctxFlow.targetFunction.parent;
     if (parent && parent.kind == ElementKind.Class) {
       let base = (<Class>parent).base;
       if (base) {
@@ -2612,14 +2596,14 @@ export class Resolver extends DiagnosticEmitter {
     /** How to proceed with eventual diagnostics. */
     reportMode: ReportMode = ReportMode.Report
   ): Element | null {
-    let element = this.resolveTypeName(node.typeName, ctxFlow, ctxFlow.sourceFunction, reportMode);
+    let element = this.resolveTypeName(node.typeName, ctxFlow, ctxFlow.targetFunction, reportMode);
     if (!element) return null;
     if (element.kind == ElementKind.ClassPrototype) {
       return this.resolveClassInclTypeArguments(
         <ClassPrototype>element,
         node.typeArguments,
         ctxFlow,
-        ctxFlow.sourceFunction,
+        ctxFlow.targetFunction,
         cloneMap(ctxFlow.contextualTypeArguments),
         node,
         reportMode
@@ -2698,7 +2682,7 @@ export class Resolver extends DiagnosticEmitter {
     const declaration = node.declaration;
     const signature = declaration.signature;
     const body = declaration.body;
-    let functionType = this.resolveType(signature, null, ctxFlow.sourceFunction, ctxFlow.contextualTypeArguments, reportMode);
+    let functionType = this.resolveType(signature, null, ctxFlow.targetFunction, ctxFlow.contextualTypeArguments, reportMode);
     if (
       functionType &&
       declaration.arrowKind != ArrowKind.None &&
@@ -2709,7 +2693,7 @@ export class Resolver extends DiagnosticEmitter {
       const expr = (<ExpressionStatement>body).expression;
       let signatureReference = assert(functionType.getSignature());
       // create a temp flow to resolve expression
-      let tempFlow = Flow.createDefault(ctxFlow.sourceFunction);
+      let tempFlow = Flow.createDefault(ctxFlow.targetFunction);
       let parameters = signature.parameters;
       // return type of resolveFunctionType should have same parameter length with signature
       assert(signatureReference.parameterTypes.length == parameters.length);

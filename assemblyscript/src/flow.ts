@@ -221,8 +221,6 @@ export class Flow {
   private constructor(
     /** Target function this flow generates code into. */
     public targetFunction: Function,
-    /** Inline function this flow generates code from, if any. */
-    public inlineFunction: Function | null = null
   ) {
     // Setup is performed above so inline ids and field flags are not reset
     // when forking flows, which also uses the constructor.
@@ -246,28 +244,10 @@ export class Flow {
   localFlags: LocalFlags[] = [];
   /** Field flags on `this`. Constructors only. */
   thisFieldFlags: Map<Property,FieldFlags> | null = null;
-  /** The label we break to when encountering a return statement, when inlining. */
-  inlineReturnLabel: string | null = null;
   /** Alternative flows if a compound expression is true-ish. */
   trueFlows: Map<ExpressionRef,Flow> | null = null;
   /** Alternative flows if a compound expression is false-ish. */
   falseFlows: Map<ExpressionRef,Flow> | null = null;
-
-  /** Tests if this is an inline flow. */
-  get isInline(): bool {
-    return this.inlineFunction != null;
-  }
-
-  /** Gets the source function being compiled. Differs from target when inlining. */
-  get sourceFunction(): Function {
-    // Obtaining the source function is useful when resolving elements relative
-    // to their source location. Note that the source function does not necessarily
-    // materialize in the binary, as it might be inlined. Code, locals, etc. must
-    // always be added to / maintained in the materializing target function instead.
-    let inlineFunction = this.inlineFunction;
-    if (inlineFunction) return inlineFunction;
-    return this.targetFunction;
-  }
 
   /** Gets the program this flow belongs to. */
   get program(): Program {
@@ -276,12 +256,12 @@ export class Flow {
 
   /** Gets the current return type. */
   get returnType(): Type {
-    return this.sourceFunction.signature.returnType;
+    return this.targetFunction.signature.returnType;
   }
 
   /** Gets the current contextual type arguments. */
   get contextualTypeArguments(): Map<string,Type> | null {
-    return this.sourceFunction.contextualTypeArguments;
+    return this.targetFunction.contextualTypeArguments;
   }
 
   /** Tests if this flow has the specified flag or flags. */
@@ -320,7 +300,7 @@ export class Flow {
     /** Whether a new continue context is established, e.g. by a loop. */
     newContinueContext: bool = newBreakContext
   ): Flow {
-    let branch = new Flow(this.targetFunction, this.inlineFunction);
+    let branch = new Flow(this.targetFunction);
     branch.parent = this;
     branch.flags = this.flags;
     branch.outer = this.outer;
@@ -341,13 +321,12 @@ export class Flow {
       branch.continueLabel = this.continueLabel;
     }
     branch.localFlags = this.localFlags.slice();
-    if (this.sourceFunction.is(CommonFlags.Constructor)) {
+    if (this.targetFunction.is(CommonFlags.Constructor)) {
       let thisFieldFlags = assert(this.thisFieldFlags);
       branch.thisFieldFlags = cloneMap(thisFieldFlags);
     } else {
       assert(!this.thisFieldFlags);
     }
-    branch.inlineReturnLabel = this.inlineReturnLabel;
     return branch;
   }
 
@@ -419,7 +398,7 @@ export class Flow {
     let definition: TypeDefinition | null = null;
     if (definition = this.lookupScopedTypeAlias(name)) return definition;
 
-    let sourceParent = this.sourceFunction.parent;
+    let sourceParent = this.targetFunction.parent;
     if (sourceParent.kind == ElementKind.Function) {
       // lookup parent function.
       let parentFunction = <Function>sourceParent;
@@ -527,7 +506,7 @@ export class Flow {
   lookup(name: string): Element | null {
     let element = this.lookupLocal(name);
     if (element) return element;
-    return this.sourceFunction.lookup(name);
+    return this.targetFunction.lookup(name);
   }
 
   /** Tests if the local at the specified index has the specified flag or flags. */
@@ -535,13 +514,6 @@ export class Flow {
     if (index < 0) return defaultIfInlined;
     let localFlags = this.localFlags;
     return index < localFlags.length && (unchecked(localFlags[index]) & flag) == flag;
-  }
-
-  /** Tests if the local at the specified index has any of the specified flags. */
-  isAnyLocalFlag(index: i32, flag: LocalFlags, defaultIfInlined: bool = true): bool {
-    if (index < 0) return defaultIfInlined;
-    let localFlags = this.localFlags;
-    return index < localFlags.length && (unchecked(localFlags[index]) & flag) != 0;
   }
 
   /** Sets the specified flag or flags on the local at the specified index. */
@@ -562,9 +534,9 @@ export class Flow {
 
   /** Initializes `this` field flags. */
   initThisFieldFlags(): void {
-    let sourceFunction = this.sourceFunction;
-    assert(sourceFunction.is(CommonFlags.Constructor));
-    let parent = sourceFunction.parent;
+    let targetFunction = this.targetFunction;
+    assert(targetFunction.is(CommonFlags.Constructor));
+    let parent = targetFunction.parent;
     assert(parent.kind == ElementKind.Class);
     let classInstance = <Class>parent;
     this.thisFieldFlags = new Map();
@@ -605,7 +577,7 @@ export class Flow {
   setThisFieldFlag(field: Property, flag: FieldFlags): void {
     let fieldFlags = this.thisFieldFlags;
     if (fieldFlags) {
-      assert(this.sourceFunction.is(CommonFlags.Constructor));
+      assert(this.targetFunction.is(CommonFlags.Constructor));
       if (fieldFlags.has(field)) {
         let flags = changetype<FieldFlags>(fieldFlags.get(field));
         fieldFlags.set(field, flags | flag);
@@ -613,7 +585,7 @@ export class Flow {
         fieldFlags.set(field, flag);
       }
     } else {
-      assert(!this.sourceFunction.is(CommonFlags.Constructor));
+      assert(!this.targetFunction.is(CommonFlags.Constructor));
     }
   }
 
@@ -1452,7 +1424,7 @@ export class Flow {
     if (this.is(FlowFlags.ConditionallyContinues)) sb.push("CONDITIONALLY_CONTINUES");
     if (this.is(FlowFlags.ConditionallyAccessesThis)) sb.push("CONDITIONALLY_ACCESSES_THIS");
     if (this.is(FlowFlags.MayReturnNonThis)) sb.push("MAY_RETURN_NONTHIS");
-    return `Flow(${this.sourceFunction})[${levels}] ${sb.join(" ")}`;
+    return `Flow(${this.targetFunction})[${levels}] ${sb.join(" ")}`;
   }
 
   addLocalsToBlock(stmts: ExpressionRef[]): void {
