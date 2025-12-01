@@ -5,8 +5,8 @@
 
 #include <algorithm>
 #include <deque>
+#include <fmt/format.h>
 #include <memory>
-#include <stack>
 #include <utility>
 #include <vector>
 
@@ -14,25 +14,24 @@
 
 namespace warpo::passes {
 
-// Abstract visitor for processing intervals in containment order
+/// @brief Abstract visitor for processing intervals in containment order
 template <typename T> class IntervalVisitor {
 public:
   virtual ~IntervalVisitor() = default;
 
-  // Called when entering a scope (before processing its children)
+  /// @brief Called when entering a scope (before processing its children)
   virtual void onEnterScope(std::pair<wasm::BinaryLocations::Span, T> const &interval) = 0;
 
-  // Called when exiting a scope (after processing all its children)
+  /// @brief Called when exiting a scope (after processing all its children)
   virtual void onExitScope(std::pair<wasm::BinaryLocations::Span, T> const &interval) = 0;
 };
 
-// Builder that processes intervals and invokes visitor callbacks
+/// @brief Builder that processes intervals and invokes visitor callbacks
 template <typename T> class IntervalTreeBuilder final {
 public:
-  // Process intervals with visitor pattern (no physical tree built)
-  // Visitor callbacks are invoked in depth-first order
+  /// @brief Process intervals with visitor pattern (no physical tree built)
+  /// Visitor callbacks are invoked in depth-first order
   static void process(std::vector<std::pair<wasm::BinaryLocations::Span, T>> &&intervals, IntervalVisitor<T> &visitor) {
-    // Sort intervals: ascending start, then descending end
     std::sort(intervals.begin(), intervals.end(),
               [](std::pair<wasm::BinaryLocations::Span, T> const &a,
                  std::pair<wasm::BinaryLocations::Span, T> const &b) noexcept -> bool {
@@ -45,31 +44,45 @@ public:
                 return a.first.end > b.first.end;
               });
 
-    std::stack<std::pair<wasm::BinaryLocations::Span, T> const *> stack;
+    std::vector<std::pair<wasm::BinaryLocations::Span, T> const *> parentStack;
 
     for (std::pair<wasm::BinaryLocations::Span, T> const &interval : intervals) {
-      // Pop intervals that don't contain current interval and exit their scopes
-      while (!stack.empty() && (stack.top()->first.end < interval.first.end)) {
-        std::pair<wasm::BinaryLocations::Span, T> const *popped = stack.top();
+      while (!parentStack.empty() && (parentStack.back()->first.end < interval.first.end)) {
+        std::pair<wasm::BinaryLocations::Span, T> const *popped = parentStack.back();
+
+        bool isValidPop = true;
+
+        bool isContainedByCurrent =
+            (interval.first.start <= popped->first.start && interval.first.end >= popped->first.end);
+        bool noOverlapWithCurrent =
+            (popped->first.end <= interval.first.start || popped->first.start >= interval.first.end);
+
+        if (!isContainedByCurrent && !noOverlapWithCurrent) {
+          isValidPop = false;
+        }
+
+        if (!isValidPop) {
+          fmt::print(stderr, "Warning: Interval [{}, {}] overlaps with existing root but is not contained.\n",
+                     popped->first.start, popped->first.end);
+        }
+
         visitor.onExitScope(*popped);
-        stack.pop();
+        parentStack.pop_back();
       }
 
-      // Enter current scope
       visitor.onEnterScope(interval);
-      stack.push(&interval);
+      parentStack.push_back(&interval);
     }
 
-    // Exit remaining scopes in stack
-    while (!stack.empty()) {
-      std::pair<wasm::BinaryLocations::Span, T> const *popped = stack.top();
+    while (!parentStack.empty()) {
+      std::pair<wasm::BinaryLocations::Span, T> const *popped = parentStack.back();
       visitor.onExitScope(*popped);
-      stack.pop();
+      parentStack.pop_back();
     }
   }
 };
 
-// Concrete tree structure that stores intervals in a containment hierarchy
+/// @brief Concrete tree structure that stores intervals in a containment hierarchy
 template <typename T> class IntervalTree final : public IntervalVisitor<T> {
 public:
   struct Node final {
@@ -84,34 +97,30 @@ public:
 
   IntervalTree() : currentParent_(nullptr) {}
 
-  // Build tree from intervals
   void build(std::vector<std::pair<wasm::BinaryLocations::Span, T>> &&intervals) {
     clear();
     currentParent_ = nullptr;
     IntervalTreeBuilder<T>::process(std::move(intervals), *this);
   }
 
-  // IntervalVisitor implementation
   void onEnterScope(std::pair<wasm::BinaryLocations::Span, T> const &interval) override {
     if (currentParent_ == nullptr) {
-      // Root level node
       roots_.emplace_back(interval.first, interval.second);
       currentParent_ = &roots_.back();
-      parentStack_.push(nullptr);
+      parentStack_.push_back(nullptr);
     } else {
-      // Child node - add to parent's children
       currentParent_->children.emplace_back(std::make_unique<Node>(interval.first, interval.second));
       Node *newNode = currentParent_->children.back().get();
       newNode->parent = currentParent_;
-      parentStack_.push(currentParent_);
+      parentStack_.push_back(currentParent_);
       currentParent_ = newNode;
     }
   }
 
   void onExitScope([[maybe_unused]] std::pair<wasm::BinaryLocations::Span, T> const &interval) override {
     if (!parentStack_.empty()) {
-      currentParent_ = parentStack_.top();
-      parentStack_.pop();
+      currentParent_ = parentStack_.back();
+      parentStack_.pop_back();
     }
   }
 
@@ -119,15 +128,13 @@ public:
 
   void clear() {
     roots_.clear();
-    while (!parentStack_.empty()) {
-      parentStack_.pop();
-    }
+    parentStack_.clear();
   }
 
 private:
   std::deque<Node> roots_;
   Node *currentParent_ = nullptr;
-  std::stack<Node *> parentStack_;
+  std::vector<Node *> parentStack_;
 };
 
 } // namespace warpo::passes
