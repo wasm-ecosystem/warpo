@@ -67,15 +67,13 @@ ChosenActions createChosenActions(wasm::Module &m) {
 // so that force inlined function can be inlined step by step.
 class ChosenActionsSteps {
   ChosenActions actions_;
-  // func name -> pending inline call count in this func.
-  // should be erased when all inline calls in this func are processed. (second never be 0)
-  std::unordered_map<wasm::Name, size_t> pendingInlineCallCountInEachFunc_;
+  // functions need to be processed
+  std::set<wasm::Name> pending_;
 
 public:
   std::vector<ChosenActions> actionSteps_;
 
   explicit ChosenActionsSteps(ChosenActions actions) : actions_(std::move(actions)) {
-    pendingInlineCallCountInEachFunc_.reserve(actions_.size());
     for (auto it = actions_.begin(); it != actions_.end();) {
       if (it->second.empty()) {
         it = actions_.erase(it);
@@ -86,23 +84,17 @@ public:
     for (auto const &[callerSiteFuncName, actions] : actions_) {
       if (actions.empty())
         continue;
-      std::set<wasm::Function *> inlinedFunctionInCurrentFunction;
-      for (InliningAction const &action : actions) {
-        inlinedFunctionInCurrentFunction.insert(action.contents);
-      }
-      if (!inlinedFunctionInCurrentFunction.empty()) {
-        pendingInlineCallCountInEachFunc_[callerSiteFuncName] = inlinedFunctionInCurrentFunction.size();
-      }
+      pending_.insert(callerSiteFuncName);
     }
   }
 
   void analyze() {
-    while (!pendingInlineCallCountInEachFunc_.empty()) {
+    while (!pending_.empty()) {
       if (support::isDebug(PASS_NAME))
         fmt::println("[" PASS_NAME "] start new loop");
       if (support::isDebug(PASS_NAME))
-        for (auto const [name, cnt] : pendingInlineCallCountInEachFunc_)
-          fmt::println("[" PASS_NAME "]   pending inline '{}' deps {} other fn", name.str, cnt);
+        for (wasm::Name const &name : pending_)
+          fmt::println("[" PASS_NAME "]   pending inline '{}'", name.str);
       std::set<wasm::Name> currentStep;
       for (auto &[callerSiteFuncName, actions] : actions_) {
         if (support::isDebug(PASS_NAME)) {
@@ -110,7 +102,7 @@ public:
         }
         bool const canBeInlined = all_of(actions, [&](InliningAction const &action) -> bool {
           // no deps
-          bool const has = pendingInlineCallCountInEachFunc_.contains(action.contents->name);
+          bool const has = pending_.contains(action.contents->name);
           if (support::isDebug(PASS_NAME)) {
             fmt::println("[" PASS_NAME "]     sub fn '{}' {} processed", action.contents->name.str,
                          has ? "didn't" : "did");
@@ -125,8 +117,8 @@ public:
       if (currentStep.empty()) {
         // must be recursive inline, give up
         std::stringstream ss;
-        for (auto const &[name, _] : pendingInlineCallCountInEachFunc_)
-          ss << "\n  " << name;
+        for (wasm::Name const &name : pending_)
+          ss << "[" PASS_NAME "]   " << name;
         fmt::println("[" PASS_NAME "] give up inline due to recursive inline decorators{}", std::move(ss).str());
         break;
       }
@@ -145,7 +137,7 @@ public:
       actionSteps_.push_back(std::move(currentActionStep));
       // update deps
       for (wasm::Name const &callerSiteFuncName : currentStep) {
-        pendingInlineCallCountInEachFunc_.erase(callerSiteFuncName);
+        pending_.erase(callerSiteFuncName);
       }
     }
   }
