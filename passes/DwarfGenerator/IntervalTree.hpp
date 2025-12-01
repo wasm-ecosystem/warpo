@@ -109,7 +109,7 @@ public:
     }
   }
 
-  void onExitScope(std::pair<wasm::BinaryLocations::Span, T> const &) override {
+  void onExitScope([[maybe_unused]] std::pair<wasm::BinaryLocations::Span, T> const &interval) override {
     if (!parentStack_.empty()) {
       currentParent_ = parentStack_.top();
       parentStack_.pop();
