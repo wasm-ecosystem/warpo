@@ -31,12 +31,11 @@ template <typename T> class IntervalTreeBuilder final {
 public:
   // Process intervals with visitor pattern (no physical tree built)
   // Visitor callbacks are invoked in depth-first order
-  template <typename U>
-  static void process(std::vector<std::pair<wasm::BinaryLocations::Span, U>> &&intervals, IntervalVisitor<T> &visitor) {
+  static void process(std::vector<std::pair<wasm::BinaryLocations::Span, T>> &&intervals, IntervalVisitor<T> &visitor) {
     // Sort intervals: ascending start, then descending end
     std::sort(intervals.begin(), intervals.end(),
-              [](std::pair<wasm::BinaryLocations::Span, U> const &a,
-                 std::pair<wasm::BinaryLocations::Span, U> const &b) noexcept -> bool {
+              [](std::pair<wasm::BinaryLocations::Span, T> const &a,
+                 std::pair<wasm::BinaryLocations::Span, T> const &b) noexcept -> bool {
                 if (a.first.start < b.first.start) {
                   return true;
                 }
@@ -46,12 +45,12 @@ public:
                 return a.first.end > b.first.end;
               });
 
-    std::stack<std::pair<wasm::BinaryLocations::Span, U> const *> stack;
+    std::stack<std::pair<wasm::BinaryLocations::Span, T> const *> stack;
 
-    for (std::pair<wasm::BinaryLocations::Span, U> const &interval : intervals) {
+    for (std::pair<wasm::BinaryLocations::Span, T> const &interval : intervals) {
       // Pop intervals that don't contain current interval and exit their scopes
       while (!stack.empty() && (stack.top()->first.end < interval.first.end)) {
-        std::pair<wasm::BinaryLocations::Span, U> const *popped = stack.top();
+        std::pair<wasm::BinaryLocations::Span, T> const *popped = stack.top();
         visitor.onExitScope(*popped);
         stack.pop();
       }
@@ -63,7 +62,7 @@ public:
 
     // Exit remaining scopes in stack
     while (!stack.empty()) {
-      std::pair<wasm::BinaryLocations::Span, U> const *popped = stack.top();
+      std::pair<wasm::BinaryLocations::Span, T> const *popped = stack.top();
       visitor.onExitScope(*popped);
       stack.pop();
     }
@@ -86,7 +85,7 @@ public:
   IntervalTree() : currentParent_(nullptr) {}
 
   // Build tree from intervals
-  template <typename U> void build(std::vector<std::pair<wasm::BinaryLocations::Span, U>> &&intervals) {
+  void build(std::vector<std::pair<wasm::BinaryLocations::Span, T>> &&intervals) {
     clear();
     currentParent_ = nullptr;
     IntervalTreeBuilder<T>::process(std::move(intervals), *this);
