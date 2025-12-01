@@ -131,9 +131,10 @@ static void optimize(AsModule const &m, Config const &config) {
   ensureValidate(*m.get());
 }
 
-static void addDebugInfoAsCustomSection(AsModule const &m) {
+static void addDebugInfoAsCustomSection(AsModule const &m,
+                                        std::unordered_map<wasm::Expression *, size_t *> const &expressionOffsets) {
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
-      DwarfGenerator::generateDebugSections(m.variableInfo_);
+      DwarfGenerator::generateDebugSections(m.variableInfo_, expressionOffsets);
 
   if (!debugSections.empty()) {
     for (auto I = debugSections.begin(); !(I == debugSections.end()); I++) {
@@ -203,12 +204,18 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
   if (config.optimizeLevel > 0U || config.shrinkLevel > 0U)
     optimize(m, config);
 
+  if (common::isEmitDebugInfo()) {
+    wasm::PassRunner runner(m.get());
+    runner.add("propagate-debug-locs");
+    // The parser should not be responsible for validation.
+    runner.setIsNested(true);
+    runner.run();
+  }
+
   // wasm and source map
   wasm::BufferWithRandomAccess buffer;
   wasm::PassOptions const options = wasm::PassOptions::getWithoutOptimization();
-  if (common::isEmitDebugInfo()) {
-    addDebugInfoAsCustomSection(m);
-  }
+
   wasm::WasmBinaryWriter writer(m.get(), buffer, options);
   std::stringstream sourceMapStream;
   if (common::isEmitDebugLine() && !config.sourceMapURL.empty()) {
@@ -217,6 +224,11 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
   writer.setNamesSection(common::isEmitDebugName());
   writer.setEmitModuleName(common::isEmitDebugName());
   writer.write();
+
+  if (common::isEmitDebugInfo()) {
+    std::unordered_map<wasm::Expression *, size_t *> const &expressionOffsets = writer.getExpressionOffsets();
+    addDebugInfoAsCustomSection(m, expressionOffsets);
+  }
 
   // wat
   std::stringstream ss{};
