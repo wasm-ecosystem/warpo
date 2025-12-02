@@ -9,7 +9,8 @@
     "exportRuntime": true,
     "initialMemory": 768,
     "runtime": "incremental",
-    "disable": ["nontrapping-f2i"]
+    "disable": ["nontrapping-f2i"],
+    "stackSize": 262144
   },
   "targets": {
     "debug": {
