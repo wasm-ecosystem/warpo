@@ -13,8 +13,10 @@ const dirname = import.meta.dirname;
 function download_url(version: string): string {
   const arch = os.arch();
   const platform = os.platform();
+  const base_url =
+    process.env["WARPO_DOWNLOAD_BASE_URL"] ?? `https://github.com/wasm-ecosystem/warpo/releases/download`;
   if ((platform === "linux" && arch === "x64") || (platform === "darwin" && arch === "arm64")) {
-    return `https://github.com/wasm-ecosystem/warpo/releases/download/${version}/warpo-${version}-${platform}-${arch}.tar.gz`;
+    return `${base_url}/${version}/warpo-${version}-${platform}-${arch}.tar.gz`;
   }
   console.log(`there is no precompiled binary for ${version} + ${platform} + ${arch}, please compile from source.`);
   process.exit(1);
