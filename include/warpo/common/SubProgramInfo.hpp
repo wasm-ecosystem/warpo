@@ -47,14 +47,14 @@ public:
 
   inline void addParameter(ParameterInfo parameter) noexcept { parameters_.push_back(std::move(parameter)); }
   inline void addLocal(LocalInfo local) noexcept {
-    uint32_t const scopeId = local.getScopeId();
+    ScopeId const scopeId = local.getScopeId();
     locals_[scopeId].push_back(std::move(local));
   }
 
   void addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
                     bool const nullable);
 
-  void addLocal(std::string variableName, std::string_view const typeName, uint32_t const index, uint32_t const scopeId,
+  void addLocal(std::string variableName, std::string_view const typeName, uint32_t const index, ScopeId const scopeId,
                 bool const nullable);
 
   uint32_t addScope(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr);

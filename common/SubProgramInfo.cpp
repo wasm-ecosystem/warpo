@@ -28,7 +28,7 @@ void SubProgramInfo::addParameter(std::string variableName, std::string_view con
   });
 }
 
-void SubProgramInfo::addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
+void SubProgramInfo::addLocal(std::string variableName, std::string_view const typeName, ScopeId const index,
                               uint32_t const scopeId, bool const nullable) {
 
   addLocal(LocalInfo{
