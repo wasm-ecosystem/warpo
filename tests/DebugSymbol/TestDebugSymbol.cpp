@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <support/colors.h>
+#include <unordered_map>
 #include <vector>
 #include <warpo/support/FileSystem.hpp>
 
@@ -26,6 +27,12 @@ warpo::cli::Opt<bool> updateFixturesFlag{
 std::string
 filterLibSubprograms(std::string const &dump,
                      std::deque<std::pair<size_t, const wasm::Function::DebugLocation *>> const &sourceMapLocations) {
+  // Build a hash map for fast address lookup
+  std::unordered_map<size_t, wasm::Function::DebugLocation const *> addressMap;
+  for (auto const &[offset, loc] : sourceMapLocations) {
+    addressMap[offset] = loc;
+  }
+
   std::istringstream input(dump);
   std::ostringstream output;
   std::string line;
@@ -52,33 +59,28 @@ filterLibSubprograms(std::string const &dump,
     // Check for DW_AT_low_pc or DW_AT_high_pc
     size_t const lowPcPos = line.find("DW_AT_low_pc");
     size_t const highPcPos = line.find("DW_AT_high_pc");
-    if (lowPcPos != std::string::npos || highPcPos != std::string::npos) {
+    if ((lowPcPos != std::string::npos) || (highPcPos != std::string::npos)) {
       // Extract the hex address from the line
       size_t const openParen = line.find('(');
-      size_t const closeParen = line.find(')');
-      if (openParen != std::string::npos && closeParen != std::string::npos && closeParen > openParen) {
-        std::string const addressStr = line.substr(openParen + 1, closeParen - openParen - 1);
-        if (addressStr.find("0x") == 0) {
-          // Parse the hex address
-          uint64_t const address = std::stoull(addressStr, nullptr, 16);
+      if (openParen != std::string::npos) {
+        size_t const closeParen = line.find(')');
+        assert(closeParen != std::string::npos && closeParen > openParen);
+        std::string const addressStr = line.substr(openParen + 1U, closeParen - openParen - 1);
+        assert(addressStr.find("0x") == 0);
+        // Parse the hex address
+        uint64_t const address = std::stoull(addressStr, nullptr, 16);
 
-          // Find the corresponding source location
-          wasm::Function::DebugLocation const *debugLoc = nullptr;
-          for (auto const &[offset, loc] : sourceMapLocations) {
-            if (offset == address) {
-              debugLoc = loc;
-              break;
-            }
-          }
+        // Find the corresponding source location using hash map
+        auto const it = addressMap.find(address);
+        assert(it != addressMap.end() && "Address should be found in source map locations");
+        wasm::Function::DebugLocation const *debugLoc = it->second;
 
-          // Replace the address with file:line if found
-          assert(debugLoc != nullptr && "Address should be found in source map locations");
-          size_t const indentEnd = line.find_first_not_of(' ');
-          std::string const indent = (indentEnd != std::string::npos) ? line.substr(0, indentEnd) : "";
-          std::string const attrName = (lowPcPos != std::string::npos) ? "scope start" : "scope end";
-          output << indent << attrName << "\t:" << debugLoc->lineNumber << "\n";
-          continue;
-        }
+        // Replace the address with file:line
+        size_t const indentEnd = line.find_first_not_of(' ');
+        std::string const indent = (indentEnd != std::string::npos) ? line.substr(0, indentEnd) : "";
+        std::string const attrName = (lowPcPos != std::string::npos) ? "scope start" : "scope end";
+        output << indent << attrName << "\t:" << debugLoc->lineNumber << "\n";
+        continue;
       }
     }
 
