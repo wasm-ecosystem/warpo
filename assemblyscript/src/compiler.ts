@@ -1786,6 +1786,7 @@ export class Compiler extends DiagnosticEmitter {
         flow.set(FlowFlags.Returns | FlowFlags.Terminates);
       }
     }
+    flow.addLocalsToBlock(stmts);
 
     // Make constructors return their instance pointer, and prepend a conditional
     // allocation if any code path accesses `this`.
@@ -2683,6 +2684,7 @@ export class Compiler extends DiagnosticEmitter {
     // Finalize
     outerFlow.inherit(flow);
     this.currentFlow = outerFlow;
+    bodyFlow.addLocalsToBlock(bodyStmts);
     let expr = module.if(condExprTrueish,
       module.flatten(bodyStmts)
     );
@@ -2696,6 +2698,7 @@ export class Compiler extends DiagnosticEmitter {
     if (outerFlow.is(FlowFlags.Terminates)) {
       stmts.push(module.unreachable());
     }
+    flow.addLocalsToBlock(stmts);
     return module.flatten(stmts);
   }
 
@@ -2780,8 +2783,10 @@ export class Compiler extends DiagnosticEmitter {
         elseStmts.push(this.compileStatement(ifFalse));
       }
       flow.inheritAlternatives(thenFlow, elseFlow); // terminates if both do
+      thenFlow.addLocalsToBlock(thenStmts);
+      elseFlow.addLocalsToBlock(elseStmts);
       this.currentFlow = flow;
-      return module.if(condExprTrueish,
+            return module.if(condExprTrueish,
         module.flatten(thenStmts),
         module.flatten(elseStmts)
       );

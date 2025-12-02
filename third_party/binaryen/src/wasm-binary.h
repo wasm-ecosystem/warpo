@@ -1467,8 +1467,14 @@ public:
 
   void writeMemoryOrder(MemoryOrder order, bool isRMW = false);
 
-  std::unordered_map<Expression*, size_t*> const& getExpressionOffsets() const {
+  std::unordered_map<Expression*, size_t*> const&
+  getExpressionOffsets() const noexcept {
     return expressionOffsets;
+  }
+
+  std::deque<std::pair<size_t, const Function::DebugLocation*>> const&
+  getSourceMapLocations() const noexcept {
+    return sourceMapLocations;
   }
 
 private:

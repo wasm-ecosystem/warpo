@@ -303,7 +303,9 @@ static void dumpAttribute(raw_ostream &OS, const DWARFDie &Die,
       }
   } else if (Optional<uint64_t> Val = FormValue.getAsUnsignedConstant())
     Name = AttributeValueString(Attr, *Val);
-
+  if(Attr == DW_AT_high_pc || Attr == DW_AT_low_pc){
+    DumpOpts.ShowAddresses = true;
+  }
   if (!Name.empty())
     WithColor(OS, Color) << Name;
   else if (Attr == DW_AT_decl_line || Attr == DW_AT_call_line)

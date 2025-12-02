@@ -23,7 +23,9 @@ warpo::cli::Opt<bool> updateFixturesFlag{
 };
 
 // Filter out subprogram sections with names starting with "~lib" or "start:~lib"
-std::string filterLibSubprograms(std::string const &dump) {
+std::string
+filterLibSubprograms(std::string const &dump,
+                     std::deque<std::pair<size_t, const wasm::Function::DebugLocation *>> const &sourceMapLocations) {
   std::istringstream input(dump);
   std::ostringstream output;
   std::string line;
@@ -44,6 +46,39 @@ std::string filterLibSubprograms(std::string const &dump) {
       } else {
         // Still inside the subprogram, skip this line
         continue;
+      }
+    }
+
+    // Check for DW_AT_low_pc or DW_AT_high_pc
+    size_t const lowPcPos = line.find("DW_AT_low_pc");
+    size_t const highPcPos = line.find("DW_AT_high_pc");
+    if (lowPcPos != std::string::npos || highPcPos != std::string::npos) {
+      // Extract the hex address from the line
+      size_t const openParen = line.find('(');
+      size_t const closeParen = line.find(')');
+      if (openParen != std::string::npos && closeParen != std::string::npos && closeParen > openParen) {
+        std::string const addressStr = line.substr(openParen + 1, closeParen - openParen - 1);
+        if (addressStr.find("0x") == 0) {
+          // Parse the hex address
+          uint64_t const address = std::stoull(addressStr, nullptr, 16);
+
+          // Find the corresponding source location
+          wasm::Function::DebugLocation const *debugLoc = nullptr;
+          for (auto const &[offset, loc] : sourceMapLocations) {
+            if (offset == address) {
+              debugLoc = loc;
+              break;
+            }
+          }
+
+          // Replace the address with file:line if found
+          assert(debugLoc != nullptr && "Address should be found in source map locations");
+          size_t const indentEnd = line.find_first_not_of(' ');
+          std::string const indent = (indentEnd != std::string::npos) ? line.substr(0, indentEnd) : "";
+          std::string const attrName = (lowPcPos != std::string::npos) ? "scope start" : "scope end";
+          output << indent << attrName << "\t:" << debugLoc->lineNumber << "\n";
+          continue;
+        }
       }
     }
 
@@ -94,6 +129,7 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
   warpo::frontend::Config config = warpo::frontend::getDefaultConfig();
   config.useColorfulDiagMessage = false;
   config.emitDebugInfo = true;
+  config.emitDebugLine = true;
   Colors::setEnabled(false);
 
   std::string const testCaseName = GetParam();
@@ -115,7 +151,8 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
   runner.run();
 
   wasm::WasmBinaryWriter writer(compileResult.m.get(), buffer, options);
-
+  std::stringstream sourceMapStream;
+  writer.setSourceMap(&sourceMapStream, "");
   writer.setNamesSection(true);
   writer.setEmitModuleName(true);
   writer.write();
@@ -125,7 +162,7 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
                                                            writer.getExpressionOffsets());
 
   std::string const rawDump = warpo::passes::DwarfGenerator::dumpDwarf(debugSections);
-  std::string const dumpOutput = filterLibSubprograms(rawDump);
+  std::string const dumpOutput = filterLibSubprograms(rawDump, writer.getSourceMapLocations());
   std::string const fixtureName = testCaseName + "Fixture.txt";
   std::filesystem::path const expectedDumpPath = testDir / fixtureName;
 
@@ -148,6 +185,7 @@ INSTANTIATE_TEST_SUITE_P(DebugSymbolTests, TestDebugSymbol_P,
                              "TestGlobal",
                              "TestLambda",
                              "TestTemplateClass",
+                             "TestLocalInFor",
                          }));
 
 int main(int argc, char **argv) {

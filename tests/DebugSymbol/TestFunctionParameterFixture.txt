@@ -42,7 +42,7 @@ Abbrev table for offset: 0x00000000
 
 
 .debug_info contents:
-0x00000000: Compile Unit: length = 0x00002ae9 version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x00002aed)
+0x00000000: Compile Unit: length = 0x00003717 version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x0000371b)
 DW_TAG_compile_unit
               DW_AT_producer	("warpo")
   DW_TAG_base_type
@@ -117,6 +117,22 @@ DW_TAG_compile_unit
                     DW_AT_name	("b")
                     DW_AT_type	("i32")
                     DW_AT_location	(0x00000002)
+      DW_TAG_lexical_block
+                    scope start	:5
+                    scope end	:5
+        DW_TAG_variable
+                      DW_AT_name	("this")
+                      DW_AT_type	("tests/DebugSymbol/TestFunctionParameter/Calculator")
+                      DW_AT_location	(0x00000000)
+        DW_TAG_variable
+                      DW_AT_name	("a")
+                      DW_AT_type	("i32")
+                      DW_AT_location	(0x00000001)
+        DW_TAG_variable
+                      DW_AT_name	("b")
+                      DW_AT_type	("i32")
+                      DW_AT_location	(0x00000002)
+        NULL
       NULL
     DW_TAG_subprogram
                   DW_AT_name	("tests/DebugSymbol/TestFunctionParameter/Calculator#processNullable")
@@ -128,6 +144,18 @@ DW_TAG_compile_unit
                     DW_AT_name	("input")
                     DW_AT_type	("~lib/string/String")
                     DW_AT_location	(0x00000001)
+      DW_TAG_lexical_block
+                    scope start	:9
+                    scope end	:12
+        DW_TAG_variable
+                      DW_AT_name	("this")
+                      DW_AT_type	("tests/DebugSymbol/TestFunctionParameter/Calculator")
+                      DW_AT_location	(0x00000000)
+        DW_TAG_variable
+                      DW_AT_name	("input")
+                      DW_AT_type	("~lib/string/String")
+                      DW_AT_location	(0x00000001)
+        NULL
       NULL
     DW_TAG_subprogram
                   DW_AT_name	("tests/DebugSymbol/TestFunctionParameter/Calculator#getLength")
@@ -139,6 +167,18 @@ DW_TAG_compile_unit
                     DW_AT_name	("text")
                     DW_AT_type	("~lib/string/String")
                     DW_AT_location	(0x00000001)
+      DW_TAG_lexical_block
+                    scope start	:16
+                    scope end	:16
+        DW_TAG_variable
+                      DW_AT_name	("this")
+                      DW_AT_type	("tests/DebugSymbol/TestFunctionParameter/Calculator")
+                      DW_AT_location	(0x00000000)
+        DW_TAG_variable
+                      DW_AT_name	("text")
+                      DW_AT_type	("~lib/string/String")
+                      DW_AT_location	(0x00000001)
+        NULL
       NULL
     NULL
   DW_TAG_class_type
@@ -496,6 +536,18 @@ DW_TAG_compile_unit
                   DW_AT_name	("y")
                   DW_AT_type	("i32")
                   DW_AT_location	(0x00000001)
+    DW_TAG_lexical_block
+                  scope start	:22
+                  scope end	:22
+      DW_TAG_variable
+                    DW_AT_name	("x")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_variable
+                    DW_AT_name	("y")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000001)
+      NULL
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/DebugSymbol/TestFunctionParameter/processString")
@@ -503,6 +555,14 @@ DW_TAG_compile_unit
                   DW_AT_name	("input")
                   DW_AT_type	("~lib/string/String")
                   DW_AT_location	(0x00000000)
+    DW_TAG_lexical_block
+                  scope start	:26
+                  scope end	:29
+      DW_TAG_variable
+                    DW_AT_name	("input")
+                    DW_AT_type	("~lib/string/String")
+                    DW_AT_location	(0x00000000)
+      NULL
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/DebugSymbol/TestFunctionParameter/concat")
@@ -514,9 +574,57 @@ DW_TAG_compile_unit
                   DW_AT_name	("b")
                   DW_AT_type	("~lib/string/String")
                   DW_AT_location	(0x00000001)
+    DW_TAG_lexical_block
+                  scope start	:33
+                  scope end	:33
+      DW_TAG_variable
+                    DW_AT_name	("a")
+                    DW_AT_type	("~lib/string/String")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_variable
+                    DW_AT_name	("b")
+                    DW_AT_type	("~lib/string/String")
+                    DW_AT_location	(0x00000001)
+      NULL
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/DebugSymbol/TestFunctionParameter/test")
+    DW_TAG_lexical_block
+                  scope start	:41
+                  scope end	:50
+      DW_TAG_variable
+                    DW_AT_name	("calc")
+                    DW_AT_type	("tests/DebugSymbol/TestFunctionParameter/Calculator")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_variable
+                    DW_AT_name	("result1")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000001)
+      DW_TAG_variable
+                    DW_AT_name	("result2")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000002)
+      DW_TAG_variable
+                    DW_AT_name	("result3")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000003)
+      DW_TAG_variable
+                    DW_AT_name	("result4")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000004)
+      DW_TAG_variable
+                    DW_AT_name	("result5")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000005)
+      DW_TAG_variable
+                    DW_AT_name	("str")
+                    DW_AT_type	("~lib/string/String")
+                    DW_AT_location	(0x00000006)
+      DW_TAG_variable
+                    DW_AT_name	("result6")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000007)
+      NULL
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/DebugSymbol/TestFunctionParameter/goo<i32>")
@@ -524,6 +632,14 @@ DW_TAG_compile_unit
                   DW_AT_name	("item")
                   DW_AT_type	("i32")
                   DW_AT_location	(0x00000000)
+    DW_TAG_lexical_block
+                  scope start	:37
+                  scope end	:37
+      DW_TAG_variable
+                    DW_AT_name	("item")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000000)
+      NULL
     NULL
 
 .debug_str contents:

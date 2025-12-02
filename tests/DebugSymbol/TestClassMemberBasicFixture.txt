@@ -42,7 +42,7 @@ Abbrev table for offset: 0x00000000
 
 
 .debug_info contents:
-0x00000000: Compile Unit: length = 0x00002d89 version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x00002d8d)
+0x00000000: Compile Unit: length = 0x0000387f version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x00003883)
 DW_TAG_compile_unit
               DW_AT_producer	("warpo")
   DW_TAG_base_type
@@ -527,6 +527,18 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/DebugSymbol/TestClassMemberBasic/test")
+    DW_TAG_lexical_block
+                  scope start	:11
+                  scope end	:16
+      DW_TAG_variable
+                    DW_AT_name	("c1")
+                    DW_AT_type	("tests/DebugSymbol/TestClassMemberBasic/C1")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_variable
+                    DW_AT_name	("ct")
+                    DW_AT_type	("tests/DebugSymbol/TestClassMemberBasic/CT<i32>")
+                    DW_AT_location	(0x00000002)
+      NULL
     NULL
 
 .debug_str contents:
