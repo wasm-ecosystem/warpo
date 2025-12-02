@@ -249,17 +249,16 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo,
 
   abbrevDecls.push_back(lexicalBlockAbbrev);
 
-  llvm::DWARFYAML::Abbrev subprogramAbbrev =
+  llvm::DWARFYAML::Abbrev subProgramAbbrev =
       abbrevFactory.create(llvm::dwarf::DW_TAG_subprogram, llvm::dwarf::DW_CHILDREN_yes);
 
-  llvm::DWARFYAML::AttributeAbbrev subprogramNameAttr{};
-  subprogramNameAttr.Attribute = llvm::dwarf::DW_AT_name;
-  subprogramNameAttr.Form = llvm::dwarf::DW_FORM_string;
-  subprogramNameAttr.Value = 0U;
-  subprogramAbbrev.Attributes.push_back(subprogramNameAttr);
+  llvm::DWARFYAML::AttributeAbbrev subProgramNameAttr{};
+  subProgramNameAttr.Attribute = llvm::dwarf::DW_AT_name;
+  subProgramNameAttr.Form = llvm::dwarf::DW_FORM_string;
+  subProgramNameAttr.Value = 0U;
+  subProgramAbbrev.Attributes.push_back(subProgramNameAttr);
 
-  abbrevDecls.push_back(subprogramAbbrev);
-
+  abbrevDecls.push_back(subProgramAbbrev);
   llvm::DWARFYAML::Abbrev terminator;
   terminator.Code = 0U;
   terminator.Tag = llvm::dwarf::DW_TAG_null;
@@ -301,7 +300,7 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo,
     rootUnit.Entries.push_back(baseTypeEntry);
   }
 
-  DwarfGenerator::AbbrevCodes const abbrevCodes{subprogramAbbrev.Code, formalParameterAbbrev.Code,
+  DwarfGenerator::AbbrevCodes const abbrevCodes{subProgramAbbrev.Code, formalParameterAbbrev.Code,
                                                 lexicalBlockAbbrev.Code, localVariableAbbrev.Code};
 
   for (auto const &[className, classInfo] : classRegistry) {
@@ -481,25 +480,25 @@ void DwarfGenerator::addSubProgramWithParameters(
 
   // Use visitor pattern to build DWARF tree directly from intervals
   if (!scopeInfoMap.empty()) {
-    std::vector<std::pair<wasm::BinaryLocations::Span, uint32_t>> intervals;
+    std::vector<std::pair<wasm::BinaryLocations::Span, SubProgramInfo::ScopeId>> intervals;
     intervals.reserve(scopeInfoMap.size());
 
-    for (std::pair<uint32_t const, ScopeInfo> const &scopeEntry : scopeInfoMap) {
-      uint32_t const scopeId = scopeEntry.first;
+    for (std::pair<SubProgramInfo::ScopeId const, ScopeInfo> const &scopeEntry : scopeInfoMap) {
+      SubProgramInfo::ScopeId const scopeId = scopeEntry.first;
       ScopeInfo const &scopeInfo = scopeEntry.second;
       wasm::BinaryLocations::Span const span = getRangeOfScope(scopeInfo, expressionOffsets);
       intervals.emplace_back(span, scopeId);
     }
 
     // Visitor that builds DWARF entries directly
-    class DwarfScopeVisitor : public IntervalVisitor<uint32_t> {
+    class DwarfScopeVisitor : public IntervalVisitor<SubProgramInfo::ScopeId> {
     public:
       DwarfScopeVisitor(llvm::DWARFYAML::Unit &unit, uint32_t blockAbbrevCode, uint32_t localVarAbbrevCode,
                         SubProgramInfo::LocalsMap const &locals, std::vector<TypeRefFixup> &fixups)
           : rootUnit_(unit), lexicalBlockAbbrevCode_(blockAbbrevCode), localVariableAbbrevCode_(localVarAbbrevCode),
             localsMap_(locals), typeRefFixups_(fixups) {}
 
-      void onEnterScope(std::pair<wasm::BinaryLocations::Span, uint32_t> const &interval) override {
+      void onEnterScope(std::pair<wasm::BinaryLocations::Span, SubProgramInfo::ScopeId> const &interval) override {
         // Add lexical block entry
         llvm::DWARFYAML::Entry blockEntry;
         blockEntry.AbbrCode = lexicalBlockAbbrevCode_;
@@ -563,9 +562,9 @@ void DwarfGenerator::addSubProgramWithParameters(
   }
 
   // Add terminator for subprogram children
-  llvm::DWARFYAML::Entry subprogramTerminator;
-  subprogramTerminator.AbbrCode = 0U;
-  rootUnit.Entries.push_back(subprogramTerminator);
+  llvm::DWARFYAML::Entry subProgramTerminator;
+  subProgramTerminator.AbbrCode = 0U;
+  rootUnit.Entries.push_back(subProgramTerminator);
 }
 
 } // namespace warpo::passes
