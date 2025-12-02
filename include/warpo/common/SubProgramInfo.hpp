@@ -33,9 +33,9 @@ namespace warpo {
 
 class SubProgramInfo final {
 public:
-  using LocalsMap = std::map<uint32_t, std::vector<LocalInfo>>;
   using ScopeId = uint32_t;
   using ScopeInfoMap = std::unordered_map<ScopeId, ScopeInfo>;
+  using LocalsMap = std::map<ScopeId, std::vector<LocalInfo>>;
 
   explicit inline SubProgramInfo(std::string_view const name) noexcept : name_(name) {}
 
