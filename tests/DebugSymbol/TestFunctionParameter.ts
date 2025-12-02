@@ -33,6 +33,10 @@ export function concat(a: string, b: string): string {
   return a + b;
 }
 
+function goo<T>(item: T): T {
+  return item;
+}
+
 export function test(): i32 {
   const calc = new Calculator();
   calc.value = 10;
@@ -42,5 +46,6 @@ export function test(): i32 {
   const result4 = multiply(4, 7);
   const result5 = processString("world");
   const str = concat("a", "b");
-  return result1 + result2 + result3 + result4 + result5 + str.length;
+  const result6 = goo<i32>(42);
+  return result1 + result2 + result3 + result4 + result5 + str.length + result6;
 }

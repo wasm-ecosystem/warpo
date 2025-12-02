@@ -1,9 +1,9 @@
-class C {
-  f: () => void;
-  constructor(f: () => void) {
-    this.f = f;
+class C1 {
+  f1: () => void;
+  constructor(fx: () => void) {
+    this.f1 = fx;
   }
 }
 
 let fn = (): void => {};
-export const c = new C(fn);
+export const c1 = new C1(fn);

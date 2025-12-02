@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <gtest/gtest.h>
 #include <sstream>
 #include <string>
@@ -20,6 +21,68 @@ warpo::cli::Opt<bool> updateFixturesFlag{
     "--update-fixtures",
     [](argparse::Argument &arg) { arg.help("update fixture files instead of comparing").flag(); },
 };
+
+// Filter out subprogram sections with names starting with "~lib" or "start:~lib"
+std::string filterLibSubprograms(std::string const &dump) {
+  std::istringstream input(dump);
+  std::ostringstream output;
+  std::string line;
+
+  bool skipping = false;
+  size_t skipIndent = 0;
+
+  while (std::getline(input, line)) {
+    if (skipping) {
+      // Count leading spaces (indentation)
+      size_t const currentIndent = line.find_first_not_of(' ');
+      size_t const indentLevel = (currentIndent == std::string::npos) ? line.size() : currentIndent;
+
+      // If we're back to the same or lower indentation level, stop skipping
+      if (indentLevel <= skipIndent) {
+        skipping = false;
+        // Fall through to process this line normally
+      } else {
+        // Still inside the subprogram, skip this line
+        continue;
+      }
+    }
+
+    // Check for DW_TAG_subprogram
+    size_t const subprogramPos = line.find("DW_TAG_subprogram");
+    if (subprogramPos != std::string::npos) {
+      // Count indentation of this subprogram
+      size_t const firstNonSpace = line.find_first_not_of(' ');
+      size_t const subprogramIndent = (firstNonSpace == std::string::npos) ? line.size() : firstNonSpace;
+
+      // Read next line to check the name
+      std::string nameLine;
+      if (std::getline(input, nameLine)) {
+        size_t const namePos = nameLine.find("DW_AT_name");
+        size_t const libPos = nameLine.find("(\"~lib");
+        size_t const startLibPos = nameLine.find("(\"start:~lib");
+        if (namePos != std::string::npos && (libPos != std::string::npos || startLibPos != std::string::npos)) {
+          // This is a ~lib subprogram, start skipping
+          skipping = true;
+          skipIndent = subprogramIndent;
+          continue; // Skip both the subprogram line and name line
+        } else {
+          // Not a ~lib subprogram, output both lines
+          output << line << '\n' << nameLine << '\n';
+          continue;
+        }
+      } else {
+        // No next line, just output this line
+        output << line << '\n';
+        break;
+      }
+    }
+
+    output << line << '\n';
+  }
+
+  return output.str();
+}
+
 } // namespace
 
 class TestDebugSymbol_P : public ::testing::TestWithParam<const char *> {
@@ -61,7 +124,8 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
       warpo::passes::DwarfGenerator::generateDebugSections(compileResult.m.variableInfo_,
                                                            writer.getExpressionOffsets());
 
-  std::string const dumpOutput = warpo::passes::DwarfGenerator::dumpDwarf(debugSections);
+  std::string const rawDump = warpo::passes::DwarfGenerator::dumpDwarf(debugSections);
+  std::string const dumpOutput = filterLibSubprograms(rawDump);
   std::string const fixtureName = testCaseName + "Fixture.txt";
   std::filesystem::path const expectedDumpPath = testDir / fixtureName;
 

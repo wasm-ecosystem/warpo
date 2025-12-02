@@ -42,2107 +42,431 @@ Abbrev table for offset: 0x00000000
 
 
 .debug_info contents:
-0x00000000: Compile Unit: length = 0x000028b7 version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x000028bb)
-
-0x0000000b: DW_TAG_compile_unit
+0x00000000: Compile Unit: length = 0x000028bd version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x000028c1)
+DW_TAG_compile_unit
               DW_AT_producer	("warpo")
-
-0x00000010:   DW_TAG_base_type
+  DW_TAG_base_type
                 DW_AT_name	("bool")
-
-0x00000016:   DW_TAG_base_type
+  DW_TAG_base_type
                 DW_AT_name	("f32")
-
-0x0000001b:   DW_TAG_base_type
+  DW_TAG_base_type
                 DW_AT_name	("f64")
-
-0x00000020:   DW_TAG_base_type
+  DW_TAG_base_type
                 DW_AT_name	("i16")
-
-0x00000025:   DW_TAG_base_type
+  DW_TAG_base_type
                 DW_AT_name	("i32")
-
-0x0000002a:   DW_TAG_base_type
+  DW_TAG_base_type
                 DW_AT_name	("i64")
-
-0x0000002f:   DW_TAG_base_type
+  DW_TAG_base_type
                 DW_AT_name	("i8")
-
-0x00000033:   DW_TAG_base_type
+  DW_TAG_base_type
                 DW_AT_name	("isize")
-
-0x0000003a:   DW_TAG_base_type
+  DW_TAG_base_type
                 DW_AT_name	("u16")
-
-0x0000003f:   DW_TAG_base_type
+  DW_TAG_base_type
                 DW_AT_name	("u32")
-
-0x00000044:   DW_TAG_base_type
+  DW_TAG_base_type
                 DW_AT_name	("u64")
-
-0x00000049:   DW_TAG_base_type
+  DW_TAG_base_type
                 DW_AT_name	("u8")
-
-0x0000004d:   DW_TAG_base_type
+  DW_TAG_base_type
                 DW_AT_name	("usize")
-
-0x00000054:   DW_TAG_class_type
-                DW_AT_name	("tests/DebugSymbol/TestLambda/C")
+  DW_TAG_class_type
+                DW_AT_name	("tests/DebugSymbol/TestLambda/C1")
                 DW_AT_signature	(0x00000005)
-
-0x00000078:     DW_TAG_member
-                  DW_AT_name	("f")
-                  DW_AT_type	(0x00000416 "~lib/function/Function<%28%29=>void>")
+    DW_TAG_member
+                  DW_AT_name	("f1")
+                  DW_AT_type	("~lib/function/Function<()=>void>")
                   DW_AT_data_member_location	(0x00000000)
-
-0x00000083:     DW_TAG_subprogram
-                  DW_AT_name	("tests/DebugSymbol/TestLambda/C#get:f")
-
-0x000000a9:       DW_TAG_formal_parameter
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/DebugSymbol/TestLambda/C1#get:f1")
+      DW_TAG_formal_parameter
                     DW_AT_name	("this")
-                    DW_AT_type	(0x00000054 "tests/DebugSymbol/TestLambda/C")
+                    DW_AT_type	("tests/DebugSymbol/TestLambda/C1")
                     DW_AT_location	(0x00000000)
-
-0x000000b7:       NULL
-
-0x000000b8:     DW_TAG_subprogram
-                  DW_AT_name	("tests/DebugSymbol/TestLambda/C#set:f")
-
-0x000000de:       DW_TAG_formal_parameter
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/DebugSymbol/TestLambda/C1#set:f1")
+      DW_TAG_formal_parameter
                     DW_AT_name	("this")
-                    DW_AT_type	(0x00000054 "tests/DebugSymbol/TestLambda/C")
+                    DW_AT_type	("tests/DebugSymbol/TestLambda/C1")
                     DW_AT_location	(0x00000000)
-
-0x000000ec:       DW_TAG_formal_parameter
-                    DW_AT_name	("f")
-                    DW_AT_type	(0x00000416 "~lib/function/Function<%28%29=>void>")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("f1")
+                    DW_AT_type	("~lib/function/Function<()=>void>")
                     DW_AT_location	(0x00000001)
-
-0x000000f7:       NULL
-
-0x000000f8:     DW_TAG_subprogram
-                  DW_AT_name	("tests/DebugSymbol/TestLambda/C#constructor")
-
-0x00000124:       DW_TAG_formal_parameter
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/DebugSymbol/TestLambda/C1#constructor")
+      DW_TAG_formal_parameter
                     DW_AT_name	("this")
-                    DW_AT_type	(0x00000054 "tests/DebugSymbol/TestLambda/C")
+                    DW_AT_type	("tests/DebugSymbol/TestLambda/C1")
                     DW_AT_location	(0x00000000)
-
-0x00000132:       DW_TAG_formal_parameter
-                    DW_AT_name	("f")
-                    DW_AT_type	(0x00000416 "~lib/function/Function<%28%29=>void>")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("fx")
+                    DW_AT_type	("~lib/function/Function<()=>void>")
                     DW_AT_location	(0x00000001)
-
-0x0000013d:       NULL
-
-0x0000013e:     NULL
-
-0x0000013f:   DW_TAG_class_type
+      NULL
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
                 DW_AT_signature	(0x00000001)
-
-0x00000161:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/arraybuffer/ArrayBuffer#constructor")
-
-0x0000018b:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x0000013f "~lib/arraybuffer/ArrayBuffer")
-                    DW_AT_location	(0x00000000)
-
-0x00000199:       DW_TAG_formal_parameter
-                    DW_AT_name	("length")
-                    DW_AT_type	(0x00000025 "i32")
-                    DW_AT_location	(0x00000001)
-
-0x000001a9:       NULL
-
-0x000001aa:     NULL
-
-0x000001ab:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/arraybuffer/ArrayBufferView")
                 DW_AT_signature	(0x00000003)
-
-0x000001d1:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("buffer")
-                  DW_AT_type	(0x0000013f "~lib/arraybuffer/ArrayBuffer")
+                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
                   DW_AT_data_member_location	(0x00000000)
-
-0x000001e1:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("dataStart")
-                  DW_AT_type	(0x0000004d "usize")
+                  DW_AT_type	("usize")
                   DW_AT_data_member_location	(0x00000004)
-
-0x000001f4:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("byteLength")
-                  DW_AT_type	(0x00000025 "i32")
+                  DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000008)
-
-0x00000208:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/arraybuffer/ArrayBufferView#get:buffer")
-
-0x00000235:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000001ab "~lib/arraybuffer/ArrayBufferView")
-                    DW_AT_location	(0x00000000)
-
-0x00000243:       NULL
-
-0x00000244:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/arraybuffer/ArrayBufferView#set:buffer")
-
-0x00000271:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000001ab "~lib/arraybuffer/ArrayBufferView")
-                    DW_AT_location	(0x00000000)
-
-0x0000027f:       DW_TAG_formal_parameter
-                    DW_AT_name	("buffer")
-                    DW_AT_type	(0x0000013f "~lib/arraybuffer/ArrayBuffer")
-                    DW_AT_location	(0x00000001)
-
-0x0000028f:       NULL
-
-0x00000290:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/arraybuffer/ArrayBufferView#get:dataStart")
-
-0x000002c0:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000001ab "~lib/arraybuffer/ArrayBufferView")
-                    DW_AT_location	(0x00000000)
-
-0x000002ce:       NULL
-
-0x000002cf:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/arraybuffer/ArrayBufferView#set:dataStart")
-
-0x000002ff:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000001ab "~lib/arraybuffer/ArrayBufferView")
-                    DW_AT_location	(0x00000000)
-
-0x0000030d:       DW_TAG_formal_parameter
-                    DW_AT_name	("dataStart")
-                    DW_AT_type	(0x0000004d "usize")
-                    DW_AT_location	(0x00000001)
-
-0x00000320:       NULL
-
-0x00000321:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/arraybuffer/ArrayBufferView#get:byteLength")
-
-0x00000352:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000001ab "~lib/arraybuffer/ArrayBufferView")
-                    DW_AT_location	(0x00000000)
-
-0x00000360:       NULL
-
-0x00000361:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/arraybuffer/ArrayBufferView#set:byteLength")
-
-0x00000392:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000001ab "~lib/arraybuffer/ArrayBufferView")
-                    DW_AT_location	(0x00000000)
-
-0x000003a0:       DW_TAG_formal_parameter
-                    DW_AT_name	("byteLength")
-                    DW_AT_type	(0x00000025 "i32")
-                    DW_AT_location	(0x00000001)
-
-0x000003b4:       NULL
-
-0x000003b5:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/arraybuffer/ArrayBufferView#constructor")
-
-0x000003e3:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000001ab "~lib/arraybuffer/ArrayBufferView")
-                    DW_AT_location	(0x00000000)
-
-0x000003f1:       DW_TAG_formal_parameter
-                    DW_AT_name	("length")
-                    DW_AT_type	(0x00000025 "i32")
-                    DW_AT_location	(0x00000001)
-
-0x00000401:       DW_TAG_formal_parameter
-                    DW_AT_name	("alignLog2")
-                    DW_AT_type	(0x00000025 "i32")
-                    DW_AT_location	(0x00000002)
-
-0x00000414:       NULL
-
-0x00000415:     NULL
-
-0x00000416:   DW_TAG_class_type
-                DW_AT_name	("~lib/function/Function<%28%29=>void>")
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/function/Function<()=>void>")
                 DW_AT_signature	(0x00000004)
-
-0x00000440:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("_index")
-                  DW_AT_type	(0x0000003f "u32")
+                  DW_AT_type	("u32")
                   DW_AT_data_member_location	(0x00000000)
-
-0x00000450:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("_env")
-                  DW_AT_type	(0x0000004d "usize")
+                  DW_AT_type	("usize")
                   DW_AT_data_member_location	(0x00000004)
-
-0x0000045e:     DW_TAG_template_type_parameter
-                  DW_AT_type	(0x00000416 "~lib/function/Function<%28%29=>void>")
-
-0x00000463:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/function/Function<()=>void>#get:_index")
-
-0x00000490:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000416 "~lib/function/Function<%28%29=>void>")
-                    DW_AT_location	(0x00000000)
-
-0x0000049e:       NULL
-
-0x0000049f:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/function/Function<()=>void>#set:_index")
-
-0x000004cc:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000416 "~lib/function/Function<%28%29=>void>")
-                    DW_AT_location	(0x00000000)
-
-0x000004da:       DW_TAG_formal_parameter
-                    DW_AT_name	("_index")
-                    DW_AT_type	(0x0000003f "u32")
-                    DW_AT_location	(0x00000001)
-
-0x000004ea:       NULL
-
-0x000004eb:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/function/Function<()=>void>#get:_env")
-
-0x00000516:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000416 "~lib/function/Function<%28%29=>void>")
-                    DW_AT_location	(0x00000000)
-
-0x00000524:       NULL
-
-0x00000525:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/function/Function<()=>void>#set:_env")
-
-0x00000550:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000416 "~lib/function/Function<%28%29=>void>")
-                    DW_AT_location	(0x00000000)
-
-0x0000055e:       DW_TAG_formal_parameter
-                    DW_AT_name	("_env")
-                    DW_AT_type	(0x0000004d "usize")
-                    DW_AT_location	(0x00000001)
-
-0x0000056c:       NULL
-
-0x0000056d:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/function/Function<()=>void>#__visit")
-
-0x00000597:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000416 "~lib/function/Function<%28%29=>void>")
-                    DW_AT_location	(0x00000000)
-
-0x000005a5:       DW_TAG_formal_parameter
-                    DW_AT_name	("cookie")
-                    DW_AT_type	(0x0000003f "u32")
-                    DW_AT_location	(0x00000001)
-
-0x000005b5:       NULL
-
-0x000005b6:     NULL
-
-0x000005b7:   DW_TAG_class_type
+    DW_TAG_template_type_parameter
+                  DW_AT_type	("~lib/function/Function<()=>void>")
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/number/Bool")
                 DW_AT_signature	(0x00000000)
-
-0x000005cd:     NULL
-
-0x000005ce:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/number/F32")
                 DW_AT_signature	(0x00000000)
-
-0x000005e3:     NULL
-
-0x000005e4:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/number/F64")
                 DW_AT_signature	(0x00000000)
-
-0x000005f9:     NULL
-
-0x000005fa:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/number/I16")
                 DW_AT_signature	(0x00000000)
-
-0x0000060f:     NULL
-
-0x00000610:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/number/I32")
                 DW_AT_signature	(0x00000000)
-
-0x00000625:     NULL
-
-0x00000626:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/number/I64")
                 DW_AT_signature	(0x00000000)
-
-0x0000063b:     NULL
-
-0x0000063c:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/number/I8")
                 DW_AT_signature	(0x00000000)
-
-0x00000650:     NULL
-
-0x00000651:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/number/Isize")
                 DW_AT_signature	(0x00000000)
-
-0x00000668:     NULL
-
-0x00000669:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/number/U16")
                 DW_AT_signature	(0x00000000)
-
-0x0000067e:     NULL
-
-0x0000067f:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/number/U32")
                 DW_AT_signature	(0x00000000)
-
-0x00000694:     NULL
-
-0x00000695:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/number/U64")
                 DW_AT_signature	(0x00000000)
-
-0x000006aa:     NULL
-
-0x000006ab:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/number/U8")
                 DW_AT_signature	(0x00000000)
-
-0x000006bf:     NULL
-
-0x000006c0:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/number/Usize")
                 DW_AT_signature	(0x00000000)
-
-0x000006d7:     NULL
-
-0x000006d8:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/object/Object")
                 DW_AT_signature	(0x00000000)
-
-0x000006f0:     NULL
-
-0x000006f1:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/rt/common/BLOCK")
                 DW_AT_signature	(0x00000000)
-
-0x0000070b:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("mmInfo")
-                  DW_AT_type	(0x0000004d "usize")
+                  DW_AT_type	("usize")
                   DW_AT_data_member_location	(0x00000000)
-
-0x0000071b:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/common/BLOCK#get:mmInfo")
-
-0x0000073c:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000006f1 "~lib/rt/common/BLOCK")
-                    DW_AT_location	(0x00000000)
-
-0x0000074a:       NULL
-
-0x0000074b:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/common/BLOCK#set:mmInfo")
-
-0x0000076c:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000006f1 "~lib/rt/common/BLOCK")
-                    DW_AT_location	(0x00000000)
-
-0x0000077a:       DW_TAG_formal_parameter
-                    DW_AT_name	("mmInfo")
-                    DW_AT_type	(0x0000004d "usize")
-                    DW_AT_location	(0x00000001)
-
-0x0000078a:       NULL
-
-0x0000078b:     NULL
-
-0x0000078c:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/rt/common/OBJECT")
                 DW_AT_signature	(0x00000000)
-
-0x000007a7:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("gcInfo")
-                  DW_AT_type	(0x0000003f "u32")
+                  DW_AT_type	("u32")
                   DW_AT_data_member_location	(0x00000004)
-
-0x000007b7:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("gcInfo2")
-                  DW_AT_type	(0x0000003f "u32")
+                  DW_AT_type	("u32")
                   DW_AT_data_member_location	(0x00000008)
-
-0x000007c8:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("rtId")
-                  DW_AT_type	(0x0000003f "u32")
+                  DW_AT_type	("u32")
                   DW_AT_data_member_location	(0x0000000c)
-
-0x000007d6:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("rtSize")
-                  DW_AT_type	(0x0000003f "u32")
+                  DW_AT_type	("u32")
                   DW_AT_data_member_location	(0x00000010)
-
-0x000007e6:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/common/OBJECT#get:gcInfo")
-
-0x00000808:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x0000078c "~lib/rt/common/OBJECT")
-                    DW_AT_location	(0x00000000)
-
-0x00000816:       NULL
-
-0x00000817:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/common/OBJECT#set:gcInfo")
-
-0x00000839:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x0000078c "~lib/rt/common/OBJECT")
-                    DW_AT_location	(0x00000000)
-
-0x00000847:       DW_TAG_formal_parameter
-                    DW_AT_name	("gcInfo")
-                    DW_AT_type	(0x0000003f "u32")
-                    DW_AT_location	(0x00000001)
-
-0x00000857:       NULL
-
-0x00000858:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/common/OBJECT#get:gcInfo2")
-
-0x0000087b:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x0000078c "~lib/rt/common/OBJECT")
-                    DW_AT_location	(0x00000000)
-
-0x00000889:       NULL
-
-0x0000088a:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/common/OBJECT#set:gcInfo2")
-
-0x000008ad:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x0000078c "~lib/rt/common/OBJECT")
-                    DW_AT_location	(0x00000000)
-
-0x000008bb:       DW_TAG_formal_parameter
-                    DW_AT_name	("gcInfo2")
-                    DW_AT_type	(0x0000003f "u32")
-                    DW_AT_location	(0x00000001)
-
-0x000008cc:       NULL
-
-0x000008cd:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/common/OBJECT#get:rtId")
-
-0x000008ed:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x0000078c "~lib/rt/common/OBJECT")
-                    DW_AT_location	(0x00000000)
-
-0x000008fb:       NULL
-
-0x000008fc:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/common/OBJECT#set:rtId")
-
-0x0000091c:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x0000078c "~lib/rt/common/OBJECT")
-                    DW_AT_location	(0x00000000)
-
-0x0000092a:       DW_TAG_formal_parameter
-                    DW_AT_name	("rtId")
-                    DW_AT_type	(0x0000003f "u32")
-                    DW_AT_location	(0x00000001)
-
-0x00000938:       NULL
-
-0x00000939:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/common/OBJECT#get:rtSize")
-
-0x0000095b:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x0000078c "~lib/rt/common/OBJECT")
-                    DW_AT_location	(0x00000000)
-
-0x00000969:       NULL
-
-0x0000096a:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/common/OBJECT#set:rtSize")
-
-0x0000098c:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x0000078c "~lib/rt/common/OBJECT")
-                    DW_AT_location	(0x00000000)
-
-0x0000099a:       DW_TAG_formal_parameter
-                    DW_AT_name	("rtSize")
-                    DW_AT_type	(0x0000003f "u32")
-                    DW_AT_location	(0x00000001)
-
-0x000009aa:       NULL
-
-0x000009ab:     NULL
-
-0x000009ac:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/rt/itcms/Object")
                 DW_AT_signature	(0x00000000)
-
-0x000009c6:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("nextWithColor")
-                  DW_AT_type	(0x0000004d "usize")
+                  DW_AT_type	("usize")
                   DW_AT_data_member_location	(0x00000004)
-
-0x000009dd:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("prev")
-                  DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
+                  DW_AT_type	("~lib/rt/itcms/Object")
                   DW_AT_data_member_location	(0x00000008)
-
-0x000009eb:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("rtId")
-                  DW_AT_type	(0x0000003f "u32")
+                  DW_AT_type	("u32")
                   DW_AT_data_member_location	(0x0000000c)
-
-0x000009f9:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("rtSize")
-                  DW_AT_type	(0x0000003f "u32")
+                  DW_AT_type	("u32")
                   DW_AT_data_member_location	(0x00000010)
-
-0x00000a09:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#get:nextWithColor")
-
-0x00000a31:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000a3f:       NULL
-
-0x00000a40:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#set:nextWithColor")
-
-0x00000a68:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000a76:       DW_TAG_formal_parameter
-                    DW_AT_name	("nextWithColor")
-                    DW_AT_type	(0x0000004d "usize")
-                    DW_AT_location	(0x00000001)
-
-0x00000a8d:       NULL
-
-0x00000a8e:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#get:prev")
-
-0x00000aad:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000abb:       NULL
-
-0x00000abc:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#set:prev")
-
-0x00000adb:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000ae9:       DW_TAG_formal_parameter
-                    DW_AT_name	("prev")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000001)
-
-0x00000af7:       NULL
-
-0x00000af8:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#get:rtId")
-
-0x00000b17:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000b25:       NULL
-
-0x00000b26:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#set:rtId")
-
-0x00000b45:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000b53:       DW_TAG_formal_parameter
-                    DW_AT_name	("rtId")
-                    DW_AT_type	(0x0000003f "u32")
-                    DW_AT_location	(0x00000001)
-
-0x00000b61:       NULL
-
-0x00000b62:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#get:rtSize")
-
-0x00000b83:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000b91:       NULL
-
-0x00000b92:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#set:rtSize")
-
-0x00000bb3:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000bc1:       DW_TAG_formal_parameter
-                    DW_AT_name	("rtSize")
-                    DW_AT_type	(0x0000003f "u32")
-                    DW_AT_location	(0x00000001)
-
-0x00000bd1:       NULL
-
-0x00000bd2:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#get:color")
-
-0x00000bf2:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000c00:       NULL
-
-0x00000c01:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#set:color")
-
-0x00000c21:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000c2f:       DW_TAG_formal_parameter
-                    DW_AT_name	("color")
-                    DW_AT_type	(0x00000025 "i32")
-                    DW_AT_location	(0x00000001)
-
-0x00000c3e:       NULL
-
-0x00000c3f:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#makeGray")
-
-0x00000c5e:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000c6c:       NULL
-
-0x00000c6d:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#unlink")
-
-0x00000c8a:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000c98:       NULL
-
-0x00000c99:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#get:next")
-
-0x00000cb8:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000cc6:       NULL
-
-0x00000cc7:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#set:next")
-
-0x00000ce6:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000cf4:       DW_TAG_formal_parameter
-                    DW_AT_name	("obj")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000001)
-
-0x00000d01:       NULL
-
-0x00000d02:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#linkTo")
-
-0x00000d1f:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000d2d:       DW_TAG_formal_parameter
-                    DW_AT_name	("list")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000001)
-
-0x00000d3b:       DW_TAG_formal_parameter
-                    DW_AT_name	("withColor")
-                    DW_AT_type	(0x00000025 "i32")
-                    DW_AT_location	(0x00000002)
-
-0x00000d4e:       NULL
-
-0x00000d4f:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#get:isPointerfree")
-
-0x00000d77:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000d85:       NULL
-
-0x00000d86:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/itcms/Object#get:size")
-
-0x00000da5:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                    DW_AT_location	(0x00000000)
-
-0x00000db3:       NULL
-
-0x00000db4:     NULL
-
-0x00000db5:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/rt/tlsf/Block")
                 DW_AT_signature	(0x00000000)
-
-0x00000dcd:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("prev")
-                  DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
+                  DW_AT_type	("~lib/rt/tlsf/Block")
                   DW_AT_data_member_location	(0x00000004)
-
-0x00000ddb:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("next")
-                  DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
+                  DW_AT_type	("~lib/rt/tlsf/Block")
                   DW_AT_data_member_location	(0x00000008)
-
-0x00000de9:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/tlsf/Block#get:prev")
-
-0x00000e06:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                    DW_AT_location	(0x00000000)
-
-0x00000e14:       NULL
-
-0x00000e15:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/tlsf/Block#set:prev")
-
-0x00000e32:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                    DW_AT_location	(0x00000000)
-
-0x00000e40:       DW_TAG_formal_parameter
-                    DW_AT_name	("prev")
-                    DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                    DW_AT_location	(0x00000001)
-
-0x00000e4e:       NULL
-
-0x00000e4f:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/tlsf/Block#get:next")
-
-0x00000e6c:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                    DW_AT_location	(0x00000000)
-
-0x00000e7a:       NULL
-
-0x00000e7b:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/tlsf/Block#set:next")
-
-0x00000e98:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                    DW_AT_location	(0x00000000)
-
-0x00000ea6:       DW_TAG_formal_parameter
-                    DW_AT_name	("next")
-                    DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                    DW_AT_location	(0x00000001)
-
-0x00000eb4:       NULL
-
-0x00000eb5:     NULL
-
-0x00000eb6:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/rt/tlsf/Root")
                 DW_AT_signature	(0x00000000)
-
-0x00000ecd:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("flMap")
-                  DW_AT_type	(0x0000004d "usize")
+                  DW_AT_type	("usize")
                   DW_AT_data_member_location	(0x00000000)
-
-0x00000edc:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/tlsf/Root#get:flMap")
-
-0x00000ef9:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                    DW_AT_location	(0x00000000)
-
-0x00000f07:       NULL
-
-0x00000f08:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/rt/tlsf/Root#set:flMap")
-
-0x00000f25:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                    DW_AT_location	(0x00000000)
-
-0x00000f33:       DW_TAG_formal_parameter
-                    DW_AT_name	("flMap")
-                    DW_AT_type	(0x0000004d "usize")
-                    DW_AT_location	(0x00000001)
-
-0x00000f42:       NULL
-
-0x00000f43:     NULL
-
-0x00000f44:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/shared/typeinfo/Typeinfo")
                 DW_AT_signature	(0x00000000)
-
-0x00000f67:     DW_TAG_member
+    DW_TAG_member
                   DW_AT_name	("flags")
-                  DW_AT_type	(0x00000025 "i32")
+                  DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000000)
-
-0x00000f76:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/shared/typeinfo/Typeinfo#get:flags")
-
-0x00000f9f:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000f44 "~lib/shared/typeinfo/Typeinfo")
-                    DW_AT_location	(0x00000000)
-
-0x00000fad:       NULL
-
-0x00000fae:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/shared/typeinfo/Typeinfo#set:flags")
-
-0x00000fd7:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000f44 "~lib/shared/typeinfo/Typeinfo")
-                    DW_AT_location	(0x00000000)
-
-0x00000fe5:       DW_TAG_formal_parameter
-                    DW_AT_name	("flags")
-                    DW_AT_type	(0x00000025 "i32")
-                    DW_AT_location	(0x00000001)
-
-0x00000ff4:       NULL
-
-0x00000ff5:     NULL
-
-0x00000ff6:   DW_TAG_class_type
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/string/String")
                 DW_AT_signature	(0x00000002)
-
-0x0000100e:     DW_TAG_subprogram
-                  DW_AT_name	("~lib/string/String#charAt")
-
-0x00001029:       DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	(0x00000ff6 "~lib/string/String")
-                    DW_AT_location	(0x00000000)
-
-0x00001037:       DW_TAG_formal_parameter
-                    DW_AT_name	("pos")
-                    DW_AT_type	(0x00000025 "i32")
-                    DW_AT_location	(0x00000001)
-
-0x00001044:       NULL
-
-0x00001045:     NULL
-
-0x00001046:   DW_TAG_variable
-                DW_AT_name	("tests/DebugSymbol/TestLambda/c")
-                DW_AT_type	(0x00000054 "tests/DebugSymbol/TestLambda/C")
-
-0x0000106a:   DW_TAG_variable
+    NULL
+  DW_TAG_variable
+                DW_AT_name	("tests/DebugSymbol/TestLambda/c1")
+                DW_AT_type	("tests/DebugSymbol/TestLambda/C1")
+  DW_TAG_variable
                 DW_AT_name	("tests/DebugSymbol/TestLambda/fn")
-                DW_AT_type	(0x00000416 "~lib/function/Function<%28%29=>void>")
-
-0x0000108f:   DW_TAG_variable
+                DW_AT_type	("~lib/function/Function<()=>void>")
+  DW_TAG_variable
                 DW_AT_name	("~lib/native/ASC_LOW_MEMORY_LIMIT")
-                DW_AT_type	(0x00000025 "i32")
-
-0x000010b5:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/AL_BITS")
-                DW_AT_type	(0x0000003f "u32")
-
-0x000010d1:   DW_TAG_variable
+                DW_AT_type	("u32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/AL_MASK")
-                DW_AT_type	(0x0000004d "usize")
-
-0x000010ed:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/AL_SIZE")
-                DW_AT_type	(0x0000004d "usize")
-
-0x00001109:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/BLOCK_MAXSIZE")
-                DW_AT_type	(0x0000004d "usize")
-
-0x0000112b:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/BLOCK_OVERHEAD")
-                DW_AT_type	(0x0000004d "usize")
-
-0x0000114e:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/DEBUG")
-                DW_AT_type	(0x00000010 "bool")
-
-0x00001168:   DW_TAG_variable
+                DW_AT_type	("bool")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/OBJECT_MAXSIZE")
-                DW_AT_type	(0x0000004d "usize")
-
-0x0000118b:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/OBJECT_OVERHEAD")
-                DW_AT_type	(0x0000004d "usize")
-
-0x000011af:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/PROFILE")
-                DW_AT_type	(0x00000010 "bool")
-
-0x000011cb:   DW_TAG_variable
+                DW_AT_type	("bool")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/RTRACE")
-                DW_AT_type	(0x00000010 "bool")
-
-0x000011e6:   DW_TAG_variable
+                DW_AT_type	("bool")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/TOTAL_OVERHEAD")
-                DW_AT_type	(0x0000004d "usize")
-
-0x00001209:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/TRACE")
-                DW_AT_type	(0x00000010 "bool")
-
-0x00001223:   DW_TAG_variable
+                DW_AT_type	("bool")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/COLOR_MASK")
-                DW_AT_type	(0x00000025 "i32")
-
-0x00001241:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/GRANULARITY")
-                DW_AT_type	(0x0000004d "usize")
-
-0x00001260:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/IDLEFACTOR")
-                DW_AT_type	(0x0000004d "usize")
-
-0x0000127e:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/STATE_IDLE")
-                DW_AT_type	(0x00000025 "i32")
-
-0x0000129c:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/STATE_MARK")
-                DW_AT_type	(0x00000025 "i32")
-
-0x000012ba:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/STATE_SWEEP")
-                DW_AT_type	(0x00000025 "i32")
-
-0x000012d9:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/STEPFACTOR")
-                DW_AT_type	(0x0000004d "usize")
-
-0x000012f7:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/VISIT_SCAN")
-                DW_AT_type	(0x00000025 "i32")
-
-0x00001315:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/fromSpace")
-                DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-
-0x00001332:   DW_TAG_variable
+                DW_AT_type	("~lib/rt/itcms/Object")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/gray")
-                DW_AT_type	(0x00000025 "i32")
-
-0x0000134a:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/iter")
-                DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-
-0x00001362:   DW_TAG_variable
+                DW_AT_type	("~lib/rt/itcms/Object")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/pinSpace")
-                DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-
-0x0000137e:   DW_TAG_variable
+                DW_AT_type	("~lib/rt/itcms/Object")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/state")
-                DW_AT_type	(0x00000025 "i32")
-
-0x00001397:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/threshold")
-                DW_AT_type	(0x0000004d "usize")
-
-0x000013b4:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/toSpace")
-                DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-
-0x000013cf:   DW_TAG_variable
+                DW_AT_type	("~lib/rt/itcms/Object")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/total")
-                DW_AT_type	(0x0000004d "usize")
-
-0x000013e8:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/transparent")
-                DW_AT_type	(0x00000025 "i32")
-
-0x00001407:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/visitCount")
-                DW_AT_type	(0x00000025 "i32")
-
-0x00001425:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/itcms/white")
-                DW_AT_type	(0x00000025 "i32")
-
-0x0000143e:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/BLOCK_MINSIZE")
-                DW_AT_type	(0x0000004d "usize")
-
-0x0000145e:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/FL_BITS")
-                DW_AT_type	(0x0000003f "u32")
-
-0x00001478:   DW_TAG_variable
+                DW_AT_type	("u32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/FREE")
-                DW_AT_type	(0x0000004d "usize")
-
-0x0000148f:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/HL_END")
-                DW_AT_type	(0x0000004d "usize")
-
-0x000014a8:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/HL_START")
-                DW_AT_type	(0x0000004d "usize")
-
-0x000014c3:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/LEFTFREE")
-                DW_AT_type	(0x0000004d "usize")
-
-0x000014de:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/ROOT")
-                DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-
-0x000014f5:   DW_TAG_variable
+                DW_AT_type	("~lib/rt/tlsf/Root")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/ROOT_SIZE")
-                DW_AT_type	(0x0000004d "usize")
-
-0x00001511:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/SB_BITS")
-                DW_AT_type	(0x0000003f "u32")
-
-0x0000152b:   DW_TAG_variable
+                DW_AT_type	("u32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/SB_SIZE")
-                DW_AT_type	(0x0000003f "u32")
-
-0x00001545:   DW_TAG_variable
+                DW_AT_type	("u32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/SL_BITS")
-                DW_AT_type	(0x0000003f "u32")
-
-0x0000155f:   DW_TAG_variable
+                DW_AT_type	("u32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/SL_END")
-                DW_AT_type	(0x0000004d "usize")
-
-0x00001578:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/SL_SIZE")
-                DW_AT_type	(0x0000003f "u32")
-
-0x00001592:   DW_TAG_variable
+                DW_AT_type	("u32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/SL_START")
-                DW_AT_type	(0x0000004d "usize")
-
-0x000015ad:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/rt/tlsf/TAGS_MASK")
-                DW_AT_type	(0x0000004d "usize")
-
-0x000015c9:   DW_TAG_variable
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/util/error/E_ALLOCATION_TOO_LARGE")
-                DW_AT_type	(0x00000ff6 "~lib/string/String")
-
-0x000015f5:   DW_TAG_variable
+                DW_AT_type	("~lib/string/String")
+  DW_TAG_variable
                 DW_AT_name	("~lib/util/error/E_INDEXOUTOFRANGE")
-                DW_AT_type	(0x00000ff6 "~lib/string/String")
-
-0x0000161c:   DW_TAG_variable
+                DW_AT_type	("~lib/string/String")
+  DW_TAG_variable
                 DW_AT_name	("~lib/util/math/EXP2F_TABLE_BITS")
-                DW_AT_type	(0x00000025 "i32")
-
-0x00001641:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/util/math/EXP_TABLE_BITS")
-                DW_AT_type	(0x00000025 "i32")
-
-0x00001664:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/util/math/LOG2F_TABLE_BITS")
-                DW_AT_type	(0x00000025 "i32")
-
-0x00001689:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/util/math/LOG2_TABLE_BITS")
-                DW_AT_type	(0x00000025 "i32")
-
-0x000016ad:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/util/math/LOGF_TABLE_BITS")
-                DW_AT_type	(0x00000025 "i32")
-
-0x000016d1:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/util/math/LOG_TABLE_BITS")
-                DW_AT_type	(0x00000025 "i32")
-
-0x000016f4:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/util/math/POW_LOG_TABLE_BITS")
-                DW_AT_type	(0x00000025 "i32")
-
-0x0000171b:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/util/math/SIGN_BIAS")
-                DW_AT_type	(0x00000025 "i32")
-
-0x00001739:   DW_TAG_variable
+                DW_AT_type	("i32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/util/number/MAX_DOUBLE_LENGTH")
-                DW_AT_type	(0x00000025 "i32")
-
-0x00001761:   DW_TAG_subprogram
-                DW_AT_name	("~lib/native/start:~lib/native")
-
-0x00001780:     NULL
-
-0x00001781:   DW_TAG_subprogram
-                DW_AT_name	("~lib/array/start:~lib/array")
-
-0x0000179e:     NULL
-
-0x0000179f:   DW_TAG_subprogram
-                DW_AT_name	("~lib/arraybuffer/start:~lib/arraybuffer")
-
-0x000017c8:     NULL
-
-0x000017c9:   DW_TAG_subprogram
-                DW_AT_name	("~lib/atomics/start:~lib/atomics")
-
-0x000017ea:     NULL
-
-0x000017eb:   DW_TAG_subprogram
-                DW_AT_name	("~lib/builtins/start:~lib/builtins")
-
-0x0000180e:     NULL
-
-0x0000180f:   DW_TAG_subprogram
-                DW_AT_name	("~lib/compat/start:~lib/compat")
-
-0x0000182e:     NULL
-
-0x0000182f:   DW_TAG_subprogram
-                DW_AT_name	("~lib/console/start:~lib/console")
-
-0x00001850:     NULL
-
-0x00001851:   DW_TAG_subprogram
-                DW_AT_name	("~lib/crypto/start:~lib/crypto")
-
-0x00001870:     NULL
-
-0x00001871:   DW_TAG_subprogram
-                DW_AT_name	("~lib/dataview/start:~lib/dataview")
-
-0x00001894:     NULL
-
-0x00001895:   DW_TAG_subprogram
-                DW_AT_name	("~lib/date/start:~lib/date")
-
-0x000018b0:     NULL
-
-0x000018b1:   DW_TAG_subprogram
-                DW_AT_name	("~lib/diagnostics/start:~lib/diagnostics")
-
-0x000018da:     NULL
-
-0x000018db:   DW_TAG_subprogram
-                DW_AT_name	("~lib/error/start:~lib/error")
-
-0x000018f8:     NULL
-
-0x000018f9:   DW_TAG_subprogram
-                DW_AT_name	("~lib/function/start:~lib/function")
-
-0x0000191c:     NULL
-
-0x0000191d:   DW_TAG_subprogram
-                DW_AT_name	("~lib/iterator/start:~lib/iterator")
-
-0x00001940:     NULL
-
-0x00001941:   DW_TAG_subprogram
-                DW_AT_name	("~lib/map/start:~lib/map")
-
-0x0000195a:     NULL
-
-0x0000195b:   DW_TAG_subprogram
-                DW_AT_name	("~lib/math/start:~lib/math")
-
-0x00001976:     NULL
-
-0x00001977:   DW_TAG_subprogram
-                DW_AT_name	("~lib/memory/start:~lib/memory")
-
-0x00001996:     NULL
-
-0x00001997:   DW_TAG_subprogram
-                DW_AT_name	("~lib/number/start:~lib/number")
-
-0x000019b6:     NULL
-
-0x000019b7:   DW_TAG_subprogram
-                DW_AT_name	("~lib/object/start:~lib/object")
-
-0x000019d6:     NULL
-
-0x000019d7:   DW_TAG_subprogram
-                DW_AT_name	("~lib/performance/start:~lib/performance")
-
-0x00001a00:     NULL
-
-0x00001a01:   DW_TAG_subprogram
-                DW_AT_name	("~lib/polyfills/start:~lib/polyfills")
-
-0x00001a26:     NULL
-
-0x00001a27:   DW_TAG_subprogram
-                DW_AT_name	("~lib/process/start:~lib/process")
-
-0x00001a48:     NULL
-
-0x00001a49:   DW_TAG_subprogram
-                DW_AT_name	("~lib/reference/start:~lib/reference")
-
-0x00001a6e:     NULL
-
-0x00001a6f:   DW_TAG_subprogram
-                DW_AT_name	("~lib/regexp/start:~lib/regexp")
-
-0x00001a8e:     NULL
-
-0x00001a8f:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/start:~lib/rt")
-
-0x00001aa6:     NULL
-
-0x00001aa7:   DW_TAG_subprogram
-                DW_AT_name	("~lib/set/start:~lib/set")
-
-0x00001ac0:     NULL
-
-0x00001ac1:   DW_TAG_subprogram
-                DW_AT_name	("~lib/staticarray/start:~lib/staticarray")
-
-0x00001aea:     NULL
-
-0x00001aeb:   DW_TAG_subprogram
-                DW_AT_name	("~lib/string/start:~lib/string")
-
-0x00001b0a:     NULL
-
-0x00001b0b:   DW_TAG_subprogram
-                DW_AT_name	("~lib/symbol/start:~lib/symbol")
-
-0x00001b2a:     NULL
-
-0x00001b2b:   DW_TAG_subprogram
-                DW_AT_name	("~lib/table/start:~lib/table")
-
-0x00001b48:     NULL
-
-0x00001b49:   DW_TAG_subprogram
-                DW_AT_name	("~lib/typedarray/start:~lib/typedarray")
-
-0x00001b70:     NULL
-
-0x00001b71:   DW_TAG_subprogram
-                DW_AT_name	("~lib/uri/start:~lib/uri")
-
-0x00001b8a:     NULL
-
-0x00001b8b:   DW_TAG_subprogram
-                DW_AT_name	("~lib/vector/start:~lib/vector")
-
-0x00001baa:     NULL
-
-0x00001bab:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/index-incremental/start:~lib/rt/index-incremental")
-
-0x00001be6:     NULL
-
-0x00001be7:   DW_TAG_subprogram
+                DW_AT_type	("i32")
+  DW_TAG_subprogram
                 DW_AT_name	("tests/DebugSymbol/TestLambda/start:tests/DebugSymbol/TestLambda")
-
-0x00001c28:     NULL
-
-0x00001c29:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/common/start:~lib/rt/common")
-
-0x00001c4e:     NULL
-
-0x00001c4f:   DW_TAG_subprogram
-                DW_AT_name	("~lib/shared/runtime/start:~lib/shared/runtime")
-
-0x00001c7e:     NULL
-
-0x00001c7f:   DW_TAG_subprogram
-                DW_AT_name	("~lib/util/sort/start:~lib/util/sort")
-
-0x00001ca4:     NULL
-
-0x00001ca5:   DW_TAG_subprogram
-                DW_AT_name	("~lib/util/bytes/start:~lib/util/bytes")
-
-0x00001ccc:     NULL
-
-0x00001ccd:   DW_TAG_subprogram
-                DW_AT_name	("~lib/util/string/start:~lib/util/string")
-
-0x00001cf6:     NULL
-
-0x00001cf7:   DW_TAG_subprogram
-                DW_AT_name	("~lib/util/error/start:~lib/util/error")
-
-0x00001d1e:     NULL
-
-0x00001d1f:   DW_TAG_subprogram
-                DW_AT_name	("~lib/bindings/dom/start:~lib/bindings/dom")
-
-0x00001d4a:     NULL
-
-0x00001d4b:   DW_TAG_subprogram
-                DW_AT_name	("~lib/util/hash/start:~lib/util/hash")
-
-0x00001d70:     NULL
-
-0x00001d71:   DW_TAG_subprogram
-                DW_AT_name	("~lib/util/math/start:~lib/util/math")
-
-0x00001d96:     NULL
-
-0x00001d97:   DW_TAG_subprogram
-                DW_AT_name	("~lib/util/memory/start:~lib/util/memory")
-
-0x00001dc0:     NULL
-
-0x00001dc1:   DW_TAG_subprogram
-                DW_AT_name	("~lib/util/number/start:~lib/util/number")
-
-0x00001dea:     NULL
-
-0x00001deb:   DW_TAG_subprogram
-                DW_AT_name	("~lib/bindings/node/start:~lib/bindings/node")
-
-0x00001e18:     NULL
-
-0x00001e19:   DW_TAG_subprogram
-                DW_AT_name	("~lib/shared/typeinfo/start:~lib/shared/typeinfo")
-
-0x00001e4a:     NULL
-
-0x00001e4b:   DW_TAG_subprogram
-                DW_AT_name	("~lib/util/casemap/start:~lib/util/casemap")
-
-0x00001e76:     NULL
-
-0x00001e77:   DW_TAG_subprogram
-                DW_AT_name	("~lib/util/uri/start:~lib/util/uri")
-
-0x00001e9a:     NULL
-
-0x00001e9b:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/start:~lib/rt/tlsf")
-
-0x00001ebc:     NULL
-
-0x00001ebd:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/itcms/start:~lib/rt/itcms")
-
-0x00001ee0:     NULL
-
-0x00001ee1:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/rtrace/start:~lib/rt/rtrace")
-
-0x00001f06:     NULL
-
-0x00001f07:   DW_TAG_subprogram
-                DW_AT_name	("~lib/string/String.__concat")
-
-0x00001f24:     DW_TAG_formal_parameter
-                  DW_AT_name	("left")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000000)
-
-0x00001f32:     DW_TAG_formal_parameter
-                  DW_AT_name	("right")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000001)
-
-0x00001f41:     NULL
-
-0x00001f42:   DW_TAG_subprogram
-                DW_AT_name	("~lib/string/String.__eq")
-
-0x00001f5b:     DW_TAG_formal_parameter
-                  DW_AT_name	("left")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000000)
-
-0x00001f69:     DW_TAG_formal_parameter
-                  DW_AT_name	("right")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000001)
-
-0x00001f78:     NULL
-
-0x00001f79:   DW_TAG_subprogram
-                DW_AT_name	("~lib/string/String.__not")
-
-0x00001f93:     DW_TAG_formal_parameter
-                  DW_AT_name	("str")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000000)
-
-0x00001fa0:     NULL
-
-0x00001fa1:   DW_TAG_subprogram
-                DW_AT_name	("~lib/string/String.__ne")
-
-0x00001fba:     DW_TAG_formal_parameter
-                  DW_AT_name	("left")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000000)
-
-0x00001fc8:     DW_TAG_formal_parameter
-                  DW_AT_name	("right")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000001)
-
-0x00001fd7:     NULL
-
-0x00001fd8:   DW_TAG_subprogram
-                DW_AT_name	("~lib/string/String.__gt")
-
-0x00001ff1:     DW_TAG_formal_parameter
-                  DW_AT_name	("left")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000000)
-
-0x00001fff:     DW_TAG_formal_parameter
-                  DW_AT_name	("right")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000001)
-
-0x0000200e:     NULL
-
-0x0000200f:   DW_TAG_subprogram
-                DW_AT_name	("~lib/string/String.__gte")
-
-0x00002029:     DW_TAG_formal_parameter
-                  DW_AT_name	("left")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000000)
-
-0x00002037:     DW_TAG_formal_parameter
-                  DW_AT_name	("right")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000001)
-
-0x00002046:     NULL
-
-0x00002047:   DW_TAG_subprogram
-                DW_AT_name	("~lib/string/String.__lt")
-
-0x00002060:     DW_TAG_formal_parameter
-                  DW_AT_name	("left")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000000)
-
-0x0000206e:     DW_TAG_formal_parameter
-                  DW_AT_name	("right")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000001)
-
-0x0000207d:     NULL
-
-0x0000207e:   DW_TAG_subprogram
-                DW_AT_name	("~lib/string/String.__lte")
-
-0x00002098:     DW_TAG_formal_parameter
-                  DW_AT_name	("left")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000000)
-
-0x000020a6:     DW_TAG_formal_parameter
-                  DW_AT_name	("right")
-                  DW_AT_type	(0x00000ff6 "~lib/string/String")
-                  DW_AT_location	(0x00000001)
-
-0x000020b5:     NULL
-
-0x000020b6:   DW_TAG_subprogram
-                DW_AT_name	("~lib/native/~start")
-
-0x000020ca:     NULL
-
-0x000020cb:   DW_TAG_subprogram
+    NULL
+  DW_TAG_subprogram
                 DW_AT_name	("start:tests/DebugSymbol/TestLambda")
-
-0x000020ef:     NULL
-
-0x000020f0:   DW_TAG_subprogram
+    NULL
+  DW_TAG_subprogram
                 DW_AT_name	("start:tests/DebugSymbol/TestLambda~anonymous|0")
-
-0x00002120:     NULL
-
-0x00002121:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/itcms/__link")
-
-0x00002137:     DW_TAG_formal_parameter
-                  DW_AT_name	("parentPtr")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000000)
-
-0x0000214a:     DW_TAG_formal_parameter
-                  DW_AT_name	("childPtr")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000001)
-
-0x0000215c:     DW_TAG_formal_parameter
-                  DW_AT_name	("expectMultiple")
-                  DW_AT_type	(0x00000010 "bool")
-                  DW_AT_location	(0x00000002)
-
-0x00002174:     NULL
-
-0x00002175:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/rt/itcms")
-
-0x0000218a:     NULL
-
-0x0000218b:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/rt/common")
-
-0x000021a1:     NULL
-
-0x000021a2:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/rt/rtrace")
-
-0x000021b8:     NULL
-
-0x000021b9:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/shared/typeinfo")
-
-0x000021d5:     NULL
-
-0x000021d6:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/util/error")
-
-0x000021ed:     NULL
-
-0x000021ee:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/itcms/initLazy")
-
-0x00002206:     DW_TAG_formal_parameter
-                  DW_AT_name	("space")
-                  DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                  DW_AT_location	(0x00000000)
-
-0x00002215:     NULL
-
-0x00002216:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/__typeinfo")
-
-0x0000222a:     DW_TAG_formal_parameter
-                  DW_AT_name	("id")
-                  DW_AT_type	(0x0000003f "u32")
-                  DW_AT_location	(0x00000000)
-
-0x00002236:     NULL
-
-0x00002237:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/rt")
-
-0x00002246:     NULL
-
-0x00002247:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/arraybuffer")
-
-0x0000225f:     NULL
-
-0x00002260:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/shared/runtime")
-
-0x0000227b:     NULL
-
-0x0000227c:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/builtins")
-
-0x00002291:     NULL
-
-0x00002292:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/util/string")
-
-0x000022aa:     NULL
-
-0x000022ab:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/util/number")
-
-0x000022c3:     NULL
-
-0x000022c4:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/math")
-
-0x000022d5:     NULL
-
-0x000022d6:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/bindings/dom")
-
-0x000022ef:     NULL
-
-0x000022f0:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/util/math")
-
-0x00002306:     NULL
-
-0x00002307:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/itcms/__new")
-
-0x0000231c:     DW_TAG_formal_parameter
-                  DW_AT_name	("size")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000000)
-
-0x0000232a:     DW_TAG_formal_parameter
-                  DW_AT_name	("id")
-                  DW_AT_type	(0x00000025 "i32")
-                  DW_AT_location	(0x00000001)
-
-0x00002336:     NULL
-
-0x00002337:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/itcms/interrupt")
-
-0x00002350:     NULL
-
-0x00002351:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/itcms/step")
-
-0x00002365:     NULL
-
-0x00002366:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/itcms/visitRoots")
-
-0x00002380:     DW_TAG_formal_parameter
-                  DW_AT_name	("cookie")
-                  DW_AT_type	(0x0000003f "u32")
-                  DW_AT_location	(0x00000000)
-
-0x00002390:     NULL
-
-0x00002391:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/itcms/visitStack")
-
-0x000023ab:     DW_TAG_formal_parameter
-                  DW_AT_name	("cookie")
-                  DW_AT_type	(0x0000003f "u32")
-                  DW_AT_location	(0x00000000)
-
-0x000023bb:     NULL
-
-0x000023bc:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/itcms/__visit")
-
-0x000023d3:     DW_TAG_formal_parameter
-                  DW_AT_name	("ptr")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000000)
-
-0x000023e0:     DW_TAG_formal_parameter
-                  DW_AT_name	("cookie")
-                  DW_AT_type	(0x00000025 "i32")
-                  DW_AT_location	(0x00000001)
-
-0x000023f0:     NULL
-
-0x000023f1:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/itcms/free")
-
-0x00002405:     DW_TAG_formal_parameter
-                  DW_AT_name	("obj")
-                  DW_AT_type	(0x000009ac "~lib/rt/itcms/Object")
-                  DW_AT_location	(0x00000000)
-
-0x00002412:     NULL
-
-0x00002413:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/__free")
-
-0x00002428:     DW_TAG_formal_parameter
-                  DW_AT_name	("ptr")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000000)
-
-0x00002435:     NULL
-
-0x00002436:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/rt/tlsf")
-
-0x0000244a:     NULL
-
-0x0000244b:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/initialize")
-
-0x00002464:     NULL
-
-0x00002465:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/SETTAIL")
-
-0x0000247b:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x00002489:     DW_TAG_formal_parameter
-                  DW_AT_name	("tail")
-                  DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                  DW_AT_location	(0x00000001)
-
-0x00002497:     NULL
-
-0x00002498:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/SETSL")
-
-0x000024ac:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x000024ba:     DW_TAG_formal_parameter
-                  DW_AT_name	("fl")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000001)
-
-0x000024c6:     DW_TAG_formal_parameter
-                  DW_AT_name	("slMap")
-                  DW_AT_type	(0x0000003f "u32")
-                  DW_AT_location	(0x00000002)
-
-0x000024d5:     NULL
-
-0x000024d6:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/SETHEAD")
-
-0x000024ec:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x000024fa:     DW_TAG_formal_parameter
-                  DW_AT_name	("fl")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000001)
-
-0x00002506:     DW_TAG_formal_parameter
-                  DW_AT_name	("sl")
-                  DW_AT_type	(0x0000003f "u32")
-                  DW_AT_location	(0x00000002)
-
-0x00002512:     DW_TAG_formal_parameter
-                  DW_AT_name	("head")
-                  DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                  DW_AT_location	(0x00000003)
-
-0x00002520:     NULL
-
-0x00002521:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/addMemory")
-
-0x00002539:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x00002547:     DW_TAG_formal_parameter
-                  DW_AT_name	("start")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000001)
-
-0x00002556:     DW_TAG_formal_parameter
-                  DW_AT_name	("endU64")
-                  DW_AT_type	(0x00000044 "u64")
-                  DW_AT_location	(0x00000002)
-
-0x00002566:     NULL
-
-0x00002567:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/GETTAIL")
-
-0x0000257d:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x0000258b:     NULL
-
-0x0000258c:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/insertBlock")
-
-0x000025a6:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x000025b4:     DW_TAG_formal_parameter
-                  DW_AT_name	("block")
-                  DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                  DW_AT_location	(0x00000001)
-
-0x000025c3:     NULL
-
-0x000025c4:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/GETRIGHT")
-
-0x000025db:     DW_TAG_formal_parameter
-                  DW_AT_name	("block")
-                  DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                  DW_AT_location	(0x00000000)
-
-0x000025ea:     NULL
-
-0x000025eb:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/removeBlock")
-
-0x00002605:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x00002613:     DW_TAG_formal_parameter
-                  DW_AT_name	("block")
-                  DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                  DW_AT_location	(0x00000001)
-
-0x00002622:     NULL
-
-0x00002623:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/GETHEAD")
-
-0x00002639:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x00002647:     DW_TAG_formal_parameter
-                  DW_AT_name	("fl")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000001)
-
-0x00002653:     DW_TAG_formal_parameter
-                  DW_AT_name	("sl")
-                  DW_AT_type	(0x0000003f "u32")
-                  DW_AT_location	(0x00000002)
-
-0x0000265f:     NULL
-
-0x00002660:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/GETSL")
-
-0x00002674:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x00002682:     DW_TAG_formal_parameter
-                  DW_AT_name	("fl")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000001)
-
-0x0000268e:     NULL
-
-0x0000268f:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/GETFREELEFT")
-
-0x000026a9:     DW_TAG_formal_parameter
-                  DW_AT_name	("block")
-                  DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                  DW_AT_location	(0x00000000)
-
-0x000026b8:     NULL
-
-0x000026b9:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/freeBlock")
-
-0x000026d1:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x000026df:     DW_TAG_formal_parameter
-                  DW_AT_name	("block")
-                  DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                  DW_AT_location	(0x00000001)
-
-0x000026ee:     NULL
-
-0x000026ef:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/checkUsedBlock")
-
-0x0000270c:     DW_TAG_formal_parameter
-                  DW_AT_name	("ptr")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000000)
-
-0x00002719:     NULL
-
-0x0000271a:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/__alloc")
-
-0x00002730:     DW_TAG_formal_parameter
-                  DW_AT_name	("size")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000000)
-
-0x0000273e:     NULL
-
-0x0000273f:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/allocateBlock")
-
-0x0000275b:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x00002769:     DW_TAG_formal_parameter
-                  DW_AT_name	("size")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000001)
-
-0x00002777:     NULL
-
-0x00002778:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/prepareSize")
-
-0x00002792:     DW_TAG_formal_parameter
-                  DW_AT_name	("size")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000000)
-
-0x000027a0:     NULL
-
-0x000027a1:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/computeSize")
-
-0x000027bb:     DW_TAG_formal_parameter
-                  DW_AT_name	("size")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000000)
-
-0x000027c9:     NULL
-
-0x000027ca:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/searchBlock")
-
-0x000027e4:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x000027f2:     DW_TAG_formal_parameter
-                  DW_AT_name	("size")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000001)
-
-0x00002800:     NULL
-
-0x00002801:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/roundSize")
-
-0x00002819:     DW_TAG_formal_parameter
-                  DW_AT_name	("size")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000000)
-
-0x00002827:     NULL
-
-0x00002828:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/growMemory")
-
-0x00002841:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x0000284f:     DW_TAG_formal_parameter
-                  DW_AT_name	("size")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000001)
-
-0x0000285d:     NULL
-
-0x0000285e:   DW_TAG_subprogram
-                DW_AT_name	("~lib/rt/tlsf/prepareBlock")
-
-0x00002879:     DW_TAG_formal_parameter
-                  DW_AT_name	("root")
-                  DW_AT_type	(0x00000eb6 "~lib/rt/tlsf/Root")
-                  DW_AT_location	(0x00000000)
-
-0x00002887:     DW_TAG_formal_parameter
-                  DW_AT_name	("block")
-                  DW_AT_type	(0x00000db5 "~lib/rt/tlsf/Block")
-                  DW_AT_location	(0x00000001)
-
-0x00002896:     DW_TAG_formal_parameter
-                  DW_AT_name	("size")
-                  DW_AT_type	(0x0000004d "usize")
-                  DW_AT_location	(0x00000002)
-
-0x000028a4:     NULL
-
-0x000028a5:   DW_TAG_subprogram
-                DW_AT_name	("start:~lib/function")
-
-0x000028ba:     NULL
+    NULL
 
 .debug_str contents:
 0x00000000: "warpo"
