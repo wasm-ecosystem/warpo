@@ -73,7 +73,7 @@ filterLibSubprograms(std::string const &dump,
         // Find the corresponding source location using hash map
         auto const it = addressMap.find(address);
         assert(it != addressMap.end() && "Address should be found in source map locations");
-        wasm::Function::DebugLocation const *debugLoc = it->second;
+        wasm::Function::DebugLocation const *const debugLoc = it->second;
 
         // Replace the address with file:line
         size_t const indentEnd = line.find_first_not_of(' ');
