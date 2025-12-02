@@ -1664,7 +1664,6 @@
   end
   local.get $0
   i32.load offset=4
-  i32.load
   drop
  )
  (func $~lib/array/Array<u32>#__get (param $0 i32) (param $1 i32) (result i32)
@@ -1984,7 +1983,6 @@
    end
    local.get $0
    i32.load offset=4
-   f64.load
    drop
    i32.const 2
    i32.const 2
@@ -2025,7 +2023,6 @@
    end
    local.get $0
    i32.load offset=4
-   f64.load
    drop
    i32.const 3
    i32.const 2
@@ -2040,7 +2037,6 @@
    end
    local.get $0
    i32.load offset=4
-   f32.load
    drop
    i32.const 12
    call $~lib/rt/__decrease_sp
@@ -2053,9 +2049,6 @@
    end
    local.get $0
    i32.load offset=4
-   i32.const 4
-   i32.add
-   f32.load
    drop
    call $infer-array/Ref#constructor
    local.set $1

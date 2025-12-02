@@ -475,24 +475,6 @@
   i32.load
   global.set $builtins/i
   i32.const 8
-  i32.load8_u
-  drop
-  i32.const 8
-  i32.load16_u
-  drop
-  i32.const 8
-  i32.load
-  drop
-  i32.const 8
-  i32.load8_s
-  drop
-  i32.const 8
-  i32.load16_s
-  drop
-  i32.const 8
-  i32.load
-  drop
-  i32.const 8
   i64.load8_s
   global.set $builtins/I
   i32.const 8
@@ -504,18 +486,6 @@
   i32.const 8
   i64.load
   global.set $builtins/I
-  i32.const 8
-  i64.load8_u
-  drop
-  i32.const 8
-  i64.load16_u
-  drop
-  i32.const 8
-  i64.load32_u
-  drop
-  i32.const 8
-  i64.load
-  drop
   i32.const 8
   i32.const 1
   i32.store8
@@ -616,48 +586,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 8
-  i32.load8_s
-  drop
-  i32.const 8
-  i32.load8_u
-  drop
-  i32.const 8
-  i32.load16_s
-  drop
-  i32.const 8
-  i32.load16_u
-  drop
-  i32.const 8
-  i32.load
-  drop
-  i32.const 8
-  i64.load8_s
-  drop
-  i32.const 8
-  i64.load8_u
-  drop
-  i32.const 8
-  i64.load16_s
-  drop
-  i32.const 8
-  i64.load16_u
-  drop
-  i32.const 8
-  i64.load32_s
-  drop
-  i32.const 8
-  i64.load32_u
-  drop
-  i32.const 8
-  i64.load
-  drop
-  i32.const 8
-  f32.load
-  drop
-  i32.const 8
-  f64.load
-  drop
   i32.const 8
   i32.const 1
   i32.store8

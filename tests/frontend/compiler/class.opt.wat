@@ -41,15 +41,6 @@
  (start $~start)
  (func $class/test (param $0 i32) (result i32)
   local.get $0
-  i32.load
-  drop
-  local.get $0
-  i32.load16_s offset=4
-  drop
-  local.get $0
-  i32.load8_s offset=6
-  drop
-  local.get $0
   i32.const 1
   i32.store
   local.get $0

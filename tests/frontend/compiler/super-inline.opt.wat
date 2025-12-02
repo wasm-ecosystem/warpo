@@ -1471,11 +1471,6 @@
   i32.const 0
   call $super-inline/Foo#constructor
   global.set $super-inline/foo
-  global.get $super-inline/foo
-  i32.const 8
-  i32.sub
-  i32.load
-  drop
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.sub

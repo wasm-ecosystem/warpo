@@ -1542,9 +1542,8 @@
  )
  (func $infer-generic/inferAssert (param $0 i32)
   local.get $0
-  if (result i32)
-   local.get $0
-  else
+  i32.eqz
+  if
    i32.const 0
    i32.const 32
    i32.const 75
@@ -1552,8 +1551,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.load
-  drop
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $folding-inner0

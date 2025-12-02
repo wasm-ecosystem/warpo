@@ -1796,11 +1796,6 @@
    global.set $~lib/memory/__stack_pointer
    local.get $0
    global.set $class-overloading-cast/c
-   global.get $class-overloading-cast/c
-   i32.const 8
-   i32.sub
-   i32.load
-   drop
    i32.const 432
    i32.const 432
    call $~lib/string/String.__eq
@@ -1813,11 +1808,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   global.get $class-overloading-cast/c
-   i32.const 8
-   i32.sub
-   i32.load
-   drop
    i32.const 432
    i32.const 432
    call $~lib/string/String.__eq

@@ -1811,19 +1811,7 @@
   i32.const 8
   i32.sub
   i32.load
-  i32.const 6
-  i32.eq
-  if
-   global.get $instanceof/a
-   local.tee $0
-   if
-    local.get $0
-    i32.const 8
-    i32.sub
-    i32.load
-    drop
-   end
-  end
+  drop
   global.get $instanceof/a
   local.tee $0
   if (result i32)

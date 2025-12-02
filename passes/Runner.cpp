@@ -24,6 +24,7 @@
 #include "ImmutableLoadEliminating.hpp"
 #include "InlinedDecoratorLower.hpp"
 #include "InsertTracePoint.hpp"
+#include "InstrSimplifier.hpp"
 #include "Runner.hpp"
 #include "binaryen-c.h"
 #include "parser/wat-parser.h"
@@ -108,6 +109,7 @@ static void optimize(AsModule const &m, Config const &config) {
     std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
     passRunner->addDefaultOptimizationPasses();
     passRunner->add(std::unique_ptr<wasm::Pass>{createAdvancedInliningPass()});
+    passRunner->add(std::unique_ptr<wasm::Pass>{createInstrSimplifier()});
     passRunner->run();
   }
   {
