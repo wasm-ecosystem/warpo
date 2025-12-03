@@ -1,9 +1,9 @@
+#include <algorithm>
 #include <cstddef>
 #include <gtest/gtest.h>
 #include <sstream>
 #include <string>
 #include <support/colors.h>
-#include <unordered_map>
 #include <vector>
 #include <warpo/support/FileSystem.hpp>
 
@@ -27,12 +27,6 @@ warpo::cli::Opt<bool> updateFixturesFlag{
 std::string
 filterLibSubprograms(std::string const &dump,
                      std::deque<std::pair<size_t, const wasm::Function::DebugLocation *>> const &sourceMapLocations) {
-  // Build a hash map for fast address lookup
-  std::unordered_map<size_t, wasm::Function::DebugLocation const *> addressMap;
-  for (auto const &[offset, loc] : sourceMapLocations) {
-    addressMap[offset] = loc;
-  }
-
   std::istringstream input(dump);
   std::ostringstream output;
   std::string line;
@@ -70,9 +64,11 @@ filterLibSubprograms(std::string const &dump,
         // Parse the hex address
         uint64_t const address = std::stoull(addressStr, nullptr, 16);
 
-        // Find the corresponding source location using hash map
-        auto const it = addressMap.find(address);
-        assert(it != addressMap.end() && "Address should be found in source map locations");
+        // Find the corresponding source location using binary search
+        auto const it = std::lower_bound(sourceMapLocations.begin(), sourceMapLocations.end(), address,
+                                         [](auto const &pair, size_t addr) { return pair.first < addr; });
+        assert(it != sourceMapLocations.end() && it->first == address &&
+               "Address should be found in source map locations");
         wasm::Function::DebugLocation const *const debugLoc = it->second;
 
         // Replace the address with file:line

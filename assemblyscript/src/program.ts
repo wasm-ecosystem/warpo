@@ -3782,6 +3782,15 @@ export class Local extends VariableLikeElement {
   declaredByFlow(flow: Flow): bool {
     return this.parent == flow.targetFunction;
   }
+
+  isParameter(): bool {
+    if (this.index < 0) return false;
+    let func = <Function>this.parent;
+    let signature = func.signature;
+    let numParams = signature.parameterTypes.length;
+    if (signature.thisType) numParams++;
+    return this.index < numParams;
+  }
 }
 
 /** A yet unresolved function prototype. */

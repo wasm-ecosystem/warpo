@@ -42,7 +42,7 @@ Abbrev table for offset: 0x00000000
 
 
 .debug_info contents:
-0x00000000: Compile Unit: length = 0x000032c3 version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x000032c7)
+0x00000000: Compile Unit: length = 0x00002eda version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x00002ede)
 DW_TAG_compile_unit
               DW_AT_producer	("warpo")
   DW_TAG_base_type
@@ -109,14 +109,6 @@ DW_TAG_compile_unit
       DW_TAG_lexical_block
                     scope start	:4
                     scope end	:4
-        DW_TAG_variable
-                      DW_AT_name	("this")
-                      DW_AT_type	("tests/DebugSymbol/TestLambda/C1")
-                      DW_AT_location	(0x00000000)
-        DW_TAG_variable
-                      DW_AT_name	("fx")
-                      DW_AT_type	("~lib/function/Function<()=>void>")
-                      DW_AT_location	(0x00000001)
         NULL
       NULL
     NULL
