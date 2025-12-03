@@ -2350,6 +2350,7 @@ export class Compiler extends DiagnosticEmitter {
     this.currentFlow = innerFlow;
 
     let stmts = this.compileStatements(statements);
+    innerFlow.addLocalsToBlock(stmts);
     outerFlow.inherit(innerFlow);
     this.currentFlow = outerFlow;
     return this.module.flatten(stmts);
@@ -2524,6 +2525,7 @@ export class Compiler extends DiagnosticEmitter {
 
     // Finalize and leave everything else to the optimizer
     this.currentFlow = outerFlow;
+    flow.addLocalsToBlock(bodyStmts);
     let expr = module.loop(loopLabel,
       module.flatten(bodyStmts)
     );
@@ -2800,6 +2802,7 @@ export class Compiler extends DiagnosticEmitter {
         flow.inheritAlternatives(thenFlow, elseFlow);
       }
       this.currentFlow = flow;
+      thenFlow.addLocalsToBlock(thenStmts);
       return module.if(condExprTrueish,
         module.flatten(thenStmts)
       );
@@ -2935,6 +2938,7 @@ export class Compiler extends DiagnosticEmitter {
           break;
         }
       }
+      this.currentFlow.addLocalsToBlock(stmts);
       stmts.length = count;
       fallThroughFlow = possiblyFallsThrough ? innerFlow : null;
       let possiblyBreaks = innerFlow.isAny(FlowFlags.Breaks | FlowFlags.ConditionallyBreaks);
@@ -3316,6 +3320,7 @@ export class Compiler extends DiagnosticEmitter {
 
     // Finalize and leave everything else to the optimizer
     this.currentFlow = outerFlow;
+    thenFlow.addLocalsToBlock(bodyStmts);
     let stmts: ExpressionRef[] = [
       module.loop(continueLabel,
         module.if(condExprTrueish,

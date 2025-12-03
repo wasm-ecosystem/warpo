@@ -184,6 +184,10 @@ INSTANTIATE_TEST_SUITE_P(DebugSymbolTests, TestDebugSymbol_P,
                              "TestLambda",
                              "TestTemplateClass",
                              "TestLocalInFor",
+                             "TestLocalInIf",
+                             "TestLocalInWhile",
+                             "TestLocalInBlock",
+                             "TestLocalInSwitch",
                          }));
 
 int main(int argc, char **argv) {
