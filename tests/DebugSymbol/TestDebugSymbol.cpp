@@ -29,6 +29,13 @@ std::string
 filterLibSubprograms(std::string const &dump,
                      std::deque<std::pair<size_t, const wasm::Function::DebugLocation *>> const &sourceMapLocations,
                      std::vector<std::string> const &debugInfoFileNames) {
+  // Cache filenames without paths
+  std::vector<std::string> fileNamesOnly;
+  fileNamesOnly.reserve(debugInfoFileNames.size());
+  for (std::string const &fullPath : debugInfoFileNames) {
+    fileNamesOnly.push_back(std::filesystem::path(fullPath).filename().string());
+  }
+
   std::istringstream input(dump);
   std::ostringstream output;
   std::string line;
@@ -77,8 +84,7 @@ filterLibSubprograms(std::string const &dump,
         size_t const indentEnd = line.find_first_not_of(' ');
         std::string const indent = (indentEnd != std::string::npos) ? line.substr(0, indentEnd) : "";
         std::string const attrName = (lowPcPos != std::string::npos) ? "scope start" : "scope end";
-        std::filesystem::path const fullPath = debugInfoFileNames[debugLoc->fileIndex];
-        std::string const fileName = fullPath.filename().string();
+        std::string const &fileName = fileNamesOnly[debugLoc->fileIndex];
         output << indent << attrName << "\t" << fileName << ":" << debugLoc->lineNumber << "\n";
         continue;
       }
