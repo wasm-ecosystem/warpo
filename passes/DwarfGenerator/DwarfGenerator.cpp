@@ -294,6 +294,7 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo,
     baseTypeEntry.AbbrCode = baseTypeAbbrev.Code;
 
     llvm::DWARFYAML::FormValue baseTypeNameValue;
+    baseTypeNameValue.Value = 0;
     baseTypeNameValue.CStr = llvm::StringRef{baseType.data(), baseType.size()};
     baseTypeEntry.Values.push_back(baseTypeNameValue);
 
@@ -308,6 +309,7 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo,
     classEntry.AbbrCode = classAbbrev.Code;
 
     llvm::DWARFYAML::FormValue classNameValue;
+    classNameValue.Value = 0;
     classNameValue.CStr = llvm::StringRef(className.data(), className.size());
     classEntry.Values.push_back(classNameValue);
 
@@ -324,6 +326,7 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo,
       memberEntry.AbbrCode = memberAbbrev.Code;
 
       llvm::DWARFYAML::FormValue memberNameValue;
+      memberNameValue.Value = 0;
       std::string_view const fieldNameView = field.getName();
       memberNameValue.CStr = llvm::StringRef(fieldNameView.data(), fieldNameView.size());
       memberEntry.Values.push_back(memberNameValue);
@@ -380,6 +383,7 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo,
     variableEntry.AbbrCode = variableAbbrev.Code;
 
     llvm::DWARFYAML::FormValue variableNameValue;
+    variableNameValue.Value = 0;
     variableNameValue.CStr = llvm::StringRef(variableName.data(), variableName.size());
     variableEntry.Values.push_back(variableNameValue);
 
@@ -445,6 +449,7 @@ void DwarfGenerator::addSubProgramWithParameters(
   subprogramEntry.AbbrCode = abbrevCodes.subprogram;
 
   llvm::DWARFYAML::FormValue subprogramNameValue;
+  subprogramNameValue.Value = 0;
   std::string_view const subProgramName = subProgram.getName();
   subprogramNameValue.CStr = llvm::StringRef(subProgramName.data(), subProgramName.size());
   subprogramEntry.Values.push_back(subprogramNameValue);
@@ -458,6 +463,7 @@ void DwarfGenerator::addSubProgramWithParameters(
     paramEntry.AbbrCode = abbrevCodes.formalParameter;
 
     llvm::DWARFYAML::FormValue paramNameValue;
+    paramNameValue.Value = 0;
     std::string_view const paramName = param.getName();
     paramNameValue.CStr = llvm::StringRef(paramName.data(), paramName.size());
     paramEntry.Values.push_back(paramNameValue);
@@ -523,6 +529,7 @@ void DwarfGenerator::addSubProgramWithParameters(
             localEntry.AbbrCode = localVariableAbbrevCode_;
 
             llvm::DWARFYAML::FormValue localNameValue;
+            localNameValue.Value = 0;
             std::string_view const localName = local.getName();
             localNameValue.CStr = llvm::StringRef(localName.data(), localName.size());
             localEntry.Values.push_back(localNameValue);
