@@ -2938,7 +2938,7 @@ export class Compiler extends DiagnosticEmitter {
           break;
         }
       }
-      this.currentFlow.addLocalsToBlock(stmts);
+      this.currentFlow.addLocalsToBlock(stmts.slice(1)); // need to slice off the container block
       stmts.length = count;
       fallThroughFlow = possiblyFallsThrough ? innerFlow : null;
       let possiblyBreaks = innerFlow.isAny(FlowFlags.Breaks | FlowFlags.ConditionallyBreaks);
