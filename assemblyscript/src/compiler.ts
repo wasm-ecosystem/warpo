@@ -2786,7 +2786,7 @@ export class Compiler extends DiagnosticEmitter {
       thenFlow.addLocalsToBlock(thenStmts);
       elseFlow.addLocalsToBlock(elseStmts);
       this.currentFlow = flow;
-            return module.if(condExprTrueish,
+      return module.if(condExprTrueish,
         module.flatten(thenStmts),
         module.flatten(elseStmts)
       );
