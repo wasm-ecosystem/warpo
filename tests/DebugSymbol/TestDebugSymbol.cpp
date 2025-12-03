@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cstddef>
+#include <filesystem>
 #include <gtest/gtest.h>
 #include <sstream>
 #include <string>
@@ -26,7 +27,8 @@ warpo::cli::Opt<bool> updateFixturesFlag{
 // Filter out subprogram sections with names starting with "~lib" or "start:~lib"
 std::string
 filterLibSubprograms(std::string const &dump,
-                     std::deque<std::pair<size_t, const wasm::Function::DebugLocation *>> const &sourceMapLocations) {
+                     std::deque<std::pair<size_t, const wasm::Function::DebugLocation *>> const &sourceMapLocations,
+                     std::vector<std::string> const &debugInfoFileNames) {
   std::istringstream input(dump);
   std::ostringstream output;
   std::string line;
@@ -75,7 +77,9 @@ filterLibSubprograms(std::string const &dump,
         size_t const indentEnd = line.find_first_not_of(' ');
         std::string const indent = (indentEnd != std::string::npos) ? line.substr(0, indentEnd) : "";
         std::string const attrName = (lowPcPos != std::string::npos) ? "scope start" : "scope end";
-        output << indent << attrName << "\t:" << debugLoc->lineNumber << "\n";
+        std::filesystem::path const fullPath = debugInfoFileNames[debugLoc->fileIndex];
+        std::string const fileName = fullPath.filename().string();
+        output << indent << attrName << "\t" << fileName << ":" << debugLoc->lineNumber << "\n";
         continue;
       }
     }
@@ -160,7 +164,8 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
                                                            writer.getExpressionOffsets());
 
   std::string const rawDump = warpo::passes::DwarfGenerator::dumpDwarf(debugSections);
-  std::string const dumpOutput = filterLibSubprograms(rawDump, writer.getSourceMapLocations());
+  std::string const dumpOutput =
+      filterLibSubprograms(rawDump, writer.getSourceMapLocations(), compileResult.m.get()->debugInfoFileNames);
   std::string const fixtureName = testCaseName + "Fixture.txt";
   std::filesystem::path const expectedDumpPath = testDir / fixtureName;
 

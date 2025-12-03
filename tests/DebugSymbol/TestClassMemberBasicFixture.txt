@@ -528,8 +528,8 @@ DW_TAG_compile_unit
   DW_TAG_subprogram
                 DW_AT_name	("tests/DebugSymbol/TestClassMemberBasic/test")
     DW_TAG_lexical_block
-                  scope start	:11
-                  scope end	:16
+                  scope start	TestClassMemberBasic.ts:11
+                  scope end	TestClassMemberBasic.ts:16
       DW_TAG_variable
                     DW_AT_name	("c1")
                     DW_AT_type	("tests/DebugSymbol/TestClassMemberBasic/C1")

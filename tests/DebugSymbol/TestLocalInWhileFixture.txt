@@ -163,8 +163,8 @@ DW_TAG_compile_unit
   DW_TAG_subprogram
                 DW_AT_name	("tests/DebugSymbol/TestLocalInWhile/foo")
     DW_TAG_lexical_block
-                  scope start	:4
-                  scope end	:5
+                  scope start	TestLocalInWhile.ts:4
+                  scope end	TestLocalInWhile.ts:5
       DW_TAG_variable
                     DW_AT_name	("aaa")
                     DW_AT_type	("i32")
@@ -174,8 +174,8 @@ DW_TAG_compile_unit
   DW_TAG_subprogram
                 DW_AT_name	("tests/DebugSymbol/TestLocalInWhile/goo")
     DW_TAG_lexical_block
-                  scope start	:12
-                  scope end	:13
+                  scope start	TestLocalInWhile.ts:12
+                  scope end	TestLocalInWhile.ts:13
       DW_TAG_variable
                     DW_AT_name	("bbb")
                     DW_AT_type	("i32")

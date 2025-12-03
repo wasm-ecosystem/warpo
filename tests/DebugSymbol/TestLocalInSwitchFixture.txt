@@ -164,31 +164,31 @@ DW_TAG_compile_unit
                   DW_AT_type	("i32")
                   DW_AT_location	(0x00000000)
     DW_TAG_lexical_block
-                  scope start	:2
-                  scope end	:22
+                  scope start	TestLocalInSwitch.ts:2
+                  scope end	TestLocalInSwitch.ts:22
       DW_TAG_variable
                     DW_AT_name	("result")
                     DW_AT_type	("i32")
                     DW_AT_location	(0x00000001)
       DW_TAG_lexical_block
-                    scope start	:5
-                    scope end	:8
+                    scope start	TestLocalInSwitch.ts:5
+                    scope end	TestLocalInSwitch.ts:8
         DW_TAG_variable
                       DW_AT_name	("aaa")
                       DW_AT_type	("i32")
                       DW_AT_location	(0x00000003)
         NULL
       DW_TAG_lexical_block
-                    scope start	:10
-                    scope end	:13
+                    scope start	TestLocalInSwitch.ts:10
+                    scope end	TestLocalInSwitch.ts:13
         DW_TAG_variable
                       DW_AT_name	("bbb")
                       DW_AT_type	("i32")
                       DW_AT_location	(0x00000004)
         NULL
       DW_TAG_lexical_block
-                    scope start	:15
-                    scope end	:18
+                    scope start	TestLocalInSwitch.ts:15
+                    scope end	TestLocalInSwitch.ts:18
         DW_TAG_variable
                       DW_AT_name	("ccc")
                       DW_AT_type	("i32")
@@ -203,31 +203,31 @@ DW_TAG_compile_unit
                   DW_AT_type	("i32")
                   DW_AT_location	(0x00000000)
     DW_TAG_lexical_block
-                  scope start	:27
-                  scope end	:45
+                  scope start	TestLocalInSwitch.ts:26
+                  scope end	TestLocalInSwitch.ts:44
       DW_TAG_variable
                     DW_AT_name	("rg1")
                     DW_AT_type	("i32")
                     DW_AT_location	(0x00000001)
       DW_TAG_lexical_block
-                    scope start	:31
-                    scope end	:33
+                    scope start	TestLocalInSwitch.ts:30
+                    scope end	TestLocalInSwitch.ts:32
         DW_TAG_variable
                       DW_AT_name	("a1")
                       DW_AT_type	("i32")
                       DW_AT_location	(0x00000003)
         NULL
       DW_TAG_lexical_block
-                    scope start	:34
-                    scope end	:37
+                    scope start	TestLocalInSwitch.ts:33
+                    scope end	TestLocalInSwitch.ts:36
         DW_TAG_variable
                       DW_AT_name	("b1")
                       DW_AT_type	("i32")
                       DW_AT_location	(0x00000004)
         NULL
       DW_TAG_lexical_block
-                    scope start	:40
-                    scope end	:42
+                    scope start	TestLocalInSwitch.ts:39
+                    scope end	TestLocalInSwitch.ts:41
         DW_TAG_variable
                       DW_AT_name	("c1")
                       DW_AT_type	("i32")

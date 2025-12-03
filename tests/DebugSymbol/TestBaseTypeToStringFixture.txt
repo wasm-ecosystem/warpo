@@ -446,8 +446,8 @@ DW_TAG_compile_unit
   DW_TAG_subprogram
                 DW_AT_name	("tests/DebugSymbol/TestBaseTypeToString/_start")
     DW_TAG_lexical_block
-                  scope start	:2
-                  scope end	:3
+                  scope start	TestBaseTypeToString.ts:2
+                  scope end	TestBaseTypeToString.ts:3
       DW_TAG_variable
                     DW_AT_name	("aaa")
                     DW_AT_type	("f32")

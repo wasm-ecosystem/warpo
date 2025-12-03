@@ -480,8 +480,8 @@ DW_TAG_compile_unit
   DW_TAG_subprogram
                 DW_AT_name	("tests/DebugSymbol/TestTemplateClass/test")
     DW_TAG_lexical_block
-                  scope start	:10
-                  scope end	:14
+                  scope start	TestTemplateClass.ts:10
+                  scope end	TestTemplateClass.ts:14
       DW_TAG_variable
                     DW_AT_name	("c2")
                     DW_AT_type	("tests/DebugSymbol/TestTemplateClass/C2<i32>")
