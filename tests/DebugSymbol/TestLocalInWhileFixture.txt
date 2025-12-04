@@ -42,7 +42,7 @@ Abbrev table for offset: 0x00000000
 
 
 .debug_info contents:
-0x00000000: Compile Unit: length = 0x00000efd version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x00000f01)
+0x00000000: Compile Unit: length = 0x00000ee5 version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x00000ee9)
 DW_TAG_compile_unit
               DW_AT_producer	("warpo")
   DW_TAG_base_type
