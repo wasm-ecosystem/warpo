@@ -9,6 +9,6 @@ declare namespace utf8 {
   function build(s: string): ConstStr;
 }
 
-declare module "rt/itcms" {
+declare module "rt/index" {
   export function __collect(): void;
 }

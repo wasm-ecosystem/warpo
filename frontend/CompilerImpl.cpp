@@ -192,10 +192,10 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
         parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
     }
 
-    std::string const rtIndexFile =
-        config.runtime == RuntimeKind::Incremental ? "rt/index-incremental" : "rt/index-radical";
-    parseFile(program, warpo::frontend::embed_library_sources.at(rtIndexFile), libraryPrefix + rtIndexFile + extension,
-              IsEntry::NO);
+    std::string_view const rtIndexSource = warpo::frontend::embed_library_sources.at(
+        config.runtime == RuntimeKind::Incremental ? "rt/index-incremental" : "rt/index-radical");
+    std::string const rtIndexFilePath = libraryPrefix + std::string{"rt/index"} + extension;
+    parseFile(program, rtIndexSource, rtIndexFilePath, IsEntry::NO);
     parseLibStat.release();
 
     for (std::string const &filePath : entryFilePaths) {
