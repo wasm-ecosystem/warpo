@@ -10,7 +10,7 @@
  (import "env" "trace" (func $~lib/builtins/trace (param i32 i32 f64 f64 f64 f64 f64)))
  (global $~lib/@as/custom/lib/index/v i32 (i32.const 32))
  (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Minimal i32 (i32.const 1))
+ (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
  (global $~lib/memory/__data_end i32 (i32.const 172))
