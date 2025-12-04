@@ -34,14 +34,18 @@ template <typename T> struct Opt {
   /// @param cat Category of this arg, one of this category is active in program will let this option be visible
   Opt(Category cat, const char *name, std::function<void(argparse::Argument &)> &&fn) {
     detail::registerCallback(cat, [fn = std::move(fn), name, this](argparse::ArgumentParser &argparser) -> void {
-      fn(argparser.add_argument(name).store_into(v_));
+      argparse::Argument &arg = argparser.add_argument(name);
+      fn(arg);
+      arg.store_into(v_);
     });
   }
   /// @param cat Category of this arg, one of this category is active in program will let this option be visible
   Opt(Category cat, const char *shortName, const char *longName, std::function<void(argparse::Argument &)> &&fn) {
     detail::registerCallback(
         cat, [fn = std::move(fn), shortName, longName, this](argparse::ArgumentParser &argparser) -> void {
-          fn(argparser.add_argument(shortName, longName).store_into(v_));
+          argparse::Argument &arg = argparser.add_argument(shortName, longName);
+          fn(arg);
+          arg.store_into(v_);
         });
   }
 
