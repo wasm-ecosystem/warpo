@@ -1,6 +1,6 @@
 //! { "func": "^.*_start$" }
 
-// it should be inlined since it is called only once
+// it should not be inlined since it is called multiple times
 function bigFunc(a: i32, b: i32): void {
   a + b;
   a + b;

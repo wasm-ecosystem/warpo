@@ -88,7 +88,7 @@ struct FunctionInfo {
     if (refs == 0) {
       return false;
     }
-    float budget = static_cast<float>(AdvInlineTolerableInstructionIncrease.get());
+    float budget = static_cast<float>(AdvInlineTolerableInstructionIncrease.get()) * getOpcodeSizeCost(Opcode::I32_ADD);
     if (!usedGlobally) {
       // when the function is not used in global scope. we can delete this function after inlining.
       budget += functionCost;
