@@ -149,9 +149,8 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     int32_t const option = r.callExportedFunctionWithName<1>("newOptions")[0].i32;
     r.callExportedFunctionWithName<1>("__pin", option);
 
-    enum class RuntimeKind : uint32_t { Incremental = 2 };
     constexpr uint32_t stackSize = 32768U;
-    r.callExportedFunctionWithName<0>("setRuntime", option, RuntimeKind::Incremental);
+    r.callExportedFunctionWithName<0>("setRuntime", option, config.runtime);
     r.callExportedFunctionWithName<0>("setStackSize", option, stackSize);
 
     enum class SetFeatureOn : uint32_t { OFF = 0, ON = 1 };
@@ -192,9 +191,11 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
       for (auto const &[libName, libSource] : warpo::frontend::embed_extension_library_sources)
         parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
     }
-    std::string const retIncremental = "rt/index-incremental";
-    parseFile(program, warpo::frontend::embed_library_sources.at(retIncremental),
-              libraryPrefix + retIncremental + extension, IsEntry::NO);
+
+    std::string const rtIndexFile =
+        config.runtime == RuntimeKind::Incremental ? "rt/index-incremental" : "rt/index-radical";
+    parseFile(program, warpo::frontend::embed_library_sources.at(rtIndexFile), libraryPrefix + rtIndexFile + extension,
+              IsEntry::NO);
     parseLibStat.release();
 
     for (std::string const &filePath : entryFilePaths) {

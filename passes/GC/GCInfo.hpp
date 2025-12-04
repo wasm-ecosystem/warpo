@@ -11,8 +11,10 @@ namespace warpo::passes::gc {
 constexpr const char *FnLocalToStack = "~lib/rt/__localtostack";
 constexpr const char *FnTmpToStack = "~lib/rt/__tmptostack";
 
-constexpr const char *FnNew = "~lib/rt/itcms/__new";
-constexpr const char *FnCollect = "~lib/rt/itcms/__collect";
+constexpr const char *FnITCMSNew = "~lib/rt/itcms/__new";
+constexpr const char *FnITCMSCollect = "~lib/rt/itcms/__collect";
+constexpr const char *FnTCMSNew = "~lib/rt/tcms/__new";
+constexpr const char *FnTCMSCollect = "~lib/rt/tcms/__collect";
 
 constexpr const char *VarStackPointer = "~lib/memory/__stack_pointer";
 constexpr const char *VarDataEnd = "~lib/memory/__data_end";

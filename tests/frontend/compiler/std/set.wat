@@ -42,7 +42,7 @@
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Minimal i32 (i32.const 1))
+ (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
@@ -2976,9 +2976,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (return
@@ -3943,9 +3943,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<i8>#set:buffer
@@ -4172,9 +4172,9 @@
      )
     )
     (drop
-     (i32.ne
+     (i32.eq
       (i32.const 2)
-      (global.get $~lib/shared/runtime/Runtime.Incremental)
+      (global.get $~lib/shared/runtime/Runtime.Stub)
      )
     )
     (if
@@ -5932,9 +5932,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<u8>#set:buffer
@@ -7694,9 +7694,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<i16>#set:buffer
@@ -9459,9 +9459,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<u16>#set:buffer
@@ -11215,9 +11215,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<i32>#set:buffer
@@ -12971,9 +12971,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<u32>#set:buffer
@@ -14829,9 +14829,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<i64>#set:buffer
@@ -16590,9 +16590,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<u64>#set:buffer
@@ -18348,9 +18348,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<f32>#set:buffer
@@ -20111,9 +20111,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<f64>#set:buffer

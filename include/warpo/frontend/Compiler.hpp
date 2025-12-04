@@ -13,6 +13,7 @@
 
 #include "warpo/common/AsModule.hpp"
 #include "warpo/common/Features.hpp"
+#include "warpo/support/Unreachable.hpp"
 
 namespace wasm {
 class Module;
@@ -22,11 +23,39 @@ namespace warpo::frontend {
 
 void init();
 
+// from assemblyscript/std/assembly/shared/runtime.ts
+enum class RuntimeKind : uint32_t {
+  Radical = 1U,
+  Incremental = 2U,
+};
+
+namespace RuntimeUtils {
+inline std::string toString(RuntimeKind runtime) {
+  switch (runtime) {
+  case RuntimeKind::Radical:
+    return "radical";
+  case RuntimeKind::Incremental:
+    return "incremental";
+  default:
+    WARPO_UNREACHABLE;
+  }
+}
+
+inline RuntimeKind fromString(std::string const &str) {
+  if (str == "radical")
+    return RuntimeKind::Radical;
+  if (str == "incremental")
+    return RuntimeKind::Incremental;
+  WARPO_UNREACHABLE;
+}
+} // namespace RuntimeUtils
+
 struct Config {
   std::map<std::string, std::string> uses;
   std::optional<std::string> ascWasmPath;
   common::Features features;
   std::optional<std::string> exportStart;
+  RuntimeKind runtime;
   bool exportRuntime;
   bool exportTable;
   std::optional<uint32_t> initialMemory;

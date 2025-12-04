@@ -38,7 +38,7 @@
  (global $std/string/str (mut i32) (i32.const 32))
  (global $std/string/nullStr (mut i32) (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Minimal i32 (i32.const 1))
+ (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -10995,9 +10995,9 @@
      )
     )
     (drop
-     (i32.ne
+     (i32.eq
       (i32.const 2)
-      (global.get $~lib/shared/runtime/Runtime.Incremental)
+      (global.get $~lib/shared/runtime/Runtime.Stub)
      )
     )
     (if

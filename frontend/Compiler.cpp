@@ -98,6 +98,19 @@ static cli::Opt<bool> experimentalOption{
     [](argparse::Argument &arg) -> void { arg.help("Enables experimental AssemblyScript extensions.").flag(); },
 };
 
+static cli::Opt<std::string> runtimeOption{
+    cli::Category::Frontend,
+    "--runtime",
+    [](argparse::Argument &arg) -> void {
+      arg.help("Specifies the runtime to use. Options are 'Radical' and 'Incremental'.")
+          .nargs(1)
+          .default_value(RuntimeUtils::toString(RuntimeKind::Incremental))
+          .choices(RuntimeUtils::toString(RuntimeKind::Radical), RuntimeUtils::toString(RuntimeKind::Incremental));
+    },
+};
+
+static RuntimeKind getRuntimeFromCLI() { return RuntimeUtils::fromString(runtimeOption.get()); }
+
 } // namespace warpo::frontend
 
 namespace warpo {
@@ -117,6 +130,7 @@ warpo::frontend::Config warpo::frontend::getDefaultConfig() {
       .ascWasmPath = std::nullopt,
       .features = common::Features::all(),
       .exportStart = std::nullopt,
+      .runtime = RuntimeKind::Incremental,
       .exportRuntime = false,
       .exportTable = false,
       .initialMemory = std::nullopt,
@@ -135,6 +149,7 @@ frontend::CompilationResult frontend::compile(Pluggable *plugin) {
       .ascWasmPath = convertEmptyStringToNullOpt(ascWasmOption.get()),
       .features = common::Features::fromCLI(),
       .exportStart = convertEmptyStringToNullOpt(exportStartOption.get()),
+      .runtime = getRuntimeFromCLI(),
       .exportRuntime = exportRuntimeOption.get(),
       .exportTable = exportTableOption.get(),
       .initialMemory = initialMemoryOption.get() == static_cast<uint32_t>(-1)

@@ -74,7 +74,7 @@
  (global $~lib/typedarray/Float32Array.BYTES_PER_ELEMENT i32 (i32.const 4))
  (global $~lib/typedarray/Float64Array.BYTES_PER_ELEMENT i32 (i32.const 8))
  (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Minimal i32 (i32.const 1))
+ (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
@@ -3477,9 +3477,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/arraybuffer/ArrayBufferView#set:buffer
@@ -56609,9 +56609,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (return

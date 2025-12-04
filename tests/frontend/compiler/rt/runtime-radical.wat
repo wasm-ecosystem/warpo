@@ -1,6 +1,6 @@
 (module
- (type $0 (func (param i32) (result i32)))
- (type $1 (func (param i32 i32)))
+ (type $0 (func (param i32 i32)))
+ (type $1 (func (param i32) (result i32)))
  (type $2 (func))
  (type $3 (func (param i32)))
  (type $4 (func (param i32 i32) (result i32)))
@@ -8,82 +8,65 @@
  (type $6 (func (param i32 i32 i32 i32)))
  (type $7 (func (param i32 i32 i32) (result i32)))
  (type $8 (func (param i32 i32 i64) (result i32)))
- (type $9 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
- (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
+ (global $~lib/rt/tcms/total (mut i32) (i32.const 0))
+ (global $~lib/rt/tcms/threshold (mut i32) (i32.const 0))
+ (global $~lib/rt/tcms/white (mut i32) (i32.const 0))
+ (global $~lib/rt/tcms/toSpace (mut i32) (i32.const 0))
+ (global $~lib/rt/tcms/pinSpace (mut i32) (i32.const 0))
+ (global $~lib/rt/tcms/fromSpace (mut i32) (i32.const 0))
+ (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
+ (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
- (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
- (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
- (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $~lib/rt/__rtti_base i32 (i32.const 464))
- (global $~lib/memory/__data_end i32 (i32.const 524))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33292))
- (global $~lib/memory/__heap_base i32 (i32.const 33292))
+ (global $~lib/native/ASC_RUNTIME i32 (i32.const 1))
+ (global $~lib/rt/__rtti_base i32 (i32.const 528))
+ (global $~lib/memory/__data_end i32 (i32.const 556))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33324))
+ (global $~lib/memory/__heap_base i32 (i32.const 33324))
  (memory $0 1)
- (data $0 (i32.const 12) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00c\00a\00l\00l\00-\00s\00u\00p\00e\00r\00.\00t\00s\00\00\00")
- (data $1 (i32.const 60) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
- (data $2 (i32.const 124) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $3 (i32.const 192) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $4 (i32.const 224) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $5 (i32.const 252) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00$\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e\00\00\00\00\00\00\00\00\00")
- (data $6 (i32.const 316) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
- (data $7 (i32.const 368) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $8 (i32.const 396) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $9 (i32.const 464) "\0e\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00")
+ (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
+ (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $2 (i32.const 144) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $3 (i32.const 176) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $4 (i32.const 208) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $5 (i32.const 236) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $6 (i32.const 300) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
+ (data $7 (i32.const 348) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00")
+ (data $8 (i32.const 396) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00*\00\00\00O\00b\00j\00e\00c\00t\00 \00a\00l\00r\00e\00a\00d\00y\00 \00p\00i\00n\00n\00e\00d\00\00\00")
+ (data $9 (i32.const 460) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00O\00b\00j\00e\00c\00t\00 \00i\00s\00 \00n\00o\00t\00 \00p\00i\00n\00n\00e\00d\00\00\00\00\00")
+ (data $10 (i32.const 528) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\02\t\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
+ (export "__new" (func $~lib/rt/tcms/__new))
+ (export "__pin" (func $~lib/rt/tcms/__pin))
+ (export "__unpin" (func $~lib/rt/tcms/__unpin))
+ (export "__collect" (func $~lib/rt/tcms/__collect))
+ (export "__rtti_base" (global $~lib/rt/__rtti_base))
  (export "memory" (memory $0))
  (start $~start)
- (func $call-super/A#get:a (param $this i32) (result i32)
-  (i32.load
-   (local.get $this)
-  )
- )
- (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
-  (i32.store offset=4
-   (local.get $this)
-   (local.get $nextWithColor)
-  )
- )
- (func $~lib/rt/itcms/Object#set:prev (param $this i32) (param $prev i32)
-  (i32.store offset=8
-   (local.get $this)
-   (local.get $prev)
-  )
- )
- (func $~lib/rt/itcms/initLazy (param $space i32) (result i32)
-  (call $~lib/rt/itcms/Object#set:nextWithColor
-   (local.get $space)
-   (local.get $space)
-  )
-  (call $~lib/rt/itcms/Object#set:prev
-   (local.get $space)
-   (local.get $space)
-  )
-  (return
-   (local.get $space)
-  )
- )
- (func $~lib/rt/itcms/Object#get:nextWithColor (param $this i32) (result i32)
+ (func $~lib/rt/tcms/Object#get:nextWithColor (param $this i32) (result i32)
   (i32.load offset=4
    (local.get $this)
   )
  )
- (func $~lib/rt/itcms/Object#get:next (param $this i32) (result i32)
+ (func $~lib/rt/tcms/Object#get:color (param $this i32) (result i32)
   (return
    (i32.and
-    (call $~lib/rt/itcms/Object#get:nextWithColor
+    (call $~lib/rt/tcms/Object#get:nextWithColor
+     (local.get $this)
+    )
+    (i32.const 3)
+   )
+  )
+ )
+ (func $~lib/rt/tcms/Object#get:next (param $this i32) (result i32)
+  (return
+   (i32.and
+    (call $~lib/rt/tcms/Object#get:nextWithColor
      (local.get $this)
     )
     (i32.xor
@@ -93,107 +76,30 @@
    )
   )
  )
- (func $~lib/rt/itcms/Object#get:color (param $this i32) (result i32)
-  (return
-   (i32.and
-    (call $~lib/rt/itcms/Object#get:nextWithColor
-     (local.get $this)
-    )
-    (i32.const 3)
-   )
-  )
- )
- (func $~lib/rt/itcms/visitRoots (param $cookie i32)
-  (local $pn i32)
-  (local $iter i32)
-  (call $~lib/rt/__visit_globals
-   (local.get $cookie)
-  )
-  (local.set $pn
-   (global.get $~lib/rt/itcms/pinSpace)
-  )
-  (local.set $iter
-   (call $~lib/rt/itcms/Object#get:next
-    (local.get $pn)
-   )
-  )
-  (block $while-break|0
-   (loop $while-continue|0
-    (if
-     (i32.ne
-      (local.get $iter)
-      (local.get $pn)
-     )
-     (then
-      (drop
-       (i32.const 1)
-      )
-      (if
-       (i32.eqz
-        (i32.eq
-         (call $~lib/rt/itcms/Object#get:color
-          (local.get $iter)
-         )
-         (i32.const 3)
-        )
-       )
-       (then
-        (call $~lib/builtins/abort
-         (i32.const 0)
-         (i32.const 144)
-         (i32.const 160)
-         (i32.const 16)
-        )
-        (unreachable)
-       )
-      )
-      (call $~lib/rt/__visit_members
-       (i32.add
-        (local.get $iter)
-        (i32.const 20)
-       )
-       (local.get $cookie)
-      )
-      (local.set $iter
-       (call $~lib/rt/itcms/Object#get:next
-        (local.get $iter)
-       )
-      )
-      (br $while-continue|0)
-     )
-    )
-   )
-  )
- )
- (func $~lib/rt/itcms/Object#set:color (param $this i32) (param $color i32)
-  (call $~lib/rt/itcms/Object#set:nextWithColor
-   (local.get $this)
-   (i32.or
-    (i32.and
-     (call $~lib/rt/itcms/Object#get:nextWithColor
-      (local.get $this)
-     )
-     (i32.xor
-      (i32.const 3)
-      (i32.const -1)
-     )
-    )
-    (local.get $color)
-   )
-  )
- )
- (func $~lib/rt/itcms/Object#get:prev (param $this i32) (result i32)
+ (func $~lib/rt/tcms/Object#get:prev (param $this i32) (result i32)
   (i32.load offset=8
    (local.get $this)
   )
  )
- (func $~lib/rt/itcms/Object#set:next (param $this i32) (param $obj i32)
-  (call $~lib/rt/itcms/Object#set:nextWithColor
+ (func $~lib/rt/tcms/Object#set:prev (param $this i32) (param $prev i32)
+  (i32.store offset=8
+   (local.get $this)
+   (local.get $prev)
+  )
+ )
+ (func $~lib/rt/tcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
+  (i32.store offset=4
+   (local.get $this)
+   (local.get $nextWithColor)
+  )
+ )
+ (func $~lib/rt/tcms/Object#set:next (param $this i32) (param $obj i32)
+  (call $~lib/rt/tcms/Object#set:nextWithColor
    (local.get $this)
    (i32.or
     (local.get $obj)
     (i32.and
-     (call $~lib/rt/itcms/Object#get:nextWithColor
+     (call $~lib/rt/tcms/Object#get:nextWithColor
       (local.get $this)
      )
      (i32.const 3)
@@ -201,11 +107,11 @@
    )
   )
  )
- (func $~lib/rt/itcms/Object#unlink (param $this i32)
+ (func $~lib/rt/tcms/Object#unlink (param $this i32)
   (local $next i32)
   (local $prev i32)
   (local.set $next
-   (call $~lib/rt/itcms/Object#get:next
+   (call $~lib/rt/tcms/Object#get:next
     (local.get $this)
    )
   )
@@ -222,7 +128,7 @@
      (i32.eqz
       (if (result i32)
        (i32.eq
-        (call $~lib/rt/itcms/Object#get:prev
+        (call $~lib/rt/tcms/Object#get:prev
          (local.get $this)
         )
         (i32.const 0)
@@ -241,8 +147,8 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 144)
-       (i32.const 128)
+       (i32.const 96)
+       (i32.const 100)
        (i32.const 18)
       )
       (unreachable)
@@ -252,7 +158,7 @@
    )
   )
   (local.set $prev
-   (call $~lib/rt/itcms/Object#get:prev
+   (call $~lib/rt/tcms/Object#get:prev
     (local.get $this)
    )
   )
@@ -266,181 +172,63 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 144)
-     (i32.const 132)
+     (i32.const 96)
+     (i32.const 104)
      (i32.const 16)
     )
     (unreachable)
    )
   )
-  (call $~lib/rt/itcms/Object#set:prev
+  (call $~lib/rt/tcms/Object#set:prev
    (local.get $next)
    (local.get $prev)
   )
-  (call $~lib/rt/itcms/Object#set:next
+  (call $~lib/rt/tcms/Object#set:next
    (local.get $prev)
    (local.get $next)
   )
  )
- (func $~lib/rt/itcms/Object#get:rtId (param $this i32) (result i32)
-  (i32.load offset=12
-   (local.get $this)
+ (func $~lib/rt/tcms/initLazy (param $space i32) (result i32)
+  (call $~lib/rt/tcms/Object#set:nextWithColor
+   (local.get $space)
+   (local.get $space)
   )
- )
- (func $~lib/shared/typeinfo/Typeinfo#get:flags (param $this i32) (result i32)
-  (i32.load
-   (local.get $this)
-  )
- )
- (func $~lib/rt/__typeinfo (param $id i32) (result i32)
-  (local $ptr i32)
-  (local.set $ptr
-   (global.get $~lib/rt/__rtti_base)
-  )
-  (if
-   (i32.gt_u
-    (local.get $id)
-    (i32.load
-     (local.get $ptr)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 272)
-     (i32.const 336)
-     (i32.const 21)
-     (i32.const 28)
-    )
-    (unreachable)
-   )
+  (call $~lib/rt/tcms/Object#set:prev
+   (local.get $space)
+   (local.get $space)
   )
   (return
-   (call $~lib/shared/typeinfo/Typeinfo#get:flags
-    (i32.add
-     (i32.add
-      (local.get $ptr)
-      (i32.const 4)
-     )
-     (i32.mul
-      (local.get $id)
-      (i32.const 4)
-     )
-    )
-   )
+   (local.get $space)
   )
  )
- (func $~lib/rt/itcms/Object#get:isPointerfree (param $this i32) (result i32)
-  (local $rtId i32)
-  (local.set $rtId
-   (call $~lib/rt/itcms/Object#get:rtId
-    (local.get $this)
-   )
-  )
-  (return
-   (if (result i32)
-    (i32.le_u
-     (local.get $rtId)
-     (i32.const 2)
-    )
-    (then
-     (i32.const 1)
-    )
-    (else
-     (i32.ne
-      (i32.and
-       (call $~lib/rt/__typeinfo
-        (local.get $rtId)
-       )
-       (i32.const 32)
-      )
-      (i32.const 0)
-     )
-    )
-   )
-  )
- )
- (func $~lib/rt/itcms/Object#linkTo (param $this i32) (param $list i32) (param $withColor i32)
+ (func $~lib/rt/tcms/Object#linkTo (param $this i32) (param $list i32) (param $withColor i32)
   (local $prev i32)
   (local.set $prev
-   (call $~lib/rt/itcms/Object#get:prev
+   (call $~lib/rt/tcms/Object#get:prev
     (local.get $list)
    )
   )
-  (call $~lib/rt/itcms/Object#set:nextWithColor
+  (call $~lib/rt/tcms/Object#set:nextWithColor
    (local.get $this)
    (i32.or
     (local.get $list)
     (local.get $withColor)
    )
   )
-  (call $~lib/rt/itcms/Object#set:prev
+  (call $~lib/rt/tcms/Object#set:prev
    (local.get $this)
    (local.get $prev)
   )
-  (call $~lib/rt/itcms/Object#set:next
+  (call $~lib/rt/tcms/Object#set:next
    (local.get $prev)
    (local.get $this)
   )
-  (call $~lib/rt/itcms/Object#set:prev
+  (call $~lib/rt/tcms/Object#set:prev
    (local.get $list)
    (local.get $this)
   )
  )
- (func $~lib/rt/itcms/Object#makeGray (param $this i32)
-  (local $1 i32)
-  (if
-   (i32.eq
-    (local.get $this)
-    (global.get $~lib/rt/itcms/iter)
-   )
-   (then
-    (global.set $~lib/rt/itcms/iter
-     (if (result i32)
-      (i32.eqz
-       (local.tee $1
-        (call $~lib/rt/itcms/Object#get:prev
-         (local.get $this)
-        )
-       )
-      )
-      (then
-       (call $~lib/builtins/abort
-        (i32.const 0)
-        (i32.const 144)
-        (i32.const 148)
-        (i32.const 30)
-       )
-       (unreachable)
-      )
-      (else
-       (local.get $1)
-      )
-     )
-    )
-   )
-  )
-  (call $~lib/rt/itcms/Object#unlink
-   (local.get $this)
-  )
-  (call $~lib/rt/itcms/Object#linkTo
-   (local.get $this)
-   (global.get $~lib/rt/itcms/toSpace)
-   (if (result i32)
-    (call $~lib/rt/itcms/Object#get:isPointerfree
-     (local.get $this)
-    )
-    (then
-     (i32.eqz
-      (global.get $~lib/rt/itcms/white)
-     )
-    )
-    (else
-     (i32.const 2)
-    )
-   )
-  )
- )
- (func $~lib/rt/itcms/__visit (param $ptr i32) (param $cookie i32)
+ (func $~lib/rt/tcms/__visit (param $ptr i32) (param $cookie i32)
   (local $obj i32)
   (if
    (i32.eqz
@@ -456,30 +244,28 @@
     (i32.const 20)
    )
   )
-  (drop
-   (i32.const 0)
-  )
   (if
    (i32.eq
-    (call $~lib/rt/itcms/Object#get:color
+    (call $~lib/rt/tcms/Object#get:color
      (local.get $obj)
     )
-    (global.get $~lib/rt/itcms/white)
+    (global.get $~lib/rt/tcms/white)
    )
    (then
-    (call $~lib/rt/itcms/Object#makeGray
+    (call $~lib/rt/tcms/Object#unlink
      (local.get $obj)
     )
-    (global.set $~lib/rt/itcms/visitCount
-     (i32.add
-      (global.get $~lib/rt/itcms/visitCount)
-      (i32.const 1)
+    (call $~lib/rt/tcms/Object#linkTo
+     (local.get $obj)
+     (global.get $~lib/rt/tcms/toSpace)
+     (i32.eqz
+      (global.get $~lib/rt/tcms/white)
      )
     )
    )
   )
  )
- (func $~lib/rt/itcms/visitStack (param $cookie i32)
+ (func $~lib/rt/tcms/visitStack
   (local $ptr i32)
   (local.set $ptr
    (global.get $~lib/memory/__stack_pointer)
@@ -492,11 +278,11 @@
       (global.get $~lib/memory/__heap_base)
      )
      (then
-      (call $~lib/rt/itcms/__visit
+      (call $~lib/rt/tcms/__visit
        (i32.load
         (local.get $ptr)
        )
-       (local.get $cookie)
+       (i32.const 0)
       )
       (local.set $ptr
        (i32.add
@@ -510,12 +296,49 @@
    )
   )
  )
+ (func $~lib/rt/tcms/visitPinned
+  (local $pn i32)
+  (local $iter i32)
+  (local.set $pn
+   (global.get $~lib/rt/tcms/pinSpace)
+  )
+  (local.set $iter
+   (call $~lib/rt/tcms/Object#get:next
+    (local.get $pn)
+   )
+  )
+  (block $while-break|0
+   (loop $while-continue|0
+    (if
+     (i32.ne
+      (local.get $iter)
+      (local.get $pn)
+     )
+     (then
+      (call $~lib/rt/__visit_members
+       (i32.add
+        (local.get $iter)
+        (i32.const 20)
+       )
+       (i32.const 0)
+      )
+      (local.set $iter
+       (call $~lib/rt/tcms/Object#get:next
+        (local.get $iter)
+       )
+      )
+      (br $while-continue|0)
+     )
+    )
+   )
+  )
+ )
  (func $~lib/rt/common/BLOCK#get:mmInfo (param $this i32) (result i32)
   (i32.load
    (local.get $this)
   )
  )
- (func $~lib/rt/itcms/Object#get:size (param $this i32) (result i32)
+ (func $~lib/rt/tcms/Object#get:size (param $this i32) (result i32)
   (return
    (i32.add
     (i32.const 4)
@@ -693,7 +516,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 416)
+     (i32.const 256)
      (i32.const 268)
      (i32.const 14)
     )
@@ -722,7 +545,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 416)
+     (i32.const 256)
      (i32.const 270)
      (i32.const 14)
     )
@@ -818,7 +641,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 416)
+     (i32.const 256)
      (i32.const 284)
      (i32.const 14)
     )
@@ -956,7 +779,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 416)
+     (i32.const 256)
      (i32.const 201)
      (i32.const 14)
     )
@@ -981,7 +804,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 416)
+     (i32.const 256)
      (i32.const 203)
      (i32.const 14)
     )
@@ -1067,7 +890,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 416)
+       (i32.const 256)
        (i32.const 221)
        (i32.const 16)
       )
@@ -1130,7 +953,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 416)
+     (i32.const 256)
      (i32.const 233)
      (i32.const 14)
     )
@@ -1156,7 +979,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 416)
+     (i32.const 256)
      (i32.const 234)
      (i32.const 14)
     )
@@ -1259,7 +1082,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 416)
+     (i32.const 256)
      (i32.const 251)
      (i32.const 14)
     )
@@ -1350,7 +1173,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 416)
+     (i32.const 256)
      (i32.const 382)
      (i32.const 14)
     )
@@ -1411,7 +1234,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 416)
+       (i32.const 256)
        (i32.const 389)
        (i32.const 16)
       )
@@ -1461,7 +1284,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 416)
+       (i32.const 256)
        (i32.const 402)
        (i32.const 5)
       )
@@ -1756,7 +1579,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 416)
+     (i32.const 256)
      (i32.const 562)
      (i32.const 3)
     )
@@ -1810,18 +1633,18 @@
    )
   )
  )
- (func $~lib/rt/itcms/free (param $obj i32)
+ (func $~lib/rt/tcms/free (param $obj i32)
   (if
    (i32.lt_u
     (local.get $obj)
     (global.get $~lib/memory/__heap_base)
    )
    (then
-    (call $~lib/rt/itcms/Object#set:nextWithColor
+    (call $~lib/rt/tcms/Object#set:nextWithColor
      (local.get $obj)
      (i32.const 0)
     )
-    (call $~lib/rt/itcms/Object#set:prev
+    (call $~lib/rt/tcms/Object#set:prev
      (local.get $obj)
      (i32.const 0)
     )
@@ -1830,16 +1653,13 @@
     (drop
      (i32.const 0)
     )
-    (global.set $~lib/rt/itcms/total
+    (global.set $~lib/rt/tcms/total
      (i32.sub
-      (global.get $~lib/rt/itcms/total)
-      (call $~lib/rt/itcms/Object#get:size
+      (global.get $~lib/rt/tcms/total)
+      (call $~lib/rt/tcms/Object#get:size
        (local.get $obj)
       )
      )
-    )
-    (drop
-     (i32.const 0)
     )
     (call $~lib/rt/tlsf/__free
      (i32.add
@@ -1850,364 +1670,143 @@
    )
   )
  )
- (func $~lib/rt/itcms/step (result i32)
-  (local $obj i32)
-  (local $1 i32)
-  (local $black i32)
-  (local $from i32)
-  (block $break|0
-   (block $case2|0
-    (block $case1|0
-     (block $case0|0
-      (local.set $1
-       (global.get $~lib/rt/itcms/state)
-      )
-      (br_if $case0|0
-       (i32.eq
-        (local.get $1)
-        (i32.const 0)
-       )
-      )
-      (br_if $case1|0
-       (i32.eq
-        (local.get $1)
-        (i32.const 1)
-       )
-      )
-      (br_if $case2|0
-       (i32.eq
-        (local.get $1)
-        (i32.const 2)
-       )
-      )
-      (br $break|0)
-     )
-     (block
-      (global.set $~lib/rt/itcms/state
-       (i32.const 1)
-      )
-      (global.set $~lib/rt/itcms/visitCount
-       (i32.const 0)
-      )
-      (call $~lib/rt/itcms/visitRoots
-       (i32.const 0)
-      )
-      (global.set $~lib/rt/itcms/iter
-       (global.get $~lib/rt/itcms/toSpace)
-      )
-      (return
-       (i32.mul
-        (global.get $~lib/rt/itcms/visitCount)
-        (i32.const 1)
-       )
-      )
-     )
-    )
-    (block
-     (local.set $black
-      (i32.eqz
-       (global.get $~lib/rt/itcms/white)
-      )
-     )
-     (local.set $obj
-      (call $~lib/rt/itcms/Object#get:next
-       (global.get $~lib/rt/itcms/iter)
-      )
-     )
-     (block $while-break|1
-      (loop $while-continue|1
-       (if
-        (i32.ne
-         (local.get $obj)
-         (global.get $~lib/rt/itcms/toSpace)
-        )
-        (then
-         (global.set $~lib/rt/itcms/iter
-          (local.get $obj)
-         )
-         (if
-          (i32.ne
-           (call $~lib/rt/itcms/Object#get:color
-            (local.get $obj)
-           )
-           (local.get $black)
-          )
-          (then
-           (call $~lib/rt/itcms/Object#set:color
-            (local.get $obj)
-            (local.get $black)
-           )
-           (global.set $~lib/rt/itcms/visitCount
-            (i32.const 0)
-           )
-           (call $~lib/rt/__visit_members
-            (i32.add
-             (local.get $obj)
-             (i32.const 20)
-            )
-            (i32.const 0)
-           )
-           (return
-            (i32.mul
-             (global.get $~lib/rt/itcms/visitCount)
-             (i32.const 1)
-            )
-           )
-          )
-         )
-         (local.set $obj
-          (call $~lib/rt/itcms/Object#get:next
-           (local.get $obj)
-          )
-         )
-         (br $while-continue|1)
-        )
-       )
-      )
-     )
-     (global.set $~lib/rt/itcms/visitCount
-      (i32.const 0)
-     )
-     (call $~lib/rt/itcms/visitRoots
-      (i32.const 0)
-     )
-     (local.set $obj
-      (call $~lib/rt/itcms/Object#get:next
-       (global.get $~lib/rt/itcms/iter)
-      )
-     )
-     (if
-      (i32.eq
-       (local.get $obj)
-       (global.get $~lib/rt/itcms/toSpace)
-      )
-      (then
-       (call $~lib/rt/itcms/visitStack
-        (i32.const 0)
-       )
-       (local.set $obj
-        (call $~lib/rt/itcms/Object#get:next
-         (global.get $~lib/rt/itcms/iter)
-        )
-       )
-       (block $while-break|2
-        (loop $while-continue|2
-         (if
-          (i32.ne
-           (local.get $obj)
-           (global.get $~lib/rt/itcms/toSpace)
-          )
-          (then
-           (if
-            (i32.ne
-             (call $~lib/rt/itcms/Object#get:color
-              (local.get $obj)
-             )
-             (local.get $black)
-            )
-            (then
-             (call $~lib/rt/itcms/Object#set:color
-              (local.get $obj)
-              (local.get $black)
-             )
-             (call $~lib/rt/__visit_members
-              (i32.add
-               (local.get $obj)
-               (i32.const 20)
-              )
-              (i32.const 0)
-             )
-            )
-           )
-           (local.set $obj
-            (call $~lib/rt/itcms/Object#get:next
-             (local.get $obj)
-            )
-           )
-           (br $while-continue|2)
-          )
-         )
-        )
-       )
-       (local.set $from
-        (global.get $~lib/rt/itcms/fromSpace)
-       )
-       (global.set $~lib/rt/itcms/fromSpace
-        (global.get $~lib/rt/itcms/toSpace)
-       )
-       (global.set $~lib/rt/itcms/toSpace
-        (local.get $from)
-       )
-       (global.set $~lib/rt/itcms/white
-        (local.get $black)
-       )
-       (global.set $~lib/rt/itcms/iter
-        (call $~lib/rt/itcms/Object#get:next
-         (local.get $from)
-        )
-       )
-       (global.set $~lib/rt/itcms/state
-        (i32.const 2)
-       )
-      )
-     )
-     (return
-      (i32.mul
-       (global.get $~lib/rt/itcms/visitCount)
-       (i32.const 1)
-      )
-     )
-    )
+ (func $~lib/rt/tcms/__collect
+  (local $beforeTotal i32)
+  (local $iter i32)
+  (local $next i32)
+  (local $tmp i32)
+  (local.set $beforeTotal
+   (global.get $~lib/rt/tcms/total)
+  )
+  (call $~lib/rt/__visit_globals
+   (i32.const 0)
+  )
+  (call $~lib/rt/tcms/visitStack)
+  (call $~lib/rt/tcms/visitPinned)
+  (local.set $iter
+   (call $~lib/rt/tcms/Object#get:next
+    (global.get $~lib/rt/tcms/toSpace)
    )
-   (block
-    (local.set $obj
-     (global.get $~lib/rt/itcms/iter)
-    )
+  )
+  (block $while-break|0
+   (loop $while-continue|0
     (if
      (i32.ne
-      (local.get $obj)
-      (global.get $~lib/rt/itcms/toSpace)
+      (local.get $iter)
+      (global.get $~lib/rt/tcms/toSpace)
      )
      (then
-      (global.set $~lib/rt/itcms/iter
-       (call $~lib/rt/itcms/Object#get:next
-        (local.get $obj)
-       )
-      )
       (drop
        (i32.const 1)
       )
       (if
        (i32.eqz
-        (i32.eq
-         (call $~lib/rt/itcms/Object#get:color
-          (local.get $obj)
+        (i32.ne
+         (call $~lib/rt/tcms/Object#get:color
+          (local.get $iter)
          )
-         (i32.eqz
-          (global.get $~lib/rt/itcms/white)
-         )
+         (global.get $~lib/rt/tcms/white)
         )
        )
        (then
         (call $~lib/builtins/abort
          (i32.const 0)
-         (i32.const 144)
-         (i32.const 229)
-         (i32.const 20)
+         (i32.const 96)
+         (i32.const 248)
+         (i32.const 16)
         )
         (unreachable)
        )
       )
-      (call $~lib/rt/itcms/free
-       (local.get $obj)
-      )
-      (return
-       (i32.const 10)
-      )
-     )
-    )
-    (call $~lib/rt/itcms/Object#set:nextWithColor
-     (global.get $~lib/rt/itcms/toSpace)
-     (global.get $~lib/rt/itcms/toSpace)
-    )
-    (call $~lib/rt/itcms/Object#set:prev
-     (global.get $~lib/rt/itcms/toSpace)
-     (global.get $~lib/rt/itcms/toSpace)
-    )
-    (global.set $~lib/rt/itcms/state
-     (i32.const 0)
-    )
-    (br $break|0)
-   )
-  )
-  (return
-   (i32.const 0)
-  )
- )
- (func $~lib/rt/itcms/interrupt
-  (local $budget i32)
-  (drop
-   (i32.const 0)
-  )
-  (drop
-   (i32.const 0)
-  )
-  (local.set $budget
-   (i32.div_u
-    (i32.mul
-     (i32.const 1024)
-     (i32.const 200)
-    )
-    (i32.const 100)
-   )
-  )
-  (loop $do-loop|0
-   (local.set $budget
-    (i32.sub
-     (local.get $budget)
-     (call $~lib/rt/itcms/step)
-    )
-   )
-   (if
-    (i32.eq
-     (global.get $~lib/rt/itcms/state)
-     (i32.const 0)
-    )
-    (then
-     (drop
-      (i32.const 0)
-     )
-     (global.set $~lib/rt/itcms/threshold
-      (i32.add
-       (i32.wrap_i64
-        (i64.div_u
-         (i64.mul
-          (i64.extend_i32_u
-           (global.get $~lib/rt/itcms/total)
-          )
-          (i64.extend_i32_u
-           (i32.const 200)
-          )
-         )
-         (i64.const 100)
-        )
+      (call $~lib/rt/__visit_members
+       (i32.add
+        (local.get $iter)
+        (i32.const 20)
        )
-       (i32.const 1024)
+       (i32.const 0)
       )
-     )
-     (drop
-      (i32.const 0)
-     )
-     (return)
-    )
-   )
-   (br_if $do-loop|0
-    (i32.gt_s
-     (local.get $budget)
-     (i32.const 0)
-    )
-   )
-  )
-  (drop
-   (i32.const 0)
-  )
-  (global.set $~lib/rt/itcms/threshold
-   (i32.add
-    (global.get $~lib/rt/itcms/total)
-    (i32.mul
-     (i32.const 1024)
-     (i32.lt_u
-      (i32.sub
-       (global.get $~lib/rt/itcms/total)
-       (global.get $~lib/rt/itcms/threshold)
+      (local.set $iter
+       (call $~lib/rt/tcms/Object#get:next
+        (local.get $iter)
+       )
       )
-      (i32.const 1024)
+      (br $while-continue|0)
      )
     )
    )
   )
-  (drop
-   (i32.const 0)
+  (local.set $iter
+   (call $~lib/rt/tcms/Object#get:next
+    (global.get $~lib/rt/tcms/fromSpace)
+   )
+  )
+  (block $while-break|1
+   (loop $while-continue|1
+    (if
+     (i32.ne
+      (local.get $iter)
+      (global.get $~lib/rt/tcms/fromSpace)
+     )
+     (then
+      (local.set $next
+       (call $~lib/rt/tcms/Object#get:next
+        (local.get $iter)
+       )
+      )
+      (call $~lib/rt/tcms/free
+       (local.get $iter)
+      )
+      (local.set $iter
+       (local.get $next)
+      )
+      (br $while-continue|1)
+     )
+    )
+   )
+  )
+  (call $~lib/rt/tcms/Object#set:nextWithColor
+   (global.get $~lib/rt/tcms/fromSpace)
+   (global.get $~lib/rt/tcms/fromSpace)
+  )
+  (call $~lib/rt/tcms/Object#set:prev
+   (global.get $~lib/rt/tcms/fromSpace)
+   (global.get $~lib/rt/tcms/fromSpace)
+  )
+  (local.set $tmp
+   (global.get $~lib/rt/tcms/fromSpace)
+  )
+  (global.set $~lib/rt/tcms/fromSpace
+   (global.get $~lib/rt/tcms/toSpace)
+  )
+  (global.set $~lib/rt/tcms/toSpace
+   (local.get $tmp)
+  )
+  (global.set $~lib/rt/tcms/white
+   (i32.eqz
+    (global.get $~lib/rt/tcms/white)
+   )
+  )
+  (if
+   (i32.gt_u
+    (i32.sub
+     (local.get $beforeTotal)
+     (global.get $~lib/rt/tcms/total)
+    )
+    (i32.const 65536)
+   )
+   (then
+    (global.set $~lib/rt/tcms/threshold
+     (local.get $beforeTotal)
+    )
+   )
+   (else
+    (global.set $~lib/rt/tcms/threshold
+     (i32.add
+      (local.get $beforeTotal)
+      (i32.const 65536)
+     )
+    )
+   )
   )
  )
  (func $~lib/rt/tlsf/computeSize (param $size i32) (result i32)
@@ -2249,8 +1848,8 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 80)
-     (i32.const 416)
+     (i32.const 32)
+     (i32.const 256)
      (i32.const 461)
      (i32.const 29)
     )
@@ -2386,7 +1985,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 416)
+     (i32.const 256)
      (i32.const 334)
      (i32.const 14)
     )
@@ -2464,7 +2063,7 @@
        (then
         (call $~lib/builtins/abort
          (i32.const 0)
-         (i32.const 416)
+         (i32.const 256)
          (i32.const 347)
          (i32.const 18)
         )
@@ -2641,7 +2240,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 416)
+     (i32.const 256)
      (i32.const 361)
      (i32.const 14)
     )
@@ -2772,7 +2371,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 416)
+       (i32.const 256)
        (i32.const 499)
        (i32.const 16)
       )
@@ -2802,7 +2401,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 416)
+     (i32.const 256)
      (i32.const 501)
      (i32.const 14)
     )
@@ -2844,19 +2443,19 @@
    )
   )
  )
- (func $~lib/rt/itcms/Object#set:rtId (param $this i32) (param $rtId i32)
+ (func $~lib/rt/tcms/Object#set:rtId (param $this i32) (param $rtId i32)
   (i32.store offset=12
    (local.get $this)
    (local.get $rtId)
   )
  )
- (func $~lib/rt/itcms/Object#set:rtSize (param $this i32) (param $rtSize i32)
+ (func $~lib/rt/tcms/Object#set:rtSize (param $this i32) (param $rtSize i32)
   (i32.store offset=16
    (local.get $this)
    (local.get $rtSize)
   )
  )
- (func $~lib/rt/itcms/__new (param $size i32) (param $id i32) (result i32)
+ (func $~lib/rt/tcms/__new (param $size i32) (param $id i32) (result i32)
   (local $obj i32)
   (local $ptr i32)
   (if
@@ -2866,9 +2465,9 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 80)
-     (i32.const 144)
-     (i32.const 262)
+     (i32.const 32)
+     (i32.const 96)
+     (i32.const 136)
      (i32.const 31)
     )
     (unreachable)
@@ -2876,11 +2475,11 @@
   )
   (if
    (i32.ge_u
-    (global.get $~lib/rt/itcms/total)
-    (global.get $~lib/rt/itcms/threshold)
+    (global.get $~lib/rt/tcms/total)
+    (global.get $~lib/rt/tcms/threshold)
    )
    (then
-    (call $~lib/rt/itcms/interrupt)
+    (call $~lib/rt/tcms/__collect)
    )
   )
   (local.set $obj
@@ -2894,23 +2493,23 @@
     (i32.const 4)
    )
   )
-  (call $~lib/rt/itcms/Object#set:rtId
+  (call $~lib/rt/tcms/Object#set:rtId
    (local.get $obj)
    (local.get $id)
   )
-  (call $~lib/rt/itcms/Object#set:rtSize
+  (call $~lib/rt/tcms/Object#set:rtSize
    (local.get $obj)
    (local.get $size)
   )
-  (call $~lib/rt/itcms/Object#linkTo
+  (call $~lib/rt/tcms/Object#linkTo
    (local.get $obj)
-   (global.get $~lib/rt/itcms/fromSpace)
-   (global.get $~lib/rt/itcms/white)
+   (global.get $~lib/rt/tcms/fromSpace)
+   (global.get $~lib/rt/tcms/white)
   )
-  (global.set $~lib/rt/itcms/total
+  (global.set $~lib/rt/tcms/total
    (i32.add
-    (global.get $~lib/rt/itcms/total)
-    (call $~lib/rt/itcms/Object#get:size
+    (global.get $~lib/rt/tcms/total)
+    (call $~lib/rt/tcms/Object#get:size
      (local.get $obj)
     )
    )
@@ -2930,199 +2529,6 @@
    (local.get $ptr)
   )
  )
- (func $call-super/A#set:a (param $this i32) (param $a i32)
-  (i32.store
-   (local.get $this)
-   (local.get $a)
-  )
- )
- (func $call-super/A#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 5)
-       )
-      )
-     )
-    )
-   )
-   (call $call-super/A#set:a
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (i32.const 1)
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/A#get:a
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-     (i32.const 1)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 6)
-     (i32.const 5)
-    )
-    (unreachable)
-   )
-  )
-  (local.get $this)
- )
- (func $call-super/B#get:b (param $this i32) (result i32)
-  (i32.load offset=4
-   (local.get $this)
-  )
- )
- (func $call-super/B#set:b (param $this i32) (param $b i32)
-  (i32.store offset=4
-   (local.get $this)
-   (local.get $b)
-  )
- )
- (func $call-super/B#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 4)
-       )
-      )
-     )
-    )
-   )
-   (call $call-super/B#set:b
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (i32.const 2)
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $call-super/A#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/A#get:a
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-     (i32.const 1)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 15)
-     (i32.const 5)
-    )
-    (unreachable)
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/B#get:b
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-     (i32.const 2)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 16)
-     (i32.const 5)
-    )
-    (unreachable)
-   )
-  )
-  (local.get $this)
- )
- (func $call-super/test1
-  (local $b i32)
-  (local.set $b
-   (call $~lib/rt/__localtostack
-    (call $call-super/B#constructor
-     (i32.const 0)
-    )
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/A#get:a
-      (call $~lib/rt/__tmptostack
-       (local.get $b)
-      )
-     )
-     (i32.const 1)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 22)
-     (i32.const 3)
-    )
-    (unreachable)
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/B#get:b
-      (call $~lib/rt/__tmptostack
-       (local.get $b)
-      )
-     )
-     (i32.const 2)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 23)
-     (i32.const 3)
-    )
-    (unreachable)
-   )
-  )
- )
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
   (if
    (i32.eqz
@@ -3131,7 +2537,7 @@
    (then
     (local.set $this
      (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
+      (call $~lib/rt/tcms/__new
        (i32.const 0)
        (i32.const 0)
       )
@@ -3141,13 +2547,43 @@
   )
   (local.get $this)
  )
- (func $call-super/C#set:a (param $this i32) (param $a i32)
+ (func $~lib/rt/tcms/__link (param $parentPtr i32) (param $childPtr i32) (param $expectMultiple i32)
+  (nop)
+ )
+ (func $~lib/array/Array<i32>#set:buffer (param $this i32) (param $buffer i32)
   (i32.store
    (local.get $this)
-   (local.get $a)
+   (local.get $buffer)
+  )
+  (call $~lib/rt/tcms/__link
+   (local.get $this)
+   (local.get $buffer)
+   (i32.const 0)
   )
  )
- (func $call-super/C#constructor (param $this i32) (result i32)
+ (func $~lib/array/Array<i32>#set:dataStart (param $this i32) (param $dataStart i32)
+  (i32.store offset=4
+   (local.get $this)
+   (local.get $dataStart)
+  )
+ )
+ (func $~lib/array/Array<i32>#set:byteLength (param $this i32) (param $byteLength i32)
+  (i32.store offset=8
+   (local.get $this)
+   (local.get $byteLength)
+  )
+ )
+ (func $~lib/array/Array<i32>#set:length_ (param $this i32) (param $length_ i32)
+  (i32.store offset=12
+   (local.get $this)
+   (local.get $length_)
+  )
+ )
+ (func $~lib/array/Array<i32>#constructor (param $this i32) (param $length i32) (result i32)
+  (local $2 i32)
+  (local $3 i32)
+  (local $bufferSize i32)
+  (local $buffer i32)
   (if
    (i32.eqz
     (local.get $this)
@@ -3155,337 +2591,213 @@
    (then
     (local.set $this
      (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 7)
+      (call $~lib/rt/tcms/__new
+       (i32.const 16)
+       (i32.const 5)
       )
      )
     )
    )
   )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $~lib/object/Object#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
+  (if
+   (i32.gt_u
+    (local.get $length)
+    (i32.shr_u
+     (i32.const 1073741820)
+     (i32.const 2)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 320)
+     (i32.const 368)
+     (i32.const 70)
+     (i32.const 60)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $bufferSize
+   (i32.shl
+    (select
+     (local.tee $2
+      (local.get $length)
      )
-    )
-   )
-  )
-  (call $call-super/C#set:a
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (i32.const 1)
-  )
-  (local.get $this)
- )
- (func $call-super/C#get:a (param $this i32) (result i32)
-  (i32.load
-   (local.get $this)
-  )
- )
- (func $call-super/D#get:b (param $this i32) (result i32)
-  (i32.load offset=4
-   (local.get $this)
-  )
- )
- (func $call-super/D#set:b (param $this i32) (param $b i32)
-  (i32.store offset=4
-   (local.get $this)
-   (local.get $b)
-  )
- )
- (func $call-super/D#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 6)
-       )
-      )
+     (local.tee $3
+      (i32.const 8)
      )
-    )
-   )
-   (call $call-super/D#set:b
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
+     (i32.gt_u
+      (local.get $2)
+      (local.get $3)
+     )
     )
     (i32.const 2)
    )
   )
-  (local.set $this
+  (local.set $buffer
    (call $~lib/rt/__localtostack
-    (call $call-super/C#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/C#get:a
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
+    (call $~lib/rt/tcms/__new
+     (local.get $bufferSize)
      (i32.const 1)
     )
    )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 38)
-     (i32.const 5)
-    )
-    (unreachable)
-   )
   )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/D#get:b
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-     (i32.const 2)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 39)
-     (i32.const 5)
-    )
-    (unreachable)
-   )
-  )
-  (local.get $this)
- )
- (func $call-super/test2
-  (local $d i32)
-  (local.set $d
-   (call $~lib/rt/__localtostack
-    (call $call-super/D#constructor
-     (i32.const 0)
-    )
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/C#get:a
-      (call $~lib/rt/__tmptostack
-       (local.get $d)
-      )
-     )
-     (i32.const 1)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 45)
-     (i32.const 3)
-    )
-    (unreachable)
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/D#get:b
-      (call $~lib/rt/__tmptostack
-       (local.get $d)
-      )
-     )
-     (i32.const 2)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 46)
-     (i32.const 3)
-    )
-    (unreachable)
-   )
-  )
- )
- (func $call-super/E#get:a (param $this i32) (result i32)
-  (i32.load
-   (local.get $this)
-  )
- )
- (func $call-super/E#set:a (param $this i32) (param $a i32)
-  (i32.store
-   (local.get $this)
-   (local.get $a)
-  )
- )
- (func $call-super/E#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 9)
-       )
-      )
-     )
-    )
-   )
-   (call $call-super/E#set:a
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
+  (drop
+   (i32.eq
     (i32.const 1)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/E#get:a
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-     (i32.const 1)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 56)
-     (i32.const 5)
-    )
-    (unreachable)
-   )
-  )
-  (local.get $this)
- )
- (func $call-super/F#set:b (param $this i32) (param $b i32)
-  (i32.store offset=4
-   (local.get $this)
-   (local.get $b)
-  )
- )
- (func $call-super/F#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 8)
-       (i32.const 8)
-      )
-     )
-    )
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $call-super/E#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (call $call-super/F#set:b
+  (call $~lib/array/Array<i32>#set:buffer
    (call $~lib/rt/__tmptostack
     (local.get $this)
    )
-   (i32.const 2)
+   (call $~lib/rt/__tmptostack
+    (local.get $buffer)
+   )
+  )
+  (call $~lib/array/Array<i32>#set:dataStart
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $buffer)
+  )
+  (call $~lib/array/Array<i32>#set:byteLength
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $bufferSize)
+  )
+  (call $~lib/array/Array<i32>#set:length_
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $length)
   )
   (local.get $this)
  )
- (func $call-super/F#get:b (param $this i32) (result i32)
-  (i32.load offset=4
-   (local.get $this)
-  )
- )
- (func $call-super/test3
-  (local $f i32)
-  (local.set $f
-   (call $~lib/rt/__localtostack
-    (call $call-super/F#constructor
-     (i32.const 0)
-    )
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/E#get:a
-      (call $~lib/rt/__tmptostack
-       (local.get $f)
-      )
-     )
-     (i32.const 1)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 66)
-     (i32.const 3)
-    )
-    (unreachable)
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/F#get:b
-      (call $~lib/rt/__tmptostack
-       (local.get $f)
-      )
-     )
-     (i32.const 2)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 67)
-     (i32.const 3)
-    )
-    (unreachable)
-   )
-  )
- )
- (func $call-super/G#set:a (param $this i32) (param $a i32)
+ (func $rt/runtime-radical/RadicalObject#set:i0 (param $this i32) (param $i0 i32)
   (i32.store
    (local.get $this)
-   (local.get $a)
+   (local.get $i0)
+  )
+  (call $~lib/rt/tcms/__link
+   (local.get $this)
+   (local.get $i0)
+   (i32.const 0)
   )
  )
- (func $call-super/G#constructor (param $this i32) (result i32)
+ (func $rt/runtime-radical/RadicalObject#set:i1 (param $this i32) (param $i1 i32)
+  (i32.store offset=4
+   (local.get $this)
+   (local.get $i1)
+  )
+  (call $~lib/rt/tcms/__link
+   (local.get $this)
+   (local.get $i1)
+   (i32.const 0)
+  )
+ )
+ (func $rt/runtime-radical/RadicalObject#set:i2 (param $this i32) (param $i2 i32)
+  (i32.store offset=8
+   (local.get $this)
+   (local.get $i2)
+  )
+  (call $~lib/rt/tcms/__link
+   (local.get $this)
+   (local.get $i2)
+   (i32.const 0)
+  )
+ )
+ (func $rt/runtime-radical/RadicalObject#set:i3 (param $this i32) (param $i3 i32)
+  (i32.store offset=12
+   (local.get $this)
+   (local.get $i3)
+  )
+  (call $~lib/rt/tcms/__link
+   (local.get $this)
+   (local.get $i3)
+   (i32.const 0)
+  )
+ )
+ (func $rt/runtime-radical/RadicalObject#set:i4 (param $this i32) (param $i4 i32)
+  (i32.store offset=16
+   (local.get $this)
+   (local.get $i4)
+  )
+  (call $~lib/rt/tcms/__link
+   (local.get $this)
+   (local.get $i4)
+   (i32.const 0)
+  )
+ )
+ (func $rt/runtime-radical/RadicalObject#set:i5 (param $this i32) (param $i5 i32)
+  (i32.store offset=20
+   (local.get $this)
+   (local.get $i5)
+  )
+  (call $~lib/rt/tcms/__link
+   (local.get $this)
+   (local.get $i5)
+   (i32.const 0)
+  )
+ )
+ (func $rt/runtime-radical/RadicalObject#set:i6 (param $this i32) (param $i6 i32)
+  (i32.store offset=24
+   (local.get $this)
+   (local.get $i6)
+  )
+  (call $~lib/rt/tcms/__link
+   (local.get $this)
+   (local.get $i6)
+   (i32.const 0)
+  )
+ )
+ (func $rt/runtime-radical/RadicalObject#set:i7 (param $this i32) (param $i7 i32)
+  (i32.store offset=28
+   (local.get $this)
+   (local.get $i7)
+  )
+  (call $~lib/rt/tcms/__link
+   (local.get $this)
+   (local.get $i7)
+   (i32.const 0)
+  )
+ )
+ (func $rt/runtime-radical/RadicalObject#set:i8 (param $this i32) (param $i8 i32)
+  (i32.store offset=32
+   (local.get $this)
+   (local.get $i8)
+  )
+  (call $~lib/rt/tcms/__link
+   (local.get $this)
+   (local.get $i8)
+   (i32.const 0)
+  )
+ )
+ (func $rt/runtime-radical/RadicalObject#set:i9 (param $this i32) (param $i9 i32)
+  (i32.store offset=36
+   (local.get $this)
+   (local.get $i9)
+  )
+  (call $~lib/rt/tcms/__link
+   (local.get $this)
+   (local.get $i9)
+   (i32.const 0)
+  )
+ )
+ (func $rt/runtime-radical/RadicalObject#set:i10 (param $this i32) (param $i10 i32)
+  (i32.store offset=40
+   (local.get $this)
+   (local.get $i10)
+  )
+  (call $~lib/rt/tcms/__link
+   (local.get $this)
+   (local.get $i10)
+   (i32.const 0)
+  )
+ )
+ (func $rt/runtime-radical/RadicalObject#constructor (param $this i32) (result i32)
   (if
    (i32.eqz
     (local.get $this)
@@ -3493,9 +2805,9 @@
    (then
     (local.set $this
      (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
+      (call $~lib/rt/tcms/__new
+       (i32.const 44)
        (i32.const 4)
-       (i32.const 11)
       )
      )
     )
@@ -3510,250 +2822,132 @@
     )
    )
   )
-  (call $call-super/G#set:a
+  (call $rt/runtime-radical/RadicalObject#set:i0
    (call $~lib/rt/__tmptostack
     (local.get $this)
    )
-   (i32.const 1)
-  )
-  (local.get $this)
- )
- (func $call-super/H#set:b (param $this i32) (param $b i32)
-  (i32.store offset=4
-   (local.get $this)
-   (local.get $b)
-  )
- )
- (func $call-super/H#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 8)
-       (i32.const 10)
-      )
-     )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/array/Array<i32>#constructor
+     (i32.const 0)
+     (i32.const 100)
     )
    )
   )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $call-super/G#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (call $call-super/H#set:b
+  (call $rt/runtime-radical/RadicalObject#set:i1
    (call $~lib/rt/__tmptostack
     (local.get $this)
    )
-   (i32.const 2)
-  )
-  (local.get $this)
- )
- (func $call-super/G#get:a (param $this i32) (result i32)
-  (i32.load
-   (local.get $this)
-  )
- )
- (func $call-super/H#get:b (param $this i32) (result i32)
-  (i32.load offset=4
-   (local.get $this)
-  )
- )
- (func $call-super/test4
-  (local $h i32)
-  (local.set $h
-   (call $~lib/rt/__localtostack
-    (call $call-super/H#constructor
+   (call $~lib/rt/__tmptostack
+    (call $~lib/array/Array<i32>#constructor
      (i32.const 0)
+     (i32.const 100)
     )
    )
   )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/G#get:a
-      (call $~lib/rt/__tmptostack
-       (local.get $h)
-      )
-     )
-     (i32.const 1)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 84)
-     (i32.const 3)
-    )
-    (unreachable)
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/H#get:b
-      (call $~lib/rt/__tmptostack
-       (local.get $h)
-      )
-     )
-     (i32.const 2)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 85)
-     (i32.const 3)
-    )
-    (unreachable)
-   )
-  )
- )
- (func $call-super/I#set:a (param $this i32) (param $a i32)
-  (i32.store
-   (local.get $this)
-   (local.get $a)
-  )
- )
- (func $call-super/I#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 13)
-       )
-      )
-     )
-    )
-   )
-   (call $call-super/I#set:a
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (i32.const 1)
-   )
-  )
-  (local.get $this)
- )
- (func $call-super/J#set:b (param $this i32) (param $b i32)
-  (i32.store offset=4
-   (local.get $this)
-   (local.get $b)
-  )
- )
- (func $call-super/J#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 8)
-       (i32.const 12)
-      )
-     )
-    )
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $call-super/I#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (call $call-super/J#set:b
+  (call $rt/runtime-radical/RadicalObject#set:i2
    (call $~lib/rt/__tmptostack
     (local.get $this)
    )
-   (i32.const 2)
+   (call $~lib/rt/__tmptostack
+    (call $~lib/array/Array<i32>#constructor
+     (i32.const 0)
+     (i32.const 100)
+    )
+   )
+  )
+  (call $rt/runtime-radical/RadicalObject#set:i3
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/array/Array<i32>#constructor
+     (i32.const 0)
+     (i32.const 100)
+    )
+   )
+  )
+  (call $rt/runtime-radical/RadicalObject#set:i4
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/array/Array<i32>#constructor
+     (i32.const 0)
+     (i32.const 100)
+    )
+   )
+  )
+  (call $rt/runtime-radical/RadicalObject#set:i5
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/array/Array<i32>#constructor
+     (i32.const 0)
+     (i32.const 100)
+    )
+   )
+  )
+  (call $rt/runtime-radical/RadicalObject#set:i6
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/array/Array<i32>#constructor
+     (i32.const 0)
+     (i32.const 100)
+    )
+   )
+  )
+  (call $rt/runtime-radical/RadicalObject#set:i7
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/array/Array<i32>#constructor
+     (i32.const 0)
+     (i32.const 100)
+    )
+   )
+  )
+  (call $rt/runtime-radical/RadicalObject#set:i8
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/array/Array<i32>#constructor
+     (i32.const 0)
+     (i32.const 100)
+    )
+   )
+  )
+  (call $rt/runtime-radical/RadicalObject#set:i9
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/array/Array<i32>#constructor
+     (i32.const 0)
+     (i32.const 100)
+    )
+   )
+  )
+  (call $rt/runtime-radical/RadicalObject#set:i10
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/array/Array<i32>#constructor
+     (i32.const 0)
+     (i32.const 100)
+    )
+   )
   )
   (local.get $this)
  )
- (func $call-super/I#get:a (param $this i32) (result i32)
-  (i32.load
-   (local.get $this)
-  )
- )
- (func $call-super/J#get:b (param $this i32) (result i32)
-  (i32.load offset=4
-   (local.get $this)
-  )
- )
- (func $call-super/test5
-  (local $h i32)
-  (local.set $h
-   (call $~lib/rt/__localtostack
-    (call $call-super/J#constructor
-     (i32.const 0)
-    )
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/I#get:a
-      (call $~lib/rt/__tmptostack
-       (local.get $h)
-      )
-     )
-     (i32.const 1)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 103)
-     (i32.const 3)
-    )
-    (unreachable)
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/J#get:b
-      (call $~lib/rt/__tmptostack
-       (local.get $h)
-      )
-     )
-     (i32.const 2)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 104)
-     (i32.const 3)
-    )
-    (unreachable)
-   )
-  )
- )
- (func $start:call-super
-  (global.set $~lib/rt/itcms/threshold
+ (func $start:rt/runtime-radical
+  (local $i i32)
+  (global.set $~lib/rt/tcms/threshold
    (i32.shr_u
     (i32.sub
      (i32.shl
@@ -3765,26 +2959,132 @@
     (i32.const 1)
    )
   )
-  (global.set $~lib/rt/itcms/pinSpace
-   (call $~lib/rt/itcms/initLazy
-    (i32.const 192)
+  (global.set $~lib/rt/tcms/toSpace
+   (call $~lib/rt/tcms/initLazy
+    (i32.const 144)
    )
   )
-  (global.set $~lib/rt/itcms/toSpace
-   (call $~lib/rt/itcms/initLazy
-    (i32.const 224)
+  (global.set $~lib/rt/tcms/pinSpace
+   (call $~lib/rt/tcms/initLazy
+    (i32.const 176)
    )
   )
-  (global.set $~lib/rt/itcms/fromSpace
-   (call $~lib/rt/itcms/initLazy
-    (i32.const 368)
+  (global.set $~lib/rt/tcms/fromSpace
+   (call $~lib/rt/tcms/initLazy
+    (i32.const 208)
    )
   )
-  (call $call-super/test1)
-  (call $call-super/test2)
-  (call $call-super/test3)
-  (call $call-super/test4)
-  (call $call-super/test5)
+  (block
+   (local.set $i
+    (i32.const 0)
+   )
+   (loop $for-loop|0
+    (if
+     (i32.lt_s
+      (local.get $i)
+      (i32.const 10)
+     )
+     (then
+      (drop
+       (call $rt/runtime-radical/RadicalObject#constructor
+        (i32.const 0)
+       )
+      )
+      (local.set $i
+       (i32.add
+        (local.get $i)
+        (i32.const 1)
+       )
+      )
+      (br $for-loop|0)
+     )
+    )
+   )
+  )
+ )
+ (func $~lib/rt/tcms/__pin (param $ptr i32) (result i32)
+  (local $obj i32)
+  (if
+   (local.get $ptr)
+   (then
+    (local.set $obj
+     (i32.sub
+      (local.get $ptr)
+      (i32.const 20)
+     )
+    )
+    (if
+     (i32.eq
+      (call $~lib/rt/tcms/Object#get:color
+       (local.get $obj)
+      )
+      (i32.const 3)
+     )
+     (then
+      (call $~lib/builtins/abort
+       (i32.const 416)
+       (i32.const 96)
+       (i32.const 188)
+       (i32.const 7)
+      )
+      (unreachable)
+     )
+    )
+    (call $~lib/rt/tcms/Object#unlink
+     (local.get $obj)
+    )
+    (call $~lib/rt/tcms/Object#linkTo
+     (local.get $obj)
+     (global.get $~lib/rt/tcms/pinSpace)
+     (i32.const 3)
+    )
+   )
+  )
+  (return
+   (local.get $ptr)
+  )
+ )
+ (func $~lib/rt/tcms/__unpin (param $ptr i32)
+  (local $obj i32)
+  (if
+   (i32.eqz
+    (local.get $ptr)
+   )
+   (then
+    (return)
+   )
+  )
+  (local.set $obj
+   (i32.sub
+    (local.get $ptr)
+    (i32.const 20)
+   )
+  )
+  (if
+   (i32.ne
+    (call $~lib/rt/tcms/Object#get:color
+     (local.get $obj)
+    )
+    (i32.const 3)
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 480)
+     (i32.const 96)
+     (i32.const 202)
+     (i32.const 5)
+    )
+    (unreachable)
+   )
+  )
+  (call $~lib/rt/tcms/Object#unlink
+   (local.get $obj)
+  )
+  (call $~lib/rt/tcms/Object#linkTo
+   (local.get $obj)
+   (global.get $~lib/rt/tcms/fromSpace)
+   (global.get $~lib/rt/tcms/white)
+  )
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
@@ -3796,7 +3096,7 @@
    (local.get $0)
    (local.get $1)
   )
-  (call $~lib/rt/itcms/__visit
+  (call $~lib/rt/tcms/__visit
    (i32.load
     (local.get $0)
    )
@@ -3806,52 +3106,123 @@
  (func $~lib/object/Object~visit (param $0 i32) (param $1 i32)
   (nop)
  )
+ (func $rt/runtime-radical/RadicalObject~visit (param $0 i32) (param $1 i32)
+  (local $2 i32)
+  (call $~lib/object/Object~visit
+   (local.get $0)
+   (local.get $1)
+  )
+  (call $~lib/rt/tcms/__visit
+   (i32.load
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+  (call $~lib/rt/tcms/__visit
+   (i32.load offset=4
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+  (call $~lib/rt/tcms/__visit
+   (i32.load offset=8
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+  (call $~lib/rt/tcms/__visit
+   (i32.load offset=12
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+  (call $~lib/rt/tcms/__visit
+   (i32.load offset=16
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+  (call $~lib/rt/tcms/__visit
+   (i32.load offset=20
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+  (call $~lib/rt/tcms/__visit
+   (i32.load offset=24
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+  (call $~lib/rt/tcms/__visit
+   (i32.load offset=28
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+  (call $~lib/rt/tcms/__visit
+   (i32.load offset=32
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+  (call $~lib/rt/tcms/__visit
+   (i32.load offset=36
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+  (call $~lib/rt/tcms/__visit
+   (i32.load offset=40
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+ )
+ (func $~lib/array/Array<i32>#get:buffer (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $~lib/array/Array<i32>#__visit (param $this i32) (param $cookie i32)
+  (drop
+   (i32.const 0)
+  )
+  (call $~lib/rt/tcms/__visit
+   (call $~lib/array/Array<i32>#get:buffer
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+   (local.get $cookie)
+  )
+ )
+ (func $~lib/array/Array<i32>~visit (param $0 i32) (param $1 i32)
+  (call $~lib/object/Object~visit
+   (local.get $0)
+   (local.get $1)
+  )
+  (call $~lib/array/Array<i32>#__visit
+   (local.get $0)
+   (local.get $1)
+  )
+ )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $call-super/I
-    (block $call-super/J
-     (block $call-super/G
-      (block $call-super/H
-       (block $call-super/E
-        (block $call-super/F
-         (block $call-super/C
-          (block $call-super/D
-           (block $call-super/A
-            (block $call-super/B
-             (block $~lib/arraybuffer/ArrayBufferView
-              (block $~lib/string/String
-               (block $~lib/arraybuffer/ArrayBuffer
-                (block $~lib/object/Object
-                 (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $call-super/B $call-super/A $call-super/D $call-super/C $call-super/F $call-super/E $call-super/H $call-super/G $call-super/J $call-super/I $invalid
-                  (i32.load
-                   (i32.sub
-                    (local.get $0)
-                    (i32.const 8)
-                   )
-                  )
-                 )
-                )
-                (return)
-               )
-               (return)
-              )
-              (return)
-             )
-             (block
-              (call $~lib/arraybuffer/ArrayBufferView~visit
-               (local.get $0)
-               (local.get $1)
-              )
-              (return)
-             )
-            )
-            (return)
+   (block $~lib/array/Array<i32>
+    (block $rt/runtime-radical/RadicalObject
+     (block $~lib/arraybuffer/ArrayBufferView
+      (block $~lib/string/String
+       (block $~lib/arraybuffer/ArrayBuffer
+        (block $~lib/object/Object
+         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $rt/runtime-radical/RadicalObject $~lib/array/Array<i32> $invalid
+          (i32.load
+           (i32.sub
+            (local.get $0)
+            (i32.const 8)
            )
-           (return)
           )
-          (return)
          )
-         (return)
         )
         (return)
        )
@@ -3859,15 +3230,33 @@
       )
       (return)
      )
+     (block
+      (call $~lib/arraybuffer/ArrayBufferView~visit
+       (local.get $0)
+       (local.get $1)
+      )
+      (return)
+     )
+    )
+    (block
+     (call $rt/runtime-radical/RadicalObject~visit
+      (local.get $0)
+      (local.get $1)
+     )
      (return)
+    )
+   )
+   (block
+    (call $~lib/array/Array<i32>~visit
+     (local.get $0)
+     (local.get $1)
     )
     (return)
    )
-   (return)
   )
   (unreachable)
  )
  (func $~start
-  (call $start:call-super)
+  (call $start:rt/runtime-radical)
  )
 )

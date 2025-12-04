@@ -1,5 +1,4 @@
-import { BLOCK, BLOCK_OVERHEAD, OBJECT_OVERHEAD, OBJECT_MAXSIZE, TOTAL_OVERHEAD, DEBUG, TRACE, RTRACE } from "./common";
-import { onvisit, oncollect } from "./rtrace";
+import { BLOCK, BLOCK_OVERHEAD, OBJECT_OVERHEAD, OBJECT_MAXSIZE, TOTAL_OVERHEAD, DEBUG, } from "./common";
 import { E_ALLOCATION_TOO_LARGE, E_ALREADY_PINNED, E_NOT_PINNED } from "../util/error";
 
 // === TCMS: A Two-Color Mark & Sweep garbage collector ===
@@ -7,7 +6,7 @@ import { E_ALLOCATION_TOO_LARGE, E_ALREADY_PINNED, E_NOT_PINNED } from "../util/
 // ╒═════════════╤══════════════ Colors ═══════════════════════════╕
 // │ Color       │ Meaning                                         │
 // ├─────────────┼─────────────────────────────────────────────────┤
-// │ WHITE*      │ Unreachable                                     │
+// │ WHITE*      │ Unprocessed or Unreachable                      │
 // │ BLACK*      │ Reachable                                       │
 // │ TRANSPARENT │ Manually pinned (always reachable)              │
 // └─────────────┴─────────────────────────────────────────────────┘
@@ -117,40 +116,49 @@ function initLazy(space: Object): Object {
   }
 }
 
+/** Frees an object. */
+function free(obj: Object): void {
+  if (changetype<usize>(obj) < __heap_base) {
+    obj.nextWithColor = 0; // may become linked again
+    obj.prev = changetype<Object>(0);
+  } else {
+    if (isDefined(ASC_GC_TESTING)) memory.fill(changetype<usize>(obj) + TOTAL_OVERHEAD, 0xDE, obj.rtSize);
+    total -= obj.size;
+    __free(changetype<usize>(obj) + BLOCK_OVERHEAD);
+  }
+}
+
 // Garbage collector interface
 
 // @ts-ignore: decorator
 @global @unsafe
 export function __new(size: usize, id: i32): usize {
-  if (size > OBJECT_MAXSIZE) throw new Error(E_ALLOCATION_TOO_LARGE);
+  if (size >= OBJECT_MAXSIZE) throw new Error(E_ALLOCATION_TOO_LARGE);
+  if (total >= threshold) __collect();
   let obj = changetype<Object>(__alloc(OBJECT_OVERHEAD + size) - BLOCK_OVERHEAD);
   obj.rtId = id;
   obj.rtSize = <u32>size;
   obj.linkTo(fromSpace, white);
   total += obj.size;
-  return changetype<usize>(obj) + TOTAL_OVERHEAD;
+  let ptr = changetype<usize>(obj) + TOTAL_OVERHEAD;
+  // may be visited before being fully initialized, so must fill
+  memory.fill(ptr, 0, size);
+  return ptr;
 }
 
 // @ts-ignore: decorator
 @global @unsafe
 export function __renew(oldPtr: usize, size: usize): usize {
   let oldObj = changetype<Object>(oldPtr - TOTAL_OVERHEAD);
-  if (oldPtr < __heap_base) { // move to heap for simplicity
-    let newPtr = __new(size, oldObj.rtId);
-    memory.copy(newPtr, oldPtr, min(size, oldObj.rtSize));
-    return newPtr;
+  // Update object size if its block is large enough
+  if (size <= (oldObj.mmInfo & ~3) - OBJECT_OVERHEAD) {
+    oldObj.rtSize = <u32>size;
+    return oldPtr;
   }
-  if (size > OBJECT_MAXSIZE) throw new Error(E_ALLOCATION_TOO_LARGE);
-  total -= oldObj.size;
-  let newPtr = __realloc(oldPtr - OBJECT_OVERHEAD, OBJECT_OVERHEAD + size) + OBJECT_OVERHEAD;
-  let newObj = changetype<Object>(newPtr - TOTAL_OVERHEAD);
-  newObj.rtSize = <u32>size;
-
-  // Replace with new object
-  newObj.next.prev = newObj;
-  newObj.prev.next = newObj;
-
-  total += newObj.size;
+  // If not the same object anymore, we have to move it move it due to the
+  // shadow stack potentially still referencing the old object
+  let newPtr = __new(size, oldObj.rtId);
+  memory.copy(newPtr, oldPtr, min(size, oldObj.rtSize));
   return newPtr;
 }
 
@@ -165,7 +173,6 @@ export function __link(parentPtr: usize, childPtr: usize, expectMultiple: bool):
 export function __visit(ptr: usize, cookie: i32): void {
   if (!ptr) return;
   let obj = changetype<Object>(ptr - TOTAL_OVERHEAD);
-  if (RTRACE) if (!onvisit(obj)) return;
   if (obj.color == white) {
     obj.unlink(); // from fromSpace
     obj.linkTo(toSpace, i32(!white));
@@ -198,57 +205,73 @@ export function __unpin(ptr: usize): void {
   obj.linkTo(fromSpace, white);
 }
 
+// Garbage collector automation
+
+/** How often to interrupt. The default of 1024 means "interrupt each 4KiB allocated". */
+// @ts-ignore: decorator
+@inline const GRANULARITY: usize = isDefined(ASC_GC_GRANULARITY) ? ASC_GC_GRANULARITY : 64 * 1024;
+
+/** Threshold of memory used by objects to exceed before interrupting again. */
+// @ts-ignore: decorator
+@lazy let threshold: usize = ((<usize>memory.size() << 16) - __heap_base) >> 1;
+
+/** Visits all objects on the stack. */
+function visitStack(): void {
+  let ptr = __stack_pointer;
+  while (ptr < __heap_base) {
+    __visit(load<usize>(ptr), VISIT_SCAN);
+    ptr += sizeof<usize>();
+  }
+}
+
+function visitPinned(): void {
+  let pn = pinSpace;
+  let iter: Object = pn.next;
+  while (iter != pn) {
+    __visit_members(changetype<usize>(iter) + TOTAL_OVERHEAD, VISIT_SCAN);
+    iter = iter.next;
+  }
+}
+
 // @ts-ignore: decorator
 @global @unsafe
 export function __collect(): void {
-  if (TRACE) trace("GC at", 1, total);
+  const beforeTotal = total;
 
-  // Mark roots (add to toSpace)
   __visit_globals(VISIT_SCAN);
+  visitStack();
+  visitPinned();
 
-  // Mark direct members of pinned objects (add to toSpace)
-  let pn = pinSpace;
-  let iter = pn.next;
-  while (iter != pn) {
-    if (DEBUG) assert(iter.color == transparent);
+  let iter: Object;
+  iter = toSpace.next;
+  while (iter != toSpace) {
+    if (DEBUG) assert(iter.color != white);
     __visit_members(changetype<usize>(iter) + TOTAL_OVERHEAD, VISIT_SCAN);
+    // __visit will insert object at the end of toSpace, so we must advance after visiting.
     iter = iter.next;
   }
 
-  // Mark what's reachable from toSpace
-  let black = i32(!white);
-  let to = toSpace;
-  iter = to.next;
-  while (iter != to) {
-    if (DEBUG) assert(iter.color == black);
-    __visit_members(changetype<usize>(iter) + TOTAL_OVERHEAD, VISIT_SCAN);
-    iter = iter.next;
+  // clean up fromSpace
+  iter = fromSpace.next;
+  while (iter != fromSpace) {
+    const next = iter.next;
+    free(iter);
+    iter = next;
   }
-
-  // Sweep what's left in fromSpace
-  let from = fromSpace;
-  iter = from.next;
-  while (iter != from) {
-    if (DEBUG) assert(iter.color == white);
-    let newNext = iter.next;
-    if (changetype<usize>(iter) < __heap_base) {
-      iter.nextWithColor = 0; // may become linked again
-      iter.prev = changetype<Object>(0);
-    } else {
-      total -= iter.size;
-      if (isDefined(__finalize)) __finalize(changetype<usize>(iter) + TOTAL_OVERHEAD);
-      __free(changetype<usize>(iter) + BLOCK_OVERHEAD);
-    }
-    iter = newNext;
-  }
-  from.nextWithColor = changetype<usize>(from);
-  from.prev = from;
+  fromSpace.nextWithColor = changetype<usize>(fromSpace);
+  fromSpace.prev = fromSpace;
 
   // Flip spaces and colors
-  fromSpace = to;
-  toSpace = from;
-  white = black;
+  const tmp = fromSpace;
+  fromSpace = toSpace;
+  toSpace = tmp;
+  white = i32(!white);
 
-  if (TRACE) trace("GC done at", 1, total);
-  if (RTRACE) oncollect(total);
+  // update threshold
+  if (beforeTotal - total > GRANULARITY) {
+    threshold = beforeTotal;
+  } else {
+    // collect less frequently if nothing can be collected
+    threshold = beforeTotal + GRANULARITY;
+  }
 }

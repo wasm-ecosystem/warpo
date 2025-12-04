@@ -11,7 +11,7 @@
  (global $enum-to-string/Enum.E1 i32 (i32.const 1))
  (global $enum-to-string/Enum.E2 i32 (i32.const 2))
  (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Minimal i32 (i32.const 1))
+ (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
  (global $enum-to-string/v (mut i32) (i32.const 0))

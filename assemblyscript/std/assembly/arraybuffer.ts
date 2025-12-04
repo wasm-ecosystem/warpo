@@ -18,7 +18,7 @@ export abstract class ArrayBufferView {
   protected constructor(length: i32, alignLog2: i32) {
     if (<u32>length > <u32>BLOCK_MAXSIZE >>> alignLog2) throw new RangeError(E_INVALIDLENGTH);
     let buffer = changetype<ArrayBuffer>(__new(length = length << alignLog2, idof<ArrayBuffer>()));
-    if (ASC_RUNTIME != Runtime.Incremental) {
+    if (ASC_RUNTIME == Runtime.Stub) {
       memory.fill(changetype<usize>(buffer), 0, <usize>length);
     }
     this.buffer = buffer; // links
@@ -51,7 +51,7 @@ export abstract class ArrayBufferView {
   constructor(length: i32) {
     if (<u32>length > <u32>BLOCK_MAXSIZE) throw new RangeError(E_INVALIDLENGTH);
     let buffer = changetype<ArrayBuffer>(__new(<usize>length, idof<ArrayBuffer>()));
-    if (ASC_RUNTIME != Runtime.Incremental) {
+    if (ASC_RUNTIME == Runtime.Stub) {
       memory.fill(changetype<usize>(buffer), 0, <usize>length);
     }
     return buffer;

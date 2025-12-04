@@ -58,6 +58,7 @@ STREQUAL
 succs
 SWEEPFACTOR
 tagopt
+tcms
 tmptostack
 tostack
 tricore

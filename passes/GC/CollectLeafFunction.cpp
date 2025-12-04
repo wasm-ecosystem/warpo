@@ -26,7 +26,7 @@ static LeafFunc collectLeafFunctions(const CallGraph &cg) {
       reservedCallGraph.try_emplace(callee, std::set<wasm::Name>{}).first->second.insert(caller);
     }
   }
-  std::set<wasm::Name> workList{FnNew, FnCollect};
+  std::set<wasm::Name> workList{FnITCMSNew, FnITCMSCollect, FnTCMSNew, FnTCMSCollect};
   while (!workList.empty()) {
     auto it = workList.begin();
     if (leaf.erase(*it) == 1) {
@@ -66,10 +66,10 @@ using ::testing::Not;
 
 TEST(GCLeafFunctionTest, LeafFunction) {
   CallGraph CG{};
-  CG[FnNew] = {};
+  CG[FnITCMSNew] = {};
   CG["leaf"] = {};
   CG["parent_1"] = {"leaf"};
-  CG["parent_poison"] = {"leaf", FnNew};
+  CG["parent_poison"] = {"leaf", FnITCMSNew};
 
   std::set<wasm::Name> const leaf = collectLeafFunctions(CG);
 

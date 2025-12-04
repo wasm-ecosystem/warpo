@@ -20,7 +20,7 @@
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $std/staticarray/arr1 i32 (i32.const 32))
  (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Minimal i32 (i32.const 1))
+ (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $std/staticarray/arr2 i32 (i32.const 256))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -3346,9 +3346,9 @@
    )
   )
   (drop
-   (i32.ne
+   (i32.eq
     (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Incremental)
+    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (return
@@ -6491,9 +6491,9 @@
      )
     )
     (drop
-     (i32.ne
+     (i32.eq
       (i32.const 2)
-      (global.get $~lib/shared/runtime/Runtime.Incremental)
+      (global.get $~lib/shared/runtime/Runtime.Stub)
      )
     )
     (if

@@ -73,7 +73,9 @@ public:
         else if (flag == "--use Date=")
           config.uses["Date"] = "";
         else if (flag == "--runtime incremental")
-          static_cast<void>(0); // do nothing, incremental is default
+          config.runtime = frontend::RuntimeKind::Incremental;
+        else if (flag == "--runtime radical")
+          config.runtime = frontend::RuntimeKind::Radical;
         else if (flag == "--bindings raw")
           static_cast<void>(0); // do nothing, raw binding is default
         else if (flag == "--experimental")

@@ -44,6 +44,7 @@ BuildScriptRunner::BuildScriptRunner(std::filesystem::path const &buildScriptPat
   createConfig.emitDebugLine = true;
   createConfig.exportRuntime = true;
   createConfig.exportTable = true;
+  createConfig.runtime = frontend::RuntimeKind::Radical;
   createConfig.exportStart = startFunctionName;
   frontend::CompilationResult const result = frontend::compile(nullptr, {buildScriptPath.string()}, createConfig);
   if (result.m.invalid()) {

@@ -37,7 +37,7 @@ struct SSAValue {
       case Kind::Arg:
         return value_.arg <=> other.value_.arg;
       default:
-        UNREACHABLE;
+        WARPO_UNREACHABLE;
       }
     } else {
       return kind_ <=> other.kind_;
@@ -50,7 +50,7 @@ struct SSAValue {
     case Kind::Arg:
       return value_.arg;
     default:
-      UNREACHABLE;
+      WARPO_UNREACHABLE;
     }
   }
   std::optional<wasm::Index> tryGetLocalIndex() const {

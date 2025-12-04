@@ -84,7 +84,7 @@ void ExprInserter::insertBefore(wasm::Builder &b, wasm::Expression *insertedExpr
     break;
   }
   default:
-    UNREACHABLE;
+    WARPO_UNREACHABLE;
   }
 }
 
@@ -160,7 +160,7 @@ void ExprInserter::insertAfter(wasm::Builder &b, wasm::Expression *insertedExpr,
       return;
     }
   }
-  UNREACHABLE;
+  WARPO_UNREACHABLE;
 }
 
 } // namespace warpo::passes
