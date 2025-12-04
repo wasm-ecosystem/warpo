@@ -24,8 +24,7 @@ static cli::Opt<std::filesystem::path> projectOption{
     "--project",
     [](argparse::Argument &arg) -> void {
       arg.help("Compile the project given the path to its configuration file, or to a folder with a 'create.ts'")
-          .nargs(1U)
-          .default_value("");
+          .nargs(1U);
     },
 };
 
