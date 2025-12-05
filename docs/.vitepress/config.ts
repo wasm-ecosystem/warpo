@@ -35,6 +35,10 @@ export default defineConfig({
     ],
     sidebar: [
       {
+        text: "About Documentation",
+        link: "/about_documentation",
+      },
+      {
         text: "Using the Language",
         link: "/using_language/index",
         items: [

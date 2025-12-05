@@ -1,3 +1,10 @@
+# Enum
+
+<p style="display: flex; gap: 10px;">
+  <img src="/version/2.2.3.svg" alt="2.2.3" />
+  <img src="/stability/stable.svg" alt="2.2.3" />
+</p>
+
 ## Basic Usage
 
 Like TS, you can use `enum` to define enumeration values in WARPO.
