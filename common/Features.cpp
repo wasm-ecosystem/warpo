@@ -12,8 +12,9 @@ static cli::Opt<std::vector<std::string>> disableFeatureOptions{
     cli::Category::Frontend | cli::Category::Optimization,
     "--disable-feature",
     [](argparse::Argument &arg) -> void {
-      arg.help("disable mutable-globals, sign-extension, nontrapping-f2i, bulk-memory")
+      arg.help("disable WebAssembly features, mutable-globals, sign-extension, nontrapping-f2i, bulk-memory")
           .nargs(argparse::nargs_pattern::at_least_one)
+          .choices("mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory")
           .append();
     },
 };
