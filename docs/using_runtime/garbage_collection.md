@@ -1,19 +1,36 @@
-WARPO uses [shadow stack GC algorithm](https://llvm.org/docs/GarbageCollection.html#the-shadow-stack-gc).
+# Garbage Collection (GC)
 
-In frontend, WARPO will introduce 2 functions to identify shadow stack mapping.
+warpo provide 2 kinds of runtime. They can be selected by command line options during compilation.
 
-```wasm
- (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
- (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
+- incremental: selected by `--runtime incremental`. Default runtime
+- radical: selected by `--runtime radical`.
+
+## interfaces
+
+<p style="display: flex; gap: 10px;">
+  <img src="/version/nightly.svg" />
+  <img src="/stability/stable.svg"  />
+</p>
+
+```ts
+// allocate new object with size and rtid
+declare function __new(size: usize, id: u32): usize;
+// re-allocate a object
+declare function __renew(ptr: usize, size: usize): usize;
+// insert write barrier (only useful for incremental runtime)
+declare function __link(parentPtr: usize, childPtr: usize, expectMultiple: bool): void;
+// trigger full GC manually
+declare function __collect(): void;
+// pin an object to prevent being garbage collected
+declare function __pin(ptr: usize): usize;
+// cancel the pin operation
+declare function __unpin(ptr: usize): void;
 ```
 
-In optimization lowering passes, WARPO will convert these 2 functions to the store operation in shadow stack.
+These interfaces are public interfaces exposed by runtime.
 
-The shadow stack area is static allocated in linear memory which is from `__stack_pointer` to `__heap_base`.
-In the prologue of each GC related function, `__stack_pointer` will decrease to allocate some space of shadow stack.
-In the epilogue, `__stack_pointer` will increase back. Then the items stored in new allocated area won't be tracked any more, in another word, these objects will be freed in next time GC.
+For host side (out of AssemblyScript):<br>
+when `--exportRuntime` is enabled, these interfaces will be WebAssembly exported functions.
 
-```wasm
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const ...))
- (global $~lib/memory/__heap_base i32 (i32.const ...))
-```
+For AssemblyScript user code:<br/>
+`import { __new, __collect, /* ... */ } from "rt/index";`

@@ -24,6 +24,6 @@ Others are brand new and experimental,
 
 Throughout the documentation are indications of a section's versioning.
 
-We will not maintain multiple version's documents, so that each section will contain a minimum usable version (by default is carry over original Assemblyscript).
+We will not maintain multiple version's documents, so that each section will contain a minimum usable version (by default is carry over original AssemblyScript).
 
 The first usable version of warpo is **2.2.3**.

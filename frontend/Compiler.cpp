@@ -102,7 +102,7 @@ static cli::Opt<std::string> runtimeOption{
     cli::Category::Frontend,
     "--runtime",
     [](argparse::Argument &arg) -> void {
-      arg.help("Specifies the runtime to use. Options are 'Radical' and 'Incremental'.")
+      arg.help("Specifies the runtime to use. Options are 'radical' and 'incremental'.")
           .nargs(1)
           .default_value(RuntimeUtils::toString(RuntimeKind::Incremental))
           .choices(RuntimeUtils::toString(RuntimeKind::Radical), RuntimeUtils::toString(RuntimeKind::Incremental));

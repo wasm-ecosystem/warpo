@@ -1,6 +1,6 @@
 warpo maintained a variant of [Typescript](https://www.typescriptlang.org/) to [WebAssembly](https://webassembly.org/).
 
-It forked from [Assemblyscript](https://www.assemblyscript.org/using_language.html) and do further extension to make it more modern.
+It forked from [AssemblyScript](https://www.assemblyscript.org/using_language.html) and do further extension to make it more modern.
 
 ### Goal
 

@@ -16,7 +16,7 @@ https://wasm-ecosystem.github.io/warpo/
 
 ## Acknowledgment
 
-- [Assemblyscript](https://www.assemblyscript.org/)
+- [AssemblyScript](https://www.assemblyscript.org/)
 - [binaryen](https://github.com/WebAssembly/binaryen)
 
 ## for Developer

@@ -72,6 +72,16 @@ export default defineConfig({
           {
             text: "garbage collection",
             link: "/using_runtime/garbage_collection",
+            items: [
+              {
+                text: "shadow stack",
+                link: "/using_runtime/shadow_stack",
+              },
+              {
+                text: "radical GC",
+                link: "/using_runtime/radical_gc",
+              },
+            ],
           },
         ],
       },

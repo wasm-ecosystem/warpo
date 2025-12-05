@@ -64,6 +64,7 @@ tostack
 tricore
 trunc
 unittests
+usize
 Walloc
 Walloca
 warpo

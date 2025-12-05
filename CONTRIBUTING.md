@@ -87,7 +87,7 @@ git branch -D binaryen-backport-1
 git push binaryen-fork binaryen-backport -u
 ```
 
-## How to Extend Assemblyscript Language Features
+## How to Extend AssemblyScript Language Features
 
 ### Builtin Functions
 
