@@ -20,6 +20,7 @@
     "test:debug_symbol:update": "cross-env-shell build/tests/DebugSymbol/TestDebugSymbol --update-fixtures",
     "test:driver": "node tests/driver/index.mjs",
     "test": "npm run test:as:ut && npm run test:cpp:ut && npm run test:as:snapshot && npm run test:opt:snapshot && npm run test:driver && npm run test:debug_symbol && npm run test:bootstrap:debug && npm run test:bootstrap:release",
+    "test:update": "npm run test:as:snapshot -- -u && npm run test:opt:snapshot -- -u && npm run test:driver -- -u && npm run test:debug_symbol -- -u",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "prettier": "prettier --check .",

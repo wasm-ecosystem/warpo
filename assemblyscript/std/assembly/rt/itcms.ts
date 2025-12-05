@@ -281,8 +281,8 @@ export function __renew(oldPtr: usize, size: usize): usize {
     oldObj.rtSize = <u32>size;
     return oldPtr;
   }
-  // If not the same object anymore, we have to move it move it due to the
-  // shadow stack potentially still referencing the old object
+  // We cannot reuse the old object anymore.
+  // shadow stack may still contain references to it, so we must not free it yet.
   let newPtr = __new(size, oldObj.rtId);
   memory.copy(newPtr, oldPtr, min(size, oldObj.rtSize));
   return newPtr;
