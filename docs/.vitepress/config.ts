@@ -39,16 +39,16 @@ export default defineConfig({
         link: "/about_documentation",
       },
       {
+        text: "new features",
+        link: "/new_features",
+      },
+      {
         text: "Using the Language",
         link: "/using_language/index",
         items: [
           {
             text: "current status",
             link: "/using_language/current_status",
-          },
-          {
-            text: "new features",
-            link: "/using_language/new_features",
           },
           {
             text: "details",
