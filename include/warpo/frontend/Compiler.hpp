@@ -64,7 +64,6 @@ struct Config {
   bool emitDebugLine;
   bool emitDebugInfo;
   bool useColorfulDiagMessage;
-  bool experimental;
 };
 
 Config getDefaultConfig();

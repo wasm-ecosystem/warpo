@@ -10,7 +10,7 @@
 ### major logic
 
 - assemblyscript: code base of assemblyscript, modify from https://github.com/AssemblyScript/assemblyscript/.
-- assemblyscript_extension: experimental functions for AS.
+- assemblyscript_extension: new functions for AS.
 - common: function related common code, most of them are cli options.
 - frontend: assemblyscript frontend compiler.
 - passes: additional optimization passes.

@@ -187,10 +187,8 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
         continue;
       parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
     }
-    if (config.experimental) {
-      for (auto const &[libName, libSource] : warpo::frontend::embed_extension_library_sources)
-        parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
-    }
+    for (auto const &[libName, libSource] : warpo::frontend::embed_extension_library_sources)
+      parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
 
     std::string_view const rtIndexSource = warpo::frontend::embed_library_sources.at(
         config.runtime == RuntimeKind::Incremental ? "rt/index-incremental" : "rt/index-radical");
@@ -214,9 +212,6 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     parseStat.release();
 
     support::PerfRAII compileStat{support::PerfItemKind::CompilationHIR_Compilation};
-
-    if (config.experimental)
-      r.callExportedFunctionWithName<0>("activeExtensions");
 
     r.callExportedFunctionWithName<0>("initializeProgram", program);
 

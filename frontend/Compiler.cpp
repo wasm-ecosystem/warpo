@@ -92,12 +92,6 @@ static cli::Opt<uint32_t> initialMemoryOption{
     },
 };
 
-static cli::Opt<bool> experimentalOption{
-    cli::Category::Frontend,
-    "--experimental",
-    [](argparse::Argument &arg) -> void { arg.help("Enables experimental AssemblyScript extensions.").flag(); },
-};
-
 static cli::Opt<std::string> runtimeOption{
     cli::Category::Frontend,
     "--runtime",
@@ -139,7 +133,6 @@ warpo::frontend::Config warpo::frontend::getDefaultConfig() {
       .emitDebugLine = false,
       .emitDebugInfo = false,
       .useColorfulDiagMessage = support::isTTY(),
-      .experimental = false,
   };
 }
 
@@ -160,7 +153,6 @@ frontend::CompilationResult frontend::compile(Pluggable *plugin) {
       .emitDebugLine = common::isEmitDebugLine(),
       .emitDebugInfo = common::isEmitDebugInfo(),
       .useColorfulDiagMessage = support::isTTY(),
-      .experimental = experimentalOption.get(),
   };
   return compile(plugin, entryPaths.get(), config);
 }
