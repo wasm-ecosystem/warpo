@@ -51,16 +51,16 @@
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
  (start $~start)
- (func $~lib/utf8_const_str/utf8.ConstStr#get:addr (param $this i32) (result i32)
+ (func $~lib/warpo/utf8/const_str/ConstStr#get:addr (param $this i32) (result i32)
   (return
    (local.get $this)
   )
  )
- (func $~lib/utf8_const_str/utf8.ConstStr#get:size (param $this i32) (result i32)
+ (func $~lib/warpo/utf8/const_str/ConstStr#get:size (param $this i32) (result i32)
   (return
    (i32.load
     (i32.sub
-     (call $~lib/utf8_const_str/utf8.ConstStr#get:addr
+     (call $~lib/warpo/utf8/const_str/ConstStr#get:addr
       (local.get $this)
      )
      (i32.const 4)
@@ -3338,13 +3338,13 @@
    )
   )
  )
- (func $~lib/utf8_const_str/utf8.ConstStr#toString (param $this i32) (result i32)
+ (func $~lib/warpo/utf8/const_str/ConstStr#toString (param $this i32) (result i32)
   (return
    (call $~lib/string/String.UTF8.decodeUnsafe
-    (call $~lib/utf8_const_str/utf8.ConstStr#get:addr
+    (call $~lib/warpo/utf8/const_str/ConstStr#get:addr
      (local.get $this)
     )
-    (call $~lib/utf8_const_str/utf8.ConstStr#get:size
+    (call $~lib/warpo/utf8/const_str/ConstStr#get:size
      (local.get $this)
     )
     (i32.const 1)
@@ -3604,7 +3604,7 @@
   (if
    (i32.eqz
     (i32.eq
-     (call $~lib/utf8_const_str/utf8.ConstStr#get:size
+     (call $~lib/warpo/utf8/const_str/ConstStr#get:size
       (global.get $extension/utf8_const_str/s)
      )
      (i32.const 6)
@@ -3651,7 +3651,7 @@
    (i32.eqz
     (call $~lib/string/String.__eq
      (call $~lib/rt/__tmptostack
-      (call $~lib/utf8_const_str/utf8.ConstStr#toString
+      (call $~lib/warpo/utf8/const_str/ConstStr#toString
        (global.get $extension/utf8_const_str/s)
       )
      )

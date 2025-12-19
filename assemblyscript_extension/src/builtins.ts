@@ -9,8 +9,8 @@ import { ExpressionRef } from "../../assemblyscript/src/module";
 import { getUtf8Cache } from "./utf8_cache";
 
 namespace ExtNames {
-  export const utf8_const_str = "~lib/utf8_const_str/utf8.ConstStr";
-  export const utf8_build = "~lib/utf8_const_str/utf8.build";
+  export const utf8_const_str = "~lib/warpo/utf8/const_str/ConstStr";
+  export const utf8_build = "~lib/warpo/utf8/const_str/build";
 }
 
 function checkTypeAbsent(ctx: BuiltinFunctionContext): i32 {
