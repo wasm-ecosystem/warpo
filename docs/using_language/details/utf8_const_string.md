@@ -11,7 +11,7 @@ In low level WebAssembly runtime, the native string most likely is utf8 encoded,
 To use this feature, explicit import `warpo:utf8_const_str` from
 
 ```ts
-import { utf8 } from "warpo:utf8_const_str";
+import { utf8 } from "warpo/utf8/const_str";
 
 let s = utf8.build("abcdef");
 
