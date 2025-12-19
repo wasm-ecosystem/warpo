@@ -60,4 +60,6 @@ function builtin_utf8_build(ctx: BuiltinFunctionContext): ExpressionRef {
   return module.i32(stringPtr);
 }
 
-builtinFunctions.set(ExtNames.utf8_build, builtin_utf8_build);
+export function activeExtensions(): void {
+  builtinFunctions.set(ExtNames.utf8_build, builtin_utf8_build);
+}
