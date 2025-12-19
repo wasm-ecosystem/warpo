@@ -69,9 +69,16 @@ Dependency FrontendCompiler::getDependency(std::string const &nextFileInternalPa
   std::string const plainName = nextFileInternalPath.substr(std::string_view{libraryPrefix}.size());
   if (embed_library_sources.contains(plainName))
     return {.text = std::string{embed_library_sources.at(plainName)}, .path = libraryPrefix + plainName + extension};
+  if (embed_extension_library_sources.contains(plainName))
+    return {.text = std::string{embed_extension_library_sources.at(plainName)},
+            .path = libraryPrefix + plainName + extension};
+
   std::string const indexName = plainName + "/index";
   if (embed_library_sources.contains(indexName))
     return {.text = std::string{embed_library_sources.at(indexName)}, .path = libraryPrefix + indexName + extension};
+  if (embed_extension_library_sources.contains(indexName))
+    return {.text = std::string{embed_extension_library_sources.at(indexName)},
+            .path = libraryPrefix + indexName + extension};
   // cache miss
   int32_t const dependee = r.callExportedFunctionWithName<1>("getDependee", program, nextFile)[0].i32;
   std::string const dependeePath = r.getString(static_cast<uint32_t>(dependee));
@@ -187,8 +194,6 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
         continue;
       parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
     }
-    for (auto const &[libName, libSource] : warpo::frontend::embed_extension_library_sources)
-      parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
 
     std::string_view const rtIndexSource = warpo::frontend::embed_library_sources.at(
         config.runtime == RuntimeKind::Incremental ? "rt/index-incremental" : "rt/index-radical");
