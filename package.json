@@ -35,6 +35,9 @@
     "compiler"
   ],
   "author": "congcong.cai@bmw.com",
+  "repository": {
+    "url": "https://github.com/wasm-ecosystem/warpo"
+  },
   "files": [
     "create",
     "dist",
