@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write # Required for OIDC
 
 jobs:
   build_and_upload:
@@ -35,16 +36,26 @@ jobs:
           CMAKE_ARGS: "-DWARPO_RELEASE=ON"
       - run: npm run build:ts
 
-      - name: Pack build/warpo directory
+      - name: pack build/warpo directory
         run: |
           tar -czvf build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.tar.gz -C build warpo
-      - name: Upload to GitHub Release
+      - name: upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.tar.gz
-      - name: Publish to NPM
-        if: matrix.os == 'ubuntu-latest'
+
+  npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build:ts
+      - name: publish
         run: |
           set -ex
           npm version ${{ steps.release_info.outputs.VERSION }} --git-tag-version false
