@@ -62,7 +62,6 @@ jobs:
         run: |
           set -ex
           npm version ${{ steps.release_info.outputs.VERSION }} --git-tag-version false
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_PUBLISH_TOKEN }}" >> .npmrc
           if ${{ github.event.release.prerelease }}; then
             npm publish --tag pre
           else
