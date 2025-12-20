@@ -4,7 +4,7 @@
 
 import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
-import { basename, join, relative } from "node:path";
+import { sep, join, relative } from "node:path";
 import assert from "node:assert";
 import { readdirSync } from "node:fs";
 
@@ -66,7 +66,7 @@ function readAllFiles(dir) {
 async function createExtensionLibrarySources() {
   const extLibraryFiles = readAllFiles(ext_libs_path)
     .filter((f) => f.endsWith(".ts"))
-    .map((p) => [p.slice(0, -3), readFileSync(join(ext_libs_path, p), "utf8")]);
+    .map((p) => [p.slice(0, -3).replace(sep, "/"), readFileSync(join(ext_libs_path, p), "utf8")]);
   writeFileSync(
     join(target_folder, "extension_library_sources.inc"),
     extLibraryFiles.map(([fileName, content]) => `{\n  "${fileName}", R"##(${content})##",\n},\n`).join("")
