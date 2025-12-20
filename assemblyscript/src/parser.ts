@@ -3154,7 +3154,7 @@ export class Parser extends DiagnosticEmitter {
           this.error(DiagnosticCode._0_expected, tn.range(), ">");
           return null;
         }
-        let expr = this.parseExpression(tn, Precedence.Call);
+        let expr = this.parseExpression(tn, Precedence.TypeAssert);
         if (!expr) return null;
         return Node.createAssertionExpression(AssertionKind.Prefix, expr, toType, tn.range(startPos, tn.pos));
       }
@@ -3654,9 +3654,9 @@ export const enum Precedence {
   Additive,
   Multiplicative,
   Exponentiated,
+  TypeAssert,
   UnaryPrefix,
   UnaryPostfix,
-  Call,
   MemberAccess,
   Grouping,
 }
