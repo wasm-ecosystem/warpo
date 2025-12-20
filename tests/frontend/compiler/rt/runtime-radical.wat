@@ -1793,22 +1793,16 @@
     (global.get $~lib/rt/tcms/total)
    )
   )
-  (if
-   (i32.gt_u
-    (local.get $collected)
-    (i32.const 16384)
-   )
-   (then
-    (global.set $~lib/rt/tcms/threshold
+  (global.set $~lib/rt/tcms/threshold
+   (select
+    (local.get $beforeTotal)
+    (i32.add
      (local.get $beforeTotal)
+     (i32.const 16384)
     )
-   )
-   (else
-    (global.set $~lib/rt/tcms/threshold
-     (i32.add
-      (local.get $beforeTotal)
-      (i32.const 16384)
-     )
+    (i32.gt_u
+     (local.get $collected)
+     (i32.const 16384)
     )
    )
   )
