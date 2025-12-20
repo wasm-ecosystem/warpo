@@ -11,7 +11,7 @@
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33324))
  (global $~lib/rt/tcms/total (mut i32) (i32.const 0))
- (global $~lib/rt/tcms/threshold (mut i32) (i32.const 0))
+ (global $~lib/rt/tcms/threshold (mut i32) (i32.const 16384))
  (global $~lib/rt/tcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/tcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tcms/pinSpace (mut i32) (i32.const 0))
@@ -926,12 +926,12 @@
   global.set $~lib/rt/tcms/white
   local.get $3
   local.get $3
-  i32.const 65536
+  i32.const 16384
   i32.add
   local.get $3
   global.get $~lib/rt/tcms/total
   i32.sub
-  i32.const 65536
+  i32.const 16384
   i32.gt_u
   select
   global.set $~lib/rt/tcms/threshold
@@ -1497,14 +1497,6 @@
  (func $~start
   (local $0 i32)
   (local $1 i32)
-  memory.size
-  i32.const 16
-  i32.shl
-  i32.const 33324
-  i32.sub
-  i32.const 1
-  i32.shr_u
-  global.set $~lib/rt/tcms/threshold
   i32.const 148
   i32.const 144
   i32.store

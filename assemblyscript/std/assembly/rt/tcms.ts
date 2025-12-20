@@ -208,13 +208,13 @@ export function __unpin(ptr: usize): void {
 
 // Garbage collector automation
 
-/** How often to interrupt. The default of 1024 means "interrupt each 4KiB allocated". */
+/** How often to interrupt. The default of 16384 means "interrupt each 16KiB allocated". */
 // @ts-ignore: decorator
-@inline const GRANULARITY: usize = isDefined(ASC_GC_GRANULARITY) ? ASC_GC_GRANULARITY : 64 * 1024;
+@inline const GRANULARITY: usize = isDefined(ASC_GC_GRANULARITY) ? ASC_GC_GRANULARITY : 16 * 1024;
 
 /** Threshold of memory used by objects to exceed before interrupting again. */
 // @ts-ignore: decorator
-@lazy let threshold: usize = (((<usize>memory.size()) << 16) - __heap_base) >> 1;
+@lazy let threshold: usize = GRANULARITY;
 
 /** Visits all objects on the stack. */
 function visitStack(): void {
@@ -268,11 +268,9 @@ export function __collect(): void {
   toSpace = tmp;
   white = i32(!white);
 
-  // update threshold
-  if (beforeTotal - total > GRANULARITY) {
-    threshold = beforeTotal;
-  } else {
-    // collect less frequently if nothing can be collected
-    threshold = beforeTotal + GRANULARITY;
-  }
+  const collected = beforeTotal - total;
+  // when collected > GRANULARITY, we collect more objects than expect.
+  // In this case increasing threshold will increase ram usage, otherwise we should increase threshold.
+  // Then we will use roughtly real RAM usage + GRANULARITY totally.
+  threshold = select(beforeTotal, beforeTotal + GRANULARITY, collected > GRANULARITY);
 }

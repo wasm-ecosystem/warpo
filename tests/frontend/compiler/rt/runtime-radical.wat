@@ -12,7 +12,7 @@
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $~lib/rt/tcms/total (mut i32) (i32.const 0))
- (global $~lib/rt/tcms/threshold (mut i32) (i32.const 0))
+ (global $~lib/rt/tcms/threshold (mut i32) (i32.const 16384))
  (global $~lib/rt/tcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/tcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tcms/pinSpace (mut i32) (i32.const 0))
@@ -1675,6 +1675,7 @@
   (local $iter i32)
   (local $next i32)
   (local $tmp i32)
+  (local $collected i32)
   (local.set $beforeTotal
    (global.get $~lib/rt/tcms/total)
   )
@@ -1786,13 +1787,16 @@
     (global.get $~lib/rt/tcms/white)
    )
   )
+  (local.set $collected
+   (i32.sub
+    (local.get $beforeTotal)
+    (global.get $~lib/rt/tcms/total)
+   )
+  )
   (if
    (i32.gt_u
-    (i32.sub
-     (local.get $beforeTotal)
-     (global.get $~lib/rt/tcms/total)
-    )
-    (i32.const 65536)
+    (local.get $collected)
+    (i32.const 16384)
    )
    (then
     (global.set $~lib/rt/tcms/threshold
@@ -1803,7 +1807,7 @@
     (global.set $~lib/rt/tcms/threshold
      (i32.add
       (local.get $beforeTotal)
-      (i32.const 65536)
+      (i32.const 16384)
      )
     )
    )
@@ -2947,18 +2951,6 @@
  )
  (func $start:rt/runtime-radical
   (local $i i32)
-  (global.set $~lib/rt/tcms/threshold
-   (i32.shr_u
-    (i32.sub
-     (i32.shl
-      (memory.size)
-      (i32.const 16)
-     )
-     (global.get $~lib/memory/__heap_base)
-    )
-    (i32.const 1)
-   )
-  )
   (global.set $~lib/rt/tcms/toSpace
    (call $~lib/rt/tcms/initLazy
     (i32.const 144)

@@ -24,4 +24,4 @@ Radical runtime has higher throughput than incremental runtime. It uses TCMS alg
 `ASC_GC_GRANULARITY`<br/>
 Once the total size of the allocated objects reaches `ASC_GC_GRANULARITY` bytes, a full garbage collection (GC) is triggered.<br/>
 Increasing this parameter will use more ram but save the CPU time.<br/>
-By default is 32 KiB (half of WebAssembly page size).
+By default is 16 KiB (A quarter of WebAssembly page size).
