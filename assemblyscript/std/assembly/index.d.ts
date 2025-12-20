@@ -1,7 +1,7 @@
 /**
  * Environment definitions for compiling AssemblyScript to WebAssembly using asc.
  * @module std/assembly
- *//***/
+ */ /***/
 
 /// <reference no-default-lib="true"/>
 
@@ -316,7 +316,7 @@ declare enum AtomicWaitResult {
   /** Loaded value did not match the expected value. */
   NOT_EQUAL,
   /** Not woken before the timeout expired. */
-  TIMED_OUT
+  TIMED_OUT,
 }
 
 /** Converts any other numeric value to an 8-bit signed integer. */
@@ -787,7 +787,24 @@ declare namespace f64 {
   export function trunc(value: f64): f64;
 }
 /** Initializes a 128-bit vector from sixteen 8-bit integer values. Arguments must be compile-time constants. */
-declare function v128(a: i8, b: i8, c: i8, d: i8, e: i8, f: i8, g: i8, h: i8, i: i8, j: i8, k: i8, l: i8, m: i8, n: i8, o: i8, p: i8): v128;
+declare function v128(
+  a: i8,
+  b: i8,
+  c: i8,
+  d: i8,
+  e: i8,
+  f: i8,
+  g: i8,
+  h: i8,
+  i: i8,
+  j: i8,
+  k: i8,
+  l: i8,
+  m: i8,
+  n: i8,
+  o: i8,
+  p: i8
+): v128;
 declare namespace v128 {
   /** Creates a vector with identical lanes. */
   export function splat<T>(x: T): v128;
@@ -955,7 +972,7 @@ declare namespace v128 {
   export function extmul_high<T extends i8 | u8 | i16 | u16 | i32 | u32>(a: v128, b: v128): v128;
   /**
    * Selects 8-bit lanes from `a` using indices in `s`. Indices in the range [0-15] select the i-th element of `a`.
-   * 
+   *
    * Unlike {@link v128.swizzle}, the result of an out of bounds index is implementation-defined, depending on hardware
    * capabilities: Either `0` or `a[s[i]%16]`.
    */
@@ -974,7 +991,7 @@ declare namespace v128 {
   /**
    * Truncates each lane of a vector from 64-bit floating point to a 32-bit signed or unsigned integer as indicated by
    * `T`. Unused higher integer lanes of the result are initialized to zero.
-   * 
+   *
    * Unlike {@link v128.trunc_sat_zero}, the result of lanes out of bounds of the target type is implementation defined,
    * depending on hardware capabilities:
    * - If the input lane contains `NaN`, the result is either `0` or the respective maximum integer value.
@@ -985,7 +1002,7 @@ declare namespace v128 {
   /**
    * Performs the fused multiply-add operation (`a * b + c`) on 32- or 64-bit floating point lanes as indicated by
    * `T`.
-   * 
+   *
    * The result is implementation defined, depending on hardware capabilities:
    * - Either `a * b` is rounded once and the final result rounded again, or
    * - The expression is evaluated with higher precision and only rounded once
@@ -994,7 +1011,7 @@ declare namespace v128 {
   /**
    * Performs the fused negative multiply-add operation (`-(a * b) + c`) on 32- or 64-bit floating point lanes as
    * indicated by `T`.
-   * 
+   *
    * The result is implementation defined, depending on hardware capabilities:
    * - Either `a * b` is rounded once and the final result rounded again, or
    * - The expression is evaluated with higher precision and only rounded once
@@ -1002,7 +1019,7 @@ declare namespace v128 {
   export function relaxed_nmadd<T>(a: v128, b: v128, c: v128): v128;
   /**
    * Selects 8-, 16-, 32- or 64-bit integer lanes as indicated by `T` from `a` or `b` based on masks in `m`.
-   * 
+   *
    * Behaves like {@link v128.bitselect} if masks in `m` do have all bits either set (result is `a[i]`) or unset (result
    * is `b[i]`). Otherwise the result is implementation-defined, depending on hardware capabilities: If the most
    * significant bit of `m` is set, the result is either `bitselect(a[i], b[i], mask)` or `a[i]`, otherwise the result
@@ -1011,28 +1028,28 @@ declare namespace v128 {
   export function relaxed_laneselect<T>(a: v128, b: v128, m: v128): v128;
   /**
    * Computes the minimum of each 32- or 64-bit floating point lane as indicated by `T`.
-   * 
+   *
    * Unlike {@link v128.min}, the result is implementation-defined if either value is `NaN` or both are `-0.0` and
    * `+0.0`, depending on hardware capabilities: Either `a[i]` or `b[i]`.
    */
   export function relaxed_min<T>(a: v128, b: v128): v128;
   /**
    * Computes the maximum of each 32- or 64-bit floating point lane as indicated by `T`.
-   * 
+   *
    * Unlike {@link v128.max}, the result is implementation-defined if either value is `NaN` or both are `-0.0` and
    * `+0.0`, depending on hardware capabilities: Either `a[i]` or `b[i]`.
    */
   export function relaxed_max<T>(a: v128, b: v128): v128;
   /**
    * Performs the lane-wise rounding multiplication in Q15 format (`(a[i] * b[i] + (1 << (Q - 1))) >> Q` where `Q=15`).
-   * 
+   *
    * Unlike {@link v128.q15mulr_sat}, the result is implementation-defined if both inputs are the minimum signed value:
    * Either the minimum or maximum signed value.
    */
   export function relaxed_q15mulr<T>(a: v128, b: v128): v128;
   /**
    * Computes the dot product of two 8-bit integer lanes each, yielding lanes one size wider than the input.
-   * 
+   *
    * Unlike {@link v128.dot}, if the most significant bit of `b[i]` is set, whether `b[i]` is interpreted as signed or
    * unsigned is implementation-defined.
    */
@@ -1040,14 +1057,31 @@ declare namespace v128 {
   /**
    * Computes the dot product of two 8-bit integer lanes each, yielding lanes two sizes wider than the input with the
    * lanes of `c` accumulated into the result.
-   * 
+   *
    * Unlike {@link v128.dot}, if the most significant bit of `b[i]` is set, whether `b[i]` is interpreted as signed or
    * unsigned by the intermediate multiplication is implementation-defined.
    */
   export function relaxed_dot_add<T>(a: v128, b: v128, c: v128): v128;
 }
 /** Initializes a 128-bit vector from sixteen 8-bit integer values. Arguments must be compile-time constants. */
-declare function i8x16(a: i8, b: i8, c: i8, d: i8, e: i8, f: i8, g: i8, h: i8, i: i8, j: i8, k: i8, l: i8, m: i8, n: i8, o: i8, p: i8): v128;
+declare function i8x16(
+  a: i8,
+  b: i8,
+  c: i8,
+  d: i8,
+  e: i8,
+  f: i8,
+  g: i8,
+  h: i8,
+  i: i8,
+  j: i8,
+  k: i8,
+  l: i8,
+  m: i8,
+  n: i8,
+  o: i8,
+  p: i8
+): v128;
 declare namespace i8x16 {
   /** Creates a vector with sixteen identical 8-bit integer lanes. */
   export function splat(x: i8): v128;
@@ -1120,20 +1154,39 @@ declare namespace i8x16 {
   /** Narrows each 16-bit signed integer lane to 8-bit unsigned integer lanes. */
   export function narrow_i16x8_u(a: v128, b: v128): v128;
   /** Selects 8-bit lanes from either vector according to the specified [0-15] respectively [16-31] lane indexes. */
-  export function shuffle(a: v128, b: v128, l0: u8, l1: u8, l2: u8, l3: u8, l4: u8, l5: u8, l6: u8, l7: u8, l8: u8, l9: u8, l10: u8, l11: u8, l12: u8, l13: u8, l14: u8, l15: u8): v128;
+  export function shuffle(
+    a: v128,
+    b: v128,
+    l0: u8,
+    l1: u8,
+    l2: u8,
+    l3: u8,
+    l4: u8,
+    l5: u8,
+    l6: u8,
+    l7: u8,
+    l8: u8,
+    l9: u8,
+    l10: u8,
+    l11: u8,
+    l12: u8,
+    l13: u8,
+    l14: u8,
+    l15: u8
+  ): v128;
   /** Selects 8-bit lanes from the first vector according to the indexes [0-15] specified by the 8-bit lanes of the second vector. */
   export function swizzle(a: v128, s: v128): v128;
   /**
    * Selects 8-bit integer lanes from `a` using indices in `s`. Indices in the range [0-15] select the i-th element of
    * `a`.
-   * 
+   *
    * Unlike {@link i8x16.swizzle}, the result of an out of bounds index is implementation-defined, depending on hardware
    * capabilities: Either `0` or `a[s[i]%16]`.
    */
   export function relaxed_swizzle(a: v128, s: v128): v128;
   /**
    * Selects 8-bit integer lanes from `a` or `b` based on masks in `m`.
-   * 
+   *
    * Behaves like {@link v128.bitselect} if masks in `m` do have all bits either set (result is `a[i]`) or unset (result
    * is `b[i]`). Otherwise the result is implementation-defined, depending on hardware capabilities: If the most
    * significant bit of `m` is set, the result is either `bitselect(a[i], b[i], mask)` or `a[i]`, otherwise the result
@@ -1256,7 +1309,7 @@ declare namespace i16x8 {
   export function relaxed_q15mulr_s(a: v128, b: v128): v128;
   /**
    * Computes the dot product of two 8-bit integer lanes each, yielding lanes one size wider than the input.
-   * 
+   *
    * Some results are implementation-defined: If the most significant bit of `b[i]` is set, the intermediate
    * multiplication may interpret `b[i]` as either signed or unsigned.
    */
@@ -1374,7 +1427,7 @@ declare namespace i32x4 {
   /**
    * Truncates each lane of a vector from 64-bit floating point to a signed 32-bit integer. The two higher
    * integer lanes of the result are initialized to zero.
-   * 
+   *
    * Unlike {@link i32x4.trunc_sat_f64x2_s_zero}, the result of lanes out of bounds of the target type is implementation
    * defined, depending on hardware capabilities:
    * - If the input lane contains `NaN`, the result is either `0` or the respective maximum integer value.
@@ -1385,7 +1438,7 @@ declare namespace i32x4 {
   /**
    * Truncates each lane of a vector from 64-bit floating point to an unsigned 32-bit integer. The two higher
    * integer lanes of the result are initialized to zero.
-   * 
+   *
    * Unlike {@link i32x4.trunc_sat_f64x2_u_zero}, the result of lanes out of bounds of the target type is implementation
    * defined, depending on hardware capabilities:
    * - If the input lane contains `NaN`, the result is either `0` or the respective maximum integer value.
@@ -1405,7 +1458,7 @@ declare namespace i32x4 {
   /**
    * Computes the dot product of two 8-bit lanes each, yielding lanes two sizes wider than the input with the lanes of
    * `c` accumulated into the result.
-   * 
+   *
    * Unlike {@link v128.dot}, if the most significant bit of `b[i]` is set, whether `b[i]` is interpreted as signed or
    * unsigned by the intermediate multiplication is implementation-defined.
    */
@@ -1541,7 +1594,7 @@ declare namespace f32x4 {
   export function shuffle(a: v128, b: v128, l0: u8, l1: u8, l2: u8, l3: u8): v128;
   /**
    * Performs the fused multiply-add operation (`a * b + c`) on all 32-bit floating point lanes.
-   * 
+   *
    * The result is implementation defined, depending on hardware capabilities:
    * - Either `a * b` is rounded once and the final result rounded again, or
    * - The expression is evaluated with higher precision and only rounded once
@@ -1549,7 +1602,7 @@ declare namespace f32x4 {
   export function relaxed_madd(a: v128, b: v128, c: v128): v128;
   /**
    * Performs the fused negative multiply-add operation (`-(a * b) + c`) on all 32-bit floating point lanes.
-   * 
+   *
    * The result is implementation defined, depending on hardware capabilities:
    * - Either `a * b` is rounded once and the final result rounded again, or
    * - The expression is evaluated with higher precision and only rounded once
@@ -1557,14 +1610,14 @@ declare namespace f32x4 {
   export function relaxed_nmadd(a: v128, b: v128, c: v128): v128;
   /**
    * Computes the minimum of each 32-bit floating point lane.
-   * 
+   *
    * Unlike {@link f32x4.min}, the result is implementation-defined if either value is `NaN`, `-0.0` or `+0.0`,
    * depending on hardware capabilities: Either `a[i]` or `b[i]`.
    */
   export function relaxed_min(a: v128, b: v128): v128;
   /**
    * Computes the maximum of each 32-bit floating point lane.
-   * 
+   *
    * Unlike {@link f32x4.max}, the result is implementation-defined if either value is `NaN`, `-0.0` or `+0.0`,
    * depending on hardware capabilities: Either `a[i]` or `b[i]`.
    */
@@ -1631,7 +1684,7 @@ declare namespace f64x2 {
   export function shuffle(a: v128, b: v128, l0: u8, l1: u8): v128;
   /**
    * Performs the fused multiply-add operation (`a * b + c`) on all 64-bit floating point lanes.
-   * 
+   *
    * The result is implementation defined, depending on hardware capabilities:
    * - Either `a * b` is rounded once and the final result rounded again, or
    * - The expression is evaluated with higher precision and only rounded once
@@ -1639,7 +1692,7 @@ declare namespace f64x2 {
   export function relaxed_madd(a: v128, b: v128, c: v128): v128;
   /**
    * Performs the fused negative multiply-add operation (`-(a * b) + c`) on all 64-bit floating point lanes.
-   * 
+   *
    * The result is implementation defined, depending on hardware capabilities:
    * - Either `a * b` is rounded once and the final result rounded again, or
    * - The expression is evaluated with higher precision and only rounded once
@@ -1647,14 +1700,14 @@ declare namespace f64x2 {
   export function relaxed_nmadd(a: v128, b: v128, c: v128): v128;
   /**
    * Computes the minimum of each 64-bit floating point lane.
-   * 
+   *
    * Unlike {@link f64x2.min}, the result is implementation-defined if either value is `NaN`, `-0.0` or `+0.0`,
    * depending on hardware capabilities: Either `a[i]` or `b[i]`.
    */
   export function relaxed_min(a: v128, b: v128): v128;
   /**
    * Computes the maximum of each 64-bit floating point lane.
-   * 
+   *
    * Unlike {@link f64x2.max}, the result is implementation-defined if either value is `NaN`, `-0.0` or `+0.0`,
    * depending on hardware capabilities: Either `a[i]` or `b[i]`.
    */
@@ -1829,16 +1882,57 @@ declare namespace table {
 
 declare namespace Atomics {
   export function load<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(array: TypedArray<T>, index: i32): T;
-  export function store<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(array: TypedArray<T>, index: i32, value: T): void;
-  export function add<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(array: TypedArray<T>, index: i32, value: T): T;
-  export function sub<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(array: TypedArray<T>, index: i32, value: T): T;
-  export function and<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(array: TypedArray<T>, index: i32, value: T): T;
-  export function or<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(array: TypedArray<T>, index: i32, value: T): T;
-  export function xor<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(array: TypedArray<T>, index: i32, value: T): T;
-  export function exchange<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(array: TypedArray<T>, index: i32, value: T): T;
-  export function compareExchange<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(array: TypedArray<T>, index: i32, expectedValue: T, replacementValue: T): T;
-  export function wait<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(array: TypedArray<T>, value: T, timeout?: i64): AtomicWaitResult;
-  export function notify<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(array: TypedArray<T>, index: i32, count?: i32): i32;
+  export function store<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
+    array: TypedArray<T>,
+    index: i32,
+    value: T
+  ): void;
+  export function add<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
+    array: TypedArray<T>,
+    index: i32,
+    value: T
+  ): T;
+  export function sub<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
+    array: TypedArray<T>,
+    index: i32,
+    value: T
+  ): T;
+  export function and<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
+    array: TypedArray<T>,
+    index: i32,
+    value: T
+  ): T;
+  export function or<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
+    array: TypedArray<T>,
+    index: i32,
+    value: T
+  ): T;
+  export function xor<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
+    array: TypedArray<T>,
+    index: i32,
+    value: T
+  ): T;
+  export function exchange<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
+    array: TypedArray<T>,
+    index: i32,
+    value: T
+  ): T;
+  export function compareExchange<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
+    array: TypedArray<T>,
+    index: i32,
+    expectedValue: T,
+    replacementValue: T
+  ): T;
+  export function wait<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
+    array: TypedArray<T>,
+    value: T,
+    timeout?: i64
+  ): AtomicWaitResult;
+  export function notify<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
+    array: TypedArray<T>,
+    index: i32,
+    count?: i32
+  ): i32;
   /** The static Atomics.isLockFree() method is used to determine whether to use locks or atomic operations. It returns true, if the given size is one of the BYTES_PER_ELEMENT */
   export function isLockFree(size: usize): bool;
 }
@@ -1988,7 +2082,7 @@ declare abstract class TypedArray<T> implements ArrayBufferView {
   /** The join() method joins all elements of an array into a string. This method has the same algorithm as Array.prototype.join(). */
   join(separator?: string): string;
   /** The set() method stores multiple values in the typed array, reading input values from a specified array. */
-  set<U extends ArrayLike<number>>(source: U, offset?: i32): void
+  set<U extends ArrayLike<number>>(source: U, offset?: i32): void;
   /** The toString() method returns a string representing the specified array and its elements. This method has the same algorithm as Array.prototype.toString() */
   toString(): string;
 }
@@ -2051,7 +2145,6 @@ declare class Float64Array extends TypedArray<f64> {
 
 /** Class representing a sequence of values of type `T`. */
 declare class Array<T> {
-
   /** Tests if a value is an array. */
   static isArray<U>(value: any): value is Array<any>;
 
@@ -2076,8 +2169,14 @@ declare class Array<T> {
   forEach(callbackfn: (value: T, index: i32, array: Array<T>) => void): void;
   map<U>(callbackfn: (value: T, index: i32, array: Array<T>) => U): Array<U>;
   filter(callbackfn: (value: T, index: i32, array: Array<T>) => bool): Array<T>;
-  reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U, initialValue: U): U;
-  reduceRight<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U, initialValue: U): U;
+  reduce<U>(
+    callbackfn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U,
+    initialValue: U
+  ): U;
+  reduceRight<U>(
+    callbackfn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U,
+    initialValue: U
+  ): U;
   every(callbackfn: (value: T, index: i32, array: Array<T>) => bool): bool;
   some(callbackfn: (value: T, index: i32, array: Array<T>) => bool): bool;
   shift(): T;
@@ -2113,8 +2212,14 @@ declare class StaticArray<T> {
   forEach(callbackfn: (value: T, index: i32, array: StaticArray<T>) => void): void;
   map<U>(callbackfn: (value: T, index: i32, array: StaticArray<T>) => U): Array<U>;
   filter(callbackfn: (value: T, index: i32, array: StaticArray<T>) => bool): Array<T>;
-  reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: i32, array: StaticArray<T>) => U, initialValue: U): U;
-  reduceRight<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: i32, array: StaticArray<T>) => U, initialValue: U): U;
+  reduce<U>(
+    callbackfn: (previousValue: U, currentValue: T, currentIndex: i32, array: StaticArray<T>) => U,
+    initialValue: U
+  ): U;
+  reduceRight<U>(
+    callbackfn: (previousValue: U, currentValue: T, currentIndex: i32, array: StaticArray<T>) => U,
+    initialValue: U
+  ): U;
   every(callbackfn: (value: T, index: i32, array: StaticArray<T>) => bool): bool;
   some(callbackfn: (value: T, index: i32, array: StaticArray<T>) => bool): bool;
   concat(items: Array<T>): Array<T>;
@@ -2176,7 +2281,7 @@ declare namespace String {
       /** Replaces unpaired surrogates with the replacement character (U+FFFD). */
       REPLACE,
       /** Throws an error on unpaired surrogates. */
-      ERROR
+      ERROR,
     }
     /** Calculates the byte length of the specified string when encoded as UTF-8, optionally null terminated. */
     export function byteLength(str: string, nullTerminated?: bool): i32;
@@ -2220,15 +2325,7 @@ declare namespace performance {
 
 declare class Date {
   /** Returns the UTC timestamp in milliseconds of the specified date. */
-  static UTC(
-    year: i32,
-    month: i32,
-    day: i32,
-    hour: i32,
-    minute: i32,
-    second: i32,
-    millisecond: i32
-  ): i64;
+  static UTC(year: i32, month: i32, day: i32, hour: i32, minute: i32, second: i32, millisecond: i32): i64;
   /** Returns the current UTC timestamp in milliseconds. */
   static now(): i64;
   /** Parses a string representation of a date, and returns the number of milliseconds since January 1, 1970, 00:00:00 UTC. */
@@ -2267,7 +2364,6 @@ declare class Date {
 
 /** Class for representing a runtime error. Base class of all errors. */
 declare class Error {
-
   /** Error name. */
   name: string;
 
@@ -2285,16 +2381,16 @@ declare class Error {
 }
 
 /** Class for indicating an error when a value is not in the set or range of allowed values. */
-declare class RangeError extends Error { }
+declare class RangeError extends Error {}
 
 /** Class for indicating an error when a value is not of the expected type. */
-declare class TypeError extends Error { }
+declare class TypeError extends Error {}
 
 /** Class for indicating an error when trying to interpret syntactically invalid code. */
-declare class SyntaxError extends Error { }
+declare class SyntaxError extends Error {}
 
 /** Class for indicating an error when a global URI handling function was used in a wrong way. */
-declare class URIError extends Error { }
+declare class URIError extends Error {}
 
 interface Function {
   /** Function table index. */
@@ -2317,7 +2413,8 @@ type ThisParameterType<T> = T extends (this: infer U, ...args: never) => any ? U
 /**
  * Removes the 'this' parameter from a function type.
  */
-type OmitThisParameter<T> = unknown extends ThisParameterType<T> ? T : T extends (...args: infer A) => infer R ? (...args: A) => R : T;
+type OmitThisParameter<T> =
+  unknown extends ThisParameterType<T> ? T : T extends (...args: infer A) => infer R ? (...args: A) => R : T;
 
 interface CallableFunction extends Function {
   /**
@@ -2353,7 +2450,11 @@ interface CallableFunction extends Function {
    * @param thisArg The object to be used as the this object.
    * @param args Arguments to bind to the parameters of the function.
    */
-  bind<T, A extends any[], B extends any[], R>(this: (this: T, ...args: [...A, ...B]) => R, thisArg: T, ...args: A): (...args: B) => R;
+  bind<T, A extends any[], B extends any[], R>(
+    this: (this: T, ...args: [...A, ...B]) => R,
+    thisArg: T,
+    ...args: A
+  ): (...args: B) => R;
 }
 
 interface NewableFunction extends Function {
@@ -2389,13 +2490,17 @@ interface NewableFunction extends Function {
    * @param thisArg The object to be used as the this object.
    * @param args Arguments to bind to the parameters of the function.
    */
-  bind<A extends any[], B extends any[], R>(this: new (...args: [...A, ...B]) => R, thisArg: any, ...args: A): new (...args: B) => R;
+  bind<A extends any[], B extends any[], R>(
+    this: new (...args: [...A, ...B]) => R,
+    thisArg: any,
+    ...args: A
+  ): new (...args: B) => R;
 }
 
 interface IArguments {}
 interface RegExp {}
 
-declare class Map<K,V> {
+declare class Map<K, V> {
   readonly size: i32;
   has(key: K): bool;
   set(key: K, value: V): this;
@@ -2576,7 +2681,7 @@ declare namespace process {
   /** Array of command line arguments passed to the binary upon instantiation. */
   export const argv: string[];
   /** Map of variables in the binary's user environment. */
-  export const env: Map<string,string>;
+  export const env: Map<string, string>;
   /** Terminates the process with either the given exit code, or `process.exitCode` if omitted. */
   export function exit(code?: i32): void;
   /** `exit()`’s default value. Defaults to `0`. */
@@ -2645,38 +2750,78 @@ interface TypedPropertyDescriptor<T> {
   set?(value: T): void;
 }
 
-type Constructor =
-  (new (...args: any[]) => unknown)
-  | (abstract new (...args: any[]) => unknown);
+type Constructor = (new (...args: any[]) => unknown) | (abstract new (...args: any[]) => unknown);
 
 /** Annotates a method as a binary operator overload for the specified `token`. */
-declare function operator(token:
-  "[]" | "[]=" | "{}" | "{}=" | "==" | "!=" | ">" | "<" | "<=" | ">=" |
-  ">>" | ">>>" | "<<" |  "&"  | "|"  | "^"  | "+" | "-" | "*"  | "**" | "/"  | "%"
-): (
-  target: any,
-  propertyKey: string,
-  descriptor: TypedPropertyDescriptor<any>
-) => TypedPropertyDescriptor<any> | void;
+declare function operator(
+  token:
+    | "[]"
+    | "[]="
+    | "{}"
+    | "{}="
+    | "=="
+    | "!="
+    | ">"
+    | "<"
+    | "<="
+    | ">="
+    | ">>"
+    | ">>>"
+    | "<<"
+    | "&"
+    | "|"
+    | "^"
+    | "+"
+    | "-"
+    | "*"
+    | "**"
+    | "/"
+    | "%"
+): (target: any, propertyKey: string, descriptor: TypedPropertyDescriptor<any>) => TypedPropertyDescriptor<any> | void;
 
 declare namespace operator {
   /** Annotates a method as a binary operator overload for the specified `token`. */
-  export function binary(token:
-    "[]" | "[]=" | "{}" | "{}=" | "==" | "!=" | ">" | "<" | "<=" | ">=" |
-    ">>" | ">>>" | "<<" |  "&"  | "|"  | "^"  | "+" | "-" | "*"  | "**" | "/"  | "%"
+  export function binary(
+    token:
+      | "[]"
+      | "[]="
+      | "{}"
+      | "{}="
+      | "=="
+      | "!="
+      | ">"
+      | "<"
+      | "<="
+      | ">="
+      | ">>"
+      | ">>>"
+      | "<<"
+      | "&"
+      | "|"
+      | "^"
+      | "+"
+      | "-"
+      | "*"
+      | "**"
+      | "/"
+      | "%"
   ): (
     target: any,
     propertyKey: string,
     descriptor: TypedPropertyDescriptor<any>
   ) => TypedPropertyDescriptor<any> | void;
   /** Annotates a method as an unary prefix operator overload for the specified `token`. */
-  export function prefix(token: "!" | "~" | "+" | "-" | "++" | "--"): (
+  export function prefix(
+    token: "!" | "~" | "+" | "-" | "++" | "--"
+  ): (
     target: any,
     propertyKey: string,
     descriptor: TypedPropertyDescriptor<any>
   ) => TypedPropertyDescriptor<any> | void;
   /** Annotates a method as an unary postfix operator overload for the specified `token`. */
-  export function postfix(token: "++" | "--"): (
+  export function postfix(
+    token: "++" | "--"
+  ): (
     target: any,
     propertyKey: string,
     descriptor: TypedPropertyDescriptor<any>

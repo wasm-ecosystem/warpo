@@ -9,6 +9,7 @@ import { Array } from "./array";
 import { E_INDEXOUTOFRANGE, E_INVALIDLENGTH, E_HOLEYARRAY } from "./util/error";
 import { joinBooleanArray, joinIntegerArray, joinFloatArray, joinStringArray, joinReferenceArray } from "./util/string";
 
+
 @final
 export class StaticArray<T> {
   [key: number]: T;
@@ -21,12 +22,12 @@ export class StaticArray<T> {
 
   static fromArray<T>(source: Array<T>): StaticArray<T> {
     let length = source.length;
-    let outSize = <usize>length << alignof<T>();
+    let outSize = (<usize>length) << alignof<T>();
     let out = changetype<StaticArray<T>>(__new(outSize, idof<StaticArray<T>>()));
     if (isManaged<T>()) {
       let sourcePtr = source.dataStart;
       for (let i = 0; i < length; ++i) {
-        let off = <usize>i << alignof<T>();
+        let off = (<usize>i) << alignof<T>();
         let ref = load<usize>(sourcePtr + off);
         store<usize>(changetype<usize>(out) + off, ref);
         __link(changetype<usize>(out), ref, true);
@@ -48,8 +49,8 @@ export class StaticArray<T> {
   }
 
   constructor(length: i32) {
-    if (<u32>length > <u32>BLOCK_MAXSIZE >>> alignof<T>()) throw new RangeError(E_INVALIDLENGTH);
-    let outSize = <usize>length << alignof<T>();
+    if (<u32>length > (<u32>BLOCK_MAXSIZE) >>> alignof<T>()) throw new RangeError(E_INVALIDLENGTH);
+    let outSize = (<usize>length) << alignof<T>();
     let out = changetype<StaticArray<T>>(__new(outSize, idof<StaticArray<T>>()));
     if (ASC_RUNTIME == Runtime.Stub) {
       memory.fill(changetype<usize>(out), 0, outSize);
@@ -65,7 +66,7 @@ export class StaticArray<T> {
     let len = this.length;
     index += select(0, len, index >= 0);
     if (<u32>index >= <u32>len) throw new RangeError(E_INDEXOUTOFRANGE);
-    let value = load<T>(changetype<usize>(this) + (<usize>index << alignof<T>()));
+    let value = load<T>(changetype<usize>(this) + ((<usize>index) << alignof<T>()));
     if (isReference<T>()) {
       if (!isNullable<T>()) {
         if (!changetype<usize>(value)) throw new Error(E_HOLEYARRAY);
@@ -73,10 +74,11 @@ export class StaticArray<T> {
     }
     return value;
   }
+
 
   @operator("[]") private __get(index: i32): T {
     if (<u32>index >= <u32>this.length) throw new RangeError(E_INDEXOUTOFRANGE);
-    let value = load<T>(changetype<usize>(this) + (<usize>index << alignof<T>()));
+    let value = load<T>(changetype<usize>(this) + ((<usize>index) << alignof<T>()));
     if (isReference<T>()) {
       if (!isNullable<T>()) {
         if (!changetype<usize>(value)) throw new Error(E_HOLEYARRAY);
@@ -85,17 +87,20 @@ export class StaticArray<T> {
     return value;
   }
 
+
   @unsafe @operator("{}") private __uget(index: i32): T {
-    return load<T>(changetype<usize>(this) + (<usize>index << alignof<T>()));
+    return load<T>(changetype<usize>(this) + ((<usize>index) << alignof<T>()));
   }
+
 
   @operator("[]=") private __set(index: i32, value: T): void {
     if (<u32>index >= <u32>this.length) throw new RangeError(E_INDEXOUTOFRANGE);
     this.__uset(index, value);
   }
 
+
   @unsafe @operator("{}=") private __uset(index: i32, value: T): void {
-    store<T>(changetype<usize>(this) + (<usize>index << alignof<T>()), value);
+    store<T>(changetype<usize>(this) + ((<usize>index) << alignof<T>()), value);
     if (isManaged<T>()) {
       __link(changetype<usize>(this), changetype<usize>(value), true);
     }
@@ -117,15 +122,16 @@ export class StaticArray<T> {
 
     end = min<i32>(end, len);
 
-    let to    = target < 0 ? max(len + target, 0) : min(target, len);
-    let from  = start < 0 ? max(len + start, 0) : min(start, len);
-    let last  = end < 0 ? max(len + end, 0) : min(end, len);
+    let to = target < 0 ? max(len + target, 0) : min(target, len);
+    let from = start < 0 ? max(len + start, 0) : min(start, len);
+    let last = end < 0 ? max(len + end, 0) : min(end, len);
     let count = min(last - from, len - to);
 
-    memory.copy( // is memmove
-      ptr + (<usize>to << alignof<T>()),
-      ptr + (<usize>from << alignof<T>()),
-      <usize>count << alignof<T>()
+    memory.copy(
+      // is memmove
+      ptr + ((<usize>to) << alignof<T>()),
+      ptr + ((<usize>from) << alignof<T>()),
+      (<usize>count) << alignof<T>()
     );
     return this;
   }
@@ -136,7 +142,7 @@ export class StaticArray<T> {
       if (length == 0 || fromIndex >= length) return false;
       if (fromIndex < 0) fromIndex = max(length + fromIndex, 0);
       while (fromIndex < length) {
-        let elem = load<T>(changetype<usize>(this) + (<usize>fromIndex << alignof<T>()));
+        let elem = load<T>(changetype<usize>(this) + ((<usize>fromIndex) << alignof<T>()));
         // @ts-ignore
         if (elem == value || isNaN(elem) & isNaN(value)) return true;
         ++fromIndex;
@@ -152,7 +158,7 @@ export class StaticArray<T> {
     if (length == 0 || fromIndex >= length) return -1;
     if (fromIndex < 0) fromIndex = max(length + fromIndex, 0);
     while (fromIndex < length) {
-      if (load<T>(changetype<usize>(this) + (<usize>fromIndex << alignof<T>())) == value) return fromIndex;
+      if (load<T>(changetype<usize>(this) + ((<usize>fromIndex) << alignof<T>())) == value) return fromIndex;
       ++fromIndex;
     }
     return -1;
@@ -164,7 +170,7 @@ export class StaticArray<T> {
     if (fromIndex < 0) fromIndex = length + fromIndex;
     else if (fromIndex >= length) fromIndex = length - 1;
     while (fromIndex >= 0) {
-      if (load<T>(changetype<usize>(this) + (<usize>fromIndex << alignof<T>())) == value) return fromIndex;
+      if (load<T>(changetype<usize>(this) + ((<usize>fromIndex) << alignof<T>())) == value) return fromIndex;
       --fromIndex;
     }
     return -1;
@@ -174,10 +180,10 @@ export class StaticArray<T> {
     let sourceLen = this.length;
     let otherLen = other.length;
     let outLen = sourceLen + otherLen;
-    if (<u32>outLen > <u32>BLOCK_MAXSIZE >>> alignof<T>()) {
+    if (<u32>outLen > (<u32>BLOCK_MAXSIZE) >>> alignof<T>()) {
       throw new Error(E_INVALIDLENGTH);
     }
-    let sourceSize = <usize>sourceLen << alignof<T>();
+    let sourceSize = (<usize>sourceLen) << alignof<T>();
     let out = changetype<U>(this); // FIXME: instanceof needs *some* value
 
     if (out instanceof Array<T>) {
@@ -194,7 +200,7 @@ export class StaticArray<T> {
           __link(changetype<usize>(out), ref, true);
         }
         outStart += sourceSize;
-        let otherSize = <usize>otherLen << alignof<T>();
+        let otherSize = (<usize>otherLen) << alignof<T>();
         for (let offset: usize = 0; offset < otherSize; offset += sizeof<T>()) {
           let ref = load<usize>(otherStart + offset);
           store<usize>(outStart + offset, ref);
@@ -202,10 +208,10 @@ export class StaticArray<T> {
         }
       } else {
         memory.copy(outStart, thisStart, sourceSize);
-        memory.copy(outStart + sourceSize, otherStart, <usize>otherLen << alignof<T>());
+        memory.copy(outStart + sourceSize, otherStart, (<usize>otherLen) << alignof<T>());
       }
     } else if (out instanceof StaticArray<T>) {
-      out = changetype<U>(__new(<usize>outLen << alignof<T>(), idof<StaticArray<T>>()));
+      out = changetype<U>(__new((<usize>outLen) << alignof<T>(), idof<StaticArray<T>>()));
       let outStart = changetype<usize>(out);
       let otherStart = changetype<usize>(other);
       let thisStart = changetype<usize>(this);
@@ -217,7 +223,7 @@ export class StaticArray<T> {
           __link(changetype<usize>(out), ref, true);
         }
         outStart += sourceSize;
-        let otherSize = <usize>otherLen << alignof<T>();
+        let otherSize = (<usize>otherLen) << alignof<T>();
         for (let offset: usize = 0; offset < otherSize; offset += sizeof<T>()) {
           let ref = load<usize>(otherStart + offset);
           store<usize>(outStart + offset, ref);
@@ -225,7 +231,7 @@ export class StaticArray<T> {
         }
       } else {
         memory.copy(outStart, thisStart, sourceSize);
-        memory.copy(outStart + sourceSize, otherStart, <usize>otherLen << alignof<T>());
+        memory.copy(outStart + sourceSize, otherStart, (<usize>otherLen) << alignof<T>());
       }
     } else {
       ERROR("Only Array<T> and StaticArray<T> accept for 'U' parameter");
@@ -236,11 +242,11 @@ export class StaticArray<T> {
   slice<U extends ArrayLike<T> = Array<T>>(start: i32 = 0, end: i32 = i32.MAX_VALUE): U {
     let length = this.length;
     start = start < 0 ? max(start + length, 0) : min(start, length);
-    end   = end   < 0 ? max(end   + length, 0) : min(end,   length);
+    end = end < 0 ? max(end + length, 0) : min(end, length);
     length = max(end - start, 0);
 
-    let sourceStart = changetype<usize>(this) + (<usize>start << alignof<T>());
-    let size = <usize>length << alignof<T>();
+    let sourceStart = changetype<usize>(this) + ((<usize>start) << alignof<T>());
+    let size = (<usize>length) << alignof<T>();
     let out = changetype<U>(this); // FIXME: instanceof needs *some* value
 
     if (out instanceof Array<T>) {
@@ -280,31 +286,36 @@ export class StaticArray<T> {
     return out;
   }
 
+
   @inline
   findIndex(fn: (value: T, index: i32, array: StaticArray<T>) => bool): i32 {
     return this.findIndexImpl(fn.index);
   }
   private findIndexImpl(fnIndex: i32): i32 {
     for (let i = 0, len = this.length; i < len; ++i) {
-      if (call_indirect<bool>(fnIndex, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this)) return i;
+      if (call_indirect<bool>(fnIndex, load<T>(changetype<usize>(this) + ((<usize>i) << alignof<T>())), i, this))
+        return i;
     }
     return -1;
   }
+
 
   @inline
   findLastIndex(fn: (value: T, index: i32, array: StaticArray<T>) => bool): i32 {
     for (let i = this.length - 1; i >= 0; --i) {
-      if (fn(load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this)) return i;
+      if (fn(load<T>(changetype<usize>(this) + ((<usize>i) << alignof<T>())), i, this)) return i;
     }
     return -1;
   }
 
+
   @inline
   forEach(fn: (value: T, index: i32, array: StaticArray<T>) => void): void {
     for (let i = 0, len = this.length; i < len; ++i) {
-      fn(load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this);
+      fn(load<T>(changetype<usize>(this) + ((<usize>i) << alignof<T>())), i, this);
     }
   }
+
 
   @inline
   map<U>(fn: (value: T, index: i32, array: StaticArray<T>) => U): Array<U> {
@@ -315,14 +326,15 @@ export class StaticArray<T> {
     let out = changetype<Array<U>>(__newArray(len, alignof<U>(), idof<Array<U>>()));
     let outStart = out.dataStart;
     for (let i = 0; i < len; ++i) {
-      let result = call_indirect<U>(fnIndex, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this);
-      store<U>(outStart + (<usize>i << alignof<U>()), result);
+      let result = call_indirect<U>(fnIndex, load<T>(changetype<usize>(this) + ((<usize>i) << alignof<T>())), i, this);
+      store<U>(outStart + ((<usize>i) << alignof<U>()), result);
       if (isManaged<U>()) {
         __link(changetype<usize>(out), changetype<usize>(result), true);
       }
     }
     return out;
   }
+
 
   @inline
   filter(fn: (value: T, index: i32, array: StaticArray<T>) => bool): Array<T> {
@@ -331,11 +343,12 @@ export class StaticArray<T> {
   private filterImpl(fnIndex: i32): Array<T> {
     let result = changetype<Array<T>>(__newArray(0, alignof<T>(), idof<Array<T>>()));
     for (let i = 0, len = this.length; i < len; ++i) {
-      let value = load<T>(changetype<usize>(this) + (<usize>i << alignof<T>()));
+      let value = load<T>(changetype<usize>(this) + ((<usize>i) << alignof<T>()));
       if (call_indirect<bool>(fnIndex, value, i, this)) result.push(value);
     }
     return result;
   }
+
 
   @inline
   reduce<U>(
@@ -347,10 +360,11 @@ export class StaticArray<T> {
   private reduceImpl<U>(fnIndex: i32, initialValue: U): U {
     let acc = initialValue;
     for (let i = 0, len = this.length; i < len; ++i) {
-      acc = call_indirect<U>(fnIndex, acc, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this);
+      acc = call_indirect<U>(fnIndex, acc, load<T>(changetype<usize>(this) + ((<usize>i) << alignof<T>())), i, this);
     }
     return acc;
   }
+
 
   @inline
   reduceRight<U>(
@@ -362,10 +376,11 @@ export class StaticArray<T> {
   private reduceRightImpl<U>(fnIndex: i32, initialValue: U): U {
     let acc = initialValue;
     for (let i = this.length - 1; i >= 0; --i) {
-      acc = call_indirect<U>(fnIndex, acc, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this);
+      acc = call_indirect<U>(fnIndex, acc, load<T>(changetype<usize>(this) + ((<usize>i) << alignof<T>())), i, this);
     }
     return acc;
   }
+
 
   @inline
   every(fn: (value: T, index: i32, array: StaticArray<T>) => bool): bool {
@@ -373,10 +388,12 @@ export class StaticArray<T> {
   }
   private everyImpl(fnIndex: i32): bool {
     for (let i = 0, len = this.length; i < len; ++i) {
-      if (!call_indirect<bool>(fnIndex, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this)) return false;
+      if (!call_indirect<bool>(fnIndex, load<T>(changetype<usize>(this) + ((<usize>i) << alignof<T>())), i, this))
+        return false;
     }
     return true;
   }
+
 
   @inline
   some(fn: (value: T, index: i32, array: StaticArray<T>) => bool): bool {
@@ -384,7 +401,8 @@ export class StaticArray<T> {
   }
   private someImpl(fnIndex: i32): bool {
     for (let i = 0, len = this.length; i < len; ++i) {
-      if (call_indirect<bool>(fnIndex, load<T>(changetype<usize>(this) + (<usize>i << alignof<T>())), i, this)) return true;
+      if (call_indirect<bool>(fnIndex, load<T>(changetype<usize>(this) + ((<usize>i) << alignof<T>())), i, this))
+        return true;
     }
     return false;
   }
@@ -395,11 +413,11 @@ export class StaticArray<T> {
   }
 
   join(separator: string = ","): string {
-    if (isBoolean<T>())   return joinBooleanArray(changetype<usize>(this), this.length, separator);
-    if (isInteger<T>())   return joinIntegerArray<T>(changetype<usize>(this), this.length, separator);
-    if (isFloat<T>())     return joinFloatArray<T>(changetype<usize>(this), this.length, separator);
+    if (isBoolean<T>()) return joinBooleanArray(changetype<usize>(this), this.length, separator);
+    if (isInteger<T>()) return joinIntegerArray<T>(changetype<usize>(this), this.length, separator);
+    if (isFloat<T>()) return joinFloatArray<T>(changetype<usize>(this), this.length, separator);
     if (ASC_SHRINK_LEVEL < 1) {
-      if (isString<T>())  return joinStringArray(changetype<usize>(this), this.length, separator);
+      if (isString<T>()) return joinStringArray(changetype<usize>(this), this.length, separator);
     }
     if (isReference<T>()) return joinReferenceArray<T>(changetype<usize>(this), this.length, separator);
     ERROR("unspported element type");

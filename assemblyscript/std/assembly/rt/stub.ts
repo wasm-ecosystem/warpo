@@ -11,7 +11,7 @@ import { E_ALLOCATION_TOO_LARGE } from "../util/error";
 function maybeGrowMemory(newOffset: usize): void {
   // assumes newOffset is aligned
   let pagesBefore = memory.size();
-  let maxOffset = ((<usize>pagesBefore << 16) + AL_MASK) & ~AL_MASK;
+  let maxOffset = (((<usize>pagesBefore) << 16) + AL_MASK) & ~AL_MASK;
   if (newOffset > maxOffset) {
     let pagesNeeded = <i32>(((newOffset - maxOffset + 0xffff) & ~0xffff) >>> 16);
     let pagesWanted = max(pagesBefore, pagesNeeded); // double memory
@@ -48,16 +48,19 @@ export function __realloc(ptr: usize, size: usize): usize {
   let isLast = ptr + actualSize == offset;
   let payloadSize = computeSize(size);
   if (size > actualSize) {
-    if (isLast) { // last block: grow
+    if (isLast) {
+      // last block: grow
       if (size > BLOCK_MAXSIZE) throw new Error(E_ALLOCATION_TOO_LARGE);
       maybeGrowMemory(ptr + payloadSize);
       block.mmInfo = payloadSize;
-    } else { // copy to new block at least double the size
+    } else {
+      // copy to new block at least double the size
       let newPtr = __alloc(max<usize>(payloadSize, actualSize << 1));
       memory.copy(newPtr, ptr, actualSize);
       block = changetype<BLOCK>((ptr = newPtr) - BLOCK_OVERHEAD);
     }
-  } else if (isLast) { // last block: shrink
+  } else if (isLast) {
+    // last block: shrink
     offset = ptr + payloadSize;
     block.mmInfo = payloadSize;
   }
@@ -69,14 +72,16 @@ export function __realloc(ptr: usize, size: usize): usize {
 export function __free(ptr: usize): void {
   assert(ptr != 0 && !(ptr & AL_MASK)); // must exist and be aligned
   let block = changetype<BLOCK>(ptr - BLOCK_OVERHEAD);
-  if (ptr + block.mmInfo == offset) { // last block: discard
+  if (ptr + block.mmInfo == offset) {
+    // last block: discard
     offset = changetype<usize>(block);
   }
 }
 
 // @ts-ignore: decorator
 @unsafe @global
-export function __reset(): void { // special
+export function __reset(): void {
+  // special
   offset = startOffset;
 }
 
@@ -122,7 +127,8 @@ export function __unpin(ptr: usize): void {
 
 // @ts-ignore: decorator
 @global @unsafe
-function __visit(ptr: usize, cookie: u32): void { // eslint-disable-line @typescript-eslint/no-unused-vars
+function __visit(ptr: usize, cookie: u32): void {
+  // eslint-disable-line @typescript-eslint/no-unused-vars
   // nop
 }
 

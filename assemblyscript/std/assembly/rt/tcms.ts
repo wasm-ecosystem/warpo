@@ -1,4 +1,4 @@
-import { BLOCK, BLOCK_OVERHEAD, OBJECT_OVERHEAD, OBJECT_MAXSIZE, TOTAL_OVERHEAD, DEBUG, } from "./common";
+import { BLOCK, BLOCK_OVERHEAD, OBJECT_OVERHEAD, OBJECT_MAXSIZE, TOTAL_OVERHEAD, DEBUG } from "./common";
 import { E_ALLOCATION_TOO_LARGE, E_ALREADY_PINNED, E_NOT_PINNED } from "../util/error";
 
 // === TCMS: A Two-Color Mark & Sweep garbage collector ===
@@ -122,7 +122,7 @@ function free(obj: Object): void {
     obj.nextWithColor = 0; // may become linked again
     obj.prev = changetype<Object>(0);
   } else {
-    if (isDefined(ASC_GC_TESTING)) memory.fill(changetype<usize>(obj) + TOTAL_OVERHEAD, 0xDE, obj.rtSize);
+    if (isDefined(ASC_GC_TESTING)) memory.fill(changetype<usize>(obj) + TOTAL_OVERHEAD, 0xde, obj.rtSize);
     total -= obj.size;
     __free(changetype<usize>(obj) + BLOCK_OVERHEAD);
   }
@@ -214,7 +214,7 @@ export function __unpin(ptr: usize): void {
 
 /** Threshold of memory used by objects to exceed before interrupting again. */
 // @ts-ignore: decorator
-@lazy let threshold: usize = ((<usize>memory.size() << 16) - __heap_base) >> 1;
+@lazy let threshold: usize = (((<usize>memory.size()) << 16) - __heap_base) >> 1;
 
 /** Visits all objects on the stack. */
 function visitStack(): void {

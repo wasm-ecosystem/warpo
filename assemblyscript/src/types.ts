@@ -3,24 +3,11 @@
  * @license Apache-2.0
  */
 
-import {
-  CommonNames
-} from "./common";
+import { CommonNames } from "./common";
 
-import {
-  Class,
-  Program,
-  DecoratorFlags,
-  OperatorKind,
-  Function
-} from "./program";
+import { Class, Program, DecoratorFlags, OperatorKind, Function } from "./program";
 
-import {
-  TypeRef,
-  createType,
-  HeapTypeRef,
-  ensureType
-} from "./module";
+import { TypeRef, createType, HeapTypeRef, ensureType } from "./module";
 
 import * as binaryen from "./glue/binaryen";
 
@@ -95,7 +82,7 @@ export const enum TypeKind {
   // other
 
   /** No return type. */
-  Void
+  Void,
 }
 
 /** Indicates capabilities of a type. */
@@ -128,12 +115,11 @@ export const enum TypeFlags {
   /** Is a class. */
   Class = 1 << 12,
   /** Is a function. */
-  Function = 1 << 13
+  Function = 1 << 13,
 }
 
 /** Represents a resolved type. */
 export class Type {
-
   /** Type kind. */
   kind: TypeKind;
   /** Type flags. */
@@ -169,18 +155,29 @@ export class Type {
     switch (this.kind) {
       case TypeKind.Bool:
       case TypeKind.I32:
-      case TypeKind.F32:   return Type.i32;
-      case TypeKind.I8:    return Type.i8;
-      case TypeKind.I16:   return Type.i16;
+      case TypeKind.F32:
+        return Type.i32;
+      case TypeKind.I8:
+        return Type.i8;
+      case TypeKind.I16:
+        return Type.i16;
       case TypeKind.F64:
-      case TypeKind.I64:   return Type.i64;
-      case TypeKind.Isize: return this.size == 64 ? Type.isize64 : Type.isize32;
-      case TypeKind.U8:    return Type.u8;
-      case TypeKind.U16:   return Type.u16;
-      case TypeKind.U32:   return Type.u32;
-      case TypeKind.U64:   return Type.u64;
-      case TypeKind.Usize: return this.size == 64 ? Type.usize64 : Type.usize32;
-      default: return Type.i32;
+      case TypeKind.I64:
+        return Type.i64;
+      case TypeKind.Isize:
+        return this.size == 64 ? Type.isize64 : Type.isize32;
+      case TypeKind.U8:
+        return Type.u8;
+      case TypeKind.U16:
+        return Type.u16;
+      case TypeKind.U32:
+        return Type.u32;
+      case TypeKind.U64:
+        return Type.u64;
+      case TypeKind.Usize:
+        return this.size == 64 ? Type.usize64 : Type.usize32;
+      default:
+        return Type.i32;
     }
   }
 
@@ -192,7 +189,7 @@ export class Type {
   /** Size in bytes. */
   get byteSize(): i32 {
     // ceiled div by 8
-    return this.size + 7 >>> 3;
+    return (this.size + 7) >>> 3;
   }
 
   /** Gets this type's logarithmic alignment in memory. */
@@ -287,9 +284,7 @@ export class Type {
 
   /** Gets the underlying class of this type, if any. */
   getClass(): Class | null {
-    return this.isInternalReference
-      ? this.classReference
-      : null;
+    return this.isInternalReference ? this.classReference : null;
   }
 
   /** Tests if this type represents a class. */
@@ -308,7 +303,7 @@ export class Type {
       if (signatureReference) {
         // function wrapper
         let type = signatureReference.type;
-        let wrapper = assert(program.resolver.resolveClass(program.functionPrototype, [ type ]));
+        let wrapper = assert(program.resolver.resolveClass(program.functionPrototype, [type]));
         wrapper.wrappedType = type;
         return wrapper;
       } else {
@@ -332,9 +327,7 @@ export class Type {
 
   /** Gets the underlying function signature of this type, if any. */
   getSignature(): Signature | null {
-    return this.isInternalReference
-      ? this.signatureReference
-      : null;
+    return this.isInternalReference ? this.signatureReference : null;
   }
 
   /** Tests if this type represents a function. */
@@ -373,7 +366,8 @@ export class Type {
       case TypeKind.Usize:
       case TypeKind.F32:
       case TypeKind.F64:
-      case TypeKind.V128: return true;
+      case TypeKind.V128:
+        return true;
     }
     return false;
   }
@@ -388,7 +382,7 @@ export class Type {
   get nullableType(): Type | null {
     return this.isReference
       ? this.asNullable() // Every reference type has a corresponding nullable type
-      : null;             // Other types do not have a nullable type
+      : null; // Other types do not have a nullable type
   }
 
   /** Computes the sign-extending shift in the target type. */
@@ -404,9 +398,13 @@ export class Type {
   }
 
   /** Tests if this type has (all of) the specified flags. */
-  is(flags: TypeFlags): bool { return (this.flags & flags) == flags; }
+  is(flags: TypeFlags): bool {
+    return (this.flags & flags) == flags;
+  }
   /** Tests if this type has any of the specified flags. */
-  isAny(flags: TypeFlags): bool { return (this.flags & flags) != 0; }
+  isAny(flags: TypeFlags): bool {
+    return (this.flags & flags) != 0;
+  }
 
   /** Composes the respective nullable type of this type. */
   asNullable(): Type {
@@ -425,11 +423,16 @@ export class Type {
   /** Use unsigned type for according size if possible. */
   toUnsigned(): Type {
     switch (this.kind) {
-      case TypeKind.I8:    return Type.u8;
-      case TypeKind.I16:   return Type.u16;
-      case TypeKind.I32:   return Type.u32;
-      case TypeKind.I64:   return Type.u64;
-      case TypeKind.Isize: return this.size == 64 ? Type.usize64 : Type.usize32;
+      case TypeKind.I8:
+        return Type.u8;
+      case TypeKind.I16:
+        return Type.u16;
+      case TypeKind.I32:
+        return Type.u32;
+      case TypeKind.I64:
+        return Type.u64;
+      case TypeKind.Isize:
+        return this.size == 64 ? Type.usize64 : Type.usize32;
     }
     return this;
   }
@@ -444,9 +447,9 @@ export class Type {
       let otherSignatureReference = other.signatureReference;
 
       return (
-        this.classReference == other.classReference
-        && selfSignatureReference == otherSignatureReference
-        && this.isNullableReference == other.isNullableReference
+        this.classReference == other.classReference &&
+        selfSignatureReference == otherSignatureReference &&
+        this.isNullableReference == other.isNullableReference
       );
     }
     return true;
@@ -461,19 +464,16 @@ export class Type {
     if (this.isReference) {
       if (target.isReference) {
         if (!this.isNullableReference || target.isNullableReference) {
-          if (currentClass = this.getClass()) {
-            if (targetClass = target.getClass()) {
+          if ((currentClass = this.getClass())) {
+            if ((targetClass = target.getClass())) {
               return currentClass.isAssignableTo(targetClass);
             }
-          } else if (currentFunction = this.getSignature()) {
-            if (targetFunction = target.getSignature()) {
+          } else if ((currentFunction = this.getSignature())) {
+            if ((targetFunction = target.getSignature())) {
               return currentFunction.isAssignableTo(targetFunction);
             }
           } else if (this.isExternalReference) {
-            if (
-              this.kind == target.kind ||
-              (target.kind == TypeKind.Any && this.kind != TypeKind.Extern)
-            ) {
+            if (this.kind == target.kind || (target.kind == TypeKind.Any && this.kind != TypeKind.Extern)) {
               return true;
             }
           }
@@ -513,9 +513,10 @@ export class Type {
     else if (target.isReference) return false;
     // not dealing with references from here on
     if (this.isIntegerValue) {
-      return target.isIntegerValue && target.size == this.size && (
-        !signednessIsRelevant ||
-        this.isSignedIntegerValue == target.isSignedIntegerValue
+      return (
+        target.isIntegerValue &&
+        target.size == this.size &&
+        (!signednessIsRelevant || this.isSignedIntegerValue == target.isSignedIntegerValue)
       );
     }
     return this.kind == target.kind;
@@ -534,10 +535,7 @@ export class Type {
     // special in that it allows integer references as well
     if (this.is(TypeFlags.Integer) && target.is(TypeFlags.Integer)) {
       let size = this.size;
-      return size == target.size && (
-        size >= 32 ||
-        this.is(TypeFlags.Signed) == target.is(TypeFlags.Signed)
-      );
+      return size == target.size && (size >= 32 || this.is(TypeFlags.Signed) == target.is(TypeFlags.Signed));
     }
     return this.kind == target.kind;
   }
@@ -584,7 +582,8 @@ export class Type {
       if (leftClass && rightClass) {
         let lubClass = Class.leastUpperBound(leftClass, rightClass);
         if (lubClass) {
-          let ret = left.is(TypeFlags.Nullable) || right.is(TypeFlags.Nullable) ? lubClass.type.asNullable() : lubClass.type;
+          let ret =
+            left.is(TypeFlags.Nullable) || right.is(TypeFlags.Nullable) ? lubClass.type.asNullable() : lubClass.type;
           return ret;
         }
       }
@@ -601,33 +600,60 @@ export class Type {
   /** Converts this type's kind to a string. */
   kindToString(): string {
     switch (this.kind) {
-      case TypeKind.Bool: return CommonNames.bool;
-      case TypeKind.I8: return CommonNames.i8;
-      case TypeKind.I16: return CommonNames.i16;
-      case TypeKind.I32: return CommonNames.i32;
-      case TypeKind.I64: return CommonNames.i64;
-      case TypeKind.Isize: return CommonNames.isize;
-      case TypeKind.U8: return CommonNames.u8;
-      case TypeKind.U16: return CommonNames.u16;
-      case TypeKind.U32: return CommonNames.u32;
-      case TypeKind.U64: return CommonNames.u64;
-      case TypeKind.Usize: return CommonNames.usize;
-      case TypeKind.F32: return CommonNames.f32;
-      case TypeKind.F64: return CommonNames.f64;
-      case TypeKind.V128: return CommonNames.v128;
-      case TypeKind.Func: return CommonNames.ref_func;
-      case TypeKind.Extern: return CommonNames.ref_extern;
-      case TypeKind.Any: return CommonNames.ref_any;
-      case TypeKind.Eq: return CommonNames.ref_eq;
-      case TypeKind.Struct: return CommonNames.ref_struct;
-      case TypeKind.Array: return CommonNames.ref_array;
-      case TypeKind.I31: return CommonNames.ref_i31;
-      case TypeKind.String: return CommonNames.ref_string;
-      case TypeKind.StringviewWTF8: return CommonNames.ref_stringview_wtf8;
-      case TypeKind.StringviewWTF16: return CommonNames.ref_stringview_wtf16;
-      case TypeKind.StringviewIter: return CommonNames.ref_stringview_iter;
-      default: assert(false);
-      case TypeKind.Void: return CommonNames.void_;
+      case TypeKind.Bool:
+        return CommonNames.bool;
+      case TypeKind.I8:
+        return CommonNames.i8;
+      case TypeKind.I16:
+        return CommonNames.i16;
+      case TypeKind.I32:
+        return CommonNames.i32;
+      case TypeKind.I64:
+        return CommonNames.i64;
+      case TypeKind.Isize:
+        return CommonNames.isize;
+      case TypeKind.U8:
+        return CommonNames.u8;
+      case TypeKind.U16:
+        return CommonNames.u16;
+      case TypeKind.U32:
+        return CommonNames.u32;
+      case TypeKind.U64:
+        return CommonNames.u64;
+      case TypeKind.Usize:
+        return CommonNames.usize;
+      case TypeKind.F32:
+        return CommonNames.f32;
+      case TypeKind.F64:
+        return CommonNames.f64;
+      case TypeKind.V128:
+        return CommonNames.v128;
+      case TypeKind.Func:
+        return CommonNames.ref_func;
+      case TypeKind.Extern:
+        return CommonNames.ref_extern;
+      case TypeKind.Any:
+        return CommonNames.ref_any;
+      case TypeKind.Eq:
+        return CommonNames.ref_eq;
+      case TypeKind.Struct:
+        return CommonNames.ref_struct;
+      case TypeKind.Array:
+        return CommonNames.ref_array;
+      case TypeKind.I31:
+        return CommonNames.ref_i31;
+      case TypeKind.String:
+        return CommonNames.ref_string;
+      case TypeKind.StringviewWTF8:
+        return CommonNames.ref_stringview_wtf8;
+      case TypeKind.StringviewWTF16:
+        return CommonNames.ref_stringview_wtf16;
+      case TypeKind.StringviewIter:
+        return CommonNames.ref_stringview_iter;
+      default:
+        assert(false);
+      case TypeKind.Void:
+        return CommonNames.void_;
     }
   }
 
@@ -658,9 +684,7 @@ export class Type {
     if (this.isReference) {
       let classReference = this.getClass();
       if (classReference) {
-        return this.isNullableReference
-          ? classReference.internalName + nullablePostfix
-          : classReference.internalName;
+        return this.isNullableReference ? classReference.internalName + nullablePostfix : classReference.internalName;
       } else {
         let signatureReference = this.getSignature();
         if (signatureReference) {
@@ -668,9 +692,7 @@ export class Type {
             ? `(${signatureReference.toString(validWat)})${nullablePostfix}`
             : signatureReference.toString(validWat);
         } else {
-          return this.isNullableReference
-            ? `${this.kindToString()}${nullablePostfix}`
-            : this.kindToString();
+          return this.isNullableReference ? `${this.kindToString()}${nullablePostfix}` : this.kindToString();
         }
       }
     }
@@ -691,14 +713,20 @@ export class Type {
       case TypeKind.I32:
       case TypeKind.U8:
       case TypeKind.U16:
-      case TypeKind.U32: return TypeRef.I32;
+      case TypeKind.U32:
+        return TypeRef.I32;
       case TypeKind.Isize:
-      case TypeKind.Usize: if (this.size != 64) return TypeRef.I32;
+      case TypeKind.Usize:
+        if (this.size != 64) return TypeRef.I32;
       case TypeKind.I64:
-      case TypeKind.U64:  return TypeRef.I64;
-      case TypeKind.F32:  return TypeRef.F32;
-      case TypeKind.F64:  return TypeRef.F64;
-      case TypeKind.V128: return TypeRef.V128;
+      case TypeKind.U64:
+        return TypeRef.I64;
+      case TypeKind.F32:
+        return TypeRef.F32;
+      case TypeKind.F64:
+        return TypeRef.F64;
+      case TypeKind.V128:
+        return TypeRef.V128;
       case TypeKind.Func: {
         return binaryen._BinaryenTypeFromHeapType(HeapTypeRef.Func, this.is(TypeFlags.Nullable));
       }
@@ -723,7 +751,8 @@ export class Type {
       case TypeKind.String: {
         return binaryen._BinaryenTypeFromHeapType(HeapTypeRef.String, this.is(TypeFlags.Nullable));
       }
-      case TypeKind.Void: return TypeRef.None;
+      case TypeKind.Void:
+        return TypeRef.None;
     }
     // TODO: not used yet
     assert(false);
@@ -733,194 +762,144 @@ export class Type {
   // Types
 
   /** An 8-bit signed integer. */
-  static readonly i8: Type  = new Type(TypeKind.I8,
-    TypeFlags.Signed   |
-    TypeFlags.Short    |
-    TypeFlags.Integer  |
-    TypeFlags.Value,   8
+  static readonly i8: Type = new Type(
+    TypeKind.I8,
+    TypeFlags.Signed | TypeFlags.Short | TypeFlags.Integer | TypeFlags.Value,
+    8
   );
 
   /** A 16-bit signed integer. */
-  static readonly i16: Type = new Type(TypeKind.I16,
-    TypeFlags.Signed   |
-    TypeFlags.Short    |
-    TypeFlags.Integer  |
-    TypeFlags.Value,  16
+  static readonly i16: Type = new Type(
+    TypeKind.I16,
+    TypeFlags.Signed | TypeFlags.Short | TypeFlags.Integer | TypeFlags.Value,
+    16
   );
 
   /** A 32-bit signed integer. */
-  static readonly i32: Type = new Type(TypeKind.I32,
-    TypeFlags.Signed   |
-    TypeFlags.Integer  |
-    TypeFlags.Value,  32
-  );
+  static readonly i32: Type = new Type(TypeKind.I32, TypeFlags.Signed | TypeFlags.Integer | TypeFlags.Value, 32);
 
   /** A 64-bit signed integer. */
-  static readonly i64: Type = new Type(TypeKind.I64,
-    TypeFlags.Signed   |
-    TypeFlags.Long     |
-    TypeFlags.Integer  |
-    TypeFlags.Value,  64
+  static readonly i64: Type = new Type(
+    TypeKind.I64,
+    TypeFlags.Signed | TypeFlags.Long | TypeFlags.Integer | TypeFlags.Value,
+    64
   );
 
   /** A 32-bit signed size. WASM32 only. */
-  static readonly isize32: Type = new Type(TypeKind.Isize,
-    TypeFlags.Signed   |
-    TypeFlags.Integer  |
-    TypeFlags.Varying  |
-    TypeFlags.Value,  32
+  static readonly isize32: Type = new Type(
+    TypeKind.Isize,
+    TypeFlags.Signed | TypeFlags.Integer | TypeFlags.Varying | TypeFlags.Value,
+    32
   );
 
   /** A 64-bit signed size. WASM64 only. */
-  static readonly isize64: Type = new Type(TypeKind.Isize,
-    TypeFlags.Signed   |
-    TypeFlags.Long     |
-    TypeFlags.Integer  |
-    TypeFlags.Varying  |
-    TypeFlags.Value,  64
+  static readonly isize64: Type = new Type(
+    TypeKind.Isize,
+    TypeFlags.Signed | TypeFlags.Long | TypeFlags.Integer | TypeFlags.Varying | TypeFlags.Value,
+    64
   );
 
   /** An 8-bit unsigned integer. */
-  static readonly u8: Type = new Type(TypeKind.U8,
-    TypeFlags.Unsigned |
-    TypeFlags.Short    |
-    TypeFlags.Integer  |
-    TypeFlags.Value,   8
+  static readonly u8: Type = new Type(
+    TypeKind.U8,
+    TypeFlags.Unsigned | TypeFlags.Short | TypeFlags.Integer | TypeFlags.Value,
+    8
   );
 
   /** A 16-bit unsigned integer. */
-  static readonly u16: Type = new Type(TypeKind.U16,
-    TypeFlags.Unsigned |
-    TypeFlags.Short    |
-    TypeFlags.Integer  |
-    TypeFlags.Value,  16
+  static readonly u16: Type = new Type(
+    TypeKind.U16,
+    TypeFlags.Unsigned | TypeFlags.Short | TypeFlags.Integer | TypeFlags.Value,
+    16
   );
 
   /** A 32-bit unsigned integer. */
-  static readonly u32: Type = new Type(TypeKind.U32,
-    TypeFlags.Unsigned |
-    TypeFlags.Integer  |
-    TypeFlags.Value,  32
-  );
+  static readonly u32: Type = new Type(TypeKind.U32, TypeFlags.Unsigned | TypeFlags.Integer | TypeFlags.Value, 32);
 
   /** A 64-bit unsigned integer. */
-  static readonly u64: Type = new Type(TypeKind.U64,
-    TypeFlags.Unsigned |
-    TypeFlags.Long     |
-    TypeFlags.Integer  |
-    TypeFlags.Value,  64
+  static readonly u64: Type = new Type(
+    TypeKind.U64,
+    TypeFlags.Unsigned | TypeFlags.Long | TypeFlags.Integer | TypeFlags.Value,
+    64
   );
 
   /** A 32-bit unsigned size. WASM32 only. */
-  static readonly usize32: Type = new Type(TypeKind.Usize,
-    TypeFlags.Unsigned |
-    TypeFlags.Integer  |
-    TypeFlags.Varying  |
-    TypeFlags.Value,  32
+  static readonly usize32: Type = new Type(
+    TypeKind.Usize,
+    TypeFlags.Unsigned | TypeFlags.Integer | TypeFlags.Varying | TypeFlags.Value,
+    32
   );
 
   /** A 64-bit unsigned size. WASM64 only. */
-  static readonly usize64: Type = new Type(TypeKind.Usize,
-    TypeFlags.Unsigned |
-    TypeFlags.Long     |
-    TypeFlags.Integer  |
-    TypeFlags.Varying  |
-    TypeFlags.Value,  64
+  static readonly usize64: Type = new Type(
+    TypeKind.Usize,
+    TypeFlags.Unsigned | TypeFlags.Long | TypeFlags.Integer | TypeFlags.Varying | TypeFlags.Value,
+    64
   );
 
   /** A 1-bit unsigned integer. */
-  static readonly bool: Type = new Type(TypeKind.Bool,
-    TypeFlags.Unsigned |
-    TypeFlags.Short    |
-    TypeFlags.Integer  |
-    TypeFlags.Value,   1
+  static readonly bool: Type = new Type(
+    TypeKind.Bool,
+    TypeFlags.Unsigned | TypeFlags.Short | TypeFlags.Integer | TypeFlags.Value,
+    1
   );
 
   /** A 32-bit float. */
-  static readonly f32: Type = new Type(TypeKind.F32,
-    TypeFlags.Signed   |
-    TypeFlags.Float    |
-    TypeFlags.Value,  32
-  );
+  static readonly f32: Type = new Type(TypeKind.F32, TypeFlags.Signed | TypeFlags.Float | TypeFlags.Value, 32);
 
   /** A 64-bit float. */
-  static readonly f64: Type = new Type(TypeKind.F64,
-    TypeFlags.Signed   |
-    TypeFlags.Long     |
-    TypeFlags.Float    |
-    TypeFlags.Value,  64
+  static readonly f64: Type = new Type(
+    TypeKind.F64,
+    TypeFlags.Signed | TypeFlags.Long | TypeFlags.Float | TypeFlags.Value,
+    64
   );
 
   /** A 128-bit vector. */
-  static readonly v128: Type = new Type(TypeKind.V128,
-    TypeFlags.Vector   |
-    TypeFlags.Value, 128
-  );
+  static readonly v128: Type = new Type(TypeKind.V128, TypeFlags.Vector | TypeFlags.Value, 128);
 
   /** Non-nullable function reference (`ref func`). */
-  static readonly func: Type = new Type(TypeKind.Func,
-    TypeFlags.External   |
-    TypeFlags.Reference, 0
-  );
+  static readonly func: Type = new Type(TypeKind.Func, TypeFlags.External | TypeFlags.Reference, 0);
 
   /** Non-nullable external reference (`ref extern`). */
-  static readonly extern: Type = new Type(TypeKind.Extern,
-    TypeFlags.External   |
-    TypeFlags.Reference, 0
-  );
+  static readonly extern: Type = new Type(TypeKind.Extern, TypeFlags.External | TypeFlags.Reference, 0);
 
   /** Non-nullable any reference (`ref any`). */
-  static readonly any: Type = new Type(TypeKind.Any,
-    TypeFlags.External   |
-    TypeFlags.Reference, 0
-  );
+  static readonly any: Type = new Type(TypeKind.Any, TypeFlags.External | TypeFlags.Reference, 0);
 
   /** Non-nullable equatable reference (`ref eq`). */
-  static readonly eq: Type = new Type(TypeKind.Eq,
-    TypeFlags.External   |
-    TypeFlags.Reference, 0
-  );
+  static readonly eq: Type = new Type(TypeKind.Eq, TypeFlags.External | TypeFlags.Reference, 0);
 
   /** Non-nullable struct reference (`ref struct`). */
-  static readonly struct: Type = new Type(TypeKind.Struct,
-    TypeFlags.External   |
-    TypeFlags.Reference, 0
-  );
+  static readonly struct: Type = new Type(TypeKind.Struct, TypeFlags.External | TypeFlags.Reference, 0);
 
   /** Non-nullable array reference (`ref array`). */
-  static readonly array: Type = new Type(TypeKind.Array,
-    TypeFlags.External   |
-    TypeFlags.Reference, 0
-  );
+  static readonly array: Type = new Type(TypeKind.Array, TypeFlags.External | TypeFlags.Reference, 0);
 
   /** Non-nullable 31-bit integer reference (`ref i31`). */
-  static readonly i31: Type = new Type(TypeKind.I31,
-    TypeFlags.External   |
-    TypeFlags.Reference, 0
-  );
+  static readonly i31: Type = new Type(TypeKind.I31, TypeFlags.External | TypeFlags.Reference, 0);
 
   /** Non-nullable string reference (`ref string`). */
-  static readonly string: Type = new Type(TypeKind.String,
-    TypeFlags.External   |
-    TypeFlags.Reference, 0
-  );
+  static readonly string: Type = new Type(TypeKind.String, TypeFlags.External | TypeFlags.Reference, 0);
 
   /** Non-nullable WTF8 string view reference (`ref stringview_wtf8`). */
-  static readonly stringview_wtf8: Type = new Type(TypeKind.StringviewWTF8,
-    TypeFlags.External   |
-    TypeFlags.Reference, 0
+  static readonly stringview_wtf8: Type = new Type(
+    TypeKind.StringviewWTF8,
+    TypeFlags.External | TypeFlags.Reference,
+    0
   );
 
   /** Non-nullable WTF16 string view reference (`ref stringview_wtf16`). */
-  static readonly stringview_wtf16: Type = new Type(TypeKind.StringviewWTF16,
-    TypeFlags.External   |
-    TypeFlags.Reference, 0
+  static readonly stringview_wtf16: Type = new Type(
+    TypeKind.StringviewWTF16,
+    TypeFlags.External | TypeFlags.Reference,
+    0
   );
 
   /** Non-nullable string iterator reference (`ref stringview_iter`). */
-  static readonly stringview_iter: Type = new Type(TypeKind.StringviewIter,
-    TypeFlags.External   |
-    TypeFlags.Reference, 0
+  static readonly stringview_iter: Type = new Type(
+    TypeKind.StringviewIter,
+    TypeFlags.External | TypeFlags.Reference,
+    0
   );
 
   /** No return type. */
@@ -935,7 +914,7 @@ export function typesToRefs(types: Type[]): TypeRef[] {
   let numTypes = types.length;
   let ret = new Array<TypeRef>(numTypes);
   for (let i = 0; i < numTypes; ++i) {
-    unchecked(ret[i] = types[i].toRef());
+    unchecked((ret[i] = types[i].toRef()));
   }
   return ret;
 }
@@ -946,7 +925,7 @@ export function typesToString(types: Type[]): string {
   if (!numTypes) return "";
   let sb = new Array<string>(numTypes);
   for (let i = 0; i < numTypes; ++i) {
-    unchecked(sb[i] = types[i].toString(true));
+    unchecked((sb[i] = types[i].toString(true)));
   }
   return sb.join(",");
 }
@@ -966,22 +945,27 @@ export class Signature {
     /** Number of required parameters excluding `this`. Other parameters are considered optional. */
     requiredParameters: i32 = parameterTypes ? parameterTypes.length : 0,
     /** Whether the last parameter is a rest parameter. */
-    hasRest: bool = false,
+    hasRest: bool = false
   ): Signature {
     // get the usize type, and the type of the signature
     let usizeType = program.options.usizeType;
-    let type = new Type(
-      usizeType.kind,
-      usizeType.flags & ~TypeFlags.Value | TypeFlags.Reference,
-      usizeType.size
-    );
+    let type = new Type(usizeType.kind, (usizeType.flags & ~TypeFlags.Value) | TypeFlags.Reference, usizeType.size);
 
     // calculate the properties
     let signatureTypes = program.uniqueSignatures;
     let nextId = program.nextSignatureId;
-    
+
     // construct the signature and calculate it's unique key
-    let signature = new Signature(program, parameterTypes, returnType, thisType, requiredParameters, hasRest, nextId, type);
+    let signature = new Signature(
+      program,
+      parameterTypes,
+      returnType,
+      thisType,
+      requiredParameters,
+      hasRest,
+      nextId,
+      type
+    );
     let uniqueKey = signature.toString();
 
     // check if it exists, and return it
@@ -1015,7 +999,7 @@ export class Signature {
     /** Unique id representing this signature. */
     public readonly id: u32,
     /** Respective function type. */
-    public readonly type: Type,
+    public readonly type: Type
   ) {}
 
   get paramRefs(): TypeRef {
@@ -1027,9 +1011,9 @@ export class Signature {
     }
     if (thisType) {
       let typeRefs = new Array<TypeRef>(1 + numParameterTypes);
-      unchecked(typeRefs[0] = thisType.toRef());
+      unchecked((typeRefs[0] = thisType.toRef()));
       for (let i = 0; i < numParameterTypes; ++i) {
-        unchecked(typeRefs[i + 1] = parameterTypes[i].toRef());
+        unchecked((typeRefs[i + 1] = parameterTypes[i].toRef()));
       }
       return createType(typeRefs);
     }
@@ -1042,7 +1026,6 @@ export class Signature {
 
   /** Tests if this signature equals the specified. */
   equals(other: Signature): bool {
-
     // check `this` type
     let thisThisType = this.thisType;
     let otherThisType = other.thisType;
@@ -1062,7 +1045,7 @@ export class Signature {
     let selfParameterTypes = this.parameterTypes;
     let otherParameterTypes = other.parameterTypes;
     let numParameters = selfParameterTypes.length;
-    if (numParameters != otherParameterTypes.length)  return false;
+    if (numParameters != otherParameterTypes.length) return false;
 
     for (let i = 0; i < numParameters; ++i) {
       let selfParameterType = unchecked(selfParameterTypes[i]);
@@ -1078,10 +1061,10 @@ export class Signature {
     let targetThisType = target.thisType;
 
     if (thisThisType && targetThisType) {
-      const compatibleThisType = checkCompatibleOverride 
+      const compatibleThisType = checkCompatibleOverride
         ? thisThisType.canExtendOrImplement(targetThisType)
         : targetThisType.isAssignableTo(thisThisType);
-      if (!compatibleThisType) return false; 
+      if (!compatibleThisType) return false;
     } else if (thisThisType || targetThisType) {
       return false;
     }
@@ -1207,7 +1190,7 @@ export class Signature {
     let numParameterTypes = parameterTypes.length;
     let cloneParameterTypes = new Array<Type>(numParameterTypes);
     for (let i = 0; i < numParameterTypes; ++i) {
-      unchecked(cloneParameterTypes[i] = parameterTypes[i]);
+      unchecked((cloneParameterTypes[i] = parameterTypes[i]));
     }
     return Signature.create(
       this.program,

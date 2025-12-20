@@ -3,14 +3,9 @@
  * @license Apache-2.0
  */
 
-import {
-  Source
-} from "./ast";
+import { Source } from "./ast";
 
-import {
-  DiagnosticCode,
-  diagnosticCodeToString
-} from "./diagnosticMessages.generated";
+import { DiagnosticCode, diagnosticCodeToString } from "./diagnosticMessages.generated";
 
 import {
   isLineBreak,
@@ -22,13 +17,10 @@ import {
   COLOR_RESET,
   isColorsEnabled,
   setColorsEnabled,
-  CharCode
+  CharCode,
 } from "./util";
 
-export {
-  DiagnosticCode,
-  diagnosticCodeToString
-} from "./diagnosticMessages.generated";
+export { DiagnosticCode, diagnosticCodeToString } from "./diagnosticMessages.generated";
 
 /** Indicates the category of a {@link DiagnosticMessage}. */
 export const enum DiagnosticCategory {
@@ -39,31 +31,26 @@ export const enum DiagnosticCategory {
   /** Warning message. */
   Warning,
   /** Error message. */
-  Error
+  Error,
 }
 
 export class Range {
-
   source!: Source;
 
-  constructor(public start: i32, public end: i32) {}
+  constructor(
+    public start: i32,
+    public end: i32
+  ) {}
 
   static join(a: Range, b: Range): Range {
     if (a.source != b.source) throw new Error("source mismatch");
-    let range = new Range(
-      a.start < b.start ? a.start : b.start,
-      a.end > b.end ? a.end : b.end
-    );
+    let range = new Range(a.start < b.start ? a.start : b.start, a.end > b.end ? a.end : b.end);
     range.source = a.source;
     return range;
   }
 
   equals(other: Range): bool {
-    return (
-      this.source == other.source &&
-      this.start == other.start &&
-      this.end == other.end
-    );
+    return this.source == other.source && this.start == other.start && this.end == other.end;
   }
 
   get atStart(): Range {
@@ -86,10 +73,14 @@ export class Range {
 /** Returns the string representation of the specified diagnostic category. */
 export function diagnosticCategoryToString(category: DiagnosticCategory): string {
   switch (category) {
-    case DiagnosticCategory.Pedantic: return "PEDANTIC";
-    case DiagnosticCategory.Info: return "INFO";
-    case DiagnosticCategory.Warning: return "WARNING";
-    case DiagnosticCategory.Error: return "ERROR";
+    case DiagnosticCategory.Pedantic:
+      return "PEDANTIC";
+    case DiagnosticCategory.Info:
+      return "INFO";
+    case DiagnosticCategory.Warning:
+      return "WARNING";
+    case DiagnosticCategory.Error:
+      return "ERROR";
     default: {
       assert(false);
       return "";
@@ -100,10 +91,14 @@ export function diagnosticCategoryToString(category: DiagnosticCategory): string
 /** Returns the ANSI escape sequence for the specified category. */
 export function diagnosticCategoryToColor(category: DiagnosticCategory): string {
   switch (category) {
-    case DiagnosticCategory.Pedantic: return COLOR_MAGENTA;
-    case DiagnosticCategory.Info: return COLOR_CYAN;
-    case DiagnosticCategory.Warning: return COLOR_YELLOW;
-    case DiagnosticCategory.Error: return COLOR_RED;
+    case DiagnosticCategory.Pedantic:
+      return COLOR_MAGENTA;
+    case DiagnosticCategory.Info:
+      return COLOR_CYAN;
+    case DiagnosticCategory.Warning:
+      return COLOR_YELLOW;
+    case DiagnosticCategory.Error:
+      return COLOR_RED;
     default: {
       assert(false);
       return "";
@@ -113,7 +108,6 @@ export function diagnosticCategoryToColor(category: DiagnosticCategory): string 
 
 /** Represents a diagnostic message. */
 export class DiagnosticMessage {
-
   /** Message code. */
   code: i32;
   /** Message category. */
@@ -268,9 +262,7 @@ function formatDiagnosticContext(range: Range, minLine: i32 = 0): string {
   let start = range.start;
   let end = start;
   let lineNumber = source.lineAt(start).toString();
-  let lineNumberLength = minLine
-    ? max(minLine.toString().length, lineNumber.length)
-    : lineNumber.length;
+  let lineNumberLength = minLine ? max(minLine.toString().length, lineNumber.length) : lineNumber.length;
   let lineSpace = " ".repeat(lineNumberLength);
   // Find preceeding line break
   while (start > 0 && !isLineBreak(text.charCodeAt(start - 1))) start--;
@@ -287,7 +279,7 @@ function formatDiagnosticContext(range: Range, minLine: i32 = 0): string {
     text.substring(start, end).replaceAll("\t", "  "),
     "\n ",
     lineSpace,
-    " │ "
+    " │ ",
   ];
   while (start < range.start) {
     if (text.charCodeAt(start) == CharCode.Tab) {
@@ -324,11 +316,10 @@ function formatDiagnosticContext(range: Range, minLine: i32 = 0): string {
 
 /** Base class of all diagnostic emitters. */
 export abstract class DiagnosticEmitter {
-
   /** Diagnostic messages emitted so far. */
   diagnostics: DiagnosticMessage[];
   /** Diagnostic messages already seen, by range. */
-  private seen: Map<Source,Map<i32,DiagnosticMessage[]>> = new Map();
+  private seen: Map<Source, Map<i32, DiagnosticMessage[]>> = new Map();
 
   /** Initializes this diagnostic emitter. */
   protected constructor(diagnostics: DiagnosticMessage[] | null = null) {
@@ -364,11 +355,11 @@ export abstract class DiagnosticEmitter {
           }
           seenMessagesAtPos.push(message);
         } else {
-          seenInSource.set(range.start, [ message ]);
+          seenInSource.set(range.start, [message]);
         }
       } else {
-        let seenInSource = new Map<i32,DiagnosticMessage[]>();
-        seenInSource.set(range.start, [ message ]);
+        let seenInSource = new Map<i32, DiagnosticMessage[]>();
+        seenInSource.set(range.start, [message]);
         seen.set(range.source, seenInSource);
       }
     }

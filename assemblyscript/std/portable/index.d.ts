@@ -10,7 +10,7 @@
  * {@link glue/js/i64} respectively {@link glue/wasm/i64}.
  *
  * @module std/portable
- *//***/
+ */ /***/
 
 // Types
 

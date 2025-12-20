@@ -271,7 +271,7 @@ export namespace atomic {
 export const enum AtomicWaitResult {
   OK = 0,
   NOT_EQUAL = 1,
-  TIMED_OUT = 2
+  TIMED_OUT = 2,
 }
 
 // @ts-ignore: decorator
@@ -279,14 +279,13 @@ export const enum AtomicWaitResult {
 export declare function i8(value: auto): i8;
 
 export namespace i8 {
-
   // @ts-ignore: decorator
   @lazy
   export const MIN_VALUE: i8 = -128;
 
   // @ts-ignore: decorator
   @lazy
-  export const MAX_VALUE: i8 =  127;
+  export const MAX_VALUE: i8 = 127;
 
   // @ts-ignore: decorator
   @inline
@@ -300,14 +299,13 @@ export namespace i8 {
 export declare function i16(value: auto): i16;
 
 export namespace i16 {
-
   // @ts-ignore: decorator
   @lazy
   export const MIN_VALUE: i16 = -32768;
 
   // @ts-ignore: decorator
   @lazy
-  export const MAX_VALUE: i16 =  32767;
+  export const MAX_VALUE: i16 = 32767;
 
   // @ts-ignore: decorator
   @inline
@@ -321,14 +319,13 @@ export namespace i16 {
 export declare function i32(value: auto): i32;
 
 export namespace i32 {
-
   // @ts-ignore: decorator
   @lazy
   export const MIN_VALUE: i32 = -2147483648;
 
   // @ts-ignore: decorator
   @lazy
-  export const MAX_VALUE: i32 =  2147483647;
+  export const MAX_VALUE: i32 = 2147483647;
 
   // @ts-ignore: decorator
   @inline
@@ -350,23 +347,23 @@ export namespace i32 {
 
   // @ts-ignore: decorator
   @builtin
-  export declare function add(left: i32, right:i32): i32;
+  export declare function add(left: i32, right: i32): i32;
 
   // @ts-ignore: decorator
   @builtin
-  export declare function sub(left: i32, right:i32): i32;
+  export declare function sub(left: i32, right: i32): i32;
 
   // @ts-ignore: decorator
   @builtin
-  export declare function mul(left: i32, right:i32): i32;
+  export declare function mul(left: i32, right: i32): i32;
 
   // @ts-ignore: decorator
   @builtin
-  export declare function div_s(left: i32, right:i32): i32;
+  export declare function div_s(left: i32, right: i32): i32;
 
   // @ts-ignore: decorator
   @builtin
-  export declare function div_u(left: i32, right:i32): i32;
+  export declare function div_u(left: i32, right: i32): i32;
 
   // @ts-ignore: decorator
   @builtin
@@ -378,11 +375,11 @@ export namespace i32 {
 
   // @ts-ignore: decorator
   @builtin
-  export declare function eq(left: i32, right:i32): i32;
+  export declare function eq(left: i32, right: i32): i32;
 
   // @ts-ignore: decorator
   @builtin
-  export declare function ne(left: i32, right:i32): i32;
+  export declare function ne(left: i32, right: i32): i32;
 
   // @ts-ignore: decorator
   @builtin
@@ -429,7 +426,6 @@ export namespace i32 {
   export declare function store(ptr: usize, value: i32, immOffset?: usize, immAlign?: usize): void;
 
   export namespace atomic {
-
     // @ts-ignore: decorator
     @builtin
     export declare function load8_u(ptr: usize, immOffset?: usize): i32;
@@ -455,7 +451,6 @@ export namespace i32 {
     export declare function store(ptr: usize, value: i32, immOffset?: usize): void;
 
     export namespace rmw8 {
-
       // @ts-ignore: decorator
       @builtin
       export declare function add_u(ptr: usize, value: i32, immOffset?: usize): i32;
@@ -486,7 +481,6 @@ export namespace i32 {
     }
 
     export namespace rmw16 {
-
       // @ts-ignore: decorator
       @builtin
       export declare function add_u(ptr: usize, value: i32, immOffset?: usize): i32;
@@ -517,7 +511,6 @@ export namespace i32 {
     }
 
     export namespace rmw {
-
       // @ts-ignore: decorator
       @builtin
       export declare function add(ptr: usize, value: i32, immOffset?: usize): i32;
@@ -554,14 +547,13 @@ export namespace i32 {
 export declare function i64(value: auto): i64;
 
 export namespace i64 {
-
   // @ts-ignore: decorator
   @lazy
   export const MIN_VALUE: i64 = -9223372036854775808;
 
   // @ts-ignore: decorator
   @lazy
-  export const MAX_VALUE: i64 =  9223372036854775807;
+  export const MAX_VALUE: i64 = 9223372036854775807;
 
   // @ts-ignore: decorator
   @inline
@@ -579,23 +571,23 @@ export namespace i64 {
 
   // @ts-ignore: decorator
   @builtin
-  export declare function add(left: i64, right:i64): i64;
+  export declare function add(left: i64, right: i64): i64;
 
   // @ts-ignore: decorator
   @builtin
-  export declare function sub(left: i64, right:i64): i64;
+  export declare function sub(left: i64, right: i64): i64;
 
   // @ts-ignore: decorator
   @builtin
-  export declare function mul(left: i64, right:i64): i64;
+  export declare function mul(left: i64, right: i64): i64;
 
   // @ts-ignore: decorator
   @builtin
-  export declare function div_s(left: i64, right:i64): i64;
+  export declare function div_s(left: i64, right: i64): i64;
 
   // @ts-ignore: decorator
   @builtin
-  export declare function div_u(left: i64, right:i64): i64;
+  export declare function div_u(left: i64, right: i64): i64;
 
   // @ts-ignore: decorator
   @builtin
@@ -639,11 +631,11 @@ export namespace i64 {
 
   // @ts-ignore: decorator
   @builtin
-  export declare function eq(left: i64, right:i64): i32;
+  export declare function eq(left: i64, right: i64): i32;
 
   // @ts-ignore: decorator
   @builtin
-  export declare function ne(left: i64, right:i64): i32;
+  export declare function ne(left: i64, right: i64): i32;
 
   // @ts-ignore: decorator
   @builtin
@@ -674,7 +666,6 @@ export namespace i64 {
   export declare function store(ptr: usize, value: i64, immOffset?: usize, immAlign?: usize): void;
 
   export namespace atomic {
-
     // @ts-ignore: decorator
     @builtin
     export declare function load8_u(ptr: usize, immOffset?: usize): i64;
@@ -708,7 +699,6 @@ export namespace i64 {
     export declare function store(ptr: usize, value: i64, immOffset?: usize): void;
 
     export namespace rmw8 {
-
       // @ts-ignore: decorator
       @builtin
       export declare function add_u(ptr: usize, value: i64, immOffset?: usize): i64;
@@ -739,7 +729,6 @@ export namespace i64 {
     }
 
     export namespace rmw16 {
-
       // @ts-ignore: decorator
       @builtin
       export declare function add_u(ptr: usize, value: i64, immOffset?: usize): i64;
@@ -770,7 +759,6 @@ export namespace i64 {
     }
 
     export namespace rmw32 {
-
       // @ts-ignore: decorator
       @builtin
       export declare function add_u(ptr: usize, value: i64, immOffset?: usize): i64;
@@ -801,7 +789,6 @@ export namespace i64 {
     }
 
     export namespace rmw {
-
       // @ts-ignore: decorator
       @builtin
       export declare function add(ptr: usize, value: i64, immOffset?: usize): i64;
@@ -838,18 +825,13 @@ export namespace i64 {
 export declare function isize(value: auto): isize;
 
 export namespace isize {
+  // @ts-ignore: decorator
+  @lazy
+  export const MIN_VALUE: isize = sizeof<i32>() == sizeof<isize>() ? -2147483648 : <isize>-9223372036854775808;
 
   // @ts-ignore: decorator
   @lazy
-  export const MIN_VALUE: isize = sizeof<i32>() == sizeof<isize>()
-    ? -2147483648
-    : <isize>-9223372036854775808;
-
-  // @ts-ignore: decorator
-  @lazy
-  export const MAX_VALUE: isize = sizeof<i32>() == sizeof<isize>()
-    ? 2147483647
-    : <isize>9223372036854775807;
+  export const MAX_VALUE: isize = sizeof<i32>() == sizeof<isize>() ? 2147483647 : <isize>9223372036854775807;
 
   // @ts-ignore: decorator
   @inline
@@ -863,7 +845,6 @@ export namespace isize {
 export declare function u8(value: auto): u8;
 
 export namespace u8 {
-
   // @ts-ignore: decorator
   @lazy
   export const MIN_VALUE: u8 = 0;
@@ -884,7 +865,6 @@ export namespace u8 {
 export declare function u16(value: auto): u16;
 
 export namespace u16 {
-
   // @ts-ignore: decorator
   @lazy
   export const MIN_VALUE: u16 = 0;
@@ -905,7 +885,6 @@ export namespace u16 {
 export declare function u32(value: auto): u32;
 
 export namespace u32 {
-
   // @ts-ignore: decorator
   @lazy
   export const MIN_VALUE: u32 = 0;
@@ -926,7 +905,6 @@ export namespace u32 {
 export declare function u64(value: auto): u64;
 
 export namespace u64 {
-
   // @ts-ignore: decorator
   @lazy
   export const MIN_VALUE: u64 = 0;
@@ -947,16 +925,13 @@ export namespace u64 {
 export declare function usize(value: auto): usize;
 
 export namespace usize {
-
   // @ts-ignore: decorator
   @lazy
   export const MIN_VALUE: usize = 0;
 
   // @ts-ignore: decorator
   @lazy
-  export const MAX_VALUE: usize = sizeof<u32>() == sizeof<usize>()
-    ? 4294967295
-    : <usize>18446744073709551615;
+  export const MAX_VALUE: usize = sizeof<u32>() == sizeof<usize>() ? 4294967295 : <usize>18446744073709551615;
 
   // @ts-ignore: decorator
   @inline
@@ -970,7 +945,6 @@ export namespace usize {
 export declare function bool(value: auto): bool;
 
 export namespace bool {
-
   // @ts-ignore: decorator
   @lazy
   export const MIN_VALUE: bool = false;
@@ -991,7 +965,6 @@ export namespace bool {
 export declare function f32(value: auto): f32;
 
 export namespace f32 {
-
   // @ts-ignore: decorator
   @lazy
   export const EPSILON = reinterpret<f32>(0x34000000); // 0x1p-23f
@@ -1002,7 +975,7 @@ export namespace f32 {
 
   // @ts-ignore: decorator
   @lazy
-  export const MAX_VALUE = reinterpret<f32>(0x7F7FFFFF); // 0x1.fffffep+127f
+  export const MAX_VALUE = reinterpret<f32>(0x7f7fffff); // 0x1.fffffep+127f
 
   // @ts-ignore: decorator
   @lazy
@@ -1014,11 +987,11 @@ export namespace f32 {
 
   // @ts-ignore: decorator
   @lazy
-  export const MAX_SAFE_INTEGER: f32 =  16777215;
+  export const MAX_SAFE_INTEGER: f32 = 16777215;
 
   // @ts-ignore: decorator
   @lazy
-  export const POSITIVE_INFINITY: f32 =  Infinity;
+  export const POSITIVE_INFINITY: f32 = Infinity;
 
   // @ts-ignore: decorator
   @lazy
@@ -1112,10 +1085,9 @@ export namespace f32 {
 export declare function f64(value: auto): f64;
 
 export namespace f64 {
-
   // @ts-ignore: decorator
   @lazy
-  export const EPSILON = reinterpret<f64>(0x3CB0000000000000); // 0x1p-52
+  export const EPSILON = reinterpret<f64>(0x3cb0000000000000); // 0x1p-52
 
   // @ts-ignore: decorator
   @lazy
@@ -1123,7 +1095,7 @@ export namespace f64 {
 
   // @ts-ignore: decorator
   @lazy
-  export const MAX_VALUE = reinterpret<f64>(0x7FEFFFFFFFFFFFFF); // 0x1.fffffffffffffp+1023
+  export const MAX_VALUE = reinterpret<f64>(0x7fefffffffffffff); // 0x1.fffffffffffffp+1023
 
   // @ts-ignore: decorator
   @lazy
@@ -1135,11 +1107,11 @@ export namespace f64 {
 
   // @ts-ignore: decorator
   @lazy
-  export const MAX_SAFE_INTEGER: f64 =  9007199254740991;
+  export const MAX_SAFE_INTEGER: f64 = 9007199254740991;
 
   // @ts-ignore: decorator
   @lazy
-  export const POSITIVE_INFINITY: f64 =  Infinity;
+  export const POSITIVE_INFINITY: f64 = Infinity;
 
   // @ts-ignore: decorator
   @lazy
@@ -1231,12 +1203,25 @@ export namespace f64 {
 // @ts-ignore: decorator
 @builtin
 export declare function v128(
-  a: i8, b: i8, c: i8, d: i8, e: i8, f: i8, g: i8, h: i8,
-  i: i8, j: i8, k: i8, l: i8, m: i8, n: i8, o: i8, p: i8
+  a: i8,
+  b: i8,
+  c: i8,
+  d: i8,
+  e: i8,
+  f: i8,
+  g: i8,
+  h: i8,
+  i: i8,
+  j: i8,
+  k: i8,
+  l: i8,
+  m: i8,
+  n: i8,
+  o: i8,
+  p: i8
 ): v128;
 
 export namespace v128 {
-
   // @ts-ignore: decorator
   @builtin
   export declare function splat<T>(x: T): v128;
@@ -1613,12 +1598,25 @@ export namespace v128 {
 // @ts-ignore: decorator
 @builtin
 export declare function i8x16(
-  a: i8, b: i8, c: i8, d: i8, e: i8, f: i8, g: i8, h: i8,
-  i: i8, j: i8, k: i8, l: i8, m: i8, n: i8, o: i8, p: i8
+  a: i8,
+  b: i8,
+  c: i8,
+  d: i8,
+  e: i8,
+  f: i8,
+  g: i8,
+  h: i8,
+  i: i8,
+  j: i8,
+  k: i8,
+  l: i8,
+  m: i8,
+  n: i8,
+  o: i8,
+  p: i8
 ): v128;
 
 export namespace i8x16 {
-
   // @ts-ignore: decorator
   @builtin
   export declare function splat(x: i8): v128;
@@ -1762,9 +1760,24 @@ export namespace i8x16 {
   // @ts-ignore: decorator
   @builtin
   export declare function shuffle(
-    a: v128, b: v128,
-    l0: u8, l1: u8, l2: u8, l3: u8, l4: u8, l5: u8, l6: u8, l7: u8,
-    l8: u8, l9: u8, l10: u8, l11: u8, l12: u8, l13: u8, l14: u8, l15: u8
+    a: v128,
+    b: v128,
+    l0: u8,
+    l1: u8,
+    l2: u8,
+    l3: u8,
+    l4: u8,
+    l5: u8,
+    l6: u8,
+    l7: u8,
+    l8: u8,
+    l9: u8,
+    l10: u8,
+    l11: u8,
+    l12: u8,
+    l13: u8,
+    l14: u8,
+    l15: u8
   ): v128;
 
   // @ts-ignore: decorator
@@ -1785,7 +1798,6 @@ export namespace i8x16 {
 export declare function i16x8(a: i16, b: i16, c: i16, d: i16, e: i16, f: i16, g: i16, h: i16): v128;
 
 export namespace i16x8 {
-
   // @ts-ignore: decorator
   @builtin
   export declare function splat(x: i16): v128;
@@ -1973,8 +1985,16 @@ export namespace i16x8 {
   // @ts-ignore: decorator
   @builtin
   export declare function shuffle(
-    a: v128, b: v128,
-    l0: u8, l1: u8, l2: u8, l3: u8, l4: u8, l5: u8, l6: u8, l7: u8
+    a: v128,
+    b: v128,
+    l0: u8,
+    l1: u8,
+    l2: u8,
+    l3: u8,
+    l4: u8,
+    l5: u8,
+    l6: u8,
+    l7: u8
   ): v128;
 
   // @ts-ignore: decorator
@@ -1995,7 +2015,6 @@ export namespace i16x8 {
 export declare function i32x4(a: i32, b: i32, c: i32, d: i32): v128;
 
 export namespace i32x4 {
-
   // @ts-ignore: decorator
   @builtin
   export declare function splat(x: i32): v128;
@@ -2198,7 +2217,6 @@ export namespace i32x4 {
 export declare function i64x2(a: i64, b: i64): v128;
 
 export namespace i64x2 {
-
   // @ts-ignore: decorator
   @builtin
   export declare function splat(x: i64): v128;
@@ -2321,7 +2339,6 @@ export namespace i64x2 {
 export declare function f32x4(a: f32, b: f32, c: f32, d: f32): v128;
 
 export namespace f32x4 {
-
   // @ts-ignore: decorator
   @builtin
   export declare function splat(x: f32): v128;
@@ -2456,7 +2473,6 @@ export namespace f32x4 {
 export declare function f64x2(a: f64, b: f64): v128;
 
 export namespace f64x2 {
-
   // @ts-ignore: decorator
   @builtin
   export declare function splat(x: f64): v128;
@@ -2586,16 +2602,22 @@ export namespace f64x2 {
   export declare function relaxed_max(a: v128, b: v128): v128;
 }
 
+
 @final
-export abstract class i31 { // FIXME: usage of 'new' requires a class :(
+export abstract class i31 {
+  // FIXME: usage of 'new' requires a class :(
 
   // @ts-ignore: decorator
   @builtin
-  static new(value: i32): i31ref { return changetype<i31ref>(unreachable()); }
+  static new(value: i32): i31ref {
+    return changetype<i31ref>(unreachable());
+  }
 
   // @ts-ignore: decorator
   @builtin
-  static get(i31expr: i31ref): i32 { return unreachable(); }
+  static get(i31expr: i31ref): i32 {
+    return unreachable();
+  }
 }
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -2603,25 +2625,12 @@ export abstract class i31 { // FIXME: usage of 'new' requires a class :(
 // @ts-ignore: decorator
 @external("env", "abort")
 @external.js("throw Error(`${message} in ${fileName}:${lineNumber}:${columnNumber}`);")
-declare function abort(
-  message?: string | null,
-  fileName?: string | null,
-  lineNumber?: u32,
-  columnNumber?: u32
-): void;
+declare function abort(message?: string | null, fileName?: string | null, lineNumber?: u32, columnNumber?: u32): void;
 
 // @ts-ignore: decorator
 @external("env", "trace")
 @external.js("console.log(message, ...[a0, a1, a2, a3, a4].slice(0, n));")
-declare function trace(
-  message: string,
-  n?: i32,
-  a0?: f64,
-  a1?: f64,
-  a2?: f64,
-  a3?: f64,
-  a4?: f64
-): void;
+declare function trace(message: string, n?: i32, a0?: f64, a1?: f64, a2?: f64, a3?: f64, a4?: f64): void;
 
 // @ts-ignore: decorator
 @external("env", "seed")

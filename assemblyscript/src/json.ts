@@ -15,13 +15,15 @@ export enum JsonValueKind {
 }
 
 export function isScalarJsonKind(kind: JsonValueKind): bool {
-  return kind == JsonValueKind.Bool || kind == JsonValueKind.I64 || kind == JsonValueKind.F64 || kind == JsonValueKind.String;
+  return (
+    kind == JsonValueKind.Bool || kind == JsonValueKind.I64 || kind == JsonValueKind.F64 || kind == JsonValueKind.String
+  );
 }
 
 export abstract class JsonValue {
   constructor(
     public range: Range,
-    public kind: JsonValueKind,
+    public kind: JsonValueKind
   ) {}
 
   abstract toExpression(): Expression;
@@ -29,7 +31,7 @@ export abstract class JsonValue {
 }
 
 // we don't support full json RFC yet.
-// mark the rest of object as JsonUnknown  
+// mark the rest of object as JsonUnknown
 export class JsonUnknown extends JsonValue {
   constructor(range: Range) {
     super(range, JsonValueKind.Unknown);
@@ -46,7 +48,7 @@ export class JsonObject extends JsonValue {
   constructor(
     public keys: string[],
     public values: JsonValue[],
-    range: Range,
+    range: Range
   ) {
     super(range, JsonValueKind.Object);
   }
@@ -60,7 +62,11 @@ export class JsonObject extends JsonValue {
       members[i] = this.values[i].toStatement(this.keys[i]);
     }
     return Node.createNamespaceDeclaration(
-      Node.createIdentifierExpression(name, this.range), null, CommonFlags.Export, members, this.range
+      Node.createIdentifierExpression(name, this.range),
+      null,
+      CommonFlags.Export,
+      members,
+      this.range
     );
   }
 }
@@ -68,7 +74,7 @@ export class JsonObject extends JsonValue {
 export class JsonBool extends JsonValue {
   constructor(
     public value: bool,
-    range: Range,
+    range: Range
   ) {
     super(range, JsonValueKind.Bool);
   }
@@ -78,7 +84,11 @@ export class JsonBool extends JsonValue {
   override toStatement(name: string): Statement {
     return Node.createVariableDeclaration(
       Node.createIdentifierExpression(name, this.range),
-      null, CommonFlags.Export, null, this.toExpression(), this.range
+      null,
+      CommonFlags.Export,
+      null,
+      this.toExpression(),
+      this.range
     );
   }
 }
@@ -86,7 +96,7 @@ export class JsonBool extends JsonValue {
 export class JsonI64 extends JsonValue {
   constructor(
     public value: i64,
-    range: Range,
+    range: Range
   ) {
     super(range, JsonValueKind.I64);
   }
@@ -96,7 +106,11 @@ export class JsonI64 extends JsonValue {
   override toStatement(name: string): Statement {
     return Node.createVariableDeclaration(
       Node.createIdentifierExpression(name, this.range),
-      null, CommonFlags.Export, null, this.toExpression(), this.range
+      null,
+      CommonFlags.Export,
+      null,
+      this.toExpression(),
+      this.range
     );
   }
 }
@@ -104,7 +118,7 @@ export class JsonI64 extends JsonValue {
 export class JsonF64 extends JsonValue {
   constructor(
     public value: f64,
-    range: Range,
+    range: Range
   ) {
     super(range, JsonValueKind.F64);
   }
@@ -114,7 +128,11 @@ export class JsonF64 extends JsonValue {
   override toStatement(name: string): Statement {
     return Node.createVariableDeclaration(
       Node.createIdentifierExpression(name, this.range),
-      null, CommonFlags.Export, null, this.toExpression(), this.range
+      null,
+      CommonFlags.Export,
+      null,
+      this.toExpression(),
+      this.range
     );
   }
 }
@@ -122,7 +140,7 @@ export class JsonF64 extends JsonValue {
 export class JsonString extends JsonValue {
   constructor(
     public value: string,
-    range: Range,
+    range: Range
   ) {
     super(range, JsonValueKind.String);
   }
@@ -132,7 +150,11 @@ export class JsonString extends JsonValue {
   override toStatement(name: string): Statement {
     return Node.createVariableDeclaration(
       Node.createIdentifierExpression(name, this.range),
-      null, CommonFlags.Export, null, this.toExpression(), this.range
+      null,
+      CommonFlags.Export,
+      null,
+      this.toExpression(),
+      this.range
     );
   }
 }
@@ -140,7 +162,7 @@ export class JsonString extends JsonValue {
 export class JsonArray extends JsonValue {
   constructor(
     public values: JsonValue[],
-    range: Range,
+    range: Range
   ) {
     super(range, JsonValueKind.Array);
   }
@@ -161,7 +183,7 @@ export class JsonArray extends JsonValue {
 
   override toExpression(): Expression {
     const length = this.values.length;
-    let elements = new Array<Expression>(length)
+    let elements = new Array<Expression>(length);
     for (let i = 0; i < length; i++) {
       elements[i] = this.values[i].toExpression();
     }
@@ -170,7 +192,11 @@ export class JsonArray extends JsonValue {
   override toStatement(name: string): Statement {
     return Node.createVariableDeclaration(
       Node.createIdentifierExpression(name, this.range),
-      null, CommonFlags.Export, null, this.toExpression(), this.range
+      null,
+      CommonFlags.Export,
+      null,
+      this.toExpression(),
+      this.range
     );
   }
 }
@@ -178,7 +204,7 @@ export class JsonArray extends JsonValue {
 export class JsonParser extends DiagnosticEmitter {
   constructor(
     public source: JsonSource,
-    diagnostics: DiagnosticMessage[],
+    diagnostics: DiagnosticMessage[]
   ) {
     super(diagnostics);
   }
@@ -240,7 +266,7 @@ export class JsonParser extends DiagnosticEmitter {
   private parseObject(tn: Tokenizer, start: i32): JsonObject | null {
     // consumed: {
     // expected: "key": value, ... }
-    let keys: string[] = []
+    let keys: string[] = [];
     let values: JsonValue[] = [];
     if (tn.skip(Token.CloseBrace)) {
       return new JsonObject(keys, values, tn.range(start, tn.pos));
@@ -288,16 +314,14 @@ export class JsonParser extends DiagnosticEmitter {
     let values: JsonValue[] = [];
     while (true) {
       let v = this.parseValue(tn);
-      if (v == null)
-        return null;
+      if (v == null) return null;
       values.push(v);
-      if (!tn.skip(Token.Comma))
-        break;
+      if (!tn.skip(Token.Comma)) break;
     }
     if (!tn.skip(Token.CloseBracket)) {
       this.error(DiagnosticCode._0_expected, tn.range(), "]");
       return null;
     }
-    return new JsonArray(values ,tn.range(start, tn.pos));
+    return new JsonArray(values, tn.range(start, tn.pos));
   }
 }

@@ -1,41 +1,17 @@
-import {
-  Source
-} from "../ast";
+import { Source } from "../ast";
 
-import {
-  CommonFlags
-} from "../common";
+import { CommonFlags } from "../common";
 
-import {
-  Global,
-  Program,
-  Function,
-  Class,
-  Interface,
-  Enum,
-  ElementKind,
-  Element,
-  PropertyPrototype
-} from "../program";
+import { Global, Program, Function, Class, Interface, Enum, ElementKind, Element, PropertyPrototype } from "../program";
 
-import {
-  Type,
-  TypeFlags
-} from "../types";
+import { Type, TypeFlags } from "../types";
 
-import {
-  CharCode,
-  escapeString,
-  indent, isIdentifier
-} from "../util";
+import { CharCode, escapeString, indent, isIdentifier } from "../util";
 
-import {
-  ExportsWalker
-} from "./util";
+import { ExportsWalker } from "./util";
 
 /** A TypeScript definitions builder. */
 export class TSDBuilder extends ExportsWalker {
-
   /** Builds TypeScript definitions for the specified program. */
   static build(program: Program, esm: bool = true): string {
     return new TSDBuilder(program, esm).build();
@@ -44,7 +20,7 @@ export class TSDBuilder extends ExportsWalker {
   private esm: bool;
   private sb: string[] = [];
   private indentLevel: i32 = 0;
-  private seenObjectTypes: Map<Class,string> = new Map();
+  private seenObjectTypes: Map<Class, string> = new Map();
   private deferredTypings: string[] = new Array();
 
   /** Constructs a new TypeScript definitions builder. */
@@ -231,9 +207,9 @@ export class TSDBuilder extends ExportsWalker {
         if (isIdentifier(moduleName)) {
           sb.push(moduleName);
         } else {
-          sb.push("\"");
+          sb.push('"');
           sb.push(escapeString(moduleName, CharCode.DoubleQuote));
-          sb.push("\"");
+          sb.push('"');
         }
         sb.push(": unknown,\n");
       }
@@ -411,5 +387,5 @@ export class TSDBuilder extends ExportsWalker {
 
 enum Mode {
   IMPORT,
-  EXPORT
+  EXPORT,
 }

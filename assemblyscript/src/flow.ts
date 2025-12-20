@@ -15,11 +15,7 @@
  * @license Apache-2.0
  */
 
-import {
-  Type,
-  TypeFlags,
-  TypeKind
-} from "./types";
+import { Type, TypeFlags, TypeKind } from "./types";
 
 import {
   Program,
@@ -32,7 +28,7 @@ import {
   mangleInternalName,
   Property,
   PropertyPrototype,
-  TypeDefinition
+  TypeDefinition,
 } from "./program";
 
 import {
@@ -41,7 +37,6 @@ import {
   ExpressionRef,
   BinaryOp,
   UnaryOp,
-
   getExpressionId,
   getLocalGetIndex,
   isLocalTee,
@@ -72,32 +67,20 @@ import {
   getCallOperandAt,
   getCallOperandCount,
   isConstZero,
-  isConstNonZero
+  isConstNonZero,
 } from "./module";
 
-import {
-  CommonFlags
-} from "./common";
+import { CommonFlags } from "./common";
 
-import {
-  UncheckedBehavior
-} from "./compiler";
+import { UncheckedBehavior } from "./compiler";
 
-import {
-  DiagnosticCode
-} from "./diagnostics";
+import { DiagnosticCode } from "./diagnostics";
 
-import {
-  Node
-} from "./ast";
+import { Node } from "./ast";
 
-import {
-  cloneMap
-} from "./util";
+import { cloneMap } from "./util";
 
-import {
-  BuiltinNames
-} from "./builtins";
+import { BuiltinNames } from "./builtins";
 
 import { addLocal, addScope } from "./warpo";
 
@@ -154,22 +137,22 @@ export const enum FlowFlags {
   // masks
 
   /** Any categorical flag. */
-  AnyCategorical = FlowFlags.Returns
-                 | FlowFlags.ReturnsWrapped
-                 | FlowFlags.ReturnsNonNull
-                 | FlowFlags.Throws
-                 | FlowFlags.Breaks
-                 | FlowFlags.Continues
-                 | FlowFlags.AccessesThis
-                 | FlowFlags.CallsSuper
-                 | FlowFlags.Terminates,
+  AnyCategorical = FlowFlags.Returns |
+    FlowFlags.ReturnsWrapped |
+    FlowFlags.ReturnsNonNull |
+    FlowFlags.Throws |
+    FlowFlags.Breaks |
+    FlowFlags.Continues |
+    FlowFlags.AccessesThis |
+    FlowFlags.CallsSuper |
+    FlowFlags.Terminates,
 
   /** Any conditional flag. */
-  AnyConditional = FlowFlags.ConditionallyReturns
-                 | FlowFlags.ConditionallyThrows
-                 | FlowFlags.ConditionallyBreaks
-                 | FlowFlags.ConditionallyContinues
-                 | FlowFlags.ConditionallyAccessesThis
+  AnyConditional = FlowFlags.ConditionallyReturns |
+    FlowFlags.ConditionallyThrows |
+    FlowFlags.ConditionallyBreaks |
+    FlowFlags.ConditionallyContinues |
+    FlowFlags.ConditionallyAccessesThis,
 }
 
 /** Flags indicating the current state of a local. */
@@ -184,13 +167,13 @@ export const enum LocalFlags {
   /** Local is non-null. */
   NonNull = 1 << 2,
   /** Local is initialized. */
-  Initialized = 1 << 3
+  Initialized = 1 << 3,
 }
 
 /** Flags indicating the current state of a field. */
 export const enum FieldFlags {
   None = 0,
-  Initialized = 1 << 0
+  Initialized = 1 << 0,
 }
 
 /** Condition kinds. */
@@ -200,12 +183,11 @@ export const enum ConditionKind {
   /** Condition is always true. */
   True,
   /** Condition is always false. */
-  False
+  False,
 }
 
 /** A control flow evaluator. */
 export class Flow {
-
   /** Creates the default top-level flow of the specified function. */
   static createDefault(targetFunction: Function): Flow {
     let flow = new Flow(targetFunction);
@@ -220,7 +202,7 @@ export class Flow {
 
   private constructor(
     /** Target function this flow generates code into. */
-    public targetFunction: Function,
+    public targetFunction: Function
   ) {
     // Setup is performed above so inline ids and field flags are not reset
     // when forking flows, which also uses the constructor.
@@ -237,17 +219,17 @@ export class Flow {
   /** The label we break to when encountering a break statement. */
   breakLabel: string | null = null;
   /** Scoped local variables. */
-  scopedLocals: Map<string,Local> | null = null;
+  scopedLocals: Map<string, Local> | null = null;
   /** Scoped type alias. */
-  scopedTypeAlias: Map<string,TypeDefinition> | null = null;
+  scopedTypeAlias: Map<string, TypeDefinition> | null = null;
   /** Local flags. */
   localFlags: LocalFlags[] = [];
   /** Field flags on `this`. Constructors only. */
-  thisFieldFlags: Map<Property,FieldFlags> | null = null;
+  thisFieldFlags: Map<Property, FieldFlags> | null = null;
   /** Alternative flows if a compound expression is true-ish. */
-  trueFlows: Map<ExpressionRef,Flow> | null = null;
+  trueFlows: Map<ExpressionRef, Flow> | null = null;
   /** Alternative flows if a compound expression is false-ish. */
-  falseFlows: Map<ExpressionRef,Flow> | null = null;
+  falseFlows: Map<ExpressionRef, Flow> | null = null;
 
   /** Gets the program this flow belongs to. */
   get program(): Program {
@@ -260,18 +242,26 @@ export class Flow {
   }
 
   /** Gets the current contextual type arguments. */
-  get contextualTypeArguments(): Map<string,Type> | null {
+  get contextualTypeArguments(): Map<string, Type> | null {
     return this.targetFunction.contextualTypeArguments;
   }
 
   /** Tests if this flow has the specified flag or flags. */
-  is(flag: FlowFlags): bool { return (this.flags & flag) == flag; }
+  is(flag: FlowFlags): bool {
+    return (this.flags & flag) == flag;
+  }
   /** Tests if this flow has one of the specified flags. */
-  isAny(flag: FlowFlags): bool { return (this.flags & flag) != 0; }
+  isAny(flag: FlowFlags): bool {
+    return (this.flags & flag) != 0;
+  }
   /** Sets the specified flag or flags. */
-  set(flag: FlowFlags): void { this.flags |= flag; }
+  set(flag: FlowFlags): void {
+    this.flags |= flag;
+  }
   /** Unsets the specified flag or flags. */
-  unset(flag: FlowFlags): void { this.flags &= ~flag; }
+  unset(flag: FlowFlags): void {
+    this.flags &= ~flag;
+  }
 
   deriveConditionalFlags(): FlowFlags {
     let condiFlags = this.flags & FlowFlags.AnyConditional;
@@ -305,18 +295,12 @@ export class Flow {
     branch.flags = this.flags;
     branch.outer = this.outer;
     if (newBreakContext) {
-      branch.flags &= ~(
-        FlowFlags.Breaks |
-        FlowFlags.ConditionallyBreaks
-      );
+      branch.flags &= ~(FlowFlags.Breaks | FlowFlags.ConditionallyBreaks);
     } else {
       branch.breakLabel = this.breakLabel;
     }
     if (newContinueContext) {
-      branch.flags &= ~(
-        FlowFlags.Continues |
-        FlowFlags.ConditionallyContinues
-      );
+      branch.flags &= ~(FlowFlags.Continues | FlowFlags.ConditionallyContinues);
     } else {
       branch.continueLabel = this.continueLabel;
     }
@@ -396,7 +380,7 @@ export class Flow {
 
   lookupTypeAlias(name: string): TypeDefinition | null {
     let definition: TypeDefinition | null = null;
-    if (definition = this.lookupScopedTypeAlias(name)) return definition;
+    if ((definition = this.lookupScopedTypeAlias(name))) return definition;
 
     let sourceParent = this.targetFunction.parent;
     if (sourceParent.kind == ElementKind.Function) {
@@ -404,7 +388,7 @@ export class Flow {
       let parentFunction = <Function>sourceParent;
       return parentFunction.flow.lookupTypeAlias(name);
     }
-    
+
     return null;
   }
 
@@ -441,10 +425,7 @@ export class Flow {
     let scopedLocals = this.scopedLocals;
     if (!scopedLocals) this.scopedLocals = scopedLocals = new Map();
     else if (scopedLocals.has(name)) {
-      this.program.error(
-        DiagnosticCode.Cannot_redeclare_block_scoped_variable_0,
-        declarationNode.range, name
-      );
+      this.program.error(DiagnosticCode.Cannot_redeclare_block_scoped_variable_0, declarationNode.range, name);
     }
     scopedDummy.set(CommonFlags.Scoped);
     scopedLocals.set(name, scopedDummy);
@@ -467,10 +448,7 @@ export class Flow {
             name
           );
         } else {
-          this.program.error(
-            DiagnosticCode.Duplicate_identifier_0,
-            reportNode.range, name
-          );
+          this.program.error(DiagnosticCode.Duplicate_identifier_0, reportNode.range, name);
         }
       }
       return existingLocal;
@@ -594,7 +572,7 @@ export class Flow {
     let targetFunction = this.targetFunction;
     let id = targetFunction.nextBreakId++;
     let stack = targetFunction.breakStack;
-    if (!stack) targetFunction.breakStack = [ id ];
+    if (!stack) targetFunction.breakStack = [id];
     else stack.push(id);
     return id;
   }
@@ -628,7 +606,6 @@ export class Flow {
     this.thisFieldFlags = other.thisFieldFlags;
   }
 
-
   /** Merges only the side effects of a branch, i.e. when not taken. */
   mergeSideEffects(other: Flow): void {
     assert(other.targetFunction == this.targetFunction);
@@ -637,7 +614,8 @@ export class Flow {
     let otherFlags = other.flags;
     let newFlags = FlowFlags.None;
 
-    if (thisFlags & FlowFlags.Returns) { // nothing can change that
+    if (thisFlags & FlowFlags.Returns) {
+      // nothing can change that
       newFlags |= FlowFlags.Returns;
     } else if (otherFlags & FlowFlags.Returns) {
       newFlags |= FlowFlags.ConditionallyReturns;
@@ -649,7 +627,8 @@ export class Flow {
     newFlags |= thisFlags & otherFlags & FlowFlags.ReturnsWrapped;
     newFlags |= thisFlags & otherFlags & FlowFlags.ReturnsNonNull;
 
-    if (thisFlags & FlowFlags.Throws) { // nothing can change that
+    if (thisFlags & FlowFlags.Throws) {
+      // nothing can change that
       newFlags |= FlowFlags.Throws;
     } else if (otherFlags & FlowFlags.Throws) {
       newFlags |= FlowFlags.ConditionallyThrows;
@@ -657,7 +636,8 @@ export class Flow {
       newFlags |= (thisFlags | otherFlags) & FlowFlags.ConditionallyThrows;
     }
 
-    if (thisFlags & FlowFlags.Breaks) { // nothing can change that
+    if (thisFlags & FlowFlags.Breaks) {
+      // nothing can change that
       newFlags |= FlowFlags.Breaks;
     } else if (other.breakLabel == this.breakLabel) {
       if (otherFlags & FlowFlags.Breaks) {
@@ -669,7 +649,8 @@ export class Flow {
       newFlags |= thisFlags & FlowFlags.ConditionallyBreaks;
     }
 
-    if (thisFlags & FlowFlags.Continues) { // nothing can change that
+    if (thisFlags & FlowFlags.Continues) {
+      // nothing can change that
       newFlags |= FlowFlags.Continues;
     } else if (other.continueLabel == this.continueLabel) {
       if (otherFlags & FlowFlags.Continues) {
@@ -681,7 +662,8 @@ export class Flow {
       newFlags |= thisFlags & FlowFlags.ConditionallyContinues;
     }
 
-    if (thisFlags & FlowFlags.AccessesThis) { // can become conditional
+    if (thisFlags & FlowFlags.AccessesThis) {
+      // can become conditional
       if (otherFlags & FlowFlags.AccessesThis) {
         newFlags |= FlowFlags.AccessesThis;
       } else {
@@ -697,7 +679,8 @@ export class Flow {
     // must be the case in both
     newFlags |= thisFlags & otherFlags & FlowFlags.CallsSuper;
 
-    if (thisFlags & FlowFlags.Terminates) { // nothing can change that
+    if (thisFlags & FlowFlags.Terminates) {
+      // nothing can change that
       newFlags |= FlowFlags.Terminates;
     }
 
@@ -717,12 +700,10 @@ export class Flow {
     for (let i = 0; i < maxLocalFlags; ++i) {
       let thisFlags = i < numThisLocalFlags ? thisLocalFlags[i] : 0;
       let otherFlags = i < numOtherLocalFlags ? otherLocalFlags[i] : 0;
-      thisLocalFlags[i] = thisFlags & otherFlags & (
-        LocalFlags.Constant  |
-        LocalFlags.Wrapped   |
-        LocalFlags.NonNull   |
-        LocalFlags.Initialized
-      );
+      thisLocalFlags[i] =
+        thisFlags &
+        otherFlags &
+        (LocalFlags.Constant | LocalFlags.Wrapped | LocalFlags.NonNull | LocalFlags.Initialized);
     }
 
     // field flags do not matter here since there's only INITIALIZED, which can
@@ -752,11 +733,11 @@ export class Flow {
       newFlags |= (leftFlags | rightFlags) & FlowFlags.ConditionallyReturns;
     }
 
-    if ((leftFlags & FlowFlags.ReturnsWrapped) && (rightFlags & FlowFlags.ReturnsWrapped)) {
+    if (leftFlags & FlowFlags.ReturnsWrapped && rightFlags & FlowFlags.ReturnsWrapped) {
       newFlags |= FlowFlags.ReturnsWrapped;
     }
 
-    if ((leftFlags & FlowFlags.ReturnsNonNull) && (rightFlags & FlowFlags.ReturnsNonNull)) {
+    if (leftFlags & FlowFlags.ReturnsNonNull && rightFlags & FlowFlags.ReturnsNonNull) {
       newFlags |= FlowFlags.ReturnsNonNull;
     }
 
@@ -810,11 +791,11 @@ export class Flow {
 
     newFlags |= (leftFlags | rightFlags) & FlowFlags.MayReturnNonThis;
 
-    if ((leftFlags & FlowFlags.CallsSuper) && (rightFlags & FlowFlags.CallsSuper)) {
+    if (leftFlags & FlowFlags.CallsSuper && rightFlags & FlowFlags.CallsSuper) {
       newFlags |= FlowFlags.CallsSuper;
     }
 
-    if ((leftFlags & FlowFlags.Terminates) && (rightFlags & FlowFlags.Terminates)) {
+    if (leftFlags & FlowFlags.Terminates && rightFlags & FlowFlags.Terminates) {
       newFlags |= FlowFlags.Terminates;
     }
 
@@ -843,26 +824,25 @@ export class Flow {
       for (let i = 0; i < maxLocalFlags; ++i) {
         let leftFlags = i < numLeftLocalFlags ? leftLocalFlags[i] : 0;
         let rightFlags = i < numRightLocalFlags ? rightLocalFlags[i] : 0;
-        thisLocalFlags[i] = leftFlags & rightFlags & (
-          LocalFlags.Constant  |
-          LocalFlags.Wrapped   |
-          LocalFlags.NonNull   |
-          LocalFlags.Initialized
-        );
+        thisLocalFlags[i] =
+          leftFlags &
+          rightFlags &
+          (LocalFlags.Constant | LocalFlags.Wrapped | LocalFlags.NonNull | LocalFlags.Initialized);
       }
     }
 
     // field flags (currently only INITIALIZED, so can simplify)
     let leftFieldFlags = left.thisFieldFlags;
     if (leftFieldFlags) {
-      let newFieldFlags = new Map<Property,FieldFlags>();
+      let newFieldFlags = new Map<Property, FieldFlags>();
       let rightFieldFlags = assert(right.thisFieldFlags);
       for (let _keys = Map_keys(leftFieldFlags), i = 0, k = _keys.length; i < k; ++i) {
         let key = _keys[i];
         let leftFlags = changetype<FieldFlags>(leftFieldFlags.get(key));
         if (
-          (leftFlags & FieldFlags.Initialized) != 0 && rightFieldFlags.has(key) &&
-          (changetype<FieldFlags>(rightFieldFlags.get(key)) & FieldFlags.Initialized)
+          (leftFlags & FieldFlags.Initialized) != 0 &&
+          rightFieldFlags.has(key) &&
+          changetype<FieldFlags>(rightFieldFlags.get(key)) & FieldFlags.Initialized
         ) {
           newFieldFlags.set(key, FieldFlags.Initialized);
         }
@@ -1153,16 +1133,15 @@ export class Flow {
 
     let operand: ExpressionRef;
     switch (getExpressionId(expr)) {
-
       // overflows if the local isn't wrapped or the conversion does
       case ExpressionId.LocalGet: {
         let local = this.targetFunction.localsByIndex[getLocalGetIndex(expr)];
-        return !this.isLocalFlag(local.index, LocalFlags.Wrapped, true)
-            || canConversionOverflow(local.type, type);
+        return !this.isLocalFlag(local.index, LocalFlags.Wrapped, true) || canConversionOverflow(local.type, type);
       }
 
       // overflows if the value does
-      case ExpressionId.LocalSet: { // tee
+      case ExpressionId.LocalSet: {
+        // tee
         assert(isLocalTee(expr));
         return this.canOverflow(getLocalSetValue(expr), type);
       }
@@ -1177,7 +1156,6 @@ export class Flow {
 
       case ExpressionId.Binary: {
         switch (getBinaryOp(expr)) {
-
           // comparisons do not overflow (result is 0 or 1)
           case BinaryOp.EqI32:
           case BinaryOp.EqI64:
@@ -1210,30 +1188,18 @@ export class Flow {
           case BinaryOp.GeI64:
           case BinaryOp.GeU64:
           case BinaryOp.GeF32:
-          case BinaryOp.GeF64: return false;
+          case BinaryOp.GeF64:
+            return false;
 
           // result won't overflow if one side is 0 or if one side is 1 and the other wrapped
           case BinaryOp.MulI32: {
             return !(
-              (
-                getExpressionId(operand = getBinaryLeft(expr)) == ExpressionId.Const &&
-                (
-                  getConstValueI32(operand) == 0 ||
-                  (
-                    getConstValueI32(operand) == 1 &&
-                    !this.canOverflow(getBinaryRight(expr), type)
-                  )
-                )
-              ) || (
-                getExpressionId(operand = getBinaryRight(expr)) == ExpressionId.Const &&
-                (
-                  getConstValueI32(operand) == 0 ||
-                  (
-                    getConstValueI32(operand) == 1 &&
-                    !this.canOverflow(getBinaryLeft(expr), type)
-                  )
-                )
-              )
+              (getExpressionId((operand = getBinaryLeft(expr))) == ExpressionId.Const &&
+                (getConstValueI32(operand) == 0 ||
+                  (getConstValueI32(operand) == 1 && !this.canOverflow(getBinaryRight(expr), type)))) ||
+              (getExpressionId((operand = getBinaryRight(expr))) == ExpressionId.Const &&
+                (getConstValueI32(operand) == 0 ||
+                  (getConstValueI32(operand) == 1 && !this.canOverflow(getBinaryLeft(expr), type))))
             );
           }
 
@@ -1243,33 +1209,31 @@ export class Flow {
             // note that computeSmallIntegerMask returns the mask minus the MSB for signed types
             // because signed value garbage bits must be guaranteed to be equal to the MSB.
             return !(
-              (
-                (
-                  getExpressionId(operand = getBinaryLeft(expr)) == ExpressionId.Const &&
-                  getConstValueI32(operand) <= type.computeSmallIntegerMask(Type.i32)
-                ) || !this.canOverflow(operand, type)
-              ) || (
-                (
-                  getExpressionId(operand = getBinaryRight(expr)) == ExpressionId.Const &&
-                  getConstValueI32(operand) <= type.computeSmallIntegerMask(Type.i32)
-                ) || !this.canOverflow(operand, type)
-              )
+              (getExpressionId((operand = getBinaryLeft(expr))) == ExpressionId.Const &&
+                getConstValueI32(operand) <= type.computeSmallIntegerMask(Type.i32)) ||
+              !this.canOverflow(operand, type) ||
+              (getExpressionId((operand = getBinaryRight(expr))) == ExpressionId.Const &&
+                getConstValueI32(operand) <= type.computeSmallIntegerMask(Type.i32)) ||
+              !this.canOverflow(operand, type)
             );
           }
 
           // overflows if the shift doesn't clear potential garbage bits
           case BinaryOp.ShlI32: {
             let shift = 32 - type.size;
-            return getExpressionId(operand = getBinaryRight(expr)) != ExpressionId.Const
-                || getConstValueI32(operand) < shift;
+            return (
+              getExpressionId((operand = getBinaryRight(expr))) != ExpressionId.Const ||
+              getConstValueI32(operand) < shift
+            );
           }
 
           // overflows if the value does and the shift doesn't clear potential garbage bits
           case BinaryOp.ShrI32: {
             let shift = 32 - type.size;
-            return this.canOverflow(getBinaryLeft(expr), type) && (
-              getExpressionId(operand = getBinaryRight(expr)) != ExpressionId.Const ||
-              getConstValueI32(operand) < shift
+            return (
+              this.canOverflow(getBinaryLeft(expr), type) &&
+              (getExpressionId((operand = getBinaryRight(expr))) != ExpressionId.Const ||
+                getConstValueI32(operand) < shift)
             );
           }
 
@@ -1279,22 +1243,21 @@ export class Flow {
             let shift = 32 - type.size;
             return type.isSignedIntegerValue
               ? !(
-                  getExpressionId(operand = getBinaryRight(expr)) == ExpressionId.Const &&
+                  getExpressionId((operand = getBinaryRight(expr))) == ExpressionId.Const &&
                   getConstValueI32(operand) > shift // must clear MSB
                 )
               : this.canOverflow(getBinaryLeft(expr), type) &&
-                !(
-                  getExpressionId(operand = getBinaryRight(expr)) == ExpressionId.Const &&
-                  getConstValueI32(operand) >= shift // can leave MSB
-                );
+                  !(
+                    getExpressionId((operand = getBinaryRight(expr))) == ExpressionId.Const &&
+                    getConstValueI32(operand) >= shift // can leave MSB
+                  );
           }
 
           // overflows if any side does
           case BinaryOp.DivU32:
           case BinaryOp.RemI32:
           case BinaryOp.RemU32: {
-            return this.canOverflow(getBinaryLeft(expr), type)
-                || this.canOverflow(getBinaryRight(expr), type);
+            return this.canOverflow(getBinaryLeft(expr), type) || this.canOverflow(getBinaryRight(expr), type);
           }
         }
         break;
@@ -1302,22 +1265,28 @@ export class Flow {
 
       case ExpressionId.Unary: {
         switch (getUnaryOp(expr)) {
-
           // comparisons do not overflow (result is 0 or 1)
           case UnaryOp.EqzI32:
-          case UnaryOp.EqzI64: return false;
+          case UnaryOp.EqzI64:
+            return false;
 
           // overflow if the maximum result (32) cannot be represented in the target type
           case UnaryOp.ClzI32:
           case UnaryOp.CtzI32:
-          case UnaryOp.PopcntI32: return type.size < 7;
+          case UnaryOp.PopcntI32:
+            return type.size < 7;
 
           // sign extensions overflow if result can have high garbage bits in the target type
-          case UnaryOp.Extend8I32: return type.size < (type.isUnsignedIntegerValue ? 32 : 8);
-          case UnaryOp.Extend8I64: return type.size < (type.isUnsignedIntegerValue ? 64 : 8);
-          case UnaryOp.Extend16I32: return type.size < (type.isUnsignedIntegerValue ? 32 : 16);
-          case UnaryOp.Extend16I64: return type.size < (type.isUnsignedIntegerValue ? 64 : 16);
-          case UnaryOp.Extend32I64: return type.size < (type.isUnsignedIntegerValue ? 64 : 32);
+          case UnaryOp.Extend8I32:
+            return type.size < (type.isUnsignedIntegerValue ? 32 : 8);
+          case UnaryOp.Extend8I64:
+            return type.size < (type.isUnsignedIntegerValue ? 64 : 8);
+          case UnaryOp.Extend16I32:
+            return type.size < (type.isUnsignedIntegerValue ? 32 : 16);
+          case UnaryOp.Extend16I64:
+            return type.size < (type.isUnsignedIntegerValue ? 64 : 16);
+          case UnaryOp.Extend32I64:
+            return type.size < (type.isUnsignedIntegerValue ? 64 : 32);
         }
         break;
       }
@@ -1326,19 +1295,38 @@ export class Flow {
       case ExpressionId.Const: {
         let value: i32 = 0;
         switch (<u32>getExpressionType(expr)) {
-          case <u32>TypeRef.I32: { value = getConstValueI32(expr); break; }
-          case <u32>TypeRef.I64: { value = getConstValueI64Low(expr); break; } // discards upper bits
-          case <u32>TypeRef.F32: { value = i32(getConstValueF32(expr)); break; }
-          case <u32>TypeRef.F64: { value = i32(getConstValueF64(expr)); break; }
-          case <u32>TypeRef.V128: return false;
-          default: assert(false);
+          case <u32>TypeRef.I32: {
+            value = getConstValueI32(expr);
+            break;
+          }
+          case <u32>TypeRef.I64: {
+            value = getConstValueI64Low(expr);
+            break;
+          } // discards upper bits
+          case <u32>TypeRef.F32: {
+            value = i32(getConstValueF32(expr));
+            break;
+          }
+          case <u32>TypeRef.F64: {
+            value = i32(getConstValueF64(expr));
+            break;
+          }
+          case <u32>TypeRef.V128:
+            return false;
+          default:
+            assert(false);
         }
         switch (type.kind) {
-          case TypeKind.Bool: return (value & ~1) != 0;
-          case TypeKind.I8:   return value < <i32>i8.MIN_VALUE  || value > <i32>i8.MAX_VALUE;
-          case TypeKind.I16:  return value < <i32>i16.MIN_VALUE || value > <i32>i16.MAX_VALUE;
-          case TypeKind.U8:   return value < 0 || value > <i32>u8.MAX_VALUE;
-          case TypeKind.U16:  return value < 0 || value > <i32>u16.MAX_VALUE;
+          case TypeKind.Bool:
+            return (value & ~1) != 0;
+          case TypeKind.I8:
+            return value < <i32>i8.MIN_VALUE || value > <i32>i8.MAX_VALUE;
+          case TypeKind.I16:
+            return value < <i32>i16.MIN_VALUE || value > <i32>i16.MAX_VALUE;
+          case TypeKind.U8:
+            return value < 0 || value > <i32>u8.MAX_VALUE;
+          case TypeKind.U16:
+            return value < 0 || value > <i32>u16.MAX_VALUE;
         }
         break;
       }
@@ -1348,9 +1336,18 @@ export class Flow {
         let fromType: Type;
         let signed = isLoadSigned(expr);
         switch (getLoadBytes(expr)) {
-          case 1:  { fromType = signed ? Type.i8  : Type.u8;  break; }
-          case 2:  { fromType = signed ? Type.i16 : Type.u16; break; }
-          default: { fromType = signed ? Type.i32 : Type.u32; break; }
+          case 1: {
+            fromType = signed ? Type.i8 : Type.u8;
+            break;
+          }
+          case 2: {
+            fromType = signed ? Type.i16 : Type.u16;
+            break;
+          }
+          default: {
+            fromType = signed ? Type.i32 : Type.u32;
+            break;
+          }
         }
         return canConversionOverflow(fromType, type);
       }
@@ -1369,14 +1366,12 @@ export class Flow {
 
       // overflows if either side does
       case ExpressionId.If: {
-        return this.canOverflow(getIfTrue(expr), type)
-            || this.canOverflow(assert(getIfFalse(expr)), type);
+        return this.canOverflow(getIfTrue(expr), type) || this.canOverflow(assert(getIfFalse(expr)), type);
       }
 
       // overflows if either side does
       case ExpressionId.Select: {
-        return this.canOverflow(getSelectThen(expr), type)
-            || this.canOverflow(getSelectElse(expr), type);
+        return this.canOverflow(getSelectThen(expr), type) || this.canOverflow(getSelectElse(expr), type);
       }
 
       // overflows if the call does not return a wrapped value or the conversion does
@@ -1389,14 +1384,14 @@ export class Flow {
           assert(instance.kind == ElementKind.Function);
           let functionInstance = <Function>instance;
           let returnType = functionInstance.signature.returnType;
-          return !functionInstance.flow.is(FlowFlags.ReturnsWrapped)
-              || canConversionOverflow(returnType, type);
+          return !functionInstance.flow.is(FlowFlags.ReturnsWrapped) || canConversionOverflow(returnType, type);
         }
         return false; // assume no overflow for builtins
       }
 
       // doesn't technically overflow
-      case ExpressionId.Unreachable: return false;
+      case ExpressionId.Unreachable:
+        return false;
     }
     return true;
   }
@@ -1428,15 +1423,22 @@ export class Flow {
   }
 
   addLocalsToBlock(stmts: ExpressionRef[]): void {
-    if(this.scopedLocals && stmts.length > 0) {
+    if (this.scopedLocals && stmts.length > 0) {
       let scopedLocals = this.scopedLocals as Map<string, Local>;
       let keys = Map_keys(scopedLocals);
       let scopeId = addScope(this.targetFunction.internalName, stmts[0], stmts[stmts.length - 1]);
       for (let i = 0; i < keys.length; ++i) {
         let key = unchecked(keys[i]);
         let local = scopedLocals.get(key) as Local;
-        if(!local.isParameter()) {
-          addLocal(this.targetFunction.internalName, local.name, local.type.toStringWithoutNullable(), local.index, scopeId, local.type.isNullableReference);
+        if (!local.isParameter()) {
+          addLocal(
+            this.targetFunction.internalName,
+            local.name,
+            local.type.toStringWithoutNullable(),
+            local.index,
+            scopeId,
+            local.type.isNullableReference
+          );
         }
       }
     }
@@ -1445,9 +1447,10 @@ export class Flow {
 
 /** Tests if a conversion from one type to another can technically overflow. */
 function canConversionOverflow(fromType: Type, toType: Type): bool {
-  return toType.isShortIntegerValue && (
-    !fromType.isIntegerValue ||                                    // i.e. float to small int
-    fromType.size > toType.size ||                                 // larger int to small int
-    fromType.isSignedIntegerValue != toType.isSignedIntegerValue   // signedness mismatch
+  return (
+    toType.isShortIntegerValue &&
+    (!fromType.isIntegerValue || // i.e. float to small int
+      fromType.size > toType.size || // larger int to small int
+      fromType.isSignedIntegerValue != toType.isSignedIntegerValue) // signedness mismatch
   );
 }

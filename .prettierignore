@@ -1,14 +1,25 @@
-# AssemblyScript Repo don't use any format, to make port change easier, please use vscode builtin formatter with following configuration
-# "[typescript]": {
-#   "editor.formatOnSaveMode": "modifications",
-#   "editor.defaultFormatter": "vscode.typescript-language-features"
-# }
-/assemblyscript
+/assemblyscript/.github
+/assemblyscript/bin
+/assemblyscript/cli
+/assemblyscript/dist
+/assemblyscript/lib
+/assemblyscript/media
+/assemblyscript/node_modules
+/assemblyscript/scripts
+/assemblyscript/tests
+/assemblyscript/util
+/assemblyscript/CONTRIBUTING.md
+
+# TODO: cannot auto format
+/assemblyscript/std/assembly/typedarray.ts
+/assemblyscript/std/assembly/util/math.ts
 
 # c++ files
 *.inc
 
 /third_party/
+
+/tests/bootstrap/tmp/*
 
 # change the format of these test cases will change the output of the test suite
 /tests/frontend/compiler/binary.ts

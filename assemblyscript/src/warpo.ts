@@ -7,13 +7,36 @@ declare function _WarpoCreateBaseType(typeName: string): void;
 declare function _WarpoCreateClass(className: string, parentClassName: string | null, rtid: u32): void;
 declare function _WarpoAddTemplateType(className: string, templateTypeName: string): void;
 
-declare function _WarpoAddField(className: string, fieldName: string, typeName: string, offset: u32, nullable: bool): void;
+declare function _WarpoAddField(
+  className: string,
+  fieldName: string,
+  typeName: string,
+  offset: u32,
+  nullable: bool
+): void;
 declare function _WarpoAddGlobal(variableName: string, typeName: string, nullable: bool): void;
 
 declare function _WarpoAddSubProgram(subProgramName: string, belongClassName: string | null): void;
-declare function _WarpoAddParameter(subProgramName: string, variableName: string, typeName: string, index: u32, nullable: bool): void;
-declare function _WarpoAddLocal(subProgramName: string, variableName: string, typeName: string, index: u32, scopeId: u32, nullable: bool): void;
-declare function _WarpoAddScope(functionName: string, startExpression: ExpressionRef, endExpression: ExpressionRef): u32;
+declare function _WarpoAddParameter(
+  subProgramName: string,
+  variableName: string,
+  typeName: string,
+  index: u32,
+  nullable: bool
+): void;
+declare function _WarpoAddLocal(
+  subProgramName: string,
+  variableName: string,
+  typeName: string,
+  index: u32,
+  scopeId: u32,
+  nullable: bool
+): void;
+declare function _WarpoAddScope(
+  functionName: string,
+  startExpression: ExpressionRef,
+  endExpression: ExpressionRef
+): u32;
 
 export function markDataElementImmutable(begin: i64, size: i32): void {
   _WarpoMarkDataElementImmutable(i64_low(begin), <u32>size);
@@ -27,7 +50,7 @@ export function createBaseType(typeName: string): void {
   _WarpoCreateBaseType(typeName);
 }
 export function createClass(className: string, parentClassName: string | null, rtid: u32): void {
-  if(parentClassName !== null) {
+  if (parentClassName !== null) {
     parentClassName = decodeURIComponent(parentClassName);
   }
   _WarpoCreateClass(decodeURIComponent(className), parentClassName, rtid);
@@ -46,18 +69,38 @@ export function addGlobal(variableName: string, typeName: string, nullable: bool
 }
 
 export function addSubProgram(subProgramName: string, belongClassName: string | null): void {
-  if(belongClassName !== null) {
+  if (belongClassName !== null) {
     belongClassName = decodeURIComponent(belongClassName);
   }
   _WarpoAddSubProgram(subProgramName, belongClassName);
 }
 
-export function addParameter(subProgramName: string, variableName: string, typeName: string, index: u32, nullable: bool): void {
+export function addParameter(
+  subProgramName: string,
+  variableName: string,
+  typeName: string,
+  index: u32,
+  nullable: bool
+): void {
   _WarpoAddParameter(decodeURIComponent(subProgramName), variableName, decodeURIComponent(typeName), index, nullable);
 }
 
-export function addLocal(subProgramName: string, variableName: string, typeName: string, index: u32, scopeId: u32, nullable: bool): void {
-  _WarpoAddLocal(decodeURIComponent(subProgramName), variableName, decodeURIComponent(typeName), index, scopeId, nullable);
+export function addLocal(
+  subProgramName: string,
+  variableName: string,
+  typeName: string,
+  index: u32,
+  scopeId: u32,
+  nullable: bool
+): void {
+  _WarpoAddLocal(
+    decodeURIComponent(subProgramName),
+    variableName,
+    decodeURIComponent(typeName),
+    index,
+    scopeId,
+    nullable
+  );
 }
 
 export function addScope(functionName: string, startExpression: ExpressionRef, endExpression: ExpressionRef): u32 {

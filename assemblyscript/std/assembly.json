@@ -5,12 +5,10 @@
     "module": "commonjs",
     "noLib": true,
     "allowJs": false,
-    "typeRoots": [ "types" ],
-    "types": [ "assembly" ],
+    "typeRoots": ["types"],
+    "types": ["assembly"],
     "paths": {
-      "*": [
-        "./assembly/*"
-      ]
+      "*": ["./assembly/*"]
     }
   }
 }

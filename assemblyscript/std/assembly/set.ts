@@ -52,7 +52,6 @@ function ENTRY_SIZE<T>(): usize {
 }
 
 export class Set<T> {
-
   // buckets referencing their respective first entry, usize[bucketsMask + 1]
   private buckets: ArrayBuffer = new ArrayBuffer(INITIAL_CAPACITY * <i32>BUCKET_SIZE);
   private bucketsMask: u32 = INITIAL_CAPACITY - 1;
@@ -81,9 +80,7 @@ export class Set<T> {
   }
 
   private find(key: T, hashCode: u32): SetEntry<T> | null {
-    let entry = load<SetEntry<T>>( // unmanaged!
-      changetype<usize>(this.buckets) + <usize>(hashCode & this.bucketsMask) * BUCKET_SIZE
-    );
+    let entry = load<SetEntry<T>>(changetype<usize>(this.buckets) + <usize>(hashCode & this.bucketsMask) * BUCKET_SIZE); // unmanaged!
     while (entry) {
       let taggedNext = entry.taggedNext;
       if (!(taggedNext & EMPTY) && entry.key == key) return entry;
@@ -91,6 +88,7 @@ export class Set<T> {
     }
     return null;
   }
+
 
   @operator("[]")
   has(key: T): bool {
@@ -104,12 +102,13 @@ export class Set<T> {
       // check if rehashing is necessary
       if (this.entriesOffset == this.entriesCapacity) {
         this.rehash(
-          this.entriesCount < this.entriesCapacity * FREE_FACTOR_N / FREE_FACTOR_D
-            ?  this.bucketsMask           // just rehash if 1/4+ entries are empty
+          this.entriesCount < (this.entriesCapacity * FREE_FACTOR_N) / FREE_FACTOR_D
+            ? this.bucketsMask // just rehash if 1/4+ entries are empty
             : (this.bucketsMask << 1) | 1 // grow capacity to next 2^N
         );
       }
       // append new entry
+      // prettier-ignore
       entry = changetype<SetEntry<T>>(changetype<usize>(this.entries) + <usize>(this.entriesOffset++) * ENTRY_SIZE<T>());
       entry.key = key;
       if (isManaged<T>()) {
@@ -123,6 +122,7 @@ export class Set<T> {
     }
     return this;
   }
+
 
   @operator("[]=")
   private __set(key: T, value: bool): void {
@@ -139,15 +139,16 @@ export class Set<T> {
     let halfBucketsMask = this.bucketsMask >> 1;
     if (
       halfBucketsMask + 1 >= max<u32>(INITIAL_CAPACITY, this.entriesCount) &&
-      this.entriesCount < this.entriesCapacity * FREE_FACTOR_N / FREE_FACTOR_D
-    ) this.rehash(halfBucketsMask);
+      this.entriesCount < (this.entriesCapacity * FREE_FACTOR_N) / FREE_FACTOR_D
+    )
+      this.rehash(halfBucketsMask);
     return true;
   }
 
   private rehash(newBucketsMask: u32): void {
     let newBucketsCapacity = <i32>(newBucketsMask + 1);
     let newBuckets = new ArrayBuffer(newBucketsCapacity * <i32>BUCKET_SIZE);
-    let newEntriesCapacity = newBucketsCapacity * FILL_FACTOR_N / FILL_FACTOR_D;
+    let newEntriesCapacity = (newBucketsCapacity * FILL_FACTOR_N) / FILL_FACTOR_D;
     let newEntries = new ArrayBuffer(newEntriesCapacity * <i32>ENTRY_SIZE<T>());
 
     // copy old entries to new entries
@@ -185,7 +186,7 @@ export class Set<T> {
     for (let i = 0; i < size; ++i) {
       let entry = changetype<SetEntry<T>>(start + <usize>i * ENTRY_SIZE<T>());
       if (!(entry.taggedNext & EMPTY)) {
-        unchecked(values[length++] = entry.key);
+        unchecked((values[length++] = entry.key));
       }
     }
     values.length = length;

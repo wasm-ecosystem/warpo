@@ -28,7 +28,8 @@ function ensureCapacity(array: usize, newSize: usize, alignLog2: u32, canGrow: b
     if (ASC_RUNTIME == Runtime.Stub) {
       memory.fill(newData + oldCapacity, 0, newCapacity - oldCapacity);
     }
-    if (newData != oldData) { // oldData has been free'd
+    if (newData != oldData) {
+      // oldData has been free'd
       store<usize>(array, newData, offsetof<ArrayBufferView>("buffer"));
       store<usize>(array, newData, offsetof<ArrayBufferView>("dataStart"));
       __link(array, changetype<usize>(newData), false);
@@ -46,6 +47,8 @@ export class Array<T> {
   // block is 16 bytes anyway so it's fine to have a couple extra fields in there.
 
   private buffer: ArrayBuffer;
+
+
   @unsafe readonly dataStart: usize;
   private byteLength: i32; // Uses here as capacity
 
@@ -67,7 +70,7 @@ export class Array<T> {
   }
 
   constructor(length: i32 = 0) {
-    if (<u32>length > <u32>BLOCK_MAXSIZE >>> alignof<T>()) throw new RangeError(E_INVALIDLENGTH);
+    if (<u32>length > (<u32>BLOCK_MAXSIZE) >>> alignof<T>()) throw new RangeError(E_INVALIDLENGTH);
     // reserve capacity for at least MIN_SIZE elements
     let bufferSize = max(<usize>length, MIN_SIZE) << alignof<T>();
     let buffer = changetype<ArrayBuffer>(__new(bufferSize, idof<ArrayBuffer>()));
@@ -91,28 +94,29 @@ export class Array<T> {
 
   every(fn: (value: T, index: i32, array: Array<T>) => bool): bool {
     for (let i = 0, len = this.length_; i < min(len, this.length_); ++i) {
-      if (!fn(load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this)) return false;
+      if (!fn(load<T>(this.dataStart + ((<usize>i) << alignof<T>())), i, this)) return false;
     }
     return true;
   }
 
   findIndex(fn: (value: T, index: i32, array: Array<T>) => bool): i32 {
     for (let i = 0, len = this.length_; i < min(len, this.length_); ++i) {
-      if (fn(load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this)) return i;
+      if (fn(load<T>(this.dataStart + ((<usize>i) << alignof<T>())), i, this)) return i;
     }
     return -1;
   }
 
   findLastIndex(fn: (value: T, index: i32, array: Array<T>) => bool): i32 {
     for (let i = this.length_ - 1; i >= 0; --i) {
-      if (fn(load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this)) return i;
+      if (fn(load<T>(this.dataStart + ((<usize>i) << alignof<T>())), i, this)) return i;
     }
     return -1;
   }
 
+
   @operator("[]") private __get(index: i32): T {
     if (<u32>index >= <u32>this.length_) throw new RangeError(E_INDEXOUTOFRANGE);
-    let value = load<T>(this.dataStart + (<usize>index << alignof<T>()));
+    let value = load<T>(this.dataStart + ((<usize>index) << alignof<T>()));
     if (isReference<T>()) {
       if (!isNullable<T>()) {
         if (!changetype<usize>(value)) throw new Error(E_HOLEYARRAY);
@@ -121,9 +125,11 @@ export class Array<T> {
     return value;
   }
 
+
   @unsafe @operator("{}") private __uget(index: i32): T {
-    return load<T>(this.dataStart + (<usize>index << alignof<T>()));
+    return load<T>(this.dataStart + ((<usize>index) << alignof<T>()));
   }
+
 
   @operator("[]=") private __set(index: i32, value: T): void {
     if (<u32>index >= <u32>this.length_) {
@@ -131,7 +137,7 @@ export class Array<T> {
       ensureCapacity(changetype<usize>(this), index + 1, alignof<T>());
       this.length_ = index + 1;
     }
-    store<T>(this.dataStart + (<usize>index << alignof<T>()), value);
+    store<T>(this.dataStart + ((<usize>index) << alignof<T>()), value);
     if (isManaged<T>()) {
       __link(changetype<usize>(this), changetype<usize>(value), true);
     }
@@ -141,7 +147,7 @@ export class Array<T> {
     let len = this.length_;
     index += select(0, len, index >= 0);
     if (<u32>index >= <u32>len) throw new RangeError(E_INDEXOUTOFRANGE);
-    let value = load<T>(this.dataStart + (<usize>index << alignof<T>()));
+    let value = load<T>(this.dataStart + ((<usize>index) << alignof<T>()));
     if (isReference<T>()) {
       if (!isNullable<T>()) {
         if (!changetype<usize>(value)) throw new Error(E_HOLEYARRAY);
@@ -167,7 +173,7 @@ export class Array<T> {
       if (fromIndex < 0) fromIndex = max(len + fromIndex, 0);
       let ptr = this.dataStart;
       while (fromIndex < len) {
-        let elem = load<T>(ptr + (<usize>fromIndex << alignof<T>()));
+        let elem = load<T>(ptr + ((<usize>fromIndex) << alignof<T>()));
         // @ts-ignore
         if (elem == value || isNaN(elem) & isNaN(value)) return true;
         ++fromIndex;
@@ -184,7 +190,7 @@ export class Array<T> {
     if (fromIndex < 0) fromIndex = max(len + fromIndex, 0);
     let ptr = this.dataStart;
     while (fromIndex < len) {
-      if (load<T>(ptr + (<usize>fromIndex << alignof<T>())) == value) return fromIndex;
+      if (load<T>(ptr + ((<usize>fromIndex) << alignof<T>())) == value) return fromIndex;
       ++fromIndex;
     }
     return -1;
@@ -197,7 +203,7 @@ export class Array<T> {
     else if (fromIndex >= len) fromIndex = len - 1;
     let ptr = this.dataStart;
     while (fromIndex >= 0) {
-      if (load<T>(ptr + (<usize>fromIndex << alignof<T>())) == value) return fromIndex;
+      if (load<T>(ptr + ((<usize>fromIndex) << alignof<T>())) == value) return fromIndex;
       --fromIndex;
     }
     return -1;
@@ -208,10 +214,10 @@ export class Array<T> {
     let len = oldLen + 1;
     ensureCapacity(changetype<usize>(this), len, alignof<T>());
     if (isManaged<T>()) {
-      store<usize>(this.dataStart + (<usize>oldLen << alignof<T>()), changetype<usize>(value));
+      store<usize>(this.dataStart + ((<usize>oldLen) << alignof<T>()), changetype<usize>(value));
       __link(changetype<usize>(this), changetype<usize>(value), true);
     } else {
-      store<T>(this.dataStart + (<usize>oldLen << alignof<T>()), value);
+      store<T>(this.dataStart + ((<usize>oldLen) << alignof<T>()), value);
     }
     this.length_ = len;
     return len;
@@ -221,10 +227,10 @@ export class Array<T> {
     let thisLen = this.length_;
     let otherLen = other.length_;
     let outLen = thisLen + otherLen;
-    if (<u32>outLen > <u32>BLOCK_MAXSIZE >>> alignof<T>()) throw new Error(E_INVALIDLENGTH);
+    if (<u32>outLen > (<u32>BLOCK_MAXSIZE) >>> alignof<T>()) throw new Error(E_INVALIDLENGTH);
     let out = changetype<Array<T>>(__newArray(outLen, alignof<T>(), idof<Array<T>>()));
     let outStart = out.dataStart;
-    let thisSize = <usize>thisLen << alignof<T>();
+    let thisSize = (<usize>thisLen) << alignof<T>();
     if (isManaged<T>()) {
       let thisStart = this.dataStart;
       for (let offset: usize = 0; offset < thisSize; offset += sizeof<T>()) {
@@ -234,7 +240,7 @@ export class Array<T> {
       }
       outStart += thisSize;
       let otherStart = other.dataStart;
-      let otherSize = <usize>otherLen << alignof<T>();
+      let otherSize = (<usize>otherLen) << alignof<T>();
       for (let offset: usize = 0; offset < otherSize; offset += sizeof<T>()) {
         let ref = load<usize>(otherStart + offset);
         store<usize>(outStart + offset, ref);
@@ -242,7 +248,7 @@ export class Array<T> {
       }
     } else {
       memory.copy(outStart, this.dataStart, thisSize);
-      memory.copy(outStart + thisSize, other.dataStart, <usize>otherLen << alignof<T>());
+      memory.copy(outStart + thisSize, other.dataStart, (<usize>otherLen) << alignof<T>());
     }
     return out;
   }
@@ -253,15 +259,16 @@ export class Array<T> {
 
     end = min<i32>(end, len);
 
-    let to    = target < 0 ? max(len + target, 0) : min(target, len);
-    let from  = start < 0 ? max(len + start, 0) : min(start, len);
-    let last  = end < 0 ? max(len + end, 0) : min(end, len);
+    let to = target < 0 ? max(len + target, 0) : min(target, len);
+    let from = start < 0 ? max(len + start, 0) : min(start, len);
+    let last = end < 0 ? max(len + end, 0) : min(end, len);
     let count = min(last - from, len - to);
 
-    memory.copy( // is memmove
-      ptr + (<usize>to << alignof<T>()),
-      ptr + (<usize>from << alignof<T>()),
-      <usize>count << alignof<T>()
+    memory.copy(
+      // is memmove
+      ptr + ((<usize>to) << alignof<T>()),
+      ptr + ((<usize>from) << alignof<T>()),
+      (<usize>count) << alignof<T>()
     );
     return this;
   }
@@ -269,16 +276,17 @@ export class Array<T> {
   pop(): T {
     let len = this.length_;
     if (len < 1) throw new RangeError(E_EMPTYARRAY);
-    let val = load<T>(this.dataStart + (<usize>(--len) << alignof<T>()));
+    let val = load<T>(this.dataStart + ((<usize>--len) << alignof<T>()));
     this.length_ = len;
     return val;
   }
 
   forEach(fn: (value: T, index: i32, array: Array<T>) => void): void {
     for (let i = 0, len = this.length_; i < min(len, this.length_); ++i) {
-      fn(load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this);
+      fn(load<T>(this.dataStart + ((<usize>i) << alignof<T>())), i, this);
     }
   }
+
 
   @inline
   map<U>(fn: (value: T, index: i32, array: Array<T>) => U): Array<U> {
@@ -289,14 +297,15 @@ export class Array<T> {
     let out = changetype<Array<U>>(__newArray(len, alignof<U>(), idof<Array<U>>()));
     let outStart = out.dataStart;
     for (let i = 0; i < min(len, this.length_); ++i) {
-      let result = call_indirect<U>(fnIndex, load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this);
-      store<U>(outStart + (<usize>i << alignof<U>()), result);
+      let result = call_indirect<U>(fnIndex, load<T>(this.dataStart + ((<usize>i) << alignof<T>())), i, this);
+      store<U>(outStart + ((<usize>i) << alignof<U>()), result);
       if (isManaged<U>()) {
         __link(changetype<usize>(out), changetype<usize>(result), true);
       }
     }
     return out;
   }
+
 
   @inline
   filter(fn: (value: T, index: i32, array: Array<T>) => bool): Array<T> {
@@ -306,38 +315,34 @@ export class Array<T> {
   private filterImpl(fnIndex: i32): Array<T> {
     let result = changetype<Array<T>>(__newArray(0, alignof<T>(), idof<Array<T>>()));
     for (let i = 0, len = this.length_; i < min(len, this.length_); ++i) {
-      let value = load<T>(this.dataStart + (<usize>i << alignof<T>()));
+      let value = load<T>(this.dataStart + ((<usize>i) << alignof<T>()));
       if (call_indirect<bool>(fnIndex, value, i, this)) result.push(value);
     }
     return result;
   }
 
+
   @inline
-  reduce<U>(
-    fn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U,
-    initialValue: U
-  ): U {
+  reduce<U>(fn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U, initialValue: U): U {
     return this.reduceImpl(fn.index, initialValue);
   }
   private reduceImpl<U>(fnIndex: i32, initialValue: U): U {
     let acc = initialValue;
     for (let i = 0, len = this.length_; i < min(len, this.length_); ++i) {
-      acc = call_indirect<U>(fnIndex, acc, load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this);
+      acc = call_indirect<U>(fnIndex, acc, load<T>(this.dataStart + ((<usize>i) << alignof<T>())), i, this);
     }
     return acc;
   }
 
+
   @inline
-  reduceRight<U>(
-    fn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U,
-    initialValue: U
-  ): U {
+  reduceRight<U>(fn: (previousValue: U, currentValue: T, currentIndex: i32, array: Array<T>) => U, initialValue: U): U {
     return this.reduceRightImpl(fn.index, initialValue);
   }
   private reduceRightImpl<U>(fnIndex: i32, initialValue: U): U {
     let acc = initialValue;
     for (let i = this.length_ - 1; i >= 0; --i) {
-      acc = call_indirect<U>(fnIndex, acc, load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this);
+      acc = call_indirect<U>(fnIndex, acc, load<T>(this.dataStart + ((<usize>i) << alignof<T>())), i, this);
     }
     return acc;
   }
@@ -348,16 +353,12 @@ export class Array<T> {
     let base = this.dataStart;
     let element = load<T>(base);
     let lastIndex = len - 1;
-    memory.copy(
-      base,
-      base + sizeof<T>(),
-      <usize>lastIndex << alignof<T>()
-    );
+    memory.copy(base, base + sizeof<T>(), (<usize>lastIndex) << alignof<T>());
     if (isReference<T>()) {
-      store<usize>(base + (<usize>lastIndex << alignof<T>()), 0);
+      store<usize>(base + ((<usize>lastIndex) << alignof<T>()), 0);
     } else {
       // @ts-ignore
-      store<T>(base + (<usize>lastIndex << alignof<T>()), <T>0);
+      store<T>(base + ((<usize>lastIndex) << alignof<T>()), <T>0);
     }
     this.length_ = lastIndex;
     return element;
@@ -365,7 +366,7 @@ export class Array<T> {
 
   some(fn: (value: T, index: i32, array: Array<T>) => bool): bool {
     for (let i = 0, len = this.length_; i < min(len, this.length_); ++i) {
-      if (fn(load<T>(this.dataStart + (<usize>i << alignof<T>())), i, this)) return true;
+      if (fn(load<T>(this.dataStart + ((<usize>i) << alignof<T>())), i, this)) return true;
     }
     return false;
   }
@@ -374,11 +375,7 @@ export class Array<T> {
     let len = this.length_ + 1;
     ensureCapacity(changetype<usize>(this), len, alignof<T>());
     let ptr = this.dataStart;
-    memory.copy(
-      ptr + sizeof<T>(),
-      ptr,
-      <usize>(len - 1) << alignof<T>()
-    );
+    memory.copy(ptr + sizeof<T>(), ptr, (<usize>(len - 1)) << alignof<T>());
     store<T>(ptr, value);
     if (isManaged<T>()) {
       __link(changetype<usize>(this), changetype<usize>(value), true);
@@ -390,14 +387,14 @@ export class Array<T> {
   slice(start: i32 = 0, end: i32 = i32.MAX_VALUE): Array<T> {
     let len = this.length_;
     start = start < 0 ? max(start + len, 0) : min(start, len);
-    end   = end   < 0 ? max(end   + len, 0) : min(end  , len);
+    end = end < 0 ? max(end + len, 0) : min(end, len);
     len = max(end - start, 0);
     let slice = changetype<Array<T>>(__newArray(len, alignof<T>(), idof<Array<T>>()));
     let sliceBase = slice.dataStart;
-    let thisBase = this.dataStart + (<usize>start << alignof<T>());
+    let thisBase = this.dataStart + ((<usize>start) << alignof<T>());
     if (isManaged<T>()) {
       let off = <usize>0;
-      let end = <usize>len << alignof<usize>();
+      let end = (<usize>len) << alignof<usize>();
       while (off < end) {
         let ref = load<usize>(thisBase + off);
         store<usize>(sliceBase + off, ref);
@@ -412,24 +409,16 @@ export class Array<T> {
 
   splice(start: i32, deleteCount: i32 = i32.MAX_VALUE): Array<T> {
     let len = this.length_;
-    start       = start < 0 ? max<i32>(len + start, 0) : min<i32>(start, len);
+    start = start < 0 ? max<i32>(len + start, 0) : min<i32>(start, len);
     deleteCount = max<i32>(min<i32>(deleteCount, len - start), 0);
-    let result  = changetype<Array<T>>(__newArray(deleteCount, alignof<T>(), idof<Array<T>>()));
+    let result = changetype<Array<T>>(__newArray(deleteCount, alignof<T>(), idof<Array<T>>()));
     let resultStart = result.dataStart;
     let thisStart = this.dataStart;
-    let thisBase  = thisStart + (<usize>start << alignof<T>());
-    memory.copy(
-      resultStart,
-      thisBase,
-      <usize>deleteCount << alignof<T>()
-    );
+    let thisBase = thisStart + ((<usize>start) << alignof<T>());
+    memory.copy(resultStart, thisBase, (<usize>deleteCount) << alignof<T>());
     let offset = start + deleteCount;
     if (len != offset) {
-      memory.copy(
-        thisBase,
-        thisStart + (<usize>offset << alignof<T>()),
-        <usize>(len - offset) << alignof<T>()
-      );
+      memory.copy(thisBase, thisStart + ((<usize>offset) << alignof<T>()), (<usize>(len - offset)) << alignof<T>());
     }
     this.length_ = len - deleteCount;
     return result;
@@ -448,12 +437,12 @@ export class Array<T> {
   join(separator: string = ","): string {
     let ptr = this.dataStart;
     let len = this.length_;
-    if (isBoolean<T>())   return joinBooleanArray(ptr, len, separator);
-    if (isInteger<T>())   return joinIntegerArray<T>(ptr, len, separator);
-    if (isFloat<T>())     return joinFloatArray<T>(ptr, len, separator);
+    if (isBoolean<T>()) return joinBooleanArray(ptr, len, separator);
+    if (isInteger<T>()) return joinIntegerArray<T>(ptr, len, separator);
+    if (isFloat<T>()) return joinFloatArray<T>(ptr, len, separator);
 
     if (ASC_SHRINK_LEVEL < 1) {
-      if (isString<T>())  return joinStringArray(ptr, len, separator);
+      if (isString<T>()) return joinStringArray(ptr, len, separator);
     }
     // For rest objects and arrays use general join routine
     if (isReference<T>()) return joinReferenceArray<T>(ptr, len, separator);
@@ -478,7 +467,7 @@ export class Array<T> {
 
     // calculate the byteLength of the resulting backing ArrayBuffer
     const align = alignof<valueof<T>>();
-    let byteLength = <usize>size << align;
+    let byteLength = (<usize>size) << align;
     let outBuffer = changetype<ArrayBuffer>(__new(byteLength, idof<ArrayBuffer>()));
 
     // create the return value and initialize it
@@ -493,14 +482,15 @@ export class Array<T> {
 
     // set the elements
     let resultOffset: usize = 0;
-    for (let i = 0; i < len; ++i) { // for each child
-      let child = load<usize>(ptr + (<usize>i << alignof<T>()));
+    for (let i = 0; i < len; ++i) {
+      // for each child
+      let child = load<usize>(ptr + ((<usize>i) << alignof<T>()));
 
       // ignore null arrays
       if (!child) continue;
 
       // copy the underlying buffer data to the result buffer
-      let childDataLength = <usize>load<i32>(child, offsetof<T>("length_")) << align;
+      let childDataLength = (<usize>load<i32>(child, offsetof<T>("length_"))) << align;
       memory.copy(
         changetype<usize>(outBuffer) + resultOffset,
         load<usize>(child, offsetof<T>("dataStart")),
@@ -514,7 +504,7 @@ export class Array<T> {
     // if the `valueof<T>` type is managed, we must link each reference
     if (isManaged<valueof<T>>()) {
       for (let i = 0; i < size; ++i) {
-        let ref = load<usize>(changetype<usize>(outBuffer) + (<usize>i << usize(alignof<valueof<T>>())));
+        let ref = load<usize>(changetype<usize>(outBuffer) + ((<usize>i) << usize(alignof<valueof<T>>())));
         __link(changetype<usize>(outBuffer), ref, true);
       }
     }
@@ -531,7 +521,7 @@ export class Array<T> {
   @unsafe private __visit(cookie: u32): void {
     if (isManaged<T>()) {
       let cur = this.dataStart;
-      let end = cur + (<usize>this.length_ << alignof<T>());
+      let end = cur + ((<usize>this.length_) << alignof<T>());
       while (cur < end) {
         let val = load<usize>(cur);
         if (val) __visit(val, cookie);

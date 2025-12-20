@@ -3,15 +3,7 @@
  * @license Apache-2.0
  */
 
-import {
-  Module,
-  ExpressionId,
-  ExpressionRef,
-  FunctionRef,
-  GlobalRef,
-  Index,
-  StringRef
-} from "../module";
+import { Module, ExpressionId, ExpressionRef, FunctionRef, GlobalRef, Index, StringRef } from "../module";
 
 import {
   _BinaryenExpressionGetId,
@@ -263,7 +255,7 @@ import {
   _BinaryenStringSliceWTFSetRef,
   _BinaryenStringSliceWTFSetStart,
   _BinaryenStringSliceWTFSetEnd,
-  _BinaryenArrayNewFixedSetValueAt
+  _BinaryenArrayNewFixedSetValueAt,
 } from "../glue/binaryen";
 
 /** Base class of custom Binaryen visitors. */
@@ -1228,7 +1220,8 @@ export abstract class Visitor {
         this.visitStringSliceWTF(expr);
         break;
       }
-      default: throw new Error("unexpected expression kind");
+      default:
+        throw new Error("unexpected expression kind");
     }
     this._currentExpression = previousExpression;
   }
@@ -1236,7 +1229,6 @@ export abstract class Visitor {
 
 /** Base class of custom Binaryen passes. */
 export abstract class Pass extends Visitor {
-
   /** Gets the current function being walked. */
   get currentFunction(): FunctionRef {
     let currentFunction = this._currentFunction;
@@ -2114,7 +2106,8 @@ export function replaceChild(
       }
       break;
     }
-    default: throw new Error("unexpected expression id");
+    default:
+      throw new Error("unexpected expression id");
   }
   return 0;
 }

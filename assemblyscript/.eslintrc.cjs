@@ -3,9 +3,7 @@
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
-  plugins: [
-    "@typescript-eslint",
-  ],
+  plugins: ["@typescript-eslint"],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
@@ -14,17 +12,17 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2020,
     sourceType: "module",
-    ecmaFeatures: {}
+    ecmaFeatures: {},
   },
   globals: {
-    "globalThis": "readonly",
-    "BigInt64Array": "readonly",
-    "BigUint64Array": "readonly",
-    "WebAssembly": "readonly",
-    "FinalizationRegistry": "readonly",
-    "fetch": "readonly",
-    "URL": "readonly",
-    "console": "readonly"
+    globalThis: "readonly",
+    BigInt64Array: "readonly",
+    BigUint64Array: "readonly",
+    WebAssembly: "readonly",
+    FinalizationRegistry: "readonly",
+    fetch: "readonly",
+    URL: "readonly",
+    console: "readonly",
   },
 
   // === General rules =========================================================
@@ -32,26 +30,35 @@ module.exports = {
   rules: {
     // Omitted semicolons are hugely popular, yet within the compiler it makes
     // sense to be better safe than sorry.
-    "semi": "error",
+    semi: "error",
 
     // Our code bases uses 2 spaces for indentation, and we enforce it here so
     // files don't mix spaces, tabs or different indentation levels.
-    "indent": ["error", 2, {
-      "SwitchCase": 1,
-      "VariableDeclarator": "first",
-      "offsetTernaryExpressions": true,
-      "ignoredNodes": [ // FIXME: something's odd here
-        "ConditionalExpression > *",
-        "ConditionalExpression > * > *",
-        "ConditionalExpression > * > * > *"
-      ]
-    }],
+    indent: [
+      "error",
+      2,
+      {
+        SwitchCase: 1,
+        VariableDeclarator: "first",
+        offsetTernaryExpressions: true,
+        ignoredNodes: [
+          // FIXME: something's odd here
+          "ConditionalExpression > *",
+          "ConditionalExpression > * > *",
+          "ConditionalExpression > * > * > *",
+        ],
+      },
+    ],
 
     // This is mostly visual style, making comments look uniform.
-    "spaced-comment": ["error", "always", {
-      "markers": ["/"],   // triple-slash
-      "exceptions": ["/"] // all slashes
-    }],
+    "spaced-comment": [
+      "error",
+      "always",
+      {
+        markers: ["/"], // triple-slash
+        exceptions: ["/"], // all slashes
+      },
+    ],
 
     // This tends to be annoying as it encourages developers to make everything
     // that is never reassigned a 'const', sometimes semantically incorrect so,
@@ -84,23 +91,19 @@ module.exports = {
     "no-unused-vars": "off",
 
     // Disabled here, but enabled again for TypeScript files.
-    "@typescript-eslint/no-unused-vars": "off"
+    "@typescript-eslint/no-unused-vars": "off",
   },
   overrides: [
-
     // === JavaScript rules ====================================================
 
     {
       env: {
-        "browser": true,
-        "amd": true,
-        "node": true,
-        "es6": true
+        browser: true,
+        amd: true,
+        node: true,
+        es6: true,
       },
-      files: [
-        "**/*.js",
-        "bin/*"
-      ],
+      files: ["**/*.js", "bin/*"],
       rules: {
         // We are testing both ESM and UMD, so don't limit us.
         "@typescript-eslint/no-var-requires": "off",
@@ -111,45 +114,41 @@ module.exports = {
         // Enforcing to remove function parameters on stubs makes code less
         // maintainable, so we instead allow unused function parameters.
         "no-unused-vars": [
-          "warn", {
-            "vars": "local",
-            "args": "none",
-            "ignoreRestSiblings": false
-          }
+          "warn",
+          {
+            vars: "local",
+            args: "none",
+            ignoreRestSiblings: false,
+          },
         ],
 
         "@typescript-eslint/no-loss-of-precision": "error",
-      }
+      },
     },
 
     // === TypeScript rules ====================================================
 
     {
-      files: [
-        "**/*.ts"
-      ],
+      files: ["**/*.ts"],
       rules: {
         // Enforcing to remove function parameters on stubs makes code less
         // maintainable, so we instead allow unused function parameters.
         "@typescript-eslint/no-unused-vars": [
-          "warn", {
-            "vars": "local",
-            "varsIgnorePattern": "^[A-Z](?:From|To)?$", // ignore type params
-            "args": "none",
-            "ignoreRestSiblings": false
-          }
-        ]
-      }
+          "warn",
+          {
+            vars: "local",
+            varsIgnorePattern: "^[A-Z](?:From|To)?$", // ignore type params
+            args: "none",
+            ignoreRestSiblings: false,
+          },
+        ],
+      },
     },
 
     // === AssemblyScript rules (extends TypeScript rules) =====================
 
     {
-      files: [
-        "**/assembly/**/*.ts",
-        "src/**/*.ts",
-        "lib/parse/src/**/*.ts"
-      ],
+      files: ["**/assembly/**/*.ts", "src/**/*.ts", "lib/parse/src/**/*.ts"],
       rules: {
         // Namespaces are quite useful in AssemblyScript
         "@typescript-eslint/no-namespace": "off",
@@ -162,16 +161,13 @@ module.exports = {
 
         // Utilized to achieve portability in some cases
         "@typescript-eslint/no-non-null-assertion": "off",
-      }
+      },
     },
 
     // === Compiler rules (extends AssemblyScript rules) =======================
 
     {
-      files: [
-        "src/**/*.ts",
-        "std/assembly/**/*.ts"
-      ],
+      files: ["src/**/*.ts", "std/assembly/**/*.ts"],
       rules: {
         // There is an actual codegen difference here - TODO: revisit
         "no-cond-assign": "off",
@@ -184,31 +180,27 @@ module.exports = {
 
         // The compiler has its own `Function` class for example
         "no-shadow-restricted-names": "off",
-        "@typescript-eslint/ban-types": "off"
-      }
+        "@typescript-eslint/ban-types": "off",
+      },
     },
 
     // === Standard Library rules (extends AssemblyScript rules) ===============
 
     {
-      files: [
-        "std/assembly/**/*.ts"
-      ],
+      files: ["std/assembly/**/*.ts"],
       rules: {
         // We are implementing with --noLib, so we shadow all the time
         "no-shadow-restricted-names": "off",
 
         // Similarly, sometimes we need the return type to be String, not string
-        "@typescript-eslint/ban-types": "off"
-      }
+        "@typescript-eslint/ban-types": "off",
+      },
     },
 
     // === Standard Definition rules (extends TypeScript rules) ================
 
     {
-      files: [
-        "std/**/*.d.ts"
-      ],
+      files: ["std/**/*.d.ts"],
       rules: {
         // Often required to achieve compatibility with TypeScript
         "@typescript-eslint/no-explicit-any": "off",
@@ -217,31 +209,26 @@ module.exports = {
         "@typescript-eslint/no-empty-interface": "off",
 
         // Definitions make use of `object` to model rather unusual constraints
-        "@typescript-eslint/ban-types": "off"
-      }
+        "@typescript-eslint/ban-types": "off",
+      },
     },
 
     // === Compiler Definition rules (extends TypeScript rules) ================
 
     {
-      files: [
-        "./dist/*.d.ts"
-      ],
+      files: ["./dist/*.d.ts"],
       rules: {
         // Our definitions are complicated, and all attempts to describe them
         // as modules have failed so far. As such, we re-export namespaces.
         "@typescript-eslint/no-namespace": "off",
-        "@typescript-eslint/triple-slash-reference": "off"
-      }
+        "@typescript-eslint/triple-slash-reference": "off",
+      },
     },
 
     // === Test rules (extends TypeScript rules) ===============================
 
     {
-      files: [
-        "./tests/compiler/**/*.ts",
-        "./lib/loader/tests/assembly/**/*.ts"
-      ],
+      files: ["./tests/compiler/**/*.ts", "./lib/loader/tests/assembly/**/*.ts"],
       rules: {
         // Tests typically include unusual code patterns on purpose. This is
         // very likely not an extensive list, but covers what's there so far.
@@ -261,8 +248,8 @@ module.exports = {
         "@typescript-eslint/triple-slash-reference": "off",
         "@typescript-eslint/ban-ts-comment": "off",
         "@typescript-eslint/no-extra-non-null-assertion": "off",
-        "@typescript-eslint/no-empty-interface": "off"
-      }
+        "@typescript-eslint/no-empty-interface": "off",
+      },
     },
-  ]
+  ],
 };

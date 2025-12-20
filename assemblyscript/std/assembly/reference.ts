@@ -11,38 +11,38 @@ export type stringview_wtf8 = ref_stringview_wtf8 | null;
 export type stringview_wtf16 = ref_stringview_wtf16 | null;
 export type stringview_iter = ref_stringview_iter | null;
 
+
 @unmanaged
-abstract class Ref {
-}
+abstract class Ref {}
+
 
 @final @unmanaged
-export abstract class RefFunc extends Ref {
-}
+export abstract class RefFunc extends Ref {}
+
 
 @final @unmanaged
-export abstract class RefExtern extends Ref {
-}
+export abstract class RefExtern extends Ref {}
+
 
 @final @unmanaged
-export abstract class RefAny extends Ref {
-}
+export abstract class RefAny extends Ref {}
+
 
 @final @unmanaged
-export abstract class RefEq extends Ref {
-}
+export abstract class RefEq extends Ref {}
+
 
 @final @unmanaged
-export abstract class RefI31 extends Ref {
-}
+export abstract class RefI31 extends Ref {}
+
 
 @final @unmanaged
-export abstract class RefStruct extends Ref {
-}
+export abstract class RefStruct extends Ref {}
+
 
 @final @unmanaged
-export abstract class RefArray extends Ref {
-}
+export abstract class RefArray extends Ref {}
+
 
 @final @unmanaged
-export abstract class RefString extends Ref {
-}
+export abstract class RefString extends Ref {}

@@ -47,30 +47,16 @@ import {
   CommonNames,
   Feature,
   Target,
-  featureToString
+  featureToString,
 } from "./common";
 
-import {
-  Options
-} from "./compiler";
+import { Options } from "./compiler";
 
-import {
-  Range,
-  DiagnosticCode,
-  DiagnosticMessage,
-  DiagnosticEmitter
-} from "./diagnostics";
+import { Range, DiagnosticCode, DiagnosticMessage, DiagnosticEmitter } from "./diagnostics";
 
-import {
-  Type,
-  TypeKind,
-  Signature,
-  TypeFlags
-} from "./types";
+import { Type, TypeKind, Signature, TypeFlags } from "./types";
 
-import {
-  Token
-} from "./tokenizer";
+import { Token } from "./tokenizer";
 
 import {
   Node,
@@ -84,12 +70,10 @@ import {
   NamedTypeNode,
   FunctionTypeNode,
   ArrowKind,
-
   Expression,
   IdentifierExpression,
   LiteralKind,
   StringLiteralExpression,
-
   Statement,
   ClassDeclaration,
   DeclarationStatement,
@@ -112,16 +96,10 @@ import {
   ParameterKind,
   ParameterNode,
   TypeName,
-  JsonSource
+  JsonSource,
 } from "./ast";
 
-import {
-  Module,
-  ExpressionRef,
-  FunctionRef,
-  MemorySegment,
-  getFunctionName
-} from "./module";
+import { Module, ExpressionRef, FunctionRef, MemorySegment, getFunctionName } from "./module";
 
 import {
   CharCode,
@@ -132,27 +110,16 @@ import {
   writeF64,
   writeI64,
   writeI32AsI64,
-  writeI64AsI32
+  writeI64AsI32,
 } from "./util";
 
-import {
-  Resolver
-} from "./resolver";
+import { Resolver } from "./resolver";
 
-import {
-  Flow,
-  LocalFlags
-} from "./flow";
+import { Flow, LocalFlags } from "./flow";
 
-import {
-  Parser
-} from "./parser";
+import { Parser } from "./parser";
 
-import {
-  BuiltinNames,
-  builtinFunctions,
-  builtinVariables_onAccess
-} from "./builtins";
+import { BuiltinNames, builtinFunctions, builtinVariables_onAccess } from "./builtins";
 import { addParameter, addSubProgram, createBaseType, createClass } from "./warpo";
 import { isScalarJsonKind, JsonArray, JsonObject, JsonValue, JsonValueKind } from "./json";
 
@@ -208,42 +175,42 @@ export enum OperatorKind {
   Invalid,
 
   // indexed access
-  IndexedGet,          // a[]
-  IndexedSet,          // a[]=b
+  IndexedGet, // a[]
+  IndexedSet, // a[]=b
   UncheckedIndexedGet, // unchecked(a[])
   UncheckedIndexedSet, // unchecked(a[]=b)
 
   // binary
-  Add,                 // a + b
-  Sub,                 // a - b
-  Mul,                 // a * b
-  Div,                 // a / b
-  Rem,                 // a % b
-  Pow,                 // a ** b
-  BitwiseAnd,          // a & b
-  BitwiseOr,           // a | b
-  BitwiseXor,          // a ^ b
-  BitwiseShl,          // a << b
-  BitwiseShr,          // a >> b
-  BitwiseShrU,         // a >>> b
-  Eq,                  // a == b, a === b
-  Ne,                  // a != b, a !== b
-  Gt,                  // a > b
-  Ge,                  // a >= b
-  Lt,                  // a < b
-  Le,                  // a <= b
+  Add, // a + b
+  Sub, // a - b
+  Mul, // a * b
+  Div, // a / b
+  Rem, // a % b
+  Pow, // a ** b
+  BitwiseAnd, // a & b
+  BitwiseOr, // a | b
+  BitwiseXor, // a ^ b
+  BitwiseShl, // a << b
+  BitwiseShr, // a >> b
+  BitwiseShrU, // a >>> b
+  Eq, // a == b, a === b
+  Ne, // a != b, a !== b
+  Gt, // a > b
+  Ge, // a >= b
+  Lt, // a < b
+  Le, // a <= b
 
   // unary prefix
-  Plus,                // +a
-  Minus,               // -a
-  Not,                 // !a
-  BitwiseNot,          // ~a
-  PrefixInc,           // ++a
-  PrefixDec,           // --a
+  Plus, // +a
+  Minus, // -a
+  Not, // !a
+  BitwiseNot, // ~a
+  PrefixInc, // ++a
+  PrefixDec, // --a
 
   // unary postfix
-  PostfixInc,          // a++
-  PostfixDec           // a--
+  PostfixInc, // a++
+  PostfixDec, // a--
 
   // not overridable:
   // LogicalAnd        // a && b
@@ -251,7 +218,6 @@ export enum OperatorKind {
 }
 
 export namespace OperatorKind {
-
   /** Returns the operator kind represented by the specified decorator and string argument. */
   export function fromDecorator(decoratorKind: DecoratorKind, arg: string): OperatorKind {
     assert(arg.length);
@@ -370,37 +336,55 @@ export namespace OperatorKind {
   export function fromBinaryToken(token: Token): OperatorKind {
     switch (token) {
       case Token.Plus:
-      case Token.Plus_Equals: return OperatorKind.Add;
+      case Token.Plus_Equals:
+        return OperatorKind.Add;
       case Token.Minus:
-      case Token.Minus_Equals: return OperatorKind.Sub;
+      case Token.Minus_Equals:
+        return OperatorKind.Sub;
       case Token.Asterisk:
-      case Token.Asterisk_Equals: return OperatorKind.Mul;
+      case Token.Asterisk_Equals:
+        return OperatorKind.Mul;
       case Token.Slash:
-      case Token.Slash_Equals: return OperatorKind.Div;
+      case Token.Slash_Equals:
+        return OperatorKind.Div;
       case Token.Percent:
-      case Token.Percent_Equals: return OperatorKind.Rem;
+      case Token.Percent_Equals:
+        return OperatorKind.Rem;
       case Token.Asterisk_Asterisk:
-      case Token.Asterisk_Asterisk_Equals: return OperatorKind.Pow;
+      case Token.Asterisk_Asterisk_Equals:
+        return OperatorKind.Pow;
       case Token.Ampersand:
-      case Token.Ampersand_Equals: return OperatorKind.BitwiseAnd;
+      case Token.Ampersand_Equals:
+        return OperatorKind.BitwiseAnd;
       case Token.Bar:
-      case Token.Bar_Equals: return OperatorKind.BitwiseOr;
+      case Token.Bar_Equals:
+        return OperatorKind.BitwiseOr;
       case Token.Caret:
-      case Token.Caret_Equals: return OperatorKind.BitwiseXor;
+      case Token.Caret_Equals:
+        return OperatorKind.BitwiseXor;
       case Token.LessThan_LessThan:
-      case Token.LessThan_LessThan_Equals: return OperatorKind.BitwiseShl;
+      case Token.LessThan_LessThan_Equals:
+        return OperatorKind.BitwiseShl;
       case Token.GreaterThan_GreaterThan:
-      case Token.GreaterThan_GreaterThan_Equals: return OperatorKind.BitwiseShr;
+      case Token.GreaterThan_GreaterThan_Equals:
+        return OperatorKind.BitwiseShr;
       case Token.GreaterThan_GreaterThan_GreaterThan:
-      case Token.GreaterThan_GreaterThan_GreaterThan_Equals: return OperatorKind.BitwiseShrU;
-      case Token.Equals_Equals: 
-      case Token.Equals_Equals_Equals: return OperatorKind.Eq;
-      case Token.Exclamation_Equals: 
-      case Token.Exclamation_Equals_Equals: return OperatorKind.Ne;
-      case Token.GreaterThan: return OperatorKind.Gt;
-      case Token.GreaterThan_Equals: return OperatorKind.Ge;
-      case Token.LessThan: return OperatorKind.Lt;
-      case Token.LessThan_Equals: return OperatorKind.Le;
+      case Token.GreaterThan_GreaterThan_GreaterThan_Equals:
+        return OperatorKind.BitwiseShrU;
+      case Token.Equals_Equals:
+      case Token.Equals_Equals_Equals:
+        return OperatorKind.Eq;
+      case Token.Exclamation_Equals:
+      case Token.Exclamation_Equals_Equals:
+        return OperatorKind.Ne;
+      case Token.GreaterThan:
+        return OperatorKind.Gt;
+      case Token.GreaterThan_Equals:
+        return OperatorKind.Ge;
+      case Token.LessThan:
+        return OperatorKind.Lt;
+      case Token.LessThan_Equals:
+        return OperatorKind.Le;
     }
     return OperatorKind.Invalid;
   }
@@ -408,12 +392,18 @@ export namespace OperatorKind {
   /** Converts a unary prefix operator token to the respective operator kind. */
   export function fromUnaryPrefixToken(token: Token): OperatorKind {
     switch (token) {
-      case Token.Plus: return OperatorKind.Plus;
-      case Token.Minus: return OperatorKind.Minus;
-      case Token.Exclamation: return OperatorKind.Not;
-      case Token.Tilde: return OperatorKind.BitwiseNot;
-      case Token.Plus_Plus: return OperatorKind.PrefixInc;
-      case Token.Minus_Minus: return OperatorKind.PrefixDec;
+      case Token.Plus:
+        return OperatorKind.Plus;
+      case Token.Minus:
+        return OperatorKind.Minus;
+      case Token.Exclamation:
+        return OperatorKind.Not;
+      case Token.Tilde:
+        return OperatorKind.BitwiseNot;
+      case Token.Plus_Plus:
+        return OperatorKind.PrefixInc;
+      case Token.Minus_Minus:
+        return OperatorKind.PrefixDec;
     }
     return OperatorKind.Invalid;
   }
@@ -421,8 +411,10 @@ export namespace OperatorKind {
   /** Converts a unary postfix operator token to the respective operator kind. */
   export function fromUnaryPostfixToken(token: Token): OperatorKind {
     switch (token) {
-      case Token.Plus_Plus: return OperatorKind.PostfixInc;
-      case Token.Minus_Minus: return OperatorKind.PostfixDec;
+      case Token.Plus_Plus:
+        return OperatorKind.PostfixInc;
+      case Token.Minus_Minus:
+        return OperatorKind.PostfixDec;
     }
     return OperatorKind.Invalid;
   }
@@ -430,7 +422,6 @@ export namespace OperatorKind {
 
 /** Represents an AssemblyScript program. */
 export class Program extends DiagnosticEmitter {
-
   /** Constructs a new program, optionally inheriting parser diagnostics. */
   constructor(
     /** Compiler options. */
@@ -439,7 +430,7 @@ export class Program extends DiagnosticEmitter {
     diagnostics: DiagnosticMessage[] | null = null
   ) {
     super(diagnostics);
-    this.module = Module.create(options.stackSize > 0, options.sizeTypeRef);    
+    this.module = Module.create(options.stackSize > 0, options.sizeTypeRef);
     this.parser = new Parser(this.diagnostics, this.sources);
     this.resolver = new Resolver(this);
     let nativeFile = createFile(this, Source.native);
@@ -469,21 +460,21 @@ export class Program extends DiagnosticEmitter {
   // Lookup maps
 
   /** Files by unique internal name. */
-  filesByName: Map<string,File> = new Map();
+  filesByName: Map<string, File> = new Map();
   /** Elements by unique internal name in element space. */
-  elementsByName: Map<string,Element> = new Map();
+  elementsByName: Map<string, Element> = new Map();
   /** Elements by declaration. */
-  elementsByDeclaration: Map<DeclarationStatement,DeclaredElement> = new Map();
+  elementsByDeclaration: Map<DeclarationStatement, DeclaredElement> = new Map();
   /** Element instances by unique internal name. */
-  instancesByName: Map<string,Element> = new Map();
+  instancesByName: Map<string, Element> = new Map();
   /** Classes wrapping basic types like `i32`. */
-  wrapperClasses: Map<Type,Class> = new Map();
+  wrapperClasses: Map<Type, Class> = new Map();
   /** Managed classes contained in the program, by id. */
-  managedClasses: Map<i32,Class> = new Map();
+  managedClasses: Map<i32, Class> = new Map();
   /** A set of unique function signatures contained in the program, by id. */
   uniqueSignatures: Map<string, Signature> = new Map<string, Signature>();
   /** Module imports. */
-  moduleImports: Map<string,Map<string,Element>> = new Map();
+  moduleImports: Map<string, Map<string, Element>> = new Map();
 
   // Standard library
 
@@ -506,7 +497,8 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Array` prototype. */
   get arrayPrototype(): ClassPrototype {
     let cached = this._arrayPrototype;
-    if (!cached) this._arrayPrototype = cached = <ClassPrototype>this.require(CommonNames.Array, ElementKind.ClassPrototype);
+    if (!cached)
+      this._arrayPrototype = cached = <ClassPrototype>this.require(CommonNames.Array, ElementKind.ClassPrototype);
     return cached;
   }
   private _arrayPrototype: ClassPrototype | null = null;
@@ -514,7 +506,10 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `StaticArray` prototype. */
   get staticArrayPrototype(): ClassPrototype {
     let cached = this._staticArrayPrototype;
-    if (!cached) this._staticArrayPrototype = cached = <ClassPrototype>this.require(CommonNames.StaticArray, ElementKind.ClassPrototype);
+    if (!cached)
+      this._staticArrayPrototype = cached = <ClassPrototype>(
+        this.require(CommonNames.StaticArray, ElementKind.ClassPrototype)
+      );
     return cached;
   }
   private _staticArrayPrototype: ClassPrototype | null = null;
@@ -522,7 +517,8 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Set` prototype. */
   get setPrototype(): ClassPrototype {
     let cached = this._setPrototype;
-    if (!cached) this._setPrototype = cached = <ClassPrototype>this.require(CommonNames.Set, ElementKind.ClassPrototype);
+    if (!cached)
+      this._setPrototype = cached = <ClassPrototype>this.require(CommonNames.Set, ElementKind.ClassPrototype);
     return cached;
   }
   private _setPrototype: ClassPrototype | null = null;
@@ -530,7 +526,8 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Map` prototype. */
   get mapPrototype(): ClassPrototype {
     let cached = this._mapPrototype;
-    if (!cached) this._mapPrototype = cached = <ClassPrototype>this.require(CommonNames.Map, ElementKind.ClassPrototype);
+    if (!cached)
+      this._mapPrototype = cached = <ClassPrototype>this.require(CommonNames.Map, ElementKind.ClassPrototype);
     return cached;
   }
   private _mapPrototype: ClassPrototype | null = null;
@@ -538,7 +535,8 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Function` prototype. */
   get functionPrototype(): ClassPrototype {
     let cached = this._functionPrototype;
-    if (!cached) this._functionPrototype = cached = <ClassPrototype>this.require(CommonNames.Function, ElementKind.ClassPrototype);
+    if (!cached)
+      this._functionPrototype = cached = <ClassPrototype>this.require(CommonNames.Function, ElementKind.ClassPrototype);
     return cached;
   }
   private _functionPrototype: ClassPrototype | null = null;
@@ -546,7 +544,10 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Int8Array` prototype. */
   get int8ArrayPrototype(): ClassPrototype {
     let cached = this._int8ArrayPrototype;
-    if (!cached) this._int8ArrayPrototype = cached = <ClassPrototype>this.require(CommonNames.Int8Array, ElementKind.ClassPrototype);
+    if (!cached)
+      this._int8ArrayPrototype = cached = <ClassPrototype>(
+        this.require(CommonNames.Int8Array, ElementKind.ClassPrototype)
+      );
     return cached;
   }
   private _int8ArrayPrototype: ClassPrototype | null = null;
@@ -554,7 +555,10 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Int16Array` prototype. */
   get int16ArrayPrototype(): ClassPrototype {
     let cached = this._int16ArrayPrototype;
-    if (!cached) this._int16ArrayPrototype = cached = <ClassPrototype>this.require(CommonNames.Int16Array, ElementKind.ClassPrototype);
+    if (!cached)
+      this._int16ArrayPrototype = cached = <ClassPrototype>(
+        this.require(CommonNames.Int16Array, ElementKind.ClassPrototype)
+      );
     return cached;
   }
   private _int16ArrayPrototype: ClassPrototype | null = null;
@@ -562,7 +566,10 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Int32Array` prototype. */
   get int32ArrayPrototype(): ClassPrototype {
     let cached = this._int32ArrayPrototype;
-    if (!cached) this._int32ArrayPrototype = cached = <ClassPrototype>this.require(CommonNames.Int32Array, ElementKind.ClassPrototype);
+    if (!cached)
+      this._int32ArrayPrototype = cached = <ClassPrototype>(
+        this.require(CommonNames.Int32Array, ElementKind.ClassPrototype)
+      );
     return cached;
   }
   private _int32ArrayPrototype: ClassPrototype | null = null;
@@ -570,7 +577,10 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Int64Array` prototype. */
   get int64ArrayPrototype(): ClassPrototype {
     let cached = this._int64ArrayPrototype;
-    if (!cached) this._int64ArrayPrototype = cached = <ClassPrototype>this.require(CommonNames.Int64Array, ElementKind.ClassPrototype);
+    if (!cached)
+      this._int64ArrayPrototype = cached = <ClassPrototype>(
+        this.require(CommonNames.Int64Array, ElementKind.ClassPrototype)
+      );
     return cached;
   }
   private _int64ArrayPrototype: ClassPrototype | null = null;
@@ -578,7 +588,10 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Uint8Array` prototype. */
   get uint8ArrayPrototype(): ClassPrototype {
     let cached = this._uint8ArrayPrototype;
-    if (!cached) this._uint8ArrayPrototype = cached = <ClassPrototype>this.require(CommonNames.Uint8Array, ElementKind.ClassPrototype);
+    if (!cached)
+      this._uint8ArrayPrototype = cached = <ClassPrototype>(
+        this.require(CommonNames.Uint8Array, ElementKind.ClassPrototype)
+      );
     return cached;
   }
   private _uint8ArrayPrototype: ClassPrototype | null = null;
@@ -586,7 +599,10 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Uint8ClampedArray` prototype. */
   get uint8ClampedArrayPrototype(): ClassPrototype {
     let cached = this._uint8ClampedArrayPrototype;
-    if (!cached) this._uint8ClampedArrayPrototype = cached = <ClassPrototype>this.require(CommonNames.Uint8ClampedArray, ElementKind.ClassPrototype);
+    if (!cached)
+      this._uint8ClampedArrayPrototype = cached = <ClassPrototype>(
+        this.require(CommonNames.Uint8ClampedArray, ElementKind.ClassPrototype)
+      );
     return cached;
   }
   private _uint8ClampedArrayPrototype: ClassPrototype | null = null;
@@ -594,7 +610,10 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Uint16Array` prototype. */
   get uint16ArrayPrototype(): ClassPrototype {
     let cached = this._uint16ArrayPrototype;
-    if (!cached) this._uint16ArrayPrototype = cached = <ClassPrototype>this.require(CommonNames.Uint16Array, ElementKind.ClassPrototype);
+    if (!cached)
+      this._uint16ArrayPrototype = cached = <ClassPrototype>(
+        this.require(CommonNames.Uint16Array, ElementKind.ClassPrototype)
+      );
     return cached;
   }
   private _uint16ArrayPrototype: ClassPrototype | null = null;
@@ -602,7 +621,10 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Uint32Array` prototype. */
   get uint32ArrayPrototype(): ClassPrototype {
     let cached = this._uint32ArrayPrototype;
-    if (!cached) this._uint32ArrayPrototype = cached = <ClassPrototype>this.require(CommonNames.Uint32Array, ElementKind.ClassPrototype);
+    if (!cached)
+      this._uint32ArrayPrototype = cached = <ClassPrototype>(
+        this.require(CommonNames.Uint32Array, ElementKind.ClassPrototype)
+      );
     return cached;
   }
   private _uint32ArrayPrototype: ClassPrototype | null = null;
@@ -610,7 +632,10 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Uint64Array` prototype. */
   get uint64ArrayPrototype(): ClassPrototype {
     let cached = this._uint64ArrayPrototype;
-    if (!cached) this._uint64ArrayPrototype = cached = <ClassPrototype>this.require(CommonNames.Uint64Array, ElementKind.ClassPrototype);
+    if (!cached)
+      this._uint64ArrayPrototype = cached = <ClassPrototype>(
+        this.require(CommonNames.Uint64Array, ElementKind.ClassPrototype)
+      );
     return cached;
   }
   private _uint64ArrayPrototype: ClassPrototype | null = null;
@@ -618,7 +643,10 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Float32Array` prototype. */
   get float32ArrayPrototype(): ClassPrototype {
     let cached = this._float32ArrayPrototype;
-    if (!cached) this._float32ArrayPrototype = cached = <ClassPrototype>this.require(CommonNames.Float32Array, ElementKind.ClassPrototype);
+    if (!cached)
+      this._float32ArrayPrototype = cached = <ClassPrototype>(
+        this.require(CommonNames.Float32Array, ElementKind.ClassPrototype)
+      );
     return cached;
   }
   private _float32ArrayPrototype: ClassPrototype | null = null;
@@ -626,7 +654,10 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Float64Array` prototype. */
   get float64ArrayPrototype(): ClassPrototype {
     let cached = this._float64ArrayPrototype;
-    if (!cached) this._float64ArrayPrototype = cached = <ClassPrototype>this.require(CommonNames.Float64Array, ElementKind.ClassPrototype);
+    if (!cached)
+      this._float64ArrayPrototype = cached = <ClassPrototype>(
+        this.require(CommonNames.Float64Array, ElementKind.ClassPrototype)
+      );
     return cached;
   }
   private _float64ArrayPrototype: ClassPrototype | null = null;
@@ -650,7 +681,8 @@ export class Program extends DiagnosticEmitter {
   /** Gets the standard `Object` prototype. */
   get objectPrototype(): ClassPrototype {
     let cached = this._objectPrototype;
-    if (!cached) this._objectPrototype = cached = <ClassPrototype>this.require(CommonNames.Object, ElementKind.ClassPrototype);
+    if (!cached)
+      this._objectPrototype = cached = <ClassPrototype>this.require(CommonNames.Object, ElementKind.ClassPrototype);
     return cached;
   }
   private _objectPrototype: ClassPrototype | null = null;
@@ -863,10 +895,7 @@ export class Program extends DiagnosticEmitter {
     flags: CommonFlags = CommonFlags.None
   ): VariableDeclaration {
     let range = Source.native.range;
-    return Node.createVariableDeclaration(
-      Node.createIdentifierExpression(name, range),
-      null, flags, null, null, range
-    );
+    return Node.createVariableDeclaration(Node.createIdentifierExpression(name, range), null, flags, null, null, range);
   }
 
   /** Creates a native type declaration. */
@@ -878,12 +907,7 @@ export class Program extends DiagnosticEmitter {
   ): TypeDeclaration {
     let range = Source.native.range;
     let identifier = Node.createIdentifierExpression(name, range);
-    return Node.createTypeDeclaration(
-      identifier,
-      null, flags, null,
-      Node.createOmittedType(range),
-      range
-    );
+    return Node.createTypeDeclaration(identifier, null, flags, null, Node.createOmittedType(range), range);
   }
 
   // a dummy signature for programmatically generated native functions
@@ -899,17 +923,29 @@ export class Program extends DiagnosticEmitter {
     let range = Source.native.range;
     let signature = this.nativeDummySignature;
     if (!signature) {
-      this.nativeDummySignature = signature = Node.createFunctionType([],
-        Node.createNamedType( // ^ AST signature doesn't really matter, is overridden anyway
+      this.nativeDummySignature = signature = Node.createFunctionType(
+        [],
+        Node.createNamedType(
+          // ^ AST signature doesn't really matter, is overridden anyway
           Node.createSimpleTypeName(CommonNames.void_, range),
-          null, false, range
+          null,
+          false,
+          range
         ),
-        null, false, range
+        null,
+        false,
+        range
       );
     }
     return Node.createFunctionDeclaration(
       Node.createIdentifierExpression(name, range),
-      null, flags, null, signature, null, ArrowKind.None, range
+      null,
+      flags,
+      null,
+      signature,
+      null,
+      ArrowKind.None,
+      range
     );
   }
 
@@ -921,10 +957,7 @@ export class Program extends DiagnosticEmitter {
     flags: CommonFlags = CommonFlags.None
   ): NamespaceDeclaration {
     let range = Source.native.range;
-    return Node.createNamespaceDeclaration(
-      Node.createIdentifierExpression(name, range),
-      null, flags, [], range
-    );
+    return Node.createNamespaceDeclaration(Node.createIdentifierExpression(name, range), null, flags, [], range);
   }
 
   /** Creates a native function. */
@@ -942,12 +975,7 @@ export class Program extends DiagnosticEmitter {
   ): Function {
     return new Function(
       name,
-      new FunctionPrototype(
-        name,
-        parent,
-        this.makeNativeFunctionDeclaration(name, flags),
-        decoratorFlags
-      ),
+      new FunctionPrototype(name, parent, this.makeNativeFunctionDeclaration(name, flags), decoratorFlags),
       null,
       signature
     );
@@ -956,9 +984,7 @@ export class Program extends DiagnosticEmitter {
   /** Gets the (possibly merged) program element linked to the specified declaration. */
   getElementByDeclaration(declaration: DeclarationStatement): DeclaredElement | null {
     let elementsByDeclaration = this.elementsByDeclaration;
-    return elementsByDeclaration.has(declaration)
-      ? assert(elementsByDeclaration.get(declaration))
-      : null;
+    return elementsByDeclaration.has(declaration) ? assert(elementsByDeclaration.get(declaration)) : null;
   }
 
   /** Initializes the program and its elements prior to compilation. */
@@ -985,36 +1011,51 @@ export class Program extends DiagnosticEmitter {
     this.registerNativeType(CommonNames.void_, Type.void);
     this.registerNativeType(CommonNames.number, Type.f64); // alias
     this.registerNativeType(CommonNames.boolean, Type.bool); // alias
-    this.nativeFile.add(CommonNames.native, new TypeDefinition(
+    this.nativeFile.add(
       CommonNames.native,
-      this.nativeFile,
-      this.makeNativeTypeDeclaration(CommonNames.native, CommonFlags.Export | CommonFlags.Generic),
-      DecoratorFlags.Builtin
-    ));
-    this.nativeFile.add(CommonNames.indexof, new TypeDefinition(
+      new TypeDefinition(
+        CommonNames.native,
+        this.nativeFile,
+        this.makeNativeTypeDeclaration(CommonNames.native, CommonFlags.Export | CommonFlags.Generic),
+        DecoratorFlags.Builtin
+      )
+    );
+    this.nativeFile.add(
       CommonNames.indexof,
-      this.nativeFile,
-      this.makeNativeTypeDeclaration(CommonNames.indexof, CommonFlags.Export | CommonFlags.Generic),
-      DecoratorFlags.Builtin
-    ));
-    this.nativeFile.add(CommonNames.valueof, new TypeDefinition(
+      new TypeDefinition(
+        CommonNames.indexof,
+        this.nativeFile,
+        this.makeNativeTypeDeclaration(CommonNames.indexof, CommonFlags.Export | CommonFlags.Generic),
+        DecoratorFlags.Builtin
+      )
+    );
+    this.nativeFile.add(
       CommonNames.valueof,
-      this.nativeFile,
-      this.makeNativeTypeDeclaration(CommonNames.valueof, CommonFlags.Export | CommonFlags.Generic),
-      DecoratorFlags.Builtin
-    ));
-    this.nativeFile.add(CommonNames.returnof, new TypeDefinition(
+      new TypeDefinition(
+        CommonNames.valueof,
+        this.nativeFile,
+        this.makeNativeTypeDeclaration(CommonNames.valueof, CommonFlags.Export | CommonFlags.Generic),
+        DecoratorFlags.Builtin
+      )
+    );
+    this.nativeFile.add(
       CommonNames.returnof,
-      this.nativeFile,
-      this.makeNativeTypeDeclaration(CommonNames.returnof, CommonFlags.Export | CommonFlags.Generic),
-      DecoratorFlags.Builtin
-    ));
-    this.nativeFile.add(CommonNames.nonnull, new TypeDefinition(
+      new TypeDefinition(
+        CommonNames.returnof,
+        this.nativeFile,
+        this.makeNativeTypeDeclaration(CommonNames.returnof, CommonFlags.Export | CommonFlags.Generic),
+        DecoratorFlags.Builtin
+      )
+    );
+    this.nativeFile.add(
       CommonNames.nonnull,
-      this.nativeFile,
-      this.makeNativeTypeDeclaration(CommonNames.nonnull, CommonFlags.Export | CommonFlags.Generic),
-      DecoratorFlags.Builtin
-    ));
+      new TypeDefinition(
+        CommonNames.nonnull,
+        this.nativeFile,
+        this.makeNativeTypeDeclaration(CommonNames.nonnull, CommonFlags.Export | CommonFlags.Generic),
+        DecoratorFlags.Builtin
+      )
+    );
 
     // The following types might not be enabled by compiler options, so the
     // compiler needs to check this condition whenever such a value is created
@@ -1033,67 +1074,104 @@ export class Program extends DiagnosticEmitter {
     this.registerNativeType(CommonNames.ref_stringview_iter, Type.stringview_iter);
 
     // register compiler hints
-    this.registerConstantInteger(CommonNames.ASC_TARGET, Type.i32,
-      i64_new(options.isWasm64 ? Target.Wasm64 : Target.Wasm32));
-    this.registerConstantInteger(CommonNames.ASC_RUNTIME, Type.i32,
-      i64_new(options.runtime));
-    this.registerConstantInteger(CommonNames.ASC_NO_ASSERT, Type.bool,
-      i64_new(options.noAssert ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_MEMORY_BASE, Type.i32,
-      i64_new(options.memoryBase, 0));
-    this.registerConstantInteger(CommonNames.ASC_TABLE_BASE, Type.i32,
-      i64_new(options.tableBase, 0));
-    this.registerConstantInteger(CommonNames.ASC_OPTIMIZE_LEVEL, Type.i32,
-      i64_new(options.optimizeLevelHint, 0));
-    this.registerConstantInteger(CommonNames.ASC_SHRINK_LEVEL, Type.i32,
-      i64_new(options.shrinkLevelHint, 0));
-    this.registerConstantInteger(CommonNames.ASC_LOW_MEMORY_LIMIT, Type.i32,
-      i64_new(options.lowMemoryLimit, 0));
-    this.registerConstantInteger(CommonNames.ASC_EXPORT_RUNTIME, Type.bool,
-      i64_new(options.exportRuntime ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_VERSION_MAJOR, Type.i32,
-      i64_new(options.bundleMajorVersion));
-    this.registerConstantInteger(CommonNames.ASC_VERSION_MINOR, Type.i32,
-      i64_new(options.bundleMinorVersion));
-    this.registerConstantInteger(CommonNames.ASC_VERSION_PATCH, Type.i32,
-      i64_new(options.bundlePatchVersion));
+    this.registerConstantInteger(
+      CommonNames.ASC_TARGET,
+      Type.i32,
+      i64_new(options.isWasm64 ? Target.Wasm64 : Target.Wasm32)
+    );
+    this.registerConstantInteger(CommonNames.ASC_RUNTIME, Type.i32, i64_new(options.runtime));
+    this.registerConstantInteger(CommonNames.ASC_NO_ASSERT, Type.bool, i64_new(options.noAssert ? 1 : 0, 0));
+    this.registerConstantInteger(CommonNames.ASC_MEMORY_BASE, Type.i32, i64_new(options.memoryBase, 0));
+    this.registerConstantInteger(CommonNames.ASC_TABLE_BASE, Type.i32, i64_new(options.tableBase, 0));
+    this.registerConstantInteger(CommonNames.ASC_OPTIMIZE_LEVEL, Type.i32, i64_new(options.optimizeLevelHint, 0));
+    this.registerConstantInteger(CommonNames.ASC_SHRINK_LEVEL, Type.i32, i64_new(options.shrinkLevelHint, 0));
+    this.registerConstantInteger(CommonNames.ASC_LOW_MEMORY_LIMIT, Type.i32, i64_new(options.lowMemoryLimit, 0));
+    this.registerConstantInteger(CommonNames.ASC_EXPORT_RUNTIME, Type.bool, i64_new(options.exportRuntime ? 1 : 0, 0));
+    this.registerConstantInteger(CommonNames.ASC_VERSION_MAJOR, Type.i32, i64_new(options.bundleMajorVersion));
+    this.registerConstantInteger(CommonNames.ASC_VERSION_MINOR, Type.i32, i64_new(options.bundleMinorVersion));
+    this.registerConstantInteger(CommonNames.ASC_VERSION_PATCH, Type.i32, i64_new(options.bundlePatchVersion));
 
     // register feature hints
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_SIGN_EXTENSION, Type.bool,
-      i64_new(options.hasFeature(Feature.SignExtension) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_MUTABLE_GLOBALS, Type.bool,
-      i64_new(options.hasFeature(Feature.MutableGlobals) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_NONTRAPPING_F2I, Type.bool,
-      i64_new(options.hasFeature(Feature.NontrappingF2I) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_BULK_MEMORY, Type.bool,
-      i64_new(options.hasFeature(Feature.BulkMemory) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_SIMD, Type.bool,
-      i64_new(options.hasFeature(Feature.Simd) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_THREADS, Type.bool,
-      i64_new(options.hasFeature(Feature.Threads) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_EXCEPTION_HANDLING, Type.bool,
-      i64_new(options.hasFeature(Feature.ExceptionHandling) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_TAIL_CALLS, Type.bool,
-      i64_new(options.hasFeature(Feature.TailCalls) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_REFERENCE_TYPES, Type.bool,
-      i64_new(options.hasFeature(Feature.ReferenceTypes) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_MULTI_VALUE, Type.bool,
-      i64_new(options.hasFeature(Feature.MultiValue) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_GC, Type.bool,
-      i64_new(options.hasFeature(Feature.GC) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_MEMORY64, Type.bool,
-      i64_new(options.hasFeature(Feature.Memory64) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_RELAXED_SIMD, Type.bool,
-      i64_new(options.hasFeature(Feature.RelaxedSimd) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_EXTENDED_CONST, Type.bool,
-      i64_new(options.hasFeature(Feature.ExtendedConst) ? 1 : 0, 0));
-    this.registerConstantInteger(CommonNames.ASC_FEATURE_STRINGREF, Type.bool,
-      i64_new(options.hasFeature(Feature.Stringref) ? 1 : 0, 0));
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_SIGN_EXTENSION,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.SignExtension) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_MUTABLE_GLOBALS,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.MutableGlobals) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_NONTRAPPING_F2I,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.NontrappingF2I) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_BULK_MEMORY,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.BulkMemory) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_SIMD,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.Simd) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_THREADS,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.Threads) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_EXCEPTION_HANDLING,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.ExceptionHandling) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_TAIL_CALLS,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.TailCalls) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_REFERENCE_TYPES,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.ReferenceTypes) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_MULTI_VALUE,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.MultiValue) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_GC,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.GC) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_MEMORY64,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.Memory64) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_RELAXED_SIMD,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.RelaxedSimd) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_EXTENDED_CONST,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.ExtendedConst) ? 1 : 0, 0)
+    );
+    this.registerConstantInteger(
+      CommonNames.ASC_FEATURE_STRINGREF,
+      Type.bool,
+      i64_new(options.hasFeature(Feature.Stringref) ? 1 : 0, 0)
+    );
 
     // remember deferred elements
     let queuedImports = new Array<QueuedImport>();
-    let queuedExports = new Map<File,Map<string,QueuedExport>>();
-    let queuedExportsStar = new Map<File,QueuedExportStar[]>();
+    let queuedExports = new Map<File, Map<string, QueuedExport>>();
+    let queuedExportsStar = new Map<File, QueuedExportStar[]>();
     let queuedExtends = new Array<ClassPrototype>();
     let queuedImplements = new Array<ClassPrototype>();
 
@@ -1159,10 +1237,7 @@ export class Program extends DiagnosticEmitter {
         let exportStar = unchecked(starExports[j]);
         let foreignFile = this.lookupForeignFile(exportStar.foreignPath, exportStar.foreignPathAlt);
         if (!foreignFile) {
-          this.error(
-            DiagnosticCode.File_0_not_found,
-            exportStar.pathLiteral.range, exportStar.pathLiteral.value
-          );
+          this.error(DiagnosticCode.File_0_not_found, exportStar.pathLiteral.range, exportStar.pathLiteral.value);
           continue;
         }
         file.ensureExportStar(foreignFile);
@@ -1172,19 +1247,17 @@ export class Program extends DiagnosticEmitter {
     // queued imports should be resolvable now through traversing exports and queued exports.
     // note that imports may depend upon imports, so repeat until there's no more progress.
     do {
-      let i = 0, madeProgress = false;
+      let i = 0,
+        madeProgress = false;
       while (i < queuedImports.length) {
         let queuedImport = queuedImports[i];
         let localIdentifier = queuedImport.localIdentifier;
         let foreignIdentifier = queuedImport.foreignIdentifier;
         // File must be found here, as it would otherwise already have been reported by the parser
         let foreignFile = assert(this.lookupForeignFile(queuedImport.foreignPath, queuedImport.foreignPathAlt));
-        if (foreignIdentifier) { // i.e. import { foo [as bar] } from "./baz"
-          let element = this.lookupForeign(
-            foreignIdentifier.text,
-            foreignFile,
-            queuedExports
-          );
+        if (foreignIdentifier) {
+          // i.e. import { foo [as bar] } from "./baz"
+          let element = this.lookupForeign(foreignIdentifier.text, foreignFile, queuedExports);
           if (element) {
             queuedImport.localFile.add(
               localIdentifier.text,
@@ -1196,16 +1269,13 @@ export class Program extends DiagnosticEmitter {
           } else {
             ++i;
           }
-        } else { // i.e. import * as bar from "./bar"
+        } else {
+          // i.e. import * as bar from "./bar"
           let localFile = queuedImport.localFile;
           let localName = localIdentifier.text;
           localFile.add(
             localName,
-            foreignFile.asAliasNamespace(
-              localName,
-              localFile,
-              localIdentifier
-            ),
+            foreignFile.asAliasNamespace(localName, localFile, localIdentifier),
             localIdentifier // isImport
           );
           queuedImports.splice(i, 1);
@@ -1220,7 +1290,9 @@ export class Program extends DiagnosticEmitter {
           if (foreignIdentifier) {
             this.error(
               DiagnosticCode.Module_0_has_no_exported_member_1,
-              foreignIdentifier.range, queuedImport.foreignPath, foreignIdentifier.text
+              foreignIdentifier.range,
+              queuedImport.foreignPath,
+              foreignIdentifier.text
             );
           }
         }
@@ -1239,7 +1311,8 @@ export class Program extends DiagnosticEmitter {
         let queuedExport = assert(exports.get(exportName));
         let localName = queuedExport.localIdentifier.text;
         let foreignPath = queuedExport.foreignPath;
-        if (foreignPath) { // i.e. export { foo [as bar] } from "./baz"
+        if (foreignPath) {
+          // i.e. export { foo [as bar] } from "./baz"
           // File must be found here, as it would otherwise already have been reported by the parser
           let foreignFile = assert(this.lookupForeignFile(foreignPath, assert(queuedExport.foreignPathAlt)));
           let element = this.lookupForeign(localName, foreignFile, queuedExports);
@@ -1249,22 +1322,26 @@ export class Program extends DiagnosticEmitter {
             this.error(
               DiagnosticCode.Module_0_has_no_exported_member_1,
               queuedExport.localIdentifier.range,
-              foreignPath, localName
+              foreignPath,
+              localName
             );
           }
-        } else { // i.e. export { foo [as bar] }
+        } else {
+          // i.e. export { foo [as bar] }
           let element = file.getMember(localName);
           if (element) {
             file.ensureExport(exportName, element);
           } else {
             let globalElement = this.lookup(localName);
-            if (globalElement && isDeclaredElement(globalElement.kind)) { // export { memory }
+            if (globalElement && isDeclaredElement(globalElement.kind)) {
+              // export { memory }
               file.ensureExport(exportName, <DeclaredElement>globalElement);
             } else {
               this.error(
                 DiagnosticCode.Module_0_has_no_exported_member_1,
                 queuedExport.foreignIdentifier.range,
-                file.internalName, queuedExport.foreignIdentifier.text
+                file.internalName,
+                queuedExport.foreignIdentifier.text
               );
             }
           }
@@ -1321,12 +1398,12 @@ export class Program extends DiagnosticEmitter {
           if (basePrototype.hasDecorator(DecoratorFlags.Final)) {
             this.error(
               DiagnosticCode.Class_0_is_final_and_cannot_be_extended,
-              extendsNode.range, basePrototype.identifierNode.text
+              extendsNode.range,
+              basePrototype.identifierNode.text
             );
           }
           if (
-            basePrototype.hasDecorator(DecoratorFlags.Unmanaged) !=
-            thisPrototype.hasDecorator(DecoratorFlags.Unmanaged)
+            basePrototype.hasDecorator(DecoratorFlags.Unmanaged) != thisPrototype.hasDecorator(DecoratorFlags.Unmanaged)
           ) {
             this.error(
               DiagnosticCode.Unmanaged_classes_cannot_extend_managed_classes_and_vice_versa,
@@ -1339,14 +1416,11 @@ export class Program extends DiagnosticEmitter {
             this.error(
               DiagnosticCode._0_is_referenced_directly_or_indirectly_in_its_own_base_expression,
               basePrototype.identifierNode.range,
-              basePrototype.identifierNode.text,
+              basePrototype.identifierNode.text
             );
           }
         } else {
-          this.error(
-            DiagnosticCode.A_class_may_only_extend_another_class,
-            extendsNode.range
-          );
+          this.error(DiagnosticCode.A_class_may_only_extend_another_class, extendsNode.range);
         }
       } else if (thisPrototype.kind == ElementKind.InterfacePrototype) {
         if (baseElement.kind == ElementKind.InterfacePrototype) {
@@ -1357,14 +1431,11 @@ export class Program extends DiagnosticEmitter {
             this.error(
               DiagnosticCode._0_is_referenced_directly_or_indirectly_in_its_own_base_expression,
               basePrototype.identifierNode.range,
-              basePrototype.identifierNode.text,
+              basePrototype.identifierNode.text
             );
           }
         } else {
-          this.error(
-            DiagnosticCode.An_interface_can_only_extend_an_interface,
-            extendsNode.range
-          );
+          this.error(DiagnosticCode.An_interface_can_only_extend_an_interface, extendsNode.range);
         }
       }
     }
@@ -1418,10 +1489,7 @@ export class Program extends DiagnosticEmitter {
           if (!interfacePrototypes) thisPrototype.interfacePrototypes = interfacePrototypes = new Array();
           interfacePrototypes.push(interfacePrototype);
         } else {
-          this.error(
-            DiagnosticCode.A_class_can_only_implement_an_interface,
-            implementsNode.range
-          );
+          this.error(DiagnosticCode.A_class_can_only_implement_an_interface, implementsNode.range);
         }
       }
     }
@@ -1501,10 +1569,7 @@ export class Program extends DiagnosticEmitter {
   }
 
   /** Processes overridden members by this class in a base class. */
-  private processOverrides(
-    thisPrototype: ClassPrototype,
-    basePrototype: ClassPrototype,
-  ): void {
+  private processOverrides(thisPrototype: ClassPrototype, basePrototype: ClassPrototype): void {
     // Note that we don't know concrete instances of class members, yet. Type
     // checking of concrete (generic) instances happens upon resolve.
     let thisInstanceMembers = thisPrototype.instanceMembers;
@@ -1554,16 +1619,14 @@ export class Program extends DiagnosticEmitter {
   ): void {
     // Constructors and private members do not override
     if (thisMember.isAny(CommonFlags.Constructor | CommonFlags.Private)) return;
-    if (
-      thisMember.kind == ElementKind.FunctionPrototype &&
-      baseMember.kind == ElementKind.FunctionPrototype
-    ) {
+    if (thisMember.kind == ElementKind.FunctionPrototype && baseMember.kind == ElementKind.FunctionPrototype) {
       let thisMethod = <FunctionPrototype>thisMember;
       let baseMethod = <FunctionPrototype>baseMember;
       if (!thisMethod.visibilityEquals(baseMethod)) {
         this.errorRelated(
           DiagnosticCode.Overload_signatures_must_all_be_public_private_or_protected,
-          thisMethod.identifierNode.range, baseMethod.identifierNode.range
+          thisMethod.identifierNode.range,
+          baseMethod.identifierNode.range
         );
       }
       baseMember.set(CommonFlags.Overridden);
@@ -1577,16 +1640,14 @@ export class Program extends DiagnosticEmitter {
           baseMethodInstance.set(CommonFlags.Overridden);
         }
       }
-    } else if (
-      thisMember.kind == ElementKind.PropertyPrototype &&
-      baseMember.kind == ElementKind.PropertyPrototype
-    ) {
+    } else if (thisMember.kind == ElementKind.PropertyPrototype && baseMember.kind == ElementKind.PropertyPrototype) {
       let thisProperty = <PropertyPrototype>thisMember;
       let baseProperty = <PropertyPrototype>baseMember;
       if (!thisProperty.visibilityEquals(baseProperty)) {
         this.errorRelated(
           DiagnosticCode.Overload_signatures_must_all_be_public_private_or_protected,
-          thisProperty.identifierNode.range, baseProperty.identifierNode.range
+          thisProperty.identifierNode.range,
+          baseProperty.identifierNode.range
         );
       }
       if (baseProperty.parent.kind != ElementKind.InterfacePrototype) {
@@ -1594,21 +1655,30 @@ export class Program extends DiagnosticEmitter {
         // members must match to retain compatiblity with TS/JS.
         let thisIsField = thisProperty.isField;
         if (thisIsField != baseProperty.isField) {
-          if (thisIsField) { // base is property
+          if (thisIsField) {
+            // base is property
             this.errorRelated(
               DiagnosticCode._0_is_defined_as_an_accessor_in_class_1_but_is_overridden_here_in_2_as_an_instance_property,
-              thisProperty.identifierNode.range, baseProperty.identifierNode.range,
-              thisProperty.name, baseClass.internalName, thisClass.internalName
+              thisProperty.identifierNode.range,
+              baseProperty.identifierNode.range,
+              thisProperty.name,
+              baseClass.internalName,
+              thisClass.internalName
             );
-          } else { // this is property, base is field
+          } else {
+            // this is property, base is field
             this.errorRelated(
               DiagnosticCode._0_is_defined_as_a_property_in_class_1_but_is_overridden_here_in_2_as_an_accessor,
-              thisProperty.identifierNode.range, baseProperty.identifierNode.range,
-              thisProperty.name, baseClass.internalName, thisClass.internalName
+              thisProperty.identifierNode.range,
+              baseProperty.identifierNode.range,
+              thisProperty.name,
+              baseClass.internalName,
+              thisClass.internalName
             );
           }
           return;
-        } else if (thisIsField) { // base is also field
+        } else if (thisIsField) {
+          // base is also field
           // Fields don't override other fields and can only be redeclared
           return;
         }
@@ -1651,8 +1721,11 @@ export class Program extends DiagnosticEmitter {
     } else {
       this.errorRelated(
         DiagnosticCode.Property_0_in_type_1_is_not_assignable_to_the_same_property_in_base_type_2,
-        thisMember.identifierNode.range, baseMember.identifierNode.range,
-        thisMember.name, thisClass.internalName, baseClass.internalName
+        thisMember.identifierNode.range,
+        baseMember.identifierNode.range,
+        thisMember.name,
+        thisClass.internalName,
+        baseClass.internalName
       );
     }
   }
@@ -1736,7 +1809,8 @@ export class Program extends DiagnosticEmitter {
       }
       case ElementKind.Property:
       case ElementKind.Function:
-      case ElementKind.Class: assert(false); // assumes that there are no instances yet
+      case ElementKind.Class:
+        assert(false); // assumes that there are no instances yet
     }
     let staticMembers = element.members;
     if (staticMembers) {
@@ -1752,7 +1826,7 @@ export class Program extends DiagnosticEmitter {
   markModuleImport(moduleName: string, name: string, element: Element): void {
     element.set(CommonFlags.ModuleImport);
     let moduleImports = this.moduleImports;
-    let module: Map<string,Element>;
+    let module: Map<string, Element>;
     if (moduleImports.has(moduleName)) {
       module = assert(moduleImports.get(moduleName));
     } else {
@@ -1833,10 +1907,7 @@ export class Program extends DiagnosticEmitter {
               name
             );
           } else {
-            this.error(
-              DiagnosticCode.Duplicate_identifier_0,
-              element.identifierNode.range, name
-            );
+            this.error(DiagnosticCode.Duplicate_identifier_0, element.identifierNode.range, name);
           }
           return element;
         }
@@ -1869,7 +1940,7 @@ export class Program extends DiagnosticEmitter {
     /** The other file. */
     foreignFile: File,
     /** So far queued exports. */
-    queuedExports: Map<File,Map<string,QueuedExport>>
+    queuedExports: Map<File, Map<string, QueuedExport>>
   ): DeclaredElement | null {
     do {
       // check if already resolved
@@ -1926,15 +1997,9 @@ export class Program extends DiagnosticEmitter {
         let flag = DecoratorFlags.fromKind(kind);
         if (flag) {
           if (!(acceptedFlags & flag)) {
-            this.error(
-              DiagnosticCode.Decorator_0_is_not_valid_here,
-              decorator.range, decorator.name.range.toString()
-            );
+            this.error(DiagnosticCode.Decorator_0_is_not_valid_here, decorator.range, decorator.name.range.toString());
           } else if (flags & flag) {
-            this.error(
-              DiagnosticCode.Duplicate_decorator,
-              decorator.range
-            );
+            this.error(DiagnosticCode.Duplicate_decorator, decorator.range);
           } else {
             flags |= flag;
           }
@@ -1947,10 +2012,7 @@ export class Program extends DiagnosticEmitter {
   /** Checks whether a particular feature is enabled. */
   checkFeatureEnabled(feature: Feature, reportNode: Node): bool {
     if (!this.options.hasFeature(feature)) {
-      this.error(
-        DiagnosticCode.Feature_0_is_not_enabled,
-        reportNode.range, featureToString(feature)
-      );
+      this.error(DiagnosticCode.Feature_0_is_not_enabled, reportNode.range, featureToString(feature));
       return false;
     }
     return true;
@@ -1959,7 +2021,8 @@ export class Program extends DiagnosticEmitter {
   /** Checks whether a particular type is supported. */
   checkTypeSupported(type: Type, reportNode: Node): bool {
     switch (type.kind) {
-      case TypeKind.V128: return this.checkFeatureEnabled(Feature.Simd, reportNode);
+      case TypeKind.V128:
+        return this.checkFeatureEnabled(Feature.Simd, reportNode);
       case TypeKind.Func:
       case TypeKind.Extern:
         // Non-nullability is introduced by typed function references (here part of GC)
@@ -1970,15 +2033,19 @@ export class Program extends DiagnosticEmitter {
       case TypeKind.Struct:
       case TypeKind.Array:
       case TypeKind.I31: {
-        return this.checkFeatureEnabled(Feature.ReferenceTypes, reportNode)
-            && this.checkFeatureEnabled(Feature.GC, reportNode);
+        return (
+          this.checkFeatureEnabled(Feature.ReferenceTypes, reportNode) &&
+          this.checkFeatureEnabled(Feature.GC, reportNode)
+        );
       }
       case TypeKind.String:
       case TypeKind.StringviewWTF8:
       case TypeKind.StringviewWTF16:
       case TypeKind.StringviewIter: {
-        return this.checkFeatureEnabled(Feature.ReferenceTypes, reportNode)
-            && this.checkFeatureEnabled(Feature.Stringref, reportNode);
+        return (
+          this.checkFeatureEnabled(Feature.ReferenceTypes, reportNode) &&
+          this.checkFeatureEnabled(Feature.Stringref, reportNode)
+        );
       }
     }
     let classReference = type.getClass();
@@ -2034,10 +2101,9 @@ export class Program extends DiagnosticEmitter {
       name,
       parent,
       declaration,
-      this.checkDecorators(declaration.decorators,
-        DecoratorFlags.Global |
-        DecoratorFlags.Final |
-        DecoratorFlags.Unmanaged
+      this.checkDecorators(
+        declaration.decorators,
+        DecoratorFlags.Global | DecoratorFlags.Final | DecoratorFlags.Unmanaged
       )
     );
     if (!parent.add(name, element)) return null;
@@ -2051,10 +2117,7 @@ export class Program extends DiagnosticEmitter {
         if (element.hasDecorator(DecoratorFlags.Unmanaged)) {
           this.error(
             DiagnosticCode.Unmanaged_classes_cannot_implement_interfaces,
-            Range.join(
-              declaration.name.range,
-              implementsTypes[numImplementsTypes - 1].range
-            )
+            Range.join(declaration.name.range, implementsTypes[numImplementsTypes - 1].range)
           );
         } else {
           queuedImplements.push(element);
@@ -2065,10 +2128,7 @@ export class Program extends DiagnosticEmitter {
     // remember classes that extend another class
     if (declaration.extendsType) {
       queuedExtends.push(element);
-    } else if (
-      !element.hasDecorator(DecoratorFlags.Unmanaged) &&
-      element.internalName != BuiltinNames.Object
-    ) {
+    } else if (!element.hasDecorator(DecoratorFlags.Unmanaged) && element.internalName != BuiltinNames.Object) {
       element.implicitlyExtendsObject = true;
     }
 
@@ -2093,8 +2153,10 @@ export class Program extends DiagnosticEmitter {
           }
           break;
         }
-        case NodeKind.IndexSignature: break; // ignored for now
-        default: assert(false); // class member expected
+        case NodeKind.IndexSignature:
+          break; // ignored for now
+        default:
+          assert(false); // class member expected
       }
     }
     return element;
@@ -2114,27 +2176,19 @@ export class Program extends DiagnosticEmitter {
     if (parent.is(CommonFlags.Ambient)) {
       acceptedFlags |= DecoratorFlags.External;
     }
-    if (declaration.is(CommonFlags.Static)) { // global variable
+    if (declaration.is(CommonFlags.Static)) {
+      // global variable
       assert(parent.kind != ElementKind.InterfacePrototype);
       acceptedFlags |= DecoratorFlags.Lazy;
       if (declaration.is(CommonFlags.Readonly)) {
         acceptedFlags |= DecoratorFlags.Inline;
       }
-      element = new Global(
-        name,
-        parent,
-        this.checkDecorators(decorators, acceptedFlags),
-        declaration
-      );
+      element = new Global(name, parent, this.checkDecorators(decorators, acceptedFlags), declaration);
       if (!parent.add(name, element)) return;
-    } else { // actual instance field
+    } else {
+      // actual instance field
       assert(!declaration.isAny(CommonFlags.Abstract | CommonFlags.Get | CommonFlags.Set));
-      element = PropertyPrototype.forField(
-        name,
-        parent,
-        declaration,
-        this.checkDecorators(decorators, acceptedFlags)
-      );
+      element = PropertyPrototype.forField(name, parent, declaration, this.checkDecorators(decorators, acceptedFlags));
       if (!parent.addInstance(name, element)) return;
     }
   }
@@ -2150,9 +2204,7 @@ export class Program extends DiagnosticEmitter {
     let isStatic = declaration.is(CommonFlags.Static);
     let acceptedFlags = DecoratorFlags.Inline | DecoratorFlags.Unsafe;
     if (!declaration.is(CommonFlags.Generic)) {
-      acceptedFlags |= DecoratorFlags.OperatorBinary
-                    |  DecoratorFlags.OperatorPrefix
-                    |  DecoratorFlags.OperatorPostfix;
+      acceptedFlags |= DecoratorFlags.OperatorBinary | DecoratorFlags.OperatorPrefix | DecoratorFlags.OperatorPostfix;
     }
     if (parent.is(CommonFlags.Ambient)) {
       acceptedFlags |= DecoratorFlags.External;
@@ -2167,15 +2219,14 @@ export class Program extends DiagnosticEmitter {
       this.checkDecorators(declaration.decorators, acceptedFlags)
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
-      this.error(
-        DiagnosticCode.Not_implemented_0,
-        declaration.range, `Builtin '${element.internalName}'`
-      );
+      this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
     }
-    if (isStatic) { // global function
+    if (isStatic) {
+      // global function
       assert(declaration.name.kind != NodeKind.Constructor);
       if (!parent.add(name, element)) return null;
-    } else { // actual instance method
+    } else {
+      // actual instance method
       if (!parent.addInstance(name, element)) return null;
     }
     this.checkOperatorOverloads(declaration.decorators, element, parent);
@@ -2207,33 +2258,21 @@ export class Program extends DiagnosticEmitter {
                 let text = (<StringLiteralExpression>firstArg).value;
                 let kind = OperatorKind.fromDecorator(decorator.decoratorKind, text);
                 if (kind == OperatorKind.Invalid) {
-                  this.error(
-                    DiagnosticCode._0_is_not_a_valid_operator,
-                    firstArg.range, text
-                  );
+                  this.error(DiagnosticCode._0_is_not_a_valid_operator, firstArg.range, text);
                 } else {
                   let overloads = classPrototype.operatorOverloadPrototypes;
                   if (overloads.has(kind)) {
-                    this.error(
-                      DiagnosticCode.Duplicate_function_implementation,
-                      firstArg.range
-                    );
+                    this.error(DiagnosticCode.Duplicate_function_implementation, firstArg.range);
                   } else {
                     prototype.operatorKind = kind;
                     overloads.set(kind, prototype);
                   }
                 }
               } else {
-                this.error(
-                  DiagnosticCode.String_literal_expected,
-                  firstArg.range
-                );
+                this.error(DiagnosticCode.String_literal_expected, firstArg.range);
               }
             } else {
-              this.error(
-                DiagnosticCode.Expected_0_arguments_but_got_1,
-                decorator.range, "1", numArgs.toString()
-              );
+              this.error(DiagnosticCode.Expected_0_arguments_but_got_1, decorator.range, "1", numArgs.toString());
             }
           }
         }
@@ -2270,10 +2309,7 @@ export class Program extends DiagnosticEmitter {
         return element;
       }
     }
-    this.error(
-      DiagnosticCode.Duplicate_property_0,
-      declaration.name.range, name
-    );
+    this.error(DiagnosticCode.Duplicate_property_0, declaration.name.range, name);
     return null;
   }
 
@@ -2290,18 +2326,12 @@ export class Program extends DiagnosticEmitter {
     let isGetter = declaration.is(CommonFlags.Get);
     if (isGetter) {
       if (property.getterPrototype) {
-        this.error(
-          DiagnosticCode.Duplicate_property_0,
-          declaration.name.range, name
-        );
+        this.error(DiagnosticCode.Duplicate_property_0, declaration.name.range, name);
         return;
       }
     } else {
       if (property.setterPrototype) {
-        this.error(
-          DiagnosticCode.Duplicate_property_0,
-          declaration.name.range, name
-        );
+        this.error(DiagnosticCode.Duplicate_property_0, declaration.name.range, name);
         return;
       }
     }
@@ -2309,9 +2339,7 @@ export class Program extends DiagnosticEmitter {
       (isGetter ? GETTER_PREFIX : SETTER_PREFIX) + name,
       property.parent, // same level as property
       declaration,
-      this.checkDecorators(declaration.decorators,
-        DecoratorFlags.Inline | DecoratorFlags.Unsafe
-      )
+      this.checkDecorators(declaration.decorators, DecoratorFlags.Inline | DecoratorFlags.Unsafe)
     );
     if (isGetter) {
       property.getterPrototype = element;
@@ -2332,11 +2360,7 @@ export class Program extends DiagnosticEmitter {
       name,
       parent,
       declaration,
-      this.checkDecorators(declaration.decorators,
-        DecoratorFlags.Global |
-        DecoratorFlags.Inline |
-        DecoratorFlags.Lazy
-      )
+      this.checkDecorators(declaration.decorators, DecoratorFlags.Global | DecoratorFlags.Inline | DecoratorFlags.Lazy)
     );
     if (!parent.add(name, element)) return null;
     let values = declaration.values;
@@ -2358,9 +2382,7 @@ export class Program extends DiagnosticEmitter {
       name,
       parent,
       declaration,
-      this.checkDecorators(declaration.decorators,
-        DecoratorFlags.None
-      )
+      this.checkDecorators(declaration.decorators, DecoratorFlags.None)
     );
     if (!parent.add(name, element)) return;
   }
@@ -2372,27 +2394,31 @@ export class Program extends DiagnosticEmitter {
     /** Parent file. */
     parent: File,
     /** So far queued `export`s. */
-    queuedExports: Map<File,Map<string,QueuedExport>>,
+    queuedExports: Map<File, Map<string, QueuedExport>>,
     /** So far queued `export *`s. */
-    queuedExportsStar: Map<File,QueuedExportStar[]>
+    queuedExportsStar: Map<File, QueuedExportStar[]>
   ): void {
     let members = statement.members;
-    if (members) { // export { foo, bar } [from "./baz"]
+    if (members) {
+      // export { foo, bar } [from "./baz"]
       for (let i = 0, k = members.length; i < k; ++i) {
         this.initializeExport(members[i], parent, statement.internalPath, queuedExports);
       }
-    } else { // export * from "./baz"
+    } else {
+      // export * from "./baz"
       let queued: QueuedExportStar[];
       if (queuedExportsStar.has(parent)) queued = assert(queuedExportsStar.get(parent));
-      else queuedExportsStar.set(parent, queued = []);
+      else queuedExportsStar.set(parent, (queued = []));
       let foreignPath = statement.internalPath!; // must be set for export *
-      queued.push(new QueuedExportStar(
-        foreignPath,
-        foreignPath.endsWith(INDEX_SUFFIX) // strip or add index depending on what's already present
-          ? foreignPath.substring(0, foreignPath.length - INDEX_SUFFIX.length)
-          : foreignPath + INDEX_SUFFIX,
-        assert(statement.path)
-      ));
+      queued.push(
+        new QueuedExportStar(
+          foreignPath,
+          foreignPath.endsWith(INDEX_SUFFIX) // strip or add index depending on what's already present
+            ? foreignPath.substring(0, foreignPath.length - INDEX_SUFFIX.length)
+            : foreignPath + INDEX_SUFFIX,
+          assert(statement.path)
+        )
+      );
     }
   }
 
@@ -2405,7 +2431,7 @@ export class Program extends DiagnosticEmitter {
     /** Path to the other file, if present. */
     foreignPath: string | null,
     /** So far queued `export`s. */
-    queuedExports: Map<File,Map<string,QueuedExport>>
+    queuedExports: Map<File, Map<string, QueuedExport>>
   ): void {
     let localName = member.localName.text;
     let foreignName = member.exportedName.text;
@@ -2415,42 +2441,41 @@ export class Program extends DiagnosticEmitter {
     if (element) {
       this.error(
         DiagnosticCode.Export_declaration_conflicts_with_exported_declaration_of_0,
-        member.exportedName.range, foreignName
+        member.exportedName.range,
+        foreignName
       );
       return;
     }
     // local element, i.e. export { foo [as bar] }
     if (foreignPath == null) {
-
       // resolve right away if the local element already exists
-      if (element = localFile.getMember(localName)) {
+      if ((element = localFile.getMember(localName))) {
         localFile.ensureExport(foreignName, element);
 
-      // otherwise queue it
+        // otherwise queue it
       } else {
-        let queued: Map<string,QueuedExport>;
+        let queued: Map<string, QueuedExport>;
         if (queuedExports.has(localFile)) queued = assert(queuedExports.get(localFile));
-        else queuedExports.set(localFile, queued = new Map());
-        queued.set(foreignName, new QueuedExport(
-          member.localName,
-          member.exportedName,
-          null, null
-        ));
+        else queuedExports.set(localFile, (queued = new Map()));
+        queued.set(foreignName, new QueuedExport(member.localName, member.exportedName, null, null));
       }
 
-    // foreign element, i.e. export { foo } from "./bar"
+      // foreign element, i.e. export { foo } from "./bar"
     } else {
-      let queued: Map<string,QueuedExport>;
+      let queued: Map<string, QueuedExport>;
       if (queuedExports.has(localFile)) queued = assert(queuedExports.get(localFile));
-      else queuedExports.set(localFile, queued = new Map());
-      queued.set(foreignName, new QueuedExport(
-        member.localName,
-        member.exportedName,
-        foreignPath,
-        foreignPath.endsWith(INDEX_SUFFIX) // strip or add index depending on what's already present
-          ? foreignPath.substring(0, foreignPath.length - INDEX_SUFFIX.length)
-          : foreignPath + INDEX_SUFFIX
-      ));
+      else queuedExports.set(localFile, (queued = new Map()));
+      queued.set(
+        foreignName,
+        new QueuedExport(
+          member.localName,
+          member.exportedName,
+          foreignPath,
+          foreignPath.endsWith(INDEX_SUFFIX) // strip or add index depending on what's already present
+            ? foreignPath.substring(0, foreignPath.length - INDEX_SUFFIX.length)
+            : foreignPath + INDEX_SUFFIX
+        )
+      );
     }
   }
 
@@ -2487,7 +2512,8 @@ export class Program extends DiagnosticEmitter {
         element = this.initializeNamespace(<NamespaceDeclaration>declaration, parent, queuedExtends, queuedImplements);
         break;
       }
-      default: assert(false);
+      default:
+        assert(false);
     }
     if (element) {
       let exports = parent.exports;
@@ -2517,29 +2543,27 @@ export class Program extends DiagnosticEmitter {
     /** So far queued `import`s. */
     queuedImports: QueuedImport[],
     /** So far queued `export`s. */
-    queuedExports: Map<File,Map<string,QueuedExport>>
+    queuedExports: Map<File, Map<string, QueuedExport>>
   ): void {
     let declarations = statement.declarations;
-    if (declarations) { // import { foo [as bar] } from "./baz"
+    if (declarations) {
+      // import { foo [as bar] } from "./baz"
       for (let i = 0, k = declarations.length; i < k; ++i) {
-        this.initializeImport(
-          declarations[i],
-          parent,
-          statement.internalPath,
-          queuedImports,
-          queuedExports
-        );
+        this.initializeImport(declarations[i], parent, statement.internalPath, queuedImports, queuedExports);
       }
     } else {
       let namespaceName = statement.namespaceName;
-      if (namespaceName) { // import * as foo from "./bar"
-        queuedImports.push(new QueuedImport(
-          parent,
-          namespaceName,
-          null, // indicates import *
-          statement.internalPath,
-          statement.internalPath + INDEX_SUFFIX
-        ));
+      if (namespaceName) {
+        // import * as foo from "./bar"
+        queuedImports.push(
+          new QueuedImport(
+            parent,
+            namespaceName,
+            null, // indicates import *
+            statement.internalPath,
+            statement.internalPath + INDEX_SUFFIX
+          )
+        );
       } else {
         // import "./foo"
       }
@@ -2547,7 +2571,8 @@ export class Program extends DiagnosticEmitter {
   }
 
   /** Initializes a single `import` declaration. Does not handle `import *`. */
-  private initializeImport( // { foo [as bar] }
+  private initializeImport(
+    // { foo [as bar] }
     /** The declaration to initialize. */
     declaration: ImportDeclaration,
     /** Parent file. */
@@ -2557,7 +2582,7 @@ export class Program extends DiagnosticEmitter {
     /** So far queued `import`s. */
     queuedImports: QueuedImport[],
     /** So far queued `export`s. */
-    queuedExports: Map<File,Map<string,QueuedExport>>
+    queuedExports: Map<File, Map<string, QueuedExport>>
   ): void {
     let foreignPathAlt = foreignPath.endsWith(INDEX_SUFFIX) // strip or add index depending on what's already present
       ? foreignPath.substring(0, foreignPath.length - INDEX_SUFFIX.length)
@@ -2574,13 +2599,9 @@ export class Program extends DiagnosticEmitter {
     }
 
     // otherwise queue it
-    queuedImports.push(new QueuedImport(
-      parent,
-      declaration.name,
-      declaration.foreignName,
-      foreignPath,
-      foreignPathAlt
-    ));
+    queuedImports.push(
+      new QueuedImport(parent, declaration.name, declaration.foreignName, foreignPath, foreignPathAlt)
+    );
   }
 
   /** Initializes a function. Does not handle methods. */
@@ -2615,10 +2636,7 @@ export class Program extends DiagnosticEmitter {
       this.checkDecorators(declaration.decorators, validDecorators)
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
-      this.error(
-        DiagnosticCode.Not_implemented_0,
-        declaration.range, `Builtin '${element.internalName}'`
-      );
+      this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
     }
     if (!parent.add(name, element)) return null;
     return element;
@@ -2631,16 +2649,14 @@ export class Program extends DiagnosticEmitter {
     /** Parent element, usually a file or namespace. */
     parent: Element,
     /** So far queued `extends` clauses. */
-    queuedExtends: ClassPrototype[],
+    queuedExtends: ClassPrototype[]
   ): InterfacePrototype | null {
     let name = declaration.name.text;
     let element = new InterfacePrototype(
       name,
       parent,
       declaration,
-      this.checkDecorators(declaration.decorators,
-        DecoratorFlags.Global
-      )
+      this.checkDecorators(declaration.decorators, DecoratorFlags.Global)
     );
     if (!parent.add(name, element)) return null;
 
@@ -2664,7 +2680,8 @@ export class Program extends DiagnosticEmitter {
           }
           break;
         }
-        default: assert(false); // interface member expected
+        default:
+          assert(false); // interface member expected
       }
     }
     return element;
@@ -2689,13 +2706,7 @@ export class Program extends DiagnosticEmitter {
         declaration.decorators,
         declaration.flags | CommonFlags.Get,
         null,
-        Node.createFunctionType(
-          [],
-          typeNode,
-          null,
-          false,
-          declaration.range
-        ),
+        Node.createFunctionType([], typeNode, null, false, declaration.range),
         null,
         declaration.range
       ),
@@ -2709,15 +2720,7 @@ export class Program extends DiagnosticEmitter {
           declaration.flags | CommonFlags.Set,
           null,
           Node.createFunctionType(
-            [
-              Node.createParameter(
-                ParameterKind.Default,
-                declaration.name,
-                typeNode,
-                null,
-                declaration.name.range
-              )
-            ],
+            [Node.createParameter(ParameterKind.Default, declaration.name, typeNode, null, declaration.name.range)],
             Node.createOmittedType(declaration.name.range.atEnd),
             null,
             false,
@@ -2783,7 +2786,8 @@ export class Program extends DiagnosticEmitter {
           this.initializeVariables(<VariableStatement>member, original);
           break;
         }
-        default: assert(false); // namespace member expected
+        default:
+          assert(false); // namespace member expected
       }
     }
     if (original != element) copyMembers(original, element); // keep original parent
@@ -2828,17 +2832,9 @@ export class Program extends DiagnosticEmitter {
       if (declaration.range.source.isLibrary) {
         acceptedFlags |= DecoratorFlags.Builtin;
       }
-      let element = new Global(
-        name,
-        parent,
-        this.checkDecorators(declaration.decorators, acceptedFlags),
-        declaration
-      );
+      let element = new Global(name, parent, this.checkDecorators(declaration.decorators, acceptedFlags), declaration);
       if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinVariables_onAccess.has(element.internalName)) {
-        this.error(
-          DiagnosticCode.Not_implemented_0,
-          declaration.range, `Builtin '${element.internalName}'`
-        );
+        this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
       }
       if (!parent.add(name, element)) continue; // reports
     }
@@ -2935,35 +2931,46 @@ export enum DecoratorFlags {
   /** Is compiled lazily. */
   Lazy = 1 << 10,
   /** Is considered unsafe code. */
-  Unsafe = 1 << 11
+  Unsafe = 1 << 11,
 }
 
 export namespace DecoratorFlags {
-
   /** Translates a decorator kind to the respective decorator flag. */
   export function fromKind(kind: DecoratorKind): DecoratorFlags {
     switch (kind) {
-      case DecoratorKind.Global: return DecoratorFlags.Global;
+      case DecoratorKind.Global:
+        return DecoratorFlags.Global;
       case DecoratorKind.Operator:
-      case DecoratorKind.OperatorBinary: return DecoratorFlags.OperatorBinary;
-      case DecoratorKind.OperatorPrefix: return DecoratorFlags.OperatorPrefix;
-      case DecoratorKind.OperatorPostfix: return DecoratorFlags.OperatorPostfix;
-      case DecoratorKind.Unmanaged: return DecoratorFlags.Unmanaged;
-      case DecoratorKind.Final: return DecoratorFlags.Final;
-      case DecoratorKind.Inline: return DecoratorFlags.Inline;
-      case DecoratorKind.External: return DecoratorFlags.External;
-      case DecoratorKind.ExternalJs: return DecoratorFlags.ExternalJs;
-      case DecoratorKind.Builtin: return DecoratorFlags.Builtin;
-      case DecoratorKind.Lazy: return DecoratorFlags.Lazy;
-      case DecoratorKind.Unsafe: return DecoratorFlags.Unsafe;
-      default: return DecoratorFlags.None;
+      case DecoratorKind.OperatorBinary:
+        return DecoratorFlags.OperatorBinary;
+      case DecoratorKind.OperatorPrefix:
+        return DecoratorFlags.OperatorPrefix;
+      case DecoratorKind.OperatorPostfix:
+        return DecoratorFlags.OperatorPostfix;
+      case DecoratorKind.Unmanaged:
+        return DecoratorFlags.Unmanaged;
+      case DecoratorKind.Final:
+        return DecoratorFlags.Final;
+      case DecoratorKind.Inline:
+        return DecoratorFlags.Inline;
+      case DecoratorKind.External:
+        return DecoratorFlags.External;
+      case DecoratorKind.ExternalJs:
+        return DecoratorFlags.ExternalJs;
+      case DecoratorKind.Builtin:
+        return DecoratorFlags.Builtin;
+      case DecoratorKind.Lazy:
+        return DecoratorFlags.Lazy;
+      case DecoratorKind.Unsafe:
+        return DecoratorFlags.Unsafe;
+      default:
+        return DecoratorFlags.None;
     }
   }
 }
 
 /** Base class of all program elements. */
 export abstract class Element {
-
   /** Parent element. */
   parent!: Element;
   /** Common flags indicating specific traits. */
@@ -2971,7 +2978,7 @@ export abstract class Element {
   /** Decorator flags indicating annotated traits. */
   decoratorFlags: DecoratorFlags = DecoratorFlags.None;
   /** Member elements. */
-  members: Map<string,DeclaredElement> | null = null;
+  members: Map<string, DeclaredElement> | null = null;
   /** Shadowing type in type space, if any. */
   shadowType: TypeDefinition | null = null;
 
@@ -3009,17 +3016,29 @@ export abstract class Element {
   }
 
   /** Tests if this element has a specific flag or flags. */
-  is(flag: CommonFlags): bool { return (this.flags & flag) == flag; }
+  is(flag: CommonFlags): bool {
+    return (this.flags & flag) == flag;
+  }
   /** Tests if this element has any of the specified flags. */
-  isAny(flags: CommonFlags): bool { return (this.flags & flags) != 0; }
+  isAny(flags: CommonFlags): bool {
+    return (this.flags & flags) != 0;
+  }
   /** Sets a specific flag or flags. */
-  set(flag: CommonFlags): void { this.flags |= flag; }
+  set(flag: CommonFlags): void {
+    this.flags |= flag;
+  }
   /** Unsets the specific flag or flags. */
-  unset(flag: CommonFlags): void {this.flags &= ~flag; }
+  unset(flag: CommonFlags): void {
+    this.flags &= ~flag;
+  }
   /** Tests if this element has a specific decorator flag or flags. */
-  hasDecorator(flag: DecoratorFlags): bool { return (this.decoratorFlags & flag) == flag; }
+  hasDecorator(flag: DecoratorFlags): bool {
+    return (this.decoratorFlags & flag) == flag;
+  }
   /** Tests if this element has any of the specified decorator flags. */
-  hasAnyDecorator(flags: DecoratorFlags): bool { return (this.decoratorFlags & flags) != 0; }
+  hasAnyDecorator(flags: DecoratorFlags): bool {
+    return (this.decoratorFlags & flags) != 0;
+  }
 
   /** Get the member with the specified name, if any. */
   getMember(name: string): DeclaredElement | null {
@@ -3047,9 +3066,7 @@ export abstract class Element {
         if (merged) {
           element = merged; // use merged element
         } else {
-          let reportedIdentifier = localIdentifierIfImport
-            ? localIdentifierIfImport
-            : element.identifierNode;
+          let reportedIdentifier = localIdentifierIfImport ? localIdentifierIfImport : element.identifierNode;
           if (isDeclaredElement(existing.kind)) {
             this.program.errorRelated(
               DiagnosticCode.Duplicate_identifier_0,
@@ -3060,7 +3077,8 @@ export abstract class Element {
           } else {
             this.program.error(
               DiagnosticCode.Duplicate_identifier_0,
-              reportedIdentifier.range, reportedIdentifier.text
+              reportedIdentifier.range,
+              reportedIdentifier.text
             );
           }
           return false;
@@ -3106,7 +3124,8 @@ export abstract class Element {
     let parent = this.parent;
     switch (parent.kind) {
       case ElementKind.Class:
-      case ElementKind.Interface: return true;
+      case ElementKind.Interface:
+        return true;
     }
     return false;
   }
@@ -3116,7 +3135,8 @@ export abstract class Element {
     let parent = this.parent;
     switch (parent.kind) {
       case ElementKind.Class:
-      case ElementKind.Interface: return <Class>parent;
+      case ElementKind.Interface:
+        return <Class>parent;
     }
     return null;
   }
@@ -3137,7 +3157,6 @@ export function isDeclaredElement(kind: ElementKind): bool {
 
 /** Base class of elements with an associated declaration statement. */
 export abstract class DeclaredElement extends Element {
-
   /** Constructs a new declared program element. */
   protected constructor(
     /** Specific element kind. */
@@ -3204,7 +3223,6 @@ export function isTypedElement(kind: ElementKind): bool {
 
 /** Base class of elements that can be resolved to a concrete type. */
 export abstract class TypedElement extends DeclaredElement {
-
   /** Resolved type. Set once `is(RESOLVED)`, otherwise void. */
   type: Type = Type.void;
 
@@ -3247,7 +3265,6 @@ export function createFile(
 
 /** A file representing the implicit top-level namespace of a source. */
 export class File extends Element {
-
   /** File exports. */
   exports: Map<string, DeclaredElement> | null = null;
   /** File re-exports. */
@@ -3291,10 +3308,7 @@ export class File extends Element {
     if (!super.add(name, element, localIdentifierIfImport)) return false;
     element = assert(this.getMember(name)); // possibly merged locally
     if (element.is(CommonFlags.Export) && !localIdentifierIfImport) {
-      this.ensureExport(
-        element.name,
-        element
-      );
+      this.ensureExport(element.name, element);
     }
     return true;
   }
@@ -3306,7 +3320,7 @@ export class File extends Element {
     let exportsStar = this.exportsStar;
     if (exportsStar) {
       for (let i = 0, k = exportsStar.length; i < k; ++i) {
-        if (element = exportsStar[i].getMember(name)) return element;
+        if ((element = exportsStar[i].getMember(name))) return element;
       }
     }
     return null;
@@ -3327,7 +3341,7 @@ export class File extends Element {
     if (this.source.sourceKind == SourceKind.LibraryEntry) this.program.ensureGlobal(name, element);
 
     // Also, add to the namespaces that capture our exports
-    for(let i = 0; i < this.aliasNamespaces.length; i++) {
+    for (let i = 0; i < this.aliasNamespaces.length; i++) {
       let ns = this.aliasNamespaces[i];
       ns.add(name, element);
     }
@@ -3356,11 +3370,7 @@ export class File extends Element {
   }
 
   /** Creates an imported namespace from this file. */
-  asAliasNamespace(
-    name: string,
-    parent: Element,
-    localIdentifier: IdentifierExpression
-  ): Namespace {
+  asAliasNamespace(name: string, parent: Element, localIdentifier: IdentifierExpression): Namespace {
     let declaration = this.program.makeNativeNamespaceDeclaration(name);
     declaration.name = localIdentifier;
     let ns = new Namespace(name, parent, declaration);
@@ -3414,7 +3424,7 @@ export class JsonFile extends File {
     if (!exports) this.exports = exports = new Map();
     exports.set(name, element);
     // Also, add to the namespaces that capture our exports
-    for(let i = 0; i < this.aliasNamespaces.length; i++) {
+    for (let i = 0; i < this.aliasNamespaces.length; i++) {
       let ns = this.aliasNamespaces[i];
       ns.add(name, element);
     }
@@ -3433,7 +3443,7 @@ export class JsonFile extends File {
 
     switch (v.kind) {
       case JsonValueKind.Unknown:
-        this.program.error(DiagnosticCode.Not_implemented_0, v.range, "import complex object from json file")
+        this.program.error(DiagnosticCode.Not_implemented_0, v.range, "import complex object from json file");
         return null;
       case JsonValueKind.Bool:
       case JsonValueKind.I64:
@@ -3452,9 +3462,9 @@ export class JsonFile extends File {
   }
 
   convertJsonValue(name: string, v: JsonValue): DeclaredElement | null {
-    switch(v.kind) {
+    switch (v.kind) {
       case JsonValueKind.Unknown:
-        this.program.error(DiagnosticCode.Not_implemented_0, v.range, "import complex object from json file")
+        this.program.error(DiagnosticCode.Not_implemented_0, v.range, "import complex object from json file");
         return null;
       case JsonValueKind.Object:
         return this.convertJsonObject(name, v as JsonObject);
@@ -3472,12 +3482,14 @@ export class JsonFile extends File {
   convertScalerJsonValue(name: string, v: JsonValue): Global | null {
     const range = v.range;
     if (v.kind == JsonValueKind.Array && !isScalarJsonKind((v as JsonArray).uniqueType)) {
-      this.program.error(DiagnosticCode.Not_implemented_0, v.range, "import complex object from json file")
+      this.program.error(DiagnosticCode.Not_implemented_0, v.range, "import complex object from json file");
       return null;
     }
     let decl = Node.createVariableDeclaration(
       Node.createIdentifierExpression(name, range),
-      null, CommonFlags.Export, null,
+      null,
+      CommonFlags.Export,
+      null,
       v.toExpression(),
       range
     );
@@ -3495,7 +3507,11 @@ export class JsonFile extends File {
       elements.push(element);
     }
     let decl = Node.createNamespaceDeclaration(
-      Node.createIdentifierExpression(name, range), null, CommonFlags.Export, members, range
+      Node.createIdentifierExpression(name, range),
+      null,
+      CommonFlags.Export,
+      members,
+      range
     );
     let ns = new Namespace(name, this, decl);
     for (let i = 0; i < elements.length; i++) {
@@ -3507,7 +3523,6 @@ export class JsonFile extends File {
 
 /** A type definition. */
 export class TypeDefinition extends TypedElement {
-
   /** Constructs a new type definition. */
   constructor(
     /** Simple name. */
@@ -3543,7 +3558,6 @@ export class TypeDefinition extends TypedElement {
 
 /** A namespace that differs from a file in being user-declared with a name. */
 export class Namespace extends DeclaredElement {
-
   /** Constructs a new namespace. */
   constructor(
     /** Simple name. */
@@ -3555,14 +3569,7 @@ export class Namespace extends DeclaredElement {
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags = DecoratorFlags.None
   ) {
-    super(
-      ElementKind.Namespace,
-      name,
-      mangleInternalName(name, parent, false),
-      parent.program,
-      parent,
-      declaration
-    );
+    super(ElementKind.Namespace, name, mangleInternalName(name, parent, false), parent.program, parent, declaration);
     this.decoratorFlags = decoratorFlags;
   }
 
@@ -3588,14 +3595,7 @@ export class Enum extends TypedElement {
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags = DecoratorFlags.None
   ) {
-    super(
-      ElementKind.Enum,
-      name,
-      mangleInternalName(name, parent, false),
-      parent.program,
-      parent,
-      declaration
-    );
+    super(ElementKind.Enum, name, mangleInternalName(name, parent, false), parent.program, parent, declaration);
     this.decoratorFlags = decoratorFlags;
     this.setType(Type.i32);
   }
@@ -3615,12 +3615,11 @@ export const enum ConstantValueKind {
   /** Constant integer value. */
   Integer,
   /** Constant float value. */
-  Float
+  Float,
 }
 
 /** Base class of all variable-like program elements. */
 export abstract class VariableLikeElement extends TypedElement {
-
   /** Constant value kind. */
   constantValueKind: ConstantValueKind = ConstantValueKind.None;
   /** Constant integer value, if applicable. */
@@ -3681,7 +3680,6 @@ export abstract class VariableLikeElement extends TypedElement {
 
 /** An enum value. */
 export class EnumValue extends VariableLikeElement {
-
   /** Constructs a new enum value. */
   constructor(
     /** Simple name. */
@@ -3693,12 +3691,7 @@ export class EnumValue extends VariableLikeElement {
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags = DecoratorFlags.None
   ) {
-    super(
-      ElementKind.EnumValue,
-      name,
-      parent,
-      declaration
-    );
+    super(ElementKind.EnumValue, name, parent, declaration);
     this.decoratorFlags = decoratorFlags;
     this.setType(Type.i32);
   }
@@ -3725,12 +3718,7 @@ export class Global extends VariableLikeElement {
     /** Declaration reference. Creates a native declaration if omitted. */
     declaration: VariableLikeDeclarationStatement = parent.program.makeNativeVariableDeclaration(name)
   ) {
-    super(
-      ElementKind.Global,
-      name,
-      parent,
-      declaration
-    );
+    super(ElementKind.Global, name, parent, declaration);
     this.decoratorFlags = decoratorFlags;
   }
 }
@@ -3750,7 +3738,6 @@ export class Parameter {
 
 /** A local variable. */
 export class Local extends VariableLikeElement {
-
   /** Original name of the (temporary) local. */
   private originalName: string;
 
@@ -3767,12 +3754,7 @@ export class Local extends VariableLikeElement {
     /** Declaration reference. */
     declaration: VariableLikeDeclarationStatement = parent.program.makeNativeVariableDeclaration(name)
   ) {
-    super(
-      ElementKind.Local,
-      name,
-      parent,
-      declaration
-    );
+    super(ElementKind.Local, name, parent, declaration);
     this.originalName = name;
     this.index = index;
     assert(type != Type.void);
@@ -3795,16 +3777,15 @@ export class Local extends VariableLikeElement {
 
 /** A yet unresolved function prototype. */
 export class FunctionPrototype extends DeclaredElement {
-
   /** Operator kind, if an overload. */
   operatorKind: OperatorKind = OperatorKind.Invalid;
   /** Already resolved instances. */
-  instances: Map<string,Function> | null = null;
+  instances: Map<string, Function> | null = null;
   /** Methods overriding this one, if any. These are unbound. */
   unboundOverrides: Set<FunctionPrototype> | null = null;
 
   /** Clones of this prototype that are bound to specific classes. */
-  private boundPrototypes: Map<Class,FunctionPrototype> | null = null;
+  private boundPrototypes: Map<Class, FunctionPrototype> | null = null;
 
   /** Constructs a new function prototype. */
   constructor(
@@ -3889,7 +3870,6 @@ export class FunctionPrototype extends DeclaredElement {
 
 /** A resolved function. */
 export class Function extends TypedElement {
-
   /** Function prototype. */
   prototype: FunctionPrototype;
   /** Function signature. */
@@ -3899,7 +3879,7 @@ export class Function extends TypedElement {
   /** Concrete type arguments. */
   typeArguments: Type[] | null;
   /** Contextual type arguments. */
-  contextualTypeArguments: Map<string,Type> | null;
+  contextualTypeArguments: Map<string, Type> | null;
   /** Default control flow. */
   flow!: Flow;
   /** Ordered debug locations by Binaryen expression reference. */
@@ -3931,7 +3911,7 @@ export class Function extends TypedElement {
     /** Concrete signature. */
     signature: Signature, // pre-resolved
     /** Contextual type arguments inherited from its parent class, if any. */
-    contextualTypeArguments: Map<string,Type> | null = null
+    contextualTypeArguments: Map<string, Type> | null = null
   ) {
     super(
       ElementKind.Function,
@@ -3954,40 +3934,29 @@ export class Function extends TypedElement {
     this.flow = flow;
     const functionName = decodeURIComponent(this.internalName);
     if (!prototype.is(CommonFlags.Ambient)) {
-
-      if(this.parent.kind == ElementKind.Class){
+      if (this.parent.kind == ElementKind.Class) {
         addSubProgram(functionName, this.parent.internalName);
-      }else{
+      } else {
         addSubProgram(functionName, null);
       }
 
       let localIndex = 0;
       let thisType = signature.thisType;
       if (thisType) {
-        let local = new Local(
-          CommonNames.this_,
-          localIndex++,
-          thisType,
-          this
-        );
+        let local = new Local(CommonNames.this_, localIndex++, thisType, this);
         let scopedLocals = this.flow.scopedLocals;
         if (!scopedLocals) this.flow.scopedLocals = scopedLocals = new Map();
         scopedLocals.set(CommonNames.this_, local);
         this.localsByIndex[local.index] = local;
         flow.setLocalFlag(local.index, LocalFlags.Initialized);
-        
+
         addParameter(functionName, "this", thisType.toStringWithoutNullable(), local.index, false);
       }
       let parameterTypes = signature.parameterTypes;
       for (let i = 0, k = parameterTypes.length; i < k; ++i) {
         let parameterType = parameterTypes[i];
         let parameterName = this.getParameterName(i);
-        let local = new Local(
-          parameterName,
-          localIndex++,
-          parameterType,
-          this
-        );
+        let local = new Local(parameterName, localIndex++, parameterType, this);
         let scopedLocals = this.flow.scopedLocals;
         if (!scopedLocals) this.flow.scopedLocals = scopedLocals = new Map();
         scopedLocals.set(parameterName, local);
@@ -4018,9 +3987,7 @@ export class Function extends TypedElement {
   /** Gets the name of the parameter at the specified index. */
   getParameterName(index: i32): string {
     let parameters = (<FunctionDeclaration>this.declaration).signature.parameters;
-    return parameters.length > index
-      ? parameters[index].name.text
-      : getDefaultParameterName(index);
+    return parameters.length > index ? parameters[index].name.text : getDefaultParameterName(index);
   }
 
   /** Creates a stub for use with this function, i.e. for varargs or override calls. */
@@ -4033,7 +4000,7 @@ export class Function extends TypedElement {
       this.contextualTypeArguments
     );
     stub.original = this.original;
-    stub.set(this.flags & ~CommonFlags.Compiled | CommonFlags.Stub);
+    stub.set((this.flags & ~CommonFlags.Compiled) | CommonFlags.Stub);
     return stub;
   }
 
@@ -4113,7 +4080,6 @@ export class Function extends TypedElement {
 
 /** A property comprised of a getter and a setter function. */
 export class PropertyPrototype extends DeclaredElement {
-
   /** Field declaration, if a field. */
   fieldDeclaration: FieldDeclaration | null = null;
   /** Getter prototype. */
@@ -4124,7 +4090,7 @@ export class PropertyPrototype extends DeclaredElement {
   instance: Property | null = null;
 
   /** Clones of this prototype that are bound to specific classes. */
-  private boundPrototypes: Map<Class,PropertyPrototype> | null = null;
+  private boundPrototypes: Map<Class, PropertyPrototype> | null = null;
 
   /** Creates a property prototype representing a field. */
   static forField(
@@ -4135,7 +4101,7 @@ export class PropertyPrototype extends DeclaredElement {
     /** Declaration of the field. */
     fieldDeclaration: FieldDeclaration,
     /** Pre-checked flags indicating built-in decorators. */
-    decoratorFlags: DecoratorFlags,
+    decoratorFlags: DecoratorFlags
   ): PropertyPrototype {
     // A field is a property with an attached memory offset. Unlike normal
     // properties, accessors for fields are not explicitly declared, so we
@@ -4162,23 +4128,19 @@ export class PropertyPrototype extends DeclaredElement {
       fieldDeclaration.flags | CommonFlags.Instance | CommonFlags.Set,
       null,
       new FunctionTypeNode(
-        [
-          new ParameterNode(
-            ParameterKind.Default,
-            fieldDeclaration.name,
-            typeNode, null, nativeRange
-          )
-        ],
+        [new ParameterNode(ParameterKind.Default, fieldDeclaration.name, typeNode, null, nativeRange)],
         new NamedTypeNode(
-          new TypeName(
-            new IdentifierExpression("", false, nativeRange),
-            null, nativeRange
-          ),
-          null, false, nativeRange
+          new TypeName(new IdentifierExpression("", false, nativeRange), null, nativeRange),
+          null,
+          false,
+          nativeRange
         ),
-        null, false, nativeRange
+        null,
+        false,
+        nativeRange
       ),
-      null, nativeRange
+      null,
+      nativeRange
     );
     let prototype = new PropertyPrototype(name, parent, getterDeclaration);
     prototype.fieldDeclaration = fieldDeclaration;
@@ -4287,7 +4249,6 @@ export class PropertyPrototype extends DeclaredElement {
 
 /** A resolved property. */
 export class Property extends VariableLikeElement {
-
   /** Prototype reference. */
   prototype: PropertyPrototype;
   /** Getter instance. */
@@ -4314,7 +4275,8 @@ export class Property extends VariableLikeElement {
             prototype.identifierNode,
             null,
             prototype.flags & CommonFlags.Instance,
-            null, null,
+            null,
+            null,
             prototype.identifierNode.range
           )
     );
@@ -4337,7 +4299,9 @@ export class Property extends VariableLikeElement {
     if (propertyGetter && propertySetter && !propertyGetter.visibilityNoLessThan(propertySetter)) {
       diag.errorRelated(
         DiagnosticCode.Get_accessor_0_must_be_at_least_as_accessible_as_the_setter,
-        propertyGetter.identifierNode.range, propertySetter.identifierNode.range, propertyGetter.identifierNode.text
+        propertyGetter.identifierNode.range,
+        propertySetter.identifierNode.range,
+        propertyGetter.identifierNode.text
       );
     }
   }
@@ -4345,7 +4309,6 @@ export class Property extends VariableLikeElement {
 
 /** A resolved index signature. */
 export class IndexSignature extends TypedElement {
-
   /** Constructs a new index prototype. */
   constructor(
     /** Parent class. */
@@ -4374,9 +4337,8 @@ export class IndexSignature extends TypedElement {
 
 /** A yet unresolved class prototype. */
 export class ClassPrototype extends DeclaredElement {
-
   /** Instance member prototypes. */
-  instanceMembers: Map<string,DeclaredElement> | null = null;
+  instanceMembers: Map<string, DeclaredElement> | null = null;
   /** Base class prototype, if applicable. */
   basePrototype: ClassPrototype | null = null;
   /** Interface prototypes, if applicable. */
@@ -4386,7 +4348,7 @@ export class ClassPrototype extends DeclaredElement {
   /** Operator overload prototypes. */
   operatorOverloadPrototypes: Map<OperatorKind, FunctionPrototype> = new Map();
   /** Already resolved instances. */
-  instances: Map<string,Class> | null = null;
+  instances: Map<string, Class> | null = null;
   /** Classes extending this class. */
   extenders: Set<ClassPrototype> = new Set();
   /** Whether this class implicitly extends `Object`. */
@@ -4466,7 +4428,8 @@ export class ClassPrototype extends DeclaredElement {
         } else {
           this.program.error(
             DiagnosticCode.Duplicate_identifier_0,
-            element.identifierNode.range, element.identifierNode.text
+            element.identifierNode.range,
+            element.identifierNode.text
           );
         }
         return false;
@@ -4499,7 +4462,6 @@ export class ClassPrototype extends DeclaredElement {
 
 /** A resolved class. */
 export class Class extends TypedElement {
-
   /** Class prototype. */
   prototype: ClassPrototype;
   /** Resolved type arguments. */
@@ -4509,13 +4471,13 @@ export class Class extends TypedElement {
   /** Directly implemented interfaces, if any. */
   interfaces: Set<Interface> | null = null;
   /** Contextual type arguments for fields and methods. */
-  contextualTypeArguments: Map<string,Type> | null = null;
+  contextualTypeArguments: Map<string, Type> | null = null;
   /** Current member memory offset. */
   nextMemoryOffset: u32 = 0;
   /** Constructor instance. */
   constructorInstance: Function | null = null;
   /** Operator overloads. */
-  operatorOverloads: Map<OperatorKind,Function> | null = null;
+  operatorOverloads: Map<OperatorKind, Function> | null = null;
   /** Index signature, if present. */
   indexSignature: IndexSignature | null = null;
   /** Unique class id. */
@@ -4549,16 +4511,11 @@ export class Class extends TypedElement {
     let lengthField = this.getMember("length");
     if (!lengthField) return false;
     return (
-      (
-        lengthField.kind == ElementKind.Property &&
-        (<Property>lengthField).getterInstance != null
-      ) || (
-        lengthField.kind == ElementKind.PropertyPrototype &&
-        (<PropertyPrototype>lengthField).getterPrototype != null // TODO: resolve & check type?
-      )
-    ) && (
-      this.lookupOverload(OperatorKind.IndexedGet) != null ||
-      this.lookupOverload(OperatorKind.UncheckedIndexedGet) != null
+      ((lengthField.kind == ElementKind.Property && (<Property>lengthField).getterInstance != null) ||
+        (lengthField.kind == ElementKind.PropertyPrototype &&
+          (<PropertyPrototype>lengthField).getterPrototype != null)) && // TODO: resolve & check type?
+      (this.lookupOverload(OperatorKind.IndexedGet) != null ||
+        this.lookupOverload(OperatorKind.UncheckedIndexedGet) != null)
     );
   }
 
@@ -4591,7 +4548,7 @@ export class Class extends TypedElement {
     this.typeArguments = typeArguments;
     let program = this.program;
     let usizeType = program.options.usizeType;
-    let type = new Type(usizeType.kind, usizeType.flags & ~TypeFlags.Value | TypeFlags.Reference, usizeType.size);
+    let type = new Type(usizeType.kind, (usizeType.flags & ~TypeFlags.Value) | TypeFlags.Reference, usizeType.size);
     type.classReference = this;
     this.setType(type);
 
@@ -4633,11 +4590,11 @@ export class Class extends TypedElement {
       if (!aBase && !bBase) return null; // none
       if (aBase) {
         if (candidates.has(aBase)) return aBase;
-        candidates.add(a = aBase);
+        candidates.add((a = aBase));
       }
       if (bBase) {
         if (candidates.has(bBase)) return bBase;
-        candidates.add(b = bBase);
+        candidates.add((b = bBase));
       }
     }
   }
@@ -4790,7 +4747,8 @@ export class Class extends TypedElement {
           if (uncheckedOverload) return uncheckedOverload;
           break;
         }
-        default: assert(false);
+        default:
+          assert(false);
       }
     }
     let instance: Class | null = this;
@@ -4819,7 +4777,8 @@ export class Class extends TypedElement {
     assert(member.kind == ElementKind.PropertyPrototype);
     let prototype = <PropertyPrototype>member;
     let property = prototype.instance;
-    if (property) { // would have failed before
+    if (property) {
+      // would have failed before
       assert(property.isField && property.memoryOffset >= 0);
       return property.memoryOffset;
     }
@@ -4977,7 +4936,6 @@ export class Class extends TypedElement {
 
     let instanceMembers = this.members;
     if (instanceMembers) {
-
       // Check that there are no managed instance fields
       for (let _values = Map_values(instanceMembers), i = 0, k = _values.length; i < k; ++i) {
         let member = unchecked(_values[i]);
@@ -5061,26 +5019,15 @@ export class Class extends TypedElement {
 
 /** A yet unresolved interface. */
 export class InterfacePrototype extends ClassPrototype {
-
   /** Constructs a new interface prototype. */
-  constructor(
-    name: string,
-    parent: Element,
-    declaration: InterfaceDeclaration,
-    decoratorFlags: DecoratorFlags
-  ) {
-    super(
-      name,
-      parent,
-      declaration,
-      decoratorFlags,
-      true
-    );
+  constructor(name: string, parent: Element, declaration: InterfaceDeclaration, decoratorFlags: DecoratorFlags) {
+    super(name, parent, declaration, decoratorFlags, true);
   }
 }
 
 /** A resolved interface. */
-export class Interface extends Class { // FIXME
+export class Interface extends Class {
+  // FIXME
 
   /** Constructs a new interface. */
   constructor(
@@ -5089,14 +5036,9 @@ export class Interface extends Class { // FIXME
     /** The respective class prototype. */
     prototype: InterfacePrototype,
     /** Concrete type arguments, if any. */
-    typeArguments: Type[] | null = null,
+    typeArguments: Type[] | null = null
   ) {
-    super(
-      nameInclTypeParameters,
-      prototype,
-      typeArguments,
-      true
-    );
+    super(nameInclTypeParameters, prototype, typeArguments, true);
   }
 }
 
@@ -5144,8 +5086,9 @@ function tryMerge(older: Element, newer: Element): DeclaredElement | null {
     case ElementKind.Namespace: {
       switch (newer.kind) {
         case ElementKind.Enum:
-        case ElementKind.ClassPrototype:      // TS2434
-        case ElementKind.FunctionPrototype: { // TS2434
+        case ElementKind.ClassPrototype: // TS2434
+        case ElementKind.FunctionPrototype: {
+          // TS2434
           copyMembers(older, newer);
           merged = <DeclaredElement>newer;
           break;
@@ -5198,7 +5141,8 @@ function tryMerge(older: Element, newer: Element): DeclaredElement | null {
     if (olderIsExport != newerIsExport) {
       older.program.error(
         DiagnosticCode.Individual_declarations_in_merged_declaration_0_must_be_all_exported_or_all_local,
-        merged.identifierNode.range, merged.identifierNode.text
+        merged.identifierNode.range,
+        merged.identifierNode.text
       );
     }
   }
@@ -5221,12 +5165,7 @@ function copyMembers(src: Element, dest: Element): void {
 }
 
 /** Mangles the internal name of an element with the specified name that is a child of the given parent. */
-export function mangleInternalName(
-  name: string,
-  parent: Element,
-  isInstance: bool,
-  asGlobal: bool = false
-): string {
+export function mangleInternalName(name: string, parent: Element, isInstance: bool, asGlobal: bool = false): string {
   switch (parent.kind) {
     case ElementKind.File: {
       if (asGlobal) return name;
@@ -5238,14 +5177,16 @@ export function mangleInternalName(
       return parent.internalName + INNER_DELIMITER + name;
     }
     case ElementKind.PropertyPrototype: // properties are just containers
-    case ElementKind.Property: {         //
+    case ElementKind.Property: {
+      //
       parent = parent.parent;
       // fall-through
     }
     default: {
       return (
         mangleInternalName(parent.name, parent.parent, parent.is(CommonFlags.Instance), asGlobal) +
-        (isInstance ? INSTANCE_DELIMITER : STATIC_DELIMITER) + name
+        (isInstance ? INSTANCE_DELIMITER : STATIC_DELIMITER) +
+        name
       );
     }
   }

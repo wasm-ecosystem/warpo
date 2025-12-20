@@ -14,30 +14,13 @@
  * When compiling to WebAssembly `glue/wasm/index.ts` must be included.
  */
 
-import {
-  Target,
-  Runtime,
-  Feature
-} from "./common";
+import { Target, Runtime, Feature } from "./common";
 
-import {
-  Compiler,
-  Options,
-  UncheckedBehavior,
-  defaultFeatures
-} from "./compiler";
+import { Compiler, Options, UncheckedBehavior, defaultFeatures } from "./compiler";
 
-import {
-  TSDBuilder,
-  JSBuilder
-} from "./bindings";
+import { TSDBuilder, JSBuilder } from "./bindings";
 
-import {
-  Range,
-  DiagnosticMessage,
-  DiagnosticCategory,
-  formatDiagnosticMessage
-} from "./diagnostics";
+import { Range, DiagnosticMessage, DiagnosticCategory, formatDiagnosticMessage } from "./diagnostics";
 
 import { Module, ModuleRef } from "./module";
 import { Program } from "./program";
@@ -165,7 +148,7 @@ export function setBundleVersion(
   options: Options,
   bundleMajorVersion: i32,
   bundleMinorVersion: i32,
-  bundlePatchVersion: i32,
+  bundlePatchVersion: i32
 ): void {
   options.bundleMajorVersion = bundleMajorVersion;
   options.bundleMinorVersion = bundleMinorVersion;

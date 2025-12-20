@@ -15,27 +15,28 @@ export function writeI8(value: i32, buffer: Uint8Array, offset: i32): void {
 
 /** Reads a 16-bit integer from the specified buffer. */
 export function readI16(buffer: Uint8Array, offset: i32): i32 {
-  return i32(buffer[offset    ])
-       | i32(buffer[offset + 1]) << 8;
+  return i32(buffer[offset]) | (i32(buffer[offset + 1]) << 8);
 }
 
 /** Writes a 16-bit integer to the specified buffer. */
 export function writeI16(value: i32, buffer: Uint8Array, offset: i32): void {
-  buffer[offset    ] = value;
+  buffer[offset] = value;
   buffer[offset + 1] = value >>> 8;
 }
 
 /** Reads a 32-bit integer from the specified buffer. */
 export function readI32(buffer: Uint8Array, offset: i32): i32 {
-  return i32(buffer[offset    ])
-       | i32(buffer[offset + 1]) << 8
-       | i32(buffer[offset + 2]) << 16
-       | i32(buffer[offset + 3]) << 24;
+  return (
+    i32(buffer[offset]) |
+    (i32(buffer[offset + 1]) << 8) |
+    (i32(buffer[offset + 2]) << 16) |
+    (i32(buffer[offset + 3]) << 24)
+  );
 }
 
 /** Writes a 32-bit integer to the specified buffer. */
 export function writeI32(value: i32, buffer: Uint8Array, offset: i32): void {
-  buffer[offset    ] = value;
+  buffer[offset] = value;
   buffer[offset + 1] = value >>> 8;
   buffer[offset + 2] = value >>> 16;
   buffer[offset + 3] = value >>> 24;

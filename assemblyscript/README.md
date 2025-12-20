@@ -47,6 +47,6 @@ npm link
 
 The link step is optional and makes the development instance available globally. The full process is documented as part of the repository:
 
-* [Compiler instructions](./src)
-* [Runtime instructions](./std/assembly/rt)
-* [Test instructions](./tests)
+- [Compiler instructions](./src)
+- [Runtime instructions](./std/assembly/rt)
+- [Test instructions](./tests)

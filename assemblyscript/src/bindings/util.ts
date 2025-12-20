@@ -1,10 +1,6 @@
-import {
-  SourceKind
-} from "../ast";
+import { SourceKind } from "../ast";
 
-import {
-  CommonFlags
-} from "../common";
+import { CommonFlags } from "../common";
 
 import {
   ClassPrototype,
@@ -20,18 +16,17 @@ import {
   Program,
   Property,
   PropertyPrototype,
-  InterfacePrototype
+  InterfacePrototype,
 } from "../program";
 
 /** Walker base class. */
 export abstract class ExportsWalker {
-
   /** Program reference. */
   program: Program;
   /** Whether to include private members */
   includePrivate: bool;
   /** Already seen elements. */
-  seen: Map<Element,string> = new Map();
+  seen: Map<Element, string> = new Map();
 
   /** Constructs a new Element walker. */
   constructor(program: Program, includePrivate: bool = false) {
@@ -86,7 +81,8 @@ export abstract class ExportsWalker {
         if (element.is(CommonFlags.Compiled)) this.visitEnum(name, <Enum>element);
         break;
       }
-      case ElementKind.EnumValue: break; // handled by visitEnum
+      case ElementKind.EnumValue:
+        break; // handled by visitEnum
       case ElementKind.FunctionPrototype: {
         this.visitFunctionInstances(name, <FunctionPrototype>element);
         break;
@@ -118,7 +114,8 @@ export abstract class ExportsWalker {
         break;
       }
       case ElementKind.TypeDefinition:
-      case ElementKind.IndexSignature: break;
+      case ElementKind.IndexSignature:
+        break;
       default: {
         // Not (directly) reachable exports:
         // File, Local, Function, Class, Interface

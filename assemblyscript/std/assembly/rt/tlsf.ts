@@ -68,7 +68,6 @@ import { E_ALLOCATION_TOO_LARGE } from "../util/error";
 // └───────────────────────────────────────────────────────────────┘ >= MIN SIZE
 // F: FREE, L: LEFTFREE
 @unmanaged export class Block extends BLOCK {
-
   /** Previous free block, if any. Only valid if free, otherwise part of payload. */
   prev: Block | null;
   /** Next free block, if any. Only valid if free, otherwise part of payload. */
@@ -142,58 +141,37 @@ import { E_ALLOCATION_TOO_LARGE } from "../util/error";
 /** Gets the second level map of the specified first level. */
 // @ts-ignore: decorator
 @inline function GETSL(root: Root, fl: usize): u32 {
-  return load<u32>(
-    changetype<usize>(root) + (fl << alignof<u32>()),
-    SL_START
-  );
+  return load<u32>(changetype<usize>(root) + (fl << alignof<u32>()), SL_START);
 }
 
 /** Sets the second level map of the specified first level. */
 // @ts-ignore: decorator
 @inline function SETSL(root: Root, fl: usize, slMap: u32): void {
-  store<u32>(
-    changetype<usize>(root) + (fl << alignof<u32>()),
-    slMap,
-    SL_START
-  );
+  store<u32>(changetype<usize>(root) + (fl << alignof<u32>()), slMap, SL_START);
 }
 
 /** Gets the head of the free list for the specified combination of first and second level. */
 // @ts-ignore: decorator
 @inline function GETHEAD(root: Root, fl: usize, sl: u32): Block | null {
-  return load<Block>(
-    changetype<usize>(root) + (((fl << SL_BITS) + <usize>sl) << alignof<usize>()),
-    HL_START
-  );
+  return load<Block>(changetype<usize>(root) + (((fl << SL_BITS) + <usize>sl) << alignof<usize>()), HL_START);
 }
 
 /** Sets the head of the free list for the specified combination of first and second level. */
 // @ts-ignore: decorator
 @inline function SETHEAD(root: Root, fl: usize, sl: u32, head: Block | null): void {
-  store<Block | null>(
-    changetype<usize>(root) + (((fl << SL_BITS) + <usize>sl) << alignof<usize>()),
-    head,
-    HL_START
-  );
+  store<Block | null>(changetype<usize>(root) + (((fl << SL_BITS) + <usize>sl) << alignof<usize>()), head, HL_START);
 }
 
 /** Gets the tail block.. */
 // @ts-ignore: decorator
 @inline function GETTAIL(root: Root): Block {
-  return load<Block>(
-    changetype<usize>(root),
-    HL_END
-  );
+  return load<Block>(changetype<usize>(root), HL_END);
 }
 
 /** Sets the tail block. */
 // @ts-ignore: decorator
 @inline function SETTAIL(root: Root, tail: Block): void {
-  store<Block>(
-    changetype<usize>(root),
-    tail,
-    HL_END
-  );
+  store<Block>(changetype<usize>(root), tail, HL_END);
 }
 
 /** Inserts a previously used block back into the free list. */
@@ -258,7 +236,7 @@ function insertBlock(root: Root, block: Block): void {
   SETHEAD(root, fl, sl, block);
 
   // update first and second level maps
-  root.flMap |= (1 << fl);
+  root.flMap |= 1 << fl;
   SETSL(root, fl, GETSL(root, fl) | (1 << sl));
 }
 
@@ -296,7 +274,7 @@ function removeBlock(root: Root, block: Block): void {
     // clear second level map if head is empty now
     if (!next) {
       let slMap = GETSL(root, fl);
-      SETSL(root, fl, slMap &= ~(1 << sl));
+      SETSL(root, fl, (slMap &= ~(1 << sl)));
 
       // clear first level map if second level is empty now
       if (!slMap) root.flMap &= ~(1 << fl);
@@ -311,9 +289,7 @@ function roundSize(size: usize): usize {
   const halfMaxSize = BLOCK_MAXSIZE >> 1; // don't round last fl
   const inv: usize = sizeof<usize>() * 8 - 1;
   const invRound = inv - SL_BITS;
-  return size < halfMaxSize
-    ? size + (1 << (invRound - clz<usize>(size))) - 1
-    : size;
+  return size < halfMaxSize ? size + (1 << (invRound - clz<usize>(size))) - 1 : size;
 }
 
 /** Searches for a free block of at least the specified size. */
@@ -344,7 +320,7 @@ function searchBlock(root: Root, size: usize): Block | null {
     } else {
       fl = ctz<usize>(flMap);
       slMap = GETSL(root, fl);
-      if (DEBUG) assert(slMap);  // can't be zero if fl points here
+      if (DEBUG) assert(slMap); // can't be zero if fl points here
       head = GETHEAD(root, fl, ctz<u32>(slMap));
     }
   } else {
@@ -369,7 +345,7 @@ function prepareBlock(root: Root, block: Block, size: usize): void {
     spare.mmInfo = (remaining - BLOCK_OVERHEAD) | FREE; // not LEFTFREE
     insertBlock(root, spare); // also sets 'back'
 
-  // otherwise tag block as no longer FREE and right as no longer LEFTFREE
+    // otherwise tag block as no longer FREE and right as no longer LEFTFREE
   } else {
     block.mmInfo = blockInfo & ~FREE;
     GETRIGHT(block).mmInfo &= ~LEFTFREE;
@@ -385,7 +361,8 @@ function addMemory(root: Root, start: usize, endU64: u64): bool {
 
   let tail = GETTAIL(root);
   let tailInfo: usize = 0;
-  if (tail) { // more memory
+  if (tail) {
+    // more memory
     if (DEBUG) assert(start >= changetype<usize>(tail) + BLOCK_OVERHEAD);
 
     // merge with current tail if adjacent
@@ -397,8 +374,8 @@ function addMemory(root: Root, start: usize, endU64: u64): bool {
       // We don't do this, but a user might `memory.grow` manually
       // leading to non-adjacent pages managed by TLSF.
     }
-
-  } else if (DEBUG) { // first memory
+  } else if (DEBUG) {
+    // first memory
     assert(start >= changetype<usize>(root) + ROOT_SIZE); // starts after root
   }
 
@@ -438,22 +415,20 @@ function growMemory(root: Root, size: usize): void {
   // and additional BLOCK_OVERHEAD must be taken into account. If we are going
   // to merge with the tail block, that's one time, otherwise it's two times.
   let pagesBefore = memory.size();
-  size += BLOCK_OVERHEAD << usize((<usize>pagesBefore << 16) - BLOCK_OVERHEAD != changetype<usize>(GETTAIL(root)));
+  size += BLOCK_OVERHEAD << usize(((<usize>pagesBefore) << 16) - BLOCK_OVERHEAD != changetype<usize>(GETTAIL(root)));
   let pagesNeeded = <i32>(((size + 0xffff) & ~0xffff) >>> 16);
   let pagesWanted = max(pagesBefore, pagesNeeded); // double memory
   if (memory.grow(pagesWanted) < 0) {
     if (memory.grow(pagesNeeded) < 0) unreachable();
   }
   let pagesAfter = memory.size();
-  addMemory(root, <usize>pagesBefore << 16, <u64>pagesAfter << 16);
+  addMemory(root, (<usize>pagesBefore) << 16, (<u64>pagesAfter) << 16);
 }
 
 /** Computes the size (excl. header) of a block. */
 function computeSize(size: usize): usize {
   // Size must be large enough and aligned minus preceeding overhead
-  return size <= BLOCK_MINSIZE
-    ? BLOCK_MINSIZE
-    : ((size + BLOCK_OVERHEAD + AL_MASK) & ~AL_MASK) - BLOCK_OVERHEAD;
+  return size <= BLOCK_MINSIZE ? BLOCK_MINSIZE : ((size + BLOCK_OVERHEAD + AL_MASK) & ~AL_MASK) - BLOCK_OVERHEAD;
 }
 
 /** Prepares and checks an allocation size. */
@@ -467,7 +442,7 @@ function initialize(): void {
   if (isDefined(ASC_RTRACE)) oninit(__heap_base);
   let rootOffset = (__heap_base + AL_MASK) & ~AL_MASK;
   let pagesBefore = memory.size();
-  let pagesNeeded = <i32>((((rootOffset + ROOT_SIZE) + 0xffff) & ~0xffff) >>> 16);
+  let pagesNeeded = <i32>(((rootOffset + ROOT_SIZE + 0xffff) & ~0xffff) >>> 16);
   if (pagesNeeded > pagesBefore && memory.grow(pagesNeeded - pagesBefore) < 0) unreachable();
   let root = changetype<Root>(rootOffset);
   root.flMap = 0;
@@ -480,11 +455,11 @@ function initialize(): void {
   }
   let memStart = rootOffset + ROOT_SIZE;
   if (ASC_LOW_MEMORY_LIMIT) {
-    const memEnd = <u64>ASC_LOW_MEMORY_LIMIT & ~AL_MASK;
+    const memEnd = (<u64>ASC_LOW_MEMORY_LIMIT) & ~AL_MASK;
     if (memStart <= memEnd) addMemory(root, memStart, memEnd);
     else unreachable(); // low memory limit already exceeded
   } else {
-    addMemory(root, memStart, <u64>memory.size() << 16);
+    addMemory(root, memStart, (<u64>memory.size()) << 16);
   }
   ROOT = root;
 }
@@ -541,7 +516,11 @@ export function reallocateBlock(root: Root, block: Block, size: usize): Block {
 /** Moves a block to a new one of the specified size. */
 function moveBlock(root: Root, block: Block, newSize: usize): Block {
   let newBlock = allocateBlock(root, newSize);
-  memory.copy(changetype<usize>(newBlock) + BLOCK_OVERHEAD, changetype<usize>(block) + BLOCK_OVERHEAD, block.mmInfo & ~TAGS_MASK);
+  memory.copy(
+    changetype<usize>(newBlock) + BLOCK_OVERHEAD,
+    changetype<usize>(block) + BLOCK_OVERHEAD,
+    block.mmInfo & ~TAGS_MASK
+  );
   if (changetype<usize>(block) >= __heap_base) {
     if (isDefined(ASC_RTRACE)) onmove(block, newBlock);
     freeBlock(root, block);
@@ -560,8 +539,9 @@ export function freeBlock(root: Root, block: Block): void {
 function checkUsedBlock(ptr: usize): Block {
   let block = changetype<Block>(ptr - BLOCK_OVERHEAD);
   assert(
-    ptr != 0 && !(ptr & AL_MASK) &&  // must exist and be aligned
-    !(block.mmInfo & FREE)           // must be used
+    ptr != 0 &&
+      !(ptr & AL_MASK) && // must exist and be aligned
+      !(block.mmInfo & FREE) // must be used
   );
   return block;
 }
@@ -577,10 +557,11 @@ export function __alloc(size: usize): usize {
 @global @unsafe
 export function __realloc(ptr: usize, size: usize): usize {
   if (!ROOT) initialize();
-  return (ptr < __heap_base
-    ? changetype<usize>(moveBlock(ROOT, checkUsedBlock(ptr), size))
-    : changetype<usize>(reallocateBlock(ROOT, checkUsedBlock(ptr), size))
-  ) + BLOCK_OVERHEAD;
+  return (
+    (ptr < __heap_base
+      ? changetype<usize>(moveBlock(ROOT, checkUsedBlock(ptr), size))
+      : changetype<usize>(reallocateBlock(ROOT, checkUsedBlock(ptr), size))) + BLOCK_OVERHEAD
+  );
 }
 
 // @ts-ignore: decorator

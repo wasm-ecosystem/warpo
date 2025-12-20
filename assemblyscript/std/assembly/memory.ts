@@ -3,7 +3,6 @@ import { E_NOTIMPLEMENTED } from "./util/error";
 
 /** Memory manager interface. */
 export namespace memory {
-
   /** Gets the size of the memory in pages. */
   // @ts-ignore: decorator
   @builtin
@@ -29,7 +28,6 @@ export namespace memory {
   }
 
   export namespace atomic {
-
     // @ts-ignore: decorator
     @unsafe @builtin
     export declare function wait32(ptr: usize, expected: i32, timeout: i64): AtomicWaitResult;
@@ -92,7 +90,6 @@ export declare const __heap_base: usize;
 
 /** Heap memory interface. */
 export namespace heap {
-
   /** Allocates a chunk of memory of at least the specified size. */
   // @ts-ignore: decorator
   @unsafe export function alloc(size: usize): usize {

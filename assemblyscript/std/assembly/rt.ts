@@ -33,7 +33,7 @@ export function __newBuffer(size: usize, id: u32, data: usize = 0): usize {
 // @ts-ignore: decorator
 @unsafe
 export function __newArray(length: i32, alignLog2: usize, id: u32, data: usize = 0): usize {
-  let bufferSize = <usize>length << alignLog2;
+  let bufferSize = (<usize>length) << alignLog2;
   // make sure `buffer` is tracked by the shadow stack
   let buffer = changetype<ArrayBuffer>(__newBuffer(bufferSize, idof<ArrayBuffer>(), data));
   // ...since allocating the array may trigger GC steps
@@ -48,7 +48,8 @@ export function __newArray(length: i32, alignLog2: usize, id: u32, data: usize =
 
 // @ts-ignore: decorator
 @global @unsafe
-function __tostack(ptr: usize): usize { // eslint-disable-line
+function __tostack(ptr: usize): usize {
+  // eslint-disable-line
   return ptr;
 }
 
