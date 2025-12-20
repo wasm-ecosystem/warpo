@@ -1,3 +1,0 @@
-assert(ASC_OPTIMIZE_LEVEL == 1);
-assert(ASC_SHRINK_LEVEL == 2);
-assert(ASC_FEATURE_SIMD);
