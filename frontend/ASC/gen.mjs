@@ -57,6 +57,11 @@ function readAllFilesImpl(dir, root, output) {
     }
   }
 }
+/**
+ *
+ * @param {string} dir
+ * @returns {string[]}
+ */
 function readAllFiles(dir) {
   const output = [];
   readAllFilesImpl(dir, dir, output);
@@ -66,7 +71,7 @@ function readAllFiles(dir) {
 async function createExtensionLibrarySources() {
   const extLibraryFiles = readAllFiles(ext_libs_path)
     .filter((f) => f.endsWith(".ts"))
-    .map((p) => [p.slice(0, -3).replace(sep, "/"), readFileSync(join(ext_libs_path, p), "utf8")]);
+    .map((p) => [p.slice(0, -3).replaceAll(sep, "/"), readFileSync(join(ext_libs_path, p), "utf8")]);
   writeFileSync(
     join(target_folder, "extension_library_sources.inc"),
     extLibraryFiles.map(([fileName, content]) => `{\n  "${fileName}", R"##(${content})##",\n},\n`).join("")
