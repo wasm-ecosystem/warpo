@@ -12,7 +12,7 @@ jobs:
   build_and_upload:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-22.04, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -34,6 +34,7 @@ jobs:
       - uses: ./.github/action/build
         with:
           CMAKE_ARGS: "-DWARPO_RELEASE=ON"
+          OS_ID: ${{ matrix.os }}
       - run: npm run build:ts
 
       - name: pack build/warpo directory

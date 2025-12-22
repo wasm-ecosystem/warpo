@@ -11,6 +11,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build_only:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci
+      - uses: ./.github/action/build
+        with:
+          CMAKE_ARGS: "-DWARPO_RELEASE=ON"
+          OS_ID: "ubuntu-22.04"
+      # enable docs is available
+      - run: npm run docs:build
+
   test:
     strategy:
       matrix:
@@ -25,8 +40,8 @@ jobs:
           node-version: "22"
       - run: npm ci
       - uses: ./.github/action/build
-      # enable docs is available
-      - run: npm run docs:build
+        with:
+          OS_ID: ${{ matrix.os }}
       # test
       - run: npm run test:as:ut
       - run: npm run test:cpp:ut
@@ -48,4 +63,7 @@ jobs:
           cache: "npm"
       - run: npm ci
       - uses: ./.github/action/build
+        with:
+          OS_ID: ubuntu-latest
+          UPLOAD_CACHE: false
       - run: npm run test:bootstrap:${{ matrix.kind }}

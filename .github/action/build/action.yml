@@ -2,13 +2,19 @@ name: build
 description: build with cache
 inputs:
   CMAKE_ARGS:
+    types: string
     description: "CMake Arguments"
     required: false
     default: ""
-  CMAKE_BUILD_ARGS:
-    description: "CMake Build Arguments"
+  OS_ID:
+    types: string
+    description: "operator system id"
+    required: true
+  UPLOAD_CACHE:
+    types: boolean
+    description: "Whether to upload cache"
     required: false
-    default: ""
+    default: true
 
 runs:
   using: "composite"
@@ -42,21 +48,36 @@ runs:
         echo "CMAKE_CXX_COMPILER=cl" >> $env:GITHUB_ENV
         echo "CCACHE_SLOPPINESS=include_file_mtime,include_file_ctime,time_macros,pch_defines,file_stat_matches" >> $env:GITHUB_ENV
         echo "CCACHE_BASEDIR=$(pwd)" >> $env:GITHUB_ENV
+
     - shell: bash
       run: |
         set -ex
         echo "CCACHE_DIR=$(pwd)/build_cache" >> $GITHUB_ENV
         mkdir -p build_cache
-    - uses: actions/cache@v4
+
+    - name: apply cache
+      uses: actions/cache@v4
+      if: ${{ inputs.UPLOAD_CACHE == 'true' }}
       with:
         path: build_cache
-        key: ccache-${{ runner.os }}-${{ inputs.CMAKE_ARGS }}-${{ github.run_id }}
+        key: ccache-${{ inputs.OS_ID }}-${{ inputs.CMAKE_ARGS }}-${{ github.run_id }}
         restore-keys: |
-          ccache-${{ runner.os }}-${{ inputs.CMAKE_ARGS }}-
-          ccache-${{ runner.os }}-
+          ccache-${{ inputs.OS_ID }}-${{ inputs.CMAKE_ARGS }}-
+          ccache-${{ inputs.OS_ID }}-
+
+    - name: apply cache (restore only)
+      uses: actions/cache/restore@v4
+      if: ${{ inputs.UPLOAD_CACHE == 'false' }}
+      with:
+        path: build_cache
+        key: ccache-${{ inputs.OS_ID }}-${{ inputs.CMAKE_ARGS }}-${{ github.run_id }}
+        restore-keys: |
+          ccache-${{ inputs.OS_ID }}-${{ inputs.CMAKE_ARGS }}-
+          ccache-${{ inputs.OS_ID }}-
+
     - shell: bash
       run: |
-        ccache --max-size=512M
+        ccache --max-size=256M
         ccache --zero-stats
     - name: install assemblyscript deps
       run: npm ci
@@ -67,7 +88,7 @@ runs:
       run: |
         set -ex
         cmake -B build -S . ${{ inputs.CMAKE_ARGS }}
-        cmake --build build --parallel ${{ inputs.CMAKE_BUILD_ARGS }}
+        cmake --build build --parallel
       shell: bash
       env:
         CMAKE_GENERATOR: Ninja
