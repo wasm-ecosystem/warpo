@@ -52,6 +52,7 @@ RELWITHDEBINFO
 rotr
 rtid
 rtti
+schleifner
 signedness
 SSAified
 STREQUAL
