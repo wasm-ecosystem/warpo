@@ -108,8 +108,8 @@ export class Set<T> {
         );
       }
       // append new entry
-      // prettier-ignore
-      entry = changetype<SetEntry<T>>(changetype<usize>(this.entries) + <usize>(this.entriesOffset++) * ENTRY_SIZE<T>());
+
+      entry = changetype<SetEntry<T>>(changetype<usize>(this.entries) + <usize>this.entriesOffset++ * ENTRY_SIZE<T>());
       entry.key = key;
       if (isManaged<T>()) {
         __link(changetype<usize>(this), changetype<usize>(key), true);
