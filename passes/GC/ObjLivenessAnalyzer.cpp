@@ -4,8 +4,6 @@
 
 #include <cassert>
 #include <cstdlib>
-#include <fmt/base.h>
-#include <fmt/ranges.h>
 #include <iostream>
 #include <map>
 #include <optional>

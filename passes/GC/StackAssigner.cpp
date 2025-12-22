@@ -5,7 +5,6 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
-#include <fmt/base.h>
 #include <map>
 #include <optional>
 
@@ -16,6 +15,7 @@
 #include "StackAssigner.hpp"
 #include "warpo/support/Debug.hpp"
 #include "warpo/support/Err.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Range.hpp"
 #include "wasm-traversal.h"
 #include "wasm.h"

@@ -4,8 +4,6 @@
 
 #include <cassert>
 #include <filesystem>
-#include <fmt/base.h>
-#include <fmt/format.h>
 #include <fstream>
 #include <ios>
 #include <memory>
@@ -36,6 +34,7 @@
 #include "warpo/passes/DwarfGenerator/DwarfGenerator.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/support/FileSystem.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Statistics.hpp"
 #include "wasm-binary.h"
 #include "wasm-features.h"

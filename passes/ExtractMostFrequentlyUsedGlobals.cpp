@@ -11,13 +11,13 @@
 #include <algorithm>
 #include <atomic>
 #include <cassert>
-#include <fmt/format.h>
 #include <map>
 #include <memory>
 
 #include "ExtractMostFrequentlyUsedGlobals.hpp"
 #include "support/index.h"
 #include "warpo/support/Debug.hpp"
+#include "warpo/support/Format.hpp"
 #include "wasm-traversal.h"
 #include "wasm-validator.h"
 #include "wasm.h"

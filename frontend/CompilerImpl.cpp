@@ -8,8 +8,6 @@
 #include <cstring>
 #include <exception>
 #include <filesystem>
-#include <fmt/base.h>
-#include <fmt/format.h>
 #include <map>
 #include <optional>
 #include <string>
@@ -23,6 +21,7 @@
 #include "ModuleResolver.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/FileSystem.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Statistics.hpp"
 #include "wasm.h"
 

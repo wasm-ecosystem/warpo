@@ -4,8 +4,6 @@
 
 #include <cassert>
 #include <exception>
-#include <fmt/base.h>
-#include <fmt/format.h>
 #include <memory>
 #include <regex>
 #include <sstream>
@@ -20,6 +18,7 @@
 #include "pass.h"
 #include "warpo/common/Features.hpp"
 #include "warpo/passes/RunnerForTest.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Opt.hpp"
 #include "wasm-validator.h"
 #include "wasm.h"

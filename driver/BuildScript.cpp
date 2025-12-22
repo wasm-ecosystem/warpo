@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <filesystem>
-#include <fmt/base.h>
 #include <memory>
 
 #include "BuildScript.hpp"
@@ -10,6 +9,7 @@
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/support/FileSystem.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Opt.hpp"
 #include "warpo/warp_runner/WarpRunner.hpp"
 

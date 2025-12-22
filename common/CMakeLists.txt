@@ -9,7 +9,7 @@ if(NOT WARPO_RELEASE)
     WARPO_ENABLE_UNIT_TESTS
   )
   target_link_libraries(${LIB_NAME}_test
-    PUBLIC binaryen fmt::fmt warpo_support gtest_main gmock
+    PUBLIC binaryen warpo_support gtest_main gmock
   )
   target_include_directories(${LIB_NAME}_test
     SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"
@@ -23,7 +23,7 @@ endif()
 add_library(${LIB_NAME} ${warpo_common_sources})
 
 target_link_libraries(${LIB_NAME}
-  PUBLIC binaryen fmt::fmt warpo_support
+  PUBLIC binaryen warpo_support
 )
 target_include_directories(${LIB_NAME}
   SYSTEM PUBLIC "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"

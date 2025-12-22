@@ -4,15 +4,14 @@
 
 #include <cassert>
 #include <deque>
-#include <fmt/format.h>
 #include <memory>
 
 #include "ConditionalReturn.hpp"
-#include "fmt/base.h"
 #include "helper/Matcher.hpp"
 #include "pass.h"
 #include "support/name.h"
 #include "warpo/support/Debug.hpp"
+#include "warpo/support/Format.hpp"
 #include "wasm-builder.h"
 #include "wasm-traversal.h"
 #include "wasm-type.h"

@@ -5,12 +5,12 @@
 
 #include <algorithm>
 #include <deque>
-#include <fmt/format.h>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "binaryen/src/wasm-binary.h"
+#include "warpo/support/Format.hpp"
 
 namespace warpo::passes {
 
@@ -62,8 +62,8 @@ public:
         }
 
         if (!isValidPop) {
-          fmt::print(stderr, "Warning: Interval [{}, {}] overlaps with existing root but is not contained.\n",
-                     popped->first.start, popped->first.end);
+          fmt::println("Warning: Interval [{}, {}] overlaps with existing root but is not contained.",
+                       popped->first.start, popped->first.end);
         }
 
         visitor.onExitScope(*popped);

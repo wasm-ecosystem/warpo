@@ -8,8 +8,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <fmt/base.h>
-#include <fmt/format.h>
 #include <optional>
 #include <set>
 #include <string>
@@ -19,6 +17,7 @@
 #include "ModuleResolver.hpp"
 #include "warpo/common/AsModule.hpp"
 #include "warpo/frontend/Compiler.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/warp_runner/WarpRunner.hpp"
 
 #include "src/WasmModule/WasmModule.hpp"

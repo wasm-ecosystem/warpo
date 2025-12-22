@@ -4,12 +4,11 @@
 
 #pragma once
 
-#include <fmt/base.h>
-#include <fmt/format.h>
 #include <memory>
 
 #include "StackAssigner.hpp"
 #include "pass.h"
+#include "warpo/support/Format.hpp"
 #include "wasm.h"
 
 namespace warpo::passes::gc {

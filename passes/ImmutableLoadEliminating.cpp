@@ -5,8 +5,6 @@
 #include <bit>
 #include <cassert>
 #include <cstdint>
-#include <fmt/base.h>
-#include <fmt/format.h>
 #include <limits>
 #include <memory>
 #include <vector>
@@ -16,6 +14,7 @@
 #include "pass.h"
 #include "warpo/common/AsModule.hpp"
 #include "warpo/support/Debug.hpp"
+#include "warpo/support/Format.hpp"
 #include "wasm-builder.h"
 #include "wasm-traversal.h"
 #include "wasm-type.h"

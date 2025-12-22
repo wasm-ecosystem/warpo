@@ -1,7 +1,6 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-#include <fmt/base.h>
 #include <ir/module-utils.h>
 #include <memory>
 #include <passes/pass-utils.h>
@@ -19,6 +18,7 @@
 #include "warpo/common/AsModule.hpp"
 #include "warpo/support/Container.hpp"
 #include "warpo/support/Debug.hpp"
+#include "warpo/support/Format.hpp"
 
 #define PASS_NAME "InlinedDecoratorLower"
 

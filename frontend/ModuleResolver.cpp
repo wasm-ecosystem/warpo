@@ -1,7 +1,5 @@
 #include <cassert>
 #include <filesystem>
-#include <fmt/base.h>
-#include <fmt/format.h>
 #include <map>
 #include <optional>
 #include <regex>
@@ -10,6 +8,7 @@
 #include "ModuleResolver.hpp"
 #include "warpo/support/Debug.hpp"
 #include "warpo/support/FileSystem.hpp"
+#include "warpo/support/Format.hpp"
 
 #define PASS_NAME "ModuleResolve"
 

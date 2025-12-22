@@ -5,10 +5,9 @@
 #include <argparse/argparse.hpp>
 #include <cstddef>
 #include <filesystem>
-#include <fmt/format.h>
 
-#include "fmt/base.h"
 #include "warpo/passes/Runner.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Opt.hpp"
 
 namespace warpo {
@@ -39,7 +38,7 @@ int main(int argc, const char *argv[]) {
   try {
     warpo::optMain(argc, argv);
   } catch (std::exception const &e) {
-    fmt::println("ERROR: {}", e.what());
+    warpo::fmt::println("ERROR: {}", e.what());
     return 1;
   }
 }

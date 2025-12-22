@@ -11,7 +11,6 @@
 #include <cstdlib>
 #include <exception>
 #include <filesystem>
-#include <fmt/base.h>
 #include <iostream>
 #include <memory>
 #include <nlohmann/json.hpp>
@@ -28,6 +27,7 @@
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/support/FileSystem.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Opt.hpp"
 #include "warpo/warp_runner/LinkedAPIAssemblyscript.hpp"
 #include "warpo/warp_runner/WarpRunner.hpp"
@@ -369,7 +369,7 @@ int main(int argc, const char *argv[]) {
   try {
     warpo::frontendTestMain(argc, argv);
   } catch (std::exception const &e) {
-    fmt::println("ERROR: {}", e.what());
+    warpo::fmt::println("ERROR: {}", e.what());
     return 1;
   }
 }

@@ -5,7 +5,6 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
-#include <fmt/base.h>
 #include <functional>
 #include <memory>
 
@@ -15,6 +14,7 @@
 #include "ShrinkWrap.hpp"
 #include "warpo/support/Debug.hpp"
 #include "warpo/support/DynBitSet.hpp"
+#include "warpo/support/Format.hpp"
 #include "wasm.h"
 
 #define PASS_NAME "SHRINK_WRAP"

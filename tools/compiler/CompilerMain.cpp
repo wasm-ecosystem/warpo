@@ -7,12 +7,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
-#include <fmt/base.h>
-#include <fmt/format.h>
 #include <fstream>
 
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/FileSystem.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Opt.hpp"
 
 namespace warpo {
@@ -47,7 +46,7 @@ int main(int argc, const char *argv[]) {
   try {
     warpo::compilerMain(argc, argv);
   } catch (std::exception const &e) {
-    fmt::println("ERROR: {}", e.what());
+    warpo::fmt::println("ERROR: {}", e.what());
     return 1;
   }
 }

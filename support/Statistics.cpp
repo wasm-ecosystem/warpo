@@ -10,8 +10,7 @@
 #include <string>
 
 #include "argparse/argparse.hpp"
-#include "fmt/base.h"
-#include "fmt/format.h"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Opt.hpp"
 #include "warpo/support/Statistics.hpp"
 

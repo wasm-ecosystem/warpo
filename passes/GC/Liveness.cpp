@@ -5,8 +5,6 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
-#include <fmt/base.h>
-#include <fmt/ranges.h>
 #include <iostream>
 #include <optional>
 #include <queue>
@@ -18,6 +16,7 @@
 #include "../helper/CFG.hpp"
 #include "Liveness.hpp"
 #include "warpo/support/DynBitSet.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Range.hpp"
 #include "wasm.h"
 

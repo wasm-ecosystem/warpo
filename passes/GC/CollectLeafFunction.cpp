@@ -6,9 +6,9 @@
 
 #include "CollectLeafFunction.hpp"
 #include "GCInfo.hpp"
-#include "fmt/base.h"
 #include "support/name.h"
 #include "warpo/support/Debug.hpp"
+#include "warpo/support/Format.hpp"
 #include "wasm.h"
 
 #define PASS_NAME "GCLeafFunction"

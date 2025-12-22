@@ -22,7 +22,6 @@
 
 #include "AdvancedInlining.hpp"
 #include "DoInlining.hpp"
-#include "fmt/base.h"
 #include "helper/CostModel.hpp"
 #include "ir/module-utils.h"
 #include "ir/type-updating.h"
@@ -32,6 +31,7 @@
 #include "support/name.h"
 #include "warpo/common/OptLevel.hpp"
 #include "warpo/support/Debug.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Opt.hpp"
 #include "wasm.h"
 

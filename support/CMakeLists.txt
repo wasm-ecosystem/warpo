@@ -26,9 +26,8 @@ if(NOT WARPO_RELEASE)
   target_compile_definitions(${LIB_NAME}_test PRIVATE
     WARPO_ENABLE_UNIT_TESTS
   )
-  target_link_libraries(${LIB_NAME}_test
-    PUBLIC fmt::fmt
-  )
+
+  # uses std::format via warpo/support/Format.hpp; no external fmt dependency
   target_include_directories(${LIB_NAME}_test
     PUBLIC "${PROJECT_SOURCE_DIR}/include"
   )
@@ -50,9 +49,6 @@ endif()
 
 add_library(${LIB_NAME}
   ${${LIB_NAME}_sources}
-)
-target_link_libraries(${LIB_NAME}
-  PUBLIC fmt::fmt
 )
 target_include_directories(${LIB_NAME}
   PUBLIC "${PROJECT_SOURCE_DIR}/include"

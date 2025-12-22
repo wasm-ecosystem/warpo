@@ -4,8 +4,6 @@
 
 #include <cassert>
 #include <cstddef>
-#include <fmt/base.h>
-#include <fmt/format.h>
 #include <fstream>
 #include <ios>
 #include <iostream>
@@ -18,6 +16,7 @@
 #include "literal.h"
 #include "pass.h"
 #include "warpo/support/FileSystem.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/IncMap.hpp"
 #include "warpo/support/Opt.hpp"
 #include "wasm-builder.h"

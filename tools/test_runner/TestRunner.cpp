@@ -2,14 +2,13 @@
 #include <cstddef>
 #include <cstring>
 #include <filesystem>
-#include <fmt/base.h>
-#include <fmt/format.h>
 #include <regex>
 #include <string>
 
 #include "warpo/passes/Runner.hpp"
 #include "warpo/passes/RunnerForTest.hpp"
 #include "warpo/support/FileSystem.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Opt.hpp"
 
 namespace warpo {
@@ -44,7 +43,7 @@ int main(int argc, char const *argv[]) {
     std::string const wat = passes::runOnWatForTest(input, std::regex{functionRegex.get()});
     writeBinaryFile(outputPath.get(), wat);
   } catch (const std::exception &e) {
-    fmt::print(stderr, "ERROR: {}\n", e.what());
+    fmt::println("ERROR: {}\n", e.what());
     return 1;
   }
 }

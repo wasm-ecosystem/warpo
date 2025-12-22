@@ -31,7 +31,7 @@ endif()
 
 add_library(${LIB_NAME} ${warpo_passes_sources})
 target_link_libraries(${LIB_NAME}
-  PUBLIC binaryen fmt::fmt warpo_common
+  PUBLIC binaryen warpo_common
 )
 target_include_directories(${LIB_NAME}
   SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/third_party/binaryen/src"

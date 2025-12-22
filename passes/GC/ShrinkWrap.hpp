@@ -7,11 +7,11 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
-#include <fmt/base.h>
 #include <memory>
 
 #include "ObjLivenessAnalyzer.hpp"
 #include "pass.h"
+#include "warpo/support/Format.hpp"
 #include "wasm.h"
 
 namespace warpo::passes::gc {

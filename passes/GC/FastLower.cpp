@@ -4,7 +4,6 @@
 
 #include <cassert>
 #include <concepts>
-#include <fmt/base.h>
 #include <map>
 #include <memory>
 #include <set>
@@ -21,6 +20,7 @@
 #include "support/name.h"
 #include "warpo/support/Debug.hpp"
 #include "warpo/support/DynBitSet.hpp"
+#include "warpo/support/Format.hpp"
 #include "wasm-builder.h"
 #include "wasm-traversal.h"
 #include "wasm-type.h"

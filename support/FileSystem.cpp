@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <filesystem>
-#include <fmt/format.h>
 #include <fstream>
 #include <ios>
 #include <sstream>
 #include <stdexcept>
 
 #include "warpo/support/FileSystem.hpp"
+#include "warpo/support/Format.hpp"
 
 std::ofstream warpo::openOFStream(std::filesystem::path const &file, std::ios_base::openmode mode) {
   ensureFileDirectory(file);

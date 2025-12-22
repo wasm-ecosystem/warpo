@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <filesystem>
-#include <fmt/base.h>
 
 #include "BuildScript.hpp"
 #include "warpo/driver/Driver.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/passes/Runner.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Opt.hpp"
 
 namespace warpo::driver {

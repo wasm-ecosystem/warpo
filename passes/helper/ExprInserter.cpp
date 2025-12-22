@@ -9,7 +9,7 @@
 #include "BinaryenExt.hpp"
 #include "ExprInserter.hpp"
 #include "ToString.hpp"
-#include "fmt/base.h"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Unreachable.hpp"
 #include "wasm-builder.h"
 #include "wasm-type.h"

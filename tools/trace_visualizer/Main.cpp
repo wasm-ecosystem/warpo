@@ -11,7 +11,6 @@
 #include <cstring>
 #include <exception>
 #include <filesystem>
-#include <fmt/base.h>
 #include <fstream>
 #include <functional>
 #include <ios>
@@ -29,6 +28,7 @@
 
 #include "Perfetto.hpp"
 #include "warpo/support/FileSystem.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Opt.hpp"
 
 #if defined(__x86_64__)
@@ -369,7 +369,7 @@ int main(int argc, const char **argv) {
   try {
     warpo::traceVisualizerMain(argc, argv);
   } catch (std::exception const &e) {
-    fmt::println("ERROR: {}", e.what());
+    warpo::fmt::println("ERROR: {}", e.what());
     return 1;
   }
   return 0;

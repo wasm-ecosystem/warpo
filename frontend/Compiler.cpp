@@ -4,8 +4,6 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <fmt/base.h>
-#include <fmt/format.h>
 #include <map>
 #include <optional>
 #include <string>
@@ -16,6 +14,7 @@
 #include "warpo/common/OptLevel.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/Color.hpp"
+#include "warpo/support/Format.hpp"
 #include "warpo/support/Opt.hpp"
 #include "warpo/support/Statistics.hpp"
 
