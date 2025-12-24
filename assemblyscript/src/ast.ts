@@ -1609,7 +1609,7 @@ export class JsonSource extends Source {
   }
 }
 
-export class DeclarationStatementBase {
+export class DeclarationBase {
   constructor(
     /** Array of decorators, if any. */
     public decorators: DecoratorNode[] | null,
@@ -1620,6 +1620,10 @@ export class DeclarationStatementBase {
     /** Overridden module name from preceeding `module` statement. */
     public overriddenModuleName: string | null
   ) {}
+
+  is(flag: CommonFlags): bool {
+    return (this.flags & flag) == flag;
+  }
 }
 
 /** Base class of all declaration statements. */
@@ -1654,8 +1658,8 @@ export abstract class DeclarationStatement extends Statement {
 
   abstract get nameRange(): Range;
 
-  toDeclarationStatementBase(): DeclarationStatementBase {
-    return new DeclarationStatementBase(this.decorators, this.flags, this.nameRange, this.overriddenModuleName);
+  toDeclarationBase(): DeclarationBase {
+    return new DeclarationBase(this.decorators, this.flags, this.nameRange, this.overriddenModuleName);
   }
 }
 

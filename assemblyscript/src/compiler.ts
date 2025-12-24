@@ -156,7 +156,7 @@ import {
   Source,
   TypeDeclaration,
   ParameterKind,
-  DeclarationStatementBase,
+  DeclarationBase,
 } from "./ast";
 
 import { Type, TypeKind, TypeFlags, Signature, typesToRefs } from "./types";
@@ -1206,7 +1206,7 @@ export class Compiler extends DiagnosticEmitter {
     if (global.is(CommonFlags.Ambient)) {
       // Constant global or mutable globals enabled
       if (isDeclaredConstant || this.options.hasFeature(Feature.MutableGlobals)) {
-        mangleImportName(global, global.declarationStatementBase);
+        mangleImportName(global, global.declarationBase);
         this.program.markModuleImport(mangleImportName_moduleName, mangleImportName_elementName, global);
         module.addGlobalImport(
           global.internalName,
@@ -1585,7 +1585,7 @@ export class Compiler extends DiagnosticEmitter {
 
       // imported function
     } else if (instance.is(CommonFlags.Ambient)) {
-      mangleImportName(instance, instance.declarationStatementBase); // TODO: check for duplicates
+      mangleImportName(instance, instance.declarationBase); // TODO: check for duplicates
       this.program.markModuleImport(mangleImportName_moduleName, mangleImportName_elementName, instance);
       module.addFunctionImport(
         instance.internalName,
@@ -6893,7 +6893,7 @@ export class Compiler extends DiagnosticEmitter {
     let sourceFunction = flow.targetFunction;
     let isNamed = declaration.name.text.length > 0;
     let isSemanticallyAnonymous = !isNamed || contextualType != Type.void;
-    let prototype = new FunctionPrototype(
+    let prototype = FunctionPrototype.createByDecl(
       isSemanticallyAnonymous
         ? `${isNamed ? declaration.name.text : "anonymous"}|${sourceFunction.nextAnonymousId++}`
         : declaration.name.text,
@@ -8500,12 +8500,7 @@ export class Compiler extends DiagnosticEmitter {
         this.checkFieldInitialization(baseClass, reportNode);
         instance = new Function(
           CommonNames.constructor,
-          new FunctionPrototype(
-            CommonNames.constructor,
-            classInstance,
-            // declaration is important, i.e. to access optional parameter initializers
-            (<FunctionDeclaration>baseCtor._declaration).clone()
-          ),
+          FunctionPrototype.copy(classInstance, baseCtor.prototype),
           null,
           Signature.create(
             this.program,
@@ -8522,7 +8517,7 @@ export class Compiler extends DiagnosticEmitter {
       } else {
         instance = new Function(
           CommonNames.constructor,
-          new FunctionPrototype(
+          FunctionPrototype.createByDecl(
             CommonNames.constructor,
             classInstance, // bound
             this.program.makeNativeFunctionDeclaration(
@@ -10187,7 +10182,7 @@ export class Compiler extends DiagnosticEmitter {
 }
 
 // helpers
-function mangleImportName(element: Element, declarationBase: DeclarationStatementBase): void {
+function mangleImportName(element: Element, declarationBase: DeclarationBase): void {
   // by default, use the file name as the module name
   mangleImportName_moduleName = declarationBase.nameRange.source.simplePath;
   // and the internal name of the element within that file as the element name

@@ -99,7 +99,7 @@ import {
   JsonSource,
   FunctionLikeWithBodyBase,
   TypeDeclarationBase,
-  DeclarationStatementBase,
+  DeclarationBase,
   VariableLikeBase,
   ClassBase,
 } from "./ast";
@@ -978,7 +978,7 @@ export class Program extends DiagnosticEmitter {
   ): Function {
     return new Function(
       name,
-      new FunctionPrototype(name, parent, this.makeNativeFunctionDeclaration(name, flags), decoratorFlags),
+      FunctionPrototype.createByDecl(name, parent, this.makeNativeFunctionDeclaration(name, flags), decoratorFlags),
       null,
       signature
     );
@@ -2204,7 +2204,7 @@ export class Program extends DiagnosticEmitter {
     if (declaration.range.source.isLibrary) {
       acceptedFlags |= DecoratorFlags.Builtin;
     }
-    let element = new FunctionPrototype(
+    let element = FunctionPrototype.createByDecl(
       name,
       parent,
       declaration,
@@ -2286,7 +2286,7 @@ export class Program extends DiagnosticEmitter {
         let element = assert(parentMembers.get(name));
         if (element.kind == ElementKind.PropertyPrototype) return <PropertyPrototype>element;
       } else {
-        let element = new PropertyPrototype(name, parent, declaration);
+        let element = PropertyPrototype.fromDecl(name, parent, declaration);
         if (!parent.add(name, element)) return null;
         return element;
       }
@@ -2296,7 +2296,7 @@ export class Program extends DiagnosticEmitter {
         let element = assert(parentMembers.get(name));
         if (element.kind == ElementKind.PropertyPrototype) return <PropertyPrototype>element;
       } else {
-        let element = new PropertyPrototype(name, parent, declaration);
+        let element = PropertyPrototype.fromDecl(name, parent, declaration);
         if (!parent.addInstance(name, element)) return null;
         return element;
       }
@@ -2327,7 +2327,7 @@ export class Program extends DiagnosticEmitter {
         return;
       }
     }
-    let element = new FunctionPrototype(
+    let element = FunctionPrototype.createByDecl(
       (isGetter ? GETTER_PREFIX : SETTER_PREFIX) + name,
       property.parent, // same level as property
       declaration,
@@ -2621,7 +2621,7 @@ export class Program extends DiagnosticEmitter {
     if (declaration.range.source.isLibrary) {
       validDecorators |= DecoratorFlags.Builtin;
     }
-    let element = new FunctionPrototype(
+    let element = FunctionPrototype.createByDecl(
       name,
       parent,
       declaration,
@@ -3151,8 +3151,6 @@ export abstract class DeclaredElement extends Element {
    * important AST nodes directly through manual casting, allowing the resolver
    * etc. to not worry about actual declarations.
    */
-  public _declaration: DeclarationStatement;
-  declarationStatementBase: DeclarationStatementBase;
   /** Constructs a new declared program element. */
   protected constructor(
     /** Specific element kind. */
@@ -3165,13 +3163,11 @@ export abstract class DeclaredElement extends Element {
     program: Program,
     /** Parent element. */
     parent: Element | null,
-    declaration: DeclarationStatement
+    public declarationBase: DeclarationBase
   ) {
     super(kind, name, internalName, program, parent);
     declaredElements.add(kind);
-    this._declaration = declaration; // init
-    this.flags = declaration.flags; // inherit
-    this.declarationStatementBase = declaration.toDeclarationStatementBase();
+    this.flags = declarationBase.flags; // inherit
   }
 
   /** Tests if this element is a library element. */
@@ -3181,11 +3177,11 @@ export abstract class DeclaredElement extends Element {
 
   /** Gets the assiciated decorator nodes. */
   get decoratorNodes(): DecoratorNode[] | null {
-    return this.declarationStatementBase.decorators;
+    return this.declarationBase.decorators;
   }
 
   get nameRange(): Range {
-    return this.declarationStatementBase.nameRange;
+    return this.declarationBase.nameRange;
   }
 }
 
@@ -3214,9 +3210,9 @@ export abstract class TypedElement extends DeclaredElement {
     /** Parent element. */
     parent: Element | null,
     /** Declaration reference. */
-    declaration: DeclarationStatement
+    declarationBase: DeclarationBase
   ) {
-    super(kind, name, internalName, program, parent, declaration);
+    super(kind, name, internalName, program, parent, declarationBase);
     typedElements.add(kind);
   }
 
@@ -3524,7 +3520,7 @@ export class TypeDefinition extends TypedElement {
       mangleInternalName(name, parent, false),
       parent.program,
       parent,
-      declaration
+      declaration.toDeclarationBase()
     );
     this.decoratorFlags = decoratorFlags;
     this.typeDeclarationBase = declaration.toTypeDeclarationBase();
@@ -3554,7 +3550,14 @@ export class Namespace extends DeclaredElement {
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags = DecoratorFlags.None
   ) {
-    super(ElementKind.Namespace, name, mangleInternalName(name, parent, false), parent.program, parent, declaration);
+    super(
+      ElementKind.Namespace,
+      name,
+      mangleInternalName(name, parent, false),
+      parent.program,
+      parent,
+      declaration.toDeclarationBase()
+    );
     this.decoratorFlags = decoratorFlags;
   }
 
@@ -3580,7 +3583,14 @@ export class Enum extends TypedElement {
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags = DecoratorFlags.None
   ) {
-    super(ElementKind.Enum, name, mangleInternalName(name, parent, false), parent.program, parent, declaration);
+    super(
+      ElementKind.Enum,
+      name,
+      mangleInternalName(name, parent, false),
+      parent.program,
+      parent,
+      declaration.toDeclarationBase()
+    );
     this.decoratorFlags = decoratorFlags;
     this.setType(Type.i32);
   }
@@ -3630,7 +3640,7 @@ export abstract class VariableLikeElement extends TypedElement {
       mangleInternalName(name, parent, declaration.is(CommonFlags.Instance)),
       parent.program,
       parent,
-      declaration
+      declaration.toDeclarationBase()
     );
     this.flags = declaration.flags;
     this.variableLikeBase = declaration.toVariableLikeBase();
@@ -3783,8 +3793,7 @@ export class FunctionPrototype extends DeclaredElement {
   /** Clones of this prototype that are bound to specific classes. */
   private boundPrototypes: Map<Class, FunctionPrototype> | null = null;
 
-  /** Constructs a new function prototype. */
-  constructor(
+  static createByDecl(
     /** Simple name */
     name: string,
     /** Parent element, usually a file, namespace or class (if a method). */
@@ -3793,19 +3802,55 @@ export class FunctionPrototype extends DeclaredElement {
     declaration: FunctionDeclaration,
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags = DecoratorFlags.None
+  ): FunctionPrototype {
+    return new FunctionPrototype(
+      name,
+      parent,
+      decoratorFlags,
+      declaration.toDeclarationBase(),
+      declaration.toFunctionLikeWithBodyBase(),
+      declaration.name,
+      declaration.identifierAndSignatureRange
+    );
+  }
+
+  static copy(parent: Element, origin: FunctionPrototype): FunctionPrototype {
+    return new FunctionPrototype(
+      origin.name,
+      parent,
+      origin.decoratorFlags,
+      origin.declarationBase,
+      origin.functionLikeWithBodyBase,
+      origin.identifierNode,
+      origin.identifierAndSignatureRange
+    );
+  }
+
+  /** Constructs a new function prototype. */
+  private constructor(
+    /** Simple name */
+    name: string,
+    /** Parent element, usually a file, namespace or class (if a method). */
+    parent: Element,
+    /** Pre-checked flags indicating built-in decorators. */
+    decoratorFlags: DecoratorFlags,
+    declarationBase: DeclarationBase,
+    functionLikeWithBodyBase: FunctionLikeWithBodyBase,
+    identifierNode: IdentifierExpression,
+    identifierAndSignatureRange: Range
   ) {
     super(
       ElementKind.FunctionPrototype,
       name,
-      mangleInternalName(name, parent, declaration.is(CommonFlags.Instance)),
+      mangleInternalName(name, parent, declarationBase.is(CommonFlags.Instance)),
       parent.program,
       parent,
-      declaration
+      declarationBase
     );
     this.decoratorFlags = decoratorFlags;
-    this.functionLikeWithBodyBase = declaration.toFunctionLikeWithBodyBase();
-    this.identifierNode = declaration.name;
-    this.identifierAndSignatureRange = declaration.identifierAndSignatureRange;
+    this.functionLikeWithBodyBase = functionLikeWithBodyBase;
+    this.identifierNode = identifierNode;
+    this.identifierAndSignatureRange = identifierAndSignatureRange;
   }
 
   /** Gets the associated type parameter nodes. */
@@ -3835,14 +3880,8 @@ export class FunctionPrototype extends DeclaredElement {
     let boundPrototypes = this.boundPrototypes;
     if (!boundPrototypes) this.boundPrototypes = boundPrototypes = new Map();
     else if (boundPrototypes.has(classInstance)) return assert(boundPrototypes.get(classInstance));
-    let declaration = this._declaration; // for constructor
-    assert(declaration.kind == NodeKind.MethodDeclaration);
-    let bound = new FunctionPrototype(
-      this.name,
-      classInstance, // now bound
-      <MethodDeclaration>declaration,
-      this.decoratorFlags
-    );
+
+    let bound = FunctionPrototype.copy(classInstance, this);
     bound.flags = this.flags;
     bound.operatorKind = this.operatorKind;
     bound.unboundOverrides = this.unboundOverrides;
@@ -3918,7 +3957,7 @@ export class Function extends TypedElement {
       mangleInternalName(nameInclTypeParameters, prototype.parent, prototype.is(CommonFlags.Instance)),
       prototype.program,
       prototype.parent,
-      prototype._declaration // for constructor
+      prototype.declarationBase
     );
     this.prototype = prototype;
     this.typeArguments = typeArguments;
@@ -4097,8 +4136,6 @@ export class PropertyPrototype extends DeclaredElement {
   /** Property instance, if resolved. */
   instance: Property | null = null;
 
-  identifierNode: IdentifierExpression;
-
   /** Clones of this prototype that are bound to specific classes. */
   private boundPrototypes: Map<Class, PropertyPrototype> | null = null;
 
@@ -4152,32 +4189,57 @@ export class PropertyPrototype extends DeclaredElement {
       null,
       nativeRange
     );
-    let prototype = new PropertyPrototype(name, parent, getterDeclaration);
+    let prototype = PropertyPrototype.fromDecl(name, parent, getterDeclaration);
     prototype.fieldDeclaration = fieldDeclaration;
     prototype.decoratorFlags = decoratorFlags;
-    prototype.getterPrototype = new FunctionPrototype(GETTER_PREFIX + name, parent, getterDeclaration, decoratorFlags);
-    prototype.setterPrototype = new FunctionPrototype(SETTER_PREFIX + name, parent, setterDeclaration, decoratorFlags);
+    prototype.getterPrototype = FunctionPrototype.createByDecl(
+      GETTER_PREFIX + name,
+      parent,
+      getterDeclaration,
+      decoratorFlags
+    );
+    prototype.setterPrototype = FunctionPrototype.createByDecl(
+      SETTER_PREFIX + name,
+      parent,
+      setterDeclaration,
+      decoratorFlags
+    );
     return prototype;
   }
 
-  /** Constructs a new property prototype. */
-  constructor(
+  static fromDecl(
     /** Simple name. */
     name: string,
     /** Parent element. Either a class prototype or instance. */
     parent: Element,
     /** Declaration of the getter or setter introducing the property. */
     firstDeclaration: FunctionDeclaration
+  ): PropertyPrototype {
+    return new PropertyPrototype(name, parent, firstDeclaration.toDeclarationBase(), firstDeclaration.name);
+  }
+
+  static copy(parent: Element, origin: PropertyPrototype): PropertyPrototype {
+    return new PropertyPrototype(origin.name, parent, origin.declarationBase, origin.identifierNode);
+  }
+
+  /** Constructs a new property prototype. */
+  private constructor(
+    /** Simple name. */
+    name: string,
+    /** Parent element. Either a class prototype or instance. */
+    parent: Element,
+    /** Declaration of the getter or setter introducing the property. */
+    declarationBase: DeclarationBase,
+    public identifierNode: IdentifierExpression
   ) {
     super(
       ElementKind.PropertyPrototype,
       name,
-      mangleInternalName(name, parent, firstDeclaration.is(CommonFlags.Instance)),
+      mangleInternalName(name, parent, declarationBase.is(CommonFlags.Instance)),
       parent.program,
       parent,
-      firstDeclaration
+      declarationBase
     );
-    this.identifierNode = firstDeclaration.name;
     this.flags &= ~(CommonFlags.Get | CommonFlags.Set);
   }
 
@@ -4214,12 +4276,9 @@ export class PropertyPrototype extends DeclaredElement {
     let boundPrototypes = this.boundPrototypes;
     if (!boundPrototypes) this.boundPrototypes = boundPrototypes = new Map();
     else if (boundPrototypes.has(classInstance)) return assert(boundPrototypes.get(classInstance));
-    let firstDeclaration = this._declaration; // for constructor
-    assert(firstDeclaration.kind == NodeKind.MethodDeclaration);
-    let bound = new PropertyPrototype(
-      this.name,
+    let bound = PropertyPrototype.copy(
       classInstance, // now bound
-      <MethodDeclaration>firstDeclaration
+      this
     );
     bound.flags = this.flags;
     bound.fieldDeclaration = this.fieldDeclaration;
@@ -4309,7 +4368,7 @@ export class IndexSignature extends TypedElement {
       parent.internalName + "[]",
       parent.program,
       parent,
-      parent.program.makeNativeVariableDeclaration("[]") // is fine
+      parent.program.makeNativeVariableDeclaration("[]").toDeclarationBase() // is fine
     );
   }
 
@@ -4361,7 +4420,7 @@ export class ClassPrototype extends DeclaredElement {
       mangleInternalName(name, parent, declaration.is(CommonFlags.Instance)),
       parent.program,
       parent,
-      declaration
+      declaration.toDeclarationBase()
     );
     this.classBase = declaration.toClassBase();
     this.decoratorFlags = decoratorFlags;
@@ -4525,7 +4584,7 @@ export class Class extends TypedElement {
       mangleInternalName(nameInclTypeParameters, prototype.parent, prototype.is(CommonFlags.Instance)),
       prototype.program,
       prototype.parent,
-      prototype._declaration // for constructor
+      prototype.declarationBase
     );
     this.prototype = prototype;
     this.flags = prototype.flags;
