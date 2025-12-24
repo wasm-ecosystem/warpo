@@ -2520,7 +2520,7 @@ export class Program extends DiagnosticEmitter {
           this.errorRelated(
             DiagnosticCode.Duplicate_identifier_0,
             declaration.nameRange,
-            existing._declaration.nameRange,
+            existing.nameRange,
             "default"
           );
           return;
@@ -3178,7 +3178,7 @@ export abstract class DeclaredElement extends Element {
 
   /** Tests if this element is a library element. */
   get isDeclaredInLibrary(): bool {
-    return this._declaration.range.source.isLibrary;
+    return this.nameRange.source.isLibrary;
   }
 
   /** Gets the assiciated decorator nodes. */
@@ -4428,7 +4428,7 @@ export class ClassPrototype extends DeclaredElement {
           this.program.errorRelated(
             DiagnosticCode.Duplicate_identifier_0,
             element.nameRange,
-            (<DeclaredElement>existing)._declaration.nameRange,
+            (<DeclaredElement>existing).nameRange,
             element.name
           );
         } else {

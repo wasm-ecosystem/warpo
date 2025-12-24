@@ -1209,7 +1209,7 @@ export class Compiler extends DiagnosticEmitter {
       }
 
       // Importing mutable globals is not supported in the MVP
-      this.error(DiagnosticCode.Feature_0_is_not_enabled, global._declaration.range, "mutable-globals");
+      this.error(DiagnosticCode.Feature_0_is_not_enabled, global.nameRange, "mutable-globals");
       global.set(CommonFlags.Errored);
       pendingElements.delete(global);
       return false;
@@ -1408,7 +1408,7 @@ export class Compiler extends DiagnosticEmitter {
               if (element.is(CommonFlags.Const)) {
                 this.error(
                   DiagnosticCode.In_const_enum_declarations_member_initializer_must_be_constant_expression,
-                  member._declaration.range
+                  member.nameRange
                 );
               }
               initInStart = true;
@@ -1748,7 +1748,7 @@ export class Compiler extends DiagnosticEmitter {
       if (classInstance.base && !classInstance.prototype.implicitlyExtendsObject && !flow.is(FlowFlags.CallsSuper)) {
         this.error(
           DiagnosticCode.Constructors_for_derived_classes_must_contain_a_super_call,
-          instance.prototype._declaration.range
+          instance.prototype.nameRange
         );
       }
 
@@ -2286,12 +2286,7 @@ export class Compiler extends DiagnosticEmitter {
     let name = statement.name.text;
     let existedTypeAlias = flow.lookupScopedTypeAlias(name);
     if (existedTypeAlias) {
-      this.errorRelated(
-        DiagnosticCode.Duplicate_identifier_0,
-        statement.range,
-        existedTypeAlias._declaration.range,
-        name
-      );
+      this.errorRelated(DiagnosticCode.Duplicate_identifier_0, statement.range, existedTypeAlias.nameRange, name);
       return this.module.unreachable();
     }
     let element = new TypeDefinition(name, flow.targetFunction, statement, DecoratorFlags.None);
@@ -2995,7 +2990,7 @@ export class Compiler extends DiagnosticEmitter {
           // here: not top-level
           let existingLocal = flow.getScopedLocal(name);
           if (existingLocal) {
-            if (!existingLocal._declaration.range.source.isNative) {
+            if (!existingLocal.nameRange.source.isNative) {
               this.errorRelated(
                 DiagnosticCode.Duplicate_identifier_0,
                 declaration.name.range,
@@ -7004,7 +6999,7 @@ export class Compiler extends DiagnosticEmitter {
       let fname = instance.name;
       let existingLocal = flow.getScopedLocal(fname);
       if (existingLocal) {
-        if (!existingLocal._declaration.range.source.isNative) {
+        if (!existingLocal.nameRange.source.isNative) {
           this.errorRelated(
             DiagnosticCode.Duplicate_identifier_0,
             declaration.name.range,

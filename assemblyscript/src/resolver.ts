@@ -1119,7 +1119,7 @@ export class Resolver extends DiagnosticEmitter {
           this.errorRelated(
             DiagnosticCode.Property_0_only_has_a_setter_and_is_missing_a_getter,
             targetNode.range,
-            setterInstance._declaration.range,
+            setterInstance.nameRange,
             propertyInstance.name
           );
           return null;
@@ -3314,7 +3314,7 @@ export class Resolver extends DiagnosticEmitter {
         }
       } else {
         if (reportMode == ReportMode.Report) {
-          this.error(DiagnosticCode.Duplicate_decorator, operatorInstance._declaration.range);
+          this.error(DiagnosticCode.Duplicate_decorator, operatorInstance.nameRange);
         }
       }
     }

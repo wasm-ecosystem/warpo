@@ -440,7 +440,7 @@ export class Flow {
     } else if (scopedLocals.has(name)) {
       let existingLocal = assert(scopedLocals.get(name));
       if (reportNode) {
-        if (!existingLocal._declaration.range.source.isNative) {
+        if (!existingLocal.nameRange.source.isNative) {
           this.program.errorRelated(
             DiagnosticCode.Duplicate_identifier_0,
             reportNode.range,
