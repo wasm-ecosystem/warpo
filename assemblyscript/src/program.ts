@@ -463,8 +463,6 @@ export class Program extends DiagnosticEmitter {
   filesByName: Map<string, File> = new Map();
   /** Elements by unique internal name in element space. */
   elementsByName: Map<string, Element> = new Map();
-  /** Elements by declaration. */
-  elementsByDeclaration: Map<DeclarationStatement, DeclaredElement> = new Map();
   /** Element instances by unique internal name. */
   instancesByName: Map<string, Element> = new Map();
   /** Classes wrapping basic types like `i32`. */
@@ -981,12 +979,6 @@ export class Program extends DiagnosticEmitter {
     );
   }
 
-  /** Gets the (possibly merged) program element linked to the specified declaration. */
-  getElementByDeclaration(declaration: DeclarationStatement): DeclaredElement | null {
-    let elementsByDeclaration = this.elementsByDeclaration;
-    return elementsByDeclaration.has(declaration) ? assert(elementsByDeclaration.get(declaration)) : null;
-  }
-
   /** Initializes the program and its elements prior to compilation. */
   initialize(): void {
     if (this.initialized) return;
@@ -1444,8 +1436,7 @@ export class Program extends DiagnosticEmitter {
         let members = Map_values(instanesMembers);
         for (let j = 0, k = members.length; j < k; j++) {
           let member = members[j];
-          let declaration = member._declaration;
-          if (declaration.is(CommonFlags.Override)) {
+          if (member.is(CommonFlags.Override)) {
             let basePrototype = prototype.basePrototype;
             let hasOverride = false;
             while (basePrototype) {
@@ -1462,7 +1453,7 @@ export class Program extends DiagnosticEmitter {
               let basePrototype = assert(prototype.basePrototype);
               this.error(
                 DiagnosticCode.This_member_cannot_have_an_override_modifier_because_it_is_not_declared_in_the_base_class_0,
-                declaration.nameRange,
+                member.nameRange,
                 basePrototype.name
               );
             }
@@ -3050,7 +3041,6 @@ export abstract class Element {
 
   /** Adds an element as a member of this one. Reports and returns `false` if a duplicate. */
   add(name: string, element: DeclaredElement, localIdentifierIfImport: IdentifierExpression | null = null): bool {
-    let originalDeclaration = element._declaration;
     let members = this.members;
     if (!members) this.members = members = new Map();
     else if (members.has(name)) {
@@ -3082,7 +3072,6 @@ export abstract class Element {
     if (element.kind != ElementKind.FunctionPrototype || !(<FunctionPrototype>element).isBound) {
       // prefer unbound prototypes in global lookup maps
       program.elementsByName.set(element.internalName, element);
-      program.elementsByDeclaration.set(originalDeclaration, element);
     }
     return true;
   }
@@ -4181,28 +4170,6 @@ export class PropertyPrototype extends DeclaredElement {
     return (<FunctionDeclaration>this._declaration).name;
   }
 
-  /** Gets the associated type node. */
-  get typeNode(): TypeNode | null {
-    let fieldDeclaration = this.fieldDeclaration;
-    if (fieldDeclaration) return fieldDeclaration.type;
-    let getterPrototype = this.getterPrototype;
-    if (getterPrototype) {
-      let getterDeclaration = getterPrototype._declaration;
-      if (getterDeclaration.kind == NodeKind.FunctionDeclaration) {
-        return (<FunctionDeclaration>getterDeclaration).signature.returnType;
-      }
-    }
-    let setterPrototype = this.setterPrototype;
-    if (setterPrototype) {
-      let setterDeclaration = setterPrototype._declaration;
-      if (setterDeclaration.kind == NodeKind.FunctionDeclaration) {
-        let setterParameters = (<FunctionDeclaration>setterDeclaration).signature.parameters;
-        if (setterParameters.length) return setterParameters[0].type;
-      }
-    }
-    return null;
-  }
-
   /** Gets the associated initializer node. */
   get initializerNode(): Expression | null {
     let fieldDeclaration = this.fieldDeclaration;
@@ -4417,7 +4384,6 @@ export class ClassPrototype extends DeclaredElement {
 
   /** Adds an element as an instance member of this one. Returns the previous element if a duplicate. */
   addInstance(name: string, element: DeclaredElement): bool {
-    let originalDeclaration = element._declaration;
     let instanceMembers = this.instanceMembers;
     if (!instanceMembers) this.instanceMembers = instanceMembers = new Map();
     else if (instanceMembers.has(name)) {
@@ -4442,7 +4408,6 @@ export class ClassPrototype extends DeclaredElement {
     if (element.is(CommonFlags.Export) && this.is(CommonFlags.ModuleExport)) {
       element.set(CommonFlags.ModuleExport); // propagate
     }
-    this.program.elementsByDeclaration.set(originalDeclaration, element);
     return true;
   }
 

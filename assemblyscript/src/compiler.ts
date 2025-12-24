@@ -402,8 +402,18 @@ export class Compiler extends DiagnosticEmitter {
 
   /** Current control flow. */
   currentFlow: Flow;
-  /** Current parent element if not a function, i.e. an enum or namespace. */
-  currentParent: Element | null = null;
+  /**
+   * Additional contextual element when resolving identifier expressions.
+   * It does not enough to resolve identifier only rely on {@link currentFlow.targetFunction}.
+   * When resolving inside enum/namespace declarations, the current enum/namespace element is needed to resolve identifiers inside them correctly.
+   * ```ts
+   * enum E {
+   *  A = 1,
+   *  B = A + 1 // needs to know that 'A' is inside enum 'E'
+   * }
+   * ```
+   */
+  ctxElement: Element | null = null;
   /** Current type in compilation. */
   currentType: Type = Type.void;
   /** Start function statements. */
@@ -1042,9 +1052,12 @@ export class Compiler extends DiagnosticEmitter {
     let previousFlow = this.currentFlow;
     let flow = startFunction.flow;
     this.currentFlow = flow;
+    const ctxElement = this.ctxElement;
+    this.ctxElement = file;
     for (let statements = file.source.statements, i = 0, k = statements.length; i < k; ++i) {
       this.compileTopLevelStatement(statements[i], startFunctionBody);
     }
+    this.ctxElement = ctxElement;
     // no need to insert unreachable since last statement should have done that
     this.currentFlow = previousFlow;
     this.currentBody = previousBody;
@@ -1348,8 +1361,6 @@ export class Compiler extends DiagnosticEmitter {
     pendingElements.add(element);
 
     let module = this.module;
-    let previousParent = this.currentParent;
-    this.currentParent = element;
     let previousValue: EnumValue | null = null;
     let previousValueIsMut = false;
     let isInline = element.is(CommonFlags.Const) || element.hasDecorator(DecoratorFlags.Inline);
@@ -1435,7 +1446,6 @@ export class Compiler extends DiagnosticEmitter {
         previousValue = enumValue;
       }
     }
-    this.currentParent = previousParent;
     pendingElements.delete(element);
     return true;
   }
@@ -2060,57 +2070,71 @@ export class Compiler extends DiagnosticEmitter {
 
   /** Compiles a top level statement (incl. function declarations etc.) to the specified body. */
   compileTopLevelStatement(statement: Statement, body: ExpressionRef[]): void {
+    const ctxElement = this.ctxElement!;
     switch (statement.kind) {
       case NodeKind.ClassDeclaration: {
         let memberStatements = (<ClassDeclaration>statement).members;
         for (let i = 0, k = memberStatements.length; i < k; ++i) {
+          let element = ctxElement.getMember((<ClassDeclaration>statement).name.text)!;
+          this.ctxElement = element;
           this.compileTopLevelStatement(memberStatements[i], body);
+          this.ctxElement = ctxElement;
         }
         break;
       }
       case NodeKind.EnumDeclaration: {
-        let element = this.program.getElementByDeclaration(<EnumDeclaration>statement);
+        let element = ctxElement.getMember((<EnumDeclaration>statement).name.text);
         if (element) {
           assert(element.kind == ElementKind.Enum);
-          if (!element.hasDecorator(DecoratorFlags.Lazy)) this.compileEnum(<Enum>element);
+          if (!element.hasDecorator(DecoratorFlags.Lazy)) {
+            this.ctxElement = element;
+            this.compileEnum(<Enum>element);
+            this.ctxElement = ctxElement;
+          }
         }
         break;
       }
       case NodeKind.NamespaceDeclaration: {
         let declaration = <NamespaceDeclaration>statement;
-        let element = this.program.getElementByDeclaration(declaration);
+        let element = ctxElement.getMember(declaration.name.text);
         if (element) {
           // any potential merged element
-          let previousParent = this.currentParent;
-          this.currentParent = element;
+          this.ctxElement = element;
           let memberStatements = declaration.members;
           for (let i = 0, k = memberStatements.length; i < k; ++i) {
             this.compileTopLevelStatement(memberStatements[i], body);
           }
-          this.currentParent = previousParent;
+          this.ctxElement = ctxElement;
         }
         break;
       }
       case NodeKind.Variable: {
         let declarations = (<VariableStatement>statement).declarations;
         for (let i = 0, k = declarations.length; i < k; ++i) {
-          let element = this.program.getElementByDeclaration(declarations[i]);
+          let element = ctxElement.getMember(declarations[i].name.text);
           if (element) {
             assert(element.kind == ElementKind.Global);
             if (
               !element.is(CommonFlags.Ambient) && // delay imports
               !element.hasDecorator(DecoratorFlags.Lazy)
-            )
+            ) {
+              this.ctxElement = element;
               this.compileGlobal(<Global>element);
+              this.ctxElement = ctxElement;
+            }
           }
         }
         break;
       }
       case NodeKind.FieldDeclaration: {
-        let element = this.program.getElementByDeclaration(<FieldDeclaration>statement);
+        let element = ctxElement.getMember((<FieldDeclaration>statement).name.text);
         if (element && element.kind == ElementKind.Global) {
           // static
-          if (!element.hasDecorator(DecoratorFlags.Lazy)) this.compileGlobal(<Global>element);
+          if (!element.hasDecorator(DecoratorFlags.Lazy)) {
+            this.ctxElement = element;
+            this.compileGlobal(<Global>element);
+            this.ctxElement = ctxElement;
+          }
         }
         break;
       }
@@ -7128,14 +7152,9 @@ export class Compiler extends DiagnosticEmitter {
     this.maybeCompileEnclosingSource(expression);
 
     // otherwise resolve
-    let currentParent = this.currentParent;
-    if (!currentParent) currentParent = sourceFunction;
-    let target = this.resolver.lookupIdentifierExpression(
-      // reports
-      expression,
-      flow,
-      currentParent
-    );
+    let ctxElement = this.ctxElement;
+    if (!ctxElement) ctxElement = sourceFunction;
+    let target = this.resolver.lookupIdentifierExpression(expression, flow, ctxElement, ReportMode.Report);
     if (!target) {
       // make a guess to avoid assertions in calling code
       if (this.currentType == Type.void) this.currentType = Type.i32;

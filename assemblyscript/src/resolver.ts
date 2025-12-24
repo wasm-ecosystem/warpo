@@ -956,9 +956,9 @@ export class Resolver extends DiagnosticEmitter {
     /** Flow to search for scoped locals. */
     ctxFlow: Flow,
     /** Element to search. */
-    ctxElement: Element = ctxFlow.targetFunction, // differs for enums and namespaces
+    ctxElement: Element, // differs for enums and namespaces
     /** How to proceed with eventual diagnostics. */
-    reportMode: ReportMode = ReportMode.Report
+    reportMode: ReportMode
   ): Element | null {
     switch (node.kind) {
       case NodeKind.True:
@@ -3155,11 +3155,7 @@ export class Resolver extends DiagnosticEmitter {
                 let fieldType = boundInstance.type;
                 if (fieldType == Type.void) break; // failed to resolve earlier
                 if (fieldType.isExternalReference) {
-                  this.error(
-                    DiagnosticCode.Not_implemented_0,
-                    assert(boundPrototype.typeNode).range,
-                    "Reference typed fields"
-                  );
+                  this.error(DiagnosticCode.Not_implemented_0, boundPrototype.nameRange, "Reference typed fields");
                   break;
                 }
                 let needsLayout = true;
