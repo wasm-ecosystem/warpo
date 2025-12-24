@@ -1614,8 +1614,6 @@ export abstract class DeclarationStatement extends Statement {
   constructor(
     /** Declaration node kind. */
     kind: NodeKind,
-    /** Simple name being declared. */
-    public name: IdentifierExpression,
     /** Array of decorators, if any. */
     public decorators: DecoratorNode[] | null,
     /** Common flags indicating specific traits. */
@@ -1640,6 +1638,8 @@ export abstract class DeclarationStatement extends Statement {
   set(flag: CommonFlags): void {
     this.flags |= flag;
   }
+
+  abstract get nameRange(): Range;
 }
 
 /** Represents an index signature. */
@@ -1664,7 +1664,7 @@ export abstract class VariableLikeDeclarationStatement extends DeclarationStatem
     /** Variable-like declaration node kind. */
     kind: NodeKind,
     /** Simple name being declared. */
-    name: IdentifierExpression,
+    public name: IdentifierExpression,
     /** Array of decorators, if any. */
     decorators: DecoratorNode[] | null,
     /** Common flags indicating specific traits. */
@@ -1676,7 +1676,10 @@ export abstract class VariableLikeDeclarationStatement extends DeclarationStatem
     /** Source range. */
     range: Range
   ) {
-    super(kind, name, decorators, flags, range);
+    super(kind, decorators, flags, range);
+  }
+  get nameRange(): Range {
+    return this.name.range;
   }
 }
 
@@ -1708,7 +1711,7 @@ export class BreakStatement extends Statement {
 export class ClassDeclaration extends DeclarationStatement {
   constructor(
     /** Simple name being declared. */
-    name: IdentifierExpression,
+    public name: IdentifierExpression,
     /** Array of decorators, if any. */
     decorators: DecoratorNode[] | null,
     /** Common flags indicating specific traits. */
@@ -1724,7 +1727,7 @@ export class ClassDeclaration extends DeclarationStatement {
     /** Source range. */
     range: Range
   ) {
-    super(NodeKind.ClassDeclaration, name, decorators, flags, range);
+    super(NodeKind.ClassDeclaration, decorators, flags, range);
   }
 
   /** Index signature, if present. */
@@ -1733,6 +1736,9 @@ export class ClassDeclaration extends DeclarationStatement {
   get isGeneric(): bool {
     let typeParameters = this.typeParameters;
     return typeParameters != null && typeParameters.length > 0;
+  }
+  get nameRange(): Range {
+    return this.name.range;
   }
 }
 
@@ -1776,7 +1782,7 @@ export class EmptyStatement extends Statement {
 export class EnumDeclaration extends DeclarationStatement {
   constructor(
     /** Simple name being declared. */
-    name: IdentifierExpression,
+    public name: IdentifierExpression,
     /** Array of decorators, if any. */
     decorators: DecoratorNode[] | null,
     /** Common flags indicating specific traits. */
@@ -1786,7 +1792,10 @@ export class EnumDeclaration extends DeclarationStatement {
     /** Source range. */
     range: Range
   ) {
-    super(NodeKind.EnumDeclaration, name, decorators, flags, range);
+    super(NodeKind.EnumDeclaration, decorators, flags, range);
+  }
+  get nameRange(): Range {
+    return this.name.range;
   }
 }
 
@@ -1958,7 +1967,7 @@ export const enum ArrowKind {
 export class FunctionDeclaration extends DeclarationStatement {
   constructor(
     /** Simple name being declared. */
-    name: IdentifierExpression,
+    public name: IdentifierExpression,
     /** Array of decorators, if any. */
     decorators: DecoratorNode[] | null,
     /** Common flags indicating specific traits. */
@@ -1974,9 +1983,11 @@ export class FunctionDeclaration extends DeclarationStatement {
     /** Source range. */
     range: Range
   ) {
-    super(NodeKind.FunctionDeclaration, name, decorators, flags, range);
+    super(NodeKind.FunctionDeclaration, decorators, flags, range);
   }
-
+  get nameRange(): Range {
+    return this.name.range;
+  }
   /** Gets if this function is generic. */
   get isGeneric(): bool {
     let typeParameters = this.typeParameters;
@@ -2018,13 +2029,16 @@ export class IfStatement extends Statement {
 export class ImportDeclaration extends DeclarationStatement {
   constructor(
     /** Simple name being declared. */
-    name: IdentifierExpression,
+    public name: IdentifierExpression,
     /** Identifier being imported. */
     public foreignName: IdentifierExpression,
     /** Source range. */
     range: Range
   ) {
-    super(NodeKind.ImportDeclaration, name, null, CommonFlags.None, range);
+    super(NodeKind.ImportDeclaration, null, CommonFlags.None, range);
+  }
+  get nameRange(): Range {
+    return this.name.range;
   }
 }
 
@@ -2108,7 +2122,7 @@ export class MethodDeclaration extends FunctionDeclaration {
 export class NamespaceDeclaration extends DeclarationStatement {
   constructor(
     /** Simple name being declared. */
-    name: IdentifierExpression,
+    public name: IdentifierExpression,
     /** Array of decorators, if any. */
     decorators: DecoratorNode[] | null,
     /** Common flags indicating specific traits. */
@@ -2118,7 +2132,10 @@ export class NamespaceDeclaration extends DeclarationStatement {
     /** Source range. */
     range: Range
   ) {
-    super(NodeKind.NamespaceDeclaration, name, decorators, flags, range);
+    super(NodeKind.NamespaceDeclaration, decorators, flags, range);
+  }
+  get nameRange(): Range {
+    return this.name.range;
   }
 }
 
@@ -2214,7 +2231,7 @@ export class ModuleDeclaration extends Statement {
 export class TypeDeclaration extends DeclarationStatement {
   constructor(
     /** Simple name being declared. */
-    name: IdentifierExpression,
+    public name: IdentifierExpression,
     /** Array of decorators, if any. */
     decorators: DecoratorNode[] | null,
     /** Common flags indicating specific traits. */
@@ -2226,7 +2243,10 @@ export class TypeDeclaration extends DeclarationStatement {
     /** Source range. */
     range: Range
   ) {
-    super(NodeKind.TypeDeclaration, name, decorators, flags, range);
+    super(NodeKind.TypeDeclaration, decorators, flags, range);
+  }
+  get nameRange(): Range {
+    return this.name.range;
   }
 }
 

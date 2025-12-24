@@ -940,7 +940,7 @@ export class Compiler extends DiagnosticEmitter {
         let global = <Global>element;
         let isConst = global.is(CommonFlags.Const) || global.is(CommonFlags.Static | CommonFlags.Readonly);
         if (!isConst && !this.options.hasFeature(Feature.MutableGlobals)) {
-          this.warning(DiagnosticCode.Feature_0_is_not_enabled, global.identifierNode.range, "mutable-globals");
+          this.warning(DiagnosticCode.Feature_0_is_not_enabled, global.nameRange, "mutable-globals");
           return;
         }
         this.compileGlobal(global);
@@ -962,7 +962,7 @@ export class Compiler extends DiagnosticEmitter {
           if (global.type == Type.v128) {
             this.warning(
               DiagnosticCode.Exchange_of_0_values_is_not_supported_by_all_embeddings,
-              global.typeNode ? assert(global.typeNode).range : global.identifierNode.range,
+              global.typeNode ? assert(global.typeNode).range : global.nameRange,
               "v128"
             );
           }
@@ -988,7 +988,7 @@ export class Compiler extends DiagnosticEmitter {
       case ElementKind.EnumValue: {
         let enumValue = <EnumValue>element;
         if (!enumValue.isImmutable && !this.options.hasFeature(Feature.MutableGlobals)) {
-          this.error(DiagnosticCode.Feature_0_is_not_enabled, enumValue.identifierNode.range, "mutable-globals");
+          this.error(DiagnosticCode.Feature_0_is_not_enabled, enumValue.nameRange, "mutable-globals");
           return;
         }
         if (enumValue.is(CommonFlags.Compiled)) {
@@ -1003,7 +1003,7 @@ export class Compiler extends DiagnosticEmitter {
     }
     this.warning(
       DiagnosticCode.Only_variables_functions_and_enums_become_WebAssembly_module_exports,
-      element.identifierNode.range
+      element.nameRange
     );
   }
 
@@ -1080,7 +1080,7 @@ export class Compiler extends DiagnosticEmitter {
     this.errorRelated(
       DiagnosticCode.Variable_0_used_before_its_declaration,
       reportNode.range,
-      global.identifierNode.range,
+      global.nameRange,
       global.internalName
     );
     return false;
@@ -1144,7 +1144,7 @@ export class Compiler extends DiagnosticEmitter {
 
         // Error if there's neither a type nor an initializer
       } else {
-        this.error(DiagnosticCode.Type_expected, global.identifierNode.range.atEnd);
+        this.error(DiagnosticCode.Type_expected, global.nameRange.atEnd);
         global.set(CommonFlags.Errored);
         pendingElements.delete(global);
         return false;
@@ -1181,10 +1181,7 @@ export class Compiler extends DiagnosticEmitter {
       type.isReference &&
       !type.isNullableReference
     ) {
-      this.error(
-        DiagnosticCode.Initializer_definitive_assignment_or_nullable_type_expected,
-        global.identifierNode.range
-      );
+      this.error(DiagnosticCode.Initializer_definitive_assignment_or_nullable_type_expected, global.nameRange);
     }
 
     let typeRef = type.toRef();
@@ -1195,7 +1192,7 @@ export class Compiler extends DiagnosticEmitter {
     if (global.is(CommonFlags.Ambient)) {
       // Constant global or mutable globals enabled
       if (isDeclaredConstant || this.options.hasFeature(Feature.MutableGlobals)) {
-        mangleImportName(global, global.declaration);
+        mangleImportName(global, global._declaration);
         this.program.markModuleImport(mangleImportName_moduleName, mangleImportName_elementName, global);
         module.addGlobalImport(
           global.internalName,
@@ -1212,7 +1209,7 @@ export class Compiler extends DiagnosticEmitter {
       }
 
       // Importing mutable globals is not supported in the MVP
-      this.error(DiagnosticCode.Feature_0_is_not_enabled, global.declaration.range, "mutable-globals");
+      this.error(DiagnosticCode.Feature_0_is_not_enabled, global._declaration.range, "mutable-globals");
       global.set(CommonFlags.Errored);
       pendingElements.delete(global);
       return false;
@@ -1392,7 +1389,7 @@ export class Compiler extends DiagnosticEmitter {
           initExpr = module.i32(0);
         } else {
           if (previousValueIsMut) {
-            this.error(DiagnosticCode.Enum_member_must_have_initializer, enumValue.identifierNode.range.atEnd);
+            this.error(DiagnosticCode.Enum_member_must_have_initializer, enumValue.nameRange.atEnd);
           }
           if (isInline) {
             let value = i64_add(previousValue.constantIntegerValue, i64_new(1));
@@ -1411,7 +1408,7 @@ export class Compiler extends DiagnosticEmitter {
               if (element.is(CommonFlags.Const)) {
                 this.error(
                   DiagnosticCode.In_const_enum_declarations_member_initializer_must_be_constant_expression,
-                  member.declaration.range
+                  member._declaration.range
                 );
               }
               initInStart = true;
@@ -1451,7 +1448,7 @@ export class Compiler extends DiagnosticEmitter {
       this.errorRelated(
         DiagnosticCode.A_const_enum_member_can_only_be_accessed_using_a_string_literal,
         reportNode.range,
-        enumElement.identifierNode.range
+        enumElement.nameRange
       );
       return null;
     }
@@ -1531,7 +1528,7 @@ export class Compiler extends DiagnosticEmitter {
     let module = this.module;
     let signature = instance.signature;
     let bodyNode = instance.prototype.bodyNode;
-    let declarationNode = instance.declaration;
+    let declarationNode = instance._declaration;
     assert(declarationNode.kind == NodeKind.FunctionDeclaration || declarationNode.kind == NodeKind.MethodDeclaration);
     this.checkSignatureSupported(instance.signature, (<FunctionDeclaration>declarationNode).signature);
 
@@ -1541,10 +1538,7 @@ export class Compiler extends DiagnosticEmitter {
     if (bodyNode) {
       // must not be ambient
       if (instance.is(CommonFlags.Ambient)) {
-        this.error(
-          DiagnosticCode.An_implementation_cannot_be_declared_in_ambient_contexts,
-          instance.identifierNode.range
-        );
+        this.error(DiagnosticCode.An_implementation_cannot_be_declared_in_ambient_contexts, instance.nameRange);
       }
 
       // cannot have an annotated external name or code
@@ -1633,7 +1627,7 @@ export class Compiler extends DiagnosticEmitter {
       if (!funcRef) {
         this.error(
           DiagnosticCode.Function_implementation_is_missing_or_not_immediately_following_the_declaration,
-          instance.identifierNode.range
+          instance.nameRange
         );
         instance.set(CommonFlags.Errored);
       }
@@ -1731,10 +1725,7 @@ export class Compiler extends DiagnosticEmitter {
         // Just prepended allocation is dropped when returning non-'this'
         if (flow.is(FlowFlags.MayReturnNonThis)) {
           if (this.options.pedantic) {
-            this.pedantic(
-              DiagnosticCode.Explicitly_returning_constructor_drops_this_allocation,
-              instance.identifierNode.range
-            );
+            this.pedantic(DiagnosticCode.Explicitly_returning_constructor_drops_this_allocation, instance.nameRange);
           }
         }
       }
@@ -1743,7 +1734,7 @@ export class Compiler extends DiagnosticEmitter {
       if (flow.is(FlowFlags.MayReturnNonThis) && !classInstance.hasDecorator(DecoratorFlags.Final)) {
         this.error(
           DiagnosticCode.A_class_with_a_constructor_explicitly_returning_something_else_than_this_must_be_final,
-          classInstance.identifierNode.range
+          classInstance.nameRange
         );
       }
 
@@ -1757,7 +1748,7 @@ export class Compiler extends DiagnosticEmitter {
       if (classInstance.base && !classInstance.prototype.implicitlyExtendsObject && !flow.is(FlowFlags.CallsSuper)) {
         this.error(
           DiagnosticCode.Constructors_for_derived_classes_must_contain_a_super_call,
-          instance.prototype.declaration.range
+          instance.prototype._declaration.range
         );
       }
 
@@ -2298,7 +2289,7 @@ export class Compiler extends DiagnosticEmitter {
       this.errorRelated(
         DiagnosticCode.Duplicate_identifier_0,
         statement.range,
-        existedTypeAlias.declaration.range,
+        existedTypeAlias._declaration.range,
         name
       );
       return this.module.unreachable();
@@ -2983,7 +2974,7 @@ export class Compiler extends DiagnosticEmitter {
                 this.errorRelated(
                   DiagnosticCode.Duplicate_identifier_0,
                   declaration.name.range,
-                  existing.declaration.name.range,
+                  existing.nameRange,
                   name
                 );
                 return this.module.unreachable();
@@ -3004,11 +2995,11 @@ export class Compiler extends DiagnosticEmitter {
           // here: not top-level
           let existingLocal = flow.getScopedLocal(name);
           if (existingLocal) {
-            if (!existingLocal.declaration.range.source.isNative) {
+            if (!existingLocal._declaration.range.source.isNative) {
               this.errorRelated(
                 DiagnosticCode.Duplicate_identifier_0,
                 declaration.name.range,
-                existingLocal.declaration.name.range,
+                existingLocal.nameRange,
                 name
               );
             } else {
@@ -3023,12 +3014,7 @@ export class Compiler extends DiagnosticEmitter {
         } else {
           let existing = flow.lookupLocal(name);
           if (existing) {
-            this.errorRelated(
-              DiagnosticCode.Duplicate_identifier_0,
-              declaration.name.range,
-              existing.declaration.name.range,
-              name
-            );
+            this.errorRelated(DiagnosticCode.Duplicate_identifier_0, declaration.name.range, existing.nameRange, name);
             continue;
           }
           local = flow.targetFunction.addLocal(type, name, declaration);
@@ -6042,7 +6028,7 @@ export class Compiler extends DiagnosticEmitter {
         this.infoRelated(
           DiagnosticCode.This_expression_is_not_callable_because_it_is_a_get_accessor_Did_you_mean_to_use_it_without,
           expression.range,
-          getterPrototype.identifierNode.range
+          getterPrototype.nameRange
         );
       }
     }
@@ -6378,7 +6364,7 @@ export class Compiler extends DiagnosticEmitter {
     stmts.push(table);
     stmts.push(
       // assume this will always succeed (can just use name as the reportNode)
-      this.makeCallDirect(original, forwardedOperands, original.declaration.name)
+      this.makeCallDirect(original, forwardedOperands, original.identifierNode)
     );
     this.currentFlow = previousFlow;
 
@@ -6460,7 +6446,7 @@ export class Compiler extends DiagnosticEmitter {
         if (!overrideSignature.isAssignableTo(originalSignature, true)) {
           this.error(
             DiagnosticCode.Type_0_is_not_assignable_to_type_1,
-            overrideInstance.identifierNode.range,
+            overrideInstance.nameRange,
             overrideSignature.toString(),
             originalSignature.toString()
           );
@@ -7018,11 +7004,11 @@ export class Compiler extends DiagnosticEmitter {
       let fname = instance.name;
       let existingLocal = flow.getScopedLocal(fname);
       if (existingLocal) {
-        if (!existingLocal.declaration.range.source.isNative) {
+        if (!existingLocal._declaration.range.source.isNative) {
           this.errorRelated(
             DiagnosticCode.Duplicate_identifier_0,
             declaration.name.range,
-            existingLocal.declaration.name.range,
+            existingLocal.nameRange,
             fname
           );
         } else {
@@ -8207,7 +8193,7 @@ export class Compiler extends DiagnosticEmitter {
       this.errorRelated(
         DiagnosticCode.Class_0_cannot_declare_a_constructor_when_instantiated_from_an_object_literal,
         expression.range,
-        ctorPrototype.identifierNode.range,
+        ctorPrototype.nameRange,
         classType.toString()
       );
       return module.unreachable();
@@ -8505,7 +8491,7 @@ export class Compiler extends DiagnosticEmitter {
             CommonNames.constructor,
             classInstance,
             // declaration is important, i.e. to access optional parameter initializers
-            (<FunctionDeclaration>baseCtor.declaration).clone()
+            (<FunctionDeclaration>baseCtor._declaration).clone()
           ),
           null,
           Signature.create(
@@ -8629,14 +8615,14 @@ export class Compiler extends DiagnosticEmitter {
             if (relatedNode) {
               this.errorRelated(
                 DiagnosticCode.Property_0_has_no_initializer_and_is_not_assigned_in_the_constructor_before_this_is_used_or_returned,
-                property.declaration.name.range,
+                property.nameRange,
                 relatedNode.range,
                 property.internalName
               );
             } else {
               this.error(
                 DiagnosticCode.Property_0_has_no_initializer_and_is_not_assigned_in_the_constructor_before_this_is_used_or_returned,
-                property.declaration.name.range,
+                property.nameRange,
                 property.internalName
               );
             }
@@ -8646,14 +8632,14 @@ export class Compiler extends DiagnosticEmitter {
             this.warning(
               // involves a runtime check
               DiagnosticCode.Property_0_is_always_assigned_before_being_used,
-              property.identifierNode.range,
+              property.nameRange,
               property.internalName
             );
           } else {
             this.pedantic(
               // is a nop anyway
               DiagnosticCode.Unnecessary_definite_assignment,
-              property.identifierNode.range
+              property.nameRange
             );
           }
         }
@@ -8768,7 +8754,7 @@ export class Compiler extends DiagnosticEmitter {
             this.errorRelated(
               DiagnosticCode.Property_0_is_used_before_being_assigned,
               expression.range,
-              propertyInstance.identifierNode.range,
+              propertyInstance.nameRange,
               propertyInstance.internalName
             );
           }

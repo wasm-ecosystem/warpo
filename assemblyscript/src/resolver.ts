@@ -1119,7 +1119,7 @@ export class Resolver extends DiagnosticEmitter {
           this.errorRelated(
             DiagnosticCode.Property_0_only_has_a_setter_and_is_missing_a_getter,
             targetNode.range,
-            setterInstance.declaration.range,
+            setterInstance._declaration.range,
             propertyInstance.name
           );
           return null;
@@ -2678,7 +2678,7 @@ export class Resolver extends DiagnosticEmitter {
             this.errorRelated(
               DiagnosticCode.This_overload_signature_is_not_compatible_with_its_implementation_signature,
               instance.identifierAndSignatureRange,
-              baseMember.identifierAndSignatureRange
+              baseMember.nameRange
             );
           }
         }
@@ -2858,7 +2858,7 @@ export class Resolver extends DiagnosticEmitter {
         if (current == prototype) {
           this.error(
             DiagnosticCode._0_is_referenced_directly_or_indirectly_in_its_own_base_expression,
-            prototype.identifierNode.range,
+            prototype.nameRange,
             prototype.internalName
           );
           return null;
@@ -2899,7 +2899,7 @@ export class Resolver extends DiagnosticEmitter {
           if (current == prototype) {
             this.error(
               DiagnosticCode._0_is_referenced_directly_or_indirectly_in_its_own_base_expression,
-              prototype.identifierNode.range,
+              prototype.nameRange,
               prototype.internalName
             );
             return null;
@@ -2953,8 +2953,8 @@ export class Resolver extends DiagnosticEmitter {
         if (reportMode == ReportMode.Report) {
           this.errorRelated(
             DiagnosticCode.Cannot_extend_a_class_0_Class_constructor_is_marked_as_private,
-            thisMember.identifierNode.range,
-            baseMember.identifierNode.range,
+            thisMember.nameRange,
+            baseMember.nameRange,
             baseClass.internalName
           );
         }
@@ -2965,8 +2965,8 @@ export class Resolver extends DiagnosticEmitter {
         if (reportMode == ReportMode.Report) {
           this.errorRelated(
             DiagnosticCode.Types_have_separate_declarations_of_a_private_property_0,
-            thisMember.identifierNode.range,
-            baseMember.identifierNode.range,
+            thisMember.nameRange,
+            baseMember.nameRange,
             name
           );
         }
@@ -2975,8 +2975,8 @@ export class Resolver extends DiagnosticEmitter {
         if (reportMode == ReportMode.Report) {
           this.errorRelated(
             DiagnosticCode.Property_0_is_private_in_type_1_but_not_in_type_2,
-            thisMember.identifierNode.range,
-            baseMember.identifierNode.range,
+            thisMember.nameRange,
+            baseMember.nameRange,
             name,
             thisClass.internalName,
             baseClass.internalName
@@ -2989,8 +2989,8 @@ export class Resolver extends DiagnosticEmitter {
         if (reportMode == ReportMode.Report) {
           this.errorRelated(
             DiagnosticCode.Property_0_is_private_in_type_1_but_not_in_type_2,
-            thisMember.identifierNode.range,
-            baseMember.identifierNode.range,
+            thisMember.nameRange,
+            baseMember.nameRange,
             name,
             baseClass.internalName,
             thisClass.internalName
@@ -3001,8 +3001,8 @@ export class Resolver extends DiagnosticEmitter {
         if (reportMode == ReportMode.Report) {
           this.errorRelated(
             DiagnosticCode.Property_0_is_protected_in_type_1_but_public_in_type_2,
-            thisMember.identifierNode.range,
-            baseMember.identifierNode.range,
+            thisMember.nameRange,
+            baseMember.nameRange,
             name,
             thisClass.internalName,
             baseClass.internalName
@@ -3017,8 +3017,8 @@ export class Resolver extends DiagnosticEmitter {
         if (reportMode == ReportMode.Report) {
           this.errorRelated(
             DiagnosticCode.Property_0_is_private_in_type_1_but_not_in_type_2,
-            thisMember.identifierNode.range,
-            baseMember.identifierNode.range,
+            thisMember.nameRange,
+            baseMember.nameRange,
             name,
             baseClass.internalName,
             thisClass.internalName
@@ -3029,8 +3029,8 @@ export class Resolver extends DiagnosticEmitter {
         if (reportMode == ReportMode.Report) {
           this.errorRelated(
             DiagnosticCode.Property_0_is_protected_in_type_1_but_public_in_type_2,
-            thisMember.identifierNode.range,
-            baseMember.identifierNode.range,
+            thisMember.nameRange,
+            baseMember.nameRange,
             name,
             baseClass.internalName,
             thisClass.internalName
@@ -3173,8 +3173,8 @@ export class Resolver extends DiagnosticEmitter {
                         // make sure fields are invariant (Binaryen would otherwise error)
                         this.errorRelated(
                           DiagnosticCode.Property_0_in_type_1_is_not_assignable_to_the_same_property_in_base_type_2,
-                          boundInstance.identifierNode.range,
-                          existingProperty.identifierNode.range,
+                          boundInstance.nameRange,
+                          existingProperty.nameRange,
                           boundInstance.name,
                           instance.internalName,
                           base.internalName
@@ -3231,8 +3231,8 @@ export class Resolver extends DiagnosticEmitter {
           let member = assert(unimplemented.get(memberName));
           this.errorRelated(
             DiagnosticCode.Non_abstract_class_0_does_not_implement_inherited_abstract_member_1_from_2,
-            instance.identifierNode.range,
-            member.identifierNode.range,
+            instance.nameRange,
+            member.nameRange,
             instance.internalName,
             memberName,
             member.parent.internalName
@@ -3314,7 +3314,7 @@ export class Resolver extends DiagnosticEmitter {
         }
       } else {
         if (reportMode == ReportMode.Report) {
-          this.error(DiagnosticCode.Duplicate_decorator, operatorInstance.declaration.range);
+          this.error(DiagnosticCode.Duplicate_decorator, operatorInstance._declaration.range);
         }
       }
     }

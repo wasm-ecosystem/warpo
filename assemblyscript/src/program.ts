@@ -1396,18 +1396,14 @@ export class Program extends DiagnosticEmitter {
         if (baseElement.kind == ElementKind.ClassPrototype) {
           let basePrototype = <ClassPrototype>baseElement;
           if (basePrototype.hasDecorator(DecoratorFlags.Final)) {
-            this.error(
-              DiagnosticCode.Class_0_is_final_and_cannot_be_extended,
-              extendsNode.range,
-              basePrototype.identifierNode.text
-            );
+            this.error(DiagnosticCode.Class_0_is_final_and_cannot_be_extended, extendsNode.range, basePrototype.name);
           }
           if (
             basePrototype.hasDecorator(DecoratorFlags.Unmanaged) != thisPrototype.hasDecorator(DecoratorFlags.Unmanaged)
           ) {
             this.error(
               DiagnosticCode.Unmanaged_classes_cannot_extend_managed_classes_and_vice_versa,
-              Range.join(thisPrototype.identifierNode.range, extendsNode.range)
+              Range.join(thisPrototype.nameRange, extendsNode.range)
             );
           }
           if (!thisPrototype.extends(basePrototype)) {
@@ -1415,8 +1411,8 @@ export class Program extends DiagnosticEmitter {
           } else {
             this.error(
               DiagnosticCode._0_is_referenced_directly_or_indirectly_in_its_own_base_expression,
-              basePrototype.identifierNode.range,
-              basePrototype.identifierNode.text
+              basePrototype.nameRange,
+              basePrototype.name
             );
           }
         } else {
@@ -1430,8 +1426,8 @@ export class Program extends DiagnosticEmitter {
           } else {
             this.error(
               DiagnosticCode._0_is_referenced_directly_or_indirectly_in_its_own_base_expression,
-              basePrototype.identifierNode.range,
-              basePrototype.identifierNode.text
+              basePrototype.nameRange,
+              basePrototype.name
             );
           }
         } else {
@@ -1448,7 +1444,7 @@ export class Program extends DiagnosticEmitter {
         let members = Map_values(instanesMembers);
         for (let j = 0, k = members.length; j < k; j++) {
           let member = members[j];
-          let declaration = member.declaration;
+          let declaration = member._declaration;
           if (declaration.is(CommonFlags.Override)) {
             let basePrototype = prototype.basePrototype;
             let hasOverride = false;
@@ -1466,7 +1462,7 @@ export class Program extends DiagnosticEmitter {
               let basePrototype = assert(prototype.basePrototype);
               this.error(
                 DiagnosticCode.This_member_cannot_have_an_override_modifier_because_it_is_not_declared_in_the_base_class_0,
-                declaration.name.range,
+                declaration.nameRange,
                 basePrototype.name
               );
             }
@@ -1625,8 +1621,8 @@ export class Program extends DiagnosticEmitter {
       if (!thisMethod.visibilityEquals(baseMethod)) {
         this.errorRelated(
           DiagnosticCode.Overload_signatures_must_all_be_public_private_or_protected,
-          thisMethod.identifierNode.range,
-          baseMethod.identifierNode.range
+          thisMethod.nameRange,
+          baseMethod.nameRange
         );
       }
       baseMember.set(CommonFlags.Overridden);
@@ -1646,8 +1642,8 @@ export class Program extends DiagnosticEmitter {
       if (!thisProperty.visibilityEquals(baseProperty)) {
         this.errorRelated(
           DiagnosticCode.Overload_signatures_must_all_be_public_private_or_protected,
-          thisProperty.identifierNode.range,
-          baseProperty.identifierNode.range
+          thisProperty.nameRange,
+          baseProperty.nameRange
         );
       }
       if (baseProperty.parent.kind != ElementKind.InterfacePrototype) {
@@ -1659,8 +1655,8 @@ export class Program extends DiagnosticEmitter {
             // base is property
             this.errorRelated(
               DiagnosticCode._0_is_defined_as_an_accessor_in_class_1_but_is_overridden_here_in_2_as_an_instance_property,
-              thisProperty.identifierNode.range,
-              baseProperty.identifierNode.range,
+              thisProperty.nameRange,
+              baseProperty.nameRange,
               thisProperty.name,
               baseClass.internalName,
               thisClass.internalName
@@ -1669,8 +1665,8 @@ export class Program extends DiagnosticEmitter {
             // this is property, base is field
             this.errorRelated(
               DiagnosticCode._0_is_defined_as_a_property_in_class_1_but_is_overridden_here_in_2_as_an_accessor,
-              thisProperty.identifierNode.range,
-              baseProperty.identifierNode.range,
+              thisProperty.nameRange,
+              baseProperty.nameRange,
               thisProperty.name,
               baseClass.internalName,
               thisClass.internalName
@@ -1721,8 +1717,8 @@ export class Program extends DiagnosticEmitter {
     } else {
       this.errorRelated(
         DiagnosticCode.Property_0_in_type_1_is_not_assignable_to_the_same_property_in_base_type_2,
-        thisMember.identifierNode.range,
-        baseMember.identifierNode.range,
+        thisMember.nameRange,
+        baseMember.nameRange,
         thisMember.name,
         thisClass.internalName,
         baseClass.internalName
@@ -1902,12 +1898,12 @@ export class Program extends DiagnosticEmitter {
           if (isDeclaredElement(existing.kind)) {
             this.errorRelated(
               DiagnosticCode.Duplicate_identifier_0,
-              element.identifierNode.range,
-              (<DeclaredElement>existing).declaration.name.range,
+              element.nameRange,
+              (<DeclaredElement>existing).nameRange,
               name
             );
           } else {
-            this.error(DiagnosticCode.Duplicate_identifier_0, element.identifierNode.range, name);
+            this.error(DiagnosticCode.Duplicate_identifier_0, element.nameRange, name);
           }
           return element;
         }
@@ -2523,8 +2519,8 @@ export class Program extends DiagnosticEmitter {
           let existing = assert(exports.get("default"));
           this.errorRelated(
             DiagnosticCode.Duplicate_identifier_0,
-            declaration.name.range,
-            existing.declaration.name.range,
+            declaration.nameRange,
+            existing._declaration.nameRange,
             "default"
           );
           return;
@@ -3054,7 +3050,7 @@ export abstract class Element {
 
   /** Adds an element as a member of this one. Reports and returns `false` if a duplicate. */
   add(name: string, element: DeclaredElement, localIdentifierIfImport: IdentifierExpression | null = null): bool {
-    let originalDeclaration = element.declaration;
+    let originalDeclaration = element._declaration;
     let members = this.members;
     if (!members) this.members = members = new Map();
     else if (members.has(name)) {
@@ -3066,20 +3062,16 @@ export abstract class Element {
         if (merged) {
           element = merged; // use merged element
         } else {
-          let reportedIdentifier = localIdentifierIfImport ? localIdentifierIfImport : element.identifierNode;
+          let reportRange = localIdentifierIfImport ? localIdentifierIfImport.range : element.nameRange;
           if (isDeclaredElement(existing.kind)) {
             this.program.errorRelated(
               DiagnosticCode.Duplicate_identifier_0,
-              reportedIdentifier.range,
-              (<DeclaredElement>existing).identifierNode.range,
-              reportedIdentifier.text
+              reportRange,
+              (<DeclaredElement>existing).nameRange,
+              name
             );
           } else {
-            this.program.error(
-              DiagnosticCode.Duplicate_identifier_0,
-              reportedIdentifier.range,
-              reportedIdentifier.text
-            );
+            this.program.error(DiagnosticCode.Duplicate_identifier_0, reportRange, name);
           }
           return false;
         }
@@ -3169,47 +3161,33 @@ export abstract class DeclaredElement extends Element {
     program: Program,
     /** Parent element. */
     parent: Element | null,
-    /** Declaration reference. */
-    public declaration: DeclarationStatement
+    /** Declaration reference.
+     * It is necessary to have access to identifiers of all members and exports
+     * for reporting purposes and this is the lowest common denominator. Comes
+     * at the expense of not having more specific type information in derived
+     * classes, though. Instead, derived classes implement getters for other
+     * important AST nodes directly through manual casting, allowing the resolver
+     * etc. to not worry about actual declarations.
+     */
+    public _declaration: DeclarationStatement
   ) {
     super(kind, name, internalName, program, parent);
     declaredElements.add(kind);
-    // It is necessary to have access to identifiers of all members and exports
-    // for reporting purposes and this is the lowest common denominator. Comes
-    // at the expense of not having more specific type information in derived
-    // classes, though. Instead, derived classes implement getters for other
-    // important AST nodes directly through manual casting, allowing the resolver
-    // etc. to not worry about actual declarations.
-    this.declaration = declaration;
-    this.flags = declaration.flags; // inherit
+    this.flags = _declaration.flags; // inherit
   }
 
   /** Tests if this element is a library element. */
   get isDeclaredInLibrary(): bool {
-    return this.declaration.range.source.isLibrary;
-  }
-
-  /** Gets the associated identifier node. */
-  get identifierNode(): IdentifierExpression {
-    return this.declaration.name;
-  }
-
-  /** Gets the signature node, if applicable, along the identifier node. */
-  get identifierAndSignatureRange(): Range {
-    let declaration = this.declaration;
-    let identifierNode = declaration.name;
-    if (declaration.kind == NodeKind.FunctionDeclaration || declaration.kind == NodeKind.MethodDeclaration) {
-      let signatureNode = (<FunctionDeclaration>declaration).signature;
-      if (identifierNode.range.source == signatureNode.range.source) {
-        return Range.join(identifierNode.range, signatureNode.range);
-      }
-    }
-    return identifierNode.range;
+    return this._declaration.range.source.isLibrary;
   }
 
   /** Gets the assiciated decorator nodes. */
   get decoratorNodes(): DecoratorNode[] | null {
-    return this.declaration.decorators;
+    return this._declaration.decorators;
+  }
+
+  get nameRange(): Range {
+    return this._declaration.nameRange;
   }
 }
 
@@ -3503,7 +3481,7 @@ export class JsonFile extends File {
     for (let i = 0; i < len; i++) {
       let element = this.convertJsonValue(v.keys[i], v.values[i]);
       if (element == null) continue; // make sure we will not emit too many error
-      members.push(element.declaration);
+      members.push(element._declaration);
       elements.push(element);
     }
     let decl = Node.createNamespaceDeclaration(
@@ -3547,12 +3525,12 @@ export class TypeDefinition extends TypedElement {
 
   /** Gets the associated type parameter nodes. */
   get typeParameterNodes(): TypeParameterNode[] | null {
-    return (<TypeDeclaration>this.declaration).typeParameters;
+    return (<TypeDeclaration>this._declaration).typeParameters;
   }
 
   /** Gets the associated type node. */
   get typeNode(): TypeNode {
-    return (<TypeDeclaration>this.declaration).type;
+    return (<TypeDeclaration>this._declaration).type;
   }
 }
 
@@ -3649,14 +3627,18 @@ export abstract class VariableLikeElement extends TypedElement {
     this.flags = declaration.flags;
   }
 
+  get identifierNode(): IdentifierExpression {
+    return (<VariableLikeDeclarationStatement>this._declaration).name;
+  }
+
   /** Gets the associated type node.s */
   get typeNode(): TypeNode | null {
-    return (<VariableLikeDeclarationStatement>this.declaration).type;
+    return (<VariableLikeDeclarationStatement>this._declaration).type;
   }
 
   /** Gets the associated initializer node. */
   get initializerNode(): Expression | null {
-    return (<VariableLikeDeclarationStatement>this.declaration).initializer;
+    return (<VariableLikeDeclarationStatement>this._declaration).initializer;
   }
 
   /** Applies a constant integer value to this element. */
@@ -3701,7 +3683,7 @@ export class EnumValue extends VariableLikeElement {
 
   /** Gets the associated value node. */
   get valueNode(): Expression | null {
-    return (<EnumValueDeclaration>this.declaration).initializer;
+    return (<EnumValueDeclaration>this._declaration).initializer;
   }
 }
 
@@ -3811,22 +3793,22 @@ export class FunctionPrototype extends DeclaredElement {
 
   /** Gets the associated type parameter nodes. */
   get typeParameterNodes(): TypeParameterNode[] | null {
-    return (<FunctionDeclaration>this.declaration).typeParameters;
+    return (<FunctionDeclaration>this._declaration).typeParameters;
   }
 
   /** Gets the associated function type node. */
   get functionTypeNode(): FunctionTypeNode {
-    return (<FunctionDeclaration>this.declaration).signature;
+    return (<FunctionDeclaration>this._declaration).signature;
   }
 
   /** Gets the associated body node. */
   get bodyNode(): Statement | null {
-    return (<FunctionDeclaration>this.declaration).body;
+    return (<FunctionDeclaration>this._declaration).body;
   }
 
   /** Gets the arrow function kind. */
   get arrowKind(): ArrowKind {
-    return (<FunctionDeclaration>this.declaration).arrowKind;
+    return (<FunctionDeclaration>this._declaration).arrowKind;
   }
 
   /** Creates a clone of this prototype that is bound to a concrete class instead. */
@@ -3836,7 +3818,7 @@ export class FunctionPrototype extends DeclaredElement {
     let boundPrototypes = this.boundPrototypes;
     if (!boundPrototypes) this.boundPrototypes = boundPrototypes = new Map();
     else if (boundPrototypes.has(classInstance)) return assert(boundPrototypes.get(classInstance));
-    let declaration = this.declaration;
+    let declaration = this._declaration;
     assert(declaration.kind == NodeKind.MethodDeclaration);
     let bound = new FunctionPrototype(
       this.name,
@@ -3919,7 +3901,7 @@ export class Function extends TypedElement {
       mangleInternalName(nameInclTypeParameters, prototype.parent, prototype.is(CommonFlags.Instance)),
       prototype.program,
       prototype.parent,
-      prototype.declaration
+      prototype._declaration
     );
     this.prototype = prototype;
     this.typeArguments = typeArguments;
@@ -3969,6 +3951,26 @@ export class Function extends TypedElement {
     registerConcreteElement(program, this);
   }
 
+  get declaration(): FunctionDeclaration {
+    return <FunctionDeclaration>this._declaration;
+  }
+  /** Gets the associated identifier node. */
+  get identifierNode(): IdentifierExpression {
+    return this.declaration.name;
+  }
+  /** Gets the signature node, if applicable, along the identifier node. */
+  get identifierAndSignatureRange(): Range {
+    let declaration = this.declaration;
+    let identifierNode = declaration.name;
+    if (declaration.kind == NodeKind.FunctionDeclaration || declaration.kind == NodeKind.MethodDeclaration) {
+      let signatureNode = (<FunctionDeclaration>declaration).signature;
+      if (identifierNode.range.source == signatureNode.range.source) {
+        return Range.join(identifierNode.range, signatureNode.range);
+      }
+    }
+    return identifierNode.range;
+  }
+
   /** Gets the types of additional locals that are not parameters. */
   getNonParameterLocalTypes(): Type[] {
     let localsByIndex = this.localsByIndex;
@@ -3986,7 +3988,7 @@ export class Function extends TypedElement {
 
   /** Gets the name of the parameter at the specified index. */
   getParameterName(index: i32): string {
-    let parameters = (<FunctionDeclaration>this.declaration).signature.parameters;
+    let parameters = (<FunctionDeclaration>this._declaration).signature.parameters;
     return parameters.length > index ? parameters[index].name.text : getDefaultParameterName(index);
   }
 
@@ -4175,20 +4177,24 @@ export class PropertyPrototype extends DeclaredElement {
     return this.fieldDeclaration != null;
   }
 
+  get identifierNode(): IdentifierExpression {
+    return (<FunctionDeclaration>this._declaration).name;
+  }
+
   /** Gets the associated type node. */
   get typeNode(): TypeNode | null {
     let fieldDeclaration = this.fieldDeclaration;
     if (fieldDeclaration) return fieldDeclaration.type;
     let getterPrototype = this.getterPrototype;
     if (getterPrototype) {
-      let getterDeclaration = getterPrototype.declaration;
+      let getterDeclaration = getterPrototype._declaration;
       if (getterDeclaration.kind == NodeKind.FunctionDeclaration) {
         return (<FunctionDeclaration>getterDeclaration).signature.returnType;
       }
     }
     let setterPrototype = this.setterPrototype;
     if (setterPrototype) {
-      let setterDeclaration = setterPrototype.declaration;
+      let setterDeclaration = setterPrototype._declaration;
       if (setterDeclaration.kind == NodeKind.FunctionDeclaration) {
         let setterParameters = (<FunctionDeclaration>setterDeclaration).signature.parameters;
         if (setterParameters.length) return setterParameters[0].type;
@@ -4225,7 +4231,7 @@ export class PropertyPrototype extends DeclaredElement {
     let boundPrototypes = this.boundPrototypes;
     if (!boundPrototypes) this.boundPrototypes = boundPrototypes = new Map();
     else if (boundPrototypes.has(classInstance)) return assert(boundPrototypes.get(classInstance));
-    let firstDeclaration = this.declaration;
+    let firstDeclaration = this._declaration;
     assert(firstDeclaration.kind == NodeKind.MethodDeclaration);
     let bound = new PropertyPrototype(
       this.name,
@@ -4277,7 +4283,7 @@ export class Property extends VariableLikeElement {
             prototype.flags & CommonFlags.Instance,
             null,
             null,
-            prototype.identifierNode.range
+            prototype.nameRange
           )
     );
     this.prototype = prototype;
@@ -4299,9 +4305,9 @@ export class Property extends VariableLikeElement {
     if (propertyGetter && propertySetter && !propertyGetter.visibilityNoLessThan(propertySetter)) {
       diag.errorRelated(
         DiagnosticCode.Get_accessor_0_must_be_at_least_as_accessible_as_the_setter,
-        propertyGetter.identifierNode.range,
-        propertySetter.identifierNode.range,
-        propertyGetter.identifierNode.text
+        propertyGetter.nameRange,
+        propertySetter.nameRange,
+        propertyGetter.declaration.name.text
       );
     }
   }
@@ -4378,15 +4384,15 @@ export class ClassPrototype extends DeclaredElement {
 
   /** Gets the associated type parameter nodes. */
   get typeParameterNodes(): TypeParameterNode[] | null {
-    return (<ClassDeclaration>this.declaration).typeParameters;
+    return (<ClassDeclaration>this._declaration).typeParameters;
   }
   /** Gets the associated extends node. */
   get extendsNode(): NamedTypeNode | null {
-    return (<ClassDeclaration>this.declaration).extendsType;
+    return (<ClassDeclaration>this._declaration).extendsType;
   }
   /** Gets the associated implements nodes. */
   get implementsNodes(): NamedTypeNode[] | null {
-    return (<ClassDeclaration>this.declaration).implementsTypes;
+    return (<ClassDeclaration>this._declaration).implementsTypes;
   }
 
   /** Tests if this prototype is of a builtin array type (Array/TypedArray). */
@@ -4411,7 +4417,7 @@ export class ClassPrototype extends DeclaredElement {
 
   /** Adds an element as an instance member of this one. Returns the previous element if a duplicate. */
   addInstance(name: string, element: DeclaredElement): bool {
-    let originalDeclaration = element.declaration;
+    let originalDeclaration = element._declaration;
     let instanceMembers = this.instanceMembers;
     if (!instanceMembers) this.instanceMembers = instanceMembers = new Map();
     else if (instanceMembers.has(name)) {
@@ -4421,16 +4427,12 @@ export class ClassPrototype extends DeclaredElement {
         if (isDeclaredElement(existing.kind)) {
           this.program.errorRelated(
             DiagnosticCode.Duplicate_identifier_0,
-            element.identifierNode.range,
-            (<DeclaredElement>existing).declaration.name.range,
-            element.identifierNode.text
+            element.nameRange,
+            (<DeclaredElement>existing)._declaration.nameRange,
+            element.name
           );
         } else {
-          this.program.error(
-            DiagnosticCode.Duplicate_identifier_0,
-            element.identifierNode.range,
-            element.identifierNode.text
-          );
+          this.program.error(DiagnosticCode.Duplicate_identifier_0, element.nameRange, element.name);
         }
         return false;
       }
@@ -4540,7 +4542,7 @@ export class Class extends TypedElement {
       mangleInternalName(nameInclTypeParameters, prototype.parent, prototype.is(CommonFlags.Instance)),
       prototype.program,
       prototype.parent,
-      prototype.declaration
+      prototype._declaration
     );
     this.prototype = prototype;
     this.flags = prototype.flags;
@@ -5141,8 +5143,8 @@ function tryMerge(older: Element, newer: Element): DeclaredElement | null {
     if (olderIsExport != newerIsExport) {
       older.program.error(
         DiagnosticCode.Individual_declarations_in_merged_declaration_0_must_be_all_exported_or_all_local,
-        merged.identifierNode.range,
-        merged.identifierNode.text
+        merged.nameRange,
+        merged.name
       );
     }
   }

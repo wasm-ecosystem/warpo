@@ -228,7 +228,7 @@ export class TSDBuilder extends ExportsWalker {
         if (member.isAny(CommonFlags.Private | CommonFlags.Protected)) return false;
         if (member.is(CommonFlags.Constructor)) {
           // a generated constructor is ok
-          if (member.declaration.range != Source.native.range) return false;
+          if (member.nameRange != Source.native.range) return false;
         }
       }
     }
