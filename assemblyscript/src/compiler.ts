@@ -156,6 +156,7 @@ import {
   Source,
   TypeDeclaration,
   ParameterKind,
+  DeclarationStatementBase,
 } from "./ast";
 
 import { Type, TypeKind, TypeFlags, Signature, typesToRefs } from "./types";
@@ -1205,7 +1206,7 @@ export class Compiler extends DiagnosticEmitter {
     if (global.is(CommonFlags.Ambient)) {
       // Constant global or mutable globals enabled
       if (isDeclaredConstant || this.options.hasFeature(Feature.MutableGlobals)) {
-        mangleImportName(global, global._declaration);
+        mangleImportName(global, global.declarationStatementBase);
         this.program.markModuleImport(mangleImportName_moduleName, mangleImportName_elementName, global);
         module.addGlobalImport(
           global.internalName,
@@ -1538,9 +1539,7 @@ export class Compiler extends DiagnosticEmitter {
     let module = this.module;
     let signature = instance.signature;
     let bodyNode = instance.prototype.bodyNode;
-    let declarationNode = instance._declaration;
-    assert(declarationNode.kind == NodeKind.FunctionDeclaration || declarationNode.kind == NodeKind.MethodDeclaration);
-    this.checkSignatureSupported(instance.signature, (<FunctionDeclaration>declarationNode).signature);
+    this.checkSignatureSupported(instance.signature, instance.prototype.functionLikeWithBodyBase.signature);
 
     let funcRef: FunctionRef = 0;
 
@@ -1586,7 +1585,7 @@ export class Compiler extends DiagnosticEmitter {
 
       // imported function
     } else if (instance.is(CommonFlags.Ambient)) {
-      mangleImportName(instance, declarationNode); // TODO: check for duplicates
+      mangleImportName(instance, instance.declarationStatementBase); // TODO: check for duplicates
       this.program.markModuleImport(mangleImportName_moduleName, mangleImportName_elementName, instance);
       module.addFunctionImport(
         instance.internalName,
@@ -1623,7 +1622,7 @@ export class Compiler extends DiagnosticEmitter {
     } else {
       // built-in field accessor?
       if (instance.isAny(CommonFlags.Get | CommonFlags.Set)) {
-        let propertyName = instance.declaration.name.text;
+        let propertyName = instance.identifierNode.text;
         let propertyParent = assert(instance.parent.getMember(propertyName));
         assert(propertyParent.kind == ElementKind.PropertyPrototype);
         let propertyInstance = (<PropertyPrototype>propertyParent).instance;
@@ -6508,7 +6507,7 @@ export class Compiler extends DiagnosticEmitter {
           for (let _values = Set_values(extenders), i = 0, k = _values.length; i < k; ++i) {
             let extender = _values[i];
             let instanceMembers = extender.prototype.instanceMembers;
-            if (instanceMembers && instanceMembers.has(instance.declaration.name.text)) {
+            if (instanceMembers && instanceMembers.has(instance.identifierNode.text)) {
               continue; // skip those not inheriting
             }
             if (
@@ -10188,10 +10187,9 @@ export class Compiler extends DiagnosticEmitter {
 }
 
 // helpers
-
-function mangleImportName(element: Element, declaration: DeclarationStatement): void {
+function mangleImportName(element: Element, declarationBase: DeclarationStatementBase): void {
   // by default, use the file name as the module name
-  mangleImportName_moduleName = declaration.range.source.simplePath;
+  mangleImportName_moduleName = declarationBase.nameRange.source.simplePath;
   // and the internal name of the element within that file as the element name
   mangleImportName_elementName = mangleInternalName(
     element.name,
@@ -10200,13 +10198,13 @@ function mangleImportName(element: Element, declaration: DeclarationStatement): 
     true
   );
   // override module name if a `module` statement is present
-  let overriddenModuleName = declaration.overriddenModuleName;
+  let overriddenModuleName = declarationBase.overriddenModuleName;
   if (overriddenModuleName) mangleImportName_moduleName = overriddenModuleName;
 
   if (!element.hasDecorator(DecoratorFlags.External)) return;
 
   let program = element.program;
-  let decorator = assert(findDecorator(DecoratorKind.External, declaration.decorators));
+  let decorator = assert(findDecorator(DecoratorKind.External, declarationBase.decorators));
   let args = decorator.args;
   if (args && args.length > 0) {
     let arg = args[0];

@@ -1609,6 +1609,19 @@ export class JsonSource extends Source {
   }
 }
 
+export class DeclarationStatementBase {
+  constructor(
+    /** Array of decorators, if any. */
+    public decorators: DecoratorNode[] | null,
+    /** Common flags indicating specific traits. */
+    public flags: CommonFlags,
+    /** small range which only covers the name. */
+    public nameRange: Range,
+    /** Overridden module name from preceeding `module` statement. */
+    public overriddenModuleName: string | null
+  ) {}
+}
+
 /** Base class of all declaration statements. */
 export abstract class DeclarationStatement extends Statement {
   constructor(
@@ -1640,6 +1653,10 @@ export abstract class DeclarationStatement extends Statement {
   }
 
   abstract get nameRange(): Range;
+
+  toDeclarationStatementBase(): DeclarationStatementBase {
+    return new DeclarationStatementBase(this.decorators, this.flags, this.nameRange, this.overriddenModuleName);
+  }
 }
 
 /** Represents an index signature. */
@@ -1656,6 +1673,17 @@ export class IndexSignatureNode extends Node {
   ) {
     super(NodeKind.IndexSignature, range);
   }
+}
+
+export class VariableLikeBase {
+  constructor(
+    /** Simple name being declared. */
+    public name: IdentifierExpression,
+    /** Annotated type node, if any. */
+    public type: TypeNode | null,
+    /** Initializer expression, if any. */
+    public initializer: Expression | null
+  ) {}
 }
 
 /** Base class of all variable-like declaration statements. */
@@ -1681,6 +1709,9 @@ export abstract class VariableLikeDeclarationStatement extends DeclarationStatem
   get nameRange(): Range {
     return this.name.range;
   }
+  toVariableLikeBase(): VariableLikeBase {
+    return new VariableLikeBase(this.name, this.type, this.initializer);
+  }
 }
 
 /** Represents a block statement. */
@@ -1705,6 +1736,16 @@ export class BreakStatement extends Statement {
   ) {
     super(NodeKind.Break, range);
   }
+}
+
+export class ClassBase {
+  constructor(
+    /** Accepted type parameters. */
+    public typeParameters: TypeParameterNode[] | null /** Base class type being extended, if any. */,
+    public extendsType: NamedTypeNode | null, // can't be a function
+    /** Interface types being implemented, if any. */
+    public implementsTypes: NamedTypeNode[] | null // can't be functions
+  ) {}
 }
 
 /** Represents a `class` declaration. */
@@ -1739,6 +1780,10 @@ export class ClassDeclaration extends DeclarationStatement {
   }
   get nameRange(): Range {
     return this.name.range;
+  }
+
+  toClassBase(): ClassBase {
+    return new ClassBase(this.typeParameters, this.extendsType, this.implementsTypes);
   }
 }
 
@@ -1963,6 +2008,19 @@ export const enum ArrowKind {
   Single,
 }
 
+export class FunctionLikeWithBodyBase {
+  constructor(
+    /** Type parameters, if any. */
+    public typeParameters: TypeParameterNode[] | null,
+    /** Function signature. */
+    public signature: FunctionTypeNode,
+    /** Body statement. Usually a block. */
+    public body: Statement | null,
+    /** Arrow function kind, if applicable. */
+    public arrowKind: ArrowKind
+  ) {}
+}
+
 /** Represents a `function` declaration. */
 export class FunctionDeclaration extends DeclarationStatement {
   constructor(
@@ -1992,6 +2050,18 @@ export class FunctionDeclaration extends DeclarationStatement {
   get isGeneric(): bool {
     let typeParameters = this.typeParameters;
     return typeParameters != null && typeParameters.length > 0;
+  }
+
+  toFunctionLikeWithBodyBase(): FunctionLikeWithBodyBase {
+    return new FunctionLikeWithBodyBase(this.typeParameters, this.signature, this.body, this.arrowKind);
+  }
+  get identifierAndSignatureRange(): Range {
+    let identifierNode = this.name;
+    let signatureNode = this.signature;
+    if (identifierNode.range.source == signatureNode.range.source) {
+      return Range.join(identifierNode.range, signatureNode.range);
+    }
+    return identifierNode.range;
   }
 
   /** Clones this function declaration. */
@@ -2227,6 +2297,15 @@ export class ModuleDeclaration extends Statement {
   }
 }
 
+export class TypeDeclarationBase {
+  constructor(
+    /** Type parameters, if any. */
+    public typeParameters: TypeParameterNode[] | null,
+    /** Type being aliased. */
+    public type: TypeNode
+  ) {}
+}
+
 /** Represents a `type` declaration. */
 export class TypeDeclaration extends DeclarationStatement {
   constructor(
@@ -2247,6 +2326,9 @@ export class TypeDeclaration extends DeclarationStatement {
   }
   get nameRange(): Range {
     return this.name.range;
+  }
+  toTypeDeclarationBase(): TypeDeclarationBase {
+    return new TypeDeclarationBase(this.typeParameters, this.type);
   }
 }
 

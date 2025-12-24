@@ -97,6 +97,11 @@ import {
   ParameterNode,
   TypeName,
   JsonSource,
+  FunctionLikeWithBodyBase,
+  TypeDeclarationBase,
+  DeclarationStatementBase,
+  VariableLikeBase,
+  ClassBase,
 } from "./ast";
 
 import { Module, ExpressionRef, FunctionRef, MemorySegment, getFunctionName } from "./module";
@@ -3138,6 +3143,16 @@ export function isDeclaredElement(kind: ElementKind): bool {
 
 /** Base class of elements with an associated declaration statement. */
 export abstract class DeclaredElement extends Element {
+  /** Declaration reference.
+   * It is necessary to have access to identifiers of all members and exports
+   * for reporting purposes and this is the lowest common denominator. Comes
+   * at the expense of not having more specific type information in derived
+   * classes, though. Instead, derived classes implement getters for other
+   * important AST nodes directly through manual casting, allowing the resolver
+   * etc. to not worry about actual declarations.
+   */
+  public _declaration: DeclarationStatement;
+  declarationStatementBase: DeclarationStatementBase;
   /** Constructs a new declared program element. */
   protected constructor(
     /** Specific element kind. */
@@ -3150,19 +3165,13 @@ export abstract class DeclaredElement extends Element {
     program: Program,
     /** Parent element. */
     parent: Element | null,
-    /** Declaration reference.
-     * It is necessary to have access to identifiers of all members and exports
-     * for reporting purposes and this is the lowest common denominator. Comes
-     * at the expense of not having more specific type information in derived
-     * classes, though. Instead, derived classes implement getters for other
-     * important AST nodes directly through manual casting, allowing the resolver
-     * etc. to not worry about actual declarations.
-     */
-    public _declaration: DeclarationStatement
+    declaration: DeclarationStatement
   ) {
     super(kind, name, internalName, program, parent);
     declaredElements.add(kind);
-    this.flags = _declaration.flags; // inherit
+    this._declaration = declaration; // init
+    this.flags = declaration.flags; // inherit
+    this.declarationStatementBase = declaration.toDeclarationStatementBase();
   }
 
   /** Tests if this element is a library element. */
@@ -3172,11 +3181,11 @@ export abstract class DeclaredElement extends Element {
 
   /** Gets the assiciated decorator nodes. */
   get decoratorNodes(): DecoratorNode[] | null {
-    return this._declaration.decorators;
+    return this.declarationStatementBase.decorators;
   }
 
   get nameRange(): Range {
-    return this._declaration.nameRange;
+    return this.declarationStatementBase.nameRange;
   }
 }
 
@@ -3370,6 +3379,13 @@ export class File extends Element {
   }
 }
 
+class GeneratedJsonValue {
+  constructor(
+    public element: DeclaredElement,
+    public decl: DeclarationStatement
+  ) {}
+}
+
 export class JsonFile extends File {
   constructor(
     /** Program this file belongs to. */
@@ -3385,17 +3401,17 @@ export class JsonFile extends File {
   }
 
   /** ensure top level declaration exists in {@link File.exports} and update {@link File.aliasNamespaces} */
-  ensure(name: string, element: DeclaredElement | null): DeclaredElement | null {
-    if (element == null) return null;
+  ensure(name: string, jsonValue: GeneratedJsonValue | null): DeclaredElement | null {
+    if (jsonValue == null) return null;
     let exports = this.exports;
     if (!exports) this.exports = exports = new Map();
-    exports.set(name, element);
+    exports.set(name, jsonValue.element);
     // Also, add to the namespaces that capture our exports
     for (let i = 0; i < this.aliasNamespaces.length; i++) {
       let ns = this.aliasNamespaces[i];
-      ns.add(name, element);
+      ns.add(name, jsonValue.element);
     }
-    return element;
+    return jsonValue.element;
   }
 
   /** Looks up the export of the specified name. */
@@ -3428,7 +3444,7 @@ export class JsonFile extends File {
     }
   }
 
-  convertJsonValue(name: string, v: JsonValue): DeclaredElement | null {
+  convertJsonValue(name: string, v: JsonValue): GeneratedJsonValue | null {
     switch (v.kind) {
       case JsonValueKind.Unknown:
         this.program.error(DiagnosticCode.Not_implemented_0, v.range, "import complex object from json file");
@@ -3446,7 +3462,7 @@ export class JsonFile extends File {
         return null;
     }
   }
-  convertScalerJsonValue(name: string, v: JsonValue): Global | null {
+  convertScalerJsonValue(name: string, v: JsonValue): GeneratedJsonValue | null {
     const range = v.range;
     if (v.kind == JsonValueKind.Array && !isScalarJsonKind((v as JsonArray).uniqueType)) {
       this.program.error(DiagnosticCode.Not_implemented_0, v.range, "import complex object from json file");
@@ -3460,18 +3476,18 @@ export class JsonFile extends File {
       v.toExpression(),
       range
     );
-    return new Global(name, this, DecoratorFlags.Lazy, decl);
+    return new GeneratedJsonValue(new Global(name, this, DecoratorFlags.Lazy, decl), decl);
   }
-  convertJsonObject(name: string, v: JsonObject): Namespace | null {
+  convertJsonObject(name: string, v: JsonObject): GeneratedJsonValue | null {
     const len = v.keys.length;
     const range = v.range;
     let members = new Array<Statement>();
     let elements = new Array<DeclaredElement>();
     for (let i = 0; i < len; i++) {
-      let element = this.convertJsonValue(v.keys[i], v.values[i]);
-      if (element == null) continue; // make sure we will not emit too many error
-      members.push(element._declaration);
-      elements.push(element);
+      let jsonValue = this.convertJsonValue(v.keys[i], v.values[i]);
+      if (jsonValue == null) continue; // make sure we will not emit too many error
+      members.push(jsonValue.decl);
+      elements.push(jsonValue.element);
     }
     let decl = Node.createNamespaceDeclaration(
       Node.createIdentifierExpression(name, range),
@@ -3484,12 +3500,13 @@ export class JsonFile extends File {
     for (let i = 0; i < elements.length; i++) {
       ns.add(elements[i].name, elements[i]);
     }
-    return ns;
+    return new GeneratedJsonValue(ns, decl);
   }
 }
 
 /** A type definition. */
 export class TypeDefinition extends TypedElement {
+  typeDeclarationBase: TypeDeclarationBase;
   /** Constructs a new type definition. */
   constructor(
     /** Simple name. */
@@ -3510,16 +3527,17 @@ export class TypeDefinition extends TypedElement {
       declaration
     );
     this.decoratorFlags = decoratorFlags;
+    this.typeDeclarationBase = declaration.toTypeDeclarationBase();
   }
 
   /** Gets the associated type parameter nodes. */
   get typeParameterNodes(): TypeParameterNode[] | null {
-    return (<TypeDeclaration>this._declaration).typeParameters;
+    return this.typeDeclarationBase.typeParameters;
   }
 
   /** Gets the associated type node. */
   get typeNode(): TypeNode {
-    return (<TypeDeclaration>this._declaration).type;
+    return this.typeDeclarationBase.type;
   }
 }
 
@@ -3587,6 +3605,7 @@ export const enum ConstantValueKind {
 
 /** Base class of all variable-like program elements. */
 export abstract class VariableLikeElement extends TypedElement {
+  variableLikeBase: VariableLikeBase;
   /** Constant value kind. */
   constantValueKind: ConstantValueKind = ConstantValueKind.None;
   /** Constant integer value, if applicable. */
@@ -3614,20 +3633,21 @@ export abstract class VariableLikeElement extends TypedElement {
       declaration
     );
     this.flags = declaration.flags;
+    this.variableLikeBase = declaration.toVariableLikeBase();
   }
 
   get identifierNode(): IdentifierExpression {
-    return (<VariableLikeDeclarationStatement>this._declaration).name;
+    return this.variableLikeBase.name;
   }
 
   /** Gets the associated type node.s */
   get typeNode(): TypeNode | null {
-    return (<VariableLikeDeclarationStatement>this._declaration).type;
+    return this.variableLikeBase.type;
   }
 
   /** Gets the associated initializer node. */
   get initializerNode(): Expression | null {
-    return (<VariableLikeDeclarationStatement>this._declaration).initializer;
+    return this.variableLikeBase.initializer;
   }
 
   /** Applies a constant integer value to this element. */
@@ -3672,7 +3692,7 @@ export class EnumValue extends VariableLikeElement {
 
   /** Gets the associated value node. */
   get valueNode(): Expression | null {
-    return (<EnumValueDeclaration>this._declaration).initializer;
+    return this.initializerNode;
   }
 }
 
@@ -3755,6 +3775,11 @@ export class FunctionPrototype extends DeclaredElement {
   /** Methods overriding this one, if any. These are unbound. */
   unboundOverrides: Set<FunctionPrototype> | null = null;
 
+  functionLikeWithBodyBase: FunctionLikeWithBodyBase;
+
+  identifierNode: IdentifierExpression;
+  identifierAndSignatureRange: Range;
+
   /** Clones of this prototype that are bound to specific classes. */
   private boundPrototypes: Map<Class, FunctionPrototype> | null = null;
 
@@ -3778,26 +3803,29 @@ export class FunctionPrototype extends DeclaredElement {
       declaration
     );
     this.decoratorFlags = decoratorFlags;
+    this.functionLikeWithBodyBase = declaration.toFunctionLikeWithBodyBase();
+    this.identifierNode = declaration.name;
+    this.identifierAndSignatureRange = declaration.identifierAndSignatureRange;
   }
 
   /** Gets the associated type parameter nodes. */
   get typeParameterNodes(): TypeParameterNode[] | null {
-    return (<FunctionDeclaration>this._declaration).typeParameters;
+    return this.functionLikeWithBodyBase.typeParameters;
   }
 
   /** Gets the associated function type node. */
   get functionTypeNode(): FunctionTypeNode {
-    return (<FunctionDeclaration>this._declaration).signature;
+    return this.functionLikeWithBodyBase.signature;
   }
 
   /** Gets the associated body node. */
   get bodyNode(): Statement | null {
-    return (<FunctionDeclaration>this._declaration).body;
+    return this.functionLikeWithBodyBase.body;
   }
 
   /** Gets the arrow function kind. */
   get arrowKind(): ArrowKind {
-    return (<FunctionDeclaration>this._declaration).arrowKind;
+    return this.functionLikeWithBodyBase.arrowKind;
   }
 
   /** Creates a clone of this prototype that is bound to a concrete class instead. */
@@ -3807,7 +3835,7 @@ export class FunctionPrototype extends DeclaredElement {
     let boundPrototypes = this.boundPrototypes;
     if (!boundPrototypes) this.boundPrototypes = boundPrototypes = new Map();
     else if (boundPrototypes.has(classInstance)) return assert(boundPrototypes.get(classInstance));
-    let declaration = this._declaration;
+    let declaration = this._declaration; // for constructor
     assert(declaration.kind == NodeKind.MethodDeclaration);
     let bound = new FunctionPrototype(
       this.name,
@@ -3890,7 +3918,7 @@ export class Function extends TypedElement {
       mangleInternalName(nameInclTypeParameters, prototype.parent, prototype.is(CommonFlags.Instance)),
       prototype.program,
       prototype.parent,
-      prototype._declaration
+      prototype._declaration // for constructor
     );
     this.prototype = prototype;
     this.typeArguments = typeArguments;
@@ -3940,24 +3968,13 @@ export class Function extends TypedElement {
     registerConcreteElement(program, this);
   }
 
-  get declaration(): FunctionDeclaration {
-    return <FunctionDeclaration>this._declaration;
-  }
   /** Gets the associated identifier node. */
   get identifierNode(): IdentifierExpression {
-    return this.declaration.name;
+    return this.prototype.identifierNode;
   }
   /** Gets the signature node, if applicable, along the identifier node. */
   get identifierAndSignatureRange(): Range {
-    let declaration = this.declaration;
-    let identifierNode = declaration.name;
-    if (declaration.kind == NodeKind.FunctionDeclaration || declaration.kind == NodeKind.MethodDeclaration) {
-      let signatureNode = (<FunctionDeclaration>declaration).signature;
-      if (identifierNode.range.source == signatureNode.range.source) {
-        return Range.join(identifierNode.range, signatureNode.range);
-      }
-    }
-    return identifierNode.range;
+    return this.prototype.identifierAndSignatureRange;
   }
 
   /** Gets the types of additional locals that are not parameters. */
@@ -3977,7 +3994,7 @@ export class Function extends TypedElement {
 
   /** Gets the name of the parameter at the specified index. */
   getParameterName(index: i32): string {
-    let parameters = (<FunctionDeclaration>this._declaration).signature.parameters;
+    let parameters = this.prototype.functionLikeWithBodyBase.signature.parameters;
     return parameters.length > index ? parameters[index].name.text : getDefaultParameterName(index);
   }
 
@@ -4080,6 +4097,8 @@ export class PropertyPrototype extends DeclaredElement {
   /** Property instance, if resolved. */
   instance: Property | null = null;
 
+  identifierNode: IdentifierExpression;
+
   /** Clones of this prototype that are bound to specific classes. */
   private boundPrototypes: Map<Class, PropertyPrototype> | null = null;
 
@@ -4158,16 +4177,13 @@ export class PropertyPrototype extends DeclaredElement {
       parent,
       firstDeclaration
     );
+    this.identifierNode = firstDeclaration.name;
     this.flags &= ~(CommonFlags.Get | CommonFlags.Set);
   }
 
   /** Tests if this property prototype represents a field. */
   get isField(): bool {
     return this.fieldDeclaration != null;
-  }
-
-  get identifierNode(): IdentifierExpression {
-    return (<FunctionDeclaration>this._declaration).name;
   }
 
   /** Gets the associated initializer node. */
@@ -4198,7 +4214,7 @@ export class PropertyPrototype extends DeclaredElement {
     let boundPrototypes = this.boundPrototypes;
     if (!boundPrototypes) this.boundPrototypes = boundPrototypes = new Map();
     else if (boundPrototypes.has(classInstance)) return assert(boundPrototypes.get(classInstance));
-    let firstDeclaration = this._declaration;
+    let firstDeclaration = this._declaration; // for constructor
     assert(firstDeclaration.kind == NodeKind.MethodDeclaration);
     let bound = new PropertyPrototype(
       this.name,
@@ -4274,7 +4290,7 @@ export class Property extends VariableLikeElement {
         DiagnosticCode.Get_accessor_0_must_be_at_least_as_accessible_as_the_setter,
         propertyGetter.nameRange,
         propertySetter.nameRange,
-        propertyGetter.declaration.name.text
+        propertyGetter.identifierNode.text
       );
     }
   }
@@ -4310,6 +4326,7 @@ export class IndexSignature extends TypedElement {
 
 /** A yet unresolved class prototype. */
 export class ClassPrototype extends DeclaredElement {
+  classBase: ClassBase;
   /** Instance member prototypes. */
   instanceMembers: Map<string, DeclaredElement> | null = null;
   /** Base class prototype, if applicable. */
@@ -4346,20 +4363,21 @@ export class ClassPrototype extends DeclaredElement {
       parent,
       declaration
     );
+    this.classBase = declaration.toClassBase();
     this.decoratorFlags = decoratorFlags;
   }
 
   /** Gets the associated type parameter nodes. */
   get typeParameterNodes(): TypeParameterNode[] | null {
-    return (<ClassDeclaration>this._declaration).typeParameters;
+    return this.classBase.typeParameters;
   }
   /** Gets the associated extends node. */
   get extendsNode(): NamedTypeNode | null {
-    return (<ClassDeclaration>this._declaration).extendsType;
+    return this.classBase.extendsType;
   }
   /** Gets the associated implements nodes. */
   get implementsNodes(): NamedTypeNode[] | null {
-    return (<ClassDeclaration>this._declaration).implementsTypes;
+    return this.classBase.implementsTypes;
   }
 
   /** Tests if this prototype is of a builtin array type (Array/TypedArray). */
@@ -4507,7 +4525,7 @@ export class Class extends TypedElement {
       mangleInternalName(nameInclTypeParameters, prototype.parent, prototype.is(CommonFlags.Instance)),
       prototype.program,
       prototype.parent,
-      prototype._declaration
+      prototype._declaration // for constructor
     );
     this.prototype = prototype;
     this.flags = prototype.flags;

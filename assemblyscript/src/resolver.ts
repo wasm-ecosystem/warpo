@@ -2635,7 +2635,7 @@ export class Resolver extends DiagnosticEmitter {
 
     // check against overridden base member
     if (classInstance) {
-      let methodOrPropertyName = instance.declaration.name.text;
+      let methodOrPropertyName = instance.identifierNode.text;
       let baseClass = classInstance.base;
       if (baseClass) {
         let baseMember = baseClass.getMember(methodOrPropertyName);
@@ -2774,7 +2774,7 @@ export class Resolver extends DiagnosticEmitter {
         if (!classInstance.isAssignableTo(parentClassInstance)) continue;
         let overrideInstance: Function | null = null;
         if (instance.isAny(CommonFlags.Get | CommonFlags.Set)) {
-          let propertyName = instance.declaration.name.text;
+          let propertyName = instance.identifierNode.text;
           let boundPropertyPrototype = assert(classInstance.getMember(propertyName));
           assert(boundPropertyPrototype.kind == ElementKind.PropertyPrototype);
           let boundPropertyInstance = this.resolveProperty(<PropertyPrototype>boundPropertyPrototype);
