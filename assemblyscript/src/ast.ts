@@ -1515,6 +1515,10 @@ export class Source extends Node {
       Source._native = source = new Source(SourceKind.LibraryEntry, LIBRARY_PREFIX + "native.ts", "[native code]");
     return source;
   }
+  /** Checks if this source represents native code. */
+  get isNative(): bool {
+    return this == Source._native;
+  }
   private static _native: Source | null = null;
 
   constructor(
@@ -1543,11 +1547,6 @@ export class Source extends Node {
   debugInfoIndex: i32 = -1;
   /** Re-exported sources. */
   exportPaths: string[] | null = null;
-
-  /** Checks if this source represents native code. */
-  get isNative(): bool {
-    return this.internalPath == LIBRARY_SUBST;
-  }
 
   /** Checks if this source is part of the (standard) library. */
   get isLibrary(): bool {

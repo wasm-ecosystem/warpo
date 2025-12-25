@@ -17,6 +17,7 @@
     "var e: i32",
     "TS2300: Duplicate identifier 'f'",
     "let f: f32",
+    "in duplicate-identifier.ts(21,9)",
     "EOF"
   ]
 }
