@@ -6891,19 +6891,22 @@ export class Compiler extends DiagnosticEmitter {
     contextualType: Type,
     constraints: Constraints
   ): ExpressionRef {
-    let declaration = expression.declaration.clone(); // generic contexts can have multiple
+    let declaration = expression.declaration; // generic contexts can have multiple
     assert(!declaration.typeParameters); // function expression cannot be generic
     let flow = this.currentFlow;
     let sourceFunction = flow.targetFunction;
     let isNamed = declaration.name.text.length > 0;
     let isSemanticallyAnonymous = !isNamed || contextualType != Type.void;
-    let prototype = FunctionPrototype.createByDecl(
+    let prototype = new FunctionPrototype(
       isSemanticallyAnonymous
         ? `${isNamed ? declaration.name.text : "anonymous"}|${sourceFunction.nextAnonymousId++}`
         : declaration.name.text,
       sourceFunction,
-      declaration,
-      DecoratorFlags.None
+      DecoratorFlags.None,
+      declaration.toDeclarationBase(),
+      declaration.toFunctionLikeWithBodyBase(),
+      declaration.name,
+      declaration.identifierAndSignatureRange
     );
     let instance: Function | null;
     let contextualTypeArguments = cloneMap(flow.contextualTypeArguments);
@@ -8519,15 +8522,20 @@ export class Compiler extends DiagnosticEmitter {
 
         // otherwise make a default constructor
       } else {
+        const declaration = this.program.makeNativeFunctionDeclaration(
+          CommonNames.constructor,
+          CommonFlags.Instance | CommonFlags.Constructor
+        );
         instance = new Function(
           CommonNames.constructor,
-          FunctionPrototype.createByDecl(
+          new FunctionPrototype(
             CommonNames.constructor,
             classInstance, // bound
-            this.program.makeNativeFunctionDeclaration(
-              CommonNames.constructor,
-              CommonFlags.Instance | CommonFlags.Constructor
-            )
+            DecoratorFlags.None,
+            declaration.toDeclarationBase(),
+            declaration.toFunctionLikeWithBodyBase(),
+            declaration.name,
+            declaration.identifierAndSignatureRange
           ),
           null,
           Signature.create(this.program, [], classInstance.type, classInstance.type),

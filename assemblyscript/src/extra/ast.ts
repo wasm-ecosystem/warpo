@@ -82,6 +82,8 @@ import {
   SwitchCase,
   IndexSignatureNode,
   isTypeOmitted,
+  FunctionLikeWithBodyBase,
+  DeclarationBase,
 } from "../ast";
 
 import { operatorTokenToString } from "../tokenizer";
@@ -606,7 +608,7 @@ export class ASTBuilder {
 
   visitFunctionExpression(node: FunctionExpression): void {
     let declaration = node.declaration;
-    if (!declaration.arrowKind) {
+    if (declaration.arrowKind != ArrowKind.None) {
       if (declaration.name.text.length) {
         this.sb.push("function ");
       } else {
@@ -615,7 +617,8 @@ export class ASTBuilder {
     } else {
       assert(declaration.name.text.length == 0);
     }
-    this.visitFunctionCommon(declaration);
+    this.visitIdentifierExpression(declaration.name);
+    this.visitFunctionWithBodyBase(declaration.toDeclarationBase(), declaration.toFunctionLikeWithBodyBase());
   }
 
   visitLiteralExpression(node: LiteralExpression): void {
@@ -1112,14 +1115,14 @@ export class ASTBuilder {
     } else {
       sb.push("function");
     }
-    this.visitFunctionCommon(node);
+    this.visitIdentifierExpression(node.name);
+    this.visitFunctionWithBodyBase(node.toDeclarationBase(), node.toFunctionLikeWithBodyBase());
   }
 
-  visitFunctionCommon(node: FunctionDeclaration): void {
+  visitFunctionWithBodyBase(declarationBase: DeclarationBase, functionBase: FunctionLikeWithBodyBase): void {
     let sb = this.sb;
-    this.visitIdentifierExpression(node.name);
-    let signature = node.signature;
-    let typeParameters = node.typeParameters;
+    let signature = functionBase.signature;
+    let typeParameters = functionBase.typeParameters;
     if (typeParameters) {
       let numTypeParameters = typeParameters.length;
       if (numTypeParameters) {
@@ -1132,7 +1135,7 @@ export class ASTBuilder {
         sb.push(">");
       }
     }
-    if (node.arrowKind == ArrowKind.Single) {
+    if (functionBase.arrowKind == ArrowKind.Single) {
       let parameters = signature.parameters;
       assert(parameters.length == 1);
       assert(!signature.explicitThisType);
@@ -1155,11 +1158,11 @@ export class ASTBuilder {
         }
       }
     }
-    let body = node.body;
+    let body = functionBase.body;
     let returnType = signature.returnType;
-    if (node.arrowKind) {
+    if (functionBase.arrowKind) {
       if (body) {
-        if (node.arrowKind == ArrowKind.Single) {
+        if (functionBase.arrowKind == ArrowKind.Single) {
           assert(isTypeOmitted(returnType));
         } else {
           if (isTypeOmitted(returnType)) {
@@ -1177,7 +1180,7 @@ export class ASTBuilder {
         this.visitTypeNode(returnType);
       }
     } else {
-      if (!isTypeOmitted(returnType) && !node.isAny(CommonFlags.Constructor | CommonFlags.Set)) {
+      if (!isTypeOmitted(returnType) && !declarationBase.isAny(CommonFlags.Constructor | CommonFlags.Set)) {
         sb.push("): ");
         this.visitTypeNode(returnType);
       } else {
@@ -1314,7 +1317,8 @@ export class ASTBuilder {
     } else if (node.is(CommonFlags.Set)) {
       this.sb.push("set ");
     }
-    this.visitFunctionCommon(node);
+    this.visitIdentifierExpression(node.name);
+    this.visitFunctionWithBodyBase(node.toDeclarationBase(), node.toFunctionLikeWithBodyBase());
   }
 
   visitNamespaceDeclaration(node: NamespaceDeclaration, isDefault: bool = false): void {

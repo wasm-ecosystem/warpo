@@ -973,9 +973,18 @@ export class Program extends DiagnosticEmitter {
     /** Decorator flags representing built-in decorators. */
     decoratorFlags: DecoratorFlags = DecoratorFlags.None
   ): Function {
+    const declaration = this.makeNativeFunctionDeclaration(name, flags);
     return new Function(
       name,
-      FunctionPrototype.createByDecl(name, parent, this.makeNativeFunctionDeclaration(name, flags), decoratorFlags),
+      new FunctionPrototype(
+        name,
+        parent,
+        decoratorFlags,
+        declaration.toDeclarationBase(),
+        declaration.toFunctionLikeWithBodyBase(),
+        declaration.name,
+        declaration.identifierAndSignatureRange
+      ),
       null,
       signature
     );
@@ -2201,11 +2210,14 @@ export class Program extends DiagnosticEmitter {
     if (declaration.range.source.isLibrary) {
       acceptedFlags |= DecoratorFlags.Builtin;
     }
-    let element = FunctionPrototype.createByDecl(
+    let element = new FunctionPrototype(
       name,
       parent,
-      declaration,
-      this.checkDecorators(declaration.decorators, acceptedFlags)
+      this.checkDecorators(declaration.decorators, acceptedFlags),
+      declaration.toDeclarationBase(),
+      declaration.toFunctionLikeWithBodyBase(),
+      declaration.name,
+      declaration.identifierAndSignatureRange
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
       this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
@@ -2324,11 +2336,14 @@ export class Program extends DiagnosticEmitter {
         return;
       }
     }
-    let element = FunctionPrototype.createByDecl(
+    let element = new FunctionPrototype(
       (isGetter ? GETTER_PREFIX : SETTER_PREFIX) + name,
       property.parent, // same level as property
-      declaration,
-      this.checkDecorators(declaration.decorators, DecoratorFlags.Inline | DecoratorFlags.Unsafe)
+      this.checkDecorators(declaration.decorators, DecoratorFlags.Inline | DecoratorFlags.Unsafe),
+      declaration.toDeclarationBase(),
+      declaration.toFunctionLikeWithBodyBase(),
+      declaration.name,
+      declaration.identifierAndSignatureRange
     );
     if (isGetter) {
       property.getterPrototype = element;
@@ -2618,11 +2633,14 @@ export class Program extends DiagnosticEmitter {
     if (declaration.range.source.isLibrary) {
       validDecorators |= DecoratorFlags.Builtin;
     }
-    let element = FunctionPrototype.createByDecl(
+    let element = new FunctionPrototype(
       name,
       parent,
-      declaration,
-      this.checkDecorators(declaration.decorators, validDecorators)
+      this.checkDecorators(declaration.decorators, validDecorators),
+      declaration.toDeclarationBase(),
+      declaration.toFunctionLikeWithBodyBase(),
+      declaration.name,
+      declaration.identifierAndSignatureRange
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
       this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
@@ -3790,27 +3808,6 @@ export class FunctionPrototype extends DeclaredElement {
   /** Clones of this prototype that are bound to specific classes. */
   private boundPrototypes: Map<Class, FunctionPrototype> | null = null;
 
-  static createByDecl(
-    /** Simple name */
-    name: string,
-    /** Parent element, usually a file, namespace or class (if a method). */
-    parent: Element,
-    /** Declaration reference. */
-    declaration: FunctionDeclaration,
-    /** Pre-checked flags indicating built-in decorators. */
-    decoratorFlags: DecoratorFlags = DecoratorFlags.None
-  ): FunctionPrototype {
-    return new FunctionPrototype(
-      name,
-      parent,
-      decoratorFlags,
-      declaration.toDeclarationBase(),
-      declaration.toFunctionLikeWithBodyBase(),
-      declaration.name,
-      declaration.identifierAndSignatureRange
-    );
-  }
-
   static copy(parent: Element, origin: FunctionPrototype): FunctionPrototype {
     return new FunctionPrototype(
       origin.name,
@@ -3824,7 +3821,7 @@ export class FunctionPrototype extends DeclaredElement {
   }
 
   /** Constructs a new function prototype. */
-  private constructor(
+  constructor(
     /** Simple name */
     name: string,
     /** Parent element, usually a file, namespace or class (if a method). */
@@ -4189,17 +4186,23 @@ export class PropertyPrototype extends DeclaredElement {
     let prototype = PropertyPrototype.fromDecl(name, parent, getterDeclaration);
     prototype.fieldDeclaration = fieldDeclaration;
     prototype.decoratorFlags = decoratorFlags;
-    prototype.getterPrototype = FunctionPrototype.createByDecl(
+    prototype.getterPrototype = new FunctionPrototype(
       GETTER_PREFIX + name,
       parent,
-      getterDeclaration,
-      decoratorFlags
+      decoratorFlags,
+      getterDeclaration.toDeclarationBase(),
+      getterDeclaration.toFunctionLikeWithBodyBase(),
+      getterDeclaration.name,
+      getterDeclaration.range
     );
-    prototype.setterPrototype = FunctionPrototype.createByDecl(
+    prototype.setterPrototype = new FunctionPrototype(
       SETTER_PREFIX + name,
       parent,
-      setterDeclaration,
-      decoratorFlags
+      decoratorFlags,
+      setterDeclaration.toDeclarationBase(),
+      setterDeclaration.toFunctionLikeWithBodyBase(),
+      setterDeclaration.name,
+      setterDeclaration.range
     );
     return prototype;
   }
@@ -4210,7 +4213,7 @@ export class PropertyPrototype extends DeclaredElement {
     /** Parent element. Either a class prototype or instance. */
     parent: Element,
     /** Declaration of the getter or setter introducing the property. */
-    firstDeclaration: FunctionDeclaration
+    firstDeclaration: MethodDeclaration
   ): PropertyPrototype {
     return new PropertyPrototype(name, parent, firstDeclaration.toDeclarationBase(), firstDeclaration.name);
   }

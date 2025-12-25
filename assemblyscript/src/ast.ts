@@ -1624,6 +1624,10 @@ export class DeclarationBase {
   is(flag: CommonFlags): bool {
     return (this.flags & flag) == flag;
   }
+  /** Tests if this node has one of the specified flags. */
+  isAny(flag: CommonFlags): bool {
+    return (this.flags & flag) != 0;
+  }
 }
 
 /** Base class of all declaration statements. */
@@ -2067,19 +2071,42 @@ export class FunctionDeclaration extends DeclarationStatement {
     }
     return identifierNode.range;
   }
+}
 
-  /** Clones this function declaration. */
-  clone(): FunctionDeclaration {
-    return new FunctionDeclaration(
-      this.name,
-      this.decorators,
-      this.flags,
-      this.typeParameters,
-      this.signature,
-      this.body,
-      this.arrowKind,
-      this.range
-    );
+/** Represents a method declaration within a `class`. */
+export class MethodDeclaration extends DeclarationStatement {
+  constructor(
+    /** Simple name being declared. */
+    public name: IdentifierExpression,
+    /** Array of decorators, if any. */
+    decorators: DecoratorNode[] | null,
+    /** Common flags indicating specific traits. */
+    flags: CommonFlags,
+    /** Type parameters, if any. */
+    public typeParameters: TypeParameterNode[] | null,
+    /** Function signature. */
+    public signature: FunctionTypeNode,
+    /** Body statement. Usually a block. */
+    public body: Statement | null,
+    /** Source range. */
+    range: Range
+  ) {
+    super(NodeKind.MethodDeclaration, decorators, flags, range);
+    this.kind = NodeKind.MethodDeclaration;
+  }
+  get nameRange(): Range {
+    return this.name.range;
+  }
+  toFunctionLikeWithBodyBase(): FunctionLikeWithBodyBase {
+    return new FunctionLikeWithBodyBase(this.typeParameters, this.signature, this.body, ArrowKind.None);
+  }
+  get identifierAndSignatureRange(): Range {
+    let identifierNode = this.name;
+    let signatureNode = this.signature;
+    if (identifierNode.range.source == signatureNode.range.source) {
+      return Range.join(identifierNode.range, signatureNode.range);
+    }
+    return identifierNode.range;
   }
 }
 
@@ -2166,29 +2193,6 @@ export class InterfaceDeclaration extends ClassDeclaration {
   ) {
     super(name, decorators, flags, typeParameters, extendsType, implementsTypes, members, range);
     this.kind = NodeKind.InterfaceDeclaration;
-  }
-}
-
-/** Represents a method declaration within a `class`. */
-export class MethodDeclaration extends FunctionDeclaration {
-  constructor(
-    /** Simple name being declared. */
-    name: IdentifierExpression,
-    /** Array of decorators, if any. */
-    decorators: DecoratorNode[] | null,
-    /** Common flags indicating specific traits. */
-    flags: CommonFlags,
-    /** Type parameters, if any. */
-    typeParameters: TypeParameterNode[] | null,
-    /** Function signature. */
-    signature: FunctionTypeNode,
-    /** Body statement. Usually a block. */
-    body: Statement | null,
-    /** Source range. */
-    range: Range
-  ) {
-    super(name, decorators, flags, typeParameters, signature, body, ArrowKind.None, range);
-    this.kind = NodeKind.MethodDeclaration;
   }
 }
 
