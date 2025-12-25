@@ -461,6 +461,4 @@ using Ref = Value::Ref;
 
 } // namespace json
 
-#undef skip
-
 #endif // wasm_support_json_h
