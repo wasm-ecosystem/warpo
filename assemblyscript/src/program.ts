@@ -3800,11 +3800,6 @@ export class FunctionPrototype extends DeclaredElement {
   /** Methods overriding this one, if any. These are unbound. */
   unboundOverrides: Set<FunctionPrototype> | null = null;
 
-  functionLikeWithBodyBase: FunctionLikeWithBodyBase;
-
-  identifierNode: IdentifierExpression;
-  identifierAndSignatureRange: Range;
-
   /** Clones of this prototype that are bound to specific classes. */
   private boundPrototypes: Map<Class, FunctionPrototype> | null = null;
 
@@ -3829,9 +3824,9 @@ export class FunctionPrototype extends DeclaredElement {
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags,
     declarationBase: DeclarationBase,
-    functionLikeWithBodyBase: FunctionLikeWithBodyBase,
-    identifierNode: IdentifierExpression,
-    identifierAndSignatureRange: Range
+    public readonly functionLikeWithBodyBase: FunctionLikeWithBodyBase,
+    public readonly identifierNode: IdentifierExpression,
+    public readonly identifierAndSignatureRange: Range
   ) {
     super(
       ElementKind.FunctionPrototype,
@@ -3842,9 +3837,6 @@ export class FunctionPrototype extends DeclaredElement {
       declarationBase
     );
     this.decoratorFlags = decoratorFlags;
-    this.functionLikeWithBodyBase = functionLikeWithBodyBase;
-    this.identifierNode = identifierNode;
-    this.identifierAndSignatureRange = identifierAndSignatureRange;
   }
 
   /** Gets the associated type parameter nodes. */
@@ -4193,7 +4185,7 @@ export class PropertyPrototype extends DeclaredElement {
       getterDeclaration.toDeclarationBase(),
       getterDeclaration.toFunctionLikeWithBodyBase(),
       getterDeclaration.name,
-      getterDeclaration.range
+      getterDeclaration.identifierAndSignatureRange
     );
     prototype.setterPrototype = new FunctionPrototype(
       SETTER_PREFIX + name,
@@ -4202,7 +4194,7 @@ export class PropertyPrototype extends DeclaredElement {
       setterDeclaration.toDeclarationBase(),
       setterDeclaration.toFunctionLikeWithBodyBase(),
       setterDeclaration.name,
-      setterDeclaration.range
+      setterDeclaration.identifierAndSignatureRange
     );
     return prototype;
   }
