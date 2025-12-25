@@ -36,12 +36,8 @@
 
 import {
   CommonFlags,
-  PATH_DELIMITER,
-  STATIC_DELIMITER,
-  INSTANCE_DELIMITER,
   GETTER_PREFIX,
   SETTER_PREFIX,
-  INNER_DELIMITER,
   INDEX_SUFFIX,
   STUB_DELIMITER,
   CommonNames,
@@ -127,6 +123,7 @@ import { Parser } from "./parser";
 import { BuiltinNames, builtinFunctions, builtinVariables_onAccess } from "./builtins";
 import { addParameter, addSubProgram, createBaseType, createClass } from "./warpo";
 import { isScalarJsonKind, JsonArray, JsonObject, JsonValue, JsonValueKind } from "./json";
+import { mangleInternalName } from "./mangle";
 
 // Memory manager constants
 const AL_SIZE = 16;
@@ -5204,34 +5201,6 @@ function copyMembers(src: Element, dest: Element): void {
       let memberName = unchecked(_keys[i]);
       let member = assert(srcMembers.get(memberName));
       destMembers.set(memberName, member);
-    }
-  }
-}
-
-/** Mangles the internal name of an element with the specified name that is a child of the given parent. */
-export function mangleInternalName(name: string, parent: Element, isInstance: bool, asGlobal: bool = false): string {
-  switch (parent.kind) {
-    case ElementKind.File: {
-      if (asGlobal) return name;
-      return parent.internalName + PATH_DELIMITER + name;
-    }
-    case ElementKind.Function: {
-      if (asGlobal) return name;
-      assert(!isInstance);
-      return parent.internalName + INNER_DELIMITER + name;
-    }
-    case ElementKind.PropertyPrototype: // properties are just containers
-    case ElementKind.Property: {
-      //
-      parent = parent.parent;
-      // fall-through
-    }
-    default: {
-      return (
-        mangleInternalName(parent.name, parent.parent, parent.is(CommonFlags.Instance), asGlobal) +
-        (isInstance ? INSTANCE_DELIMITER : STATIC_DELIMITER) +
-        name
-      );
     }
   }
 }

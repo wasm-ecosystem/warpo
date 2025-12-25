@@ -25,7 +25,6 @@ import {
   ElementKind,
   Class,
   TypedElement,
-  mangleInternalName,
   Property,
   PropertyPrototype,
   TypeDefinition,
@@ -83,6 +82,7 @@ import { cloneMap } from "./util";
 import { BuiltinNames } from "./builtins";
 
 import { addLocal, addScope } from "./warpo";
+import { mangleInternalName } from "./mangle";
 
 /** Control flow flags indicating specific conditions. */
 export const enum FlowFlags {

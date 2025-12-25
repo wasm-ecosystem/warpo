@@ -3,10 +3,6 @@
  * @license Apache-2.0
  */
 
-// helper globals used by mangleImportName
-let mangleImportName_moduleName: string = "";
-let mangleImportName_elementName: string = "";
-
 import {
   BuiltinNames,
   BuiltinFunctionContext,
@@ -81,7 +77,6 @@ import {
   PropertyPrototype,
   IndexSignature,
   File,
-  mangleInternalName,
   TypeDefinition,
 } from "./program";
 
@@ -182,6 +177,7 @@ import { RtraceMemory } from "./passes/rtrace";
 
 import { liftRequiresExportRuntime, lowerRequiresExportRuntime } from "./bindings/js";
 import { markDataElementImmutable, addGlobal, addSubProgram, markCallInlined } from "./warpo";
+import { mangleImportName, mangleInternalName } from "./mangle";
 
 /** Features enabled by default. */
 export const defaultFeatures =
@@ -1206,12 +1202,16 @@ export class Compiler extends DiagnosticEmitter {
     if (global.is(CommonFlags.Ambient)) {
       // Constant global or mutable globals enabled
       if (isDeclaredConstant || this.options.hasFeature(Feature.MutableGlobals)) {
-        mangleImportName(global, global.declarationBase);
-        this.program.markModuleImport(mangleImportName_moduleName, mangleImportName_elementName, global);
+        const importName = mangleImportName(global, global.declarationBase);
+        this.program.markModuleImport(
+          importName.mangleImportName_moduleName,
+          importName.mangleImportName_elementName,
+          global
+        );
         module.addGlobalImport(
           global.internalName,
-          mangleImportName_moduleName,
-          mangleImportName_elementName,
+          importName.mangleImportName_moduleName,
+          importName.mangleImportName_elementName,
           typeRef,
           !isDeclaredConstant
         );
@@ -1585,12 +1585,16 @@ export class Compiler extends DiagnosticEmitter {
 
       // imported function
     } else if (instance.is(CommonFlags.Ambient)) {
-      mangleImportName(instance, instance.declarationBase); // TODO: check for duplicates
-      this.program.markModuleImport(mangleImportName_moduleName, mangleImportName_elementName, instance);
+      const importName = mangleImportName(instance, instance.declarationBase); // TODO: check for duplicates
+      this.program.markModuleImport(
+        importName.mangleImportName_moduleName,
+        importName.mangleImportName_elementName,
+        instance
+      );
       module.addFunctionImport(
         instance.internalName,
-        mangleImportName_moduleName,
-        mangleImportName_elementName,
+        importName.mangleImportName_moduleName,
+        importName.mangleImportName_elementName,
         signature.paramRefs,
         signature.resultRefs
       );
@@ -10178,51 +10182,5 @@ export class Compiler extends DiagnosticEmitter {
     }
     this.currentType = toType;
     return expr;
-  }
-}
-
-// helpers
-function mangleImportName(element: Element, declarationBase: DeclarationBase): void {
-  // by default, use the file name as the module name
-  mangleImportName_moduleName = declarationBase.nameRange.source.simplePath;
-  // and the internal name of the element within that file as the element name
-  mangleImportName_elementName = mangleInternalName(
-    element.name,
-    element.parent,
-    element.is(CommonFlags.Instance),
-    true
-  );
-  // override module name if a `module` statement is present
-  let overriddenModuleName = declarationBase.overriddenModuleName;
-  if (overriddenModuleName) mangleImportName_moduleName = overriddenModuleName;
-
-  if (!element.hasDecorator(DecoratorFlags.External)) return;
-
-  let program = element.program;
-  let decorator = assert(findDecorator(DecoratorKind.External, declarationBase.decorators));
-  let args = decorator.args;
-  if (args && args.length > 0) {
-    let arg = args[0];
-    // if one argument is given, override just the element name
-    // if two arguments are given, override both module and element name
-    if (arg.isLiteralKind(LiteralKind.String)) {
-      mangleImportName_elementName = (<StringLiteralExpression>arg).value;
-      if (args.length >= 2) {
-        arg = args[1];
-        if (arg.isLiteralKind(LiteralKind.String)) {
-          mangleImportName_moduleName = mangleImportName_elementName;
-          mangleImportName_elementName = (<StringLiteralExpression>arg).value;
-          if (args.length > 2) {
-            program.error(DiagnosticCode.Expected_0_arguments_but_got_1, decorator.range, "2", args.length.toString());
-          }
-        } else {
-          program.error(DiagnosticCode.String_literal_expected, arg.range);
-        }
-      }
-    } else {
-      program.error(DiagnosticCode.String_literal_expected, arg.range);
-    }
-  } else {
-    program.error(DiagnosticCode.Expected_at_least_0_arguments_but_got_1, decorator.range, "1", "0");
   }
 }
