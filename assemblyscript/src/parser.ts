@@ -70,6 +70,7 @@ import {
   mangleInternalPath,
   MethodDeclaration,
   JsonSource,
+  PropertyName,
 } from "./ast";
 import { JsonParser } from "./json";
 
@@ -1571,65 +1572,27 @@ export class Parser extends DiagnosticEmitter {
     return Node.createClassExpression(declaration);
   }
 
-  private parseIndexSignatureOrMethod(
-    tn: Tokenizer,
-    flags: CommonFlags,
-    accessRange: Range,
-    staticRange: Range,
-    overrideRange: Range,
-    abstractRange: Range,
-    readonlyRange: Range,
-    decorators: DecoratorNode[] | null
-  ): Node | null {
+  // returns true: IndexSignatureNode
+  private detectIndexSignature(tn: Tokenizer): boolean {
     const state = tn.mark();
-    let expr = this.parseExpression(tn);
-    if (expr && tn.skip(Token.CloseBracket)) {
-      // method with computed property
-      if (!tn.skip(Token.OpenParen)) {
-        this.error(DiagnosticCode._0_expected, tn.range(), "(");
-        return null;
+    // detect: '['
+    //         ->  'key' ':'
+    if (tn.skipIdentifier()) {
+      let id = tn.readIdentifier();
+      if (id == "key") {
+        if (tn.skip(Token.Colon)) {
+          tn.reset(state);
+          return true;
+        }
       }
-      let typeParameters: TypeParameterNode[] | null = null;
-      if (tn.skip(Token.LessThan)) {
-        typeParameters = this.parseTypeParameters(tn);
-        if (!typeParameters) return null;
-        flags |= CommonFlags.Generic;
-      }
-      assert(false, "NYI");
     }
-    // index signature
     tn.reset(state);
-    // TODO: also handle symbols, which might have some of these modifiers
-    if (flags & CommonFlags.Public) {
-      this.error(DiagnosticCode._0_modifier_cannot_be_used_here, accessRange, "public"); // recoverable
-    } else if (flags & CommonFlags.Protected) {
-      this.error(DiagnosticCode._0_modifier_cannot_be_used_here, accessRange, "protected"); // recoverable
-    } else if (flags & CommonFlags.Private) {
-      this.error(DiagnosticCode._0_modifier_cannot_be_used_here, accessRange, "private"); // recoverable
-    }
-    if (flags & CommonFlags.Static) {
-      this.error(DiagnosticCode._0_modifier_cannot_be_used_here, staticRange, "static"); // recoverable
-    }
-    if (flags & CommonFlags.Override) {
-      this.error(DiagnosticCode._0_modifier_cannot_be_used_here, overrideRange, "override");
-    }
-    if (flags & CommonFlags.Abstract) {
-      this.error(DiagnosticCode._0_modifier_cannot_be_used_here, abstractRange, "abstract"); // recoverable
-    }
-    let retIndex = this.parseIndexSignature(tn, flags, decorators);
-    if (!retIndex) {
-      if (flags & CommonFlags.Readonly) {
-        this.error(DiagnosticCode._0_modifier_cannot_be_used_here, readonlyRange, "readonly"); // recoverable
-      }
-      return null;
-    }
-    tn.skip(Token.Semicolon);
-    return retIndex;
+    return false;
   }
 
   private parseMethod(
     tn: Tokenizer,
-    name: IdentifierExpression,
+    name: PropertyName,
     parent: ClassDeclaration,
     startPos: i32,
     flags: CommonFlags,
@@ -1679,22 +1642,20 @@ export class Parser extends DiagnosticEmitter {
       if (parameters.length > 0 && parameters[0].initializer) {
         this.error(DiagnosticCode.A_set_accessor_parameter_cannot_have_an_initializer, name.range);
       }
-    } else if (name.text == "constructor") {
-      this.error(DiagnosticCode._0_keyword_cannot_be_used_here, name.range, "constructor");
     }
 
     let returnType: TypeNode | null = null;
     if (tn.skip(Token.Colon)) {
-      if (name.text == "constructor") {
+      if (isConstructor) {
         this.error(DiagnosticCode.Type_annotation_cannot_appear_on_a_constructor_declaration, tn.range());
       } else if (isSetter) {
         this.error(DiagnosticCode.A_set_accessor_cannot_have_a_return_type_annotation, tn.range());
       }
-      returnType = this.parseType(tn, isSetter || name.text == "constructor");
+      returnType = this.parseType(tn, isSetter || isConstructor);
       if (!returnType) return null;
     } else {
       returnType = Node.createOmittedType(tn.range(tn.pos));
-      if (!isSetter && name.text != "constructor") {
+      if (!isSetter && !isConstructor) {
         this.error(DiagnosticCode.Type_expected, returnType.range); // recoverable
       }
     }
@@ -1709,7 +1670,7 @@ export class Parser extends DiagnosticEmitter {
         this.error(
           DiagnosticCode.Method_0_cannot_have_an_implementation_because_it_is_marked_abstract,
           tn.range(),
-          name.text
+          name.getReadableName()
         ); // recoverable
       } else if (isInterface) {
         this.error(DiagnosticCode._0_expected, tn.range(), ";"); // recoverable
@@ -1944,30 +1905,75 @@ export class Parser extends DiagnosticEmitter {
     }
 
     let isGetterOrSetter = isGetter || isSetter;
-    let name: IdentifierExpression;
-    if (isConstructor) {
-      name = Node.createConstructorExpression(tn.range());
-    } else {
-      // index signature or method with computed property
-      if (!isGetterOrSetter && tn.skip(Token.OpenBracket)) {
-        return this.parseIndexSignatureOrMethod(
-          tn,
-          flags,
-          tn.range(accessStart, accessEnd),
-          tn.range(staticStart, staticEnd),
-          tn.range(overrideStart, overrideEnd),
-          tn.range(abstractStart, abstractEnd),
-          tn.range(readonlyStart, readonlyEnd),
-          decorators
-        );
+    let propertyName: PropertyName;
+    let isComputedProperty = false;
+    let bracketStart: i32 = 0; // only used if isComputedProperty
+
+    // index signature or method with computed property
+    if (!isConstructor && !isGetterOrSetter && tn.skip(Token.OpenBracket)) {
+      bracketStart = tn.tokenPos;
+      if (this.detectIndexSignature(tn)) {
+        // index signature
+        // TODO: also handle symbols, which might have some of these modifiers
+        if (flags & CommonFlags.Public) {
+          this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(accessStart, accessEnd), "public"); // recoverable
+        } else if (flags & CommonFlags.Protected) {
+          this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(accessStart, accessEnd), "protected"); // recoverable
+        } else if (flags & CommonFlags.Private) {
+          this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(accessStart, accessEnd), "private"); // recoverable
+        }
+        if (flags & CommonFlags.Static) {
+          this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(staticStart, staticEnd), "static"); // recoverable
+        }
+        if (flags & CommonFlags.Override) {
+          this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(overrideStart, overrideEnd), "override");
+        }
+        if (flags & CommonFlags.Abstract) {
+          this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(overrideStart, overrideEnd), "abstract"); // recoverable
+        }
+        let retIndex = this.parseIndexSignature(tn, flags, decorators);
+        if (!retIndex) {
+          if (flags & CommonFlags.Readonly) {
+            this.error(
+              DiagnosticCode._0_modifier_cannot_be_used_here,
+              tn.range(readonlyStart, readonlyEnd),
+              "readonly"
+            ); // recoverable
+          }
+          return null;
+        }
+        tn.skip(Token.Semicolon);
+        return retIndex;
       }
-      if (!tn.skipIdentifier(IdentifierHandling.Always)) {
-        this.error(DiagnosticCode.Identifier_expected, tn.range());
-        return null;
-      }
-      if (!startPos) startPos = tn.tokenPos;
-      name = Node.createIdentifierExpression(tn.readIdentifier(), tn.range());
+      // method with computed property
+      isComputedProperty = true;
     }
+
+    if (isConstructor) {
+      propertyName = Node.createConstructorExpression(tn.range());
+    } else {
+      if (isComputedProperty) {
+        // at '['
+        //        Expression ']'
+        let expr = this.parseExpression(tn);
+        if (expr == null) return null;
+        if (!tn.skip(Token.CloseBracket)) {
+          this.error(DiagnosticCode._0_expected, tn.range(), "]");
+          return null;
+        }
+        propertyName = Node.createComputedPropertyName(expr, tn.range(bracketStart, tn.pos));
+      } else {
+        // at
+        //     Identifier
+        if (!tn.skipIdentifier(IdentifierHandling.Always)) {
+          this.error(DiagnosticCode.Identifier_expected, tn.range());
+          return null;
+        }
+        if (!startPos) startPos = tn.tokenPos;
+        propertyName = Node.createIdentifierExpression(tn.readIdentifier(), tn.range());
+      }
+    }
+
     let typeParameters: TypeParameterNode[] | null = null;
     if (tn.skip(Token.LessThan)) {
       let typeParametersStart = tn.tokenPos;
@@ -1989,7 +1995,7 @@ export class Parser extends DiagnosticEmitter {
     if (tn.skip(Token.OpenParen)) {
       return this.parseMethod(
         tn,
-        name,
+        propertyName,
         parent,
         startPos,
         flags,
@@ -2002,15 +2008,20 @@ export class Parser extends DiagnosticEmitter {
         isInterface
       );
     } else if (isConstructor) {
-      this.error(DiagnosticCode.Constructor_implementation_is_missing, name.range);
+      this.error(DiagnosticCode.Constructor_implementation_is_missing, propertyName.range);
     } else if (isGetterOrSetter) {
       this.error(
         DiagnosticCode.Function_implementation_is_missing_or_not_immediately_following_the_declaration,
-        name.range
+        propertyName.range
       );
 
       // field: (':' Type)? ('=' Expression)? ';'?
     } else {
+      if (isComputedProperty) {
+        this.error(DiagnosticCode.Not_implemented_0, propertyName.range, "ComputedPropertyName for field");
+        return null;
+      }
+      const name = propertyName as IdentifierExpression;
       if (flags & CommonFlags.Declare) {
         this.error(DiagnosticCode.Not_implemented_0, tn.range(declareStart, declareEnd), "Ambient fields"); // recoverable
       }

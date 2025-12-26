@@ -84,6 +84,8 @@ import {
   isTypeOmitted,
   FunctionLikeWithBodyBase,
   DeclarationBase,
+  ComputedPropertyName,
+  PropertyName,
 } from "../ast";
 
 import { operatorTokenToString } from "../tokenizer";
@@ -104,10 +106,17 @@ export class ASTBuilder {
   private sb: string[] = [];
   private indentLevel: i32 = 0;
 
+  // interface
   visitNode(node: Node): void {
     switch (node.kind) {
       case NodeKind.Source: {
         this.visitSource(<Source>node);
+        break;
+      }
+
+      // name
+      case NodeKind.ComputedPropertyName: {
+        this.visitComputedPropertyName(<ComputedPropertyName>node);
         break;
       }
 
@@ -356,6 +365,29 @@ export class ASTBuilder {
     }
   }
 
+  visitPropertyName(node: PropertyName): void {
+    switch (node.kind) {
+      case NodeKind.False:
+      case NodeKind.Null:
+      case NodeKind.Super:
+      case NodeKind.This:
+      case NodeKind.True:
+      case NodeKind.Constructor:
+      case NodeKind.Identifier: {
+        this.visitIdentifierExpression(<IdentifierExpression>node);
+        break;
+      }
+      case NodeKind.ComputedPropertyName: {
+        this.visitComputedPropertyName(<ComputedPropertyName>node);
+        break;
+      }
+      default:
+        assert(false);
+    }
+  }
+
+  // detail node
+
   visitSource(source: Source): void {
     let statements = source.statements;
     for (let i = 0, k = statements.length; i < k; ++i) {
@@ -451,6 +483,13 @@ export class ASTBuilder {
       this.sb.push("=");
       this.visitTypeNode(defaultType);
     }
+  }
+
+  // name
+  visitComputedPropertyName(node: ComputedPropertyName): void {
+    this.sb.push("[");
+    this.visitNode(node.expression);
+    this.sb.push("]");
   }
 
   // expressions
@@ -1317,7 +1356,7 @@ export class ASTBuilder {
     } else if (node.is(CommonFlags.Set)) {
       this.sb.push("set ");
     }
-    this.visitIdentifierExpression(node.name);
+    this.visitPropertyName(node.name);
     this.visitFunctionWithBodyBase(node.toDeclarationBase(), node.toFunctionLikeWithBodyBase());
   }
 

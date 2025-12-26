@@ -106,10 +106,13 @@ export const enum NodeKind {
   SwitchCase,
   IndexSignature,
   Comment,
+
+  // name
+  ComputedPropertyName,
 }
 
 /** Base class of all nodes. */
-export abstract class Node {
+export abstract class Node implements INode {
   constructor(
     /** Kind of this node. */
     public kind: NodeKind,
@@ -536,7 +539,7 @@ export abstract class Node {
   }
 
   static createMethodDeclaration(
-    name: IdentifierExpression,
+    name: PropertyName,
     decorators: DecoratorNode[] | null,
     flags: CommonFlags,
     typeParameters: TypeParameterNode[] | null,
@@ -625,6 +628,10 @@ export abstract class Node {
     return new WhileStatement(condition, statement, range);
   }
 
+  static createComputedPropertyName(expression: Expression, range: Range): ComputedPropertyName {
+    return new ComputedPropertyName(expression, range);
+  }
+
   /** Tests if this node is a literal of the specified kind. */
   isLiteralKind(literalKind: LiteralKind): bool {
     return this.kind == NodeKind.Literal && (<LiteralExpression>changetype<Node>(this)).literalKind == literalKind; // TS
@@ -690,6 +697,33 @@ export abstract class Node {
 
   get isEmpty(): bool {
     return this.kind == NodeKind.Empty;
+  }
+}
+
+// union
+
+export interface INode {
+  // FIXME: should be inside Node interface
+  range: Range;
+  kind: NodeKind;
+}
+
+/** {@link IdentifierExpression} | {@link ComputedPropertyName} */
+export interface PropertyName extends INode {
+  getReadableName(): string;
+}
+
+// name
+
+export class ComputedPropertyName extends Node implements PropertyName {
+  constructor(
+    public expression: Expression,
+    range: Range
+  ) {
+    super(NodeKind.ComputedPropertyName, range);
+  }
+  getReadableName(): string {
+    return this.range.toString();
   }
 }
 
@@ -1005,7 +1039,7 @@ export class CommentNode extends Node {
 export abstract class Expression extends Node {}
 
 /** Represents an identifier expression. */
-export class IdentifierExpression extends Expression {
+export class IdentifierExpression extends Expression implements PropertyName {
   constructor(
     /** Textual name. */
     public text: string,
@@ -1015,6 +1049,9 @@ export class IdentifierExpression extends Expression {
     range: Range
   ) {
     super(NodeKind.Identifier, range);
+  }
+  getReadableName(): string {
+    return this.text;
   }
 }
 
@@ -2076,7 +2113,7 @@ export class FunctionDeclaration extends DeclarationStatement {
 export class MethodDeclaration extends DeclarationStatement {
   constructor(
     /** Simple name being declared. */
-    public name: IdentifierExpression,
+    public name: PropertyName,
     /** Array of decorators, if any. */
     decorators: DecoratorNode[] | null,
     /** Common flags indicating specific traits. */
@@ -2091,7 +2128,6 @@ export class MethodDeclaration extends DeclarationStatement {
     range: Range
   ) {
     super(NodeKind.MethodDeclaration, decorators, flags, range);
-    this.kind = NodeKind.MethodDeclaration;
   }
   get nameRange(): Range {
     return this.name.range;

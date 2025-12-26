@@ -42,7 +42,6 @@
   "Array literal expected.": 227,
   "Function '{0}' is virtual and will not be inlined.": 228,
   "Property '{0}' only has a setter and is missing a getter.": 229,
-  "'{0}' keyword cannot be used here.": 230,
   "A class with a constructor explicitly returning something else than 'this' must be '@final'.": 231,
   "Property '{0}' is always assigned before being used.": 233,
   "Expression does not compile to a value at runtime.": 234,

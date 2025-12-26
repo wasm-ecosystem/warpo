@@ -98,6 +98,7 @@ import {
   DeclarationBase,
   VariableLikeBase,
   ClassBase,
+  PropertyName,
 } from "./ast";
 
 import { Module, ExpressionRef, FunctionRef, MemorySegment, getFunctionName } from "./module";
@@ -982,7 +983,7 @@ export class Program extends DiagnosticEmitter {
         decoratorFlags,
         declaration.toDeclarationBase(),
         declaration.toFunctionLikeWithBodyBase(),
-        declaration.name,
+        CompiledNameNode.from(declaration.name),
         declaration.identifierAndSignatureRange
       ),
       null,
@@ -2191,6 +2192,15 @@ export class Program extends DiagnosticEmitter {
     }
   }
 
+  private initializePropertyName(name: PropertyName): CompiledNameNode | null {
+    if (name.kind == NodeKind.ComputedPropertyName) {
+      if (name.getReadableName() != "[Symbol.iterator]")
+        this.error(DiagnosticCode.Not_implemented_0, name.range, "common ComputedPropertyName");
+      return null;
+    }
+    return new CompiledNameNode(name.getReadableName(), name.range);
+  }
+
   /** Initializes a method of a class or interface. */
   private initializeMethod(
     /** The declaration to initialize. */
@@ -2198,7 +2208,8 @@ export class Program extends DiagnosticEmitter {
     /** Parent class. */
     parent: ClassPrototype
   ): FunctionPrototype | null {
-    let name = declaration.name.text;
+    let propertyName = this.initializePropertyName(declaration.name);
+    if (propertyName == null) return null;
     let isStatic = declaration.is(CommonFlags.Static);
     let acceptedFlags = DecoratorFlags.Inline | DecoratorFlags.Unsafe;
     if (!declaration.is(CommonFlags.Generic)) {
@@ -2211,12 +2222,12 @@ export class Program extends DiagnosticEmitter {
       acceptedFlags |= DecoratorFlags.Builtin;
     }
     let element = new FunctionPrototype(
-      name,
+      propertyName.text,
       parent,
       this.checkDecorators(declaration.decorators, acceptedFlags),
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
-      declaration.name,
+      propertyName,
       declaration.identifierAndSignatureRange
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
@@ -2225,10 +2236,10 @@ export class Program extends DiagnosticEmitter {
     if (isStatic) {
       // global function
       assert(declaration.name.kind != NodeKind.Constructor);
-      if (!parent.add(name, element)) return null;
+      if (!parent.add(propertyName.text, element)) return null;
     } else {
       // actual instance method
-      if (!parent.addInstance(name, element)) return null;
+      if (!parent.addInstance(propertyName.text, element)) return null;
     }
     this.checkOperatorOverloads(declaration.decorators, element, parent);
     return element;
@@ -2288,7 +2299,12 @@ export class Program extends DiagnosticEmitter {
     /** Parent class. */
     parent: ClassPrototype
   ): PropertyPrototype | null {
-    let name = declaration.name.text;
+    if (declaration.name.kind == NodeKind.ComputedPropertyName) {
+      this.error(DiagnosticCode.Not_implemented_0, declaration.name.range, "ComputedPropertyName");
+      return null;
+    }
+    const identifier = <IdentifierExpression>declaration.name;
+    const name = identifier.text;
     if (declaration.is(CommonFlags.Static)) {
       let parentMembers = parent.members;
       if (parentMembers && parentMembers.has(name)) {
@@ -2323,7 +2339,12 @@ export class Program extends DiagnosticEmitter {
   ): void {
     let property = this.ensureProperty(declaration, parent);
     if (!property) return;
-    let name = declaration.name.text;
+    if (declaration.name.kind == NodeKind.ComputedPropertyName) {
+      this.error(DiagnosticCode.Not_implemented_0, declaration.name.range, "ComputedPropertyName");
+      return;
+    }
+    const identifier = <IdentifierExpression>declaration.name;
+    const name = identifier.text;
     let isGetter = declaration.is(CommonFlags.Get);
     if (isGetter) {
       if (property.getterPrototype) {
@@ -2342,7 +2363,7 @@ export class Program extends DiagnosticEmitter {
       this.checkDecorators(declaration.decorators, DecoratorFlags.Inline | DecoratorFlags.Unsafe),
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
-      declaration.name,
+      CompiledNameNode.from(identifier),
       declaration.identifierAndSignatureRange
     );
     if (isGetter) {
@@ -2639,7 +2660,7 @@ export class Program extends DiagnosticEmitter {
       this.checkDecorators(declaration.decorators, validDecorators),
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
-      declaration.name,
+      CompiledNameNode.from(declaration.name),
       declaration.identifierAndSignatureRange
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
@@ -3791,6 +3812,19 @@ export class Local extends VariableLikeElement {
   }
 }
 
+/** work around for report node */
+export class CompiledNameNode extends Node {
+  constructor(
+    public text: string,
+    range: Range
+  ) {
+    super(NodeKind.Compiled, range);
+  }
+  static from(identifier: IdentifierExpression): CompiledNameNode {
+    return new CompiledNameNode(identifier.text, identifier.range);
+  }
+}
+
 /** A yet unresolved function prototype. */
 export class FunctionPrototype extends DeclaredElement {
   /** Operator kind, if an overload. */
@@ -3825,7 +3859,7 @@ export class FunctionPrototype extends DeclaredElement {
     decoratorFlags: DecoratorFlags,
     declarationBase: DeclarationBase,
     public readonly functionLikeWithBodyBase: FunctionLikeWithBodyBase,
-    public readonly identifierNode: IdentifierExpression,
+    public readonly identifierNode: CompiledNameNode,
     public readonly identifierAndSignatureRange: Range
   ) {
     super(
@@ -3994,7 +4028,7 @@ export class Function extends TypedElement {
   }
 
   /** Gets the associated identifier node. */
-  get identifierNode(): IdentifierExpression {
+  get identifierNode(): CompiledNameNode {
     return this.prototype.identifierNode;
   }
   /** Gets the signature node, if applicable, along the identifier node. */
@@ -4136,6 +4170,7 @@ export class PropertyPrototype extends DeclaredElement {
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags
   ): PropertyPrototype {
+    const identifier = fieldDeclaration.name;
     // A field is a property with an attached memory offset. Unlike normal
     // properties, accessors for fields are not explicitly declared, so we
     // declare them implicitly here and compile them as built-ins when used.
@@ -4145,9 +4180,9 @@ export class PropertyPrototype extends DeclaredElement {
     // override stub at the interface needs to handle both interchangeably.
     let nativeRange = Source.native.range;
     let typeNode = fieldDeclaration.type;
-    if (!typeNode) typeNode = Node.createOmittedType(fieldDeclaration.name.range.atEnd);
+    if (!typeNode) typeNode = Node.createOmittedType(identifier.range.atEnd);
     let getterDeclaration = new MethodDeclaration( // get name(): type
-      fieldDeclaration.name,
+      identifier,
       fieldDeclaration.decorators,
       fieldDeclaration.flags | CommonFlags.Instance | CommonFlags.Get,
       null,
@@ -4156,12 +4191,12 @@ export class PropertyPrototype extends DeclaredElement {
       nativeRange
     );
     let setterDeclaration = new MethodDeclaration( // set name(name: type)
-      fieldDeclaration.name,
+      identifier,
       fieldDeclaration.decorators,
       fieldDeclaration.flags | CommonFlags.Instance | CommonFlags.Set,
       null,
       new FunctionTypeNode(
-        [new ParameterNode(ParameterKind.Default, fieldDeclaration.name, typeNode, null, nativeRange)],
+        [new ParameterNode(ParameterKind.Default, identifier, typeNode, null, nativeRange)],
         new NamedTypeNode(
           new TypeName(new IdentifierExpression("", false, nativeRange), null, nativeRange),
           null,
@@ -4184,7 +4219,7 @@ export class PropertyPrototype extends DeclaredElement {
       decoratorFlags,
       getterDeclaration.toDeclarationBase(),
       getterDeclaration.toFunctionLikeWithBodyBase(),
-      getterDeclaration.name,
+      CompiledNameNode.from(identifier),
       getterDeclaration.identifierAndSignatureRange
     );
     prototype.setterPrototype = new FunctionPrototype(
@@ -4193,7 +4228,7 @@ export class PropertyPrototype extends DeclaredElement {
       decoratorFlags,
       setterDeclaration.toDeclarationBase(),
       setterDeclaration.toFunctionLikeWithBodyBase(),
-      setterDeclaration.name,
+      CompiledNameNode.from(identifier),
       setterDeclaration.identifierAndSignatureRange
     );
     return prototype;
@@ -4207,7 +4242,13 @@ export class PropertyPrototype extends DeclaredElement {
     /** Declaration of the getter or setter introducing the property. */
     firstDeclaration: MethodDeclaration
   ): PropertyPrototype {
-    return new PropertyPrototype(name, parent, firstDeclaration.toDeclarationBase(), firstDeclaration.name);
+    assert(firstDeclaration.name instanceof IdentifierExpression, "NYI: ComputedPropertyName");
+    return new PropertyPrototype(
+      name,
+      parent,
+      firstDeclaration.toDeclarationBase(),
+      firstDeclaration.name as IdentifierExpression
+    );
   }
 
   static copy(parent: Element, origin: PropertyPrototype): PropertyPrototype {

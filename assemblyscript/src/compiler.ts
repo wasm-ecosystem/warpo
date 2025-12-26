@@ -78,6 +78,7 @@ import {
   IndexSignature,
   File,
   TypeDefinition,
+  CompiledNameNode,
 } from "./program";
 
 import { FlowFlags, Flow, LocalFlags, FieldFlags, ConditionKind } from "./flow";
@@ -6905,7 +6906,7 @@ export class Compiler extends DiagnosticEmitter {
       DecoratorFlags.None,
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
-      declaration.name,
+      CompiledNameNode.from(declaration.name),
       declaration.identifierAndSignatureRange
     );
     let instance: Function | null;
@@ -8534,7 +8535,7 @@ export class Compiler extends DiagnosticEmitter {
             DecoratorFlags.None,
             declaration.toDeclarationBase(),
             declaration.toFunctionLikeWithBodyBase(),
-            declaration.name,
+            CompiledNameNode.from(declaration.name),
             declaration.identifierAndSignatureRange
           ),
           null,
