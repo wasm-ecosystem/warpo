@@ -99,6 +99,7 @@ import {
   VariableLikeBase,
   ClassBase,
   PropertyName,
+  ComputedPropertyName,
 } from "./ast";
 
 import { Module, ExpressionRef, FunctionRef, MemorySegment, getFunctionName } from "./module";
@@ -983,7 +984,7 @@ export class Program extends DiagnosticEmitter {
         decoratorFlags,
         declaration.toDeclarationBase(),
         declaration.toFunctionLikeWithBodyBase(),
-        CompiledNameNode.from(declaration.name),
+        CompiledNameNode.fromIdentifier(declaration.name),
         declaration.identifierAndSignatureRange
       ),
       null,
@@ -1353,6 +1354,34 @@ export class Program extends DiagnosticEmitter {
       }
     }
 
+    // define class / interface with fields and methods.
+    for (let i = 0, k = this.sources.length; i < k; ++i) {
+      let source = this.sources[i];
+      let file = assert(this.filesByName.get(source.internalPath)); // ensure file is created
+      let statements = source.statements;
+      for (let j = 0, l = statements.length; j < l; ++j) {
+        let statement = statements[j];
+        switch (statement.kind) {
+          case NodeKind.ExportDefault: {
+            this.defineExportDefault(<ExportDefaultStatement>statement, file);
+            break;
+          }
+          case NodeKind.ClassDeclaration: {
+            this.defineClass(<ClassDeclaration>statement, file);
+            break;
+          }
+          case NodeKind.InterfaceDeclaration: {
+            this.defineInterface(<InterfaceDeclaration>statement, file);
+            break;
+          }
+          case NodeKind.NamespaceDeclaration: {
+            this.defineNamespace(<NamespaceDeclaration>statement, file);
+            break;
+          }
+        }
+      }
+    }
+
     // register foundational classes with fixed ids
     assert(this.objectInstance.id == 0);
     assert(this.arrayBufferInstance.id == 1);
@@ -1566,6 +1595,9 @@ export class Program extends DiagnosticEmitter {
       }
     }
   }
+
+  /** resolve computed property names in class and interface */
+  resolveComputedPropertyNames(): void {}
 
   /** Processes overridden members by this class in a base class. */
   private processOverrides(thisPrototype: ClassPrototype, basePrototype: ClassPrototype): void {
@@ -2131,21 +2163,36 @@ export class Program extends DiagnosticEmitter {
       element.implicitlyExtendsObject = true;
     }
 
+    return element;
+  }
+
+  /** Initializes a class declaration. */
+  private defineClass(
+    /** The declaration to initialize. */
+    declaration: ClassDeclaration,
+    /** Parent element, usually a file or namespace. */
+    parent: Element
+  ): void {
+    let name = declaration.name.text;
+    let member = parent.getMember(name);
+    if (member == null || member.kind != ElementKind.ClassPrototype) return;
+    let element = <ClassPrototype>member;
+
     // initialize members
     let memberDeclarations = declaration.members;
     for (let i = 0, k = memberDeclarations.length; i < k; ++i) {
       let memberDeclaration = memberDeclarations[i];
       switch (memberDeclaration.kind) {
         case NodeKind.FieldDeclaration: {
-          this.initializeField(<FieldDeclaration>memberDeclaration, element);
+          this.defineField(<FieldDeclaration>memberDeclaration, element);
           break;
         }
         case NodeKind.MethodDeclaration: {
           let methodDeclaration = <MethodDeclaration>memberDeclaration;
           if (memberDeclaration.isAny(CommonFlags.Get | CommonFlags.Set)) {
-            this.initializeProperty(methodDeclaration, element);
+            this.defineProperty(methodDeclaration, element);
           } else {
-            let method = this.initializeMethod(methodDeclaration, element);
+            let method = this.defineMethod(methodDeclaration, element);
             if (method && methodDeclaration.name.kind == NodeKind.Constructor) {
               element.constructorPrototype = method;
             }
@@ -2158,11 +2205,10 @@ export class Program extends DiagnosticEmitter {
           assert(false); // class member expected
       }
     }
-    return element;
   }
 
   /** Initializes a field of a class or interface. */
-  private initializeField(
+  private defineField(
     /** The declaration to initialize. */
     declaration: FieldDeclaration,
     /** Parent class. */
@@ -2192,24 +2238,29 @@ export class Program extends DiagnosticEmitter {
     }
   }
 
-  private initializePropertyName(name: PropertyName): CompiledNameNode | null {
+  private definePropertyName(name: PropertyName, classPrototype: ClassPrototype): CompiledNameNode | null {
     if (name.kind == NodeKind.ComputedPropertyName) {
-      if (name.getReadableName() != "[Symbol.iterator]")
-        this.error(DiagnosticCode.Not_implemented_0, name.range, "common ComputedPropertyName");
-      return null;
+      const lookupName = this.resolver.resolveComputedPropertyName(
+        <ComputedPropertyName>name,
+        classPrototype.file.startFunction.flow
+      );
+      if (lookupName == null) return null;
+      return CompiledNameNode.fromComputedPropertyName(<ComputedPropertyName>name, lookupName);
+    } else {
+      return CompiledNameNode.fromIdentifier(<IdentifierExpression>name);
     }
-    return new CompiledNameNode(name.getReadableName(), name.range);
   }
 
   /** Initializes a method of a class or interface. */
-  private initializeMethod(
+  private defineMethod(
     /** The declaration to initialize. */
     declaration: MethodDeclaration,
     /** Parent class. */
     parent: ClassPrototype
   ): FunctionPrototype | null {
-    let propertyName = this.initializePropertyName(declaration.name);
+    const propertyName = this.definePropertyName(declaration.name, parent);
     if (propertyName == null) return null;
+
     let isStatic = declaration.is(CommonFlags.Static);
     let acceptedFlags = DecoratorFlags.Inline | DecoratorFlags.Unsafe;
     if (!declaration.is(CommonFlags.Generic)) {
@@ -2331,7 +2382,7 @@ export class Program extends DiagnosticEmitter {
   }
 
   /** Initializes a property of a class. */
-  private initializeProperty(
+  private defineProperty(
     /** The declaration of the getter or setter. */
     declaration: MethodDeclaration,
     /** Parent class. */
@@ -2363,7 +2414,7 @@ export class Program extends DiagnosticEmitter {
       this.checkDecorators(declaration.decorators, DecoratorFlags.Inline | DecoratorFlags.Unsafe),
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
-      CompiledNameNode.from(identifier),
+      CompiledNameNode.fromIdentifier(identifier),
       declaration.identifierAndSignatureRange
     );
     if (isGetter) {
@@ -2559,6 +2610,25 @@ export class Program extends DiagnosticEmitter {
     }
   }
 
+  private defineExportDefault(
+    /** The statement to initialize. */
+    statement: ExportDefaultStatement,
+    /** Parent file. */
+    parent: File
+  ): void {
+    let declaration = statement.declaration;
+    switch (declaration.kind) {
+      case NodeKind.ClassDeclaration: {
+        this.defineClass(<ClassDeclaration>declaration, parent);
+        break;
+      }
+      case NodeKind.InterfaceDeclaration: {
+        this.defineInterface(<InterfaceDeclaration>declaration, parent);
+        break;
+      }
+    }
+  }
+
   /** Initializes an `import` statement. */
   private initializeImports(
     /** The statement to initialize. */
@@ -2660,7 +2730,7 @@ export class Program extends DiagnosticEmitter {
       this.checkDecorators(declaration.decorators, validDecorators),
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
-      CompiledNameNode.from(declaration.name),
+      CompiledNameNode.fromIdentifier(declaration.name),
       declaration.identifierAndSignatureRange
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
@@ -2691,20 +2761,35 @@ export class Program extends DiagnosticEmitter {
     // remember interfaces that extend another interface
     if (declaration.extendsType) queuedExtends.push(element);
 
+    return element;
+  }
+
+  /** Initializes an interface. */
+  private defineInterface(
+    /** The declaration to initialize. */
+    declaration: InterfaceDeclaration,
+    /** Parent element, usually a file or namespace. */
+    parent: Element
+  ): void {
+    let name = declaration.name.text;
+    let member = parent.getMember(name);
+    if (member == null || member.kind != ElementKind.InterfacePrototype) return;
+    let element = <InterfacePrototype>member;
+
     let memberDeclarations = declaration.members;
     for (let i = 0, k = memberDeclarations.length; i < k; ++i) {
       let memberDeclaration = memberDeclarations[i];
       switch (memberDeclaration.kind) {
         case NodeKind.FieldDeclaration: {
-          this.initializeFieldAsProperty(<FieldDeclaration>memberDeclaration, element);
+          this.defineFieldAsProperty(<FieldDeclaration>memberDeclaration, element);
           break;
         }
         case NodeKind.MethodDeclaration: {
           let methodDeclaration = <MethodDeclaration>memberDeclaration;
           if (memberDeclaration.isAny(CommonFlags.Get | CommonFlags.Set)) {
-            this.initializeProperty(methodDeclaration, element);
+            this.defineProperty(methodDeclaration, element);
           } else {
-            this.initializeMethod(methodDeclaration, element);
+            this.defineMethod(methodDeclaration, element);
           }
           break;
         }
@@ -2712,11 +2797,10 @@ export class Program extends DiagnosticEmitter {
           assert(false); // interface member expected
       }
     }
-    return element;
   }
 
   /** Initializes a field of an interface, as a property. */
-  private initializeFieldAsProperty(
+  private defineFieldAsProperty(
     /** Field declaration. */
     declaration: FieldDeclaration,
     /** Parent interface. */
@@ -2728,7 +2812,7 @@ export class Program extends DiagnosticEmitter {
     }
     let typeNode = declaration.type;
     if (!typeNode) typeNode = Node.createOmittedType(declaration.name.range.atEnd);
-    this.initializeProperty(
+    this.defineProperty(
       Node.createMethodDeclaration(
         declaration.name,
         declaration.decorators,
@@ -2741,7 +2825,7 @@ export class Program extends DiagnosticEmitter {
       parent
     );
     if (!declaration.is(CommonFlags.Readonly)) {
-      this.initializeProperty(
+      this.defineProperty(
         Node.createMethodDeclaration(
           declaration.name,
           declaration.decorators,
@@ -2820,6 +2904,37 @@ export class Program extends DiagnosticEmitter {
     }
     if (original != element) copyMembers(original, element); // keep original parent
     return element;
+  }
+
+  /** Initializes a namespace. */
+  private defineNamespace(
+    /** The declaration to initialize. */
+    declaration: NamespaceDeclaration,
+    /** Parent element, usually a file or another namespace. */
+    parent: Element
+  ): void {
+    let name = declaration.name.text;
+    let member = parent.getMember(name);
+    if (member == null || member.kind != ElementKind.Namespace) return;
+    let original = <Namespace>member;
+    let members = declaration.members;
+    for (let i = 0, k = members.length; i < k; ++i) {
+      let member = members[i];
+      switch (member.kind) {
+        case NodeKind.ClassDeclaration: {
+          this.defineClass(<ClassDeclaration>member, original);
+          break;
+        }
+        case NodeKind.InterfaceDeclaration: {
+          this.defineInterface(<InterfaceDeclaration>member, original);
+          break;
+        }
+        case NodeKind.NamespaceDeclaration: {
+          this.defineNamespace(<NamespaceDeclaration>member, original);
+          break;
+        }
+      }
+    }
   }
 
   /** Initializes a `type` definition. */
@@ -3812,16 +3927,24 @@ export class Local extends VariableLikeElement {
   }
 }
 
+export enum CompiledNameKind {
+  Identifier,
+  ComputedPropertyName,
+}
 /** work around for report node */
 export class CompiledNameNode extends Node {
-  constructor(
+  private constructor(
+    public compiledNameKind: CompiledNameKind,
     public text: string,
     range: Range
   ) {
     super(NodeKind.Compiled, range);
   }
-  static from(identifier: IdentifierExpression): CompiledNameNode {
-    return new CompiledNameNode(identifier.text, identifier.range);
+  static fromComputedPropertyName(computedPropertyName: ComputedPropertyName, lookupName: string): CompiledNameNode {
+    return new CompiledNameNode(CompiledNameKind.ComputedPropertyName, lookupName, computedPropertyName.range);
+  }
+  static fromIdentifier(identifier: IdentifierExpression): CompiledNameNode {
+    return new CompiledNameNode(CompiledNameKind.Identifier, identifier.text, identifier.range);
   }
 }
 
@@ -4219,7 +4342,7 @@ export class PropertyPrototype extends DeclaredElement {
       decoratorFlags,
       getterDeclaration.toDeclarationBase(),
       getterDeclaration.toFunctionLikeWithBodyBase(),
-      CompiledNameNode.from(identifier),
+      CompiledNameNode.fromIdentifier(identifier),
       getterDeclaration.identifierAndSignatureRange
     );
     prototype.setterPrototype = new FunctionPrototype(
@@ -4228,7 +4351,7 @@ export class PropertyPrototype extends DeclaredElement {
       decoratorFlags,
       setterDeclaration.toDeclarationBase(),
       setterDeclaration.toFunctionLikeWithBodyBase(),
-      CompiledNameNode.from(identifier),
+      CompiledNameNode.fromIdentifier(identifier),
       setterDeclaration.identifierAndSignatureRange
     );
     return prototype;

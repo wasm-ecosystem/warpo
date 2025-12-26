@@ -33,6 +33,8 @@ import {
   isTypedElement,
   InterfacePrototype,
   DeclaredElement,
+  CompiledNameKind,
+  CompiledNameNode,
 } from "./program";
 
 import { Flow } from "./flow";
@@ -71,6 +73,8 @@ import {
   ArrayLiteralExpression,
   ArrowKind,
   ExpressionStatement,
+  PropertyName,
+  ComputedPropertyName,
 } from "./ast";
 
 import { Type, Signature, typesToString, TypeKind, TypeFlags } from "./types";
@@ -112,6 +116,28 @@ export class Resolver extends DiagnosticEmitter {
   ) {
     super(program.diagnostics);
     this.program = program;
+  }
+
+  // ====================================================== Names ======================================================
+  resolveComputedPropertyName(node: ComputedPropertyName, ctxFlow: Flow): string | null {
+    const computedPropertyNameNode = node.expression;
+    const element = this.lookupExpression(computedPropertyNameNode, ctxFlow);
+    if (element == null || element.kind != ElementKind.Global) {
+      this.error(
+        DiagnosticCode.A_computed_property_name_must_reference_a_const_global_variable,
+        computedPropertyNameNode.range
+      );
+      return null;
+    }
+    const global = <Global>element;
+    if (!global.is(CommonFlags.Const)) {
+      this.error(
+        DiagnosticCode.A_computed_property_name_must_reference_a_const_global_variable,
+        computedPropertyNameNode.range
+      );
+      // recoverable
+    }
+    return `[${global.internalName}]`;
   }
 
   // ====================================================== Types ======================================================
@@ -1310,21 +1336,38 @@ export class Resolver extends DiagnosticEmitter {
     /** How to proceed with eventual diagnostics. */
     reportMode: ReportMode = ReportMode.Report
   ): Element | null {
-    let targetExpression = node.expression;
-    let targetType = this.resolveExpression(targetExpression, ctxFlow, ctxType, reportMode);
+    const targetExpression = node.expression;
+    const elementExpression = node.elementExpression;
+    const targetType = this.resolveExpression(targetExpression, ctxFlow, ctxType, reportMode);
     if (!targetType) return null;
+
+    let elementElement = this.lookupExpression(elementExpression, ctxFlow, ctxType, reportMode);
+    if (elementElement && elementElement.kind != ElementKind.Global) elementElement = null;
+
     let classReference = targetType.getClassOrWrapper(this.program);
     if (classReference) {
       do {
+        // there are 2 kinds lookup:
+        // 1. index signature
         let indexSignature = classReference.indexSignature;
         if (indexSignature) {
           this.currentThisExpression = targetExpression;
-          this.currentElementExpression = node.elementExpression;
+          this.currentElementExpression = elementExpression;
           return indexSignature;
+        }
+        // 2. computed property [expr]
+        if (elementElement) {
+          const computedProperty = classReference.getMember(`[${elementElement.internalName}]`);
+          if (computedProperty) {
+            this.currentThisExpression = targetExpression;
+            this.currentElementExpression = elementExpression;
+            return computedProperty;
+          }
         }
         classReference = classReference.base;
       } while (classReference);
     }
+
     if (reportMode == ReportMode.Report) {
       this.error(DiagnosticCode.Index_signature_is_missing_in_type_0, targetExpression.range, targetType.toString());
     }
@@ -3142,8 +3185,9 @@ export class Resolver extends DiagnosticEmitter {
         }
         switch (member.kind) {
           case ElementKind.FunctionPrototype: {
-            let boundPrototype = (<FunctionPrototype>member).toBound(instance);
-            instance.add(boundPrototype.name, boundPrototype); // reports
+            const prototype = <FunctionPrototype>member;
+            let boundPrototype = prototype.toBound(instance);
+            instance.add(boundPrototype.name, boundPrototype);
             break;
           }
           case ElementKind.PropertyPrototype: {

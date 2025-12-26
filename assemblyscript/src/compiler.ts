@@ -6906,7 +6906,7 @@ export class Compiler extends DiagnosticEmitter {
       DecoratorFlags.None,
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
-      CompiledNameNode.from(declaration.name),
+      CompiledNameNode.fromIdentifier(declaration.name),
       declaration.identifierAndSignatureRange
     );
     let instance: Function | null;
@@ -8535,7 +8535,7 @@ export class Compiler extends DiagnosticEmitter {
             DecoratorFlags.None,
             declaration.toDeclarationBase(),
             declaration.toFunctionLikeWithBodyBase(),
-            CompiledNameNode.from(declaration.name),
+            CompiledNameNode.fromIdentifier(declaration.name),
             declaration.identifierAndSignatureRange
           ),
           null,
