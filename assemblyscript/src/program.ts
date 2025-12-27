@@ -126,6 +126,7 @@ import { BuiltinNames, builtinFunctions, builtinVariables_onAccess } from "./bui
 import { addParameter, addSubProgram, createBaseType, createClass } from "./warpo";
 import { isScalarJsonKind, JsonArray, JsonObject, JsonValue, JsonValueKind } from "./json";
 import { mangleInternalName } from "./mangle";
+import { Lookup } from "./lookup";
 
 // Memory manager constants
 const AL_SIZE = 16;
@@ -1382,6 +1383,8 @@ export class Program extends DiagnosticEmitter {
       }
     }
 
+    // from here, resolver can be used.
+
     // register foundational classes with fixed ids
     assert(this.objectInstance.id == 0);
     assert(this.arrayBufferInstance.id == 1);
@@ -2163,6 +2166,22 @@ export class Program extends DiagnosticEmitter {
       element.implicitlyExtendsObject = true;
     }
 
+    // initialize static members
+    let memberDeclarations = declaration.members;
+    for (let i = 0, k = memberDeclarations.length; i < k; ++i) {
+      let memberDeclaration = memberDeclarations[i];
+      switch (memberDeclaration.kind) {
+        case NodeKind.FieldDeclaration: {
+          this.initializeField(<FieldDeclaration>memberDeclaration, element);
+          break;
+        }
+        case NodeKind.MethodDeclaration:
+        case NodeKind.IndexSignature:
+          break; // ignored for now
+        default:
+          assert(false); // class member expected
+      }
+    }
     return element;
   }
 
@@ -2207,13 +2226,13 @@ export class Program extends DiagnosticEmitter {
     }
   }
 
-  /** Initializes a field of a class or interface. */
-  private defineField(
+  /** Initializes a static field of a class or interface. */
+  private initializeField(
     /** The declaration to initialize. */
     declaration: FieldDeclaration,
     /** Parent class. */
     parent: ClassPrototype
-  ): void {
+  ): DeclaredElement | null {
     let name = declaration.name.text;
     let decorators = declaration.decorators;
     let element: DeclaredElement;
@@ -2229,8 +2248,28 @@ export class Program extends DiagnosticEmitter {
         acceptedFlags |= DecoratorFlags.Inline;
       }
       element = new Global(name, parent, this.checkDecorators(decorators, acceptedFlags), declaration);
-      if (!parent.add(name, element)) return;
-    } else {
+      if (!parent.add(name, element)) return null;
+      return element;
+    }
+    return null;
+  }
+
+  /** Define a non-static field of a class or interface. */
+  private defineField(
+    /** The declaration to initialize. */
+    declaration: FieldDeclaration,
+    /** Parent class. */
+    parent: ClassPrototype
+  ): void {
+    let name = declaration.name.text;
+    let decorators = declaration.decorators;
+    let element: DeclaredElement;
+    let acceptedFlags: DecoratorFlags = DecoratorFlags.Unsafe;
+    if (parent.is(CommonFlags.Ambient)) {
+      acceptedFlags |= DecoratorFlags.External;
+    }
+    // static field is processed before
+    if (!declaration.is(CommonFlags.Static)) {
       // actual instance field
       assert(!declaration.isAny(CommonFlags.Abstract | CommonFlags.Get | CommonFlags.Set));
       element = PropertyPrototype.forField(name, parent, declaration, this.checkDecorators(decorators, acceptedFlags));
@@ -2240,12 +2279,15 @@ export class Program extends DiagnosticEmitter {
 
   private definePropertyName(name: PropertyName, classPrototype: ClassPrototype): CompiledNameNode | null {
     if (name.kind == NodeKind.ComputedPropertyName) {
-      const lookupName = this.resolver.resolveComputedPropertyName(
-        <ComputedPropertyName>name,
-        classPrototype.file.startFunction.flow
-      );
-      if (lookupName == null) return null;
-      return CompiledNameNode.fromComputedPropertyName(<ComputedPropertyName>name, lookupName);
+      // don't use resolver, since at this time, ClassPrototype does not finish definition.
+      // resolve class will generate incomplete Class Element.
+      const expr = (<ComputedPropertyName>name).expression;
+      const propertyElement = new Lookup().lookupExpression(expr, classPrototype);
+      if (propertyElement == null) {
+        this.error(DiagnosticCode.A_computed_property_name_must_reference_a_const_global_variable, name.range);
+        return null;
+      }
+      return CompiledNameNode.fromComputedPropertyName(<ComputedPropertyName>name, `[${propertyElement.internalName}]`);
     } else {
       return CompiledNameNode.fromIdentifier(<IdentifierExpression>name);
     }

@@ -118,28 +118,6 @@ export class Resolver extends DiagnosticEmitter {
     this.program = program;
   }
 
-  // ====================================================== Names ======================================================
-  resolveComputedPropertyName(node: ComputedPropertyName, ctxFlow: Flow): string | null {
-    const computedPropertyNameNode = node.expression;
-    const element = this.lookupExpression(computedPropertyNameNode, ctxFlow);
-    if (element == null || element.kind != ElementKind.Global) {
-      this.error(
-        DiagnosticCode.A_computed_property_name_must_reference_a_const_global_variable,
-        computedPropertyNameNode.range
-      );
-      return null;
-    }
-    const global = <Global>element;
-    if (!global.is(CommonFlags.Const)) {
-      this.error(
-        DiagnosticCode.A_computed_property_name_must_reference_a_const_global_variable,
-        computedPropertyNameNode.range
-      );
-      // recoverable
-    }
-    return `[${global.internalName}]`;
-  }
-
   // ====================================================== Types ======================================================
 
   /** Resolves a {@link TypeNode} to a concrete {@link Type}. */
