@@ -125,7 +125,7 @@ import { Parser } from "./parser";
 import { BuiltinNames, builtinFunctions, builtinVariables_onAccess } from "./builtins";
 import { addParameter, addSubProgram, createBaseType, createClass } from "./warpo";
 import { isScalarJsonKind, JsonArray, JsonObject, JsonValue, JsonValueKind } from "./json";
-import { mangleInternalName } from "./mangle";
+import { mangleComputedPropertyName, mangleInternalName } from "./mangle";
 import { Lookup } from "./lookup";
 
 // Memory manager constants
@@ -2287,7 +2287,10 @@ export class Program extends DiagnosticEmitter {
         this.error(DiagnosticCode.A_computed_property_name_must_reference_a_const_global_variable, name.range);
         return null;
       }
-      return CompiledNameNode.fromComputedPropertyName(<ComputedPropertyName>name, `[${propertyElement.internalName}]`);
+      return CompiledNameNode.fromComputedPropertyName(
+        <ComputedPropertyName>name,
+        mangleComputedPropertyName(propertyElement)
+      );
     } else {
       return CompiledNameNode.fromIdentifier(<IdentifierExpression>name);
     }

@@ -1,3 +1,6 @@
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 import { Expression, JsonSource, Node, Statement, VariableDeclaration } from "./ast";
 import { CommonFlags } from "./common";
 import { DiagnosticCode, DiagnosticEmitter, DiagnosticMessage, Range } from "./diagnostics";

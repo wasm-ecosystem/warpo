@@ -88,6 +88,7 @@ import { Token, operatorTokenToString } from "./tokenizer";
 import { BuiltinNames, builtinTypes, BuiltinTypesContext } from "./builtins";
 
 import { addField, createClass, addTemplateType } from "./warpo";
+import { mangleComputedPropertyName } from "./mangle";
 
 /** Indicates whether errors are reported or not. */
 export const enum ReportMode {
@@ -1335,7 +1336,7 @@ export class Resolver extends DiagnosticEmitter {
         }
         // 2. computed property [expr]
         if (elementElement) {
-          const computedProperty = classReference.getMember(`[${elementElement.internalName}]`);
+          const computedProperty = classReference.getMember(mangleComputedPropertyName(elementElement));
           if (computedProperty) {
             this.currentThisExpression = targetExpression;
             this.currentElementExpression = elementExpression;
