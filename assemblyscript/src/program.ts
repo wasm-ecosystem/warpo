@@ -1599,9 +1599,6 @@ export class Program extends DiagnosticEmitter {
     }
   }
 
-  /** resolve computed property names in class and interface */
-  resolveComputedPropertyNames(): void {}
-
   /** Processes overridden members by this class in a base class. */
   private processOverrides(thisPrototype: ClassPrototype, basePrototype: ClassPrototype): void {
     // Note that we don't know concrete instances of class members, yet. Type
