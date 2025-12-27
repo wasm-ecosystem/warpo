@@ -118,8 +118,9 @@ public:
         // must be recursive inline, give up
         std::stringstream ss;
         for (wasm::Name const &name : pending_)
-          ss << "[" PASS_NAME "]   " << name;
-        fmt::println("[" PASS_NAME "] give up inline due to recursive inline decorators{}", std::move(ss).str());
+          ss << "[" PASS_NAME "] warn:   " << name << "\n";
+        fmt::println("[" PASS_NAME "] warn: give up inline due to recursive inline decorators\n{}",
+                     std::move(ss).str());
         break;
       }
 
