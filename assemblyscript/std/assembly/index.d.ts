@@ -2522,25 +2522,34 @@ declare class Set<K> {
   toString(): string;
 }
 
-interface SymbolConstructor {
-  readonly hasInstance: symbol;
-  readonly isConcatSpreadable: symbol;
-  readonly isRegExp: symbol;
-  readonly iterator: symbol;
-  readonly match: symbol;
-  readonly replace: symbol;
-  readonly search: symbol;
-  readonly species: symbol;
-  readonly split: symbol;
-  readonly toPrimitive: symbol;
-  readonly toStringTag: symbol;
-  readonly unscopables: symbol;
+declare interface SymbolConstructor {
   (description?: string | null): symbol;
+  readonly iterator: symbol;
   for(key: string): symbol;
   keyFor(sym: symbol): string | null;
 }
-
 declare const Symbol: SymbolConstructor;
+
+interface Symbol {
+  /** Returns a string representation of an object. */
+  toString(): string;
+}
+
+declare class IteratorResult<T> {
+  private constructor(value: T);
+  get done(): boolean;
+  get value(): T;
+  static done<T>(): IteratorResult<T>;
+  static fromValue<T>(value: T): IteratorResult<T>;
+}
+
+interface Iterator<T> {
+  next(): IteratorResult<T>;
+}
+
+interface Iterable<T> {
+  [Symbol.iterator](): Iterator<T>;
+}
 
 /** @internal */
 interface IMath<T> {

@@ -20,7 +20,7 @@
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/symbol/stringToId (mut i32) (i32.const 0))
- (global $~lib/symbol/nextId (mut i32) (i32.const 12))
+ (global $~lib/symbol/Symbol.nextId (mut i32) (i32.const 2))
  (global $~lib/symbol/idToString (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c")
@@ -150,7 +150,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$163
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$164
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -174,7 +174,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$163
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$164
    end
    local.get $0
    i32.load offset=8
@@ -1009,7 +1009,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$168 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$169 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1025,7 +1025,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$168
+         br $__inlined_func$~lib/rt/itcms/step$169
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1064,7 +1064,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$168
+           br $__inlined_func$~lib/rt/itcms/step$169
           end
           local.get $2
           i32.load offset=4
@@ -1156,7 +1156,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$168
+        br $__inlined_func$~lib/rt/itcms/step$169
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1255,7 +1255,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$168
+        br $__inlined_func$~lib/rt/itcms/step$169
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -2194,7 +2194,7 @@
   global.set $~lib/memory/__stack_pointer
   local.get $0
   global.set $~lib/symbol/idToString
-  block $__inlined_func$~lib/symbol/_Symbol.for$188 (result i32)
+  block $__inlined_func$~lib/symbol/Symbol.for$189 (result i32)
    global.get $~lib/symbol/stringToId
    i32.const 32
    call $~lib/util/hash/HASH<~lib/string/String>
@@ -2216,25 +2216,25 @@
     end
     local.get $0
     i32.load offset=4
-    br $__inlined_func$~lib/symbol/_Symbol.for$188
+    br $__inlined_func$~lib/symbol/Symbol.for$189
    end
-   global.get $~lib/symbol/nextId
+   global.get $~lib/symbol/Symbol.nextId
    local.tee $7
    i32.const 1
    i32.add
-   global.set $~lib/symbol/nextId
+   global.set $~lib/symbol/Symbol.nextId
    local.get $7
    i32.eqz
    if
     unreachable
    end
-   i32.const 8
+   i32.const 12
    call $~lib/rt/__decrease_sp
    global.get $~lib/memory/__stack_pointer
    global.get $~lib/symbol/stringToId
+   i32.store offset=8 align=1
+   global.get $~lib/symbol/stringToId
    local.tee $1
-   i32.store offset=4 align=1
-   local.get $1
    i32.const 32
    call $~lib/util/hash/HASH<~lib/string/String>
    local.tee $8
@@ -2432,8 +2432,8 @@
    end
    global.get $~lib/memory/__stack_pointer
    global.get $~lib/symbol/idToString
-   i32.store offset=4 align=1
-   block $"__inlined_func$~lib/map/Map<usize,~lib/string/String>#find$170" (result i32)
+   i32.store offset=8 align=1
+   block $"__inlined_func$~lib/map/Map<usize,~lib/string/String>#find$171" (result i32)
     global.get $~lib/symbol/idToString
     local.tee $1
     i32.load
@@ -2491,7 +2491,7 @@
        i32.load
        i32.eq
       end
-      br_if $"__inlined_func$~lib/map/Map<usize,~lib/string/String>#find$170"
+      br_if $"__inlined_func$~lib/map/Map<usize,~lib/string/String>#find$171"
       drop
       local.get $2
       i32.const -2
@@ -2724,7 +2724,7 @@
     i32.store
    end
    global.get $~lib/memory/__stack_pointer
-   i32.const 8
+   i32.const 12
    i32.add
    global.set $~lib/memory/__stack_pointer
    i32.const 0

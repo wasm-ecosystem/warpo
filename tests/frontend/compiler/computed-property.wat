@@ -30,7 +30,7 @@
  (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $~lib/symbol/stringToId (mut i32) (i32.const 0))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
- (global $~lib/symbol/nextId (mut i32) (i32.const 12))
+ (global $~lib/symbol/Symbol.nextId (mut i32) (i32.const 2))
  (global $~lib/symbol/idToString (mut i32) (i32.const 0))
  (global $computed-property/computed_property_symbol (mut i32) (i32.const 0))
  (global $computed-property/myfn (mut i32) (i32.const 0))
@@ -5186,7 +5186,34 @@
    (local.get $this)
   )
  )
- (func $~lib/symbol/_Symbol.for (param $key i32) (result i32)
+ (func $~lib/symbol/ensureToMap (param $id i32) (param $key i32) (result i32)
+  (drop
+   (call $"~lib/map/Map<~lib/string/String,usize>#set"
+    (call $~lib/rt/__tmptostack
+     (global.get $~lib/symbol/stringToId)
+    )
+    (call $~lib/rt/__tmptostack
+     (local.get $key)
+    )
+    (local.get $id)
+   )
+  )
+  (drop
+   (call $"~lib/map/Map<usize,~lib/string/String>#set"
+    (call $~lib/rt/__tmptostack
+     (global.get $~lib/symbol/idToString)
+    )
+    (local.get $id)
+    (call $~lib/rt/__tmptostack
+     (local.get $key)
+    )
+   )
+  )
+  (return
+   (local.get $id)
+  )
+ )
+ (func $~lib/symbol/Symbol.for (param $key i32) (result i32)
   (local $1 i32)
   (local $id i32)
   (if
@@ -5213,10 +5240,10 @@
   )
   (local.set $id
    (block (result i32)
-    (global.set $~lib/symbol/nextId
+    (global.set $~lib/symbol/Symbol.nextId
      (i32.add
       (local.tee $1
-       (global.get $~lib/symbol/nextId)
+       (global.get $~lib/symbol/Symbol.nextId)
       )
       (i32.const 1)
      )
@@ -5232,30 +5259,13 @@
     (unreachable)
    )
   )
-  (drop
-   (call $"~lib/map/Map<~lib/string/String,usize>#set"
-    (call $~lib/rt/__tmptostack
-     (global.get $~lib/symbol/stringToId)
-    )
-    (call $~lib/rt/__tmptostack
-     (local.get $key)
-    )
-    (local.get $id)
-   )
-  )
-  (drop
-   (call $"~lib/map/Map<usize,~lib/string/String>#set"
-    (call $~lib/rt/__tmptostack
-     (global.get $~lib/symbol/idToString)
-    )
-    (local.get $id)
-    (call $~lib/rt/__tmptostack
-     (local.get $key)
-    )
-   )
-  )
   (return
-   (local.get $id)
+   (call $~lib/symbol/ensureToMap
+    (local.get $id)
+    (call $~lib/rt/__tmptostack
+     (local.get $key)
+    )
+   )
   )
  )
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
@@ -5345,7 +5355,7 @@
    )
   )
   (global.set $computed-property/computed_property_symbol
-   (call $~lib/symbol/_Symbol.for
+   (call $~lib/symbol/Symbol.for
     (i32.const 32)
    )
   )

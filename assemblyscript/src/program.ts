@@ -2289,7 +2289,8 @@ export class Program extends DiagnosticEmitter {
       }
       return CompiledNameNode.fromComputedPropertyName(<ComputedPropertyName>name, `[${propertyElement.internalName}]`);
     } else {
-      return CompiledNameNode.fromIdentifier(<IdentifierExpression>name);
+      const identifier = <IdentifierExpression>name;
+      return CompiledNameNode.fromIdentifier(identifier);
     }
   }
 
@@ -2749,6 +2750,19 @@ export class Program extends DiagnosticEmitter {
     parent: Element
   ): FunctionPrototype | null {
     let name = declaration.name.text;
+    let decorators = declaration.decorators;
+    if (
+      name == "__warpo_for" &&
+      decorators &&
+      decorators.length == 1 &&
+      decorators[0].name.kind == NodeKind.Identifier &&
+      (<IdentifierExpression>decorators[0].name).text == "__warpo_rename_for" &&
+      true
+    ) {
+      // the compiler holes for `Symbol.for`.
+      // currently we don't support add field for function.
+      name = "for";
+    }
     let validDecorators = DecoratorFlags.Unsafe;
     if (declaration.is(CommonFlags.Ambient)) {
       validDecorators |= DecoratorFlags.External | DecoratorFlags.ExternalJs;
