@@ -1606,7 +1606,7 @@ export class Program extends DiagnosticEmitter {
         let interfaceMember = unchecked(_values[i]);
         const implMember = this.searchImplementation(thisPrototype, interfaceMember.name);
         if (!implMember) continue;
-        this.doProcessImplementaion(thisPrototype, implMember, interfacePrototype, interfaceMember);
+        this.doProcessImplementation(thisPrototype, implMember, interfacePrototype, interfaceMember);
       }
     }
     const interfaceBasePrototype = interfacePrototype.basePrototype;
@@ -1628,7 +1628,7 @@ export class Program extends DiagnosticEmitter {
     return null;
   }
 
-  private doProcessImplementaion(
+  private doProcessImplementation(
     thisClass: ClassPrototype,
     implMember: DeclaredElement,
     interfacePrototype: InterfacePrototype,
