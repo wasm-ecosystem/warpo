@@ -1,15 +1,6 @@
-/**
- * @fileoverview A TypeScript tokenizer modified for AssemblyScript.
- *
- * The `Tokenizer` scans over a source file and returns one syntactic token
- * at a time that the parser will combine to an abstract syntax tree.
- *
- * It skips over trivia like comments and whitespace and provides a general
- * mark/reset mechanism for the parser to utilize on ambiguous tokens, with
- * one token of lookahead otherwise.
- *
- * @license Apache-2.0
- */
+// Copyright (C) 2025 Daniel Wirtz / The AssemblyScript Authors
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
 
 import { Range, DiagnosticCode, DiagnosticMessage, DiagnosticEmitter } from "./diagnostics";
 

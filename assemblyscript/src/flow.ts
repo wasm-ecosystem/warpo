@@ -1,19 +1,6 @@
-/**
- * @fileoverview A concurrent code flow analyzer.
- *
- * Flows keep track of compilation state and can be queried for various
- * conditions, like whether the current branch always terminates, whether
- * a local is known to be non-null or whether an expression has possibly
- * overflown its value range.
- *
- * To accomplish this, compilation of each function begins with a clean
- * flow populated with initial local states etc. While compilation
- * progresses, statements and expressions update flow state while control
- * constructs fork, potentially add scoped locals and later merge these
- * forked branches as necessary.
- *
- * @license Apache-2.0
- */
+// Copyright (C) 2025 Daniel Wirtz / The AssemblyScript Authors
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
 
 import { Type, TypeFlags, TypeKind } from "./types";
 

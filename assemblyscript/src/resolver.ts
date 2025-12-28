@@ -1,15 +1,6 @@
-/**
- * @fileoverview Resolve infrastructure to obtain types and elements.
- *
- * Similar to the compiler making instructions of expressions, the resolver
- * obtains metadata of expressions. As such, for each `compileX` method in
- * the compiler there is one `lookupX` method in the resolver returning the
- * respective IR element, respectively one `resolveX` method returning the
- * respective type of an expression. It is also able to make new elements,
- * like instances of classes given its concrete type arguments.
- *
- * @license Apache-2.0
- */
+// Copyright (C) 2025 Daniel Wirtz / The AssemblyScript Authors
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
 
 import { Range, DiagnosticEmitter, DiagnosticCode } from "./diagnostics";
 

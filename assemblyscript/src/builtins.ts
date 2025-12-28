@@ -1,3 +1,7 @@
+// Copyright (C) 2025 Daniel Wirtz / The AssemblyScript Authors
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * @fileoverview Built-in elements providing core WebAssembly functionality.
  *
@@ -17,8 +21,6 @@
  * ambiguous in that the input can still be an i32 or an i64, leading to
  * either an `i32.store8` or an `i64.store8`, so `i32` is forced there.
  * This behavior is indicated by `from i32/i64` in the comments below.
- *
- * @license Apache-2.0
  */
 
 // TODO: Add builtins for `i32.add` etc. that do not have a core builtin.

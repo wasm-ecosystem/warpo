@@ -1,11 +1,6 @@
-/**
- * @fileoverview A TypeScript parser for the AssemblyScript subset.
- *
- * Takes the tokens produced by the `Tokenizer` and builds an abstract
- * syntax tree composed of `Node`s wrapped in a `Source` out of it.
- *
- * @license Apache-2.0
- */
+// Copyright (C) 2025 Daniel Wirtz / The AssemblyScript Authors
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
 
 import { CommonFlags, LIBRARY_PREFIX, PATH_DELIMITER } from "./common";
 

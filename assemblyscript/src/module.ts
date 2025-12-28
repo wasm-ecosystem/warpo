@@ -1,12 +1,6 @@
-/**
- * @fileoverview A thin wrapper around Binaryen's C-API.
- *
- * The AssemblyScript compiler utilizes Binaryen's C-API directly. Even
- * though it currently imports binaryen.js, none of the JS APIs it
- * provides are used.
- *
- * @license Apache-2.0
- */
+// Copyright (C) 2025 Daniel Wirtz / The AssemblyScript Authors
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
 
 import { BuiltinNames } from "./builtins";
 import { CommonNames, Target } from "./common";

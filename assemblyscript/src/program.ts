@@ -1,20 +1,6 @@
-/**
- * @fileoverview AssemblyScript's intermediate representation.
- *
- * The compiler uses Binaryen IR, which is fairly low level, as its
- * primary intermediate representation, with the following structures
- * holding any higher level information that cannot be represented by
- * Binaryen IR alone, for example higher level types.
- *
- * Similar to the AST being composed of `Node`s in `Source`s, the IR is
- * composed of `Element`s in a `Program`. Each class or function is
- * represented by a "prototype" holding all the relevant information,
- * including each's concrete instances. If a class or function is not
- * generic, there is exactly one instance, otherwise there is one for
- * each concrete set of type arguments.
- *
- * @license Apache-2.0
- */
+// Copyright (C) 2025 Daniel Wirtz / The AssemblyScript Authors
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
 
 // Element                    Base class of all elements
 // ├─DeclaredElement          Base class of elements with a declaration

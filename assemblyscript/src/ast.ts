@@ -14,7 +14,7 @@
 // TODO: Make the AST more easily serializable by refactoring `Node#range` so
 // it doesn't reference the non-serializable `Source` object.
 
-import { CommonFlags, PATH_DELIMITER, LIBRARY_PREFIX, LIBRARY_SUBST } from "./common";
+import { CommonFlags, PATH_DELIMITER, LIBRARY_PREFIX } from "./common";
 
 import { Range } from "./diagnostics";
 
@@ -919,7 +919,7 @@ export enum DecoratorKind {
 }
 
 export namespace DecoratorKind {
-  /** Returns the kind of the specified decorator name node. Defaults to {@link DecoratorKind.CUSTOM}. */
+  /** Returns the kind of the specified decorator name node. Defaults to {@link DecoratorKind.Custom}. */
   export function fromNode(nameNode: Expression): DecoratorKind {
     if (nameNode.kind == NodeKind.Identifier) {
       let nameStr = (<IdentifierExpression>nameNode).text;

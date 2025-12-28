@@ -1,3 +1,6 @@
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 import { ExpressionRef } from "./module";
 
 declare function _WarpoMarkDataElementImmutable(begin: u32, size: u32): void;

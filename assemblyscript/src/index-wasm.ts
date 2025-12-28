@@ -1,28 +1,11 @@
-/**
- * @fileoverview The C-like and re-exported public compiler interface.
- *
- * The intended way to consume the compiler sources is to import this
- * file, which again exports all relevant functions, classes and constants
- * as a flat namespace.
- *
- * Note though that the compiler sources are written in "portable
- * AssemblyScript" that can be compiled to both JavaScript with tsc and
- * to WebAssembly with asc, and as such require additional glue code
- * depending on the target.
- *
- * When compiling to JavaScript `glue/js/index.js` must be included.
- * When compiling to WebAssembly `glue/wasm/index.ts` must be included.
- */
+// Copyright (C) 2025 Daniel Wirtz / The AssemblyScript Authors
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
 
 import { Target, Runtime, Feature } from "./common";
-
 import { Compiler, Options, UncheckedBehavior, defaultFeatures } from "./compiler";
-
-import { TSDBuilder, JSBuilder } from "./bindings";
-
 import { Range, DiagnosticMessage, DiagnosticCategory, formatDiagnosticMessage } from "./diagnostics";
-
-import { Module, ModuleRef } from "./module";
+import { Module } from "./module";
 import { Program } from "./program";
 import { Source } from "./ast";
 
@@ -340,34 +323,3 @@ export function compile(program: Program): Module {
   program.parser.finish();
   return new Compiler(program).compile();
 }
-
-/** Builds TypeScript definitions for the specified program. */
-export function buildTSD(program: Program, esm: bool): string {
-  return TSDBuilder.build(program, esm);
-}
-
-/** Builds JavaScript glue code for the specified program. */
-export function buildJS(program: Program, esm: bool): string {
-  return JSBuilder.build(program, esm);
-}
-
-/** Gets the Binaryen module reference of a module. */
-export function getBinaryenModuleRef(module: Module): ModuleRef {
-  return module.ref;
-}
-
-/** Validates a module. */
-export function validate(module: Module): bool {
-  return module.validate();
-}
-
-// /** Optimizes a module. */
-// export function optimize(
-//   module: Module,
-//   optimizeLevel: i32,
-//   shrinkLevel: i32,
-//   debugInfo: bool = false,
-//   zeroFilledMemory: bool = false
-// ): void {
-//   module.optimize(optimizeLevel, shrinkLevel, debugInfo, zeroFilledMemory);
-// }
