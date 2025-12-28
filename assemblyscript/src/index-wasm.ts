@@ -5,7 +5,7 @@
 import { Target, Runtime, Feature } from "./common";
 import { Compiler, Options, UncheckedBehavior, defaultFeatures } from "./compiler";
 import { Range, DiagnosticMessage, DiagnosticCategory, formatDiagnosticMessage } from "./diagnostics";
-import { Module } from "./module";
+import { Module, ModuleRef } from "./module";
 import { Program } from "./program";
 import { Source } from "./ast";
 
@@ -322,4 +322,9 @@ export function initializeProgram(program: Program): void {
 export function compile(program: Program): Module {
   program.parser.finish();
   return new Compiler(program).compile();
+}
+
+/** Gets the Binaryen module reference of a module. */
+export function getBinaryenModuleRef(module: Module): ModuleRef {
+  return module.ref;
 }
