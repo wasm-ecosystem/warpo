@@ -1,10 +1,6 @@
-/**
- * @fileoverview Abstract Syntax Tree extras.
- *
- * Provides serialization of the AssemblyScript AST back to it source form.
- *
- * @license Apache-2.0
- */
+// Copyright (C) 2025 Daniel Wirtz / The AssemblyScript Authors
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
 
 import {
   Node,

@@ -173,11 +173,9 @@ import {
   v128_ones,
 } from "./util";
 
-import { RtraceMemory } from "./passes/rtrace";
-
 import { liftRequiresExportRuntime, lowerRequiresExportRuntime } from "./bindings/js";
 import { markDataElementImmutable, addGlobal, addSubProgram, markCallInlined } from "./warpo";
-import { mangleImportName, mangleInternalName } from "./mangle";
+import { mangleImportName } from "./mangle";
 
 /** Features enabled by default. */
 export const defaultFeatures =
@@ -732,10 +730,6 @@ export class Compiler extends DiagnosticEmitter {
         TypeRef.I32
       );
     }
-    if (program.lookup("ASC_RTRACE") != null) {
-      new RtraceMemory(this).walkModule();
-    }
-
     return module;
   }
 
