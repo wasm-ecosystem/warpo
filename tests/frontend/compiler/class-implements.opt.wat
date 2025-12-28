@@ -2028,36 +2028,29 @@
    i32.add
    global.set $~lib/memory/__stack_pointer
    block $default0
-    block $case31
-     block $case22
-      block $case13
+    block $case21
+     block $case12
+      local.get $0
+      i32.const 8
+      i32.sub
+      i32.load
+      local.tee $0
+      i32.const 11
+      i32.ne
+      if
        local.get $0
        i32.const 8
-       i32.sub
-       i32.load
-       local.tee $0
-       i32.const 13
-       i32.ne
-       if
-        local.get $0
-        i32.const 11
-        i32.eq
-        br_if $case13
-        local.get $0
-        i32.const 8
-        i32.eq
-        local.get $0
-        i32.const 10
-        i32.eq
-        i32.or
-        br_if $case22
-        local.get $0
-        i32.const 12
-        i32.eq
-        br_if $case31
-        br $default0
-       end
-       unreachable
+       i32.eq
+       local.get $0
+       i32.const 10
+       i32.eq
+       i32.or
+       br_if $case12
+       local.get $0
+       i32.const 12
+       i32.eq
+       br_if $case21
+       br $default0
       end
       i32.const 4
       br $__inlined_func$class-implements/J#foo@override$88
