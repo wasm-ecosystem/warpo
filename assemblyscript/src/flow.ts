@@ -245,7 +245,7 @@ export class Flow {
   set(flag: FlowFlags): void {
     this.flags |= flag;
   }
-  /** Unsets the specified flag or flags. */
+  /** Unset the specified flag or flags. */
   unset(flag: FlowFlags): void {
     this.flags &= ~flag;
   }
@@ -489,7 +489,7 @@ export class Flow {
     localFlags[index] = flags | flag;
   }
 
-  /** Unsets the specified flag or flags on the local at the specified index. */
+  /** Unset the specified flag or flags on the local at the specified index. */
   unsetLocalFlag(index: i32, flag: LocalFlags): void {
     if (index < 0) return;
     let localFlags = this.localFlags;

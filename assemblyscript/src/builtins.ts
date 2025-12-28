@@ -3084,7 +3084,7 @@ function builtin_atomic_notify(ctx: BuiltinFunctionContext): ExpressionRef {
   let operands = ctx.operands;
   let arg0 = compiler.compileExpression(operands[0], compiler.options.usizeType, Constraints.ConvImplicit);
   let arg1 =
-    operands.length == 2 ? compiler.compileExpression(operands[1], Type.i32, Constraints.ConvImplicit) : module.i32(-1); // Inifinity count of waiters
+    operands.length == 2 ? compiler.compileExpression(operands[1], Type.i32, Constraints.ConvImplicit) : module.i32(-1); // Infinity count of waiters
   compiler.currentType = Type.i32;
   return module.atomic_notify(arg0, arg1);
 }
@@ -3306,7 +3306,7 @@ function builtin_memory_data(ctx: BuiltinFunctionContext): ExpressionRef {
     }
     offset = compiler.addAlignedMemorySegment(new Uint8Array(size), align).offset;
   }
-  // FIXME: what if recompiles happen? recompiles are bad.
+  // FIXME: what if re-compiles happen? re-compiles are bad.
   compiler.currentType = usizeType;
   if (usizeType == Type.usize32) {
     assert(!i64_high(offset));
@@ -6901,7 +6901,7 @@ function builtin_v128_relaxed_dot_add(ctx: BuiltinFunctionContext): ExpressionRe
   let arg1 = compiler.compileExpression(operands[1], Type.v128, Constraints.ConvImplicit);
   let arg2 = compiler.compileExpression(operands[2], Type.v128, Constraints.ConvImplicit);
   switch (type.kind) {
-    // TOOD: emulate relaxed_dot_add of i16 with multiple instructions?
+    // TODO: emulate relaxed_dot_add of i16 with multiple instructions?
     case TypeKind.Isize: {
       if (compiler.options.isWasm64) break;
       // fall-through

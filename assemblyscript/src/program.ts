@@ -866,11 +866,11 @@ export class Program extends DiagnosticEmitter {
     let blockSize = this.computeBlockStart(payloadSize);
     // make sure that block size is valid according to TLSF requirements
     let blockOverhead = this.blockOverhead;
-    let blockMinsize = ((3 * this.options.usizeType.byteSize + blockOverhead + AL_MASK) & ~AL_MASK) - blockOverhead;
-    if (blockSize < blockMinsize) blockSize = blockMinsize;
-    const blockMaxsize = 1 << 30; // 1 << (FL_BITS + SB_BITS - 1), exclusive
+    let blockMinSize = ((3 * this.options.usizeType.byteSize + blockOverhead + AL_MASK) & ~AL_MASK) - blockOverhead;
+    if (blockSize < blockMinSize) blockSize = blockMinSize;
+    const blockMaxSize = 1 << 30; // 1 << (FL_BITS + SB_BITS - 1), exclusive
     const tagsMask = 3;
-    if (blockSize >= blockMaxsize || (blockSize & tagsMask) != 0) {
+    if (blockSize >= blockMaxSize || (blockSize & tagsMask) != 0) {
       throw new Error("invalid block size");
     }
     return blockSize;
@@ -1461,9 +1461,9 @@ export class Program extends DiagnosticEmitter {
     // check override
     for (let i = 0, k = queuedExtends.length; i < k; i++) {
       let prototype = queuedExtends[i];
-      let instanesMembers = prototype.instanceMembers;
-      if (instanesMembers) {
-        let members = Map_values(instanesMembers);
+      let instanceMembers = prototype.instanceMembers;
+      if (instanceMembers) {
+        let members = Map_values(instanceMembers);
         for (let j = 0, k = members.length; j < k; j++) {
           let member = members[j];
           if (member.is(CommonFlags.Override)) {
@@ -1669,7 +1669,7 @@ export class Program extends DiagnosticEmitter {
       }
       if (baseProperty.parent.kind != ElementKind.InterfacePrototype) {
         // Interface fields/properties can be implemented by either, but other
-        // members must match to retain compatiblity with TS/JS.
+        // members must match to retain compatibility with TS/JS.
         let thisIsField = thisProperty.isField;
         if (thisIsField != baseProperty.isField) {
           if (thisIsField) {
@@ -1911,7 +1911,7 @@ export class Program extends DiagnosticEmitter {
       // NOTE: this is effectively only performed when merging native types with
       // their respective namespaces in std/builtins, but can also trigger when a
       // user has multiple global elements of the same name in different files,
-      // which might result in unexpected shared symbols accross files. considering
+      // which might result in unexpected shared symbols across files. considering
       // this a wonky feature for now that we might want to revisit later.
       if (existing != element) {
         let merged = tryMerge(existing, element);
@@ -3212,7 +3212,7 @@ export abstract class Element {
   set(flag: CommonFlags): void {
     this.flags |= flag;
   }
-  /** Unsets the specific flag or flags. */
+  /** Unset the specific flag or flags. */
   unset(flag: CommonFlags): void {
     this.flags &= ~flag;
   }
@@ -3368,7 +3368,7 @@ export abstract class DeclaredElement extends Element {
     return this.nameRange.source.isLibrary;
   }
 
-  /** Gets the assiciated decorator nodes. */
+  /** Gets the associated decorator nodes. */
   get decoratorNodes(): DecoratorNode[] | null {
     return this.declarationBase.decorators;
   }
@@ -4501,7 +4501,7 @@ export class Property extends VariableLikeElement {
   getterInstance: Function | null = null;
   /** Setter instance. */
   setterInstance: Function | null = null;
-  /** Field memory offset, if a (layed out) instance field. */
+  /** Field memory offset, if a (layout) instance field. */
   memoryOffset: i32 = -1;
 
   /** Constructs a new property prototype. */
@@ -4644,14 +4644,14 @@ export class ClassPrototype extends DeclaredElement {
   }
 
   /** Tests if this prototype extends the specified. */
-  extends(basePtototype: ClassPrototype | null): bool {
+  extends(basePrototype: ClassPrototype | null): bool {
     let current: ClassPrototype | null = this;
     let seen = new Set<ClassPrototype>();
     do {
       // cannot directly or indirectly extend itself
       if (seen.has(current)) break;
       seen.add(current);
-      if (current == basePtototype) return true;
+      if (current == basePrototype) return true;
       current = current.basePrototype;
     } while (current);
     return false;
@@ -5119,7 +5119,7 @@ export class Class extends TypedElement {
     return this.prototype.extends(prototype);
   }
 
-  /** Gets the concrete type arguments to the specified extendend prototype. */
+  /** Gets the concrete type arguments to the specified extended prototype. */
   getTypeArgumentsTo(extendedPrototype: ClassPrototype): Type[] | null {
     let current: Class | null = this;
     do {

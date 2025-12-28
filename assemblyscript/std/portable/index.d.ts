@@ -164,7 +164,7 @@ declare namespace i32 {
   /** Parses a string as an i32. */
   export function parse(value: string, radix?: i32): i32;
 }
-/** Converts any other numeric value to a 32-bit (in WASM32) respectivel 64-bit (in WASM64) signed integer. */
+/** Converts any other numeric value to a 32-bit (in WASM32) respectively 64-bit (in WASM64) signed integer. */
 declare function isize(value: any): isize;
 declare namespace isize {
   /** Smallest representable value. */
@@ -175,7 +175,7 @@ declare namespace isize {
   export function parseFloat(string: string): isize;
   /** Parses a string as an integer. */
   export function parseInt(string: string, radix?: i32): isize;
-  /** Parses a string as an iszie. */
+  /** Parses a string as an isize. */
   export function parse(value: string, radix?: i32): isize;
 }
 /** Converts any other numeric value to an 8-bit unsigned integer. */
@@ -220,7 +220,7 @@ declare namespace u32 {
   /** Parses a string as an u32. */
   export function parse(value: string, radix?: i32): u32;
 }
-/** Converts any other numeric value to a 32-bit (in WASM32) respectivel 64-bit (in WASM64) unsigned integer. */
+/** Converts any other numeric value to a 32-bit (in WASM32) respectively 64-bit (in WASM64) unsigned integer. */
 declare function usize(value: any): isize;
 declare namespace usize {
   /** Smallest representable value. */

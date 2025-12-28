@@ -43,10 +43,10 @@ export function encode(src: usize, len: usize, table: usize): usize {
     let org = i;
     let c: u32, c1: u32;
     // fast scan a check chars until it valid ASCII
-    // and safe for copying withoud escaping.
+    // and safe for copying without escaping.
     do {
       c = <u32>load<u16>(src + (i << 1));
-      // is it valid ASII and safe?
+      // is it valid ASCII and safe?
       if (c - 33 < 94) {
         // 127 - 33
         if (load<u8>(table + (c - 33))) break;
@@ -87,7 +87,7 @@ export function encode(src: usize, len: usize, table: usize): usize {
     let estSize = offset + (c < 0x80 ? 1 * 6 : 4 * 6);
     if (estSize > outSize) {
       // doubling estimated size but only for greater than one
-      // input lenght due to we already estemated it for worst case
+      // input length due to we already estimated it for worst case
       outSize = len > 1 ? estSize << 1 : estSize;
       dst = __renew(dst, outSize);
     }
@@ -119,7 +119,7 @@ export function encode(src: usize, len: usize, table: usize): usize {
     }
     ++i;
   }
-  // shink output string buffer if necessary
+  // shrink output string buffer if necessary
   if (outSize > offset) {
     dst = __renew(dst, offset);
   }
@@ -198,7 +198,7 @@ export function decode(src: usize, len: usize, component: bool): usize {
   }
 
   assert(offset <= len << 1);
-  // shink output string buffer if necessary
+  // shrink output string buffer if necessary
   if (len << 1 > offset) {
     dst = __renew(dst, offset);
   }

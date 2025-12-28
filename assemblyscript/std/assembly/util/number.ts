@@ -161,7 +161,7 @@ function ulog_base(num: u64, base: i32): u32 {
 
 function utoa32_dec_lut(buffer: usize, num: u32, offset: usize): void {
   while (num >= 10000) {
-    // in most VMs i32/u32 div and modulo by constant can be shared and simplificate
+    // in most VMs i32/u32 div and modulo by constant can be shared and simplification
     let t = num / 10000;
     let r = num % 10000;
     num = t;

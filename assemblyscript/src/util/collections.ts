@@ -49,7 +49,7 @@ export function mergeMaps<K, V>(map1: Map<K, V>, map2: Map<K, V>): Map<K, V> {
 }
 
 /** BitSet represent growable sequence of N bits. It's faster alternative of Set<i32> when elements
- * are not too much sparsed. Also it's more memory and cache efficient than Array<bool>.
+ * are not too much sparse. Also it's more memory and cache efficient than Array<bool>.
  * The best way to use it for short bit sequences (less than 32*(2**16)).
  */
 export class BitSet {

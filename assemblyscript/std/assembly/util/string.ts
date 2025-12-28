@@ -222,7 +222,7 @@ import { ipow32 } from "../math";
 
 // size: 2976 bytes (compressed to ~2050 bytes after binaryen)
 // @ts-ignore: decorator
-@lazy @inline const CASE_IGNORABLES = memory.data<u8>([
+@lazy @inline const CASE_IGNORABLE = memory.data<u8>([
   18, 16, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 16, 16, 34, 16, 16, 16, 35, 36, 37, 38, 39, 40,
   41, 16, 42, 43, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 44, 45, 46, 16, 47, 16, 16, 16, 16, 16, 16, 16, 16, 16,
   16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
@@ -432,7 +432,7 @@ export function isCased(c: u32): bool {
 @inline
 export function isCaseIgnorable(c: u32): bool {
   // @ts-ignore: cast
-  return c < 0xe01f0 && stagedBinaryLookup(CASE_IGNORABLES, c);
+  return c < 0xe01f0 && stagedBinaryLookup(CASE_IGNORABLE, c);
 }
 
 // @ts-ignore: decorator

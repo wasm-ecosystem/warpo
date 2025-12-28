@@ -46,20 +46,20 @@ export function COMPARATOR<T>(): Comparator<T> {
     return (a, b) => {
       if (changetype<usize>(a) == changetype<usize>(b) || changetype<usize>(a) == 0 || changetype<usize>(b) == 0)
         return 0;
-      let alen = changetype<string>(a).length;
-      let blen = changetype<string>(b).length;
-      if (!(alen | blen)) return 0;
-      if (!alen) return -1;
-      if (!blen) return 1;
-      let res = compareImpl(changetype<string>(a), 0, changetype<string>(b), 0, <usize>min(alen, blen));
-      return res ? res : alen - blen;
+      let aLen = changetype<string>(a).length;
+      let bLen = changetype<string>(b).length;
+      if (!(aLen | bLen)) return 0;
+      if (!aLen) return -1;
+      if (!bLen) return 1;
+      let res = compareImpl(changetype<string>(a), 0, changetype<string>(b), 0, <usize>min(aLen, bLen));
+      return res ? res : aLen - bLen;
     };
   } else {
     return (a, b) => i32(a > b) - i32(a < b);
   }
 }
 
-// Power Sort implementation (stable) from paper "Nearly-Optimal Mergesorts"
+// Power Sort implementation (stable) from paper "Nearly-Optimal MergeSorts"
 // https://arxiv.org/pdf/1805.04154.pdf
 // This method usually outperform TimSort.
 // TODO: refactor c >>> 31 to c < 0 when binaryen will support this opt
@@ -186,7 +186,7 @@ function insertionSort<T>(ptr: usize, left: i32, right: i32, presorted: i32, com
       let min = b,
         max = a;
       if (comparator(a, b) <= 0) {
-        ((min = a), (max = b));
+        (min = a), (max = b);
       }
       let j = i - 1;
       while (j >= left) {

@@ -3716,7 +3716,7 @@ export const enum Precedence {
   Shift,
   Additive,
   Multiplicative,
-  Exponentiated,
+  Exponential,
   TypeAssert,
   UnaryPrefix,
   UnaryPostfix,
@@ -3780,7 +3780,7 @@ function determinePrecedence(kind: Token): Precedence {
     case Token.Percent:
       return Precedence.Multiplicative;
     case Token.Asterisk_Asterisk:
-      return Precedence.Exponentiated;
+      return Precedence.Exponential;
     case Token.Plus_Plus:
     case Token.Minus_Minus:
       return Precedence.UnaryPostfix;

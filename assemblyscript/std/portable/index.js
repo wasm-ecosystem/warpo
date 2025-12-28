@@ -294,9 +294,9 @@ if (typeof globalScope.ASC_TARGET === "undefined") {
 
   if (!String.prototype.replaceAll) {
     Object.defineProperty(String.prototype, "replaceAll", {
-      value: function replaceAll(search, replacment) {
-        let res = this.split(search).join(replacment);
-        if (!search.length) res = replacment + res + replacment;
+      value: function replaceAll(search, replacement) {
+        let res = this.split(search).join(replacement);
+        if (!search.length) res = replacement + res + replacement;
         return res;
       },
       configurable: true,
@@ -306,7 +306,7 @@ if (typeof globalScope.ASC_TARGET === "undefined") {
   function defaultComparator(a, b) {
     if (a == b) {
       if (a != 0) return 0;
-      ((a = 1 / a), (b = 1 / b));
+      (a = 1 / a), (b = 1 / b);
     } else {
       let nanA = a != a,
         nanB = b != b;

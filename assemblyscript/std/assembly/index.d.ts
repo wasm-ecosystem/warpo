@@ -187,7 +187,7 @@ declare function eq<T extends i32 | i64 | f32 | f64>(left: T, right: T): i32;
 declare function ne<T extends i32 | i64 | f32 | f64>(left: T, right: T): i32;
 /** Computes the remainder of two integers. */
 declare function rem<T extends i32 | i64>(left: T, right: T): T;
-/** Loads a value of the specified type from memory. Equivalent to dereferncing a pointer in other languages. */
+/** Loads a value of the specified type from memory. Equivalent to dereferencing a pointer in other languages. */
 declare function load<T>(ptr: usize, immOffset?: usize, immAlign?: usize): T;
 /** Stores a value of the specified type to memory. Equivalent to dereferencing a pointer in other languages when assigning a value. */
 declare function store<T>(ptr: usize, value: T, immOffset?: usize, immAlign?: usize): void;
@@ -612,7 +612,7 @@ declare namespace i64 {
     }
   }
 }
-/** Converts any other numeric value to a 32-bit (in WASM32) respectivel 64-bit (in WASM64) signed integer. */
+/** Converts any other numeric value to a 32-bit (in WASM32) respectively 64-bit (in WASM64) signed integer. */
 declare let isize: typeof i32 | typeof i64;
 /** Converts any other numeric value to an 8-bit unsigned integer. */
 declare function u8(value: any): u8;
@@ -654,7 +654,7 @@ declare namespace u64 {
   /** Parses a string as an u64. */
   export function parse(value: string, radix?: i32): u64;
 }
-/** Converts any other numeric value to a 32-bit (in WASM32) respectivel 64-bit (in WASM64) unsigned integer. */
+/** Converts any other numeric value to a 32-bit (in WASM32) respectively 64-bit (in WASM64) unsigned integer. */
 declare let usize: typeof u32 | typeof u64;
 /** Converts any other numeric value to a 1-bit unsigned integer. */
 declare function bool(value: any): bool;
@@ -985,7 +985,7 @@ declare namespace v128 {
    * depending on hardware capabilities:
    * - If the input lane contains `NaN`, the result is either `0` or the respective maximum integer value.
    * - If the input lane contains a value otherwise out of bounds of the target type, the result is either the
-   *   saturatated result or maximum integer value.
+   *   saturated result or maximum integer value.
    */
   export function relaxed_trunc<T extends i32 | u32>(a: v128): v128;
   /**
@@ -996,7 +996,7 @@ declare namespace v128 {
    * depending on hardware capabilities:
    * - If the input lane contains `NaN`, the result is either `0` or the respective maximum integer value.
    * - If the input lane contains a value otherwise out of bounds of the target type, the result is either the
-   *   saturatated result or maximum integer value.
+   *   saturated result or maximum integer value.
    */
   export function relaxed_trunc_zero<T extends i32 | u32>(a: v128): v128;
   /**
@@ -1411,7 +1411,7 @@ declare namespace i32x4 {
    * defined, depending on hardware capabilities:
    * - If the input lane contains `NaN`, the result is either `0` or the respective maximum integer value.
    * - If the input lane contains a value otherwise out of bounds of the target type, the result is either the
-   *   saturatated result or maximum integer value.
+   *   saturated result or maximum integer value.
    */
   export function relaxed_trunc_f32x4_s(a: v128): v128;
   /**
@@ -1421,7 +1421,7 @@ declare namespace i32x4 {
    * defined, depending on hardware capabilities:
    * - If the input lane contains `NaN`, the result is either `0` or the respective maximum integer value.
    * - If the input lane contains a value otherwise out of bounds of the target type, the result is either the
-   *   saturatated result or maximum integer value.
+   *   saturated result or maximum integer value.
    */
   export function relaxed_trunc_f32x4_u(a: v128): v128;
   /**
@@ -1432,7 +1432,7 @@ declare namespace i32x4 {
    * defined, depending on hardware capabilities:
    * - If the input lane contains `NaN`, the result is either `0` or the respective maximum integer value.
    * - If the input lane contains a value otherwise out of bounds of the target type, the result is either the
-   *   saturatated result or maximum integer value.
+   *   saturated result or maximum integer value.
    */
   export function relaxed_trunc_f64x2_s_zero(a: v128): v128;
   /**
@@ -1443,7 +1443,7 @@ declare namespace i32x4 {
    * defined, depending on hardware capabilities:
    * - If the input lane contains `NaN`, the result is either `0` or the respective maximum integer value.
    * - If the input lane contains a value otherwise out of bounds of the target type, the result is either the
-   *   saturatated result or maximum integer value.
+   *   saturated result or maximum integer value.
    */
   export function relaxed_trunc_f64x2_u_zero(a: v128): v128;
   /**
@@ -2287,7 +2287,7 @@ declare namespace String {
     export function byteLength(str: string, nullTerminated?: bool): i32;
     /** Encodes the specified string to UTF-8 bytes, optionally null terminated. ErrorMode defaults to WTF-8. */
     export function encode(str: string, nullTerminated?: bool, errorMode?: ErrorMode): ArrayBuffer;
-    /** Encodes the specified raw string to UTF-8 bytes, opionally null terminated. ErrorMode defaults to WTF-8. Returns the number of bytes written. */
+    /** Encodes the specified raw string to UTF-8 bytes, optionally null terminated. ErrorMode defaults to WTF-8. Returns the number of bytes written. */
     export function encodeUnsafe(str: usize, len: i32, buf: usize, nullTerminated?: bool, errorMode?: ErrorMode): usize;
     /** Decodes the specified buffer from UTF-8 bytes to a string, optionally null terminated. */
     export function decode(buf: ArrayBuffer, nullTerminated?: bool): string;

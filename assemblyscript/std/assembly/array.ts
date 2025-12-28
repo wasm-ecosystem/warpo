@@ -19,7 +19,7 @@ function ensureCapacity(array: usize, newSize: usize, alignLog2: u32, canGrow: b
     if (newSize > BLOCK_MAXSIZE >>> alignLog2) throw new RangeError(E_INVALIDLENGTH);
     let oldData = changetype<usize>(changetype<ArrayBufferView>(array).buffer);
     // Grows old capacity by factor of two.
-    // Make sure we don't reach BLOCK_MAXSIZE for new growed capacity.
+    // Make sure we don't reach BLOCK_MAXSIZE for new grown capacity.
     let newCapacity = max(newSize, MIN_SIZE) << alignLog2;
     if (canGrow) newCapacity = max(min(oldCapacity << 1, BLOCK_MAXSIZE), newCapacity);
     let newData = __renew(oldData, newCapacity);
@@ -446,7 +446,7 @@ export class Array<T> {
     }
     // For rest objects and arrays use general join routine
     if (isReference<T>()) return joinReferenceArray<T>(ptr, len, separator);
-    ERROR("unspported element type");
+    ERROR("unsupported element type");
     return <string>unreachable();
   }
 

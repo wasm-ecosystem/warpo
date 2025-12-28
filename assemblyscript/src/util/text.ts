@@ -227,7 +227,7 @@ export function numCodeUnits(cp: i32): i32 {
 }
 
 export function isAlpha(c: i32): bool {
-  let c0 = c | 32; // unify uppercases and lowercases a|A - z|Z
+  let c0 = c | 32; // unify uppercase and lowercase a|A - z|Z
   return c0 >= CharCode.a && c0 <= CharCode.z;
 }
 
@@ -243,7 +243,7 @@ export function isOctal(c: i32): bool {
 
 /** Tests if the specified character code is a valid hexadecimal symbol [a-f]. */
 export function isHexBase(c: i32): bool {
-  let c0 = c | 32; // unify uppercases and lowercases a|A - f|F
+  let c0 = c | 32; // unify uppercase and lowercase a|A - f|F
   return c0 >= CharCode.a && c0 <= CharCode.f;
 }
 
@@ -279,7 +279,7 @@ export function isIdentifierPart(cp: i32): bool {
   );
 }
 
-/** Tests if the specified string is a valid identifer. */
+/** Tests if the specified string is a valid identifier. */
 export function isIdentifier(str: string): bool {
   let len = str.length;
   if (!len) return false;
@@ -517,7 +517,7 @@ export function indent(sb: string[], level: i32): void {
   } else {
     let indents: string;
     // Limit number of indent entries to 1024 for avoiding unnecessary
-    // memory consumetion
+    // memory consumption
     if (indentCache.size <= 1024) {
       if (indentCache.has(level)) {
         indents = assert(indentCache.get(level));

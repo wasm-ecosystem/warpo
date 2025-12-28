@@ -193,7 +193,7 @@ export class Options {
   runtime: Runtime = Runtime.Incremental;
   /** If true, indicates that debug information will be emitted by Binaryen. */
   debugInfo: bool = false;
-  /** If true, replaces assertions with nops. */
+  /** If true, replaces assertions with nop. */
   noAssert: bool = false;
   /** It true, exports the memory to the embedder. */
   exportMemory: bool = true;
@@ -1491,7 +1491,7 @@ export class Compiler extends DiagnosticEmitter {
 
   // === Functions ================================================================================
 
-  /** Compiles a priorly resolved function. */
+  /** Compiles a resolved function. */
   compileFunction(
     /** Function to compile. */
     instance: Function,
@@ -3216,7 +3216,7 @@ export class Compiler extends DiagnosticEmitter {
         if (!(element.hasDecorator(DecoratorFlags.Builtin) && contextualType == Type.f32)) {
           return this.module.f64(element.constantFloatValue);
         }
-        // otherwise fall-through: basically precomputes f32.demote/f64 of NaN / Infinity
+        // otherwise fall-through: basically precomputed f32.demote/f64 of NaN / Infinity
         this.currentType = Type.f32;
       }
       case TypeKind.F32: {
@@ -7475,7 +7475,7 @@ export class Compiler extends DiagnosticEmitter {
           ),
           TypeRef.I32
         ),
-        false // managedness is irrelevant here, isn't interrupted
+        false // isManaged is irrelevant here, isn't interrupted
       )
     );
     let allInstances: Set<Class> | null;
@@ -7597,7 +7597,7 @@ export class Compiler extends DiagnosticEmitter {
             ),
             TypeRef.I32
           ),
-          false // managedness is irrelevant here, isn't interrupted
+          false // isManaged is irrelevant here, isn't interrupted
         )
       );
       let allInstances = new Set<Class>();
@@ -7795,7 +7795,7 @@ export class Compiler extends DiagnosticEmitter {
       let joinInstance = assert(arrayInstance.getMethod("join"));
       let indexedSetInstance = assert(arrayInstance.lookupOverload(OperatorKind.IndexedSet, true));
       let stmts = new Array<ExpressionRef>(2 * numExpressions + 1);
-      // Use one local per toString'ed subexpression, since otherwise recursion on the same
+      // Use one local per toString'ed sub expression, since otherwise recursion on the same
       // static array would overwrite already prepared parts. Avoids a temporary array.
       let temps = new Array<Local>(numExpressions);
       let flow = this.currentFlow;
@@ -8823,7 +8823,7 @@ export class Compiler extends DiagnosticEmitter {
 
     let condExpr = this.compileExpression(expression.condition, Type.bool);
     let condExprTrueish = this.makeIsTrueish(condExpr, this.currentType, expression.condition);
-    // Try to eliminate unnecesssary branches if the condition is constant
+    // Try to eliminate unnecessary branches if the condition is constant
     // FIXME: skips common denominator, inconsistently picking branch type
     let condKind = this.evaluateCondition(condExprTrueish);
     if (condKind == ConditionKind.True) {
@@ -9435,7 +9435,7 @@ export class Compiler extends DiagnosticEmitter {
       if (!element) {
         switch (operand.kind) {
           case NodeKind.Identifier:
-            break; // ignore error: typeof doesntExist -> undefined
+            break; // ignore error: typeof doesNotExist -> undefined
           case NodeKind.PropertyAccess:
           case NodeKind.ElementAccess: {
             operand =
@@ -10029,7 +10029,7 @@ export class Compiler extends DiagnosticEmitter {
               setterInstance,
               [
                 module.local_get(thisLocalIndex, sizeTypeRef),
-                // Create only when necessary since makeZero will allocte persistent memory by Binaryen.
+                // Create only when necessary since makeZero will allocate persistent memory by Binaryen.
                 this.makeZero(fieldType),
               ],
               field.identifierNode,

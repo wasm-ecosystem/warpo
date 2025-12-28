@@ -1644,7 +1644,7 @@ export class DeclarationBase {
     public flags: CommonFlags,
     /** small range which only covers the name. */
     public nameRange: Range,
-    /** Overridden module name from preceeding `module` statement. */
+    /** Overridden module name from preceding `module` statement. */
     public overriddenModuleName: string | null
   ) {}
 
@@ -1671,7 +1671,7 @@ export abstract class DeclarationStatement extends Statement {
   ) {
     super(kind, range);
   }
-  /** Overridden module name from preceeding `module` statement. */
+  /** Overridden module name from preceding `module` statement. */
   public overriddenModuleName: string | null = null;
 
   /** Tests if this node has the specified flag or flags. */
@@ -2197,7 +2197,7 @@ export class ImportStatement extends Statement {
   internalPath: string;
 }
 
-/** Represents an `interfarce` declaration. */
+/** Represents an `interface` declaration. */
 export class InterfaceDeclaration extends ClassDeclaration {
   constructor(
     /** Simple name being declared. */

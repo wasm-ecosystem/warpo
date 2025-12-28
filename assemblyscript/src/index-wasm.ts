@@ -255,7 +255,7 @@ export function getRangeStart(range: Range): i32 {
   return range.start;
 }
 
-/** Gets a range's end offsset. */
+/** Gets a range's end offset. */
 export function getRangeEnd(range: Range): i32 {
   return range.end;
 }
@@ -313,7 +313,7 @@ export function getDependee(program: Program, file: string): string | null {
 
 // Compiler
 
-/** Initializes the program pre-emptively for transform hooks. */
+/** Initializes the program preemptively for transform hooks. */
 export function initializeProgram(program: Program): void {
   program.initialize();
 }

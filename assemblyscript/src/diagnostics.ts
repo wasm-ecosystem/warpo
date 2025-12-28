@@ -263,7 +263,7 @@ function formatDiagnosticContext(range: Range, minLine: i32 = 0): string {
   let lineNumber = source.lineAt(start).toString();
   let lineNumberLength = minLine ? max(minLine.toString().length, lineNumber.length) : lineNumber.length;
   let lineSpace = " ".repeat(lineNumberLength);
-  // Find preceeding line break
+  // Find preceding line break
   while (start > 0 && !isLineBreak(text.charCodeAt(start - 1))) start--;
   // Skip leading whitespace (assume no supplementary whitespaces)
   while (start < len && isWhiteSpace(text.charCodeAt(start))) start++;

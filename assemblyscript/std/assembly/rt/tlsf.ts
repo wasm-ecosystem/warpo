@@ -427,7 +427,7 @@ function growMemory(root: Root, size: usize): void {
 
 /** Computes the size (excl. header) of a block. */
 function computeSize(size: usize): usize {
-  // Size must be large enough and aligned minus preceeding overhead
+  // Size must be large enough and aligned minus preceding overhead
   return size <= BLOCK_MINSIZE ? BLOCK_MINSIZE : ((size + BLOCK_OVERHEAD + AL_MASK) & ~AL_MASK) - BLOCK_OVERHEAD;
 }
 

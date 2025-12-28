@@ -45,7 +45,7 @@ import { ExportsWalker } from "./util";
 //
 //   Instead, generated bindings are limited to lifting and lowering of plain
 //   objects when the class has no constructor and no non-public elements. In
-//   any other sitation an internal or external reference is passed.
+//   any other situation an internal or external reference is passed.
 //
 // - Linking two instrumented modules with separate bindings produces
 //   intermediate garbage (i.e. goes through a temporary JS object). Any native

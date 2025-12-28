@@ -2476,7 +2476,7 @@ export class Resolver extends DiagnosticEmitter {
       body.kind == NodeKind.Expression &&
       isTypeOmitted(signature.returnType)
     ) {
-      // (x) => ret, infer return type accordingt to `ret`
+      // (x) => ret, infer return type according to `ret`
       const expr = (<ExpressionStatement>body).expression;
       let signatureReference = assert(functionType.getSignature());
       // create a temp flow to resolve expression
@@ -2700,7 +2700,7 @@ export class Resolver extends DiagnosticEmitter {
     return instance;
   }
 
-  /** Resolves a function prototypeby first resolving the specified type arguments. */
+  /** Resolves a function prototype by first resolving the specified type arguments. */
   resolveFunctionInclTypeArguments(
     /** The prototype of the function. */
     prototype: FunctionPrototype,
