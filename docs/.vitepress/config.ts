@@ -120,7 +120,16 @@ export default defineConfig({
           },
           {
             text: "For Developers",
-            items: listItems("tech/for_dev"),
+            items: [
+              {
+                text: "binaryen",
+                items: listItems("tech/for_dev/binaryen"),
+              },
+              {
+                text: "assemblyscript",
+                items: listItems("tech/for_dev/assemblyscript"),
+              },
+            ],
           },
         ],
       },
