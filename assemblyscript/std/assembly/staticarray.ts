@@ -420,7 +420,7 @@ export class StaticArray<T> {
       if (isString<T>()) return joinStringArray(changetype<usize>(this), this.length, separator);
     }
     if (isReference<T>()) return joinReferenceArray<T>(changetype<usize>(this), this.length, separator);
-    ERROR("unspported element type");
+    ERROR("unsupported element type");
     return <string>unreachable();
   }
 

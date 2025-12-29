@@ -25313,8 +25313,8 @@
   )
  )
  (func $~lib/util/sort/COMPARATOR<~lib/string/String|null>~anonymous|0 (param $a i32) (param $b i32) (result i32)
-  (local $alen i32)
-  (local $blen i32)
+  (local $aLen i32)
+  (local $bLen i32)
   (local $4 i32)
   (local $5 i32)
   (local $res i32)
@@ -25351,14 +25351,14 @@
     )
    )
   )
-  (local.set $alen
+  (local.set $aLen
    (call $~lib/string/String#get:length
     (call $~lib/rt/__tmptostack
      (local.get $a)
     )
    )
   )
-  (local.set $blen
+  (local.set $bLen
    (call $~lib/string/String#get:length
     (call $~lib/rt/__tmptostack
      (local.get $b)
@@ -25368,8 +25368,8 @@
   (if
    (i32.eqz
     (i32.or
-     (local.get $alen)
-     (local.get $blen)
+     (local.get $aLen)
+     (local.get $bLen)
     )
    )
    (then
@@ -25380,7 +25380,7 @@
   )
   (if
    (i32.eqz
-    (local.get $alen)
+    (local.get $aLen)
    )
    (then
     (return
@@ -25390,7 +25390,7 @@
   )
   (if
    (i32.eqz
-    (local.get $blen)
+    (local.get $bLen)
    )
    (then
     (return
@@ -25410,10 +25410,10 @@
     (i32.const 0)
     (select
      (local.tee $4
-      (local.get $alen)
+      (local.get $aLen)
      )
      (local.tee $5
-      (local.get $blen)
+      (local.get $bLen)
      )
      (i32.lt_s
       (local.get $4)
@@ -25430,8 +25430,8 @@
     )
     (else
      (i32.sub
-      (local.get $alen)
-      (local.get $blen)
+      (local.get $aLen)
+      (local.get $bLen)
      )
     )
    )
@@ -27694,8 +27694,8 @@
   )
  )
  (func $~lib/util/sort/COMPARATOR<~lib/string/String>~anonymous|0 (param $a i32) (param $b i32) (result i32)
-  (local $alen i32)
-  (local $blen i32)
+  (local $aLen i32)
+  (local $bLen i32)
   (local $4 i32)
   (local $5 i32)
   (local $res i32)
@@ -27732,14 +27732,14 @@
     )
    )
   )
-  (local.set $alen
+  (local.set $aLen
    (call $~lib/string/String#get:length
     (call $~lib/rt/__tmptostack
      (local.get $a)
     )
    )
   )
-  (local.set $blen
+  (local.set $bLen
    (call $~lib/string/String#get:length
     (call $~lib/rt/__tmptostack
      (local.get $b)
@@ -27749,8 +27749,8 @@
   (if
    (i32.eqz
     (i32.or
-     (local.get $alen)
-     (local.get $blen)
+     (local.get $aLen)
+     (local.get $bLen)
     )
    )
    (then
@@ -27761,7 +27761,7 @@
   )
   (if
    (i32.eqz
-    (local.get $alen)
+    (local.get $aLen)
    )
    (then
     (return
@@ -27771,7 +27771,7 @@
   )
   (if
    (i32.eqz
-    (local.get $blen)
+    (local.get $bLen)
    )
    (then
     (return
@@ -27791,10 +27791,10 @@
     (i32.const 0)
     (select
      (local.tee $4
-      (local.get $alen)
+      (local.get $aLen)
      )
      (local.tee $5
-      (local.get $blen)
+      (local.get $bLen)
      )
      (i32.lt_s
       (local.get $4)
@@ -27811,8 +27811,8 @@
     )
     (else
      (i32.sub
-      (local.get $alen)
-      (local.get $blen)
+      (local.get $aLen)
+      (local.get $bLen)
      )
     )
    )

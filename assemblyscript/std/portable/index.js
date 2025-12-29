@@ -306,7 +306,7 @@ if (typeof globalScope.ASC_TARGET === "undefined") {
   function defaultComparator(a, b) {
     if (a == b) {
       if (a != 0) return 0;
-      (a = 1 / a), (b = 1 / b);
+      ((a = 1 / a), (b = 1 / b));
     } else {
       let nanA = a != a,
         nanB = b != b;

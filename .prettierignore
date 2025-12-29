@@ -1,5 +1,6 @@
 /assemblyscript/.github
 /assemblyscript/bin
+/assemblyscript/build
 /assemblyscript/cli
 /assemblyscript/dist
 /assemblyscript/lib
@@ -9,6 +10,9 @@
 /assemblyscript/tests
 /assemblyscript/util
 /assemblyscript/CONTRIBUTING.md
+/assemblyscript/src/diagnosticMessages.generated.ts
+
+*.wat
 
 # TODO: cannot auto format
 /assemblyscript/std/assembly/typedarray.ts

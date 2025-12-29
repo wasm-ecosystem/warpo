@@ -186,7 +186,7 @@ function insertionSort<T>(ptr: usize, left: i32, right: i32, presorted: i32, com
       let min = b,
         max = a;
       if (comparator(a, b) <= 0) {
-        (min = a), (max = b);
+        ((min = a), (max = b));
       }
       let j = i - 1;
       while (j >= left) {
