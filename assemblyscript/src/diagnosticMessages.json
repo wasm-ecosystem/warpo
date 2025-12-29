@@ -208,6 +208,7 @@
   "Numeric separators are not allowed here.": 6188,
   "Multiple consecutive numeric separators are not permitted.": 6189,
   "This expression is not callable because it is a 'get' accessor. Did you mean to use it without '()'?": 6234,
+  "A type assertion expression is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses.": 17007,
   "'super' must be called before accessing 'this' in the constructor of a derived class.": 17009,
   "'super' must be called before accessing a property of 'super' in the constructor of a derived class.": 17011
 }

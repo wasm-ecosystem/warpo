@@ -22,6 +22,7 @@ import {
   ArrowKind,
   Expression,
   AssertionKind,
+  AssertionExpression,
   CallExpression,
   ClassExpression,
   FunctionExpression,
@@ -3487,6 +3488,16 @@ export class Parser extends DiagnosticEmitter {
         case Token.Caret_Equals:
         case Token.Bar_Equals:
         case Token.Asterisk_Asterisk: {
+          // TS17007: A type assertion expression is not allowed in the left-hand side of an exponentiation expression.
+          if (token == Token.Asterisk_Asterisk && expr.kind == NodeKind.Assertion) {
+            let assertionExpr = <AssertionExpression>expr;
+            if (assertionExpr.assertionKind == AssertionKind.Prefix) {
+              this.error(
+                DiagnosticCode.A_type_assertion_expression_is_not_allowed_in_the_left_hand_side_of_an_exponentiation_expression_Consider_enclosing_the_expression_in_parentheses,
+                expr.range
+              );
+            }
+          }
           let next = this.parseExpression(tn, nextPrecedence);
           if (!next) return null;
           expr = Node.createBinaryExpression(token, expr, next, tn.range(startPos, tn.pos));

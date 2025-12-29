@@ -30,6 +30,7 @@
 /tests/frontend/compiler/call-rest-err.ts
 /tests/frontend/compiler/constant-assign.ts
 /tests/frontend/compiler/constructor-errors.ts
+/tests/frontend/compiler/exponentiation-assertion-error.ts
 /tests/frontend/compiler/field-initialization-errors.ts
 /tests/frontend/compiler/field-initialization.ts
 /tests/frontend/compiler/inlining.ts
