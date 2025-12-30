@@ -1,0 +1,3 @@
+{
+  "stderr": ["Type 'i32' must have a '[Symbol.iterator]()' method that returns an iterator.", "for (let v of a) {"]
+}
