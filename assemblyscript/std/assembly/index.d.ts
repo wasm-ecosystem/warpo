@@ -2149,6 +2149,7 @@ declare class Array<T> {
   static isArray<U>(value: any): value is Array<any>;
 
   [key: number]: T;
+  [Symbol.iterator](): Iterator<T>;
   /** Current length of the array. */
   length: i32;
   /** Returns raw pointer to data storage (unsafe). */

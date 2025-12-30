@@ -1317,15 +1317,9 @@ export class Resolver extends DiagnosticEmitter {
     let classReference = targetType.getClassOrWrapper(this.program);
     if (classReference) {
       do {
-        // there are 2 kinds lookup:
-        // 1. index signature
-        let indexSignature = classReference.indexSignature;
-        if (indexSignature) {
-          this.currentThisExpression = targetExpression;
-          this.currentElementExpression = elementExpression;
-          return indexSignature;
-        }
-        // 2. computed property [expr]
+        // TODO: research how TS prioritize them in complex inheritance system
+        // there are 2 kinds lookup. computed property should have higher priority
+        // 1. computed property [expr]
         if (elementElement) {
           const computedProperty = classReference.getMember(mangleComputedPropertyName(elementElement));
           if (computedProperty) {
@@ -1333,6 +1327,13 @@ export class Resolver extends DiagnosticEmitter {
             this.currentElementExpression = elementExpression;
             return computedProperty;
           }
+        }
+        // 2. index signature
+        let indexSignature = classReference.indexSignature;
+        if (indexSignature) {
+          this.currentThisExpression = targetExpression;
+          this.currentElementExpression = elementExpression;
+          return indexSignature;
         }
         classReference = classReference.base;
       } while (classReference);

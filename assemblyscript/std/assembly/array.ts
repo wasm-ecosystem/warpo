@@ -11,6 +11,17 @@ import { E_INDEXOUTOFRANGE, E_INVALIDLENGTH, E_EMPTYARRAY, E_HOLEYARRAY } from "
 // @ts-ignore: decorator
 @inline @lazy const MIN_SIZE: usize = 8;
 
+class ArrayIterator<T> implements Iterator<T> {
+  current: i32 = 0;
+  constructor(private readonly array: Array<T>) {}
+  next(): IteratorResult<T> {
+    const current = this.current;
+    ++this.current;
+    if (current >= this.array.length) return IteratorResult.done<T>();
+    return IteratorResult.fromValue<T>(unchecked(this.array[current]));
+  }
+}
+
 /** Ensures that the given array has _at least_ the specified backing size. */
 function ensureCapacity(array: usize, newSize: usize, alignLog2: u32, canGrow: bool = true): void {
   // Depends on the fact that Arrays mimic ArrayBufferView
@@ -514,6 +525,10 @@ export class Array<T> {
 
   toString(): string {
     return this.join();
+  }
+
+  [Symbol.iterator](): ArrayIterator<T> {
+    return new ArrayIterator<T>(this);
   }
 
   // RT integration

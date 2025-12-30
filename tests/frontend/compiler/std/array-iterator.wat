@@ -10,10 +10,12 @@
  (type $8 (func (result i32)))
  (type $9 (func (param i32 i32 i64) (result i32)))
  (type $10 (func (param i32 i32 i32 i32) (result i32)))
- (type $11 (func (param i32 i32 i32 i32 i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
+ (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
+ (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
+ (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -22,38 +24,36 @@
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
- (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
- (global $~lib/rt/__rtti_base i32 (i32.const 784))
- (global $~lib/memory/__data_end i32 (i32.const 832))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33600))
- (global $~lib/memory/__heap_base i32 (i32.const 33600))
+ (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
+ (global $~lib/rt/__rtti_base i32 (i32.const 720))
+ (global $~lib/memory/__data_end i32 (i32.const 756))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33524))
+ (global $~lib/memory/__heap_base i32 (i32.const 33524))
  (memory $0 1)
- (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
- (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $2 (i32.const 144) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00\01\00\00\00\02\00\00\00\03\00\00\00")
+ (data $1 (i32.const 44) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
+ (data $2 (i32.const 108) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $3 (i32.const 176) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $4 (i32.const 204) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00$\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e\00\00\00\00\00\00\00\00\00")
- (data $5 (i32.const 268) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
- (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $8 (i32.const 412) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00a\00\00\00\00\00\00\00\00\00\00\00")
- (data $9 (i32.const 444) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00b\00\00\00\00\00\00\00\00\00\00\00")
- (data $10 (i32.const 476) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00c\00\00\00\00\00\00\00\00\00\00\00")
- (data $11 (i32.const 508) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00\b0\01\00\00\d0\01\00\00\f0\01\00\00")
- (data $12 (i32.const 540) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00")
- (data $13 (i32.const 588) "|\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00^\00\00\00E\00l\00e\00m\00e\00n\00t\00 \00t\00y\00p\00e\00 \00m\00u\00s\00t\00 \00b\00e\00 \00n\00u\00l\00l\00a\00b\00l\00e\00 \00i\00f\00 \00a\00r\00r\00a\00y\00 \00i\00s\00 \00h\00o\00l\00e\00y\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $14 (i32.const 716) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00s\00t\00d\00/\00i\00t\00e\00r\00a\00t\00o\00r\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $15 (i32.const 784) "\0b\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00 \00\00\00\02A\00\00\02\t\00\00\00\00\00\00 \00\00\00\00\00\00\00")
+ (data $4 (i32.const 208) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $5 (i32.const 236) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00$\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e\00\00\00\00\00\00\00\00\00")
+ (data $6 (i32.const 300) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
+ (data $7 (i32.const 352) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $8 (i32.const 380) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $9 (i32.const 444) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00*\00\00\00s\00t\00d\00/\00a\00r\00r\00a\00y\00-\00i\00t\00e\00r\00a\00t\00o\00r\00.\00t\00s\00\00\00")
+ (data $10 (i32.const 508) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
+ (data $11 (i32.const 556) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00")
+ (data $12 (i32.const 604) ",\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\10\00\00\00\01\00\00\00\02\00\00\00\03\00\00\00\04\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $13 (i32.const 652) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00\01\00\00\00\02\00\00\00\03\00\00\00")
+ (data $14 (i32.const 684) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00\02\00\00\00\03\00\00\00\04\00\00\00")
+ (data $15 (i32.const 720) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00\00\00\00\00 \00\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
- (export "test1" (func $std/iterator/test1))
- (export "test2" (func $std/iterator/test2))
+ (export "increase_arr_length" (func $std/array-iterator/increase_arr_length))
+ (export "reduce_arr_length" (func $std/array-iterator/reduce_arr_length))
+ (export "replace_arr" (func $std/array-iterator/replace_arr))
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
@@ -146,7 +146,7 @@
        (then
         (call $~lib/builtins/abort
          (i32.const 0)
-         (i32.const 96)
+         (i32.const 128)
          (i32.const 170)
          (i32.const 16)
         )
@@ -247,7 +247,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 96)
+       (i32.const 128)
        (i32.const 138)
        (i32.const 18)
       )
@@ -272,7 +272,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 96)
+     (i32.const 128)
      (i32.const 142)
      (i32.const 16)
     )
@@ -312,8 +312,8 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 224)
-     (i32.const 288)
+     (i32.const 256)
+     (i32.const 320)
      (i32.const 21)
      (i32.const 28)
     )
@@ -412,7 +412,7 @@
       (then
        (call $~lib/builtins/abort
         (i32.const 0)
-        (i32.const 96)
+        (i32.const 128)
         (i32.const 158)
         (i32.const 30)
        )
@@ -699,7 +699,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 246)
      (i32.const 14)
     )
@@ -728,7 +728,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 248)
      (i32.const 14)
     )
@@ -824,7 +824,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 262)
      (i32.const 14)
     )
@@ -962,7 +962,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 179)
      (i32.const 14)
     )
@@ -987,7 +987,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 181)
      (i32.const 14)
     )
@@ -1073,7 +1073,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 368)
+       (i32.const 400)
        (i32.const 199)
        (i32.const 16)
       )
@@ -1136,7 +1136,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 211)
      (i32.const 14)
     )
@@ -1162,7 +1162,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 212)
      (i32.const 14)
     )
@@ -1265,7 +1265,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 229)
      (i32.const 14)
     )
@@ -1356,7 +1356,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 358)
      (i32.const 14)
     )
@@ -1417,7 +1417,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 368)
+       (i32.const 400)
        (i32.const 366)
        (i32.const 16)
       )
@@ -1467,7 +1467,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 368)
+       (i32.const 400)
        (i32.const 379)
        (i32.const 5)
       )
@@ -1762,7 +1762,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 541)
      (i32.const 3)
     )
@@ -2097,7 +2097,7 @@
        (then
         (call $~lib/builtins/abort
          (i32.const 0)
-         (i32.const 96)
+         (i32.const 128)
          (i32.const 240)
          (i32.const 20)
         )
@@ -2255,8 +2255,8 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 32)
-     (i32.const 368)
+     (i32.const 64)
+     (i32.const 400)
      (i32.const 436)
      (i32.const 29)
     )
@@ -2392,7 +2392,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 310)
      (i32.const 14)
     )
@@ -2470,7 +2470,7 @@
        (then
         (call $~lib/builtins/abort
          (i32.const 0)
-         (i32.const 368)
+         (i32.const 400)
          (i32.const 323)
          (i32.const 18)
         )
@@ -2647,7 +2647,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 337)
      (i32.const 14)
     )
@@ -2778,7 +2778,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 368)
+       (i32.const 400)
        (i32.const 474)
        (i32.const 16)
       )
@@ -2808,7 +2808,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 368)
+     (i32.const 400)
      (i32.const 476)
      (i32.const 14)
     )
@@ -2872,8 +2872,8 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 32)
-     (i32.const 96)
+     (i32.const 64)
+     (i32.const 128)
      (i32.const 273)
      (i32.const 31)
     )
@@ -2936,24 +2936,6 @@
    (local.get $ptr)
   )
  )
- (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
  (func $~lib/rt/__newBuffer (param $size i32) (param $id i32) (param $data i32) (result i32)
   (local $buffer i32)
   (local.set $buffer
@@ -2998,7 +2980,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 96)
+     (i32.const 128)
      (i32.const 307)
      (i32.const 14)
     )
@@ -3130,70 +3112,18 @@
    (local.get $array)
   )
  )
- (func $std/iterator/MyIterable#set:items (param $this i32) (param $items i32)
-  (i32.store
-   (local.get $this)
-   (local.get $items)
-  )
-  (call $~lib/rt/itcms/__link
-   (local.get $this)
-   (local.get $items)
-   (i32.const 0)
-  )
- )
- (func $std/iterator/MyIterable#constructor (param $this i32) (result i32)
-  (local $1 i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $~lib/object/Object#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (call $std/iterator/MyIterable#set:items
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (call $~lib/rt/__tmptostack
-    (call $~lib/rt/__newArray
-     (i32.const 3)
-     (i32.const 2)
-     (i32.const 6)
-     (i32.const 528)
-    )
-   )
-  )
-  (local.get $this)
- )
- (func $std/iterator/MyIterator#set:items (param $this i32) (param $items i32)
+ (func $~lib/array/ArrayIterator<i32>#set:array (param $this i32) (param $array i32)
   (i32.store offset=4
    (local.get $this)
-   (local.get $items)
+   (local.get $array)
   )
   (call $~lib/rt/itcms/__link
    (local.get $this)
-   (local.get $items)
+   (local.get $array)
    (i32.const 0)
   )
  )
- (func $std/iterator/MyIterator#constructor (param $this i32) (param $items i32) (result i32)
+ (func $~lib/array/ArrayIterator<i32>#constructor (param $this i32) (param $array i32) (result i32)
   (block
    (if
     (i32.eqz
@@ -3204,155 +3134,97 @@
       (call $~lib/rt/__localtostack
        (call $~lib/rt/itcms/__new
         (i32.const 8)
-        (i32.const 8)
+        (i32.const 5)
        )
       )
      )
     )
    )
-   (call $std/iterator/MyIterator#set:items
+   (call $~lib/array/ArrayIterator<i32>#set:array
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
     (call $~lib/rt/__tmptostack
-     (local.get $items)
+     (local.get $array)
     )
    )
   )
   (local.get $this)
  )
- (func $std/iterator/MyIterable#get:items (param $this i32) (result i32)
-  (i32.load
-   (local.get $this)
-  )
- )
- (func $"std/iterator/MyIterable#[~lib/symbol/Symbol.iterator]" (param $this i32) (result i32)
+ (func $"~lib/array/Array<i32>#[~lib/symbol/Symbol.iterator]" (param $this i32) (result i32)
   (return
-   (call $std/iterator/MyIterator#constructor
+   (call $~lib/array/ArrayIterator<i32>#constructor
     (i32.const 0)
-    (call $~lib/rt/__tmptostack
-     (call $std/iterator/MyIterable#get:items
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-    )
-   )
-  )
- )
- (func $std/iterator/MyIterator#get:index (param $this i32) (result i32)
-  (i32.load
-   (local.get $this)
-  )
- )
- (func $std/iterator/MyIterator#get:items (param $this i32) (result i32)
-  (i32.load offset=4
-   (local.get $this)
-  )
- )
- (func $~lib/array/Array<~lib/string/String>#get:length_ (param $this i32) (result i32)
-  (i32.load offset=12
-   (local.get $this)
-  )
- )
- (func $~lib/array/Array<~lib/string/String>#get:length (param $this i32) (result i32)
-  (return
-   (call $~lib/array/Array<~lib/string/String>#get:length_
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
    )
   )
  )
- (func $std/iterator/MyIterator#set:index (param $this i32) (param $index i32)
-  (i32.store
+ (func $~lib/array/ArrayIterator<i32>#get:current (param $this i32) (result i32)
+  (i32.load
    (local.get $this)
-   (local.get $index)
   )
  )
- (func $~lib/array/Array<~lib/string/String>#get:dataStart (param $this i32) (result i32)
+ (func $~lib/array/ArrayIterator<i32>#set:current (param $this i32) (param $current i32)
+  (i32.store
+   (local.get $this)
+   (local.get $current)
+  )
+ )
+ (func $~lib/array/ArrayIterator<i32>#get:array (param $this i32) (result i32)
   (i32.load offset=4
    (local.get $this)
   )
  )
- (func $~lib/array/Array<~lib/string/String>#__get (param $this i32) (param $index i32) (result i32)
-  (local $value i32)
-  (if
-   (i32.ge_u
-    (local.get $index)
-    (call $~lib/array/Array<~lib/string/String>#get:length_
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 224)
-     (i32.const 560)
-     (i32.const 129)
-     (i32.const 42)
-    )
-    (unreachable)
-   )
-  )
-  (local.set $value
-   (call $~lib/rt/__localtostack
-    (i32.load
-     (i32.add
-      (call $~lib/array/Array<~lib/string/String>#get:dataStart
-       (call $~lib/rt/__tmptostack
-        (local.get $this)
-       )
-      )
-      (i32.shl
-       (local.get $index)
-       (i32.const 2)
-      )
-     )
-    )
-   )
-  )
-  (drop
-   (i32.const 1)
-  )
-  (block
-   (drop
-    (i32.eqz
-     (i32.const 0)
-    )
-   )
-   (if
-    (i32.eqz
-     (local.get $value)
-    )
-    (then
-     (call $~lib/builtins/abort
-      (i32.const 608)
-      (i32.const 560)
-      (i32.const 133)
-      (i32.const 40)
-     )
-     (unreachable)
-    )
-   )
-  )
-  (return
-   (local.get $value)
+ (func $~lib/array/Array<i32>#get:length_ (param $this i32) (result i32)
+  (i32.load offset=12
+   (local.get $this)
   )
  )
- (func $~lib/iterator/IteratorResult<~lib/string/String>#set:value (param $this i32) (param $value i32)
+ (func $~lib/array/Array<i32>#get:length (param $this i32) (result i32)
+  (return
+   (call $~lib/array/Array<i32>#get:length_
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+ )
+ (func $~lib/iterator/IteratorResult.done<i32> (result i32)
+  (return
+   (i32.const 0)
+  )
+ )
+ (func $~lib/array/Array<i32>#get:dataStart (param $this i32) (result i32)
+  (i32.load offset=4
+   (local.get $this)
+  )
+ )
+ (func $~lib/array/Array<i32>#__uget (param $this i32) (param $index i32) (result i32)
+  (return
+   (i32.load
+    (i32.add
+     (call $~lib/array/Array<i32>#get:dataStart
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+     (i32.shl
+      (local.get $index)
+      (i32.const 2)
+     )
+    )
+   )
+  )
+ )
+ (func $~lib/iterator/IteratorResult<i32>#set:value (param $this i32) (param $value i32)
   (i32.store
    (local.get $this)
    (local.get $value)
   )
-  (call $~lib/rt/itcms/__link
-   (local.get $this)
-   (local.get $value)
-   (i32.const 0)
-  )
  )
- (func $~lib/iterator/IteratorResult<~lib/string/String>#constructor (param $this i32) (param $value i32) (result i32)
+ (func $~lib/iterator/IteratorResult<i32>#constructor (param $this i32) (param $value i32) (result i32)
   (block
    (if
     (i32.eqz
@@ -3363,732 +3235,946 @@
       (call $~lib/rt/__localtostack
        (call $~lib/rt/itcms/__new
         (i32.const 4)
-        (i32.const 10)
+        (i32.const 7)
        )
       )
      )
     )
    )
-   (call $~lib/iterator/IteratorResult<~lib/string/String>#set:value
+   (call $~lib/iterator/IteratorResult<i32>#set:value
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
-    (call $~lib/rt/__tmptostack
-     (local.get $value)
-    )
+    (local.get $value)
    )
   )
   (local.get $this)
  )
- (func $~lib/iterator/IteratorResult.fromValue<~lib/string/String> (param $value i32) (result i32)
+ (func $~lib/iterator/IteratorResult.fromValue<i32> (param $value i32) (result i32)
   (return
-   (call $~lib/iterator/IteratorResult<~lib/string/String>#constructor
+   (call $~lib/iterator/IteratorResult<i32>#constructor
     (i32.const 0)
+    (local.get $value)
+   )
+  )
+ )
+ (func $~lib/array/ArrayIterator<i32>#next (param $this i32) (result i32)
+  (local $current i32)
+  (local.set $current
+   (call $~lib/array/ArrayIterator<i32>#get:current
     (call $~lib/rt/__tmptostack
-     (local.get $value)
+     (local.get $this)
     )
    )
   )
- )
- (func $~lib/iterator/IteratorResult.done<~lib/string/String> (result i32)
-  (return
-   (i32.const 0)
-  )
- )
- (func $std/iterator/MyIterator#next (param $this i32) (result i32)
-  (local $1 i32)
-  (if
-   (i32.lt_s
-    (call $std/iterator/MyIterator#get:index
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-    (call $~lib/array/Array<~lib/string/String>#get:length
-     (call $~lib/rt/__tmptostack
-      (call $std/iterator/MyIterator#get:items
-       (call $~lib/rt/__tmptostack
-        (local.get $this)
-       )
-      )
-     )
-    )
-   )
-   (then
-    (return
-     (call $~lib/iterator/IteratorResult.fromValue<~lib/string/String>
-      (call $~lib/rt/__tmptostack
-       (call $~lib/array/Array<~lib/string/String>#__get
-        (call $~lib/rt/__tmptostack
-         (call $std/iterator/MyIterator#get:items
-          (call $~lib/rt/__tmptostack
-           (local.get $this)
-          )
-         )
-        )
-        (block (result i32)
-         (call $std/iterator/MyIterator#set:index
-          (call $~lib/rt/__tmptostack
-           (local.get $this)
-          )
-          (i32.add
-           (local.tee $1
-            (call $std/iterator/MyIterator#get:index
-             (call $~lib/rt/__tmptostack
-              (local.get $this)
-             )
-            )
-           )
-           (i32.const 1)
-          )
-         )
-         (local.get $1)
-        )
-       )
-      )
-     )
-    )
-   )
-   (else
-    (return
-     (call $~lib/iterator/IteratorResult.done<~lib/string/String>)
-    )
-   )
-  )
- )
- (func $~lib/iterator/IteratorResult<~lib/string/String>#get:done (param $this i32) (result i32)
-  (return
-   (i32.eq
-    (i32.const 0)
+  (call $~lib/array/ArrayIterator<i32>#set:current
+   (call $~lib/rt/__tmptostack
     (local.get $this)
    )
-  )
- )
- (func $~lib/iterator/IteratorResult<~lib/string/String>#get:value (param $this i32) (result i32)
-  (i32.load
-   (local.get $this)
-  )
- )
- (func $~lib/rt/common/OBJECT#get:rtSize (param $this i32) (result i32)
-  (i32.load offset=16
-   (local.get $this)
-  )
- )
- (func $~lib/string/String#get:length (param $this i32) (result i32)
-  (return
-   (i32.shr_u
-    (call $~lib/rt/common/OBJECT#get:rtSize
-     (i32.sub
+   (i32.add
+    (call $~lib/array/ArrayIterator<i32>#get:current
+     (call $~lib/rt/__tmptostack
       (local.get $this)
-      (i32.const 20)
      )
     )
     (i32.const 1)
    )
   )
- )
- (func $~lib/util/string/compareImpl (param $str1 i32) (param $index1 i32) (param $str2 i32) (param $index2 i32) (param $len i32) (result i32)
-  (local $ptr1 i32)
-  (local $ptr2 i32)
-  (local $7 i32)
-  (local $a i32)
-  (local $b i32)
-  (local.set $ptr1
-   (i32.add
-    (local.get $str1)
-    (i32.shl
-     (local.get $index1)
-     (i32.const 1)
-    )
-   )
-  )
-  (local.set $ptr2
-   (i32.add
-    (local.get $str2)
-    (i32.shl
-     (local.get $index2)
-     (i32.const 1)
-    )
-   )
-  )
-  (drop
-   (i32.lt_s
-    (i32.const 0)
-    (i32.const 2)
-   )
-  )
   (if
-   (if (result i32)
-    (i32.ge_u
-     (local.get $len)
-     (i32.const 4)
-    )
-    (then
-     (i32.eqz
-      (i32.or
-       (i32.and
-        (local.get $ptr1)
-        (i32.const 7)
-       )
-       (i32.and
-        (local.get $ptr2)
-        (i32.const 7)
+   (i32.ge_s
+    (local.get $current)
+    (call $~lib/array/Array<i32>#get:length
+     (call $~lib/rt/__tmptostack
+      (call $~lib/array/ArrayIterator<i32>#get:array
+       (call $~lib/rt/__tmptostack
+        (local.get $this)
        )
       )
      )
-    )
-    (else
-     (i32.const 0)
     )
    )
    (then
-    (block $do-break|0
-     (loop $do-loop|0
-      (if
-       (i64.ne
-        (i64.load
-         (local.get $ptr1)
-        )
-        (i64.load
-         (local.get $ptr2)
-        )
-       )
-       (then
-        (br $do-break|0)
-       )
-      )
-      (local.set $ptr1
-       (i32.add
-        (local.get $ptr1)
-        (i32.const 8)
-       )
-      )
-      (local.set $ptr2
-       (i32.add
-        (local.get $ptr2)
-        (i32.const 8)
-       )
-      )
-      (local.set $len
-       (i32.sub
-        (local.get $len)
-        (i32.const 4)
-       )
-      )
-      (br_if $do-loop|0
-       (i32.ge_u
-        (local.get $len)
-        (i32.const 4)
-       )
-      )
-     )
+    (return
+     (call $~lib/iterator/IteratorResult.done<i32>)
     )
    )
   )
-  (block $while-break|1
-   (loop $while-continue|1
-    (if
-     (block (result i32)
-      (local.set $len
-       (i32.sub
-        (local.tee $7
-         (local.get $len)
-        )
-        (i32.const 1)
+  (return
+   (call $~lib/iterator/IteratorResult.fromValue<i32>
+    (call $~lib/array/Array<i32>#__uget
+     (call $~lib/rt/__tmptostack
+      (call $~lib/array/ArrayIterator<i32>#get:array
+       (call $~lib/rt/__tmptostack
+        (local.get $this)
        )
       )
-      (local.get $7)
+     )
+     (local.get $current)
+    )
+   )
+  )
+ )
+ (func $~lib/iterator/IteratorResult<i32>#get:value (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $~lib/arraybuffer/ArrayBufferView#get:byteLength (param $this i32) (result i32)
+  (i32.load offset=8
+   (local.get $this)
+  )
+ )
+ (func $~lib/arraybuffer/ArrayBufferView#get:buffer (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $~lib/rt/itcms/Object#get:rtSize (param $this i32) (result i32)
+  (i32.load offset=16
+   (local.get $this)
+  )
+ )
+ (func $~lib/rt/itcms/__renew (param $oldPtr i32) (param $size i32) (result i32)
+  (local $oldObj i32)
+  (local $newPtr i32)
+  (local $4 i32)
+  (local $5 i32)
+  (local.set $oldObj
+   (i32.sub
+    (local.get $oldPtr)
+    (i32.const 20)
+   )
+  )
+  (if
+   (i32.le_u
+    (local.get $size)
+    (i32.sub
+     (i32.and
+      (call $~lib/rt/common/BLOCK#get:mmInfo
+       (local.get $oldObj)
+      )
+      (i32.xor
+       (i32.const 3)
+       (i32.const -1)
+      )
+     )
+     (i32.const 16)
+    )
+   )
+   (then
+    (call $~lib/rt/itcms/Object#set:rtSize
+     (local.get $oldObj)
+     (local.get $size)
+    )
+    (return
+     (local.get $oldPtr)
+    )
+   )
+  )
+  (local.set $newPtr
+   (call $~lib/rt/itcms/__new
+    (local.get $size)
+    (call $~lib/rt/itcms/Object#get:rtId
+     (local.get $oldObj)
+    )
+   )
+  )
+  (memory.copy
+   (local.get $newPtr)
+   (local.get $oldPtr)
+   (select
+    (local.tee $4
+     (local.get $size)
+    )
+    (local.tee $5
+     (call $~lib/rt/itcms/Object#get:rtSize
+      (local.get $oldObj)
+     )
+    )
+    (i32.lt_u
+     (local.get $4)
+     (local.get $5)
+    )
+   )
+  )
+  (return
+   (local.get $newPtr)
+  )
+ )
+ (func $~lib/array/ensureCapacity (param $array i32) (param $newSize i32) (param $alignLog2 i32) (param $canGrow i32)
+  (local $oldCapacity i32)
+  (local $oldData i32)
+  (local $6 i32)
+  (local $7 i32)
+  (local $newCapacity i32)
+  (local $9 i32)
+  (local $10 i32)
+  (local $11 i32)
+  (local $12 i32)
+  (local $newData i32)
+  (local.set $oldCapacity
+   (call $~lib/arraybuffer/ArrayBufferView#get:byteLength
+    (call $~lib/rt/__tmptostack
+     (local.get $array)
+    )
+   )
+  )
+  (if
+   (i32.gt_u
+    (local.get $newSize)
+    (i32.shr_u
+     (local.get $oldCapacity)
+     (local.get $alignLog2)
+    )
+   )
+   (then
+    (if
+     (i32.gt_u
+      (local.get $newSize)
+      (i32.shr_u
+       (i32.const 1073741820)
+       (local.get $alignLog2)
+      )
      )
      (then
-      (local.set $a
-       (i32.load16_u
-        (local.get $ptr1)
-       )
+      (call $~lib/builtins/abort
+       (i32.const 528)
+       (i32.const 576)
+       (i32.const 30)
+       (i32.const 48)
       )
-      (local.set $b
-       (i32.load16_u
-        (local.get $ptr2)
-       )
-      )
-      (if
-       (i32.ne
-        (local.get $a)
-        (local.get $b)
-       )
-       (then
-        (return
-         (i32.sub
-          (local.get $a)
-          (local.get $b)
-         )
-        )
-       )
-      )
-      (local.set $ptr1
-       (i32.add
-        (local.get $ptr1)
-        (i32.const 2)
-       )
-      )
-      (local.set $ptr2
-       (i32.add
-        (local.get $ptr2)
-        (i32.const 2)
-       )
-      )
-      (br $while-continue|1)
+      (unreachable)
      )
     )
-   )
-  )
-  (return
-   (i32.const 0)
-  )
- )
- (func $~lib/string/String.__eq (param $left i32) (param $right i32) (result i32)
-  (local $leftLength i32)
-  (if
-   (i32.eq
-    (local.get $left)
-    (local.get $right)
-   )
-   (then
-    (return
-     (i32.const 1)
-    )
-   )
-  )
-  (if
-   (if (result i32)
-    (i32.eq
-     (local.get $left)
-     (i32.const 0)
-    )
-    (then
-     (i32.const 1)
-    )
-    (else
-     (i32.eq
-      (local.get $right)
-      (i32.const 0)
-     )
-    )
-   )
-   (then
-    (return
-     (i32.const 0)
-    )
-   )
-  )
-  (local.set $leftLength
-   (call $~lib/string/String#get:length
-    (call $~lib/rt/__tmptostack
-     (local.get $left)
-    )
-   )
-  )
-  (if
-   (i32.ne
-    (local.get $leftLength)
-    (call $~lib/string/String#get:length
-     (call $~lib/rt/__tmptostack
-      (local.get $right)
-     )
-    )
-   )
-   (then
-    (return
-     (i32.const 0)
-    )
-   )
-  )
-  (return
-   (i32.eqz
-    (call $~lib/util/string/compareImpl
-     (call $~lib/rt/__tmptostack
-      (local.get $left)
-     )
-     (i32.const 0)
-     (call $~lib/rt/__tmptostack
-      (local.get $right)
-     )
-     (i32.const 0)
-     (local.get $leftLength)
-    )
-   )
-  )
- )
- (func $std/iterator/test1
-  (local $cnt i32)
-  (local $myIterable i32)
-  (local $it i32)
-  (local $ret i32)
-  (local $4 i32)
-  (local.set $cnt
-   (i32.const 0)
-  )
-  (local.set $myIterable
-   (call $~lib/rt/__localtostack
-    (call $std/iterator/MyIterable#constructor
-     (i32.const 0)
-    )
-   )
-  )
-  (block
-   (local.set $it
-    (call $~lib/rt/__localtostack
-     (call $"std/iterator/MyIterable#[~lib/symbol/Symbol.iterator]"
+    (local.set $oldData
+     (call $~lib/arraybuffer/ArrayBufferView#get:buffer
       (call $~lib/rt/__tmptostack
-       (local.get $myIterable)
+       (local.get $array)
       )
      )
     )
-   )
-   (local.set $ret
-    (call $~lib/rt/__localtostack
-     (call $std/iterator/MyIterator#next
-      (call $~lib/rt/__tmptostack
-       (local.get $it)
+    (local.set $newCapacity
+     (i32.shl
+      (select
+       (local.tee $6
+        (local.get $newSize)
+       )
+       (local.tee $7
+        (i32.const 8)
+       )
+       (i32.gt_u
+        (local.get $6)
+        (local.get $7)
+       )
       )
+      (local.get $alignLog2)
      )
     )
-   )
-  )
-  (loop $for-loop|0
-   (if
-    (i32.eqz
-     (call $~lib/iterator/IteratorResult<~lib/string/String>#get:done
-      (call $~lib/rt/__tmptostack
-       (local.get $ret)
-      )
-     )
-    )
-    (then
-     (block $break|1
-      (block $case3|1
-       (block $case2|1
-        (block $case1|1
-         (block $case0|1
-          (local.set $4
-           (local.get $cnt)
-          )
-          (br_if $case0|1
-           (i32.eq
-            (local.get $4)
-            (i32.const 0)
-           )
-          )
-          (br_if $case1|1
-           (i32.eq
-            (local.get $4)
+    (if
+     (local.get $canGrow)
+     (then
+      (local.set $newCapacity
+       (select
+        (local.tee $11
+         (select
+          (local.tee $9
+           (i32.shl
+            (local.get $oldCapacity)
             (i32.const 1)
            )
           )
-          (br_if $case2|1
-           (i32.eq
-            (local.get $4)
-            (i32.const 2)
-           )
+          (local.tee $10
+           (i32.const 1073741820)
           )
-          (br $case3|1)
-         )
-         (if
-          (i32.eqz
-           (call $~lib/string/String.__eq
-            (call $~lib/rt/__tmptostack
-             (call $~lib/iterator/IteratorResult<~lib/string/String>#get:value
-              (call $~lib/rt/__tmptostack
-               (local.get $ret)
-              )
-             )
-            )
-            (i32.const 432)
-           )
+          (i32.lt_u
+           (local.get $9)
+           (local.get $10)
           )
-          (then
-           (call $~lib/builtins/abort
-            (i32.const 0)
-            (i32.const 736)
-            (i32.const 31)
-            (i32.const 9)
-           )
-           (unreachable)
-          )
-         )
-         (br $break|1)
-        )
-        (if
-         (i32.eqz
-          (call $~lib/string/String.__eq
-           (call $~lib/rt/__tmptostack
-            (call $~lib/iterator/IteratorResult<~lib/string/String>#get:value
-             (call $~lib/rt/__tmptostack
-              (local.get $ret)
-             )
-            )
-           )
-           (i32.const 464)
-          )
-         )
-         (then
-          (call $~lib/builtins/abort
-           (i32.const 0)
-           (i32.const 736)
-           (i32.const 34)
-           (i32.const 9)
-          )
-          (unreachable)
          )
         )
-        (br $break|1)
-       )
-       (if
-        (i32.eqz
-         (call $~lib/string/String.__eq
-          (call $~lib/rt/__tmptostack
-           (call $~lib/iterator/IteratorResult<~lib/string/String>#get:value
-            (call $~lib/rt/__tmptostack
-             (local.get $ret)
-            )
-           )
-          )
-          (i32.const 496)
-         )
+        (local.tee $12
+         (local.get $newCapacity)
         )
-        (then
-         (call $~lib/builtins/abort
-          (i32.const 0)
-          (i32.const 736)
-          (i32.const 37)
-          (i32.const 9)
-         )
-         (unreachable)
+        (i32.gt_u
+         (local.get $11)
+         (local.get $12)
         )
-       )
-       (br $break|1)
-      )
-      (if
-       (i32.eqz
-        (i32.const 0)
-       )
-       (then
-        (call $~lib/builtins/abort
-         (i32.const 0)
-         (i32.const 736)
-         (i32.const 40)
-         (i32.const 9)
-        )
-        (unreachable)
        )
       )
      )
-     (local.set $cnt
-      (i32.add
-       (local.get $cnt)
-       (i32.const 1)
+    )
+    (local.set $newData
+     (call $~lib/rt/itcms/__renew
+      (local.get $oldData)
+      (local.get $newCapacity)
+     )
+    )
+    (drop
+     (i32.eq
+      (i32.const 2)
+      (global.get $~lib/shared/runtime/Runtime.Stub)
+     )
+    )
+    (if
+     (i32.ne
+      (local.get $newData)
+      (local.get $oldData)
+     )
+     (then
+      (i32.store
+       (local.get $array)
+       (local.get $newData)
+      )
+      (i32.store offset=4
+       (local.get $array)
+       (local.get $newData)
+      )
+      (call $~lib/rt/itcms/__link
+       (local.get $array)
+       (local.get $newData)
+       (i32.const 0)
       )
      )
-     (local.set $ret
-      (call $~lib/rt/__localtostack
-       (call $std/iterator/MyIterator#next
+    )
+    (i32.store offset=8
+     (local.get $array)
+     (local.get $newCapacity)
+    )
+   )
+  )
+ )
+ (func $~lib/array/Array<i32>#set:length_ (param $this i32) (param $length_ i32)
+  (i32.store offset=12
+   (local.get $this)
+   (local.get $length_)
+  )
+ )
+ (func $~lib/array/Array<i32>#push (param $this i32) (param $value i32) (result i32)
+  (local $oldLen i32)
+  (local $len i32)
+  (local.set $oldLen
+   (call $~lib/array/Array<i32>#get:length_
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+  (local.set $len
+   (i32.add
+    (local.get $oldLen)
+    (i32.const 1)
+   )
+  )
+  (call $~lib/array/ensureCapacity
+   (local.get $this)
+   (local.get $len)
+   (i32.const 2)
+   (i32.const 1)
+  )
+  (drop
+   (i32.const 0)
+  )
+  (i32.store
+   (i32.add
+    (call $~lib/array/Array<i32>#get:dataStart
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.shl
+     (local.get $oldLen)
+     (i32.const 2)
+    )
+   )
+   (local.get $value)
+  )
+  (call $~lib/array/Array<i32>#set:length_
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $len)
+  )
+  (return
+   (local.get $len)
+  )
+ )
+ (func $~lib/iterator/IteratorResult<i32>#get:done (param $this i32) (result i32)
+  (return
+   (i32.eq
+    (i32.const 0)
+    (local.get $this)
+   )
+  )
+ )
+ (func $std/array-iterator/increase_arr_length
+  (local $0 i32)
+  (local $arr i32)
+  (local $it i32)
+  (local.set $arr
+   (call $~lib/rt/__localtostack
+    (call $~lib/rt/__newArray
+     (i32.const 3)
+     (i32.const 2)
+     (i32.const 4)
+     (i32.const 32)
+    )
+   )
+  )
+  (local.set $it
+   (call $~lib/rt/__localtostack
+    (call $"~lib/array/Array<i32>#[~lib/symbol/Symbol.iterator]"
+     (call $~lib/rt/__tmptostack
+      (local.get $arr)
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/iterator/IteratorResult<i32>#get:value
+      (call $~lib/rt/__tmptostack
+       (call $~lib/array/ArrayIterator<i32>#next
         (call $~lib/rt/__tmptostack
          (local.get $it)
         )
        )
       )
      )
-     (br $for-loop|0)
+     (i32.const 1)
     )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 4)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/iterator/IteratorResult<i32>#get:value
+      (call $~lib/rt/__tmptostack
+       (call $~lib/array/ArrayIterator<i32>#next
+        (call $~lib/rt/__tmptostack
+         (local.get $it)
+        )
+       )
+      )
+     )
+     (i32.const 2)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 5)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/iterator/IteratorResult<i32>#get:value
+      (call $~lib/rt/__tmptostack
+       (call $~lib/array/ArrayIterator<i32>#next
+        (call $~lib/rt/__tmptostack
+         (local.get $it)
+        )
+       )
+      )
+     )
+     (i32.const 3)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 6)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (drop
+   (call $~lib/array/Array<i32>#push
+    (call $~lib/rt/__tmptostack
+     (local.get $arr)
+    )
+    (i32.const 4)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/iterator/IteratorResult<i32>#get:value
+      (call $~lib/rt/__tmptostack
+       (call $~lib/array/ArrayIterator<i32>#next
+        (call $~lib/rt/__tmptostack
+         (local.get $it)
+        )
+       )
+      )
+     )
+     (i32.const 4)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 8)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/iterator/IteratorResult<i32>#get:done
+     (call $~lib/rt/__tmptostack
+      (call $~lib/array/ArrayIterator<i32>#next
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
+      )
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 9)
+     (i32.const 3)
+    )
+    (unreachable)
    )
   )
  )
- (func $std/iterator/test2
-  (local $cnt i32)
-  (local $myIterable i32)
-  (local $2 i32)
-  (local $3 i32)
+ (func $~lib/array/Array<i32>#splice (param $this i32) (param $start i32) (param $deleteCount i32) (result i32)
+  (local $len i32)
   (local $4 i32)
-  (local $value i32)
+  (local $5 i32)
   (local $6 i32)
-  (local.set $cnt
-   (i32.const 0)
+  (local $7 i32)
+  (local $8 i32)
+  (local $9 i32)
+  (local $10 i32)
+  (local $11 i32)
+  (local $result i32)
+  (local $resultStart i32)
+  (local $thisStart i32)
+  (local $thisBase i32)
+  (local $offset i32)
+  (local.set $len
+   (call $~lib/array/Array<i32>#get:length_
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
   )
-  (local.set $myIterable
+  (local.set $start
+   (if (result i32)
+    (i32.lt_s
+     (local.get $start)
+     (i32.const 0)
+    )
+    (then
+     (select
+      (local.tee $4
+       (i32.add
+        (local.get $len)
+        (local.get $start)
+       )
+      )
+      (local.tee $5
+       (i32.const 0)
+      )
+      (i32.gt_s
+       (local.get $4)
+       (local.get $5)
+      )
+     )
+    )
+    (else
+     (select
+      (local.tee $6
+       (local.get $start)
+      )
+      (local.tee $7
+       (local.get $len)
+      )
+      (i32.lt_s
+       (local.get $6)
+       (local.get $7)
+      )
+     )
+    )
+   )
+  )
+  (local.set $deleteCount
+   (select
+    (local.tee $10
+     (select
+      (local.tee $8
+       (local.get $deleteCount)
+      )
+      (local.tee $9
+       (i32.sub
+        (local.get $len)
+        (local.get $start)
+       )
+      )
+      (i32.lt_s
+       (local.get $8)
+       (local.get $9)
+      )
+     )
+    )
+    (local.tee $11
+     (i32.const 0)
+    )
+    (i32.gt_s
+     (local.get $10)
+     (local.get $11)
+    )
+   )
+  )
+  (local.set $result
    (call $~lib/rt/__localtostack
-    (call $std/iterator/MyIterable#constructor
+    (call $~lib/rt/__newArray
+     (local.get $deleteCount)
+     (i32.const 2)
+     (i32.const 4)
      (i32.const 0)
     )
    )
   )
-  (local.set $2
-   (call $~lib/rt/__localtostack
-    (local.get $myIterable)
+  (local.set $resultStart
+   (call $~lib/array/Array<i32>#get:dataStart
+    (call $~lib/rt/__tmptostack
+     (local.get $result)
+    )
    )
   )
-  (local.set $3
-   (call $~lib/rt/__localtostack
-    (call $"std/iterator/MyIterable#[~lib/symbol/Symbol.iterator]"
-     (call $~lib/rt/__tmptostack
-      (local.get $2)
+  (local.set $thisStart
+   (call $~lib/array/Array<i32>#get:dataStart
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+  (local.set $thisBase
+   (i32.add
+    (local.get $thisStart)
+    (i32.shl
+     (local.get $start)
+     (i32.const 2)
+    )
+   )
+  )
+  (memory.copy
+   (local.get $resultStart)
+   (local.get $thisBase)
+   (i32.shl
+    (local.get $deleteCount)
+    (i32.const 2)
+   )
+  )
+  (local.set $offset
+   (i32.add
+    (local.get $start)
+    (local.get $deleteCount)
+   )
+  )
+  (if
+   (i32.ne
+    (local.get $len)
+    (local.get $offset)
+   )
+   (then
+    (memory.copy
+     (local.get $thisBase)
+     (i32.add
+      (local.get $thisStart)
+      (i32.shl
+       (local.get $offset)
+       (i32.const 2)
+      )
+     )
+     (i32.shl
+      (i32.sub
+       (local.get $len)
+       (local.get $offset)
+      )
+      (i32.const 2)
      )
     )
    )
   )
-  (local.set $4
+  (call $~lib/array/Array<i32>#set:length_
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.sub
+    (local.get $len)
+    (local.get $deleteCount)
+   )
+  )
+  (return
+   (local.get $result)
+  )
+ )
+ (func $std/array-iterator/reduce_arr_length
+  (local $0 i32)
+  (local $arr i32)
+  (local $it i32)
+  (local.set $arr
    (call $~lib/rt/__localtostack
-    (call $std/iterator/MyIterator#next
+    (call $~lib/rt/__newArray
+     (i32.const 4)
+     (i32.const 2)
+     (i32.const 4)
+     (i32.const 624)
+    )
+   )
+  )
+  (local.set $it
+   (call $~lib/rt/__localtostack
+    (call $"~lib/array/Array<i32>#[~lib/symbol/Symbol.iterator]"
      (call $~lib/rt/__tmptostack
-      (local.get $3)
+      (local.get $arr)
      )
     )
    )
   )
-  (loop $for-of-loop|0
-   (if
-    (i32.eqz
-     (call $~lib/iterator/IteratorResult<~lib/string/String>#get:done
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/iterator/IteratorResult<i32>#get:value
       (call $~lib/rt/__tmptostack
-       (local.get $4)
+       (call $~lib/array/ArrayIterator<i32>#next
+        (call $~lib/rt/__tmptostack
+         (local.get $it)
+        )
+       )
+      )
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 16)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (drop
+   (call $~lib/array/Array<i32>#splice
+    (call $~lib/rt/__tmptostack
+     (local.get $arr)
+    )
+    (i32.const 1)
+    (i32.const 1)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/iterator/IteratorResult<i32>#get:value
+      (call $~lib/rt/__tmptostack
+       (call $~lib/array/ArrayIterator<i32>#next
+        (call $~lib/rt/__tmptostack
+         (local.get $it)
+        )
+       )
+      )
+     )
+     (i32.const 3)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 18)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/iterator/IteratorResult<i32>#get:value
+      (call $~lib/rt/__tmptostack
+       (call $~lib/array/ArrayIterator<i32>#next
+        (call $~lib/rt/__tmptostack
+         (local.get $it)
+        )
+       )
+      )
+     )
+     (i32.const 4)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 19)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/iterator/IteratorResult<i32>#get:done
+     (call $~lib/rt/__tmptostack
+      (call $~lib/array/ArrayIterator<i32>#next
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
       )
      )
     )
-    (then
-     (local.set $value
-      (call $~lib/rt/__localtostack
-       (call $~lib/iterator/IteratorResult<~lib/string/String>#get:value
-        (call $~lib/rt/__tmptostack
-         (local.get $4)
-        )
-       )
-      )
-     )
-     (block $break|1
-      (block $case3|1
-       (block $case2|1
-        (block $case1|1
-         (block $case0|1
-          (local.set $6
-           (local.get $cnt)
-          )
-          (br_if $case0|1
-           (i32.eq
-            (local.get $6)
-            (i32.const 0)
-           )
-          )
-          (br_if $case1|1
-           (i32.eq
-            (local.get $6)
-            (i32.const 1)
-           )
-          )
-          (br_if $case2|1
-           (i32.eq
-            (local.get $6)
-            (i32.const 2)
-           )
-          )
-          (br $case3|1)
-         )
-         (if
-          (i32.eqz
-           (call $~lib/string/String.__eq
-            (call $~lib/rt/__tmptostack
-             (local.get $value)
-            )
-            (i32.const 432)
-           )
-          )
-          (then
-           (call $~lib/builtins/abort
-            (i32.const 0)
-            (i32.const 736)
-            (i32.const 52)
-            (i32.const 9)
-           )
-           (unreachable)
-          )
-         )
-         (br $break|1)
-        )
-        (if
-         (i32.eqz
-          (call $~lib/string/String.__eq
-           (call $~lib/rt/__tmptostack
-            (local.get $value)
-           )
-           (i32.const 464)
-          )
-         )
-         (then
-          (call $~lib/builtins/abort
-           (i32.const 0)
-           (i32.const 736)
-           (i32.const 55)
-           (i32.const 9)
-          )
-          (unreachable)
-         )
-        )
-        (br $break|1)
-       )
-       (if
-        (i32.eqz
-         (call $~lib/string/String.__eq
-          (call $~lib/rt/__tmptostack
-           (local.get $value)
-          )
-          (i32.const 496)
-         )
-        )
-        (then
-         (call $~lib/builtins/abort
-          (i32.const 0)
-          (i32.const 736)
-          (i32.const 58)
-          (i32.const 9)
-         )
-         (unreachable)
-        )
-       )
-       (br $break|1)
-      )
-      (if
-       (i32.eqz
-        (i32.const 0)
-       )
-       (then
-        (call $~lib/builtins/abort
-         (i32.const 0)
-         (i32.const 736)
-         (i32.const 61)
-         (i32.const 9)
-        )
-        (unreachable)
-       )
-      )
-     )
-     (local.set $cnt
-      (i32.add
-       (local.get $cnt)
-       (i32.const 1)
-      )
-     )
-     (local.set $4
-      (call $~lib/rt/__localtostack
-       (call $std/iterator/MyIterator#next
-        (call $~lib/rt/__tmptostack
-         (local.get $3)
-        )
-       )
-      )
-     )
-     (br $for-of-loop|0)
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 20)
+     (i32.const 3)
     )
+    (unreachable)
    )
   )
  )
- (func $start:std/iterator
+ (func $std/array-iterator/replace_arr
+  (local $0 i32)
+  (local $arr i32)
+  (local $it i32)
+  (local $3 i32)
+  (local.set $arr
+   (call $~lib/rt/__localtostack
+    (call $~lib/rt/__newArray
+     (i32.const 3)
+     (i32.const 2)
+     (i32.const 4)
+     (i32.const 672)
+    )
+   )
+  )
+  (local.set $it
+   (call $~lib/rt/__localtostack
+    (call $"~lib/array/Array<i32>#[~lib/symbol/Symbol.iterator]"
+     (call $~lib/rt/__tmptostack
+      (local.get $arr)
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/iterator/IteratorResult<i32>#get:value
+      (call $~lib/rt/__tmptostack
+       (call $~lib/array/ArrayIterator<i32>#next
+        (call $~lib/rt/__tmptostack
+         (local.get $it)
+        )
+       )
+      )
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 27)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $arr
+   (call $~lib/rt/__localtostack
+    (call $~lib/rt/__newArray
+     (i32.const 3)
+     (i32.const 2)
+     (i32.const 4)
+     (i32.const 704)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/iterator/IteratorResult<i32>#get:value
+      (call $~lib/rt/__tmptostack
+       (call $~lib/array/ArrayIterator<i32>#next
+        (call $~lib/rt/__tmptostack
+         (local.get $it)
+        )
+       )
+      )
+     )
+     (i32.const 2)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 29)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/iterator/IteratorResult<i32>#get:value
+      (call $~lib/rt/__tmptostack
+       (call $~lib/array/ArrayIterator<i32>#next
+        (call $~lib/rt/__tmptostack
+         (local.get $it)
+        )
+       )
+      )
+     )
+     (i32.const 3)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 30)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
+ (func $start:std/array-iterator
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -4103,21 +4189,22 @@
   )
   (global.set $~lib/rt/itcms/pinSpace
    (call $~lib/rt/itcms/initLazy
-    (i32.const 144)
+    (i32.const 176)
    )
   )
   (global.set $~lib/rt/itcms/toSpace
    (call $~lib/rt/itcms/initLazy
-    (i32.const 176)
+    (i32.const 208)
    )
   )
   (global.set $~lib/rt/itcms/fromSpace
    (call $~lib/rt/itcms/initLazy
-    (i32.const 320)
+    (i32.const 352)
    )
   )
-  (call $std/iterator/test1)
-  (call $std/iterator/test2)
+  (call $std/array-iterator/increase_arr_length)
+  (call $std/array-iterator/reduce_arr_length)
+  (call $std/array-iterator/replace_arr)
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
@@ -4138,105 +4225,6 @@
  )
  (func $~lib/object/Object~visit (param $0 i32) (param $1 i32)
   (nop)
- )
- (func $std/iterator/MyIterable~visit (param $0 i32) (param $1 i32)
-  (local $2 i32)
-  (call $~lib/object/Object~visit
-   (local.get $0)
-   (local.get $1)
-  )
-  (call $~lib/rt/itcms/__visit
-   (i32.load
-    (local.get $0)
-   )
-   (local.get $1)
-  )
- )
- (func $~lib/array/Array<~lib/string/String>#get:buffer (param $this i32) (result i32)
-  (i32.load
-   (local.get $this)
-  )
- )
- (func $~lib/array/Array<~lib/string/String>#__visit (param $this i32) (param $cookie i32)
-  (local $cur i32)
-  (local $end i32)
-  (local $val i32)
-  (drop
-   (i32.const 1)
-  )
-  (block
-   (local.set $cur
-    (call $~lib/array/Array<~lib/string/String>#get:dataStart
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-   (local.set $end
-    (i32.add
-     (local.get $cur)
-     (i32.shl
-      (call $~lib/array/Array<~lib/string/String>#get:length_
-       (call $~lib/rt/__tmptostack
-        (local.get $this)
-       )
-      )
-      (i32.const 2)
-     )
-    )
-   )
-   (block $while-break|0
-    (loop $while-continue|0
-     (if
-      (i32.lt_u
-       (local.get $cur)
-       (local.get $end)
-      )
-      (then
-       (local.set $val
-        (i32.load
-         (local.get $cur)
-        )
-       )
-       (if
-        (local.get $val)
-        (then
-         (call $~lib/rt/itcms/__visit
-          (local.get $val)
-          (local.get $cookie)
-         )
-        )
-       )
-       (local.set $cur
-        (i32.add
-         (local.get $cur)
-         (i32.const 4)
-        )
-       )
-       (br $while-continue|0)
-      )
-     )
-    )
-   )
-  )
-  (call $~lib/rt/itcms/__visit
-   (call $~lib/array/Array<~lib/string/String>#get:buffer
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-   )
-   (local.get $cookie)
-  )
- )
- (func $~lib/array/Array<~lib/string/String>~visit (param $0 i32) (param $1 i32)
-  (call $~lib/object/Object~visit
-   (local.get $0)
-   (local.get $1)
-  )
-  (call $~lib/array/Array<~lib/string/String>#__visit
-   (local.get $0)
-   (local.get $1)
-  )
  )
  (func $~lib/array/Array<i32>#get:buffer (param $this i32) (result i32)
   (i32.load
@@ -4266,7 +4254,7 @@
    (local.get $1)
   )
  )
- (func $std/iterator/MyIterator~visit (param $0 i32) (param $1 i32)
+ (func $~lib/array/ArrayIterator<i32>~visit (param $0 i32) (param $1 i32)
   (local $2 i32)
   (call $~lib/object/Object~visit
    (local.get $0)
@@ -4279,67 +4267,33 @@
    (local.get $1)
   )
  )
- (func $~lib/iterator/IteratorResult<~lib/string/String>~visit (param $0 i32) (param $1 i32)
-  (local $2 i32)
-  (call $~lib/object/Object~visit
-   (local.get $0)
-   (local.get $1)
-  )
-  (call $~lib/rt/itcms/__visit
-   (i32.load
-    (local.get $0)
-   )
-   (local.get $1)
-  )
- )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $~lib/iterator/IteratorResult<~lib/string/String>
-    (block $~lib/iterator/Iterator<~lib/string/String>
-     (block $std/iterator/MyIterator
+   (block $~lib/iterator/IteratorResult<i32>
+    (block $~lib/iterator/Iterator<i32>
+     (block $~lib/array/ArrayIterator<i32>
       (block $~lib/array/Array<i32>
-       (block $~lib/array/Array<~lib/string/String>
-        (block $~lib/iterator/Iterable<~lib/string/String>
-         (block $std/iterator/MyIterable
-          (block $~lib/arraybuffer/ArrayBufferView
-           (block $~lib/string/String
-            (block $~lib/arraybuffer/ArrayBuffer
-             (block $~lib/object/Object
-              (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $std/iterator/MyIterable $~lib/iterator/Iterable<~lib/string/String> $~lib/array/Array<~lib/string/String> $~lib/array/Array<i32> $std/iterator/MyIterator $~lib/iterator/Iterator<~lib/string/String> $~lib/iterator/IteratorResult<~lib/string/String> $invalid
-               (i32.load
-                (i32.sub
-                 (local.get $0)
-                 (i32.const 8)
-                )
-               )
-              )
+       (block $~lib/arraybuffer/ArrayBufferView
+        (block $~lib/string/String
+         (block $~lib/arraybuffer/ArrayBuffer
+          (block $~lib/object/Object
+           (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/array/ArrayIterator<i32> $~lib/iterator/Iterator<i32> $~lib/iterator/IteratorResult<i32> $invalid
+            (i32.load
+             (i32.sub
+              (local.get $0)
+              (i32.const 8)
              )
-             (return)
             )
-            (return)
            )
-           (return)
-          )
-          (block
-           (call $~lib/arraybuffer/ArrayBufferView~visit
-            (local.get $0)
-            (local.get $1)
-           )
-           (return)
-          )
-         )
-         (block
-          (call $std/iterator/MyIterable~visit
-           (local.get $0)
-           (local.get $1)
           )
           (return)
          )
+         (return)
         )
         (return)
        )
        (block
-        (call $~lib/array/Array<~lib/string/String>~visit
+        (call $~lib/arraybuffer/ArrayBufferView~visit
          (local.get $0)
          (local.get $1)
         )
@@ -4355,7 +4309,7 @@
       )
      )
      (block
-      (call $std/iterator/MyIterator~visit
+      (call $~lib/array/ArrayIterator<i32>~visit
        (local.get $0)
        (local.get $1)
       )
@@ -4364,17 +4318,11 @@
     )
     (return)
    )
-   (block
-    (call $~lib/iterator/IteratorResult<~lib/string/String>~visit
-     (local.get $0)
-     (local.get $1)
-    )
-    (return)
-   )
+   (return)
   )
   (unreachable)
  )
  (func $~start
-  (call $start:std/iterator)
+  (call $start:std/array-iterator)
  )
 )
