@@ -21,5 +21,7 @@ for (
   let it: MyIterator = myIterable[Symbol.iterator](), ret: IteratorResult<string> = it.next();
   !ret.done;
   ret = it.next()
-) {}
+) {
+  const value = it.value;
+}
 ```
