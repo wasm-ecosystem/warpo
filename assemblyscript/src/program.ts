@@ -717,7 +717,7 @@ export class Program extends DiagnosticEmitter {
       if (iteratorElement == null) throw new Error(`Missing standard library component: Symbol.iterator`);
       if (iteratorElement.kind != ElementKind.Global)
         throw Error(`Invalid standard library component kind: Symbol.iterator`);
-      cached = mangleComputedPropertyName(iteratorElement);
+      this._iteratorMethodName = cached = mangleComputedPropertyName(iteratorElement);
     }
     return cached;
   }
