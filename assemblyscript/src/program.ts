@@ -699,6 +699,30 @@ export class Program extends DiagnosticEmitter {
     return this.resolver.resolveFunction(<FunctionPrototype>prototype, null);
   }
 
+  get iterablePrototype(): InterfacePrototype {
+    let cached = this._iterablePrototype;
+    if (!cached)
+      this._iterablePrototype = cached = <InterfacePrototype>(
+        this.require(CommonNames.Iterable, ElementKind.InterfacePrototype)
+      );
+    return cached;
+  }
+  private _iterablePrototype: InterfacePrototype | null = null;
+
+  get iteratorMethodName(): string {
+    let cached = this._iteratorMethodName;
+    if (cached == null) {
+      const symbolElement = this.require(CommonNames.Symbol, ElementKind.FunctionPrototype);
+      const iteratorElement = symbolElement.getMember(CommonNames.SymbolIterator);
+      if (iteratorElement == null) throw new Error(`Missing standard library component: Symbol.iterator`);
+      if (iteratorElement.kind != ElementKind.Global)
+        throw Error(`Invalid standard library component kind: Symbol.iterator`);
+      cached = mangleComputedPropertyName(iteratorElement);
+    }
+    return cached;
+  }
+  private _iteratorMethodName: string | null = null;
+
   // Runtime interface
 
   /** Gets the runtime `__alloc(size: usize): usize` instance. */
@@ -4795,6 +4819,28 @@ export class ClassPrototype extends DeclaredElement {
     return false;
   }
 
+  /** Tests if this prototype implements the specified. */
+  implements(basePrototype: InterfacePrototype | null): bool {
+    const seen = new Set<ClassPrototype>();
+    let backlog = new Array<ClassPrototype>();
+    backlog.push(this);
+    while (backlog.length > 0) {
+      let current = assert(backlog.pop());
+      if (current == basePrototype) return true;
+      if (seen.has(current)) continue;
+      seen.add(current);
+      const interfacePrototypes = current.interfacePrototypes;
+      if (interfacePrototypes) {
+        for (let i = 0, k = interfacePrototypes.length; i < k; i++) {
+          backlog.push(interfacePrototypes[i]);
+        }
+      }
+      const currentBase = current.basePrototype;
+      if (currentBase) backlog.push(currentBase);
+    }
+    return false;
+  }
+
   /** Adds an element as an instance member of this one. Returns the previous element if a duplicate. */
   addInstance(name: string, element: DeclaredElement): bool {
     let instanceMembers = this.instanceMembers;
@@ -5255,6 +5301,10 @@ export class Class extends TypedElement {
   /** Tests if this class extends the specified prototype. */
   extendsPrototype(prototype: ClassPrototype): bool {
     return this.prototype.extends(prototype);
+  }
+
+  implementsPrototype(prototype: InterfacePrototype): bool {
+    return this.prototype.implements(prototype);
   }
 
   /** Gets the concrete type arguments to the specified extended prototype. */

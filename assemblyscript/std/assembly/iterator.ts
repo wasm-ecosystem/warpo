@@ -1,5 +1,9 @@
-export class IteratorResult<T> {
-  private constructor(public value: T) {}
+
+@final export class IteratorResult<T> {
+  constructor(public value: T) {}
+
+
+  @inline
   get done(): boolean {
     return 0 == changetype<usize>(this);
   }

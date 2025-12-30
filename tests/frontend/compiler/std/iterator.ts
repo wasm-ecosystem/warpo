@@ -17,7 +17,7 @@ class MyIterable implements Iterable<string> {
   }
 }
 
-export function test(): void {
+export function test1(): void {
   let cnt = 0;
   const myIterable = new MyIterable();
   // for (const value of myIterable) {
@@ -43,4 +43,27 @@ export function test(): void {
   }
 }
 
-test();
+export function test2(): void {
+  let cnt = 0;
+  const myIterable = new MyIterable();
+  for (const value of myIterable) {
+    switch (cnt) {
+      case 0:
+        assert(value == "a");
+        break;
+      case 1:
+        assert(value == "b");
+        break;
+      case 2:
+        assert(value == "c");
+        break;
+      default:
+        assert(false); // should not happen
+    }
+    cnt++;
+  }
+}
+
+test1();
+
+test2();

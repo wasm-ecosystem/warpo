@@ -52,7 +52,8 @@
  (data $15 (i32.const 784) "\0b\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00 \00\00\00\02A\00\00\02\t\00\00\00\00\00\00 \00\00\00\00\00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
- (export "test" (func $std/iterator/test))
+ (export "test1" (func $std/iterator/test1))
+ (export "test2" (func $std/iterator/test2))
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
@@ -3717,7 +3718,7 @@
    )
   )
  )
- (func $std/iterator/test
+ (func $std/iterator/test1
   (local $cnt i32)
   (local $myIterable i32)
   (local $it i32)
@@ -3901,6 +3902,192 @@
    )
   )
  )
+ (func $std/iterator/test2
+  (local $cnt i32)
+  (local $myIterable i32)
+  (local $2 i32)
+  (local $3 i32)
+  (local $4 i32)
+  (local $value i32)
+  (local $6 i32)
+  (local.set $cnt
+   (i32.const 0)
+  )
+  (local.set $myIterable
+   (call $~lib/rt/__localtostack
+    (call $std/iterator/MyIterable#constructor
+     (i32.const 0)
+    )
+   )
+  )
+  (local.set $2
+   (call $~lib/rt/__localtostack
+    (local.get $myIterable)
+   )
+  )
+  (local.set $3
+   (call $~lib/rt/__localtostack
+    (call $"std/iterator/MyIterable#[~lib/symbol/Symbol.iterator]"
+     (call $~lib/rt/__tmptostack
+      (local.get $2)
+     )
+    )
+   )
+  )
+  (local.set $4
+   (call $~lib/rt/__localtostack
+    (call $std/iterator/MyIterator#next
+     (call $~lib/rt/__tmptostack
+      (local.get $3)
+     )
+    )
+   )
+  )
+  (loop $for-of-loop|0
+   (if
+    (i32.eqz
+     (call $~lib/iterator/IteratorResult<~lib/string/String>#get:done
+      (call $~lib/rt/__tmptostack
+       (local.get $4)
+      )
+     )
+    )
+    (then
+     (local.set $value
+      (call $~lib/rt/__localtostack
+       (call $~lib/iterator/IteratorResult<~lib/string/String>#get:value
+        (call $~lib/rt/__tmptostack
+         (local.get $4)
+        )
+       )
+      )
+     )
+     (block $break|1
+      (block $case3|1
+       (block $case2|1
+        (block $case1|1
+         (block $case0|1
+          (local.set $6
+           (local.get $cnt)
+          )
+          (br_if $case0|1
+           (i32.eq
+            (local.get $6)
+            (i32.const 0)
+           )
+          )
+          (br_if $case1|1
+           (i32.eq
+            (local.get $6)
+            (i32.const 1)
+           )
+          )
+          (br_if $case2|1
+           (i32.eq
+            (local.get $6)
+            (i32.const 2)
+           )
+          )
+          (br $case3|1)
+         )
+         (if
+          (i32.eqz
+           (call $~lib/string/String.__eq
+            (call $~lib/rt/__tmptostack
+             (local.get $value)
+            )
+            (i32.const 432)
+           )
+          )
+          (then
+           (call $~lib/builtins/abort
+            (i32.const 0)
+            (i32.const 736)
+            (i32.const 52)
+            (i32.const 9)
+           )
+           (unreachable)
+          )
+         )
+         (br $break|1)
+        )
+        (if
+         (i32.eqz
+          (call $~lib/string/String.__eq
+           (call $~lib/rt/__tmptostack
+            (local.get $value)
+           )
+           (i32.const 464)
+          )
+         )
+         (then
+          (call $~lib/builtins/abort
+           (i32.const 0)
+           (i32.const 736)
+           (i32.const 55)
+           (i32.const 9)
+          )
+          (unreachable)
+         )
+        )
+        (br $break|1)
+       )
+       (if
+        (i32.eqz
+         (call $~lib/string/String.__eq
+          (call $~lib/rt/__tmptostack
+           (local.get $value)
+          )
+          (i32.const 496)
+         )
+        )
+        (then
+         (call $~lib/builtins/abort
+          (i32.const 0)
+          (i32.const 736)
+          (i32.const 58)
+          (i32.const 9)
+         )
+         (unreachable)
+        )
+       )
+       (br $break|1)
+      )
+      (if
+       (i32.eqz
+        (i32.const 0)
+       )
+       (then
+        (call $~lib/builtins/abort
+         (i32.const 0)
+         (i32.const 736)
+         (i32.const 61)
+         (i32.const 9)
+        )
+        (unreachable)
+       )
+      )
+     )
+     (local.set $cnt
+      (i32.add
+       (local.get $cnt)
+       (i32.const 1)
+      )
+     )
+     (local.set $4
+      (call $~lib/rt/__localtostack
+       (call $std/iterator/MyIterator#next
+        (call $~lib/rt/__tmptostack
+         (local.get $3)
+        )
+       )
+      )
+     )
+     (br $for-of-loop|0)
+    )
+   )
+  )
+ )
  (func $start:std/iterator
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
@@ -3929,7 +4116,8 @@
     (i32.const 320)
    )
   )
-  (call $std/iterator/test)
+  (call $std/iterator/test1)
+  (call $std/iterator/test2)
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)

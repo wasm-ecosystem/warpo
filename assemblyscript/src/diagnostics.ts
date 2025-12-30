@@ -458,4 +458,14 @@ export abstract class DiagnosticEmitter {
   ): void {
     this.emitDiagnostic(code, DiagnosticCategory.Error, range, relatedRange, arg0, arg1, arg2);
   }
+
+  /**
+   * Whether any diagnostics have been emitted.
+   * It is useful for assertion.
+   * AS will try to compile even after an error, so invalid IR ​​need to be considered during compilation.
+   * This function can effectively restrict the IR in the happy path.
+   */
+  protected hasDiag(): bool {
+    return this.diagnostics.length > 0;
+  }
 }

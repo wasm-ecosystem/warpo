@@ -2608,8 +2608,157 @@ export class Compiler extends DiagnosticEmitter {
   }
 
   private compileForOfStatement(statement: ForOfStatement): ExpressionRef {
-    this.error(DiagnosticCode.Not_implemented_0, statement.range, "Iterators");
-    return this.module.unreachable();
+    const module = this.module;
+    const program = this.program;
+    const stmts = new Array<ExpressionRef>();
+    const iterable = statement.iterable;
+    const body = statement.body;
+    if (
+      statement.variable.kind != NodeKind.Variable ||
+      (<VariableStatement>statement.variable).declarations.length != 1
+    ) {
+      this.error(DiagnosticCode.Not_implemented_0, statement.variable.range, "for...of without variable declaration");
+      return module.unreachable();
+    }
+    const variable = (<VariableStatement>statement.variable).declarations[0];
+
+    const iterableExpr = this.compileExpression(iterable, Type.auto);
+    const iterableType = this.currentType;
+    const outerFlow = this.currentFlow;
+    const flow = outerFlow.fork();
+    this.currentFlow = flow;
+
+    // put iterableExpr to local to ensure lifetime
+    const iterableLocal = outerFlow.getTempLocal(iterableType);
+    stmts.push(module.local_set(iterableLocal.index, iterableExpr, iterableType.isManaged));
+
+    // initialize iterator
+    // let it = iterable[Symbol.iterator](), _tmp = it.next();
+    const iterableClass = iterableType.getClassOrWrapper(program);
+    if (iterableClass == null || !iterableClass.implementsPrototype(program.iterablePrototype)) {
+      this.error(
+        DiagnosticCode.Type_0_must_have_a_Symbol_iterator_method_that_returns_an_iterator,
+        iterable.range,
+        iterableType.toString()
+      );
+      return module.unreachable();
+    }
+    const iteratorMethod = iterableClass.getMethod(program.iteratorMethodName);
+    assert(iteratorMethod || this.hasDiag());
+    if (iteratorMethod == null) return module.unreachable();
+    const iteratorExpr = this.compileCallDirect(
+      iteratorMethod,
+      [],
+      iterable,
+      module.local_get(iterableLocal.index, iterableType.toRef())
+    );
+    const iteratorType = this.currentType;
+    const iteratorClass = iteratorType.getClassOrWrapper(program);
+    const iteratorLocal = outerFlow.getTempLocal(iteratorType);
+    stmts.push(module.local_set(iteratorLocal.index, iteratorExpr, iteratorType.isManaged));
+    assert(iteratorClass || this.hasDiag());
+    if (iteratorClass == null) return module.unreachable();
+    const nextMethod = iteratorClass.getMethod("next");
+    assert(nextMethod || this.hasDiag());
+    if (nextMethod == null) return module.unreachable();
+    const tmpExpr = this.compileCallDirect(
+      nextMethod,
+      [],
+      iterable,
+      module.local_get(iteratorLocal.index, iteratorType.toRef())
+    );
+    const tmpType = this.currentType;
+    const tmpClass = tmpType.getClassOrWrapper(program);
+    const tmpLocal = outerFlow.getTempLocal(tmpType);
+    stmts.push(module.local_set(tmpLocal.index, tmpExpr, tmpType.isManaged));
+
+    assert(tmpClass || this.hasDiag());
+    if (tmpClass == null) return module.unreachable();
+
+    const getDone = assert(
+      assert(this.resolver.resolveProperty(<PropertyPrototype>assert(tmpClass.getMember("done")))).getterInstance
+    );
+    const getValue = assert(
+      assert(this.resolver.resolveProperty(<PropertyPrototype>assert(tmpClass.getMember("value")))).getterInstance
+    );
+    // compile loop body
+    const isNotDoneExpr = module.unary(
+      UnaryOp.EqzI32,
+      this.compileCallDirect(getDone, [], statement, module.local_get(tmpLocal.index, tmpType.toRef()))
+    );
+
+    // TODO: copy from for statement, maybe refactored into a common function
+    const bodyFlow = flow.forkThen(isNotDoneExpr, /** newBreakContext= */ true);
+    const label = bodyFlow.pushControlFlowLabel();
+    const breakLabel = `for-of-break${label}`;
+    bodyFlow.breakLabel = breakLabel;
+    const continueLabel = `for-of-continue|${label}`;
+    bodyFlow.continueLabel = continueLabel;
+    const loopLabel = `for-of-loop|${label}`;
+    this.currentFlow = bodyFlow;
+    const bodyStmts = new Array<ExpressionRef>();
+
+    const variableExpr = this.compileCallDirect(
+      getValue,
+      [],
+      variable,
+      module.local_get(tmpLocal.index, tmpType.toRef())
+    );
+    const variableType = this.currentType;
+    // body flow is new created, there are definitely no duplicate identifier.
+    const variableLocal = bodyFlow.addScopedLocal(variable.name.text, variableType);
+    if (variable.is(CommonFlags.Const)) bodyFlow.setLocalFlag(variableLocal.index, LocalFlags.Constant);
+    bodyStmts.push(this.makeLocalAssignment(variableLocal, variableExpr, variableType, false));
+    if (body.kind == NodeKind.Block) {
+      this.compileStatements((<BlockStatement>body).statements, bodyStmts);
+    } else {
+      bodyStmts.push(this.compileStatement(body));
+    }
+    bodyFlow.popControlFlowLabel(label);
+    bodyFlow.breakLabel = null;
+    bodyFlow.continueLabel = null;
+
+    const possiblyFallsThrough = !bodyFlow.isAny(FlowFlags.Terminates | FlowFlags.Breaks);
+    const possiblyContinues = bodyFlow.isAny(FlowFlags.Continues | FlowFlags.ConditionallyContinues);
+    const possiblyBreaks = bodyFlow.isAny(FlowFlags.Breaks | FlowFlags.ConditionallyBreaks);
+
+    if (possiblyContinues) {
+      bodyStmts[0] = module.block(continueLabel, bodyStmts);
+      bodyStmts.length = 1;
+    }
+
+    flow.mergeBranch(bodyFlow);
+
+    // compile the incrementor if it possibly executes
+    const possiblyLoops = possiblyContinues || possiblyFallsThrough;
+    if (possiblyLoops) {
+      bodyStmts.push(
+        module.local_set(
+          tmpLocal.index,
+          this.compileCallDirect(nextMethod, [], iterable, module.local_get(iteratorLocal.index, iteratorType.toRef())),
+          tmpType.isManaged
+        )
+      );
+      bodyStmts.push(module.br(loopLabel));
+    }
+
+    // finalize
+    outerFlow.inherit(flow);
+    this.currentFlow = outerFlow;
+    bodyFlow.addLocalsToBlock(bodyStmts);
+    let expr = module.if(isNotDoneExpr, module.flatten(bodyStmts));
+    if (possiblyLoops) {
+      expr = module.loop(loopLabel, expr);
+    }
+    if (possiblyBreaks) {
+      expr = module.block(breakLabel, [expr]);
+    }
+    stmts.push(expr);
+    if (outerFlow.is(FlowFlags.Terminates)) {
+      stmts.push(module.unreachable());
+    }
+    flow.addLocalsToBlock(stmts);
+    return module.flatten(stmts);
   }
 
   private compileIfStatement(statement: IfStatement): ExpressionRef {

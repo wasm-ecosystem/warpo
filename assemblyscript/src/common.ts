@@ -245,6 +245,9 @@ export namespace CommonNames {
   export const Float64Array = "Float64Array";
   export const TemplateStringsArray = "TemplateStringsArray";
   export const Error = "Error";
+  export const Iterable = "Iterable";
+  export const Symbol = "Symbol";
+  export const SymbolIterator = "iterator";
   // runtime
   export const abort = "abort";
   export const trace = "trace";

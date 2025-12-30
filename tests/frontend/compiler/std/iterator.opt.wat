@@ -3,10 +3,11 @@
  (type $1 (func (param i32)))
  (type $2 (func (param i32 i32)))
  (type $3 (func (param i32 i32) (result i32)))
- (type $4 (func (param i32 i32 i32 i32)))
- (type $5 (func (param i32 i32 i32)))
- (type $6 (func (param i32 i32 i64)))
- (type $7 (func (param i32) (result i32)))
+ (type $4 (func (param i32) (result i32)))
+ (type $5 (func (param i32 i32 i32 i32)))
+ (type $6 (func (param i32 i32 i32)))
+ (type $7 (func (param i32 i32 i64)))
+ (type $8 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33600))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -46,7 +47,8 @@
  (data $14.1 (i32.const 728) "\02\00\00\00\1e\00\00\00s\00t\00d\00/\00i\00t\00e\00r\00a\00t\00o\00r\00.\00t\00s")
  (data $15 (i32.const 784) "\0b\00\00\00 \00\00\00 \00\00\00 ")
  (data $15.1 (i32.const 808) " \00\00\00\02A\00\00\02\t\00\00\00\00\00\00 ")
- (export "test" (func $std/iterator/test))
+ (export "test1" (func $std/iterator/test1))
+ (export "test2" (func $std/iterator/test2))
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -1578,6 +1580,100 @@
    end
   end
  )
+ (func $std/iterator/MyIterable#constructor (result i32)
+  (local $0 i32)
+  (local $1 i32)
+  (local $2 i32)
+  i32.const 4
+  call $~lib/rt/__decrease_sp
+  i32.const 4
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
+  local.get $0
+  i32.eqz
+  if
+   i32.const 0
+   i32.const 0
+   call $~lib/rt/itcms/__new
+   local.set $0
+  end
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
+  i32.const 4
+  call $~lib/rt/__decrease_sp
+  i32.const 12
+  i32.const 1
+  call $~lib/rt/itcms/__new
+  local.tee $2
+  i32.const 528
+  i32.const 12
+  memory.copy
+  global.get $~lib/memory/__stack_pointer
+  local.get $2
+  i32.store align=1
+  i32.const 16
+  i32.const 6
+  call $~lib/rt/itcms/__new
+  local.tee $1
+  local.get $2
+  i32.store
+  local.get $1
+  local.get $2
+  call $~lib/rt/itcms/__link
+  local.get $1
+  local.get $2
+  i32.store offset=4
+  local.get $1
+  i32.const 12
+  i32.store offset=8
+  local.get $1
+  i32.const 3
+  i32.store offset=12
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
+  local.get $1
+  i32.store
+  local.get $0
+  local.get $1
+  call $~lib/rt/itcms/__link
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
+ )
+ (func $"std/iterator/MyIterable#[~lib/symbol/Symbol.iterator]" (param $0 i32) (result i32)
+  (local $1 i32)
+  i32.const 4
+  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.load
+  local.tee $0
+  i32.store align=1
+  i32.const 8
+  i32.const 8
+  call $~lib/rt/itcms/__new
+  local.tee $1
+  local.get $0
+  i32.store offset=4
+  local.get $1
+  local.get $0
+  call $~lib/rt/itcms/__link
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $1
+ )
  (func $std/iterator/MyIterator#next (param $0 i32) (result i32)
   (local $1 i32)
   local.get $0
@@ -1764,100 +1860,20 @@
   end
   i32.eqz
  )
- (func $std/iterator/test
+ (func $std/iterator/test1
   (local $0 i32)
   (local $1 i32)
   (local $2 i32)
-  (local $3 i32)
   i32.const 8
   call $~lib/rt/__decrease_sp
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  i32.const 4
-  i32.const 4
-  call $~lib/rt/itcms/__new
+  call $std/iterator/MyIterable#constructor
   local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
   local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   local.set $0
-  end
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  i32.const 12
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.tee $2
-  i32.const 528
-  i32.const 12
-  memory.copy
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store align=1
-  i32.const 16
-  i32.const 6
-  call $~lib/rt/itcms/__new
-  local.tee $1
-  local.get $2
-  i32.store
-  local.get $1
-  local.get $2
-  call $~lib/rt/itcms/__link
-  local.get $1
-  local.get $2
-  i32.store offset=4
-  local.get $1
-  i32.const 12
-  i32.store offset=8
-  local.get $1
-  i32.const 3
-  i32.store offset=12
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  local.get $1
-  i32.store
-  local.get $0
-  local.get $1
-  call $~lib/rt/itcms/__link
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.load
-  local.tee $0
-  i32.store align=1
-  i32.const 8
-  i32.const 8
-  call $~lib/rt/itcms/__new
-  local.tee $1
-  local.get $0
-  i32.store offset=4
-  local.get $1
-  local.get $0
-  call $~lib/rt/itcms/__link
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
+  call $"std/iterator/MyIterable#[~lib/symbol/Symbol.iterator]"
+  local.set $1
   global.get $~lib/memory/__stack_pointer
   local.get $1
   i32.store offset=4 align=1
@@ -1875,7 +1891,7 @@
       block $case2|1
        block $case1|1
         block $case0|1
-         local.get $3
+         local.get $2
          br_table $case0|1 $case1|1 $case2|1 $case3|1
         end
         local.get $0
@@ -1930,14 +1946,115 @@
      call $~lib/builtins/abort
      unreachable
     end
-    local.get $3
+    local.get $2
     i32.const 1
     i32.add
-    local.set $3
+    local.set $2
     local.get $1
     call $std/iterator/MyIterator#next
     local.set $0
     br $for-loop|0
+   end
+  end
+  global.get $~lib/memory/__stack_pointer
+  i32.const 8
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+ )
+ (func $std/iterator/test2
+  (local $0 i32)
+  (local $1 i32)
+  (local $2 i32)
+  i32.const 8
+  call $~lib/rt/__decrease_sp
+  call $std/iterator/MyIterable#constructor
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
+  local.get $0
+  call $"std/iterator/MyIterable#[~lib/symbol/Symbol.iterator]"
+  local.set $1
+  global.get $~lib/memory/__stack_pointer
+  local.get $1
+  i32.store offset=4 align=1
+  local.get $1
+  call $std/iterator/MyIterator#next
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
+  loop $for-of-loop|0
+   local.get $0
+   if
+    local.get $0
+    i32.load
+    local.set $0
+    block $break|1
+     block $case3|1
+      block $case2|1
+       block $case1|1
+        block $case0|1
+         local.get $2
+         br_table $case0|1 $case1|1 $case2|1 $case3|1
+        end
+        local.get $0
+        i32.const 432
+        call $~lib/string/String.__eq
+        i32.eqz
+        if
+         i32.const 0
+         i32.const 736
+         i32.const 52
+         i32.const 9
+         call $~lib/builtins/abort
+         unreachable
+        end
+        br $break|1
+       end
+       local.get $0
+       i32.const 464
+       call $~lib/string/String.__eq
+       i32.eqz
+       if
+        i32.const 0
+        i32.const 736
+        i32.const 55
+        i32.const 9
+        call $~lib/builtins/abort
+        unreachable
+       end
+       br $break|1
+      end
+      local.get $0
+      i32.const 496
+      call $~lib/string/String.__eq
+      i32.eqz
+      if
+       i32.const 0
+       i32.const 736
+       i32.const 58
+       i32.const 9
+       call $~lib/builtins/abort
+       unreachable
+      end
+      br $break|1
+     end
+     i32.const 0
+     i32.const 736
+     i32.const 61
+     i32.const 9
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $2
+    i32.const 1
+    i32.add
+    local.set $2
+    local.get $1
+    call $std/iterator/MyIterator#next
+    local.set $0
+    br $for-of-loop|0
    end
   end
   global.get $~lib/memory/__stack_pointer
@@ -2057,7 +2174,8 @@
   i32.store
   i32.const 320
   global.set $~lib/rt/itcms/fromSpace
-  call $std/iterator/test
+  call $std/iterator/test1
+  call $std/iterator/test2
  )
  (func $~lib/rt/__decrease_sp (param $0 i32)
   global.get $~lib/memory/__stack_pointer
