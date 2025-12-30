@@ -1646,8 +1646,8 @@ export class Program extends DiagnosticEmitter {
         );
       }
       if (interfaceProperty.parent.kind != ElementKind.InterfacePrototype) {
-        // Interface fields/properties can be impled by either, but other
-        // members must match to retain compatiblity with TS/JS.
+        // Interface fields/properties can be implemented by either, but other
+        // members must match to retain compatibility with TS/JS.
         const implIsField = implProperty.isField;
         if (implIsField != interfaceProperty.isField) {
           if (implIsField) {
