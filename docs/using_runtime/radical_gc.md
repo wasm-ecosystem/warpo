@@ -1,7 +1,7 @@
 # Radical GC runtime
 
 <p style="display: flex; gap: 10px;">
-  <img src="/version/nightly.svg" />
+  <img src="/version/2.3.0.svg" />
   <img src="/stability/experimental.svg"  />
 </p>
 

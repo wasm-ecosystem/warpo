@@ -19,7 +19,7 @@ In AssemblyScript, we hope everything is static, TS/JS computed property name wi
 ### Computed Property Names as Method Name
 
 <p style="display: flex; gap: 10px;">
-  <img src="/version/nightly.svg" />
+  <img src="/version/2.3.0.svg" />
   <img src="/stability/stable.svg"  />
 </p>
 
