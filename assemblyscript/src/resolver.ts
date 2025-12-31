@@ -66,6 +66,7 @@ import {
   ExpressionStatement,
   PropertyName,
   ComputedPropertyName,
+  TupleTypeNode,
 } from "./ast";
 
 import { Type, Signature, typesToString, TypeKind, TypeFlags } from "./types";
@@ -138,6 +139,10 @@ export class Resolver extends DiagnosticEmitter {
       }
       case NodeKind.FunctionType: {
         resolved = this.resolveFunctionType(<FunctionTypeNode>node, flow, ctxElement, ctxTypes, reportMode);
+        break;
+      }
+      case NodeKind.TupleType: {
+        resolved = this.resolveTupleType(<TupleTypeNode>node, flow, ctxElement, ctxTypes, reportMode);
         break;
       }
       default:
@@ -349,6 +354,23 @@ export class Resolver extends DiagnosticEmitter {
     }
     let signature = Signature.create(this.program, parameterTypes, returnType, thisType, requiredParameters, hasRest);
     return node.isNullable ? signature.type.asNullable() : signature.type;
+  }
+
+  /** Resolves a {@link TupleType} to a concrete {@link Type}. */
+  private resolveTupleType(
+    /** The type to resolve. */
+    node: TupleTypeNode,
+    /** The flow */
+    flow: Flow | null,
+    /** Contextual element. */
+    ctxElement: Element,
+    /** Contextual types, i.e. `T`. */
+    ctxTypes: Map<string, Type> | null = null,
+    /** How to proceed with eventual diagnostics. */
+    reportMode: ReportMode = ReportMode.Report
+  ): Type | null {
+    this.error(DiagnosticCode.Not_implemented_0, node.range, "tuple type");
+    return null;
   }
 
   private resolveBuiltinNotNullableType(
@@ -680,6 +702,7 @@ export class Resolver extends DiagnosticEmitter {
     /** The names of the type parameters being inferred. */
     typeParameterNames: Set<string>
   ): void {
+    // TODO: use switch
     if (node.kind == NodeKind.NamedType) {
       let namedTypeNode = <NamedTypeNode>node;
       let typeArgumentNodes = namedTypeNode.typeArguments;
@@ -747,6 +770,8 @@ export class Resolver extends DiagnosticEmitter {
         }
         return;
       }
+    } else if (node.kind == NodeKind.TupleType) {
+      this.error(DiagnosticCode.Not_implemented_0, node.range, "tuple type");
     }
   }
 

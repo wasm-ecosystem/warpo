@@ -67,6 +67,7 @@ import {
   MethodDeclaration,
   JsonSource,
   PropertyName,
+  TupleTypeNode,
 } from "./ast";
 import { JsonParser } from "./json";
 
@@ -560,6 +561,18 @@ export class Parser extends DiagnosticEmitter {
       }
       if (!parameters) parameters = [];
       type = Node.createNamedType(name, parameters, false, tn.range(startPos, tn.pos));
+    } else if (token == Token.OpenBracket) {
+      let items = new Array<TypeNode>();
+      do {
+        let subTypeNode = this.parseType(tn, true, suppressErrors);
+        if (subTypeNode == null) return null;
+        items.push(subTypeNode);
+      } while (tn.skip(Token.Comma));
+      if (!tn.skip(Token.CloseBracket)) {
+        if (!suppressErrors) this.error(DiagnosticCode._0_expected, tn.range(), "]");
+        return null;
+      }
+      type = Node.createTupleType(items, tn.range(startPos, tn.pos));
     } else {
       if (!suppressErrors) {
         this.error(DiagnosticCode.Type_expected, tn.range());
@@ -3824,6 +3837,13 @@ function isCircularTypeAlias(name: string, type: TypeNode): bool {
       let parameters = functionType.parameters;
       for (let i = 0, k = parameters.length; i < k; i++) {
         if (isCircularTypeAlias(name, parameters[i].type)) return true;
+      }
+      break;
+    }
+    case NodeKind.TupleType: {
+      let tupleType = <TupleTypeNode>type;
+      for (let i = 0, k = tupleType.elementTypes.length; i < k; i++) {
+        if (isCircularTypeAlias(name, tupleType.elementTypes[i])) return true;
       }
       break;
     }

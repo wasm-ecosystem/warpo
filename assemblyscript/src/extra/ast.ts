@@ -82,6 +82,7 @@ import {
   DeclarationBase,
   ComputedPropertyName,
   PropertyName,
+  TupleTypeNode,
 } from "../ast";
 
 import { operatorTokenToString } from "../tokenizer";
@@ -126,6 +127,11 @@ export class ASTBuilder {
         this.visitFunctionTypeNode(<FunctionTypeNode>node);
         break;
       }
+      case NodeKind.TupleType: {
+        this.visitTupleTypeNode(<TupleTypeNode>node);
+        break;
+      }
+
       case NodeKind.TypeParameter: {
         this.visitTypeParameter(<TypeParameterNode>node);
         break;
@@ -403,6 +409,10 @@ export class ASTBuilder {
         this.visitFunctionTypeNode(<FunctionTypeNode>node);
         break;
       }
+      case NodeKind.TupleType: {
+        this.visitTupleTypeNode(<TupleTypeNode>node);
+        break;
+      }
       default:
         assert(false);
     }
@@ -465,6 +475,17 @@ export class ASTBuilder {
       sb.push(") => void");
     }
     if (isNullable) sb.push(") | null");
+  }
+
+  visitTupleTypeNode(node: TupleTypeNode): void {
+    let sb = this.sb;
+    sb.push("[");
+    for (let i = 0, k = node.elementTypes.length; i < k; ++i) {
+      this.visitTypeNode(node.elementTypes[i]);
+      if (i != k - 1) sb.push(", ");
+    }
+    sb.push("]");
+    if (node.isNullable) sb.push(" | null");
   }
 
   visitTypeParameter(node: TypeParameterNode): void {

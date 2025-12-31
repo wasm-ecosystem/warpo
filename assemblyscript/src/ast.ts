@@ -25,6 +25,7 @@ export const enum NodeKind {
   // types
   NamedType,
   FunctionType,
+  TupleType,
   TypeName,
   TypeParameter,
   Parameter,
@@ -134,6 +135,10 @@ export abstract class Node implements INode {
     range: Range
   ): FunctionTypeNode {
     return new FunctionTypeNode(parameters, returnType, explicitThisType, isNullable, range);
+  }
+
+  static createTupleType(types: TypeNode[], range: Range): TupleTypeNode {
+    return new TupleTypeNode(types, range);
   }
 
   static createOmittedType(range: Range): NamedTypeNode {
@@ -736,36 +741,7 @@ export abstract class TypeNode extends Node {
   currentlyResolving: bool = false;
 
   /** Tests if this type has a generic component matching one of the given type parameters. */
-  hasGenericComponent(typeParameterNodes: TypeParameterNode[]): bool {
-    if (this.kind == NodeKind.NamedType) {
-      let namedTypeNode = <NamedTypeNode>changetype<TypeNode>(this); // TS
-      if (!namedTypeNode.name.next) {
-        let typeArgumentNodes = namedTypeNode.typeArguments;
-        if (typeArgumentNodes && typeArgumentNodes.length > 0) {
-          for (let i = 0, k = typeArgumentNodes.length; i < k; ++i) {
-            if (typeArgumentNodes[i].hasGenericComponent(typeParameterNodes)) return true;
-          }
-        } else {
-          let name = namedTypeNode.name.identifier.text;
-          for (let i = 0, k = typeParameterNodes.length; i < k; ++i) {
-            if (typeParameterNodes[i].name.text == name) return true;
-          }
-        }
-      }
-    } else if (this.kind == NodeKind.FunctionType) {
-      let functionTypeNode = <FunctionTypeNode>changetype<TypeNode>(this); // TS
-      let parameterNodes = functionTypeNode.parameters;
-      for (let i = 0, k = parameterNodes.length; i < k; ++i) {
-        if (parameterNodes[i].type.hasGenericComponent(typeParameterNodes)) return true;
-      }
-      if (functionTypeNode.returnType.hasGenericComponent(typeParameterNodes)) return true;
-      let explicitThisType = functionTypeNode.explicitThisType;
-      if (explicitThisType && explicitThisType.hasGenericComponent(typeParameterNodes)) return true;
-    } else {
-      assert(false);
-    }
-    return false;
-  }
+  abstract hasGenericComponent(typeParameterNodes: TypeParameterNode[]): bool;
 }
 
 /** Represents a type name. */
@@ -807,6 +783,23 @@ export class NamedTypeNode extends TypeNode {
   get isNull(): bool {
     return this.name.identifier.text == "null";
   }
+
+  hasGenericComponent(typeParameterNodes: TypeParameterNode[]): bool {
+    if (!this.name.next) {
+      let typeArgumentNodes = this.typeArguments;
+      if (typeArgumentNodes && typeArgumentNodes.length > 0) {
+        for (let i = 0, k = typeArgumentNodes.length; i < k; ++i) {
+          if (typeArgumentNodes[i].hasGenericComponent(typeParameterNodes)) return true;
+        }
+      } else {
+        let name = this.name.identifier.text;
+        for (let i = 0, k = typeParameterNodes.length; i < k; ++i) {
+          if (typeParameterNodes[i].name.text == name) return true;
+        }
+      }
+    }
+    return false;
+  }
 }
 
 /** Represents a function type. */
@@ -824,6 +817,34 @@ export class FunctionTypeNode extends TypeNode {
     range: Range
   ) {
     super(NodeKind.FunctionType, isNullable, range);
+  }
+
+  hasGenericComponent(typeParameterNodes: TypeParameterNode[]): bool {
+    let parameterNodes = this.parameters;
+    for (let i = 0, k = parameterNodes.length; i < k; ++i) {
+      if (parameterNodes[i].type.hasGenericComponent(typeParameterNodes)) return true;
+    }
+    if (this.returnType.hasGenericComponent(typeParameterNodes)) return true;
+    let explicitThisType = this.explicitThisType;
+    if (explicitThisType && explicitThisType.hasGenericComponent(typeParameterNodes)) return true;
+    return false;
+  }
+}
+
+export class TupleTypeNode extends TypeNode {
+  constructor(
+    public elementTypes: TypeNode[],
+    range: Range
+  ) {
+    super(NodeKind.TupleType, false, range);
+    assert(elementTypes.length > 0);
+  }
+
+  hasGenericComponent(typeParameterNodes: TypeParameterNode[]): bool {
+    for (let i = 0, k = this.elementTypes.length; i < k; i++) {
+      if (this.elementTypes[i].hasGenericComponent(typeParameterNodes)) return true;
+    }
+    return false;
   }
 }
 
