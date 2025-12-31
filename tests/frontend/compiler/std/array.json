@@ -1,4 +1,3 @@
 {
-  "asc_flags": ["--exportStart _start"],
-  "asc_rtrace": true
+  "asc_flags": ["--exportStart _start"]
 }
