@@ -37,9 +37,9 @@
  (global $~lib/builtins/u32.MAX_VALUE i32 (i32.const -1))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 2272))
- (global $~lib/memory/__data_end i32 (i32.const 2304))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 35072))
- (global $~lib/memory/__heap_base i32 (i32.const 35072))
+ (global $~lib/memory/__data_end i32 (i32.const 2312))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 35080))
+ (global $~lib/memory/__heap_base i32 (i32.const 35080))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\08\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00")
  (data $1 (i32.const 44) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
@@ -57,7 +57,7 @@
  (data $13 (i32.const 716) "0\000\000\001\000\002\000\003\000\004\000\005\000\006\000\007\000\008\000\009\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\007\001\008\001\009\002\000\002\001\002\002\002\003\002\004\002\005\002\006\002\007\002\008\002\009\003\000\003\001\003\002\003\003\003\004\003\005\003\006\003\007\003\008\003\009\004\000\004\001\004\002\004\003\004\004\004\005\004\006\004\007\004\008\004\009\005\000\005\001\005\002\005\003\005\004\005\005\005\006\005\007\005\008\005\009\006\000\006\001\006\002\006\003\006\004\006\005\006\006\006\007\006\008\006\009\007\000\007\001\007\002\007\003\007\004\007\005\007\006\007\007\007\008\007\009\008\000\008\001\008\002\008\003\008\004\008\005\008\006\008\007\008\008\008\009\009\000\009\001\009\002\009\003\009\004\009\005\009\006\009\007\009\008\009\009\00")
  (data $14 (i32.const 1116) "\1c\04\00\00\00\00\00\00\00\00\00\00\02\00\00\00\00\04\00\000\000\000\001\000\002\000\003\000\004\000\005\000\006\000\007\000\008\000\009\000\00a\000\00b\000\00c\000\00d\000\00e\000\00f\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\007\001\008\001\009\001\00a\001\00b\001\00c\001\00d\001\00e\001\00f\002\000\002\001\002\002\002\003\002\004\002\005\002\006\002\007\002\008\002\009\002\00a\002\00b\002\00c\002\00d\002\00e\002\00f\003\000\003\001\003\002\003\003\003\004\003\005\003\006\003\007\003\008\003\009\003\00a\003\00b\003\00c\003\00d\003\00e\003\00f\004\000\004\001\004\002\004\003\004\004\004\005\004\006\004\007\004\008\004\009\004\00a\004\00b\004\00c\004\00d\004\00e\004\00f\005\000\005\001\005\002\005\003\005\004\005\005\005\006\005\007\005\008\005\009\005\00a\005\00b\005\00c\005\00d\005\00e\005\00f\006\000\006\001\006\002\006\003\006\004\006\005\006\006\006\007\006\008\006\009\006\00a\006\00b\006\00c\006\00d\006\00e\006\00f\007\000\007\001\007\002\007\003\007\004\007\005\007\006\007\007\007\008\007\009\007\00a\007\00b\007\00c\007\00d\007\00e\007\00f\008\000\008\001\008\002\008\003\008\004\008\005\008\006\008\007\008\008\008\009\008\00a\008\00b\008\00c\008\00d\008\00e\008\00f\009\000\009\001\009\002\009\003\009\004\009\005\009\006\009\007\009\008\009\009\009\00a\009\00b\009\00c\009\00d\009\00e\009\00f\00a\000\00a\001\00a\002\00a\003\00a\004\00a\005\00a\006\00a\007\00a\008\00a\009\00a\00a\00a\00b\00a\00c\00a\00d\00a\00e\00a\00f\00b\000\00b\001\00b\002\00b\003\00b\004\00b\005\00b\006\00b\007\00b\008\00b\009\00b\00a\00b\00b\00b\00c\00b\00d\00b\00e\00b\00f\00c\000\00c\001\00c\002\00c\003\00c\004\00c\005\00c\006\00c\007\00c\008\00c\009\00c\00a\00c\00b\00c\00c\00c\00d\00c\00e\00c\00f\00d\000\00d\001\00d\002\00d\003\00d\004\00d\005\00d\006\00d\007\00d\008\00d\009\00d\00a\00d\00b\00d\00c\00d\00d\00d\00e\00d\00f\00e\000\00e\001\00e\002\00e\003\00e\004\00e\005\00e\006\00e\007\00e\008\00e\009\00e\00a\00e\00b\00e\00c\00e\00d\00e\00e\00e\00f\00f\000\00f\001\00f\002\00f\003\00f\004\00f\005\00f\006\00f\007\00f\008\00f\009\00f\00a\00f\00b\00f\00c\00f\00d\00f\00e\00f\00f\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $15 (i32.const 2172) "\\\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00H\00\00\000\001\002\003\004\005\006\007\008\009\00a\00b\00c\00d\00e\00f\00g\00h\00i\00j\00k\00l\00m\00n\00o\00p\00q\00r\00s\00t\00u\00v\00w\00x\00y\00z\00\00\00\00\00")
- (data $16 (i32.const 2272) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\02\00\00\02\t\00\00 \00\00\00")
+ (data $16 (i32.const 2272) "\t\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\02\00\00 \00\00\00\02\t\00\00 \00\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "arrayAccess" (func $resolve-access/arrayAccess))
@@ -4329,7 +4329,7 @@
      (call $~lib/rt/__localtostack
       (call $~lib/rt/itcms/__new
        (i32.const 8)
-       (i32.const 6)
+       (i32.const 8)
       )
      )
     )
@@ -4665,50 +4665,56 @@
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
    (block $resolve-access/Container
-    (block $~lib/array/Array<i32>
-     (block $~lib/array/Array<u64>
-      (block $~lib/arraybuffer/ArrayBufferView
-       (block $~lib/string/String
-        (block $~lib/arraybuffer/ArrayBuffer
-         (block $~lib/object/Object
-          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<u64> $~lib/array/Array<i32> $resolve-access/Container $invalid
-           (i32.load
-            (i32.sub
-             (local.get $0)
-             (i32.const 8)
+    (block $~lib/iterator/Iterable<i32>
+     (block $~lib/array/Array<i32>
+      (block $~lib/iterator/Iterable<u64>
+       (block $~lib/array/Array<u64>
+        (block $~lib/arraybuffer/ArrayBufferView
+         (block $~lib/string/String
+          (block $~lib/arraybuffer/ArrayBuffer
+           (block $~lib/object/Object
+            (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<u64> $~lib/iterator/Iterable<u64> $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $resolve-access/Container $invalid
+             (i32.load
+              (i32.sub
+               (local.get $0)
+               (i32.const 8)
+              )
+             )
             )
            )
+           (return)
           )
+          (return)
          )
          (return)
         )
+        (block
+         (call $~lib/arraybuffer/ArrayBufferView~visit
+          (local.get $0)
+          (local.get $1)
+         )
+         (return)
+        )
+       )
+       (block
+        (call $~lib/array/Array<u64>~visit
+         (local.get $0)
+         (local.get $1)
+        )
         (return)
        )
-       (return)
       )
-      (block
-       (call $~lib/arraybuffer/ArrayBufferView~visit
-        (local.get $0)
-        (local.get $1)
-       )
-       (return)
-      )
+      (return)
      )
      (block
-      (call $~lib/array/Array<u64>~visit
+      (call $~lib/array/Array<i32>~visit
        (local.get $0)
        (local.get $1)
       )
       (return)
      )
     )
-    (block
-     (call $~lib/array/Array<i32>~visit
-      (local.get $0)
-      (local.get $1)
-     )
-     (return)
-    )
+    (return)
    )
    (return)
   )

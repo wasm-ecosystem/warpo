@@ -49,9 +49,9 @@
  (global $issues/2873/f32arr i32 (i32.const 2080))
  (global $issues/2873/f64arr i32 (i32.const 2288))
  (global $~lib/rt/__rtti_base i32 (i32.const 2320))
- (global $~lib/memory/__data_end i32 (i32.const 2348))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 35116))
- (global $~lib/memory/__heap_base i32 (i32.const 35116))
+ (global $~lib/memory/__data_end i32 (i32.const 2356))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 35124))
+ (global $~lib/memory/__heap_base i32 (i32.const 35124))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\06\00\00\000\00.\000\00\00\00\00\00\00\00")
  (data $1 (i32.const 44) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\06\00\00\00N\00a\00N\00\00\00\00\00\00\00")
@@ -78,8 +78,8 @@
  (data $22 (i32.const 2140) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00,\00\00\00\00\00\00\00\00\00\00\00")
  (data $23 (i32.const 2172) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\16\00\00\001\00.\001\00,\002\00.\002\00,\003\00.\003\00\00\00\00\00\00\00")
  (data $24 (i32.const 2220) ",\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\18\00\00\00\9a\99\99\99\99\99\f1?\9a\99\99\99\99\99\01@ffffff\n@\00\00\00\00")
- (data $25 (i32.const 2268) ",\00\00\00\00\00\00\00\00\00\00\00\05\00\00\00\10\00\00\00\c0\08\00\00\c0\08\00\00\18\00\00\00\03\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $26 (i32.const 2320) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\19\00\00\02\1a\00\00")
+ (data $25 (i32.const 2268) ",\00\00\00\00\00\00\00\00\00\00\00\06\00\00\00\10\00\00\00\c0\08\00\00\c0\08\00\00\18\00\00\00\03\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $26 (i32.const 2320) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\19\00\00 \00\00\00\02\1a\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -6177,50 +6177,56 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $~lib/array/Array<f64>
-    (block $~lib/array/Array<f32>
-     (block $~lib/arraybuffer/ArrayBufferView
-      (block $~lib/string/String
-       (block $~lib/arraybuffer/ArrayBuffer
-        (block $~lib/object/Object
-         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<f32> $~lib/array/Array<f64> $invalid
-          (i32.load
-           (i32.sub
-            (local.get $0)
-            (i32.const 8)
+   (block $~lib/iterator/Iterable<f64>
+    (block $~lib/array/Array<f64>
+     (block $~lib/iterator/Iterable<f32>
+      (block $~lib/array/Array<f32>
+       (block $~lib/arraybuffer/ArrayBufferView
+        (block $~lib/string/String
+         (block $~lib/arraybuffer/ArrayBuffer
+          (block $~lib/object/Object
+           (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<f32> $~lib/iterator/Iterable<f32> $~lib/array/Array<f64> $~lib/iterator/Iterable<f64> $invalid
+            (i32.load
+             (i32.sub
+              (local.get $0)
+              (i32.const 8)
+             )
+            )
            )
           )
+          (return)
          )
+         (return)
         )
         (return)
        )
+       (block
+        (call $~lib/arraybuffer/ArrayBufferView~visit
+         (local.get $0)
+         (local.get $1)
+        )
+        (return)
+       )
+      )
+      (block
+       (call $~lib/array/Array<f32>~visit
+        (local.get $0)
+        (local.get $1)
+       )
        (return)
       )
-      (return)
      )
-     (block
-      (call $~lib/arraybuffer/ArrayBufferView~visit
-       (local.get $0)
-       (local.get $1)
-      )
-      (return)
-     )
+     (return)
     )
     (block
-     (call $~lib/array/Array<f32>~visit
+     (call $~lib/array/Array<f64>~visit
       (local.get $0)
       (local.get $1)
      )
      (return)
     )
    )
-   (block
-    (call $~lib/array/Array<f64>~visit
-     (local.get $0)
-     (local.get $1)
-    )
-    (return)
-   )
+   (return)
   )
   (unreachable)
  )

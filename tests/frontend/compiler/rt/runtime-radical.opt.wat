@@ -9,7 +9,7 @@
  (type $7 (func (result i32)))
  (type $8 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33324))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33328))
  (global $~lib/rt/tcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/tcms/threshold (mut i32) (i32.const 16384))
  (global $~lib/rt/tcms/white (mut i32) (i32.const 0))
@@ -33,8 +33,8 @@
  (data $8.1 (i32.const 408) "\02\00\00\00*\00\00\00O\00b\00j\00e\00c\00t\00 \00a\00l\00r\00e\00a\00d\00y\00 \00p\00i\00n\00n\00e\00d")
  (data $9 (i32.const 460) "<")
  (data $9.1 (i32.const 472) "\02\00\00\00(\00\00\00O\00b\00j\00e\00c\00t\00 \00i\00s\00 \00n\00o\00t\00 \00p\00i\00n\00n\00e\00d")
- (data $10 (i32.const 528) "\06\00\00\00 \00\00\00 \00\00\00 ")
- (data $10.1 (i32.const 552) "\02\t")
+ (data $10 (i32.const 528) "\07\00\00\00 \00\00\00 \00\00\00 ")
+ (data $10.1 (i32.const 552) "\02\t\00\00 ")
  (export "__new" (func $~lib/rt/tcms/__new))
  (export "__pin" (func $~lib/rt/tcms/__pin))
  (export "__unpin" (func $~lib/rt/tcms/__unpin))
@@ -55,7 +55,7 @@
    i32.load offset=8
    i32.eqz
    local.get $0
-   i32.const 33324
+   i32.const 33328
    i32.lt_u
    i32.and
    i32.eqz
@@ -746,7 +746,7 @@
   local.set $0
   loop $while-continue|0
    local.get $0
-   i32.const 33324
+   i32.const 33328
    i32.lt_u
    if
     local.get $0
@@ -834,7 +834,7 @@
     i32.and
     local.set $1
     local.get $0
-    i32.const 33324
+    i32.const 33328
     i32.lt_u
     if
      local.get $0
@@ -857,7 +857,7 @@
      i32.const 4
      i32.add
      local.tee $4
-     i32.const 33324
+     i32.const 33328
      i32.ge_u
      if
       global.get $~lib/rt/tlsf/ROOT
@@ -1336,7 +1336,7 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 556
+  i32.const 560
   i32.lt_s
   if
    unreachable
@@ -1429,67 +1429,70 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
-   block $~lib/array/Array<i32>
-    block $rt/runtime-radical/RadicalObject
-     block $~lib/arraybuffer/ArrayBufferView
-      block $~lib/string/String
-       block $~lib/arraybuffer/ArrayBuffer
-        block $~lib/object/Object
-         local.get $0
-         i32.const 8
-         i32.sub
-         i32.load
-         br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $rt/runtime-radical/RadicalObject $~lib/array/Array<i32> $invalid
+   block $~lib/iterator/Iterable<i32>
+    block $~lib/array/Array<i32>
+     block $rt/runtime-radical/RadicalObject
+      block $~lib/arraybuffer/ArrayBufferView
+       block $~lib/string/String
+        block $~lib/arraybuffer/ArrayBuffer
+         block $~lib/object/Object
+          local.get $0
+          i32.const 8
+          i32.sub
+          i32.load
+          br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $rt/runtime-radical/RadicalObject $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $invalid
+         end
+         return
         end
         return
        end
        return
       end
+      local.get $0
+      i32.load
+      call $~lib/rt/tcms/__visit
       return
      end
      local.get $0
      i32.load
+     call $~lib/rt/tcms/__visit
+     local.get $0
+     i32.load offset=4
+     call $~lib/rt/tcms/__visit
+     local.get $0
+     i32.load offset=8
+     call $~lib/rt/tcms/__visit
+     local.get $0
+     i32.load offset=12
+     call $~lib/rt/tcms/__visit
+     local.get $0
+     i32.load offset=16
+     call $~lib/rt/tcms/__visit
+     local.get $0
+     i32.load offset=20
+     call $~lib/rt/tcms/__visit
+     local.get $0
+     i32.load offset=24
+     call $~lib/rt/tcms/__visit
+     local.get $0
+     i32.load offset=28
+     call $~lib/rt/tcms/__visit
+     local.get $0
+     i32.load offset=32
+     call $~lib/rt/tcms/__visit
+     local.get $0
+     i32.load offset=36
+     call $~lib/rt/tcms/__visit
+     local.get $0
+     i32.load offset=40
      call $~lib/rt/tcms/__visit
      return
     end
     local.get $0
     i32.load
     call $~lib/rt/tcms/__visit
-    local.get $0
-    i32.load offset=4
-    call $~lib/rt/tcms/__visit
-    local.get $0
-    i32.load offset=8
-    call $~lib/rt/tcms/__visit
-    local.get $0
-    i32.load offset=12
-    call $~lib/rt/tcms/__visit
-    local.get $0
-    i32.load offset=16
-    call $~lib/rt/tcms/__visit
-    local.get $0
-    i32.load offset=20
-    call $~lib/rt/tcms/__visit
-    local.get $0
-    i32.load offset=24
-    call $~lib/rt/tcms/__visit
-    local.get $0
-    i32.load offset=28
-    call $~lib/rt/tcms/__visit
-    local.get $0
-    i32.load offset=32
-    call $~lib/rt/tcms/__visit
-    local.get $0
-    i32.load offset=36
-    call $~lib/rt/tcms/__visit
-    local.get $0
-    i32.load offset=40
-    call $~lib/rt/tcms/__visit
     return
    end
-   local.get $0
-   i32.load
-   call $~lib/rt/tcms/__visit
    return
   end
   unreachable
@@ -1534,7 +1537,7 @@
     i32.const 0
     i32.store align=1
     global.get $~lib/memory/__stack_pointer
-    i32.const 556
+    i32.const 560
     i32.lt_s
     if
      unreachable

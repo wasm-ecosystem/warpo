@@ -30,9 +30,9 @@
  (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $~argumentsLength (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 688))
- (global $~lib/memory/__data_end i32 (i32.const 760))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33528))
- (global $~lib/memory/__heap_base i32 (i32.const 33528))
+ (global $~lib/memory/__data_end i32 (i32.const 764))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33532))
+ (global $~lib/memory/__heap_base i32 (i32.const 33532))
  (memory $0 1)
  (data $0 (i32.const 12) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
  (data $1 (i32.const 60) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00&\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00b\00u\00f\00f\00e\00r\00.\00t\00s\00\00\00\00\00\00\00")
@@ -47,7 +47,7 @@
  (data $10 (i32.const 524) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00$\00\00\00s\00t\00d\00/\00a\00r\00r\00a\00y\00b\00u\00f\00f\00e\00r\00.\00t\00s\00\00\00\00\00\00\00\00\00")
  (data $11 (i32.const 588) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\08\00\00\00\01\00\00\00\02\00\00\00\00\00\00\00")
  (data $12 (i32.const 620) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00d\00a\00t\00a\00v\00i\00e\00w\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $13 (i32.const 688) "\11\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00A\08\00\00A\00\00\00A\00\00\00\81\08\00\00\81\00\00\00\01\t\00\00\01\01\00\00\01\n\00\00\01\02\00\00\01\19\00\00\01\1a\00\00\00\00\00\00")
+ (data $13 (i32.const 688) "\12\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00 \00\00\00A\08\00\00A\00\00\00A\00\00\00\81\08\00\00\81\00\00\00\01\t\00\00\01\01\00\00\01\n\00\00\01\02\00\00\01\19\00\00\01\1a\00\00\00\00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -3547,7 +3547,7 @@
      (call $~lib/rt/__localtostack
       (call $~lib/rt/itcms/__new
        (i32.const 12)
-       (i32.const 6)
+       (i32.const 7)
       )
      )
     )
@@ -3706,7 +3706,7 @@
      (call $~lib/rt/__localtostack
       (call $~lib/rt/itcms/__new
        (i32.const 12)
-       (i32.const 10)
+       (i32.const 11)
       )
      )
     )
@@ -3785,7 +3785,7 @@
      (call $~lib/rt/__localtostack
       (call $~lib/rt/itcms/__new
        (i32.const 12)
-       (i32.const 16)
+       (i32.const 17)
       )
      )
     )
@@ -4718,41 +4718,44 @@
             (block $~lib/typedarray/Uint8ClampedArray
              (block $~lib/typedarray/Uint8Array
               (block $~lib/typedarray/Int8Array
-               (block $~lib/array/Array<i32>
-                (block $~lib/arraybuffer/ArrayBufferView
-                 (block $~lib/string/String
-                  (block $~lib/arraybuffer/ArrayBuffer
-                   (block $~lib/object/Object
-                    (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/typedarray/Int8Array $~lib/typedarray/Uint8Array $~lib/typedarray/Uint8ClampedArray $~lib/typedarray/Int16Array $~lib/typedarray/Uint16Array $~lib/typedarray/Int32Array $~lib/typedarray/Uint32Array $~lib/typedarray/Int64Array $~lib/typedarray/Uint64Array $~lib/typedarray/Float32Array $~lib/typedarray/Float64Array $~lib/dataview/DataView $invalid
-                     (i32.load
-                      (i32.sub
-                       (local.get $0)
-                       (i32.const 8)
+               (block $~lib/iterator/Iterable<i32>
+                (block $~lib/array/Array<i32>
+                 (block $~lib/arraybuffer/ArrayBufferView
+                  (block $~lib/string/String
+                   (block $~lib/arraybuffer/ArrayBuffer
+                    (block $~lib/object/Object
+                     (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $~lib/typedarray/Int8Array $~lib/typedarray/Uint8Array $~lib/typedarray/Uint8ClampedArray $~lib/typedarray/Int16Array $~lib/typedarray/Uint16Array $~lib/typedarray/Int32Array $~lib/typedarray/Uint32Array $~lib/typedarray/Int64Array $~lib/typedarray/Uint64Array $~lib/typedarray/Float32Array $~lib/typedarray/Float64Array $~lib/dataview/DataView $invalid
+                      (i32.load
+                       (i32.sub
+                        (local.get $0)
+                        (i32.const 8)
+                       )
                       )
                      )
                     )
+                    (return)
                    )
                    (return)
                   )
                   (return)
                  )
-                 (return)
+                 (block
+                  (call $~lib/arraybuffer/ArrayBufferView~visit
+                   (local.get $0)
+                   (local.get $1)
+                  )
+                  (return)
+                 )
                 )
                 (block
-                 (call $~lib/arraybuffer/ArrayBufferView~visit
+                 (call $~lib/array/Array<i32>~visit
                   (local.get $0)
                   (local.get $1)
                  )
                  (return)
                 )
                )
-               (block
-                (call $~lib/array/Array<i32>~visit
-                 (local.get $0)
-                 (local.get $1)
-                )
-                (return)
-               )
+               (return)
               )
               (block
                (call $~lib/typedarray/Int8Array~visit

@@ -7,7 +7,7 @@
  (type $5 (func (param i32 i32 i32)))
  (type $6 (func (param i32 i32 i64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33224))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33228))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -33,7 +33,7 @@
  (data $5.1 (i32.const 280) "\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s")
  (data $7 (i32.const 348) "<")
  (data $7.1 (i32.const 360) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
- (data $8 (i32.const 416) "\t\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00\02A\00\00 ")
+ (data $8 (i32.const 416) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00\02A\00\00 \00\00\00 ")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -172,7 +172,7 @@
       i32.load offset=8
       i32.eqz
       local.get $0
-      i32.const 33224
+      i32.const 33228
       i32.lt_u
       i32.and
       i32.eqz
@@ -998,7 +998,7 @@
          local.set $1
          loop $while-continue|0
           local.get $1
-          i32.const 33224
+          i32.const 33228
           i32.lt_u
           if
            local.get $1
@@ -1094,7 +1094,7 @@
          unreachable
         end
         local.get $1
-        i32.const 33224
+        i32.const 33228
         i32.lt_u
         if
          local.get $1
@@ -1117,7 +1117,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33224
+         i32.const 33228
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1386,68 +1386,71 @@
   (local $3 i32)
   block $invalid
    block $optional-typeparameters/TestMethodDerived2<f64>
-    block $~lib/array/Array<~lib/string/String>
-     block $optional-typeparameters/TestMethodDerived<~lib/string/String>
-      block $"optional-typeparameters/TestDerived<f64,f64>"
-       block $"optional-typeparameters/TestConcrete<i32,i32>"
-        block $~lib/arraybuffer/ArrayBufferView
-         block $~lib/string/String
-          block $~lib/arraybuffer/ArrayBuffer
-           block $~lib/object/Object
-            local.get $0
-            i32.const 8
-            i32.sub
-            i32.load
-            br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $"optional-typeparameters/TestConcrete<i32,i32>" $"optional-typeparameters/TestDerived<f64,f64>" $optional-typeparameters/TestMethodDerived<~lib/string/String> $~lib/array/Array<~lib/string/String> $optional-typeparameters/TestMethodDerived2<f64> $invalid
+    block $~lib/iterator/Iterable<~lib/string/String>
+     block $~lib/array/Array<~lib/string/String>
+      block $optional-typeparameters/TestMethodDerived<~lib/string/String>
+       block $"optional-typeparameters/TestDerived<f64,f64>"
+        block $"optional-typeparameters/TestConcrete<i32,i32>"
+         block $~lib/arraybuffer/ArrayBufferView
+          block $~lib/string/String
+           block $~lib/arraybuffer/ArrayBuffer
+            block $~lib/object/Object
+             local.get $0
+             i32.const 8
+             i32.sub
+             i32.load
+             br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $"optional-typeparameters/TestConcrete<i32,i32>" $"optional-typeparameters/TestDerived<f64,f64>" $optional-typeparameters/TestMethodDerived<~lib/string/String> $~lib/array/Array<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $optional-typeparameters/TestMethodDerived2<f64> $invalid
+            end
+            return
            end
            return
           end
           return
          end
+         local.get $0
+         i32.load
+         call $~lib/rt/itcms/__visit
          return
         end
-        local.get $0
-        i32.load
-        call $~lib/rt/itcms/__visit
         return
        end
        return
       end
       return
      end
+     local.get $0
+     i32.load offset=4
+     local.tee $1
+     local.get $0
+     i32.load offset=12
+     i32.const 2
+     i32.shl
+     i32.add
+     local.set $2
+     loop $while-continue|0
+      local.get $1
+      local.get $2
+      i32.lt_u
+      if
+       local.get $1
+       i32.load
+       local.tee $3
+       if
+        local.get $3
+        call $~lib/rt/itcms/__visit
+       end
+       local.get $1
+       i32.const 4
+       i32.add
+       local.set $1
+       br $while-continue|0
+      end
+     end
+     local.get $0
+     i32.load
+     call $~lib/rt/itcms/__visit
      return
     end
-    local.get $0
-    i32.load offset=4
-    local.tee $1
-    local.get $0
-    i32.load offset=12
-    i32.const 2
-    i32.shl
-    i32.add
-    local.set $2
-    loop $while-continue|0
-     local.get $1
-     local.get $2
-     i32.lt_u
-     if
-      local.get $1
-      i32.load
-      local.tee $3
-      if
-       local.get $3
-       call $~lib/rt/itcms/__visit
-      end
-      local.get $1
-      i32.const 4
-      i32.add
-      local.set $1
-      br $while-continue|0
-     end
-    end
-    local.get $0
-    i32.load
-    call $~lib/rt/itcms/__visit
     return
    end
    return
@@ -1459,7 +1462,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33224
+  i32.const 33228
   i32.sub
   i32.const 1
   i32.shr_u
@@ -1549,7 +1552,7 @@
   local.get $0
   global.set $optional-typeparameters/tMethodDerived
   call $~lib/rt/__decrease_sp
-  i32.const 8
+  i32.const 9
   call $~lib/rt/itcms/__new
   local.set $0
   global.get $~lib/memory/__stack_pointer
@@ -1578,7 +1581,7 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 456
+  i32.const 460
   i32.lt_s
   if
    unreachable

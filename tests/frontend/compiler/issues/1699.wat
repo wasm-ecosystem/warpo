@@ -28,9 +28,9 @@
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $~lib/rt/__rtti_base i32 (i32.const 688))
- (global $~lib/memory/__data_end i32 (i32.const 716))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33484))
- (global $~lib/memory/__heap_base i32 (i32.const 33484))
+ (global $~lib/memory/__data_end i32 (i32.const 720))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33488))
+ (global $~lib/memory/__heap_base i32 (i32.const 33488))
  (memory $0 1)
  (data $0 (i32.const 12) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
  (data $1 (i32.const 60) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00")
@@ -44,7 +44,7 @@
  (data $9 (i32.const 444) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $10 (i32.const 508) "|\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00^\00\00\00E\00l\00e\00m\00e\00n\00t\00 \00t\00y\00p\00e\00 \00m\00u\00s\00t\00 \00b\00e\00 \00n\00u\00l\00l\00a\00b\00l\00e\00 \00i\00f\00 \00a\00r\00r\00a\00y\00 \00i\00s\00 \00h\00o\00l\00e\00y\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $11 (i32.const 636) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00i\00s\00s\00u\00e\00s\00/\001\006\009\009\00.\00t\00s\00")
- (data $12 (i32.const 688) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00\02A\00\00")
+ (data $12 (i32.const 688) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00\02A\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -3882,44 +3882,47 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $~lib/array/Array<issues/1699/MultiAssignmentTest>
-    (block $issues/1699/MultiAssignmentTest
-     (block $~lib/arraybuffer/ArrayBufferView
-      (block $~lib/string/String
-       (block $~lib/arraybuffer/ArrayBuffer
-        (block $~lib/object/Object
-         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $issues/1699/MultiAssignmentTest $~lib/array/Array<issues/1699/MultiAssignmentTest> $invalid
-          (i32.load
-           (i32.sub
-            (local.get $0)
-            (i32.const 8)
+   (block $~lib/iterator/Iterable<issues/1699/MultiAssignmentTest>
+    (block $~lib/array/Array<issues/1699/MultiAssignmentTest>
+     (block $issues/1699/MultiAssignmentTest
+      (block $~lib/arraybuffer/ArrayBufferView
+       (block $~lib/string/String
+        (block $~lib/arraybuffer/ArrayBuffer
+         (block $~lib/object/Object
+          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $issues/1699/MultiAssignmentTest $~lib/array/Array<issues/1699/MultiAssignmentTest> $~lib/iterator/Iterable<issues/1699/MultiAssignmentTest> $invalid
+           (i32.load
+            (i32.sub
+             (local.get $0)
+             (i32.const 8)
+            )
            )
           )
          )
+         (return)
         )
         (return)
        )
        (return)
       )
-      (return)
-     )
-     (block
-      (call $~lib/arraybuffer/ArrayBufferView~visit
-       (local.get $0)
-       (local.get $1)
+      (block
+       (call $~lib/arraybuffer/ArrayBufferView~visit
+        (local.get $0)
+        (local.get $1)
+       )
+       (return)
       )
-      (return)
      )
+     (return)
     )
-    (return)
-   )
-   (block
-    (call $~lib/array/Array<issues/1699/MultiAssignmentTest>~visit
-     (local.get $0)
-     (local.get $1)
+    (block
+     (call $~lib/array/Array<issues/1699/MultiAssignmentTest>~visit
+      (local.get $0)
+      (local.get $1)
+     )
+     (return)
     )
-    (return)
    )
+   (return)
   )
   (unreachable)
  )

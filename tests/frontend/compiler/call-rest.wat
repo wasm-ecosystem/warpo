@@ -31,9 +31,9 @@
  (global $call-rest/indirect (mut i32) (i32.const 624))
  (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $~lib/rt/__rtti_base i32 (i32.const 1072))
- (global $~lib/memory/__data_end i32 (i32.const 1112))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33880))
- (global $~lib/memory/__heap_base i32 (i32.const 33880))
+ (global $~lib/memory/__data_end i32 (i32.const 1124))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33892))
+ (global $~lib/memory/__heap_base i32 (i32.const 33892))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00$\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e\00\00\00\00\00\00\00\00\00")
  (data $1 (i32.const 76) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00")
@@ -48,7 +48,7 @@
  (data $10 (i32.const 492) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\18\00\00\00c\00a\00l\00l\00-\00r\00e\00s\00t\00.\00t\00s\00\00\00\00\00")
  (data $11 (i32.const 540) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\04\00\00\00\03\00\00\00\00\00\00\00\00\00\00\00")
  (data $12 (i32.const 572) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00\03\00\00\00\04\00\00\00\05\00\00\00")
- (data $13 (i32.const 604) "\1c\00\00\00\00\00\00\00\00\00\00\00\06\00\00\00\08\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00")
+ (data $13 (i32.const 604) "\1c\00\00\00\00\00\00\00\00\00\00\00\08\00\00\00\08\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00")
  (data $14 (i32.const 636) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\04\00\00\00\03\00\00\00\00\00\00\00\00\00\00\00")
  (data $15 (i32.const 668) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00\03\00\00\00\04\00\00\00\05\00\00\00")
  (data $16 (i32.const 700) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
@@ -62,7 +62,7 @@
  (data $24 (i32.const 972) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00b\00\00\00\00\00\00\00\00\00\00\00")
  (data $25 (i32.const 1004) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00c\00\00\00\00\00\00\00\00\00\00\00")
  (data $26 (i32.const 1036) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00\c0\03\00\00\e0\03\00\00\00\04\00\00")
- (data $27 (i32.const 1072) "\t\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00\02\01\00\00\00\00\00\00\00\00\00\00\02A\00\00")
+ (data $27 (i32.const 1072) "\0c\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00 \00\00\00\02\01\00\00 \00\00\00\00\00\00\00\00\00\00\00\02A\00\00 \00\00\00")
  (table $0 2 2 funcref)
  (elem $0 (i32.const 1) $call-rest/fn@varargs)
  (export "memory" (memory $0))
@@ -3263,7 +3263,7 @@
      (call $~lib/rt/__newArray
       (i32.const 0)
       (i32.const 2)
-      (i32.const 5)
+      (i32.const 6)
       (i32.const 144)
      )
     )
@@ -3649,7 +3649,7 @@
      (call $~lib/rt/__localtostack
       (call $~lib/rt/itcms/__new
        (i32.const 4)
-       (i32.const 7)
+       (i32.const 9)
       )
      )
     )
@@ -3757,7 +3757,7 @@
      (call $~lib/rt/__newArray
       (i32.const 0)
       (i32.const 2)
-      (i32.const 5)
+      (i32.const 6)
       (i32.const 768)
      )
     )
@@ -3858,7 +3858,7 @@
      (call $~lib/rt/__newArray
       (i32.const 0)
       (i32.const 2)
-      (i32.const 5)
+      (i32.const 6)
       (i32.const 864)
      )
     )
@@ -4380,7 +4380,7 @@
        (call $~lib/rt/__newArray
         (i32.const 3)
         (i32.const 2)
-        (i32.const 8)
+        (i32.const 10)
         (i32.const 1056)
        )
       )
@@ -4606,48 +4606,63 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $~lib/array/Array<~lib/string/String>
-    (block $call-rest/Foo
-     (block $~lib/function/Function<%28i32%2Ci32?%2C...~lib/array/Array<i32>%29=>i32>
-      (block $~lib/array/Array<usize>
-       (block $~lib/array/Array<i32>
-        (block $~lib/arraybuffer/ArrayBufferView
-         (block $~lib/string/String
-          (block $~lib/arraybuffer/ArrayBuffer
-           (block $~lib/object/Object
-            (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/array/Array<usize> $~lib/function/Function<%28i32%2Ci32?%2C...~lib/array/Array<i32>%29=>i32> $call-rest/Foo $~lib/array/Array<~lib/string/String> $invalid
-             (i32.load
-              (i32.sub
-               (local.get $0)
-               (i32.const 8)
+   (block $~lib/iterator/Iterable<~lib/string/String>
+    (block $~lib/array/Array<~lib/string/String>
+     (block $call-rest/Foo
+      (block $~lib/function/Function<%28i32%2Ci32?%2C...~lib/array/Array<i32>%29=>i32>
+       (block $~lib/iterator/Iterable<usize>
+        (block $~lib/array/Array<usize>
+         (block $~lib/iterator/Iterable<i32>
+          (block $~lib/array/Array<i32>
+           (block $~lib/arraybuffer/ArrayBufferView
+            (block $~lib/string/String
+             (block $~lib/arraybuffer/ArrayBuffer
+              (block $~lib/object/Object
+               (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $~lib/array/Array<usize> $~lib/iterator/Iterable<usize> $~lib/function/Function<%28i32%2Ci32?%2C...~lib/array/Array<i32>%29=>i32> $call-rest/Foo $~lib/array/Array<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $invalid
+                (i32.load
+                 (i32.sub
+                  (local.get $0)
+                  (i32.const 8)
+                 )
+                )
+               )
               )
+              (return)
              )
+             (return)
             )
+            (return)
+           )
+           (block
+            (call $~lib/arraybuffer/ArrayBufferView~visit
+             (local.get $0)
+             (local.get $1)
+            )
+            (return)
+           )
+          )
+          (block
+           (call $~lib/array/Array<i32>~visit
+            (local.get $0)
+            (local.get $1)
            )
            (return)
           )
-          (return)
          )
          (return)
         )
         (block
-         (call $~lib/arraybuffer/ArrayBufferView~visit
+         (call $~lib/array/Array<usize>~visit
           (local.get $0)
           (local.get $1)
          )
          (return)
         )
        )
-       (block
-        (call $~lib/array/Array<i32>~visit
-         (local.get $0)
-         (local.get $1)
-        )
-        (return)
-       )
+       (return)
       )
       (block
-       (call $~lib/array/Array<usize>~visit
+       (call $~lib/function/Function<%28i32%2Ci32?%2C...~lib/array/Array<i32>%29=>i32>~visit
         (local.get $0)
         (local.get $1)
        )
@@ -4655,7 +4670,7 @@
       )
      )
      (block
-      (call $~lib/function/Function<%28i32%2Ci32?%2C...~lib/array/Array<i32>%29=>i32>~visit
+      (call $call-rest/Foo~visit
        (local.get $0)
        (local.get $1)
       )
@@ -4663,20 +4678,14 @@
      )
     )
     (block
-     (call $call-rest/Foo~visit
+     (call $~lib/array/Array<~lib/string/String>~visit
       (local.get $0)
       (local.get $1)
      )
      (return)
     )
    )
-   (block
-    (call $~lib/array/Array<~lib/string/String>~visit
-     (local.get $0)
-     (local.get $1)
-    )
-    (return)
-   )
+   (return)
   )
   (unreachable)
  )

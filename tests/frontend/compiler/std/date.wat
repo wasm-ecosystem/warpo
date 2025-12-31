@@ -47,9 +47,9 @@
  (global $~lib/builtins/i32.MAX_VALUE i32 (i32.const 2147483647))
  (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $~lib/rt/__rtti_base i32 (i32.const 7408))
- (global $~lib/memory/__data_end i32 (i32.const 7444))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 40212))
- (global $~lib/memory/__heap_base i32 (i32.const 40212))
+ (global $~lib/memory/__data_end i32 (i32.const 7452))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 40220))
+ (global $~lib/memory/__heap_base i32 (i32.const 40220))
  (global $~started (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\18\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00D\00a\00t\00e\00\00\00\00\00")
@@ -169,7 +169,7 @@
  (data $114 (i32.const 7164) "L\00\00\00\00\00\00\00\00\00\00\00\02\00\00\006\00\00\00+\002\007\005\007\006\000\00-\000\009\00-\001\003\00T\000\000\00:\000\000\00:\000\000\00.\000\000\000\00Z\00\00\00\00\00\00\00")
  (data $115 (i32.const 7244) "L\00\00\00\00\00\00\00\00\00\00\00\02\00\00\006\00\00\00+\002\007\005\007\006\000\00-\000\009\00-\001\002\00T\002\003\00:\005\009\00:\005\009\00.\009\009\009\00Z\00\00\00\00\00\00\00")
  (data $116 (i32.const 7324) "L\00\00\00\00\00\00\00\00\00\00\00\02\00\00\006\00\00\00-\002\007\001\008\002\001\00-\000\004\00-\002\000\00T\000\000\00:\000\000\00:\000\000\00.\000\000\001\00Z\00\00\00\00\00\00\00")
- (data $117 (i32.const 7408) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00\04A\00\00\02A\00\00\02\t\00\00")
+ (data $117 (i32.const 7408) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00\04A\00\00\02A\00\00 \00\00\00\02\t\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -13826,62 +13826,68 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $~lib/array/Array<i32>
-    (block $~lib/array/Array<~lib/string/String>
-     (block $~lib/staticarray/StaticArray<~lib/string/String>
-      (block $~lib/date/Date
-       (block $~lib/arraybuffer/ArrayBufferView
-        (block $~lib/string/String
-         (block $~lib/arraybuffer/ArrayBuffer
-          (block $~lib/object/Object
-           (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/date/Date $~lib/staticarray/StaticArray<~lib/string/String> $~lib/array/Array<~lib/string/String> $~lib/array/Array<i32> $invalid
-            (i32.load
-             (i32.sub
-              (local.get $0)
-              (i32.const 8)
+   (block $~lib/iterator/Iterable<i32>
+    (block $~lib/array/Array<i32>
+     (block $~lib/iterator/Iterable<~lib/string/String>
+      (block $~lib/array/Array<~lib/string/String>
+       (block $~lib/staticarray/StaticArray<~lib/string/String>
+        (block $~lib/date/Date
+         (block $~lib/arraybuffer/ArrayBufferView
+          (block $~lib/string/String
+           (block $~lib/arraybuffer/ArrayBuffer
+            (block $~lib/object/Object
+             (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/date/Date $~lib/staticarray/StaticArray<~lib/string/String> $~lib/array/Array<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $invalid
+              (i32.load
+               (i32.sub
+                (local.get $0)
+                (i32.const 8)
+               )
+              )
              )
             )
+            (return)
            )
+           (return)
           )
           (return)
          )
-         (return)
+         (block
+          (call $~lib/arraybuffer/ArrayBufferView~visit
+           (local.get $0)
+           (local.get $1)
+          )
+          (return)
+         )
         )
         (return)
        )
        (block
-        (call $~lib/arraybuffer/ArrayBufferView~visit
+        (call $~lib/staticarray/StaticArray<~lib/string/String>~visit
          (local.get $0)
          (local.get $1)
         )
         (return)
        )
       )
-      (return)
-     )
-     (block
-      (call $~lib/staticarray/StaticArray<~lib/string/String>~visit
-       (local.get $0)
-       (local.get $1)
+      (block
+       (call $~lib/array/Array<~lib/string/String>~visit
+        (local.get $0)
+        (local.get $1)
+       )
+       (return)
       )
-      (return)
      )
+     (return)
     )
     (block
-     (call $~lib/array/Array<~lib/string/String>~visit
+     (call $~lib/array/Array<i32>~visit
       (local.get $0)
       (local.get $1)
      )
      (return)
     )
    )
-   (block
-    (call $~lib/array/Array<i32>~visit
-     (local.get $0)
-     (local.get $1)
-    )
-    (return)
-   )
+   (return)
   )
   (unreachable)
  )

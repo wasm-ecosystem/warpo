@@ -8,7 +8,7 @@
  (type $6 (func (param i32 i32 i32)))
  (type $7 (func (param i32 i32 i64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33524))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33528))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -44,7 +44,7 @@
  (data $13.1 (i32.const 664) "\01\00\00\00\0c\00\00\00\01\00\00\00\02\00\00\00\03")
  (data $14 (i32.const 684) "\1c")
  (data $14.1 (i32.const 696) "\01\00\00\00\0c\00\00\00\02\00\00\00\03\00\00\00\04")
- (data $15 (i32.const 720) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00\00\00\00\00 \00\00\00 ")
+ (data $15 (i32.const 720) "\t\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00 \00\00\00\00\00\00\00 \00\00\00 ")
  (export "increase_arr_length" (func $std/array-iterator/increase_arr_length))
  (export "reduce_arr_length" (func $std/array-iterator/reduce_arr_length))
  (export "replace_arr" (func $std/array-iterator/replace_arr))
@@ -150,7 +150,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33524
+    i32.const 33528
     i32.lt_u
     i32.and
     i32.eqz
@@ -1076,7 +1076,7 @@
          local.set $2
          loop $while-continue|0
           local.get $2
-          i32.const 33524
+          i32.const 33528
           i32.lt_u
           if
            local.get $2
@@ -1172,7 +1172,7 @@
          unreachable
         end
         local.get $3
-        i32.const 33524
+        i32.const 33528
         i32.lt_u
         if
          local.get $3
@@ -1195,7 +1195,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33524
+         i32.const 33528
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1628,7 +1628,7 @@
  (func $~lib/array/ArrayIterator<i32>#constructor (param $0 i32) (result i32)
   (local $1 i32)
   i32.const 8
-  i32.const 5
+  i32.const 6
   call $~lib/rt/itcms/__new
   local.tee $1
   local.get $0
@@ -1668,7 +1668,7 @@
   i32.load
   local.set $0
   i32.const 4
-  i32.const 7
+  i32.const 8
   call $~lib/rt/itcms/__new
   local.tee $1
   local.get $0
@@ -2092,21 +2092,27 @@
    block $~lib/iterator/IteratorResult<i32>
     block $~lib/iterator/Iterator<i32>
      block $~lib/array/ArrayIterator<i32>
-      block $~lib/array/Array<i32>
-       block $~lib/arraybuffer/ArrayBufferView
-        block $~lib/string/String
-         block $~lib/arraybuffer/ArrayBuffer
-          block $~lib/object/Object
-           local.get $0
-           i32.const 8
-           i32.sub
-           i32.load
-           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/array/ArrayIterator<i32> $~lib/iterator/Iterator<i32> $~lib/iterator/IteratorResult<i32> $invalid
+      block $~lib/iterator/Iterable<i32>
+       block $~lib/array/Array<i32>
+        block $~lib/arraybuffer/ArrayBufferView
+         block $~lib/string/String
+          block $~lib/arraybuffer/ArrayBuffer
+           block $~lib/object/Object
+            local.get $0
+            i32.const 8
+            i32.sub
+            i32.load
+            br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $~lib/array/ArrayIterator<i32> $~lib/iterator/Iterator<i32> $~lib/iterator/IteratorResult<i32> $invalid
+           end
+           return
           end
           return
          end
          return
         end
+        local.get $0
+        i32.load
+        call $~lib/rt/itcms/__visit
         return
        end
        local.get $0
@@ -2114,9 +2120,6 @@
        call $~lib/rt/itcms/__visit
        return
       end
-      local.get $0
-      i32.load
-      call $~lib/rt/itcms/__visit
       return
      end
      local.get $0
@@ -2134,7 +2137,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33524
+  i32.const 33528
   i32.sub
   i32.const 1
   i32.shr_u
@@ -2177,7 +2180,7 @@
   local.get $0
   memory.fill
   global.get $~lib/memory/__stack_pointer
-  i32.const 756
+  i32.const 760
   i32.lt_s
   if
    unreachable

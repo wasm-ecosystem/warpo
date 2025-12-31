@@ -31,14 +31,14 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 592))
- (global $~lib/memory/__data_end i32 (i32.const 636))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33404))
- (global $~lib/memory/__heap_base i32 (i32.const 33404))
+ (global $~lib/memory/__data_end i32 (i32.const 640))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33408))
+ (global $~lib/memory/__heap_base i32 (i32.const 33408))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00i\00n\00f\00e\00r\00-\00g\00e\00n\00e\00r\00i\00c\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $1 (i32.const 76) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\0c\00\00\00\00\00\80?\00\00\00@\00\00@@")
  (data $2 (i32.const 108) ",\00\00\00\00\00\00\00\00\00\00\00\04\00\00\00\10\00\00\00`\00\00\00`\00\00\00\0c\00\00\00\03\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $3 (i32.const 156) "\1c\00\00\00\00\00\00\00\00\00\00\00\05\00\00\00\08\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00")
+ (data $3 (i32.const 156) "\1c\00\00\00\00\00\00\00\00\00\00\00\06\00\00\00\08\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00")
  (data $4 (i32.const 188) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $5 (i32.const 252) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -47,7 +47,7 @@
  (data $9 (i32.const 444) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
  (data $10 (i32.const 496) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $11 (i32.const 524) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $12 (i32.const 592) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\19\00\00\00\00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $12 (i32.const 592) "\0b\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\19\00\00 \00\00\00\00\00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (table $0 2 2 funcref)
  (elem $0 (i32.const 1) $start:infer-generic~anonymous|0)
  (export "test1" (func $infer-generic/test1))
@@ -3111,7 +3111,7 @@
      (call $~lib/rt/__localtostack
       (call $~lib/rt/itcms/__new
        (i32.const 4)
-       (i32.const 6)
+       (i32.const 7)
       )
      )
     )
@@ -3517,41 +3517,44 @@
      (block $~lib/function/Function<%28%29=>f64>
       (block $infer-generic/Ref
        (block $~lib/function/Function<%28bool%2Cf32%2Ci32%2C~lib/array/Array<f32>%29=>bool>
-        (block $~lib/array/Array<f32>
-         (block $~lib/arraybuffer/ArrayBufferView
-          (block $~lib/string/String
-           (block $~lib/arraybuffer/ArrayBuffer
-            (block $~lib/object/Object
-             (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<f32> $~lib/function/Function<%28bool%2Cf32%2Ci32%2C~lib/array/Array<f32>%29=>bool> $infer-generic/Ref $~lib/function/Function<%28%29=>f64> $~lib/function/Function<%28f32%29=>f64> $~lib/function/Function<%28f32%2Ci32%29=>f64> $invalid
-              (i32.load
-               (i32.sub
-                (local.get $0)
-                (i32.const 8)
+        (block $~lib/iterator/Iterable<f32>
+         (block $~lib/array/Array<f32>
+          (block $~lib/arraybuffer/ArrayBufferView
+           (block $~lib/string/String
+            (block $~lib/arraybuffer/ArrayBuffer
+             (block $~lib/object/Object
+              (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<f32> $~lib/iterator/Iterable<f32> $~lib/function/Function<%28bool%2Cf32%2Ci32%2C~lib/array/Array<f32>%29=>bool> $infer-generic/Ref $~lib/function/Function<%28%29=>f64> $~lib/function/Function<%28f32%29=>f64> $~lib/function/Function<%28f32%2Ci32%29=>f64> $invalid
+               (i32.load
+                (i32.sub
+                 (local.get $0)
+                 (i32.const 8)
+                )
                )
               )
              )
+             (return)
             )
             (return)
            )
            (return)
           )
-          (return)
+          (block
+           (call $~lib/arraybuffer/ArrayBufferView~visit
+            (local.get $0)
+            (local.get $1)
+           )
+           (return)
+          )
          )
          (block
-          (call $~lib/arraybuffer/ArrayBufferView~visit
+          (call $~lib/array/Array<f32>~visit
            (local.get $0)
            (local.get $1)
           )
           (return)
          )
         )
-        (block
-         (call $~lib/array/Array<f32>~visit
-          (local.get $0)
-          (local.get $1)
-         )
-         (return)
-        )
+        (return)
        )
        (block
         (call $~lib/function/Function<%28bool%2Cf32%2Ci32%2C~lib/array/Array<f32>%29=>bool>~visit

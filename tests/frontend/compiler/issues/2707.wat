@@ -30,11 +30,11 @@
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~argumentsLength (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 496))
- (global $~lib/memory/__data_end i32 (i32.const 524))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33292))
- (global $~lib/memory/__heap_base i32 (i32.const 33292))
+ (global $~lib/memory/__data_end i32 (i32.const 528))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33296))
+ (global $~lib/memory/__heap_base i32 (i32.const 33296))
  (memory $0 1)
- (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\05\00\00\00\08\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00")
+ (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\06\00\00\00\08\00\00\00\01\00\00\00\00\00\00\00\00\00\00\00")
  (data $1 (i32.const 44) ",\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\10\00\00\00\01\00\00\00\02\00\00\00\03\00\00\00\04\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $2 (i32.const 92) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $3 (i32.const 156) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -44,7 +44,7 @@
  (data $7 (i32.const 348) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
  (data $8 (i32.const 400) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $9 (i32.const 428) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $10 (i32.const 496) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00\00\00\00\00")
+ (data $10 (i32.const 496) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00 \00\00\00\00\00\00\00")
  (table $0 2 2 funcref)
  (elem $0 (i32.const 1) $start:issues/2707~anonymous|0)
  (export "memory" (memory $0))
@@ -3236,41 +3236,44 @@
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
    (block $~lib/function/Function<%28~lib/array/Array<i32>%29=>i32>
-    (block $~lib/array/Array<i32>
-     (block $~lib/arraybuffer/ArrayBufferView
-      (block $~lib/string/String
-       (block $~lib/arraybuffer/ArrayBuffer
-        (block $~lib/object/Object
-         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/function/Function<%28~lib/array/Array<i32>%29=>i32> $invalid
-          (i32.load
-           (i32.sub
-            (local.get $0)
-            (i32.const 8)
+    (block $~lib/iterator/Iterable<i32>
+     (block $~lib/array/Array<i32>
+      (block $~lib/arraybuffer/ArrayBufferView
+       (block $~lib/string/String
+        (block $~lib/arraybuffer/ArrayBuffer
+         (block $~lib/object/Object
+          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $~lib/function/Function<%28~lib/array/Array<i32>%29=>i32> $invalid
+           (i32.load
+            (i32.sub
+             (local.get $0)
+             (i32.const 8)
+            )
            )
           )
          )
+         (return)
         )
         (return)
        )
        (return)
       )
-      (return)
+      (block
+       (call $~lib/arraybuffer/ArrayBufferView~visit
+        (local.get $0)
+        (local.get $1)
+       )
+       (return)
+      )
      )
      (block
-      (call $~lib/arraybuffer/ArrayBufferView~visit
+      (call $~lib/array/Array<i32>~visit
        (local.get $0)
        (local.get $1)
       )
       (return)
      )
     )
-    (block
-     (call $~lib/array/Array<i32>~visit
-      (local.get $0)
-      (local.get $1)
-     )
-     (return)
-    )
+    (return)
    )
    (block
     (call $~lib/function/Function<%28~lib/array/Array<i32>%29=>i32>~visit

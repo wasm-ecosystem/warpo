@@ -9,7 +9,7 @@
  (type $7 (func (param i32 i32 i64)))
  (type $8 (func (param i64) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 35072))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 35080))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -46,7 +46,7 @@
  (data $14.1 (i32.const 1128) "\02\00\00\00\00\04\00\000\000\000\001\000\002\000\003\000\004\000\005\000\006\000\007\000\008\000\009\000\00a\000\00b\000\00c\000\00d\000\00e\000\00f\001\000\001\001\001\002\001\003\001\004\001\005\001\006\001\007\001\008\001\009\001\00a\001\00b\001\00c\001\00d\001\00e\001\00f\002\000\002\001\002\002\002\003\002\004\002\005\002\006\002\007\002\008\002\009\002\00a\002\00b\002\00c\002\00d\002\00e\002\00f\003\000\003\001\003\002\003\003\003\004\003\005\003\006\003\007\003\008\003\009\003\00a\003\00b\003\00c\003\00d\003\00e\003\00f\004\000\004\001\004\002\004\003\004\004\004\005\004\006\004\007\004\008\004\009\004\00a\004\00b\004\00c\004\00d\004\00e\004\00f\005\000\005\001\005\002\005\003\005\004\005\005\005\006\005\007\005\008\005\009\005\00a\005\00b\005\00c\005\00d\005\00e\005\00f\006\000\006\001\006\002\006\003\006\004\006\005\006\006\006\007\006\008\006\009\006\00a\006\00b\006\00c\006\00d\006\00e\006\00f\007\000\007\001\007\002\007\003\007\004\007\005\007\006\007\007\007\008\007\009\007\00a\007\00b\007\00c\007\00d\007\00e\007\00f\008\000\008\001\008\002\008\003\008\004\008\005\008\006\008\007\008\008\008\009\008\00a\008\00b\008\00c\008\00d\008\00e\008\00f\009\000\009\001\009\002\009\003\009\004\009\005\009\006\009\007\009\008\009\009\009\00a\009\00b\009\00c\009\00d\009\00e\009\00f\00a\000\00a\001\00a\002\00a\003\00a\004\00a\005\00a\006\00a\007\00a\008\00a\009\00a\00a\00a\00b\00a\00c\00a\00d\00a\00e\00a\00f\00b\000\00b\001\00b\002\00b\003\00b\004\00b\005\00b\006\00b\007\00b\008\00b\009\00b\00a\00b\00b\00b\00c\00b\00d\00b\00e\00b\00f\00c\000\00c\001\00c\002\00c\003\00c\004\00c\005\00c\006\00c\007\00c\008\00c\009\00c\00a\00c\00b\00c\00c\00c\00d\00c\00e\00c\00f\00d\000\00d\001\00d\002\00d\003\00d\004\00d\005\00d\006\00d\007\00d\008\00d\009\00d\00a\00d\00b\00d\00c\00d\00d\00d\00e\00d\00f\00e\000\00e\001\00e\002\00e\003\00e\004\00e\005\00e\006\00e\007\00e\008\00e\009\00e\00a\00e\00b\00e\00c\00e\00d\00e\00e\00e\00f\00f\000\00f\001\00f\002\00f\003\00f\004\00f\005\00f\006\00f\007\00f\008\00f\009\00f\00a\00f\00b\00f\00c\00f\00d\00f\00e\00f\00f")
  (data $15 (i32.const 2172) "\\")
  (data $15.1 (i32.const 2184) "\02\00\00\00H\00\00\000\001\002\003\004\005\006\007\008\009\00a\00b\00c\00d\00e\00f\00g\00h\00i\00j\00k\00l\00m\00n\00o\00p\00q\00r\00s\00t\00u\00v\00w\00x\00y\00z")
- (data $16 (i32.const 2272) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\02\00\00\02\t\00\00 ")
+ (data $16 (i32.const 2272) "\t\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\02\00\00 \00\00\00\02\t\00\00 \00\00\00 ")
  (export "arrayAccess" (func $resolve-access/arrayAccess))
  (export "fieldAccess" (func $resolve-access/fieldAccess))
  (export "propertyAccess" (func $resolve-access/propertyAccess))
@@ -152,7 +152,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 35072
+    i32.const 35080
     i32.lt_u
     i32.and
     i32.eqz
@@ -782,10 +782,10 @@
   if
    unreachable
   end
-  i32.const 35072
+  i32.const 35088
   i32.const 0
   i32.store
-  i32.const 36640
+  i32.const 36656
   i32.const 0
   i32.store
   i32.const 0
@@ -798,7 +798,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 35072
+    i32.const 35088
     i32.add
     i32.const 0
     i32.store offset=4
@@ -816,7 +816,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 35072
+      i32.const 35088
       i32.add
       i32.const 0
       i32.store offset=96
@@ -834,14 +834,14 @@
     br $for-loop|0
    end
   end
-  i32.const 35072
-  i32.const 36644
+  i32.const 35088
+  i32.const 36660
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 35072
+  i32.const 35088
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/tlsf/searchBlock (param $0 i32) (param $1 i32) (result i32)
@@ -1078,7 +1078,7 @@
          local.set $2
          loop $while-continue|0
           local.get $2
-          i32.const 35072
+          i32.const 35080
           i32.lt_u
           if
            local.get $2
@@ -1174,7 +1174,7 @@
          unreachable
         end
         local.get $3
-        i32.const 35072
+        i32.const 35080
         i32.lt_u
         if
          local.get $3
@@ -1197,7 +1197,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 35072
+         i32.const 35080
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1851,7 +1851,7 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 2304
+  i32.const 2312
   i32.lt_s
   if
    unreachable
@@ -1961,13 +1961,13 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 2304
+  i32.const 2312
   i32.lt_s
   if
    unreachable
   end
   i32.const 8
-  i32.const 6
+  i32.const 8
   call $~lib/rt/itcms/__new
   local.set $0
   global.get $~lib/memory/__stack_pointer
@@ -2068,23 +2068,29 @@
   block $folding-inner0
    block $invalid
     block $resolve-access/Container
-     block
-      block $~lib/string/String
-       block $~lib/arraybuffer/ArrayBuffer
-        block $~lib/object/Object
-         local.get $0
-         i32.const 8
-         i32.sub
-         i32.load
-         br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $folding-inner0 $resolve-access/Container $invalid
+     block $~lib/iterator/Iterable<i32>
+      block $~lib/iterator/Iterable<u64>
+       block
+        block $~lib/string/String
+         block $~lib/arraybuffer/ArrayBuffer
+          block $~lib/object/Object
+           local.get $0
+           i32.const 8
+           i32.sub
+           i32.load
+           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<u64> $folding-inner0 $~lib/iterator/Iterable<i32> $resolve-access/Container $invalid
+          end
+          return
+         end
+         return
         end
         return
        end
-       return
+       unreachable
       end
       return
      end
-     unreachable
+     return
     end
     return
    end
@@ -2098,7 +2104,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 35072
+  i32.const 35080
   i32.sub
   i32.const 1
   i32.shr_u

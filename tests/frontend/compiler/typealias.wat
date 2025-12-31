@@ -349,8 +349,8 @@
  (func $typealias/alias_in_type_arguments
   (drop
    (i32.eq
-    (i32.const 6)
-    (i32.const 6)
+    (i32.const 7)
+    (i32.const 7)
    )
   )
  )

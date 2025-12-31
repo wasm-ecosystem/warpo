@@ -32,9 +32,9 @@
  (global $optional-typeparameters/tMethodDerived (mut i32) (i32.const 0))
  (global $optional-typeparameters/tMethodDerived2 (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 416))
- (global $~lib/memory/__data_end i32 (i32.const 456))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33224))
- (global $~lib/memory/__heap_base i32 (i32.const 33224))
+ (global $~lib/memory/__data_end i32 (i32.const 460))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33228))
+ (global $~lib/memory/__heap_base i32 (i32.const 33228))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -44,7 +44,7 @@
  (data $5 (i32.const 268) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $8 (i32.const 416) "\t\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00\02A\00\00 \00\00\00")
+ (data $8 (i32.const 416) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00\02A\00\00 \00\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -3072,7 +3072,7 @@
      (call $~lib/rt/__localtostack
       (call $~lib/rt/itcms/__new
        (i32.const 0)
-       (i32.const 8)
+       (i32.const 9)
       )
      )
     )
@@ -3348,50 +3348,53 @@
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
    (block $optional-typeparameters/TestMethodDerived2<f64>
-    (block $~lib/array/Array<~lib/string/String>
-     (block $optional-typeparameters/TestMethodDerived<~lib/string/String>
-      (block $"optional-typeparameters/TestDerived<f64,f64>"
-       (block $"optional-typeparameters/TestConcrete<i32,i32>"
-        (block $~lib/arraybuffer/ArrayBufferView
-         (block $~lib/string/String
-          (block $~lib/arraybuffer/ArrayBuffer
-           (block $~lib/object/Object
-            (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $"optional-typeparameters/TestConcrete<i32,i32>" $"optional-typeparameters/TestDerived<f64,f64>" $optional-typeparameters/TestMethodDerived<~lib/string/String> $~lib/array/Array<~lib/string/String> $optional-typeparameters/TestMethodDerived2<f64> $invalid
-             (i32.load
-              (i32.sub
-               (local.get $0)
-               (i32.const 8)
+    (block $~lib/iterator/Iterable<~lib/string/String>
+     (block $~lib/array/Array<~lib/string/String>
+      (block $optional-typeparameters/TestMethodDerived<~lib/string/String>
+       (block $"optional-typeparameters/TestDerived<f64,f64>"
+        (block $"optional-typeparameters/TestConcrete<i32,i32>"
+         (block $~lib/arraybuffer/ArrayBufferView
+          (block $~lib/string/String
+           (block $~lib/arraybuffer/ArrayBuffer
+            (block $~lib/object/Object
+             (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $"optional-typeparameters/TestConcrete<i32,i32>" $"optional-typeparameters/TestDerived<f64,f64>" $optional-typeparameters/TestMethodDerived<~lib/string/String> $~lib/array/Array<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $optional-typeparameters/TestMethodDerived2<f64> $invalid
+              (i32.load
+               (i32.sub
+                (local.get $0)
+                (i32.const 8)
+               )
               )
              )
             )
+            (return)
            )
            (return)
           )
           (return)
          )
-         (return)
-        )
-        (block
-         (call $~lib/arraybuffer/ArrayBufferView~visit
-          (local.get $0)
-          (local.get $1)
+         (block
+          (call $~lib/arraybuffer/ArrayBufferView~visit
+           (local.get $0)
+           (local.get $1)
+          )
+          (return)
          )
-         (return)
         )
+        (return)
        )
        (return)
       )
       (return)
      )
-     (return)
-    )
-    (block
-     (call $~lib/array/Array<~lib/string/String>~visit
-      (local.get $0)
-      (local.get $1)
+     (block
+      (call $~lib/array/Array<~lib/string/String>~visit
+       (local.get $0)
+       (local.get $1)
+      )
+      (return)
      )
-     (return)
     )
+    (return)
    )
    (return)
   )

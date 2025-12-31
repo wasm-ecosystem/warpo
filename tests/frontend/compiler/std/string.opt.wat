@@ -40,7 +40,7 @@
  (global $~lib/util/number/_K (mut i32) (i32.const 0))
  (global $~lib/util/number/_frc_pow (mut i64) (i64.const 0))
  (global $~lib/util/number/_exp_pow (mut i32) (i32.const 0))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 58380))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 58388))
  (memory $0 1)
  (data $0 (i32.const 12) "<")
  (data $0.1 (i32.const 24) "\02\00\00\00 \00\00\00h\00i\00,\00 \00I\00\'\00m\00 \00a\00 \00s\00t\00r\00i\00n\00g")
@@ -979,7 +979,7 @@
  (data $473.1 (i32.const 25528) "\02\00\00\00\04\00\00\00\d8S\cf\91")
  (data $474 (i32.const 25548) "\1c")
  (data $474.1 (i32.const 25560) "\02\00\00\00\08\00\00\00A\d8\0e\dfA\d81\df")
- (data $475 (i32.const 25584) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00\02A")
+ (data $475 (i32.const 25584) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00 \00\00\00\02A\00\00 ")
  (export "getString" (func $std/string/getString))
  (export "memory" (memory $0))
  (start $~start)
@@ -1211,7 +1211,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 58380
+    i32.const 58388
     i32.lt_u
     i32.and
     i32.eqz
@@ -1841,10 +1841,10 @@
   if
    unreachable
   end
-  i32.const 58384
+  i32.const 58400
   i32.const 0
   i32.store
-  i32.const 59952
+  i32.const 59968
   i32.const 0
   i32.store
   i32.const 0
@@ -1857,7 +1857,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 58384
+    i32.const 58400
     i32.add
     i32.const 0
     i32.store offset=4
@@ -1875,7 +1875,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 58384
+      i32.const 58400
       i32.add
       i32.const 0
       i32.store offset=96
@@ -1893,14 +1893,14 @@
     br $for-loop|0
    end
   end
-  i32.const 58384
-  i32.const 59956
+  i32.const 58400
+  i32.const 59972
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 58384
+  i32.const 58400
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/itcms/step (result i32)
@@ -1985,7 +1985,7 @@
      local.set $0
      loop $while-continue|0
       local.get $0
-      i32.const 58380
+      i32.const 58388
       i32.lt_u
       if
        local.get $0
@@ -2081,7 +2081,7 @@
      unreachable
     end
     local.get $0
-    i32.const 58380
+    i32.const 58388
     i32.lt_u
     if
      local.get $0
@@ -2104,7 +2104,7 @@
      i32.const 4
      i32.add
      local.tee $1
-     i32.const 58380
+     i32.const 58388
      i32.ge_u
      if
       global.get $~lib/rt/tlsf/ROOT
@@ -6396,7 +6396,7 @@
      i32.eqz
      if
       i32.const 1
-      i32.const 5
+      i32.const 6
       i32.const 0
       call $~lib/rt/__newArray
       local.set $1
@@ -6455,7 +6455,7 @@
       i32.eqz
       if
        i32.const 1
-       i32.const 5
+       i32.const 6
        i32.const 0
        call $~lib/rt/__newArray
        local.tee $0
@@ -6475,7 +6475,7 @@
       i32.lt_s
       select
       local.tee $3
-      i32.const 5
+      i32.const 6
       i32.const 0
       call $~lib/rt/__newArray
       local.set $2
@@ -6529,7 +6529,7 @@
       return
      end
      i32.const 0
-     i32.const 5
+     i32.const 6
      i32.const 0
      call $~lib/rt/__newArray
      local.set $2
@@ -6636,7 +6636,7 @@
      br $folding-inner1
     end
     i32.const 0
-    i32.const 5
+    i32.const 6
     i32.const 0
     call $~lib/rt/__newArray
     local.set $0
@@ -8674,54 +8674,60 @@
   (local $3 i32)
   block $folding-inner0
    block $invalid
-    block $~lib/array/Array<~lib/string/String>
-     block
-      block $~lib/string/String
-       block $~lib/arraybuffer/ArrayBuffer
-        block $~lib/object/Object
-         local.get $0
-         i32.const 8
-         i32.sub
-         i32.load
-         br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $~lib/array/Array<~lib/string/String> $invalid
+    block $~lib/iterator/Iterable<~lib/string/String>
+     block $~lib/array/Array<~lib/string/String>
+      block $~lib/iterator/Iterable<i32>
+       block
+        block $~lib/string/String
+         block $~lib/arraybuffer/ArrayBuffer
+          block $~lib/object/Object
+           local.get $0
+           i32.const 8
+           i32.sub
+           i32.load
+           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<i32> $~lib/array/Array<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $invalid
+          end
+          return
+         end
+         return
         end
         return
        end
-       return
+       unreachable
       end
       return
      end
-     unreachable
-    end
-    local.get $0
-    i32.load offset=4
-    local.tee $1
-    local.get $0
-    i32.load offset=12
-    i32.const 2
-    i32.shl
-    i32.add
-    local.set $2
-    loop $while-continue|0
-     local.get $1
-     local.get $2
-     i32.lt_u
-     if
+     local.get $0
+     i32.load offset=4
+     local.tee $1
+     local.get $0
+     i32.load offset=12
+     i32.const 2
+     i32.shl
+     i32.add
+     local.set $2
+     loop $while-continue|0
       local.get $1
-      i32.load
-      local.tee $3
+      local.get $2
+      i32.lt_u
       if
-       local.get $3
-       call $~lib/rt/itcms/__visit
+       local.get $1
+       i32.load
+       local.tee $3
+       if
+        local.get $3
+        call $~lib/rt/itcms/__visit
+       end
+       local.get $1
+       i32.const 4
+       i32.add
+       local.set $1
+       br $while-continue|0
       end
-      local.get $1
-      i32.const 4
-      i32.add
-      local.set $1
-      br $while-continue|0
      end
+     br $folding-inner0
     end
-    br $folding-inner0
+    return
    end
    unreachable
   end
@@ -8888,7 +8894,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 58380
+  i32.const 58388
   i32.sub
   i32.const 1
   i32.shr_u
@@ -17900,7 +17906,7 @@
   end
   i32.const 0
   global.set $std/string/str
-  i32.const 58380
+  i32.const 58388
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/rt/itcms/state
   i32.const 0
@@ -17946,7 +17952,7 @@
   local.get $0
   memory.fill
   global.get $~lib/memory/__stack_pointer
-  i32.const 25612
+  i32.const 25620
   i32.lt_s
   if
    unreachable

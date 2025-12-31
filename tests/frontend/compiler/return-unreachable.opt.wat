@@ -18,7 +18,7 @@
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33304))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33308))
  (memory $0 1)
  (data $0 (i32.const 12) ",")
  (data $0.1 (i32.const 24) "\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h")
@@ -34,7 +34,7 @@
  (data $7.1 (i32.const 376) "\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s")
  (data $9 (i32.const 444) "<")
  (data $9.1 (i32.const 456) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
- (data $10 (i32.const 512) "\05\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t")
+ (data $10 (i32.const 512) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00 ")
  (export "test" (func $return-unreachable/test))
  (export "memory" (memory $0))
  (start $~start)
@@ -138,7 +138,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33304
+    i32.const 33308
     i32.lt_u
     i32.and
     i32.eqz
@@ -1064,7 +1064,7 @@
          local.set $2
          loop $while-continue|0
           local.get $2
-          i32.const 33304
+          i32.const 33308
           i32.lt_u
           if
            local.get $2
@@ -1160,7 +1160,7 @@
          unreachable
         end
         local.get $3
-        i32.const 33304
+        i32.const 33308
         i32.lt_u
         if
          local.get $3
@@ -1183,7 +1183,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33304
+         i32.const 33308
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1527,7 +1527,7 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 536
+  i32.const 540
   i32.lt_s
   if
    unreachable
@@ -1612,21 +1612,27 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
-   block $~lib/array/Array<i32>
-    block $~lib/arraybuffer/ArrayBufferView
-     block $~lib/string/String
-      block $~lib/arraybuffer/ArrayBuffer
-       block $~lib/object/Object
-        local.get $0
-        i32.const 8
-        i32.sub
-        i32.load
-        br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $invalid
+   block $~lib/iterator/Iterable<i32>
+    block $~lib/array/Array<i32>
+     block $~lib/arraybuffer/ArrayBufferView
+      block $~lib/string/String
+       block $~lib/arraybuffer/ArrayBuffer
+        block $~lib/object/Object
+         local.get $0
+         i32.const 8
+         i32.sub
+         i32.load
+         br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $invalid
+        end
+        return
        end
        return
       end
       return
      end
+     local.get $0
+     i32.load
+     call $~lib/rt/itcms/__visit
      return
     end
     local.get $0
@@ -1634,9 +1640,6 @@
     call $~lib/rt/itcms/__visit
     return
    end
-   local.get $0
-   i32.load
-   call $~lib/rt/itcms/__visit
    return
   end
   unreachable
@@ -1645,7 +1648,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33304
+  i32.const 33308
   i32.sub
   i32.const 1
   i32.shr_u

@@ -12,7 +12,7 @@
  (type $10 (func (param i32 i32 i32 i32) (result i32)))
  (type $11 (func (param i32 i32 i32 i32 i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 35704))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 35712))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -67,11 +67,11 @@
  (data $21 (i32.const 940) "\1c")
  (data $21.1 (i32.const 952) "\02\00\00\00\02\00\00\002")
  (data $22 (i32.const 972) "\1c")
- (data $22.1 (i32.const 984) "\08\00\00\00\08\00\00\00\a0\03\00\00\c0\03")
+ (data $22.1 (i32.const 984) "\t\00\00\00\08\00\00\00\a0\03\00\00\c0\03")
  (data $23 (i32.const 1004) "\1c")
  (data $23.1 (i32.const 1016) "\02\00\00\00\02\00\00\003")
  (data $24 (i32.const 1036) "\1c")
- (data $24.1 (i32.const 1048) "\08\00\00\00\04\00\00\00\00\04")
+ (data $24.1 (i32.const 1048) "\t\00\00\00\04\00\00\00\00\04")
  (data $25 (i32.const 1068) "\1c")
  (data $25.1 (i32.const 1080) "\02\00\00\00\06\00\00\00a\00n\00t")
  (data $26 (i32.const 1100) "\1c")
@@ -83,11 +83,11 @@
  (data $29 (i32.const 1196) ",")
  (data $29.1 (i32.const 1208) "\02\00\00\00\10\00\00\00e\00l\00e\00p\00h\00a\00n\00t")
  (data $30 (i32.const 1244) ",")
- (data $30.1 (i32.const 1256) "\08\00\00\00\14\00\00\00@\04\00\00`\04\00\00\80\04\00\00\a0\04\00\00\c0\04")
+ (data $30.1 (i32.const 1256) "\t\00\00\00\14\00\00\00@\04\00\00`\04\00\00\80\04\00\00\a0\04\00\00\c0\04")
  (data $31 (i32.const 1292) "|")
  (data $31.1 (i32.const 1304) "\02\00\00\00^\00\00\00E\00l\00e\00m\00e\00n\00t\00 \00t\00y\00p\00e\00 \00m\00u\00s\00t\00 \00b\00e\00 \00n\00u\00l\00l\00a\00b\00l\00e\00 \00i\00f\00 \00a\00r\00r\00a\00y\00 \00i\00s\00 \00h\00o\00l\00e\00y")
  (data $32 (i32.const 1420) ",")
- (data $32.1 (i32.const 1432) "\08\00\00\00\14\00\00\00@\04\00\00`\04\00\00\80\04\00\00\a0\04\00\00\c0\04")
+ (data $32.1 (i32.const 1432) "\t\00\00\00\14\00\00\00@\04\00\00`\04\00\00\80\04\00\00\a0\04\00\00\c0\04")
  (data $33 (i32.const 1468) "\1c")
  (data $33.1 (i32.const 1480) "\01")
  (data $34 (i32.const 1500) "\1c")
@@ -95,12 +95,12 @@
  (data $35 (i32.const 1532) "\1c")
  (data $35.1 (i32.const 1544) "\01\00\00\00\04\00\00\00\f0\05")
  (data $36 (i32.const 1564) ",")
- (data $36.1 (i32.const 1576) "\08\00\00\00\14\00\00\00@\04\00\00`\04\00\00\80\04\00\00\a0\04\00\00\c0\04")
+ (data $36.1 (i32.const 1576) "\t\00\00\00\14\00\00\00@\04\00\00`\04\00\00\80\04\00\00\a0\04\00\00\c0\04")
  (data $37 (i32.const 1612) "\1c")
- (data $37.1 (i32.const 1624) "\n\00\00\00\08")
+ (data $37.1 (i32.const 1624) "\0c\00\00\00\08")
  (data $37.2 (i32.const 1638) "\f8\7f")
  (data $38 (i32.const 1644) "\1c")
- (data $38.1 (i32.const 1656) "\0b\00\00\00\04\00\00\00\00\00\c0\7f")
+ (data $38.1 (i32.const 1656) "\r\00\00\00\04\00\00\00\00\00\c0\7f")
  (data $39 (i32.const 1676) "\1c")
  (data $39.1 (i32.const 1688) "\04\00\00\00\0c\00\00\00\02\00\00\00\t\00\00\00\t")
  (data $40 (i32.const 1708) ",")
@@ -112,7 +112,7 @@
  (data $43 (i32.const 1820) "\1c")
  (data $43.1 (i32.const 1832) "\02\00\00\00\n\00\00\00W\00a\00t\00e\00r")
  (data $44 (i32.const 1852) "\1c")
- (data $44.1 (i32.const 1864) "\08\00\00\00\0c\00\00\00\f0\06\00\00\10\07\00\000\07")
+ (data $44.1 (i32.const 1864) "\t\00\00\00\0c\00\00\00\f0\06\00\00\10\07\00\000\07")
  (data $45 (i32.const 1884) "\1c")
  (data $45.1 (i32.const 1896) "\02")
  (data $46 (i32.const 1916) "\1c")
@@ -138,36 +138,36 @@
  (data $56 (i32.const 2332) "\1c")
  (data $56.1 (i32.const 2344) "\04\00\00\00\0c\00\00\00\01\00\00\00\02\00\00\00\03")
  (data $57 (i32.const 2364) "\1c")
- (data $57.1 (i32.const 2376) "\0c\00\00\00\08\00\00\00\01")
+ (data $57.1 (i32.const 2376) "\0e\00\00\00\08\00\00\00\01")
  (data $58 (i32.const 2396) "\1c")
- (data $58.1 (i32.const 2408) "\r\00\00\00\08\00\00\00\02")
+ (data $58.1 (i32.const 2408) "\0f\00\00\00\08\00\00\00\02")
  (data $59 (i32.const 2428) "\1c")
- (data $59.1 (i32.const 2440) "\0e\00\00\00\08\00\00\00\03")
+ (data $59.1 (i32.const 2440) "\10\00\00\00\08\00\00\00\03")
  (data $60 (i32.const 2460) "\1c")
- (data $60.1 (i32.const 2472) "\0f\00\00\00\08\00\00\00\04")
+ (data $60.1 (i32.const 2472) "\11\00\00\00\08\00\00\00\04")
  (data $61 (i32.const 2492) "\1c")
- (data $61.1 (i32.const 2504) "\0f\00\00\00\08\00\00\00\05")
+ (data $61.1 (i32.const 2504) "\11\00\00\00\08\00\00\00\05")
  (data $62 (i32.const 2524) "\1c")
- (data $62.1 (i32.const 2536) "\0e\00\00\00\08\00\00\00\06")
+ (data $62.1 (i32.const 2536) "\10\00\00\00\08\00\00\00\06")
  (data $63 (i32.const 2556) "\1c")
- (data $63.1 (i32.const 2568) "\0e\00\00\00\08\00\00\00\07")
+ (data $63.1 (i32.const 2568) "\10\00\00\00\08\00\00\00\07")
  (data $64 (i32.const 2588) "\1c")
- (data $64.1 (i32.const 2600) "\0e\00\00\00\08\00\00\00\08")
+ (data $64.1 (i32.const 2600) "\10\00\00\00\08\00\00\00\08")
  (data $65 (i32.const 2620) "\1c")
- (data $65.1 (i32.const 2632) "\0e\00\00\00\08\00\00\00\t")
+ (data $65.1 (i32.const 2632) "\10\00\00\00\08\00\00\00\t")
  (data $66 (i32.const 2652) "\1c")
- (data $66.1 (i32.const 2664) "\0e\00\00\00\08\00\00\00\n")
+ (data $66.1 (i32.const 2664) "\10\00\00\00\08\00\00\00\n")
  (data $67 (i32.const 2684) "\1c")
- (data $67.1 (i32.const 2696) "\0e\00\00\00\08\00\00\00\0b")
+ (data $67.1 (i32.const 2696) "\10\00\00\00\08\00\00\00\0b")
  (data $68 (i32.const 2716) "\1c")
- (data $68.1 (i32.const 2728) "\0e\00\00\00\08\00\00\00\0c")
+ (data $68.1 (i32.const 2728) "\10\00\00\00\08\00\00\00\0c")
  (data $69 (i32.const 2748) "\1c")
- (data $69.1 (i32.const 2760) "\0e\00\00\00\08\00\00\00\r")
+ (data $69.1 (i32.const 2760) "\10\00\00\00\08\00\00\00\r")
  (data $70 (i32.const 2780) ",")
  (data $70.1 (i32.const 2792) "\04\00\00\00\10\00\00\00\00\00\00\00\03\00\00\00\02\00\00\00\01")
  (data $71 (i32.const 2828) "\1c")
- (data $71.1 (i32.const 2840) "\10\00\00\00\08\00\00\00\0e")
- (data $72 (i32.const 2864) "\11\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00$\t\00\00 \00\00\00\04A\00\00\02\t\00\00\04A\00\00\02A\00\00$\1a\00\00$\19")
+ (data $71.1 (i32.const 2840) "\12\00\00\00\08\00\00\00\0e")
+ (data $72 (i32.const 2864) "\13\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00$\t\00\00 \00\00\00\04A\00\00\02\t\00\00 \00\00\00\04A\00\00\02A\00\00 \00\00\00$\1a\00\00$\19")
  (table $0 15 15 funcref)
  (elem $0 (i32.const 1) $start:std/staticarray~anonymous|0 $start:std/staticarray~anonymous|1 $start:std/staticarray~anonymous|2 $start:std/staticarray~anonymous|3 $start:std/staticarray~anonymous|3 $start:std/staticarray~anonymous|5 $start:std/staticarray~anonymous|6 $start:std/staticarray~anonymous|7 $start:std/staticarray~anonymous|8 $start:std/staticarray~anonymous|5 $start:std/staticarray~anonymous|6 $start:std/staticarray~anonymous|5 $start:std/staticarray~anonymous|6 $~lib/util/sort/COMPARATOR<i32>~anonymous|0)
  (export "memory" (memory $0))
@@ -335,7 +335,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 35704
+    i32.const 35712
     i32.lt_u
     i32.and
     i32.eqz
@@ -1031,7 +1031,7 @@
   (local $1 i32)
   (local $2 i32)
   local.get $0
-  i32.const 35704
+  i32.const 35712
   i32.ge_u
   if
    global.get $~lib/rt/tlsf/ROOT
@@ -1159,7 +1159,7 @@
      local.set $0
      loop $while-continue|0
       local.get $0
-      i32.const 35704
+      i32.const 35712
       i32.lt_u
       if
        local.get $0
@@ -1255,7 +1255,7 @@
      unreachable
     end
     local.get $0
-    i32.const 35704
+    i32.const 35712
     i32.lt_u
     if
      local.get $0
@@ -1998,7 +1998,7 @@
   i32.const 2
   i32.shl
   local.tee $2
-  i32.const 8
+  i32.const 9
   call $~lib/rt/itcms/__new
   local.set $1
   i32.const 0
@@ -2236,7 +2236,7 @@
   i32.shl
   local.set $4
   local.get $2
-  i32.const 9
+  i32.const 10
   i32.const 0
   call $~lib/rt/__newArray
   local.tee $3
@@ -3300,19 +3300,25 @@
     block $invalid
      block $~lib/staticarray/StaticArray<f32>
       block $~lib/staticarray/StaticArray<f64>
-       block $~lib/array/Array<~lib/string/String>
-        block $~lib/staticarray/StaticArray<~lib/string/String>
-         block $~lib/staticarray/StaticArray<std/staticarray/Ref>
-          block $std/staticarray/Ref
-           block $~lib/staticarray/StaticArray<i32>
-            block $~lib/string/String
-             block $~lib/arraybuffer/ArrayBuffer
-              block $~lib/object/Object
-               local.get $0
-               i32.const 8
-               i32.sub
-               i32.load
-               br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner1 $~lib/staticarray/StaticArray<i32> $std/staticarray/Ref $~lib/staticarray/StaticArray<std/staticarray/Ref> $folding-inner1 $~lib/staticarray/StaticArray<~lib/string/String> $~lib/array/Array<~lib/string/String> $~lib/staticarray/StaticArray<f64> $~lib/staticarray/StaticArray<f32> $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $invalid
+       block $~lib/iterator/Iterable<~lib/string/String>
+        block $~lib/array/Array<~lib/string/String>
+         block $~lib/staticarray/StaticArray<~lib/string/String>
+          block $~lib/iterator/Iterable<i32>
+           block $~lib/staticarray/StaticArray<std/staticarray/Ref>
+            block $std/staticarray/Ref
+             block $~lib/staticarray/StaticArray<i32>
+              block $~lib/string/String
+               block $~lib/arraybuffer/ArrayBuffer
+                block $~lib/object/Object
+                 local.get $0
+                 i32.const 8
+                 i32.sub
+                 i32.load
+                 br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner1 $~lib/staticarray/StaticArray<i32> $std/staticarray/Ref $~lib/staticarray/StaticArray<std/staticarray/Ref> $folding-inner1 $~lib/iterator/Iterable<i32> $~lib/staticarray/StaticArray<~lib/string/String> $~lib/array/Array<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $~lib/staticarray/StaticArray<f64> $~lib/staticarray/StaticArray<f32> $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $invalid
+                end
+                return
+               end
+               return
               end
               return
              end
@@ -3320,6 +3326,8 @@
             end
             return
            end
+           local.get $0
+           call $~lib/staticarray/StaticArray<std/staticarray/Ref>~visit
            return
           end
           return
@@ -3329,38 +3337,36 @@
          return
         end
         local.get $0
-        call $~lib/staticarray/StaticArray<std/staticarray/Ref>~visit
-        return
-       end
-       local.get $0
-       i32.load offset=4
-       local.tee $1
-       local.get $0
-       i32.load offset=12
-       i32.const 2
-       i32.shl
-       i32.add
-       local.set $2
-       loop $while-continue|0
-        local.get $1
-        local.get $2
-        i32.lt_u
-        if
+        i32.load offset=4
+        local.tee $1
+        local.get $0
+        i32.load offset=12
+        i32.const 2
+        i32.shl
+        i32.add
+        local.set $2
+        loop $while-continue|0
          local.get $1
-         i32.load
-         local.tee $3
+         local.get $2
+         i32.lt_u
          if
-          local.get $3
-          call $~lib/rt/itcms/__visit
+          local.get $1
+          i32.load
+          local.tee $3
+          if
+           local.get $3
+           call $~lib/rt/itcms/__visit
+          end
+          local.get $1
+          i32.const 4
+          i32.add
+          local.set $1
+          br $while-continue|0
          end
-         local.get $1
-         i32.const 4
-         i32.add
-         local.set $1
-         br $while-continue|0
         end
+        br $folding-inner1
        end
-       br $folding-inner1
+       return
       end
       return
      end
@@ -3496,7 +3502,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 35704
+  i32.const 35712
   i32.sub
   i32.const 1
   i32.shr_u
@@ -3886,7 +3892,7 @@
    unreachable
   end
   i32.const 8
-  i32.const 8
+  i32.const 9
   i32.const 992
   call $~lib/rt/__newBuffer
   local.set $2
@@ -3894,7 +3900,7 @@
   local.get $2
   i32.store offset=4 align=1
   i32.const 4
-  i32.const 8
+  i32.const 9
   i32.const 1056
   call $~lib/rt/__newBuffer
   local.set $4
@@ -3934,7 +3940,7 @@
   local.get $0
   i32.const 2
   i32.shl
-  i32.const 8
+  i32.const 9
   call $~lib/rt/itcms/__new
   local.set $9
   loop $for-loop|00
@@ -4014,7 +4020,7 @@
    unreachable
   end
   i32.const 20
-  i32.const 8
+  i32.const 9
   i32.const 1264
   call $~lib/rt/__newBuffer
   local.set $1
@@ -4286,7 +4292,7 @@
    unreachable
   end
   i32.const 20
-  i32.const 8
+  i32.const 9
   i32.const 1440
   call $~lib/rt/__newBuffer
   local.set $1
@@ -4294,7 +4300,7 @@
   local.get $1
   i32.store align=1
   i32.const 0
-  i32.const 9
+  i32.const 10
   i32.const 1488
   call $~lib/rt/__newArray
   local.set $0
@@ -4321,7 +4327,7 @@
    unreachable
   end
   i32.const 1
-  i32.const 9
+  i32.const 10
   i32.const 1552
   call $~lib/rt/__newArray
   local.set $0
@@ -4350,7 +4356,7 @@
    unreachable
   end
   i32.const 20
-  i32.const 8
+  i32.const 9
   i32.const 1584
   call $~lib/rt/__newBuffer
   local.tee $0
@@ -4410,7 +4416,7 @@
    local.set $2
    i32.const 0
    i32.const 8
-   i32.const 10
+   i32.const 12
    i32.const 1632
    call $~lib/rt/__newBuffer
    local.tee $0
@@ -4467,7 +4473,7 @@
    local.set $2
    i32.const 0
    i32.const 4
-   i32.const 11
+   i32.const 13
    i32.const 1664
    call $~lib/rt/__newBuffer
    local.tee $0
@@ -4678,7 +4684,7 @@
    unreachable
   end
   i32.const 12
-  i32.const 8
+  i32.const 9
   i32.const 1872
   call $~lib/rt/__newBuffer
   local.set $1
@@ -6088,7 +6094,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 35704
+  i32.const 35712
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/rt/itcms/state
   i32.const 0
@@ -6134,7 +6140,7 @@
   local.get $0
   memory.fill
   global.get $~lib/memory/__stack_pointer
-  i32.const 2936
+  i32.const 2944
   i32.lt_s
   if
    unreachable

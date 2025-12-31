@@ -31,9 +31,9 @@
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $~lib/rt/__rtti_base i32 (i32.const 512))
- (global $~lib/memory/__data_end i32 (i32.const 544))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33312))
- (global $~lib/memory/__heap_base i32 (i32.const 33312))
+ (global $~lib/memory/__data_end i32 (i32.const 548))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33316))
+ (global $~lib/memory/__heap_base i32 (i32.const 33316))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -45,7 +45,7 @@
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $8 (i32.const 412) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
  (data $9 (i32.const 460) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00")
- (data $10 (i32.const 512) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00\00\00\00\00\02\t\00\00")
+ (data $10 (i32.const 512) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00\00\00\00\00\02\t\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "test" (func $class/test))
@@ -3487,53 +3487,56 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $~lib/array/Array<i32>
-    (block $class/GenericInitializer<i32>
-     (block $class/Animal<f64>
-      (block $~lib/arraybuffer/ArrayBufferView
-       (block $~lib/string/String
-        (block $~lib/arraybuffer/ArrayBuffer
-         (block $~lib/object/Object
-          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $class/Animal<f64> $class/GenericInitializer<i32> $~lib/array/Array<i32> $invalid
-           (i32.load
-            (i32.sub
-             (local.get $0)
-             (i32.const 8)
+   (block $~lib/iterator/Iterable<i32>
+    (block $~lib/array/Array<i32>
+     (block $class/GenericInitializer<i32>
+      (block $class/Animal<f64>
+       (block $~lib/arraybuffer/ArrayBufferView
+        (block $~lib/string/String
+         (block $~lib/arraybuffer/ArrayBuffer
+          (block $~lib/object/Object
+           (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $class/Animal<f64> $class/GenericInitializer<i32> $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $invalid
+            (i32.load
+             (i32.sub
+              (local.get $0)
+              (i32.const 8)
+             )
             )
            )
           )
+          (return)
          )
          (return)
         )
         (return)
        )
-       (return)
-      )
-      (block
-       (call $~lib/arraybuffer/ArrayBufferView~visit
-        (local.get $0)
-        (local.get $1)
+       (block
+        (call $~lib/arraybuffer/ArrayBufferView~visit
+         (local.get $0)
+         (local.get $1)
+        )
+        (return)
        )
-       (return)
       )
+      (return)
      )
-     (return)
+     (block
+      (call $class/GenericInitializer<i32>~visit
+       (local.get $0)
+       (local.get $1)
+      )
+      (return)
+     )
     )
     (block
-     (call $class/GenericInitializer<i32>~visit
+     (call $~lib/array/Array<i32>~visit
       (local.get $0)
       (local.get $1)
      )
      (return)
     )
    )
-   (block
-    (call $~lib/array/Array<i32>~visit
-     (local.get $0)
-     (local.get $1)
-    )
-    (return)
-   )
+   (return)
   )
   (unreachable)
  )

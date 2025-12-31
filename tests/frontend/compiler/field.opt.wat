@@ -8,7 +8,7 @@
  (type $6 (func (param i32 i32 i64)))
  (type $7 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33248))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33256))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -32,8 +32,8 @@
  (data $7.1 (i32.const 360) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $8 (i32.const 412) "\1c")
  (data $8.1 (i32.const 424) "\01")
- (data $9 (i32.const 448) "\07\00\00\00 \00\00\00 \00\00\00 ")
- (data $9.1 (i32.const 472) "\02A\00\00\02\t")
+ (data $9 (i32.const 448) "\t\00\00\00 \00\00\00 \00\00\00 ")
+ (data $9.1 (i32.const 472) "\02A\00\00 \00\00\00\02\t\00\00 ")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -136,7 +136,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33248
+    i32.const 33256
     i32.lt_u
     i32.and
     i32.eqz
@@ -766,10 +766,10 @@
   if
    unreachable
   end
-  i32.const 33248
+  i32.const 33264
   i32.const 0
   i32.store
-  i32.const 34816
+  i32.const 34832
   i32.const 0
   i32.store
   i32.const 0
@@ -782,7 +782,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 33248
+    i32.const 33264
     i32.add
     i32.const 0
     i32.store offset=4
@@ -800,7 +800,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 33248
+      i32.const 33264
       i32.add
       i32.const 0
       i32.store offset=96
@@ -818,14 +818,14 @@
     br $for-loop|0
    end
   end
-  i32.const 33248
-  i32.const 34820
+  i32.const 33264
+  i32.const 34836
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 33248
+  i32.const 33264
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/itcms/step (result i32)
@@ -910,7 +910,7 @@
      local.set $0
      loop $while-continue|0
       local.get $0
-      i32.const 33248
+      i32.const 33256
       i32.lt_u
       if
        local.get $0
@@ -1006,7 +1006,7 @@
      unreachable
     end
     local.get $0
-    i32.const 33248
+    i32.const 33256
     i32.lt_u
     if
      local.get $0
@@ -1029,7 +1029,7 @@
      i32.const 4
      i32.add
      local.tee $1
-     i32.const 33248
+     i32.const 33256
      i32.ge_u
      if
       global.get $~lib/rt/tlsf/ROOT
@@ -1575,54 +1575,60 @@
   (local $3 i32)
   block $folding-inner0
    block $invalid
-    block $~lib/array/Array<~lib/string/String>
-     block
-      block $~lib/string/String
-       block $~lib/arraybuffer/ArrayBuffer
-        block $~lib/object/Object
-         local.get $0
-         i32.const 8
-         i32.sub
-         i32.load
-         br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $~lib/array/Array<~lib/string/String> $folding-inner0 $invalid
+    block $~lib/iterator/Iterable<i32>
+     block $~lib/iterator/Iterable<~lib/string/String>
+      block $~lib/array/Array<~lib/string/String>
+       block
+        block $~lib/string/String
+         block $~lib/arraybuffer/ArrayBuffer
+          block $~lib/object/Object
+           local.get $0
+           i32.const 8
+           i32.sub
+           i32.load
+           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $~lib/array/Array<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $folding-inner0 $~lib/iterator/Iterable<i32> $invalid
+          end
+          return
+         end
+         return
         end
         return
        end
-       return
+       unreachable
       end
-      return
-     end
-     unreachable
-    end
-    local.get $0
-    i32.load offset=4
-    local.tee $1
-    local.get $0
-    i32.load offset=12
-    i32.const 2
-    i32.shl
-    i32.add
-    local.set $2
-    loop $while-continue|0
-     local.get $1
-     local.get $2
-     i32.lt_u
-     if
-      local.get $1
-      i32.load
-      local.tee $3
-      if
-       local.get $3
-       call $~lib/rt/itcms/__visit
-      end
-      local.get $1
-      i32.const 4
+      local.get $0
+      i32.load offset=4
+      local.tee $1
+      local.get $0
+      i32.load offset=12
+      i32.const 2
+      i32.shl
       i32.add
-      local.set $1
-      br $while-continue|0
+      local.set $2
+      loop $while-continue|0
+       local.get $1
+       local.get $2
+       i32.lt_u
+       if
+        local.get $1
+        i32.load
+        local.tee $3
+        if
+         local.get $3
+         call $~lib/rt/itcms/__visit
+        end
+        local.get $1
+        i32.const 4
+        i32.add
+        local.set $1
+        br $while-continue|0
+       end
+      end
+      br $folding-inner0
      end
+     return
     end
-    br $folding-inner0
+    return
    end
    unreachable
   end
@@ -1637,7 +1643,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33248
+  i32.const 33256
   i32.sub
   i32.const 1
   i32.shr_u
@@ -1674,7 +1680,7 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 480
+  i32.const 488
   i32.lt_s
   if
    unreachable
@@ -1705,7 +1711,7 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 480
+  i32.const 488
   i32.lt_s
   if
    unreachable

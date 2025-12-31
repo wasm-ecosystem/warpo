@@ -21,7 +21,7 @@
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33732))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33748))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c")
  (data $0.1 (i32.const 24) "\01\00\00\00\08\00\00\00\01\00\00\00\02")
@@ -30,16 +30,16 @@
  (data $2 (i32.const 92) ",")
  (data $2.1 (i32.const 104) "\01\00\00\00\10\00\00\00\03\00\00\00\00\00\00\00\04")
  (data $3 (i32.const 140) ",")
- (data $3.1 (i32.const 152) "\05\00\00\00\10\00\00\00p\00\00\00p\00\00\00\10\00\00\00\02")
+ (data $3.1 (i32.const 152) "\06\00\00\00\10\00\00\00p\00\00\00p\00\00\00\10\00\00\00\02")
  (data $4 (i32.const 188) "\1c")
  (data $4.1 (i32.const 200) "\01\00\00\00\08\00\00\00\00\00\c0?\00\00 @")
  (data $5 (i32.const 220) ",")
- (data $5.1 (i32.const 232) "\06\00\00\00\10\00\00\00\d0\00\00\00\d0\00\00\00\08\00\00\00\02")
+ (data $5.1 (i32.const 232) "\08\00\00\00\10\00\00\00\d0\00\00\00\d0\00\00\00\08\00\00\00\02")
  (data $6 (i32.const 268) ",")
  (data $6.1 (i32.const 280) "\01\00\00\00\10")
  (data $6.2 (i32.const 294) "\f4?\00\00\00\00\00\00\02@")
  (data $7 (i32.const 316) ",")
- (data $7.1 (i32.const 328) "\07\00\00\00\10\00\00\00 \01\00\00 \01\00\00\10\00\00\00\02")
+ (data $7.1 (i32.const 328) "\n\00\00\00\10\00\00\00 \01\00\00 \01\00\00\10\00\00\00\02")
  (data $8 (i32.const 364) "<")
  (data $8.1 (i32.const 376) "\02\00\00\00&\00\00\00s\00t\00d\00/\00s\00t\00a\00t\00i\00c\00-\00a\00r\00r\00a\00y\00.\00t\00s")
  (data $9 (i32.const 428) "<")
@@ -56,7 +56,7 @@
  (data $16.1 (i32.const 792) "\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s")
  (data $18 (i32.const 860) "<")
  (data $18.1 (i32.const 872) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
- (data $19 (i32.const 928) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00\02\n\00\00\02\19\00\00\02\1a")
+ (data $19 (i32.const 928) "\0c\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00 \00\00\00\02\n\00\00 \00\00\00\02\19\00\00 \00\00\00\02\1a\00\00 ")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/array/Array<i32>#__get (param $0 i32) (result i32)
@@ -188,7 +188,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33732
+    i32.const 33748
     i32.lt_u
     i32.and
     i32.eqz
@@ -818,10 +818,10 @@
   if
    unreachable
   end
-  i32.const 33744
+  i32.const 33760
   i32.const 0
   i32.store
-  i32.const 35312
+  i32.const 35328
   i32.const 0
   i32.store
   i32.const 0
@@ -834,7 +834,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 33744
+    i32.const 33760
     i32.add
     i32.const 0
     i32.store offset=4
@@ -852,7 +852,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 33744
+      i32.const 33760
       i32.add
       i32.const 0
       i32.store offset=96
@@ -870,14 +870,14 @@
     br $for-loop|0
    end
   end
-  i32.const 33744
-  i32.const 35316
+  i32.const 33760
+  i32.const 35332
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 33744
+  i32.const 33760
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/tlsf/searchBlock (param $0 i32) (param $1 i32) (result i32)
@@ -1179,7 +1179,7 @@
            local.set $1
            loop $while-continue|0
             local.get $1
-            i32.const 33732
+            i32.const 33748
             i32.lt_u
             if
              local.get $1
@@ -1275,7 +1275,7 @@
            unreachable
           end
           local.get $1
-          i32.const 33732
+          i32.const 33748
           i32.lt_u
           if
            local.get $1
@@ -1298,7 +1298,7 @@
            i32.const 4
            i32.add
            local.tee $2
-           i32.const 33732
+           i32.const 33748
            i32.ge_u
            if
             global.get $~lib/rt/tlsf/ROOT
@@ -1772,15 +1772,30 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $folding-inner0
    block $invalid
-    block $~lib/arraybuffer/ArrayBufferView
-     block $~lib/string/String
-      block $~lib/arraybuffer/ArrayBuffer
-       block $~lib/object/Object
+    block $~lib/iterator/Iterable<f64>
+     block $~lib/iterator/Iterable<f32>
+      block $~lib/iterator/Iterable<i64>
+       block $~lib/iterator/Iterable<i32>
+        block $~lib/arraybuffer/ArrayBufferView
+         block $~lib/string/String
+          block $~lib/arraybuffer/ArrayBuffer
+           block $~lib/object/Object
+            local.get $0
+            i32.const 8
+            i32.sub
+            i32.load
+            br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $folding-inner0 $~lib/iterator/Iterable<i32> $folding-inner0 $~lib/iterator/Iterable<i64> $folding-inner0 $~lib/iterator/Iterable<f32> $folding-inner0 $~lib/iterator/Iterable<f64> $invalid
+           end
+           return
+          end
+          return
+         end
+         return
+        end
         local.get $0
-        i32.const 8
-        i32.sub
         i32.load
-        br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $invalid
+        call $~lib/rt/itcms/__visit
+        return
        end
        return
       end
@@ -1788,9 +1803,6 @@
      end
      return
     end
-    local.get $0
-    i32.load
-    call $~lib/rt/itcms/__visit
     return
    end
    unreachable
@@ -1845,7 +1857,7 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 964
+  i32.const 980
   i32.lt_s
   if
    unreachable
@@ -1853,7 +1865,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33732
+  i32.const 33748
   i32.sub
   i32.const 1
   i32.shr_u

@@ -9,7 +9,7 @@
  (type $7 (func (param i32 i32 i64)))
  (type $8 (func (param i32 i32 i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33628))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33644))
  (global $std/array-literal/emptyArrayI32 (mut i32) (i32.const 400))
  (global $std/array-literal/i (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -40,11 +40,11 @@
  (data $5 (i32.const 268) "\1c")
  (data $5.1 (i32.const 280) "\01\00\00\00\0c\00\00\00\00\00\00\00\01\00\00\00\02")
  (data $6 (i32.const 300) ",")
- (data $6.1 (i32.const 312) "\05\00\00\00\10\00\00\00 \01\00\00 \01\00\00\0c\00\00\00\03")
+ (data $6.1 (i32.const 312) "\06\00\00\00\10\00\00\00 \01\00\00 \01\00\00\0c\00\00\00\03")
  (data $7 (i32.const 348) "\1c")
  (data $7.1 (i32.const 360) "\01")
  (data $8 (i32.const 380) ",")
- (data $8.1 (i32.const 392) "\05\00\00\00\10\00\00\00p\01\00\00p\01")
+ (data $8.1 (i32.const 392) "\06\00\00\00\10\00\00\00p\01\00\00p\01")
  (data $9 (i32.const 428) "<")
  (data $9.1 (i32.const 440) "\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e")
  (data $10 (i32.const 492) "<")
@@ -55,7 +55,7 @@
  (data $15.1 (i32.const 712) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $16 (i32.const 764) ",")
  (data $16.1 (i32.const 776) "\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h")
- (data $17 (i32.const 816) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00B\08\00\00\02\t\00\00 \00\00\00\02A\00\00 \00\00\00\02A")
+ (data $17 (i32.const 816) "\0e\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00B\08\00\00 \00\00\00\02\t\00\00 \00\00\00 \00\00\00\02A\00\00 \00\00\00 \00\00\00\02A\00\00 ")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/array/Array<i8>#__get (param $0 i32) (param $1 i32) (result i32)
@@ -232,7 +232,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33628
+    i32.const 33644
     i32.lt_u
     i32.and
     i32.eqz
@@ -862,10 +862,10 @@
   if
    unreachable
   end
-  i32.const 33632
+  i32.const 33648
   i32.const 0
   i32.store
-  i32.const 35200
+  i32.const 35216
   i32.const 0
   i32.store
   i32.const 0
@@ -878,7 +878,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 33632
+    i32.const 33648
     i32.add
     i32.const 0
     i32.store offset=4
@@ -896,7 +896,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 33632
+      i32.const 33648
       i32.add
       i32.const 0
       i32.store offset=96
@@ -914,14 +914,14 @@
     br $for-loop|0
    end
   end
-  i32.const 33632
-  i32.const 35204
+  i32.const 33648
+  i32.const 35220
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 33632
+  i32.const 33648
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/itcms/step (result i32)
@@ -1006,7 +1006,7 @@
      local.set $0
      loop $while-continue|0
       local.get $0
-      i32.const 33628
+      i32.const 33644
       i32.lt_u
       if
        local.get $0
@@ -1102,7 +1102,7 @@
      unreachable
     end
     local.get $0
-    i32.const 33628
+    i32.const 33644
     i32.lt_u
     if
      local.get $0
@@ -1125,7 +1125,7 @@
      i32.const 4
      i32.add
      local.tee $1
-     i32.const 33628
+     i32.const 33644
      i32.ge_u
      if
       global.get $~lib/rt/tlsf/ROOT
@@ -1680,7 +1680,7 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 860
+  i32.const 876
   i32.lt_s
   if
    unreachable
@@ -1909,13 +1909,13 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 860
+  i32.const 876
   i32.lt_s
   if
    unreachable
   end
   i32.const 0
-  i32.const 6
+  i32.const 8
   call $~lib/rt/itcms/__new
   local.set $0
   global.get $~lib/memory/__stack_pointer
@@ -2016,19 +2016,31 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $folding-inner0
    block $invalid
-    block $~lib/array/Array<std/array-literal/RefWithCtor>
-     block $std/array-literal/RefWithCtor
-      block $~lib/array/Array<std/array-literal/Ref>
-       block $std/array-literal/Ref
-        block
-         block $~lib/string/String
-          block $~lib/arraybuffer/ArrayBuffer
-           block $~lib/object/Object
-            local.get $0
-            i32.const 8
-            i32.sub
-            i32.load
-            br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $folding-inner0 $std/array-literal/Ref $~lib/array/Array<std/array-literal/Ref> $std/array-literal/RefWithCtor $~lib/array/Array<std/array-literal/RefWithCtor> $invalid
+    block $~lib/iterator/Iterable<std/array-literal/RefWithCtor>
+     block $~lib/array/Array<std/array-literal/RefWithCtor>
+      block $std/array-literal/RefWithCtor
+       block $~lib/iterator/Iterable<std/array-literal/Ref>
+        block $~lib/array/Array<std/array-literal/Ref>
+         block $std/array-literal/Ref
+          block $~lib/iterator/Iterable<i32>
+           block $~lib/iterator/Iterable<i8>
+            block
+             block $~lib/string/String
+              block $~lib/arraybuffer/ArrayBuffer
+               block $~lib/object/Object
+                local.get $0
+                i32.const 8
+                i32.sub
+                i32.load
+                br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<i8> $folding-inner0 $~lib/iterator/Iterable<i32> $std/array-literal/Ref $~lib/array/Array<std/array-literal/Ref> $~lib/iterator/Iterable<std/array-literal/Ref> $std/array-literal/RefWithCtor $~lib/array/Array<std/array-literal/RefWithCtor> $~lib/iterator/Iterable<std/array-literal/RefWithCtor> $invalid
+               end
+               return
+              end
+              return
+             end
+             return
+            end
+            unreachable
            end
            return
           end
@@ -2036,18 +2048,18 @@
          end
          return
         end
-        unreachable
+        local.get $0
+        call $~lib/array/Array<std/array-literal/Ref>~visit
+        return
        end
        return
       end
-      local.get $0
-      call $~lib/array/Array<std/array-literal/Ref>~visit
       return
      end
+     local.get $0
+     call $~lib/array/Array<std/array-literal/Ref>~visit
      return
     end
-    local.get $0
-    call $~lib/array/Array<std/array-literal/Ref>~visit
     return
    end
    unreachable
@@ -2174,7 +2186,7 @@
   i32.const 0
   i32.store align=1
   global.get $~lib/memory/__stack_pointer
-  i32.const 860
+  i32.const 876
   i32.lt_s
   if
    unreachable
@@ -2182,7 +2194,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33628
+  i32.const 33644
   i32.sub
   i32.const 1
   i32.shr_u
@@ -2294,7 +2306,7 @@
   global.set $std/array-literal/i
   i32.const 3
   i32.const 2
-  i32.const 5
+  i32.const 6
   call $~lib/rt/__newArray
   local.set $0
   global.get $~lib/memory/__stack_pointer
@@ -2373,7 +2385,7 @@
   end
   i32.const 3
   i32.const 2
-  i32.const 7
+  i32.const 9
   call $~lib/rt/__newArray
   local.set $0
   global.get $~lib/memory/__stack_pointer
@@ -2407,7 +2419,7 @@
   end
   i32.const 3
   i32.const 2
-  i32.const 9
+  i32.const 12
   call $~lib/rt/__newArray
   local.set $0
   global.get $~lib/memory/__stack_pointer
@@ -2416,19 +2428,19 @@
   local.get $0
   i32.const 0
   i32.const 0
-  i32.const 8
+  i32.const 11
   call $~lib/rt/itcms/__new
   call $~lib/array/Array<std/array-literal/Ref>#__set
   local.get $0
   i32.const 1
   i32.const 0
-  i32.const 8
+  i32.const 11
   call $~lib/rt/itcms/__new
   call $~lib/array/Array<std/array-literal/Ref>#__set
   local.get $0
   i32.const 2
   i32.const 0
-  i32.const 8
+  i32.const 11
   call $~lib/rt/itcms/__new
   call $~lib/array/Array<std/array-literal/Ref>#__set
   local.get $0
@@ -2457,7 +2469,7 @@
   global.set $std/array-literal/dynamicArrayRefWithCtor
   i32.const 1
   i32.const 2
-  i32.const 7
+  i32.const 9
   call $~lib/rt/__newArray
   local.set $0
   global.get $~lib/memory/__stack_pointer
@@ -2467,7 +2479,7 @@
   i32.const 0
   call $std/array-literal/Ref#constructor
   call $~lib/array/Array<std/array-literal/Ref>#__set
-  i32.const 33628
+  i32.const 33644
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/rt/itcms/state
   i32.const 0
