@@ -51,6 +51,32 @@ function ENTRY_SIZE<T>(): usize {
   return size;
 }
 
+// @ts-ignore: decorator
+@lazy
+const GET_START = Symbol();
+
+// @ts-ignore: decorator
+@lazy
+const GET_ENTRIES_OFFSET = Symbol();
+
+class SetIterator<T> implements Iterator<T> {
+  private i: i32 = 0;
+  constructor(private set: Set<T>) {}
+  next(): IteratorResult<T> {
+    const set = this.set;
+    const start = set[GET_START]();
+    const size = set[GET_ENTRIES_OFFSET]();
+    for (let i = this.i; i < size; ++i) {
+      let entry = changetype<SetEntry<T>>(start + <usize>i * ENTRY_SIZE<T>());
+      if (!(entry.taggedNext & EMPTY)) {
+        this.i = i + 1;
+        return IteratorResult.fromValue<T>(entry.key);
+      }
+    }
+    return IteratorResult.done<T>();
+  }
+}
+
 export class Set<T> {
   // buckets referencing their respective first entry, usize[bucketsMask + 1]
   private buckets: ArrayBuffer = new ArrayBuffer(INITIAL_CAPACITY * <i32>BUCKET_SIZE);
@@ -64,6 +90,16 @@ export class Set<T> {
 
   constructor() {
     /* nop */
+  }
+
+  // we don't want to explore these fields but they are needed by iterator.
+  @inline
+  [GET_START](): usize {
+    return changetype<usize>(this.entries);
+  }
+  @inline
+  [GET_ENTRIES_OFFSET](): i32 {
+    return this.entriesOffset;
   }
 
   get size(): i32 {
@@ -175,6 +211,10 @@ export class Set<T> {
     this.entries = newEntries;
     this.entriesCapacity = newEntriesCapacity;
     this.entriesOffset = this.entriesCount;
+  }
+
+  [Symbol.iterator](): SetIterator<T> {
+    return new SetIterator<T>(this);
   }
 
   values(): T[] {

@@ -2521,6 +2521,7 @@ declare class Set<K> {
   clear(): void;
   values(): K[]; // preliminary
   toString(): string;
+  [Symbol.iterator](): Iterator<K>;
 }
 
 declare interface SymbolConstructor {
