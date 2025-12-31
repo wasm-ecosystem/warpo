@@ -77,7 +77,7 @@ class SetIterator<T> implements Iterator<T> {
   }
 }
 
-export class Set<T> {
+export class Set<T> implements Iterable<T> {
   // buckets referencing their respective first entry, usize[bucketsMask + 1]
   private buckets: ArrayBuffer = new ArrayBuffer(INITIAL_CAPACITY * <i32>BUCKET_SIZE);
   private bucketsMask: u32 = INITIAL_CAPACITY - 1;

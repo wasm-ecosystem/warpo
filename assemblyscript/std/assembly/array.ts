@@ -49,7 +49,7 @@ function ensureCapacity(array: usize, newSize: usize, alignLog2: u32, canGrow: b
   }
 }
 
-export class Array<T> {
+export class Array<T> implements Iterable<T> {
   [key: number]: T;
 
   // Mimicking ArrayBufferView isn't strictly necessary here but is done to allow glue code
