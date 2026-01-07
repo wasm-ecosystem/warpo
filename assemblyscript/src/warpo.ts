@@ -17,7 +17,7 @@ declare function _WarpoAddField(
   offset: u32,
   nullable: bool
 ): void;
-declare function _WarpoAddGlobal(variableName: string, typeName: string, nullable: bool): void;
+declare function _WarpoAddGlobal(variableName: string, typeName: string, nullable: bool, isMutable: bool): void;
 
 declare function _WarpoAddSubProgram(subProgramName: string, belongClassName: string | null): void;
 declare function _WarpoAddParameter(
@@ -67,8 +67,8 @@ export function addTemplateType(className: string, templateTypeName: string): vo
   _WarpoAddTemplateType(decodeURIComponent(className), decodeURIComponent(templateTypeName));
 }
 
-export function addGlobal(variableName: string, typeName: string, nullable: bool): void {
-  _WarpoAddGlobal(variableName, decodeURIComponent(typeName), nullable);
+export function addGlobal(variableName: string, typeName: string, nullable: bool, isMutable: bool): void {
+  _WarpoAddGlobal(variableName, decodeURIComponent(typeName), nullable, isMutable);
 }
 
 export function addSubProgram(subProgramName: string, belongClassName: string | null): void {

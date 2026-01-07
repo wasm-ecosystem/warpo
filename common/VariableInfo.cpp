@@ -37,9 +37,14 @@ void VariableInfo::addTemplateType(std::string_view const className, std::string
   classIt->second.addTemplateType(internedTypeName);
 }
 
-void VariableInfo::addGlobalType(std::string variableName, std::string_view const typeName, uint32_t const nullable) {
+void VariableInfo::addGlobalType(std::string variableName, std::string_view const typeName, bool const nullable,
+                                 bool const isMutable) {
   std::string_view const internedTypeName = stringPool_.internString(typeName);
-  globalTypes_.emplace(std::move(variableName), GlobalTypeInfo{internedTypeName, nullable != 0});
+  globalTypes_.emplace(std::move(variableName), GlobalTypeInfo{
+                                                    .typeName = internedTypeName,
+                                                    .nullable = nullable,
+                                                    .isMutable = isMutable,
+                                                });
 }
 
 void VariableInfo::addSubProgram(std::string subProgramName, std::string_view const belongClassName) {
@@ -224,16 +229,18 @@ TEST(TestVariableInfo, TestTemplateTypes) {
 TEST(TestVariableInfo, TestGlobalTypes) {
   VariableInfo variableInfo;
 
-  variableInfo.addGlobalType("counter", "i32", 0);
-  variableInfo.addGlobalType("message", "~lib/string/String", 1);
+  variableInfo.addGlobalType("counter", "i32", false, true);
+  variableInfo.addGlobalType("message", "~lib/string/String", true, false);
 
   const VariableInfo::GlobalTypes &globalTypes = variableInfo.getGlobalTypes();
 
   ASSERT_EQ(globalTypes.size(), 2);
   EXPECT_EQ(globalTypes.at("counter").typeName, "i32");
   EXPECT_FALSE(globalTypes.at("counter").nullable);
+  EXPECT_TRUE(globalTypes.at("counter").isMutable);
   EXPECT_EQ(globalTypes.at("message").typeName, "~lib/string/String");
   EXPECT_TRUE(globalTypes.at("message").nullable);
+  EXPECT_FALSE(globalTypes.at("message").isMutable);
 }
 
 TEST(TestVariableInfo, TestAddParameter) {
