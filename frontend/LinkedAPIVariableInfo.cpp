@@ -47,12 +47,12 @@ void addTemplateType(uint32_t const classNamePtr, uint32_t const templateTypeNam
   pCompiler->asModule_.variableInfo_.addTemplateType(className, templateTypeName);
 }
 
-void addGlobal(uint32_t const variableNamePtr, uint32_t const typeNamePtr, uint32_t const nullable,
+void addGlobal(uint32_t const variableNamePtr, uint32_t const typeNamePtr, uint32_t const nullable, uint32_t isMutable,
                vb::WasmModule const *const ctx) {
   std::string variableName = WarpRunner::getString(ctx, variableNamePtr);
   std::string const typeName = WarpRunner::getString(ctx, typeNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
-  pCompiler->asModule_.variableInfo_.addGlobalType(std::move(variableName), typeName, nullable);
+  pCompiler->asModule_.variableInfo_.addGlobalType(std::move(variableName), typeName, nullable != 0, isMutable != 0);
 }
 
 void addSubProgram(uint32_t const subProgramNamePtr, uint32_t const belongClassNamePtr,

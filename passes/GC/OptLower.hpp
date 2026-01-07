@@ -5,13 +5,15 @@
 #pragma once
 
 #include "pass.h"
+#include "warpo/common/VariableInfo.hpp"
 #include "wasm.h"
 
 namespace warpo::passes::gc {
 
 /// @brief lowering tostack function
 struct OptLower : public wasm::Pass {
-  explicit OptLower() { name = "gc::OptLower"; }
+  VariableInfo const *variableInfo_;
+  explicit OptLower(VariableInfo const *variableInfo) : variableInfo_(variableInfo) { name = "gc::OptLower"; }
   void run(wasm::Module *m) override;
 
   // preprocess pass for testing
