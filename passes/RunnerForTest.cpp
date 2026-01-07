@@ -14,7 +14,6 @@
 #include "AdvancedInlining.hpp"
 #include "GC/FastLower.hpp"
 #include "GC/OptLower.hpp"
-#include "Runner.hpp"
 #include "binaryen-c.h"
 #include "helper/ToString.hpp"
 #include "pass.h"
@@ -42,25 +41,24 @@ static cli::Opt<bool> EnableAdvancedInliningPassForTesting{
     [](argparse::Argument &arg) { arg.flag().hidden(); },
 };
 
-std::string passes::runOnWatForTest(std::string const &input, std::regex const &targetFunctionRegex) {
-  std::unique_ptr<wasm::Module> m = passes::loadWat(input);
+std::string passes::runOnWatForTest(AsModule const &m, std::regex const &targetFunctionRegex) {
   wasm::PassRunner passRunner(m.get());
   if ((EnableGCFastLowerPassForTesting.get() && EnableGCOptLowerPassForTesting.get())) {
     fmt::println("Do not allow to enable FastLower and OptLower at the same time");
     std::terminate();
   }
   if (EnableGCOptLowerPassForTesting.get())
-    passRunner.add(std::unique_ptr<wasm::Pass>{new passes::gc::OptLower(nullptr)});
+    passRunner.add(std::unique_ptr<wasm::Pass>{new passes::gc::OptLower(&m.variableInfo_)});
   if (EnableGCFastLowerPassForTesting.get())
     passRunner.add(std::unique_ptr<wasm::Pass>{new passes::gc::FastLower()});
   if (EnableAdvancedInliningPassForTesting.get())
     passRunner.add(std::unique_ptr<wasm::Pass>{passes::createAdvancedInliningPass()});
   passRunner.run();
-  if (!wasm::WasmValidator{}.validate(*m))
+  if (!wasm::WasmValidator{}.validate(*m.get()))
     throw std::logic_error("validate error");
 
   std::stringstream ss{};
-  for (std::unique_ptr<wasm::Function> &f : m->functions) {
+  for (std::unique_ptr<wasm::Function> &f : m.get()->functions) {
     if (std::regex_match(f->name.toString(), targetFunctionRegex))
       ss << toString(f.get());
   }

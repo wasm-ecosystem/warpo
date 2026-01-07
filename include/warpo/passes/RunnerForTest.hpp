@@ -8,8 +8,10 @@
 #include <regex>
 #include <string>
 
+#include "warpo/common/AsModule.hpp"
+
 namespace warpo::passes {
 
-std::string runOnWatForTest(std::string const &input, std::regex const &targetFunctionRegex);
+std::string runOnWatForTest(AsModule const &m, std::regex const &targetFunctionRegex);
 
 } // namespace warpo::passes

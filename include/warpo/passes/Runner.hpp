@@ -34,6 +34,5 @@ Output runOnModule(AsModule const &m);
 Output runOnModule(AsModule const &m, Config const &config);
 
 void runAndEmit(AsModule const &m, std::filesystem::path const &outputPath);
-void runAndEmit(std::string const &inputPath, std::filesystem::path const &outputPath);
 
 } // namespace warpo::passes

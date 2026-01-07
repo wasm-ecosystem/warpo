@@ -6,8 +6,6 @@
 #include <filesystem>
 #include <fmt/base.h>
 #include <fmt/format.h>
-#include <fstream>
-#include <ios>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -256,17 +254,6 @@ void passes::runAndEmit(AsModule const &m, std::filesystem::path const &outputPa
   if (!outputFiles.sourceMap_.empty() && common::isEmitDebugLine()) {
     writeBinaryFile(outputFiles.sourceMap_, output.sourceMap);
   }
-}
-
-void passes::runAndEmit(std::string const &inputPath, std::filesystem::path const &outputPath) {
-  if (!inputPath.ends_with("wat") && !inputPath.ends_with("wast"))
-    throw std::runtime_error{fmt::format("invalid file extension: {}, expected 'wat' or 'wast'", inputPath)};
-  std::ifstream ifstream{inputPath, std::ios::in};
-  if (!ifstream.good())
-    throw std::runtime_error{fmt::format("failed to open file: {}", inputPath)};
-  std::string const wat{std::istreambuf_iterator<char>{ifstream}, {}};
-  std::unique_ptr<wasm::Module> m = loadWat(wat);
-  runAndEmit(AsModule{m.release()}, outputPath);
 }
 
 } // namespace warpo

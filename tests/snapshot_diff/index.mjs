@@ -60,21 +60,17 @@ class TestCase {
     console.log(`run test in '${this.file}' with '${fileConfigStr}'`);
     const fileConfig = JSON.parse(fileConfigStr);
 
-    const originalWatPath = `${filePathWithoutExt}.input.wast`;
     const baseOutputPath = `${filePathWithoutExt}.base.wat`;
     const lowerOutputPath = `${filePathWithoutExt}.opt.wat`;
 
-    const inputArgs = ["-i", originalWatPath];
     const optArgs = [...this.folderConfig.optPass, "-o", lowerOutputPath];
     const baseArgs = [...this.folderConfig.basePass, "-o", baseOutputPath];
 
     const functionFilter = fileConfig.func ? ["--func", fileConfig.func] : [];
 
-    await cmd("build/warpo/warpo_compiler", [this.file, "-t", originalWatPath]);
-    await cmd(`${buildDir}/tools/test_runner/warpo_test_runner`, [...inputArgs, ...optArgs, ...functionFilter]);
-    await cmd(`${buildDir}/tools/test_runner/warpo_test_runner`, [...inputArgs, ...baseArgs, ...functionFilter]);
+    await cmd(`${buildDir}/tools/test_runner/warpo_test_runner`, [this.file, ...optArgs, ...functionFilter]);
+    await cmd(`${buildDir}/tools/test_runner/warpo_test_runner`, [this.file, ...baseArgs, ...functionFilter]);
 
-    originalWatPath;
     const commentLine = (l) => (l.startsWith("  ") ? `;;${l.slice(2)}` : l.length > 0 ? `;;${l}` : l);
     const commentLines = (lines) => lines.split("\n").map(commentLine).join("\n");
     const commentLinesForRemoved = (change) => (change.removed ? commentLines(change.value) : change.value);
@@ -88,7 +84,6 @@ class TestCase {
       .map((change) => getChangePrefix(change) + "\n" + commentLinesForRemoved(change))
       .join("");
     if (!isDebugMode) {
-      fsp.unlink(originalWatPath);
       fsp.unlink(lowerOutputPath);
       fsp.unlink(baseOutputPath);
     }
