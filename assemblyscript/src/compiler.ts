@@ -2548,6 +2548,10 @@ export class Compiler extends DiagnosticEmitter {
     } else {
       bodyStmts.push(this.compileStatement(body));
     }
+    let bodyEnd: ExpressionRef = 0;
+    if(bodyStmts.length > 0) {
+      bodyEnd = bodyStmts[bodyStmts.length - 1];
+    }
     bodyFlow.popControlFlowLabel(label);
     bodyFlow.breakLabel = null;
     bodyFlow.continueLabel = null;
@@ -2591,7 +2595,9 @@ export class Compiler extends DiagnosticEmitter {
     // Finalize
     outerFlow.inherit(flow);
     this.currentFlow = outerFlow;
-    bodyFlow.addLocalsToBlock(bodyStmts);
+    if(bodyEnd != 0) {
+      bodyFlow.addLocalsToBlock([bodyStmts[0], bodyEnd]);
+    }
     let expr = module.if(condExprTrueish, module.flatten(bodyStmts));
     if (possiblyLoops) {
       expr = module.loop(loopLabel, expr);
@@ -2603,7 +2609,8 @@ export class Compiler extends DiagnosticEmitter {
     if (outerFlow.is(FlowFlags.Terminates)) {
       stmts.push(module.unreachable());
     }
-    flow.addLocalsToBlock(stmts);
+    let forDebugStmts = (bodyEnd != 0) ? [stmts[0], bodyEnd] : stmts;
+    flow.addLocalsToBlock(forDebugStmts);
     return module.flatten(stmts);
   }
 
@@ -2714,6 +2721,10 @@ export class Compiler extends DiagnosticEmitter {
     } else {
       bodyStmts.push(this.compileStatement(body));
     }
+    let bodyEnd: ExpressionRef = 0;
+    if(bodyStmts.length > 0) {
+      bodyEnd = bodyStmts[bodyStmts.length - 1];
+    }
     bodyFlow.popControlFlowLabel(label);
     bodyFlow.breakLabel = null;
     bodyFlow.continueLabel = null;
@@ -2745,7 +2756,9 @@ export class Compiler extends DiagnosticEmitter {
     // finalize
     outerFlow.inherit(flow);
     this.currentFlow = outerFlow;
-    bodyFlow.addLocalsToBlock(bodyStmts);
+    if(bodyEnd != 0) {
+      bodyFlow.addLocalsToBlock([bodyStmts[0], bodyEnd]);
+    }
     let expr = module.if(isNotDoneExpr, module.flatten(bodyStmts));
     if (possiblyLoops) {
       expr = module.loop(loopLabel, expr);
@@ -2757,7 +2770,8 @@ export class Compiler extends DiagnosticEmitter {
     if (outerFlow.is(FlowFlags.Terminates)) {
       stmts.push(module.unreachable());
     }
-    flow.addLocalsToBlock(stmts);
+    let forDebugStmts = (bodyEnd != 0) ? [stmts[0], bodyEnd] : stmts;
+    flow.addLocalsToBlock(forDebugStmts);
     return module.flatten(stmts);
   }
 

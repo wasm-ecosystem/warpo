@@ -42,7 +42,7 @@ Abbrev table for offset: 0x00000000
 
 
 .debug_info contents:
-0x00000000: Compile Unit: length = 0x000036ee version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x000036f2)
+0x00000000: Compile Unit: length = 0x000036f2 version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x000036f6)
 DW_TAG_compile_unit
               DW_AT_producer	("warpo")
   DW_TAG_base_type
@@ -286,7 +286,7 @@ DW_TAG_compile_unit
                 DW_AT_signature	(0x00000002)
     NULL
   DW_TAG_variable
-                DW_AT_name	("tests/DebugSymbol/TestLocalInForOf/r")
+                DW_AT_name	("tests/DebugSymbol/TestLocalInForOf/rrr")
                 DW_AT_type	("i32")
   DW_TAG_variable
                 DW_AT_name	("~lib/native/ASC_LOW_MEMORY_LIMIT")
@@ -480,7 +480,7 @@ DW_TAG_compile_unit
                   scope start	TestLocalInForOf.ts:3
                   scope end	TestLocalInForOf.ts:3
       DW_TAG_variable
-                    DW_AT_name	("a")
+                    DW_AT_name	("aaa")
                     DW_AT_type	("~lib/array/Array<i32>")
                     DW_AT_location	(0x00000001)
       DW_TAG_lexical_block
@@ -499,7 +499,7 @@ DW_TAG_compile_unit
                         DW_AT_location	(0x00000009)
           DW_TAG_lexical_block
                         scope start	TestLocalInForOf.ts:3
-                        scope end	TestLocalInForOf.ts:3
+                        scope end	TestLocalInForOf.ts:8
             DW_TAG_variable
                           DW_AT_name	("v")
                           DW_AT_type	("i32")

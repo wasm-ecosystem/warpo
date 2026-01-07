@@ -42,7 +42,7 @@ Abbrev table for offset: 0x00000000
 
 
 .debug_info contents:
-0x00000000: Compile Unit: length = 0x00000ec8 version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x00000ecc)
+0x00000000: Compile Unit: length = 0x00000ee1 version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x00000ee5)
 DW_TAG_compile_unit
               DW_AT_producer	("warpo")
   DW_TAG_base_type
@@ -152,7 +152,7 @@ DW_TAG_compile_unit
                 DW_AT_signature	(0x00000002)
     NULL
   DW_TAG_variable
-                DW_AT_name	("tests/DebugSymbol/TestLocalInFor/a")
+                DW_AT_name	("tests/DebugSymbol/TestLocalInFor/aaa")
                 DW_AT_type	("i32")
   DW_TAG_subprogram
                 DW_AT_name	("tests/DebugSymbol/TestLocalInFor/start:tests/DebugSymbol/TestLocalInFor")
@@ -164,26 +164,34 @@ DW_TAG_compile_unit
                 DW_AT_name	("tests/DebugSymbol/TestLocalInFor/foo")
     DW_TAG_lexical_block
                   scope start	TestLocalInFor.ts:3
-                  scope end	TestLocalInFor.ts:3
+                  scope end	TestLocalInFor.ts:10
       DW_TAG_variable
                     DW_AT_name	("iii")
                     DW_AT_type	("i32")
                     DW_AT_location	(0x00000000)
       DW_TAG_lexical_block
-                    scope start	TestLocalInFor.ts:5
-                    scope end	TestLocalInFor.ts:6
+                    scope start	TestLocalInFor.ts:4
+                    scope end	TestLocalInFor.ts:10
         DW_TAG_variable
-                      DW_AT_name	("bbb")
+                      DW_AT_name	("ddd")
                       DW_AT_type	("i32")
                       DW_AT_location	(0x00000001)
-        NULL
-      DW_TAG_lexical_block
-                    scope start	TestLocalInFor.ts:8
-                    scope end	TestLocalInFor.ts:9
-        DW_TAG_variable
-                      DW_AT_name	("ccc")
-                      DW_AT_type	("i32")
-                      DW_AT_location	(0x00000002)
+        DW_TAG_lexical_block
+                      scope start	TestLocalInFor.ts:6
+                      scope end	TestLocalInFor.ts:7
+          DW_TAG_variable
+                        DW_AT_name	("bbb")
+                        DW_AT_type	("i32")
+                        DW_AT_location	(0x00000002)
+          NULL
+        DW_TAG_lexical_block
+                      scope start	TestLocalInFor.ts:9
+                      scope end	TestLocalInFor.ts:10
+          DW_TAG_variable
+                        DW_AT_name	("ccc")
+                        DW_AT_type	("i32")
+                        DW_AT_location	(0x00000003)
+          NULL
         NULL
       NULL
     NULL

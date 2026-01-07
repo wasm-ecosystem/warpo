@@ -1,11 +1,11 @@
-let r = 0;
+let rrr = 0;
 export function foo(): void {
-  let a: i32[] = [1, 2, 3];
-  for (const v of a) {
-    for (const v of a) {
-      for (const v of a) {
-        for (const v of a) {
-          r += v;
+  let aaa: i32[] = [1, 2, 3];
+  for (const v of aaa) {
+    for (const v of aaa) {
+      for (const v of aaa) {
+        for (const v of aaa) {
+          rrr += v;
         }
       }
     }
