@@ -23,6 +23,7 @@ public:
   struct GlobalTypeInfo {
     std::string_view typeName;
     bool nullable;
+    bool isMutable;
   };
 
   using GlobalTypes = std::map<std::string, GlobalTypeInfo>;
@@ -35,7 +36,7 @@ public:
 
   void addTemplateType(std::string_view const className, std::string_view const templateTypeName);
 
-  void addGlobalType(std::string variableName, std::string_view const typeName, uint32_t const nullable);
+  void addGlobalType(std::string variableName, std::string_view const typeName, bool const nullable, bool isMutable);
 
   BaseTypeRegistry const &getBaseTypeRegistry() const noexcept { return baseTypeRegistry_; }
   ClassRegistry const &getClassRegistry() const noexcept { return classRegistry_; }
