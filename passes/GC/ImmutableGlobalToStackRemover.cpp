@@ -3,6 +3,7 @@
 
 #include <cassert>
 
+#include "../helper/Matcher.hpp"
 #include "GCInfo.hpp"
 #include "ImmutableGlobalToStackRemover.hpp"
 #include "wasm-traversal.h"
@@ -12,29 +13,36 @@
 
 namespace warpo::passes::gc {
 
+static bool isGlobalImmutable(VariableInfo const &variableInfo, wasm::Name const &globalName) {
+  VariableInfo::GlobalTypes const &globalTypes = variableInfo.getGlobalTypes();
+  auto it = globalTypes.find(std::string{globalName.str});
+  // when the global variable is not found, consider it mutable
+  if (it == globalTypes.end())
+    return false;
+  return !it->second.isMutable;
+}
+
 namespace {
 
 struct CallReplacer : public wasm::PostWalker<CallReplacer> {
   wasm::Module *const module_;
-  VariableInfo const *const variableInfo_;
+  VariableInfo const &variableInfo_;
 
-  explicit CallReplacer(wasm::Module *module, VariableInfo const *variableInfo)
+  explicit CallReplacer(wasm::Module *module, VariableInfo const &variableInfo)
       : module_(module), variableInfo_(variableInfo) {}
 
   void visitCall(wasm::Call *expr) {
-    if (expr->target != FnTmpToStack)
+    using namespace matcher;
+    auto match = isCall(call::callee(FnTmpToStack), call::operands(has(1)),
+                        call::operands(at(0, isGlobalGet().bind("global.get"))));
+    Context ctx{};
+    if (!match(*expr, ctx))
       return;
-    if (expr->operands.size() != 1)
+    wasm::GlobalGet const *const globalGet = ctx.getBinding<wasm::GlobalGet>("global.get");
+    assert(globalGet != nullptr);
+    if (!isGlobalImmutable(variableInfo_, globalGet->name))
       return;
-    wasm::GlobalGet *const globalGet = expr->operands.front()->dynCast<wasm::GlobalGet>();
-    if (globalGet == nullptr)
-      return;
-    wasm::Name const globalName = globalGet->name;
-    VariableInfo::GlobalTypes const &globalTypes = variableInfo_->getGlobalTypes();
-    auto it = globalTypes.find(std::string(globalName.str));
-    if (it == globalTypes.end() || it->second.isMutable)
-      return;
-    replaceCurrent(globalGet);
+    replaceCurrent(expr->operands[0]);
   }
 };
 
@@ -43,7 +51,7 @@ struct CallReplacer : public wasm::PostWalker<CallReplacer> {
 void ImmutableGlobalToStackRemover::runOnFunction(wasm::Module *m, wasm::Function *func) {
   if (variableInfo_ == nullptr)
     return;
-  CallReplacer replacer(m, variableInfo_);
+  CallReplacer replacer(m, *variableInfo_);
   replacer.walkFunctionInModule(func, m);
 }
 

@@ -82,7 +82,6 @@ void OptLower::run(wasm::Module *m) {
   if (TestOnlyControlGroup.get())
     return;
 
-  // TODO: NoImmutableGlobalToStackRemover does not work. Fix it later.
   if (!NoImmutableGlobalToStackRemover.get())
     runner.add(std::unique_ptr<wasm::Pass>(new ImmutableGlobalToStackRemover(variableInfo_)));
 
