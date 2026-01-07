@@ -135,6 +135,7 @@ const tasks = (
       "advanced_inlining",
       "gc_lower_fast",
       "gc_lower_opt/base",
+      "gc_lower_opt/immutable_global_to_stack_remover",
       "gc_lower_opt/leaf_filter",
       "gc_lower_opt/reuse_stack",
       "gc_lower_opt/shrink_wrap",

@@ -3141,22 +3141,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 2356
-  i32.lt_s
-  if
-   unreachable
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 2080
-  i32.store align=1
   block $__inlined_func$~lib/util/string/joinFloatArray<f32>$78 (result i32)
    i32.const 2084
    i32.load
@@ -3316,9 +3300,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 2288
-  i32.store align=1
   i32.const 0
   local.set $3
   block $__inlined_func$~lib/util/string/joinFloatArray<f64>$81 (result i32)
@@ -3472,12 +3453,6 @@
   i32.const 2192
   call $~lib/string/String.__eq
   i32.eqz
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
   if
    i32.const 0
    i32.const 2000

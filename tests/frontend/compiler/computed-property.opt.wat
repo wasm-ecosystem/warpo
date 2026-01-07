@@ -1,7 +1,7 @@
 (module
- (type $0 (func (param i32)))
+ (type $0 (func))
  (type $1 (func (param i32 i32) (result i32)))
- (type $2 (func))
+ (type $2 (func (param i32)))
  (type $3 (func (param i32 i32 i32)))
  (type $4 (func (param i32 i32)))
  (type $5 (func (param i32) (result i32)))
@@ -2123,7 +2123,6 @@
   i32.store
   i32.const 352
   global.set $~lib/rt/itcms/fromSpace
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 24
   i32.const 4
@@ -2162,7 +2161,6 @@
   global.set $~lib/memory/__stack_pointer
   local.get $0
   global.set $~lib/symbol/stringToId
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 24
   i32.const 5
@@ -2235,11 +2233,6 @@
    if
     unreachable
    end
-   i32.const 12
-   call $~lib/rt/__decrease_sp
-   global.get $~lib/memory/__stack_pointer
-   global.get $~lib/symbol/stringToId
-   i32.store offset=8 align=1
    global.get $~lib/symbol/stringToId
    local.tee $1
    i32.const 32
@@ -2279,7 +2272,6 @@
       i32.or
      end
      local.set $6
-     i32.const 4
      call $~lib/rt/__decrease_sp
      local.get $6
      i32.const 1
@@ -2437,9 +2429,6 @@
     local.get $0
     i32.store
    end
-   global.get $~lib/memory/__stack_pointer
-   global.get $~lib/symbol/idToString
-   i32.store offset=8 align=1
    block $"__inlined_func$~lib/map/Map<usize,~lib/string/String>#find$170" (result i32)
     global.get $~lib/symbol/idToString
     local.tee $1
@@ -2546,7 +2535,6 @@
       i32.or
      end
      local.set $6
-     i32.const 4
      call $~lib/rt/__decrease_sp
      local.get $6
      i32.const 1
@@ -2730,14 +2718,9 @@
     local.get $0
     i32.store
    end
-   global.get $~lib/memory/__stack_pointer
-   i32.const 12
-   i32.add
-   global.set $~lib/memory/__stack_pointer
    i32.const 0
   end
   drop
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 0
   i32.const 7
@@ -2783,15 +2766,14 @@
    unreachable
   end
  )
- (func $~lib/rt/__decrease_sp (param $0 i32)
+ (func $~lib/rt/__decrease_sp
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  i32.const 4
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
   i32.const 0
-  local.get $0
-  memory.fill
+  i32.store align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 820
   i32.lt_s

@@ -11,6 +11,7 @@
 #include "BaseLower.hpp"
 #include "CollectLeafFunction.hpp"
 #include "GCInfo.hpp"
+#include "ImmutableGlobalToStackRemover.hpp"
 #include "LeafFunctionFilter.hpp"
 #include "MergeSSA.hpp"
 #include "ObjLivenessAnalyzer.hpp"
@@ -31,6 +32,11 @@
 
 namespace warpo::passes::gc {
 
+static cli::Opt<bool> NoImmutableGlobalToStackRemover{
+    cli::Category::OnlyForTest,
+    "--no-gc-immutable-global-to-stack-remover",
+    [](argparse::Argument &arg) { arg.flag().hidden(); },
+};
 static cli::Opt<bool> NoLeafFunctionFilter{
     cli::Category::OnlyForTest,
     "--no-gc-leaf-function-filter",
@@ -72,10 +78,13 @@ void OptLower::run(wasm::Module *m) {
 
   preprocess(runner);
 
-  if (TestOnlyControlGroup.get()) {
-    // only for test purpose
+  // only for test purpose
+  if (TestOnlyControlGroup.get())
     return;
-  }
+
+  // TODO: NoImmutableGlobalToStackRemover does not work. Fix it later.
+  if (!NoImmutableGlobalToStackRemover.get())
+    runner.add(std::unique_ptr<wasm::Pass>(new ImmutableGlobalToStackRemover(variableInfo_)));
 
   ModuleLevelSSAMap const moduleLevelSSAMap = ModuleLevelSSAMap::create(m);
 

@@ -81,7 +81,7 @@ static void lowering(AsModule const &m, Config const &config) {
     std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
     passRunner->add(std::unique_ptr<wasm::Pass>{createInlinedDecoratorLower(m.forceInlineHints_)});
     if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0)
-      passRunner->add(std::unique_ptr<wasm::Pass>{new gc::OptLower()});
+      passRunner->add(std::unique_ptr<wasm::Pass>{new gc::OptLower(&m.variableInfo_)});
     else
       passRunner->add(std::unique_ptr<wasm::Pass>{new gc::FastLower()});
     passRunner->run();

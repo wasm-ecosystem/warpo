@@ -50,7 +50,7 @@ std::string passes::runOnWatForTest(std::string const &input, std::regex const &
     std::terminate();
   }
   if (EnableGCOptLowerPassForTesting.get())
-    passRunner.add(std::unique_ptr<wasm::Pass>{new passes::gc::OptLower()});
+    passRunner.add(std::unique_ptr<wasm::Pass>{new passes::gc::OptLower(nullptr)});
   if (EnableGCFastLowerPassForTesting.get())
     passRunner.add(std::unique_ptr<wasm::Pass>{new passes::gc::FastLower()});
   if (EnableAdvancedInliningPassForTesting.get())

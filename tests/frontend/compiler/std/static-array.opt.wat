@@ -21,7 +21,6 @@
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33748))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c")
  (data $0.1 (i32.const 24) "\01\00\00\00\08\00\00\00\01\00\00\00\02")
@@ -176,7 +175,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$106
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$105
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -200,7 +199,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$106
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$105
    end
    local.get $0
    i32.load offset=8
@@ -1040,7 +1039,7 @@
    local.get $0
    i32.load
    local.tee $6
-   block $__inlined_func$~lib/rt/itcms/__renew$112 (result i32)
+   block $__inlined_func$~lib/rt/itcms/__renew$111 (result i32)
     i32.const 1073741820
     local.get $2
     i32.const 1
@@ -1075,7 +1074,7 @@
      local.get $4
      i32.store offset=16
      local.get $6
-     br $__inlined_func$~lib/rt/itcms/__renew$112
+     br $__inlined_func$~lib/rt/itcms/__renew$111
     end
     local.get $7
     i32.load offset=12
@@ -1100,7 +1099,7 @@
       local.set $1
       loop $do-loop|0
        local.get $1
-       block $__inlined_func$~lib/rt/itcms/step$111 (result i32)
+       block $__inlined_func$~lib/rt/itcms/step$110 (result i32)
         block $break|0
          block $case2|0
           block $case1|0
@@ -1116,7 +1115,7 @@
            global.get $~lib/rt/itcms/toSpace
            global.set $~lib/rt/itcms/iter
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$111
+           br $__inlined_func$~lib/rt/itcms/step$110
           end
           global.get $~lib/rt/itcms/white
           i32.eqz
@@ -1155,7 +1154,7 @@
              i32.add
              call $~lib/rt/__visit_members
              global.get $~lib/rt/itcms/visitCount
-             br $__inlined_func$~lib/rt/itcms/step$111
+             br $__inlined_func$~lib/rt/itcms/step$110
             end
             local.get $1
             i32.load offset=4
@@ -1175,7 +1174,7 @@
           i32.and
           i32.eq
           if
-           global.get $~lib/memory/__stack_pointer
+           i32.const 33748
            local.set $1
            loop $while-continue|0
             local.get $1
@@ -1247,7 +1246,7 @@
            global.set $~lib/rt/itcms/state
           end
           global.get $~lib/rt/itcms/visitCount
-          br $__inlined_func$~lib/rt/itcms/step$111
+          br $__inlined_func$~lib/rt/itcms/step$110
          end
          global.get $~lib/rt/itcms/iter
          local.tee $1
@@ -1346,7 +1345,7 @@
            end
           end
           i32.const 10
-          br $__inlined_func$~lib/rt/itcms/step$111
+          br $__inlined_func$~lib/rt/itcms/step$110
          end
          global.get $~lib/rt/itcms/toSpace
          global.get $~lib/rt/itcms/toSpace
@@ -1812,7 +1811,6 @@
   call $~lib/rt/itcms/__visit
  )
  (func $~start
-  (local $0 i32)
   i32.const 76
   i32.load
   i32.const 2
@@ -1849,19 +1847,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 980
-  i32.lt_s
-  if
-   unreachable
-  end
   memory.size
   i32.const 16
   i32.shl
@@ -1894,9 +1879,6 @@
   i32.store
   i32.const 832
   global.set $~lib/rt/itcms/fromSpace
-  global.get $~lib/memory/__stack_pointer
-  i32.const 64
-  i32.store align=1
   i32.const 76
   i32.load
   i32.eqz
@@ -1960,9 +1942,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 160
-  i32.store align=1
   i32.const 172
   i32.load
   i32.eqz
@@ -2026,9 +2005,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 240
-  i32.store align=1
   i32.const 252
   i32.load
   i32.eqz
@@ -2092,9 +2068,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 336
-  i32.store align=1
   i32.const 348
   i32.load
   i32.eqz
@@ -2114,12 +2087,6 @@
   call $~lib/array/Array<f64>#__get
   f64.const 2.25
   f64.ne
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
   if
    i32.const 0
    i32.const 384
