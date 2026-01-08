@@ -31,6 +31,12 @@ It is possible to have nested call. We should make sure the slot of first argume
 
 Optimized lowering passes will analysis the object liveness and dom tree, which cost more time then fast lower but produce better output.
 
+### Clean `tostack` Call
+
+Some tmp_to_stack call is unless and can be removed.
+
+- `tmp_to_stack` a immutable global. ([ImmutableGlobalToStackRemover](https://github.com/wasm-ecosystem/warpo/blob/c758c9532fe1319e4d8d8821cc3762144f3a95bb/passes/GC/ImmutableGlobalToStackRemover.cpp))
+
 ### Analyze Object Liveness
 
 It will convert each object to SSA. analyze liveness of each SSA object.

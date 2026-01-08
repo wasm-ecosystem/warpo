@@ -2,10 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <cassert>
+#include <fmt/base.h>
 
 #include "../helper/Matcher.hpp"
 #include "GCInfo.hpp"
 #include "ImmutableGlobalToStackRemover.hpp"
+#include "warpo/support/Debug.hpp"
 #include "wasm-traversal.h"
 #include "wasm.h"
 
@@ -42,6 +44,9 @@ struct CallReplacer : public wasm::PostWalker<CallReplacer> {
     assert(globalGet != nullptr);
     if (!isGlobalImmutable(variableInfo_, globalGet->name))
       return;
+    if (support::isDebug(PASS_NAME, getFunction()->name.str))
+      fmt::println("[" PASS_NAME "] in fn '{}' remove call ${} for global.get ${}", getFunction()->name.str,
+                   FnTmpToStack, globalGet->name.str);
     replaceCurrent(expr->operands[0]);
   }
 };
