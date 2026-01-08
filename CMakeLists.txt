@@ -10,6 +10,15 @@ option(ENABLE_WERROR "Enable warnings as errors" OFF)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if(APPLE)
+  execute_process(
+    COMMAND xcrun --show-sdk-path
+    OUTPUT_VARIABLE CMAKE_SYSROOT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  set(CMAKE_SYSROOT ${CMAKE_SYSROOT})
+endif()
+
 if(NOT CMAKE_BUILD_TYPE)
   if(WARPO_RELEASE)
     set(CMAKE_BUILD_TYPE Release)

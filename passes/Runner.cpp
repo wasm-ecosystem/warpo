@@ -6,8 +6,6 @@
 #include <filesystem>
 #include <fmt/base.h>
 #include <fmt/format.h>
-#include <fstream>
-#include <ios>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -81,7 +79,7 @@ static void lowering(AsModule const &m, Config const &config) {
     std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
     passRunner->add(std::unique_ptr<wasm::Pass>{createInlinedDecoratorLower(m.forceInlineHints_)});
     if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0)
-      passRunner->add(std::unique_ptr<wasm::Pass>{new gc::OptLower()});
+      passRunner->add(std::unique_ptr<wasm::Pass>{new gc::OptLower(&m.variableInfo_)});
     else
       passRunner->add(std::unique_ptr<wasm::Pass>{new gc::FastLower()});
     passRunner->run();
@@ -256,17 +254,6 @@ void passes::runAndEmit(AsModule const &m, std::filesystem::path const &outputPa
   if (!outputFiles.sourceMap_.empty() && common::isEmitDebugLine()) {
     writeBinaryFile(outputFiles.sourceMap_, output.sourceMap);
   }
-}
-
-void passes::runAndEmit(std::string const &inputPath, std::filesystem::path const &outputPath) {
-  if (!inputPath.ends_with("wat") && !inputPath.ends_with("wast"))
-    throw std::runtime_error{fmt::format("invalid file extension: {}, expected 'wat' or 'wast'", inputPath)};
-  std::ifstream ifstream{inputPath, std::ios::in};
-  if (!ifstream.good())
-    throw std::runtime_error{fmt::format("failed to open file: {}", inputPath)};
-  std::string const wat{std::istreambuf_iterator<char>{ifstream}, {}};
-  std::unique_ptr<wasm::Module> m = loadWat(wat);
-  runAndEmit(AsModule{m.release()}, outputPath);
 }
 
 } // namespace warpo

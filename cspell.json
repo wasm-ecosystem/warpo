@@ -12,6 +12,7 @@
   "ignorePaths": [
     "build/**",
     "*.svg",
+    "*.wast",
     "*.wat",
     "*.pftrace",
     "passes/DoInlining.cpp",

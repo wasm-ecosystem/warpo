@@ -1,4 +1,4 @@
 {
-  "extends": "../../assemblyscript/std/assembly.json",
+  "extends": "../../tsconfig-warpo.json",
   "include": ["./**/*.ts"]
 }

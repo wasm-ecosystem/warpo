@@ -1,10 +1,10 @@
 (module
  (type $0 (func (param i32 i32) (result i32)))
- (type $1 (func (param i32) (result i32)))
- (type $2 (func (param i32)))
- (type $3 (func (param i32 i32)))
- (type $4 (func))
- (type $5 (func (param i32 i32 i32)))
+ (type $1 (func))
+ (type $2 (func (param i32 i32)))
+ (type $3 (func (param i32) (result i32)))
+ (type $4 (func (param i32 i32 i32)))
+ (type $5 (func (param i32)))
  (type $6 (func (param i32 i32 i32) (result i32)))
  (type $7 (func (param i32 i32 i32 i32)))
  (type $8 (func (param i32 i32 i64)))
@@ -1809,7 +1809,6 @@
      i32.or
     end
     local.set $7
-    i32.const 4
     call $~lib/rt/__decrease_sp
     local.get $7
     i32.const 1
@@ -1985,35 +1984,6 @@
    local.get $3
    i32.store
   end
- )
- (func $~lib/symbol/Symbol (param $0 i32) (result i32)
-  (local $1 i32)
-  (local $2 i32)
-  global.get $~lib/symbol/Symbol.nextId
-  local.tee $1
-  i32.const 1
-  i32.add
-  global.set $~lib/symbol/Symbol.nextId
-  local.get $1
-  i32.eqz
-  if
-   unreachable
-  end
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  global.get $~lib/symbol/idToDesc
-  local.tee $2
-  i32.store align=1
-  local.get $2
-  local.get $1
-  local.get $0
-  call $"~lib/map/Map<usize,~lib/string/String|null>#set"
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $1
  )
  (func $~lib/util/hash/HASH<~lib/string/String> (param $0 i32) (result i32)
   (local $1 i32)
@@ -2373,11 +2343,6 @@
   (local $9 i32)
   (local $10 i32)
   (local $11 i32)
-  i32.const 12
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  global.get $~lib/symbol/stringToId
-  i32.store offset=8 align=1
   local.get $0
   local.set $5
   global.get $~lib/symbol/stringToId
@@ -2420,7 +2385,6 @@
      i32.or
     end
     local.set $6
-    i32.const 4
     call $~lib/rt/__decrease_sp
     local.get $6
     i32.const 1
@@ -2570,17 +2534,10 @@
    local.get $0
    i32.store
   end
-  global.get $~lib/memory/__stack_pointer
-  global.get $~lib/symbol/idToString
-  i32.store offset=8 align=1
   global.get $~lib/symbol/idToString
   local.get $5
   local.get $1
   call $"~lib/map/Map<usize,~lib/string/String|null>#set"
-  global.get $~lib/memory/__stack_pointer
-  i32.const 12
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $5
  )
  (func $~lib/symbol/Symbol.for (result i32)
@@ -2763,7 +2720,6 @@
    i32.const 864
    return
   end
-  i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 996
   local.get $0
@@ -3161,7 +3117,6 @@
    i32.store
    i32.const 352
    global.set $~lib/rt/itcms/fromSpace
-   i32.const 4
    call $~lib/rt/__decrease_sp
    i32.const 24
    i32.const 4
@@ -3190,11 +3145,37 @@
    global.set $~lib/memory/__stack_pointer
    local.get $0
    global.set $~lib/symbol/idToDesc
+   global.get $~lib/symbol/Symbol.nextId
+   local.tee $0
+   i32.const 1
+   i32.add
+   global.set $~lib/symbol/Symbol.nextId
+   local.get $0
+   i32.eqz
+   if
+    unreachable
+   end
+   global.get $~lib/symbol/idToDesc
+   local.get $0
    i32.const 32
-   call $~lib/symbol/Symbol
+   call $"~lib/map/Map<usize,~lib/string/String|null>#set"
+   local.get $0
    global.set $std/symbol/sym1
+   global.get $~lib/symbol/Symbol.nextId
+   local.tee $0
+   i32.const 1
+   i32.add
+   global.set $~lib/symbol/Symbol.nextId
+   local.get $0
+   i32.eqz
+   if
+    unreachable
+   end
+   global.get $~lib/symbol/idToDesc
+   local.get $0
    i32.const 32
-   call $~lib/symbol/Symbol
+   call $"~lib/map/Map<usize,~lib/string/String|null>#set"
+   local.get $0
    global.set $std/symbol/sym2
    global.get $std/symbol/sym1
    global.get $std/symbol/sym2
@@ -3207,7 +3188,6 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 4
    call $~lib/rt/__decrease_sp
    i32.const 24
    i32.const 5
@@ -3236,7 +3216,6 @@
    global.set $~lib/memory/__stack_pointer
    local.get $0
    global.set $~lib/symbol/stringToId
-   i32.const 4
    call $~lib/rt/__decrease_sp
    i32.const 24
    i32.const 6
@@ -3362,8 +3341,21 @@
     call $~lib/builtins/abort
     unreachable
    end
+   global.get $~lib/symbol/Symbol.nextId
+   local.tee $0
+   i32.const 1
+   i32.add
+   global.set $~lib/symbol/Symbol.nextId
+   local.get $0
+   i32.eqz
+   if
+    unreachable
+   end
+   global.get $~lib/symbol/idToDesc
+   local.get $0
    i32.const 0
-   call $~lib/symbol/Symbol
+   call $"~lib/map/Map<usize,~lib/string/String|null>#set"
+   local.get $0
    call $~lib/symbol/symbol#toString
    i32.const 864
    call $~lib/string/String.__eq
@@ -3410,15 +3402,14 @@
    end
   end
  )
- (func $~lib/rt/__decrease_sp (param $0 i32)
+ (func $~lib/rt/__decrease_sp
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  i32.const 4
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
   i32.const 0
-  local.get $0
-  memory.fill
+  i32.store align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 1236
   i32.lt_s

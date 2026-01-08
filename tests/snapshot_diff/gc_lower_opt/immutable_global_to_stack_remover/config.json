@@ -1,0 +1,17 @@
+{
+  "optPass": [
+    "--enable-gc-opt-lower-pass-for-testing",
+    "--no-gc-shrink-wrap",
+    "--no-gc-leaf-function-filter",
+    "--no-gc-merge-ssa",
+    "--no-gc-optimized-stack-position-assigner"
+  ],
+  "basePass": [
+    "--enable-gc-opt-lower-pass-for-testing",
+    "--no-gc-immutable-global-to-stack-remover",
+    "--no-gc-shrink-wrap",
+    "--no-gc-leaf-function-filter",
+    "--no-gc-merge-ssa",
+    "--no-gc-optimized-stack-position-assigner"
+  ]
+}
