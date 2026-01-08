@@ -2596,7 +2596,7 @@ export class Compiler extends DiagnosticEmitter {
     outerFlow.inherit(flow);
     this.currentFlow = outerFlow;
     if (bodyEnd != 0) {
-      bodyFlow.addLocalsToBlock([bodyStmts[0], bodyEnd]);
+      bodyFlow.addLocalsToBlockWithStartEndStmt(bodyStmts[0], bodyEnd);
     }
     let expr = module.if(condExprTrueish, module.flatten(bodyStmts));
     if (possiblyLoops) {
@@ -2609,8 +2609,13 @@ export class Compiler extends DiagnosticEmitter {
     if (outerFlow.is(FlowFlags.Terminates)) {
       stmts.push(module.unreachable());
     }
-    let forDebugStmts = bodyEnd != 0 ? [stmts[0], bodyEnd] : stmts;
-    flow.addLocalsToBlock(forDebugStmts);
+
+    if (bodyEnd != 0) {
+      flow.addLocalsToBlockWithStartEndStmt(stmts[0], bodyEnd);
+    } else {
+      flow.addLocalsToBlock(stmts);
+    }
+
     return module.flatten(stmts);
   }
 
@@ -2757,7 +2762,7 @@ export class Compiler extends DiagnosticEmitter {
     outerFlow.inherit(flow);
     this.currentFlow = outerFlow;
     if (bodyEnd != 0) {
-      bodyFlow.addLocalsToBlock([bodyStmts[0], bodyEnd]);
+      bodyFlow.addLocalsToBlockWithStartEndStmt(bodyStmts[0], bodyEnd);
     }
     let expr = module.if(isNotDoneExpr, module.flatten(bodyStmts));
     if (possiblyLoops) {
@@ -2770,8 +2775,11 @@ export class Compiler extends DiagnosticEmitter {
     if (outerFlow.is(FlowFlags.Terminates)) {
       stmts.push(module.unreachable());
     }
-    let forDebugStmts = bodyEnd != 0 ? [stmts[0], bodyEnd] : stmts;
-    flow.addLocalsToBlock(forDebugStmts);
+    if (bodyEnd != 0) {
+      flow.addLocalsToBlockWithStartEndStmt(stmts[0], bodyEnd);
+    } else {
+      flow.addLocalsToBlock(stmts);
+    }
     return module.flatten(stmts);
   }
 
