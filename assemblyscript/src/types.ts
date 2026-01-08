@@ -918,17 +918,6 @@ export function typesToRefs(types: Type[]): TypeRef[] {
   return ret;
 }
 
-/** Converts an array of types to its combined string representation. */
-export function typesToString(types: Type[]): string {
-  let numTypes = types.length;
-  if (!numTypes) return "";
-  let sb = new Array<string>(numTypes);
-  for (let i = 0; i < numTypes; ++i) {
-    unchecked((sb[i] = types[i].toString(true)));
-  }
-  return sb.join(",");
-}
-
 /** Represents a fully resolved function signature. */
 export class Signature {
   /** Construct a new signature. */

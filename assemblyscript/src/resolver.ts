@@ -64,11 +64,8 @@ import {
   ArrayLiteralExpression,
   ArrowKind,
   ExpressionStatement,
-  PropertyName,
-  ComputedPropertyName,
 } from "./ast";
-
-import { Type, Signature, typesToString, TypeKind, TypeFlags } from "./types";
+import { Type, Signature, TypeKind, TypeFlags } from "./types";
 
 import { CommonFlags, CommonNames } from "./common";
 
@@ -79,7 +76,7 @@ import { Token, operatorTokenToString } from "./tokenizer";
 import { BuiltinNames, builtinTypes, BuiltinTypesContext } from "./builtins";
 
 import { addField, createClass, addTemplateType } from "./warpo";
-import { mangleComputedPropertyName } from "./mangle";
+import { mangleComputedPropertyName, mangleGenericInstanceKey, mangleGenericInstanceName } from "./mangle";
 
 /** Indicates whether errors are reported or not. */
 export const enum ReportMode {
@@ -2519,7 +2516,7 @@ export class Resolver extends DiagnosticEmitter {
     reportMode: ReportMode = ReportMode.Report
   ): Function | null {
     let classInstance: Class | null = null; // if an instance method
-    let instanceKey = typeArguments ? typesToString(typeArguments) : "";
+    const instanceKey = mangleGenericInstanceKey(typeArguments);
 
     // Instance method prototypes are pre-bound to their concrete class as their parent
     if (prototype.is(CommonFlags.Instance)) {
@@ -2642,8 +2639,7 @@ export class Resolver extends DiagnosticEmitter {
 
     let signature = Signature.create(this.program, parameterTypes, returnType, thisType, requiredParameters, hasRest);
 
-    let nameInclTypeParameters = prototype.name;
-    if (instanceKey.length) nameInclTypeParameters += `<${instanceKey}>`;
+    const nameInclTypeParameters = mangleGenericInstanceName(prototype.name, instanceKey);
     let instance = new Function(nameInclTypeParameters, prototype, typeArguments, signature, ctxTypes);
     prototype.setResolvedInstance(instanceKey, instance);
 
@@ -2871,7 +2867,7 @@ export class Resolver extends DiagnosticEmitter {
     /** How to proceed with eventual diagnostics. */
     reportMode: ReportMode = ReportMode.Report
   ): Class | null {
-    let instanceKey = typeArguments ? typesToString(typeArguments) : "";
+    const instanceKey = mangleGenericInstanceKey(typeArguments);
 
     // Do not attempt to resolve the same class twice. This can return a class
     // that isn't fully resolved yet, but only on deeper levels of recursion.
@@ -2879,8 +2875,7 @@ export class Resolver extends DiagnosticEmitter {
     if (instance) return instance;
 
     // Otherwise create
-    let nameInclTypeParameters = prototype.name;
-    if (instanceKey.length) nameInclTypeParameters += `<${instanceKey}>`;
+    const nameInclTypeParameters = mangleGenericInstanceName(prototype.name, instanceKey);
     if (prototype.kind == ElementKind.InterfacePrototype) {
       instance = new Interface(nameInclTypeParameters, <InterfacePrototype>prototype, typeArguments);
     } else {

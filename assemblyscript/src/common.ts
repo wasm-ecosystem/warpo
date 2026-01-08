@@ -85,29 +85,6 @@ export const enum CommonFlags {
   InternallyNullable = 1 << 31,
 }
 
-/** Path delimiter inserted between file system levels. */
-export const PATH_DELIMITER = "/";
-/** Substitution used to indicate the parent directory. */
-export const PARENT_SUBST = "..";
-/** Function name prefix used for getters. */
-export const GETTER_PREFIX = "get:";
-/** Function name prefix used for setters. */
-export const SETTER_PREFIX = "set:";
-/** Delimiter used between class names and instance members. */
-export const INSTANCE_DELIMITER = "#";
-/** Delimiter used between class and namespace names and static members. */
-export const STATIC_DELIMITER = ".";
-/** Delimiter used between a function and its inner elements. */
-export const INNER_DELIMITER = "~";
-/** Substitution used to indicate a library directory. */
-export const LIBRARY_SUBST = "~lib";
-/** Library directory prefix. */
-export const LIBRARY_PREFIX = LIBRARY_SUBST + PATH_DELIMITER;
-/** Path index suffix. */
-export const INDEX_SUFFIX = PATH_DELIMITER + "index";
-/** Stub function delimiter. */
-export const STUB_DELIMITER = "@";
-
 /** Common names. */
 export namespace CommonNames {
   // special

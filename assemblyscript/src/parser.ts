@@ -2,8 +2,8 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-import { CommonFlags, LIBRARY_PREFIX, PATH_DELIMITER } from "./common";
-
+import { CommonFlags } from "./common";
+import { LIBRARY_PREFIX, PATH_DELIMITER } from "./mangle";
 import { Tokenizer, Token, CommentHandler, IdentifierHandling, isIllegalVariableIdentifier } from "./tokenizer";
 
 import { Range, DiagnosticCode, DiagnosticEmitter, DiagnosticMessage } from "./diagnostics";

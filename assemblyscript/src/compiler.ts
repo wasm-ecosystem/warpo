@@ -53,7 +53,7 @@ import {
   isConstZero,
 } from "./module";
 
-import { CommonFlags, STATIC_DELIMITER, INDEX_SUFFIX, CommonNames, Feature, Target, Runtime } from "./common";
+import { CommonFlags, CommonNames, Feature, Target, Runtime } from "./common";
 
 import {
   Program,
@@ -175,7 +175,7 @@ import {
 
 import { liftRequiresExportRuntime, lowerRequiresExportRuntime } from "./bindings/js";
 import { markDataElementImmutable, addGlobal, addSubProgram, markCallInlined } from "./warpo";
-import { mangleImportName } from "./mangle";
+import { mangleImportName, STATIC_DELIMITER, INDEX_SUFFIX } from "./mangle";
 
 /** Features enabled by default. */
 export const defaultFeatures =
