@@ -1,13 +1,4 @@
 {
-  "optPass": [
-    "--enable-gc-opt-lower-pass-for-testing",
-    "--no-gc-merge-ssa",
-    "--no-gc-optimized-stack-position-assigner"
-  ],
-  "basePass": [
-    "--enable-gc-opt-lower-pass-for-testing",
-    "--no-gc-merge-ssa",
-    "--no-gc-optimized-stack-position-assigner",
-    "--no-gc-shrink-wrap"
-  ]
+  "optPass": ["--enable-gc-opt-lower-pass-for-testing", "--no-gc-opt", "--gc-shrink-wrap", "--gc-leaf-function-filter"],
+  "basePass": ["--enable-gc-opt-lower-pass-for-testing", "--no-gc-opt", "--gc-leaf-function-filter"]
 }

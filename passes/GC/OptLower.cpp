@@ -32,32 +32,37 @@
 
 namespace warpo::passes::gc {
 
-static cli::Opt<bool> NoImmutableGlobalToStackRemover{
+static cli::Opt<bool> NoGCOpt{
     cli::Category::OnlyForTest,
-    "--no-gc-immutable-global-to-stack-remover",
+    "--no-gc-opt",
+    [](argparse::Argument &arg) { arg.help("Disable all GC optimizations by default").flag().hidden(); },
+};
+static cli::Opt<bool> GCImmutableGlobalToStackRemover{
+    cli::Category::OnlyForTest,
+    "--gc-immutable-global-to-stack-remover",
     [](argparse::Argument &arg) { arg.flag().hidden(); },
 };
-static cli::Opt<bool> NoLeafFunctionFilter{
+static cli::Opt<bool> GCLeafFunctionFilter{
     cli::Category::OnlyForTest,
-    "--no-gc-leaf-function-filter",
-    [](argparse::Argument &arg) { arg.help("Disable leaf function filter during GC lowering").flag().hidden(); },
+    "--gc-leaf-function-filter",
+    [](argparse::Argument &arg) { arg.help("Enable leaf function filter during GC lowering").flag().hidden(); },
 };
-static cli::Opt<bool> NoMergeSSA{
+static cli::Opt<bool> GCMergeSSA{
     cli::Category::OnlyForTest,
-    "--no-gc-merge-ssa",
-    [](argparse::Argument &arg) { arg.help("Disable SSA merging during GC lowering").flag().hidden(); },
+    "--gc-merge-ssa",
+    [](argparse::Argument &arg) { arg.help("Enable SSA merging during GC lowering").flag().hidden(); },
 };
-static cli::Opt<bool> NoOptimizedStackPositionAssigner{
+static cli::Opt<bool> GCOptimizedStackPositionAssigner{
     cli::Category::OnlyForTest,
-    "--no-gc-optimized-stack-position-assigner",
+    "--gc-optimized-stack-position-assigner",
     [](argparse::Argument &arg) {
-      arg.help("Disable optimized stack position assigner during GC lowering").flag().hidden();
+      arg.help("Enable optimized stack position assigner during GC lowering").flag().hidden();
     },
 };
-static cli::Opt<bool> NoShrinkWrap{
+static cli::Opt<bool> GCShrinkWrap{
     cli::Category::OnlyForTest,
-    "--no-gc-shrink-wrap",
-    [](argparse::Argument &arg) { arg.help("Disable shrink wrap during GC lowering").flag().hidden(); },
+    "--gc-shrink-wrap",
+    [](argparse::Argument &arg) { arg.help("Enable shrink wrap during GC lowering").flag().hidden(); },
 };
 
 static cli::Opt<bool> TestOnlyControlGroup{
@@ -82,7 +87,14 @@ void OptLower::run(wasm::Module *m) {
   if (TestOnlyControlGroup.get())
     return;
 
-  if (!NoImmutableGlobalToStackRemover.get())
+  bool const defaultOptEnabled = !NoGCOpt.get();
+  bool const enableImmutableGlobalToStackRemover = defaultOptEnabled || GCImmutableGlobalToStackRemover.get();
+  bool const enableLeafFunctionFilter = defaultOptEnabled || GCLeafFunctionFilter.get();
+  bool const enableMergeSSA = defaultOptEnabled || GCMergeSSA.get();
+  bool const enableOptimizedStackPositionAssigner = defaultOptEnabled || GCOptimizedStackPositionAssigner.get();
+  bool const enableShrinkWrap = defaultOptEnabled || GCShrinkWrap.get();
+
+  if (enableImmutableGlobalToStackRemover)
     runner.add(std::unique_ptr<wasm::Pass>(new ImmutableGlobalToStackRemover(variableInfo_)));
 
   ModuleLevelSSAMap const moduleLevelSSAMap = ModuleLevelSSAMap::create(m);
@@ -90,11 +102,11 @@ void OptLower::run(wasm::Module *m) {
   std::shared_ptr<CallGraph const> const cg = CallGraphBuilder::addToPass(runner);
 
   std::shared_ptr<LeafFunc const> const leafFunc =
-      NoLeafFunctionFilter.get() ? nullptr : LeafFunctionCollector::addToPass(runner, cg);
+      enableLeafFunctionFilter ? LeafFunctionCollector::addToPass(runner, cg) : nullptr;
 
   std::shared_ptr<ObjLivenessInfo> const livenessInfo = ObjLivenessAnalyzer::addToPass(runner, moduleLevelSSAMap);
 
-  if (!NoMergeSSA.get()) {
+  if (enableMergeSSA) {
     // now merge ssa should be done firstly, it is depends on liveness info as local's possible values.
     // After LeafFunctionFilter, liveness info is not correct anymore.
     // TODO: use def-uses chain instead of liveness info
@@ -104,11 +116,11 @@ void OptLower::run(wasm::Module *m) {
   LeafFunctionFilter::addToPass(runner, leafFunc, livenessInfo);
 
   StackAssigner::Mode const stackAssignerMode =
-      NoOptimizedStackPositionAssigner.get() ? StackAssigner::Mode::Vanilla : StackAssigner::Mode::GreedyConflictGraph;
+      enableOptimizedStackPositionAssigner ? StackAssigner::Mode::GreedyConflictGraph : StackAssigner::Mode::Vanilla;
   std::shared_ptr<StackPositions const> const stackPositions =
       StackAssigner::addToPass(runner, stackAssignerMode, livenessInfo);
   std::shared_ptr<InsertPositionHints const> const stackInsertPositions =
-      NoShrinkWrap.get() ? ShrinkWrapAnalysis::dummy(runner) : ShrinkWrapAnalysis::addToPass(runner, livenessInfo);
+      enableShrinkWrap ? ShrinkWrapAnalysis::addToPass(runner, livenessInfo) : ShrinkWrapAnalysis::dummy(runner);
   runner.add(std::unique_ptr<wasm::Pass>(
       new PrologEpilogInserter(stackInsertPositions, MaxShadowStackOffsetsFromStackPositions::create(stackPositions))));
   runner.add(std::unique_ptr<wasm::Pass>(new ToStackReplacer(stackPositions)));
