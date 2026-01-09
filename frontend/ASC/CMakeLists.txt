@@ -1,5 +1,3 @@
-set(CMAKE_CXX_STANDARD 26) # use c++ 26 to embed binary file
-
 if(WARPO_RELEASE)
   set(AS_BUILD_TARGET release)
 else()
@@ -9,11 +7,17 @@ endif()
 message("build assemblyscript target: ${AS_BUILD_TARGET}")
 
 file(GLOB_RECURSE asc_sources
+
+  # sources
   "${PROJECT_SOURCE_DIR}/assemblyscript/src/*.ts"
   "${PROJECT_SOURCE_DIR}/assemblyscript/std/*.ts"
-  "${PROJECT_SOURCE_DIR}/assemblyscript/scripts/*.js"
+
+  # warpo extension
   "${PROJECT_SOURCE_DIR}/assemblyscript_extension/src/*.ts"
   "${PROJECT_SOURCE_DIR}/assemblyscript_extension/std/*.ts"
+
+  # generator
+  "${PROJECT_SOURCE_DIR}/frontend/ASC/*.mjs"
 )
 set_source_files_properties(${asc_sources})
 

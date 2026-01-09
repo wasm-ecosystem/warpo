@@ -79,10 +79,6 @@ runs:
       run: |
         ccache --max-size=512M
         ccache --zero-stats
-    - name: install assemblyscript deps
-      run: npm ci
-      shell: bash
-      working-directory: assemblyscript
 
     - name: build
       run: |

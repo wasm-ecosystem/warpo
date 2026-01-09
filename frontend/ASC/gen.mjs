@@ -4,80 +4,19 @@
 
 import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync } from "node:fs";
-import { sep, join, relative } from "node:path";
+import { join } from "node:path";
 import assert from "node:assert";
-import { readdirSync } from "node:fs";
+import { project_root } from "./helper.mjs";
+import { createExtensionLibrarySources, createLibrarySources } from "./std.mjs";
+import { generateDiagnostics } from "./diag.mjs";
 
 const target_folder = process.argv[2];
 const build_target = process.argv[3];
 assert(build_target === "debug" || build_target === "release", "invalid build target");
 
-const project_root = join("..", "..");
-
-const ext_libs_path = join(project_root, "assemblyscript_extension", "std");
-
-execSync("node scripts/build.js", { cwd: join(project_root, "assemblyscript") });
-
-function stringToHexCArray(str) {
-  // Convert a string to a C-style hex array
-  // Each character is converted to its hex representation
-  // and padded to two digits, separated by commas.
-  // Example: "abc" -> "0x61, 0x62, 0x63"
-  let hexArray = [];
-  str = Buffer.from(str, "utf-8");
-  for (let i = 0, k = str.length; i < k; i++) hexArray.push(str[i].toString());
-  return hexArray.join(",");
-}
-
-async function createLibrarySources() {
-  const { libraryFiles } = await import("../../assemblyscript/cli/index.generated.js");
-  const librarySourceMapInc = [];
-  const librarySourceInc = [];
-  let cnt = 0;
-  for (const fileName of Object.keys(libraryFiles)) {
-    cnt++;
-    const name = `library_source_${cnt}`;
-    librarySourceInc.push(`uint8_t const ${name}[] = {${stringToHexCArray(libraryFiles[fileName])}};\n`);
-    librarySourceMapInc.push(
-      `{"${fileName}", std::string_view{reinterpret_cast<const char*>(${name}), sizeof(${name})}},\n`
-    );
-  }
-  writeFileSync(join(target_folder, "library_sources.inc"), librarySourceInc.join(""));
-  writeFileSync(join(target_folder, "library_sources_map.inc"), librarySourceMapInc.join(""));
-}
-createLibrarySources();
-
-function readAllFilesImpl(dir, root, output) {
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const fullPath = join(dir, entry.name);
-    if (entry.isDirectory()) {
-      readAllFilesImpl(fullPath, root, output);
-    } else if (entry.isFile()) {
-      output.push(relative(root, fullPath));
-    }
-  }
-}
-/**
- *
- * @param {string} dir
- * @returns {string[]}
- */
-function readAllFiles(dir) {
-  const output = [];
-  readAllFilesImpl(dir, dir, output);
-  return output;
-}
-
-async function createExtensionLibrarySources() {
-  const extLibraryFiles = readAllFiles(ext_libs_path)
-    .filter((f) => f.endsWith(".ts"))
-    .map((p) => [p.slice(0, -3).replaceAll(sep, "/"), readFileSync(join(ext_libs_path, p), "utf8")]);
-  writeFileSync(
-    join(target_folder, "extension_library_sources.inc"),
-    extLibraryFiles.map(([fileName, content]) => `{\n  "${fileName}", R"##(${content})##",\n},\n`).join("")
-  );
-}
-createExtensionLibrarySources();
+generateDiagnostics();
+createLibrarySources(target_folder);
+createExtensionLibrarySources(target_folder);
 
 execSync(
   `npx asc --config asconfig.json --target ${build_target} -o ${target_folder}/assemblyscript.${build_target}.wasm -t ${target_folder}/assemblyscript.${build_target}.wast`,
