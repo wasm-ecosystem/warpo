@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "CompilerImpl.hpp"
+#include "warpo/common/ConfigFile.hpp"
 #include "warpo/common/DebugLevel.hpp"
 #include "warpo/common/OptLevel.hpp"
 #include "warpo/frontend/Compiler.hpp"
@@ -27,7 +28,7 @@ static std::optional<std::string> convertEmptyStringToNullOpt(std::string const 
   return std::nullopt;
 }
 
-static cli::Opt<std::vector<std::string>> entryPaths{
+static cli::Opt<std::vector<std::string>> entryPathsOption{
     cli::Category::Frontend,
     "entries",
     [](argparse::Argument &arg) -> void { arg.help("entry files").nargs(argparse::nargs_pattern::at_least_one); },
@@ -105,6 +106,91 @@ static cli::Opt<std::string> runtimeOption{
 
 static RuntimeKind getRuntimeFromCLI() { return RuntimeUtils::fromString(runtimeOption.get()); }
 
+static void applyJsonConfig(Config &config, const common::FileConfigOptions &jsonConfig) {
+  if (jsonConfig.exportStart) {
+    config.exportStart = *jsonConfig.exportStart;
+  }
+
+  if (jsonConfig.exportRuntime) {
+    config.exportRuntime = *jsonConfig.exportRuntime;
+  }
+
+  if (jsonConfig.exportTable) {
+    config.exportTable = *jsonConfig.exportTable;
+  }
+
+  if (jsonConfig.initialMemory) {
+    config.initialMemory = *jsonConfig.initialMemory;
+  }
+
+  if (jsonConfig.runtime) {
+    config.runtime = frontend::RuntimeUtils::fromString(*jsonConfig.runtime);
+  }
+
+  if (jsonConfig.optimizeLevel) {
+    config.optimizationLevel = *jsonConfig.optimizeLevel;
+  }
+
+  if (jsonConfig.shrinkLevel) {
+    config.shrinkLevel = *jsonConfig.shrinkLevel;
+  }
+
+  if (jsonConfig.debug) {
+    bool const debug = *jsonConfig.debug;
+    config.emitDebugInfo = debug;
+    config.emitDebugLine = debug;
+  }
+
+  if (jsonConfig.sourceMap) {
+    config.emitDebugLine = *jsonConfig.sourceMap;
+  }
+
+  if (jsonConfig.use) {
+    std::string const useStr = *jsonConfig.use;
+    size_t const eqPos = useStr.find('=');
+    if (eqPos != std::string::npos && eqPos != 0) {
+      config.uses.insert_or_assign(useStr.substr(0, eqPos), useStr.substr(eqPos + 1));
+    }
+  }
+}
+
+static void applyCLIConfig(Config &config) {
+  config.uses = getUses();
+  if (ascWasmOption.isSet()) {
+    config.ascWasmPath = convertEmptyStringToNullOpt(ascWasmOption.get());
+  }
+  config.features = common::Features::fromCLI(); // Features are always from CLI
+  if (exportStartOption.isSet()) {
+    config.exportStart = convertEmptyStringToNullOpt(exportStartOption.get());
+  }
+  if (runtimeOption.isSet()) {
+    config.runtime = getRuntimeFromCLI();
+  }
+  if (exportRuntimeOption.isSet()) {
+    config.exportRuntime = exportRuntimeOption.get();
+  }
+  if (exportTableOption.isSet()) {
+    config.exportTable = exportTableOption.get();
+  }
+  if (initialMemoryOption.isSet()) {
+    config.initialMemory = initialMemoryOption.get() == static_cast<uint32_t>(-1)
+                               ? std::nullopt
+                               : std::optional<uint32_t>{initialMemoryOption.get()};
+  }
+  // TODO: support config and CLI in common
+  config.optimizationLevel = common::getOptimizationLevel();
+  config.shrinkLevel = common::getShrinkLevel();
+  config.emitDebugLine = common::isEmitDebugLine();
+  config.emitDebugInfo = common::isEmitDebugInfo();
+  config.useColorfulDiagMessage = support::isTTY();
+}
+
+struct EntryPaths {
+  std::set<std::string> entries;
+  void merge(std::vector<std::string> const &other) { entries.insert(other.begin(), other.end()); }
+  std::vector<std::string> toVector() const { return std::vector<std::string>(entries.begin(), entries.end()); }
+};
+
 } // namespace warpo::frontend
 
 namespace warpo {
@@ -137,24 +223,20 @@ warpo::frontend::Config warpo::frontend::getDefaultConfig() {
 }
 
 frontend::CompilationResult frontend::compile(Pluggable *plugin) {
-  Config const config{
-      .uses = getUses(),
-      .ascWasmPath = convertEmptyStringToNullOpt(ascWasmOption.get()),
-      .features = common::Features::fromCLI(),
-      .exportStart = convertEmptyStringToNullOpt(exportStartOption.get()),
-      .runtime = getRuntimeFromCLI(),
-      .exportRuntime = exportRuntimeOption.get(),
-      .exportTable = exportTableOption.get(),
-      .initialMemory = initialMemoryOption.get() == static_cast<uint32_t>(-1)
-                           ? std::nullopt
-                           : std::optional<uint32_t>{initialMemoryOption.get()},
-      .optimizationLevel = common::getOptimizationLevel(),
-      .shrinkLevel = common::getShrinkLevel(),
-      .emitDebugLine = common::isEmitDebugLine(),
-      .emitDebugInfo = common::isEmitDebugInfo(),
-      .useColorfulDiagMessage = support::isTTY(),
-  };
-  return compile(plugin, entryPaths.get(), config);
+  // handle config
+  Config config = getDefaultConfig();
+  std::optional<common::MergedFileConfig> fileConfig = common::getFileConfig();
+  if (fileConfig.has_value())
+    applyJsonConfig(config, fileConfig->options);
+  applyCLIConfig(config);
+
+  // handle entries
+  EntryPaths entries;
+  if (fileConfig.has_value())
+    entries.merge(fileConfig->entries);
+  entries.merge(entryPathsOption.get());
+
+  return compile(plugin, entries.toVector(), config);
 }
 
 } // namespace warpo
