@@ -5,13 +5,19 @@
     "exportRuntime": false,
     "exportTable": true,
     "optimizeLevel": 0,
-    "debug": true
+    "debug": true,
+    "use": {
+      "USE_VALUE": "5"
+    }
   },
   "targets": {
     "release": {
       "exportRuntime": true,
       "optimizeLevel": 3,
-      "debug": false
+      "debug": false,
+      "use": {
+        "USE_VALUE": "10"
+      }
     }
   }
 }

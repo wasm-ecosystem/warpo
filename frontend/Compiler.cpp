@@ -6,7 +6,6 @@
 #include <cstring>
 #include <fmt/base.h>
 #include <fmt/format.h>
-#include <map>
 #include <optional>
 #include <string>
 #include <vector>
@@ -42,19 +41,6 @@ static cli::Opt<std::vector<std::string>> useOptions{
       arg.help("use option, format <name>=<value>").nargs(argparse::nargs_pattern::at_least_one).append();
     },
 };
-static std::map<std::string, std::string> getUses() {
-  std::map<std::string, std::string> res{};
-  std::vector<std::string> const &uses = useOptions.get();
-  for (std::string const &use : uses) {
-    size_t const eqPos = use.find('=');
-    if (eqPos == std::string::npos || eqPos == 0) {
-      fmt::println("ERROR: invalid use option: {}", use);
-      std::exit(1);
-    }
-    res.insert_or_assign(use.substr(0, eqPos), use.substr(eqPos + 1));
-  }
-  return res;
-}
 
 static cli::Opt<std::string> ascWasmOption{
     cli::Category::Frontend,
@@ -107,59 +93,29 @@ static cli::Opt<std::string> runtimeOption{
 static RuntimeKind getRuntimeFromCLI() { return RuntimeUtils::fromString(runtimeOption.get()); }
 
 static void applyJsonConfig(Config &config, const common::FileConfigOptions &jsonConfig) {
-  if (jsonConfig.exportStart) {
+  if (jsonConfig.exportStart)
     config.exportStart = *jsonConfig.exportStart;
-  }
-
-  if (jsonConfig.exportRuntime) {
+  if (jsonConfig.exportRuntime)
     config.exportRuntime = *jsonConfig.exportRuntime;
-  }
-
-  if (jsonConfig.exportTable) {
+  if (jsonConfig.exportTable)
     config.exportTable = *jsonConfig.exportTable;
-  }
-
-  if (jsonConfig.initialMemory) {
+  if (jsonConfig.initialMemory)
     config.initialMemory = *jsonConfig.initialMemory;
-  }
-
-  if (jsonConfig.runtime) {
+  if (jsonConfig.runtime)
     config.runtime = frontend::RuntimeUtils::fromString(*jsonConfig.runtime);
-  }
-
-  if (jsonConfig.optimizeLevel) {
-    config.optimizationLevel = *jsonConfig.optimizeLevel;
-  }
-
-  if (jsonConfig.shrinkLevel) {
-    config.shrinkLevel = *jsonConfig.shrinkLevel;
-  }
-
-  if (jsonConfig.debug) {
-    bool const debug = *jsonConfig.debug;
-    config.emitDebugInfo = debug;
-    config.emitDebugLine = debug;
-  }
-
-  if (jsonConfig.sourceMap) {
-    config.emitDebugLine = *jsonConfig.sourceMap;
-  }
-
   if (jsonConfig.use) {
-    std::string const useStr = *jsonConfig.use;
-    size_t const eqPos = useStr.find('=');
-    if (eqPos != std::string::npos && eqPos != 0) {
-      config.uses.insert_or_assign(useStr.substr(0, eqPos), useStr.substr(eqPos + 1));
-    }
+    config.uses = *jsonConfig.use;
   }
 }
 
 static void applyCLIConfig(Config &config) {
-  config.uses = getUses();
+  std::vector<std::string> const &uses = useOptions.get();
+  for (std::string const &use : uses) {
+    config.uses.merge(use);
+  }
   if (ascWasmOption.isSet()) {
     config.ascWasmPath = convertEmptyStringToNullOpt(ascWasmOption.get());
   }
-  config.features = common::Features::fromCLI(); // Features are always from CLI
   if (exportStartOption.isSet()) {
     config.exportStart = convertEmptyStringToNullOpt(exportStartOption.get());
   }
@@ -177,12 +133,6 @@ static void applyCLIConfig(Config &config) {
                                ? std::nullopt
                                : std::optional<uint32_t>{initialMemoryOption.get()};
   }
-  // TODO: support config and CLI in common
-  config.optimizationLevel = common::getOptimizationLevel();
-  config.shrinkLevel = common::getShrinkLevel();
-  config.emitDebugLine = common::isEmitDebugLine();
-  config.emitDebugInfo = common::isEmitDebugInfo();
-  config.useColorfulDiagMessage = support::isTTY();
 }
 
 struct EntryPaths {
@@ -210,27 +160,35 @@ warpo::frontend::Config warpo::frontend::getDefaultConfig() {
   return Config{
       .uses = {},
       .ascWasmPath = std::nullopt,
-      .features = common::Features::all(),
       .exportStart = std::nullopt,
       .runtime = RuntimeKind::Incremental,
       .exportRuntime = false,
       .exportTable = false,
       .initialMemory = std::nullopt,
+
+      .useColorfulDiagMessage = support::isTTY(),
+
+      .features = common::Features::all(),
       .optimizationLevel = 0U,
       .shrinkLevel = 0U,
       .emitDebugLine = false,
       .emitDebugInfo = false,
-      .useColorfulDiagMessage = support::isTTY(),
   };
 }
 
 frontend::CompilationResult frontend::compile(Pluggable *plugin) {
   // handle config
   Config config = getDefaultConfig();
-  std::optional<common::MergedFileConfig> fileConfig = common::getFileConfig();
+  std::optional<common::MergedFileConfig> const &fileConfig = common::getFileConfig();
   if (fileConfig.has_value())
     applyJsonConfig(config, fileConfig->options);
   applyCLIConfig(config);
+
+  config.features = common::Features::fromCLI();
+  config.optimizationLevel = common::getOptimizationLevel();
+  config.shrinkLevel = common::getShrinkLevel();
+  config.emitDebugLine = common::isEmitDebugLine();
+  config.emitDebugInfo = common::isEmitDebugInfo();
 
   // handle entries
   EntryPaths entries;

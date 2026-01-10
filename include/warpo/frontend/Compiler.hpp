@@ -6,10 +6,10 @@
 
 #include <binaryen/src/binaryen-c.h>
 #include <filesystem>
-#include <map>
 #include <optional>
 #include <string>
 #include <vector>
+#include <warpo/common/ConfigFile.hpp>
 
 #include "warpo/common/AsModule.hpp"
 #include "warpo/common/Features.hpp"
@@ -51,19 +51,22 @@ inline RuntimeKind fromString(std::string const &str) {
 } // namespace RuntimeUtils
 
 struct Config {
-  std::map<std::string, std::string> uses;
+  common::UsesOption uses;
   std::optional<std::string> ascWasmPath;
-  common::Features features;
   std::optional<std::string> exportStart;
   RuntimeKind runtime;
   bool exportRuntime;
   bool exportTable;
   std::optional<uint32_t> initialMemory;
+
+  bool useColorfulDiagMessage;
+
+  // directly from common
+  common::Features features;
   uint32_t optimizationLevel;
   uint32_t shrinkLevel;
   bool emitDebugLine;
   bool emitDebugInfo;
-  bool useColorfulDiagMessage;
 };
 
 Config getDefaultConfig();

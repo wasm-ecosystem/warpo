@@ -3,11 +3,18 @@
 
 #pragma once
 
+#include <map>
 #include <optional>
 #include <string>
 #include <vector>
 
 namespace warpo::common {
+
+struct UsesOption : std::map<std::string, std::string> {
+  UsesOption() = default;
+  void merge(std::string const &useStr);
+  using std::map<std::string, std::string>::insert_or_assign;
+};
 
 struct FileConfigOptions {
   std::optional<std::string> exportStart = std::nullopt;
@@ -19,7 +26,7 @@ struct FileConfigOptions {
   std::optional<uint32_t> shrinkLevel = std::nullopt;
   std::optional<bool> debug = std::nullopt;
   std::optional<bool> sourceMap = std::nullopt;
-  std::optional<std::string> use = std::nullopt;
+  std::optional<UsesOption> use = std::nullopt;
 
   void dump() const;
 };
@@ -29,6 +36,6 @@ struct MergedFileConfig {
   FileConfigOptions options;
 };
 
-std::optional<MergedFileConfig> getFileConfig();
+std::optional<MergedFileConfig> const &getFileConfig();
 
 } // namespace warpo::common

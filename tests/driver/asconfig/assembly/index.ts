@@ -1,8 +1,6 @@
-export function meaning(): i32 {
-  return 42;
-}
+/// <reference path="./index.d.ts" />
 
 export function _start(): void {
-  assert(meaning() == 42);
+  assert(USE_VALUE == 10, "USE_VALUE should be 10");
   trace("asconfig ready");
 }

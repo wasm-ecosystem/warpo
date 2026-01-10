@@ -1,6 +1,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <cstddef>
 #include <exception>
 #include <filesystem>
 #include <fmt/format.h>
@@ -26,6 +27,15 @@ struct FileConfigJson {
 
 } // namespace
 
+void UsesOption::merge(std::string const &useStr) {
+  size_t const eqPos = useStr.find('=');
+  if (eqPos != std::string::npos && eqPos != 0) {
+    this->insert_or_assign(useStr.substr(0, eqPos), useStr.substr(eqPos + 1));
+  } else {
+    throw std::runtime_error{fmt::format("Invalid use option: {}", useStr)};
+  }
+}
+
 void FileConfigOptions::dump() const {
   fmt::print("FileConfigOptions:\n");
   if (exportStart.has_value())
@@ -46,8 +56,12 @@ void FileConfigOptions::dump() const {
     fmt::print("  debug: {}\n", debug.value());
   if (sourceMap.has_value())
     fmt::print("  sourceMap: {}\n", sourceMap.value());
-  if (use.has_value())
-    fmt::print("  use: {}\n", use.value());
+  if (use.has_value()) {
+    fmt::print("  use:\n");
+    for (auto const &[key, value] : *use) {
+      fmt::print("    {} = {}\n", key, value);
+    }
+  }
 }
 
 static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOptions) {
@@ -71,8 +85,12 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
       config.debug = jsonOptions["debug"].get<bool>();
     if (jsonOptions.contains("sourceMap"))
       config.sourceMap = jsonOptions["sourceMap"].get<bool>();
-    if (jsonOptions.contains("use"))
-      config.use = jsonOptions["use"].get<std::string>();
+    if (jsonOptions.contains("use")) {
+      config.use = UsesOption{};
+      for (const auto &[useKey, useEntry] : jsonOptions["use"].items()) {
+        config.use->insert_or_assign(useKey, useEntry.get<std::string>());
+      }
+    }
   } catch (std::exception const &e) {
     throw std::runtime_error{fmt::format("Failed to parse json options: {}", e.what())};
   }
@@ -159,14 +177,18 @@ static std::optional<MergedFileConfig> getFileConfigImpl(std::string const confi
   };
 }
 
-std::optional<MergedFileConfig> getFileConfig() {
-  if (configOption.notSet())
-    return std::nullopt;
-  std::string const configContent = readTextFile(configOption.get());
-  return getFileConfigImpl(configContent, targetOption.tryGet());
-}
-
 } // namespace warpo::common
+
+std::optional<warpo::common::MergedFileConfig> const &warpo::common::getFileConfig() {
+  static std::optional<MergedFileConfig> fileConfig = std::nullopt;
+  if (configOption.notSet())
+    return fileConfig;
+  if (fileConfig.has_value())
+    return fileConfig;
+  std::string const configContent = readTextFile(configOption.get());
+  fileConfig = getFileConfigImpl(configContent, targetOption.tryGet());
+  return fileConfig;
+}
 
 #ifdef WARPO_ENABLE_UNIT_TESTS
 
@@ -177,11 +199,19 @@ namespace warpo::common::ut {
 
 TEST(TestConfigFile, TestParseFileConfigOptions) {
   // Test parsing complete JSON options
-  nlohmann::json const jsonOptions = {
-      {"exportStart", "start"},   {"exportRuntime", true},   {"exportTable", false}, {"initialMemory", 65536},
-      {"runtime", "instantiate"}, {"optimizeLevel", 3},      {"shrinkLevel", 2},     {"debug", true},
-      {"sourceMap", false},       {"use", "assemblyscript"},
-  };
+  std::string const jsonStr = R"({
+    "exportStart": "start",
+    "exportRuntime": true,
+    "exportTable": false,
+    "initialMemory": 65536,
+    "runtime": "instantiate",
+    "optimizeLevel": 3,
+    "shrinkLevel": 2,
+    "debug": true,
+    "sourceMap": false,
+    "use": { "U1": "10" }
+  })";
+  nlohmann::json const jsonOptions = nlohmann::json::parse(jsonStr);
 
   FileConfigOptions const config = parseFileConfigOptions(jsonOptions);
 
@@ -194,10 +224,14 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   EXPECT_EQ(config.shrinkLevel, 2);
   EXPECT_EQ(config.debug, true);
   EXPECT_EQ(config.sourceMap, false);
-  EXPECT_EQ(config.use, "assemblyscript");
+  EXPECT_EQ(config.use->at("U1"), "10");
 
   // Test parsing partial JSON options
-  nlohmann::json const partialJson = {{"exportStart", "main"}, {"debug", false}};
+  std::string const partialJsonStr = R"({
+    "exportStart": "main",
+    "debug": false
+  })";
+  nlohmann::json const partialJson = nlohmann::json::parse(partialJsonStr);
 
   FileConfigOptions const partialConfig = parseFileConfigOptions(partialJson);
 

@@ -67,15 +67,23 @@
         },
         "optimizeLevel": {
           "type": "number",
-          "description": "Optimization level for this build target (higher means more optimization)."
+          "description": "Optimization level for this build target (higher means more optimization).",
+          "minimum": 0,
+          "maximum": 3
         },
         "shrinkLevel": {
           "type": "number",
-          "description": "Shrink level for this build target (higher means smaller output)."
+          "description": "Shrink level for this build target (higher means smaller output).",
+          "minimum": 0,
+          "maximum": 2
         },
         "use": {
-          "type": "string",
-          "description": "Additional compiler flags or environment variables for this build target."
+          "type": "object",
+          "description": "Additional compiler flags or environment variables for this build target.",
+          "additionalProperties": {
+            "type": "string",
+            "description": "Value for the use option."
+          }
         }
       },
       "additionalProperties": false
