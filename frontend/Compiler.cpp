@@ -31,7 +31,7 @@ static std::optional<std::string> convertEmptyStringToNullOpt(std::string const 
 static cli::Opt<std::vector<std::string>> entryPathsOption{
     cli::Category::Frontend,
     "entries",
-    [](argparse::Argument &arg) -> void { arg.help("entry files").nargs(argparse::nargs_pattern::at_least_one); },
+    [](argparse::Argument &arg) -> void { arg.help("entry files").nargs(argparse::nargs_pattern::any); },
 };
 
 static cli::Opt<std::vector<std::string>> useOptions{
@@ -199,6 +199,8 @@ void frontend::init() { FrontendCompiler::init(); }
 
 frontend::CompilationResult frontend::compile(Pluggable *plugin, std::vector<std::string> const &entryFilePaths,
                                               Config const &config) {
+  if (entryFilePaths.empty())
+    throw std::runtime_error("No entry files specified for compilation.");
   support::PerfRAII const r(support::PerfItemKind::CompilationHIR);
   FrontendCompiler compiler{config, plugin};
   return compiler.compile(entryFilePaths, config);

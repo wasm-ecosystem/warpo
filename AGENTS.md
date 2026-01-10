@@ -21,3 +21,8 @@ Please follow these instructions after modifying the code.
 - Prefer to use east const style.
 - Don't touch all files in `third_party` folder.
 - When there is only a simple statement (such as return or break) in the if block, do not add braces.
+
+## How to add test
+
+- When C++ code changed, if needed, add unittest in the same file wrapped with `WARPO_ENABLE_UNIT_TESTS` macro.
+- When project level feature added, create a new test cases in `tests/driver`.

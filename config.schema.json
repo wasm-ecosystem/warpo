@@ -37,6 +37,10 @@
           "type": "boolean",
           "description": "Whether to export the runtime from the WebAssembly module."
         },
+        "exportTable": {
+          "type": "boolean",
+          "description": "Whether to export the function table from the WebAssembly module."
+        },
         "initialMemory": {
           "type": "number",
           "description": "Initial memory size for the WebAssembly module, in kilobytes."
@@ -49,13 +53,9 @@
           "type": "boolean",
           "description": "Whether to output compilation statistics."
         },
-        "outFile": {
+        "output": {
           "type": "string",
-          "description": "Path to the output WebAssembly (.wasm) file for this target."
-        },
-        "textFile": {
-          "type": "string",
-          "description": "Path to the output WebAssembly text (.wast) file for this target."
+          "description": "Path to the output WebAssembly (.wasm or .wat) file for this target."
         },
         "debug": {
           "type": "boolean",

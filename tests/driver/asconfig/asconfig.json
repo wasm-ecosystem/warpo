@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../config.schema.json",
+  "entries": ["assembly/index.ts"],
+  "options": {
+    "exportRuntime": false,
+    "exportTable": true,
+    "optimizeLevel": 0,
+    "debug": true
+  },
+  "targets": {
+    "release": {
+      "exportRuntime": true,
+      "optimizeLevel": 3,
+      "debug": false
+    }
+  }
+}

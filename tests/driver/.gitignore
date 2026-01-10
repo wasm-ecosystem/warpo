@@ -1,2 +1,4 @@
 /module-resolve/build/*.wasm
 /module-resolve/tmp
+/asconfig/build/*.wasm
+/asconfig/tmp
