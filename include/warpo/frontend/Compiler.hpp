@@ -60,10 +60,10 @@ struct Config {
   std::optional<uint32_t> initialMemory;
   uint32_t stackSize = 32768U;
 
-  bool useColorfulDiagMessage;
+  bool useColorfulDiagMessage = false;
 
   // directly from common
-  common::Features features;
+  common::Features features = common::Features::all();
   uint32_t optimizationLevel = 0U;
   uint32_t shrinkLevel = 0U;
   bool emitDebugLine = false;
