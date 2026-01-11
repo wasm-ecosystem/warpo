@@ -147,7 +147,7 @@ static cli::Opt<std::string> targetOption{
 static std::optional<MergedFileConfig> getFileConfigImpl(std::string const configContent,
                                                          std::optional<std::string> const &target) {
 
-  MergedFileConfig fileConfig;
+  MergedFileConfig const fileConfig;
   FileConfigJson const fileConfigJson = parseFileConfigJson(configContent);
   return MergedFileConfig{
       .entries = fileConfigJson.entries,
@@ -369,7 +369,7 @@ TEST(TestConfigFile, TestGetFileConfigImpl) {
 
   // Test with config file but no target
   {
-    std::optional<MergedFileConfig> result = getFileConfigImpl(configContent, std::nullopt);
+    std::optional<MergedFileConfig> const result = getFileConfigImpl(configContent, std::nullopt);
     ASSERT_TRUE(result.has_value());
     EXPECT_THAT(result->entries, ::testing::ElementsAre("src/main.ts", "src/utils.ts"));
     EXPECT_EQ(result->options.exportStart, "main");
@@ -380,7 +380,7 @@ TEST(TestConfigFile, TestGetFileConfigImpl) {
 
   // Test with config file and existing target
   {
-    std::optional<MergedFileConfig> result = getFileConfigImpl(configContent, "debug");
+    std::optional<MergedFileConfig> const result = getFileConfigImpl(configContent, "debug");
     ASSERT_TRUE(result.has_value());
     EXPECT_THAT(result->entries, ::testing::ElementsAre("src/main.ts", "src/utils.ts"));
     EXPECT_EQ(result->options.exportStart, "main");
@@ -391,7 +391,7 @@ TEST(TestConfigFile, TestGetFileConfigImpl) {
 
   // Test with config file and existing target
   {
-    std::optional<MergedFileConfig> result = getFileConfigImpl(configContent, "release");
+    std::optional<MergedFileConfig> const result = getFileConfigImpl(configContent, "release");
     ASSERT_TRUE(result.has_value());
     EXPECT_THAT(result->entries, ::testing::ElementsAre("src/main.ts", "src/utils.ts"));
     EXPECT_EQ(result->options.exportStart, "main"); // From global options
