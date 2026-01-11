@@ -42,12 +42,17 @@
           "description": "Whether to export the function table from the WebAssembly module."
         },
         "initialMemory": {
-          "type": "number",
+          "type": "integer",
           "description": "Initial memory size for the WebAssembly module, in kilobytes."
         },
         "runtime": {
           "type": "string",
-          "description": "Type of runtime to use, e.g., 'incremental'."
+          "description": "Type of runtime to use, either 'incremental' or 'radical'.",
+          "enum": ["incremental", "radical"]
+        },
+        "outFile": {
+          "type": "string",
+          "description": "Path to the output WebAssembly (.wasm or .wat) file."
         },
         "stats": {
           "type": "boolean",
@@ -66,13 +71,13 @@
           "description": "Generate source map for this build target."
         },
         "optimizeLevel": {
-          "type": "number",
+          "type": "integer",
           "description": "Optimization level for this build target (higher means more optimization).",
           "minimum": 0,
           "maximum": 3
         },
         "shrinkLevel": {
-          "type": "number",
+          "type": "integer",
           "description": "Shrink level for this build target (higher means smaller output).",
           "minimum": 0,
           "maximum": 2
