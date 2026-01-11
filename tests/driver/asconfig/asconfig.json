@@ -6,6 +6,7 @@
     "exportTable": true,
     "optimizeLevel": 0,
     "debug": true,
+    "disable": ["nontrapping-f2i"],
     "use": {
       "USE_VALUE": "5"
     }

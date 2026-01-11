@@ -36,34 +36,6 @@ void UsesOption::merge(std::string const &useStr) {
   }
 }
 
-void FileConfigOptions::dump() const {
-  fmt::print("FileConfigOptions:\n");
-  if (exportStart.has_value())
-    fmt::print("  exportStart: {}\n", exportStart.value());
-  if (exportRuntime.has_value())
-    fmt::print("  exportRuntime: {}\n", exportRuntime.value());
-  if (exportTable.has_value())
-    fmt::print("  exportTable: {}\n", exportTable.value());
-  if (initialMemory.has_value())
-    fmt::print("  initialMemory: {}\n", initialMemory.value());
-  if (runtime.has_value())
-    fmt::print("  runtime: {}\n", runtime.value());
-  if (optimizeLevel.has_value())
-    fmt::print("  optimizeLevel: {}\n", optimizeLevel.value());
-  if (shrinkLevel.has_value())
-    fmt::print("  shrinkLevel: {}\n", shrinkLevel.value());
-  if (debug.has_value())
-    fmt::print("  debug: {}\n", debug.value());
-  if (sourceMap.has_value())
-    fmt::print("  sourceMap: {}\n", sourceMap.value());
-  if (use.has_value()) {
-    fmt::print("  use:\n");
-    for (auto const &[key, value] : *use) {
-      fmt::print("    {} = {}\n", key, value);
-    }
-  }
-}
-
 static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOptions) {
   FileConfigOptions config;
   try {
@@ -93,6 +65,8 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
         config.use->insert_or_assign(useKey, useEntry.get<std::string>());
       }
     }
+    if (jsonOptions.contains("disable"))
+      config.features = Features::all() & ~Features::fromString(jsonOptions["disable"].get<std::vector<std::string>>());
   } catch (std::exception const &e) {
     throw std::runtime_error{fmt::format("Failed to parse json options: {}", e.what())};
   }
@@ -123,6 +97,8 @@ static FileConfigOptions mergeFileConfigOptions(FileConfigOptions const &base, F
     result.sourceMap = override.sourceMap;
   if (override.use.has_value())
     result.use = override.use;
+  if (override.features.has_value())
+    result.features = override.features;
   return result;
 }
 

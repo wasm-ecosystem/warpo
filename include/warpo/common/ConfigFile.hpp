@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "warpo/common/Features.hpp"
+
 namespace warpo::common {
 
 struct UsesOption : std::map<std::string, std::string> {
@@ -29,8 +31,7 @@ struct FileConfigOptions {
   std::optional<bool> debug = std::nullopt;
   std::optional<bool> sourceMap = std::nullopt;
   std::optional<UsesOption> use = std::nullopt;
-
-  void dump() const;
+  std::optional<Features> features = std::nullopt;
 };
 
 struct MergedFileConfig {

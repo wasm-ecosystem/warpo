@@ -2,6 +2,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include "warpo/common/ConfigFile.hpp"
 #include "warpo/common/Features.hpp"
 #include "warpo/support/Opt.hpp"
 #include "wasm-features.h"
@@ -19,23 +20,31 @@ static cli::Opt<std::vector<std::string>> disableFeatureOptions{
     },
 };
 
-Features Features::fromCLI() {
-  Features res = Features::all();
-  std::vector<std::string> const &disableFeatures = disableFeatureOptions.get();
-  for (std::string const &disableFeature : disableFeatures) {
-    if (disableFeature == "sign-extension") {
-      res = res & ~Features::signExtension();
-    } else if (disableFeature == "mutable-globals") {
-      res = res & ~Features::mutableGlobals();
-    } else if (disableFeature == "nontrapping-f2i") {
-      res = res & ~Features::nontrappingF2I();
-    } else if (disableFeature == "bulk-memory") {
-      res = res & ~Features::bulkMemory();
+Features Features::fromString(std::vector<std::string> const &featureStrs) {
+  Features res = Features::none();
+  for (std::string const &featureStr : featureStrs) {
+    if (featureStr == "sign-extension") {
+      res = res | Features::signExtension();
+    } else if (featureStr == "mutable-globals") {
+      res = res | Features::mutableGlobals();
+    } else if (featureStr == "nontrapping-f2i") {
+      res = res | Features::nontrappingF2I();
+    } else if (featureStr == "bulk-memory") {
+      res = res | Features::bulkMemory();
     } else {
-      throw std::runtime_error("unknown feature: " + disableFeature);
+      throw std::runtime_error("unknown feature: " + featureStr);
     }
   }
   return res;
+}
+
+Features Features::fromCLI() {
+  if (disableFeatureOptions.isSet())
+    return Features::all() & ~Features::fromString(disableFeatureOptions.get());
+  std::optional<MergedFileConfig> const &fileConfig = getFileConfig();
+  if (fileConfig.has_value() && fileConfig->options.features.has_value())
+    return fileConfig->options.features.value();
+  return Features::all();
 }
 
 namespace {
