@@ -17,9 +17,10 @@ static cli::Opt<bool> debugOption{
 static bool isDebugInCLIOrConfig() {
   if (debugOption.isSet())
     return debugOption.get();
-  std::optional<bool> const &debugFromConfig = getFileConfig()->options.debug;
-  if (debugFromConfig.has_value())
-    return debugFromConfig.value();
+  std::optional<MergedFileConfig> const &fileConfig = getFileConfig();
+  if (fileConfig.has_value() && fileConfig->options.debug.has_value()) {
+    return fileConfig->options.debug.value();
+  }
   return false;
 }
 
