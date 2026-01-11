@@ -138,15 +138,17 @@ static void applyCLIConfig(Config &config) {
     config.stackSize = stackSizeOption.get();
 }
 
-struct EntryPaths {
-  std::set<std::string> entries;
-  void merge(std::vector<std::string> const &other) { entries.insert(other.begin(), other.end()); }
-  std::vector<std::string> toVector() const { return std::vector<std::string>(entries.begin(), entries.end()); }
+class EntryPaths {
+  std::set<std::string> entries_;
+
+public:
+  void merge(std::vector<std::string> const &other) { entries_.insert(other.begin(), other.end()); }
+  std::vector<std::string> toVector() const { return std::vector<std::string>{entries_.begin(), entries_.end()}; }
 };
 
 Config Config::getDefault() {
   return Config{
-      .uses = {},
+      .uses = common::UsesOption{},
       .ascWasmPath = std::nullopt,
       .exportStart = std::nullopt,
       .runtime = RuntimeKind::Incremental,
