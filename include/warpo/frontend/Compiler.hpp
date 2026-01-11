@@ -54,7 +54,7 @@ struct Config {
   common::UsesOption uses;
   std::optional<std::string> ascWasmPath;
   std::optional<std::string> exportStart;
-  RuntimeKind runtime;
+  RuntimeKind runtime = RuntimeKind::Incremental;
   bool exportRuntime = false;
   bool exportTable = false;
   std::optional<uint32_t> initialMemory;
