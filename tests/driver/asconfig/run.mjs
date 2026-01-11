@@ -4,6 +4,7 @@ import path from "node:path";
 import { argv, exit } from "node:process";
 import { instantiate } from "@assemblyscript/loader";
 import { diff } from "../diff.js";
+import asconfig from "./asconfig.json" with { type: "json" };
 
 const __dirname = import.meta.dirname;
 const projectRoot = __dirname;
@@ -13,19 +14,22 @@ const isUpdateMode = argv.includes("--update") || argv.includes("-u");
 const warpoRoot = path.join(__dirname, "..", "..", "..");
 const binary = path.join(warpoRoot, "build", "warpo", "warpo_asc");
 const configPath = path.join(projectRoot, "asconfig.json");
-const expectWat = path.join(projectRoot, "build", "asconfig.wat");
-const outputWat = isUpdateMode ? expectWat : path.join(projectRoot, "tmp", "asconfig.wat");
-const outputWasm = outputWat.replace(/wat$/g, "wasm");
 
-mkdirSync(path.dirname(outputWat), { recursive: true });
+const targetName = isUpdateMode ? "release-update" : "release";
+const target = asconfig.targets[targetName];
+
+const outputWasm = path.join(projectRoot, target.outFile);
+const outputWat = path.join(projectRoot, target.outFile.replace(/wasm$/g, "wat"));
+
 mkdirSync(path.dirname(outputWasm), { recursive: true });
 
-execSync(`${binary} --config ${configPath} --target release -o ${outputWat}`, {
+execSync(`${binary} --config ${configPath} --target ${targetName}`, {
   cwd: projectRoot,
   stdio: "inherit",
 });
 
 if (!isUpdateMode) {
+  const expectWat = path.join(projectRoot, "build", "asconfig.wat");
   const oldOutput = readFileSync(expectWat, "utf8");
   const newOutput = readFileSync(outputWat, "utf8");
   if (oldOutput !== newOutput) {

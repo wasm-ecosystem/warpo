@@ -43,7 +43,7 @@
         },
         "initialMemory": {
           "type": "integer",
-          "description": "Initial memory size for the WebAssembly module, in kilobytes."
+          "description": "Initial memory size for the WebAssembly module, in WebAssembly pages."
         },
         "runtime": {
           "type": "string",

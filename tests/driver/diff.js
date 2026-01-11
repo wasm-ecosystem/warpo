@@ -1,6 +1,13 @@
 import { structuredPatch } from "diff";
 import chalk from "chalk";
 
+/**
+ *
+ * @param {string} filename
+ * @param {string} expected
+ * @param {string} actual
+ * @returns
+ */
 export function diff(filename, expected, actual) {
   const patch = structuredPatch(filename, filename, expected, actual, "expected", "actual", { context: 5 });
   if (!patch.hunks.length) return null;

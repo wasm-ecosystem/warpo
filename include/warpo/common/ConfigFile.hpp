@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <filesystem>
 #include <map>
 #include <optional>
 #include <string>
@@ -17,6 +18,7 @@ struct UsesOption : std::map<std::string, std::string> {
 };
 
 struct FileConfigOptions {
+  std::optional<std::filesystem::path> outFile = std::nullopt;
   std::optional<std::string> exportStart = std::nullopt;
   std::optional<bool> exportRuntime = std::nullopt;
   std::optional<bool> exportTable = std::nullopt;

@@ -67,6 +67,8 @@ void FileConfigOptions::dump() const {
 static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOptions) {
   FileConfigOptions config;
   try {
+    if (jsonOptions.contains("outFile"))
+      config.outFile = jsonOptions["outFile"].get<std::string>();
     if (jsonOptions.contains("exportStart"))
       config.exportStart = jsonOptions["exportStart"].get<std::string>();
     if (jsonOptions.contains("exportRuntime"))
@@ -99,6 +101,8 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
 
 static FileConfigOptions mergeFileConfigOptions(FileConfigOptions const &base, FileConfigOptions const &override) {
   FileConfigOptions result = base;
+  if (override.outFile.has_value())
+    result.outFile = override.outFile;
   if (override.exportStart.has_value())
     result.exportStart = override.exportStart;
   if (override.exportRuntime.has_value())

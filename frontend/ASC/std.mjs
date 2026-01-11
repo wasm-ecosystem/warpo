@@ -19,7 +19,6 @@ export function createLibrarySources(target_folder) {
   const librarySourceInc = [];
   let cnt = 0;
   for (const [fileName, content] of libraryFiles) {
-    console.log(fileName);
     cnt++;
     const name = `library_source_${cnt}`;
     librarySourceInc.push(`uint8_t const ${name}[] = {${stringToHexCArray(content)}};\n`);
