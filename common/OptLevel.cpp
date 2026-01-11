@@ -33,9 +33,11 @@ static cli::Opt<uint32_t> shrinkLevelOption{
 uint32_t warpo::common::getOptimizationLevel() {
   if (optimizeLevelOption.isSet())
     return std::min(3U, optimizeLevelOption.get());
-  std::optional<uint32_t> const &optimizeLevelFromConfig = getFileConfig()->options.optimizeLevel;
-  if (optimizeLevelFromConfig.has_value())
-    return std::min(3U, optimizeLevelFromConfig.value());
+  std::optional<MergedFileConfig> const &fileConfig = getFileConfig();
+  if (fileConfig.has_value()) {
+    if (fileConfig->options.optimizeLevel.has_value())
+      return std::min(3U, fileConfig->options.optimizeLevel.value());
+  }
   constexpr uint32_t defaultOptimizeLevel = 0U;
   return defaultOptimizeLevel;
 }
@@ -44,9 +46,11 @@ uint32_t warpo::common::getOptimizationLevel() {
 uint32_t warpo::common::getShrinkLevel() {
   if (shrinkLevelOption.isSet())
     return std::min(2U, shrinkLevelOption.get());
-  std::optional<uint32_t> const &shrinkLevelFromConfig = getFileConfig()->options.shrinkLevel;
-  if (shrinkLevelFromConfig.has_value())
-    return std::min(2U, shrinkLevelFromConfig.value());
+  std::optional<MergedFileConfig> const &fileConfig = getFileConfig();
+  if (fileConfig.has_value()) {
+    if (fileConfig->options.shrinkLevel.has_value())
+      return std::min(2U, fileConfig->options.shrinkLevel.value());
+  }
   constexpr uint32_t defaultShrinkLevel = 0U;
   return defaultShrinkLevel;
 }
