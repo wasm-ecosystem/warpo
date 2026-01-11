@@ -55,22 +55,22 @@ struct Config {
   std::optional<std::string> ascWasmPath;
   std::optional<std::string> exportStart;
   RuntimeKind runtime;
-  bool exportRuntime;
-  bool exportTable;
+  bool exportRuntime = false;
+  bool exportTable = false;
   std::optional<uint32_t> initialMemory;
-  uint32_t stackSize;
+  uint32_t stackSize = 32768U;
 
   bool useColorfulDiagMessage;
 
   // directly from common
   common::Features features;
-  uint32_t optimizationLevel;
-  uint32_t shrinkLevel;
-  bool emitDebugLine;
-  bool emitDebugInfo;
-};
+  uint32_t optimizationLevel = 0U;
+  uint32_t shrinkLevel = 0U;
+  bool emitDebugLine = false;
+  bool emitDebugInfo = false;
 
-Config getDefaultConfig();
+  static Config getDefault();
+};
 
 class Pluggable {
 public:

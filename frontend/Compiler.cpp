@@ -144,22 +144,7 @@ struct EntryPaths {
   std::vector<std::string> toVector() const { return std::vector<std::string>(entries.begin(), entries.end()); }
 };
 
-} // namespace warpo::frontend
-
-namespace warpo {
-
-void frontend::init() { FrontendCompiler::init(); }
-
-frontend::CompilationResult frontend::compile(Pluggable *plugin, std::vector<std::string> const &entryFilePaths,
-                                              Config const &config) {
-  if (entryFilePaths.empty())
-    throw std::runtime_error("No entry files specified for compilation.");
-  support::PerfRAII const r(support::PerfItemKind::CompilationHIR);
-  FrontendCompiler compiler{config, plugin};
-  return compiler.compile(entryFilePaths, config);
-}
-
-warpo::frontend::Config warpo::frontend::getDefaultConfig() {
+Config Config::getDefault() {
   return Config{
       .uses = {},
       .ascWasmPath = std::nullopt,
@@ -180,9 +165,24 @@ warpo::frontend::Config warpo::frontend::getDefaultConfig() {
   };
 }
 
+} // namespace warpo::frontend
+
+namespace warpo {
+
+void frontend::init() { FrontendCompiler::init(); }
+
+frontend::CompilationResult frontend::compile(Pluggable *plugin, std::vector<std::string> const &entryFilePaths,
+                                              Config const &config) {
+  if (entryFilePaths.empty())
+    throw std::runtime_error("No entry files specified for compilation.");
+  support::PerfRAII const r(support::PerfItemKind::CompilationHIR);
+  FrontendCompiler compiler{config, plugin};
+  return compiler.compile(entryFilePaths, config);
+}
+
 frontend::CompilationResult frontend::compile(Pluggable *plugin) {
   // handle config
-  Config config = getDefaultConfig();
+  Config config = Config::getDefault();
   std::optional<common::MergedFileConfig> const &fileConfig = common::getFileConfig();
   if (fileConfig.has_value())
     applyJsonConfig(config, fileConfig->options);

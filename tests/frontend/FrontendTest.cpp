@@ -57,7 +57,7 @@ public:
   }
 
   frontend::Config createConfig() const {
-    frontend::Config config = frontend::getDefaultConfig();
+    frontend::Config config = frontend::Config::getDefault();
     config.useColorfulDiagMessage = false;
     config.features =
         common::Features::bulkMemory() | common::Features::mutableGlobals() | common::Features::signExtension();

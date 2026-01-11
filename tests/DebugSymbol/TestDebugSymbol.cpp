@@ -134,7 +134,7 @@ protected:
 };
 
 TEST_P(TestDebugSymbol_P, DebugInfo) {
-  warpo::frontend::Config config = warpo::frontend::getDefaultConfig();
+  warpo::frontend::Config config = warpo::frontend::Config::getDefault();
   config.useColorfulDiagMessage = false;
   config.emitDebugInfo = true;
   config.emitDebugLine = true;
