@@ -40,11 +40,12 @@
     "url": "https://github.com/wasm-ecosystem/warpo"
   },
   "files": [
+    "asconfig.schema.json",
+    "assemblyscript/std/assembly/index.d.ts",
     "create",
     "dist",
-    "types",
     "tsconfig-warpo.json",
-    "assemblyscript/std/assembly/index.d.ts"
+    "types"
   ],
   "devDependencies": {
     "@assemblyscript/loader": "^0.28.9",

@@ -58,6 +58,7 @@ struct Config {
   bool exportRuntime;
   bool exportTable;
   std::optional<uint32_t> initialMemory;
+  uint32_t stackSize;
 
   bool useColorfulDiagMessage;
 

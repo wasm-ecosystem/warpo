@@ -25,6 +25,7 @@ struct FileConfigOptions {
   std::optional<bool> exportRuntime = std::nullopt;
   std::optional<bool> exportTable = std::nullopt;
   std::optional<uint32_t> initialMemory = std::nullopt;
+  std::optional<uint32_t> stackSize = std::nullopt;
   std::optional<std::string> runtime = std::nullopt;
   std::optional<uint32_t> optimizeLevel = std::nullopt;
   std::optional<uint32_t> shrinkLevel = std::nullopt;

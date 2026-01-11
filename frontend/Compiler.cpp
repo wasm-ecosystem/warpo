@@ -74,9 +74,13 @@ static cli::Opt<bool> exportRuntimeOption{
 static cli::Opt<uint32_t> initialMemoryOption{
     cli::Category::Frontend,
     "--initialMemory",
-    [](argparse::Argument &arg) -> void {
-      arg.help("Sets the initial memory size in pages.").nargs(1).default_value(static_cast<uint32_t>(-1));
-    },
+    [](argparse::Argument &arg) -> void { arg.help("Sets the initial memory size in pages.").nargs(1); },
+};
+
+static cli::Opt<uint32_t> stackSizeOption{
+    cli::Category::Frontend,
+    "--stackSize",
+    [](argparse::Argument &arg) -> void { arg.help("Sets the stack size in bytes.").nargs(1); },
 };
 
 static cli::Opt<std::string> runtimeOption{
@@ -103,9 +107,10 @@ static void applyJsonConfig(Config &config, const common::FileConfigOptions &jso
     config.initialMemory = *jsonConfig.initialMemory;
   if (jsonConfig.runtime)
     config.runtime = frontend::RuntimeUtils::fromString(*jsonConfig.runtime);
-  if (jsonConfig.use) {
+  if (jsonConfig.use)
     config.uses = *jsonConfig.use;
-  }
+  if (jsonConfig.stackSize)
+    config.stackSize = *jsonConfig.stackSize;
 }
 
 static void applyCLIConfig(Config &config) {
@@ -125,14 +130,12 @@ static void applyCLIConfig(Config &config) {
   if (exportRuntimeOption.isSet()) {
     config.exportRuntime = exportRuntimeOption.get();
   }
-  if (exportTableOption.isSet()) {
+  if (exportTableOption.isSet())
     config.exportTable = exportTableOption.get();
-  }
-  if (initialMemoryOption.isSet()) {
-    config.initialMemory = initialMemoryOption.get() == static_cast<uint32_t>(-1)
-                               ? std::nullopt
-                               : std::optional<uint32_t>{initialMemoryOption.get()};
-  }
+  if (initialMemoryOption.isSet())
+    config.initialMemory = initialMemoryOption.get();
+  if (stackSizeOption.isSet())
+    config.stackSize = stackSizeOption.get();
 }
 
 struct EntryPaths {
@@ -165,6 +168,7 @@ warpo::frontend::Config warpo::frontend::getDefaultConfig() {
       .exportRuntime = false,
       .exportTable = false,
       .initialMemory = std::nullopt,
+      .stackSize = 32768U,
 
       .useColorfulDiagMessage = support::isTTY(),
 
