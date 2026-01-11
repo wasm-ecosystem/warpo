@@ -165,8 +165,10 @@ std::optional<warpo::common::MergedFileConfig> const &warpo::common::getFileConf
     return fileConfig;
   if (fileConfig.has_value())
     return fileConfig;
+  std::cout << __FILE__ << ":" << __LINE__ << "\n";
   std::string const configContent = readTextFile(configOption.get());
   fileConfig = getFileConfigImpl(configContent, targetOption.tryGet());
+  std::cout << __FILE__ << ":" << __LINE__ << "\n";
   return fileConfig;
 }
 

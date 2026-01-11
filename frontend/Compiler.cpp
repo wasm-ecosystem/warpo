@@ -183,25 +183,29 @@ frontend::CompilationResult frontend::compile(Pluggable *plugin, std::vector<std
 }
 
 frontend::CompilationResult frontend::compile(Pluggable *plugin) {
+  std::cout << __FILE__ << ":" << __LINE__ << "\n";
   // handle config
   Config config = Config::getDefault();
+  std::cout << __FILE__ << ":" << __LINE__ << "\n";
   std::optional<common::MergedFileConfig> const &fileConfig = common::getFileConfig();
+  std::cout << __FILE__ << ":" << __LINE__ << "\n";
   if (fileConfig.has_value())
     applyJsonConfig(config, fileConfig->options);
   applyCLIConfig(config);
-
+  std::cout << __FILE__ << ":" << __LINE__ << "\n";
   config.features = common::Features::fromCLI();
   config.optimizationLevel = common::getOptimizationLevel();
   config.shrinkLevel = common::getShrinkLevel();
   config.emitDebugLine = common::isEmitDebugLine();
   config.emitDebugInfo = common::isEmitDebugInfo();
-
+  std::cout << __FILE__ << ":" << __LINE__ << "\n";
   // handle entries
   EntryPaths entries;
   if (fileConfig.has_value())
     entries.merge(fileConfig->entries);
+  std::cout << __FILE__ << ":" << __LINE__ << "\n";
   entries.merge(entryPathsOption.get());
-
+  std::cout << __FILE__ << ":" << __LINE__ << "\n";
   return compile(plugin, entries.toVector(), config);
 }
 

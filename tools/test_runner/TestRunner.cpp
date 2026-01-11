@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fmt/base.h>
 #include <fmt/format.h>
+#include <iostream>
 #include <regex>
 #include <string>
 
@@ -31,14 +32,22 @@ int main(int argc, char const *argv[]) {
   using namespace warpo;
 
   try {
+    std::cout << __FILE__ << ":" << __LINE__ << "\n";
     frontend::init();
+    std::cout << __FILE__ << ":" << __LINE__ << "\n";
     passes::init();
+    std::cout << __FILE__ << ":" << __LINE__ << "\n";
     argparse::ArgumentParser program("warpo_test_runner");
+    std::cout << __FILE__ << ":" << __LINE__ << "\n";
     cli::init(cli::Category::All, program, argc, argv);
+    std::cout << __FILE__ << ":" << __LINE__ << "\n";
 
     frontend::CompilationResult const result = frontend::compile(nullptr);
+    std::cout << __FILE__ << ":" << __LINE__ << "\n";
     std::string const wat = passes::runOnWatForTest(result.m, std::regex{functionRegex.get()});
+    std::cout << __FILE__ << ":" << __LINE__ << "\n";
     writeBinaryFile(outputPath.get(), wat);
+    std::cout << __FILE__ << ":" << __LINE__ << "\n";
   } catch (const std::exception &e) {
     fmt::print(stderr, "ERROR: {}\n", e.what());
     return 1;
