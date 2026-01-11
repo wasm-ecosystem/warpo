@@ -42,7 +42,13 @@ jobs:
       - uses: ./.github/action/build
         with:
           OS_ID: ${{ matrix.os }}
-      - run: npm run test
+      # test
+      - run: npm run test:as:ut
+      - run: npm run test:cpp:ut
+      - run: npm run test:opt:snapshot -- --debug
+      - run: npm run test:as:snapshot
+      - run: npm run test:debug_symbol
+      - run: npm run test:driver
 
   bootstrap:
     strategy:
