@@ -73,32 +73,33 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
   return config;
 }
 
-static FileConfigOptions mergeFileConfigOptions(FileConfigOptions const &base, FileConfigOptions const &override) {
-  FileConfigOptions result = base;
-  if (override.outFile.has_value())
-    result.outFile = override.outFile;
-  if (override.exportStart.has_value())
-    result.exportStart = override.exportStart;
-  if (override.exportRuntime.has_value())
-    result.exportRuntime = override.exportRuntime;
-  if (override.exportTable.has_value())
-    result.exportTable = override.exportTable;
-  if (override.initialMemory.has_value())
-    result.initialMemory = override.initialMemory;
-  if (override.runtime.has_value())
-    result.runtime = override.runtime;
-  if (override.optimizeLevel.has_value())
-    result.optimizeLevel = override.optimizeLevel;
-  if (override.shrinkLevel.has_value())
-    result.shrinkLevel = override.shrinkLevel;
-  if (override.debug.has_value())
-    result.debug = override.debug;
-  if (override.sourceMap.has_value())
-    result.sourceMap = override.sourceMap;
-  if (override.use.has_value())
-    result.use = override.use;
-  if (override.features.has_value())
-    result.features = override.features;
+static FileConfigOptions mergeFileConfigOptions(FileConfigOptions const &baseConfig,
+                                                FileConfigOptions const &overrideConfig) {
+  FileConfigOptions result = baseConfig;
+  if (overrideConfig.outFile.has_value())
+    result.outFile = overrideConfig.outFile;
+  if (overrideConfig.exportStart.has_value())
+    result.exportStart = overrideConfig.exportStart;
+  if (overrideConfig.exportRuntime.has_value())
+    result.exportRuntime = overrideConfig.exportRuntime;
+  if (overrideConfig.exportTable.has_value())
+    result.exportTable = overrideConfig.exportTable;
+  if (overrideConfig.initialMemory.has_value())
+    result.initialMemory = overrideConfig.initialMemory;
+  if (overrideConfig.runtime.has_value())
+    result.runtime = overrideConfig.runtime;
+  if (overrideConfig.optimizeLevel.has_value())
+    result.optimizeLevel = overrideConfig.optimizeLevel;
+  if (overrideConfig.shrinkLevel.has_value())
+    result.shrinkLevel = overrideConfig.shrinkLevel;
+  if (overrideConfig.debug.has_value())
+    result.debug = overrideConfig.debug;
+  if (overrideConfig.sourceMap.has_value())
+    result.sourceMap = overrideConfig.sourceMap;
+  if (overrideConfig.use.has_value())
+    result.use = overrideConfig.use;
+  if (overrideConfig.features.has_value())
+    result.features = overrideConfig.features;
   return result;
 }
 
