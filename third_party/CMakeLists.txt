@@ -10,8 +10,8 @@ include(FetchContent)
 
 FetchContent_Declare(
   fmt
-  URL https://github.com/fmtlib/fmt/releases/download/11.1.4/fmt-11.1.4.zip
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  URL https://github.com/fmtlib/fmt/releases/download/11.1.4/fmt-11.1.4.zip
 )
 FetchContent_MakeAvailable(fmt)
 target_include_directories(fmt SYSTEM INTERFACE
@@ -20,15 +20,15 @@ target_include_directories(fmt SYSTEM INTERFACE
 
 FetchContent_Declare(
   googletest
-  URL https://github.com/google/googletest/releases/download/v1.16.0/googletest-1.16.0.tar.gz
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  URL https://github.com/google/googletest/releases/download/v1.16.0/googletest-1.16.0.tar.gz
 )
 FetchContent_MakeAvailable(googletest)
 
 FetchContent_Declare(
   wasm-compiler
-  URL https://github.com/wasm-ecosystem/wasm-compiler/archive/refs/tags/3.0.5.tar.gz
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+  URL https://github.com/wasm-ecosystem/wasm-compiler/archive/refs/tags/3.0.5.tar.gz
 )
 set(ENABLE_EXTENSIONS ON)
 FetchContent_MakeAvailable(wasm-compiler)
