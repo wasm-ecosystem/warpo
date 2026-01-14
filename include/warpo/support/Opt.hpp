@@ -37,6 +37,10 @@ template <typename T> struct Opt {
       argparse::Argument &arg = argparser.add_argument(name);
       fn(arg);
       arg.store_into(v_);
+      arg.action([this](const auto &value) {
+        set_ = true;
+        return value;
+      });
     });
   }
   /// @param cat Category of this arg, one of this category is active in program will let this option be visible
@@ -46,13 +50,21 @@ template <typename T> struct Opt {
           argparse::Argument &arg = argparser.add_argument(shortName, longName);
           fn(arg);
           arg.store_into(v_);
+          arg.action([this](const auto &value) {
+            set_ = true;
+            return value;
+          });
         });
   }
 
   T const &get() const { return v_; }
+  std::optional<T> tryGet() const { return set_ ? std::optional(v_) : std::nullopt; }
+  bool isSet() const { return set_; }
+  bool notSet() const { return !set_; }
 
 private:
   T v_{};
+  bool set_{false};
 };
 
 /// @param cat Category of this program

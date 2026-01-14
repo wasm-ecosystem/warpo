@@ -20,17 +20,7 @@
 // │ └─ClassPrototype         Prototype of concrete class instances
 // └─File                     File, analogous to Source in the AST
 
-import {
-  CommonFlags,
-  GETTER_PREFIX,
-  SETTER_PREFIX,
-  INDEX_SUFFIX,
-  STUB_DELIMITER,
-  CommonNames,
-  Feature,
-  Target,
-  featureToString,
-} from "./common";
+import { CommonFlags, CommonNames, Feature, Target, featureToString } from "./common";
 
 import { Options } from "./compiler";
 
@@ -111,7 +101,14 @@ import { Parser } from "./parser";
 import { BuiltinNames, builtinFunctions, builtinVariables_onAccess } from "./builtins";
 import { addParameter, addSubProgram, createBaseType, createClass } from "./warpo";
 import { isScalarJsonKind, JsonArray, JsonObject, JsonValue, JsonValueKind } from "./json";
-import { mangleComputedPropertyName, mangleInternalName } from "./mangle";
+import {
+  mangleComputedPropertyName,
+  mangleGetterName,
+  mangleInternalName,
+  mangleSetterName,
+  mangleStubName,
+  INDEX_SUFFIX,
+} from "./mangle";
 import { Lookup } from "./lookup";
 
 // Memory manager constants
@@ -2580,7 +2577,7 @@ export class Program extends DiagnosticEmitter {
       }
     }
     let element = new FunctionPrototype(
-      (isGetter ? GETTER_PREFIX : SETTER_PREFIX) + name,
+      isGetter ? mangleGetterName(name) : mangleSetterName(name),
       property.parent, // same level as property
       this.checkDecorators(declaration.decorators, DecoratorFlags.Inline | DecoratorFlags.Unsafe),
       declaration.toDeclarationBase(),
@@ -4387,7 +4384,7 @@ export class Function extends TypedElement {
   /** Creates a stub for use with this function, i.e. for varargs or override calls. */
   newStub(postfix: string, requiredParameters: i32 = this.signature.requiredParameters): Function {
     let stub = new Function(
-      this.original.name + STUB_DELIMITER + postfix,
+      mangleStubName(this.original.name, postfix),
       this.prototype,
       this.typeArguments,
       this.signature.clone(requiredParameters),
@@ -4541,7 +4538,7 @@ export class PropertyPrototype extends DeclaredElement {
     prototype.fieldDeclaration = fieldDeclaration;
     prototype.decoratorFlags = decoratorFlags;
     prototype.getterPrototype = new FunctionPrototype(
-      GETTER_PREFIX + name,
+      mangleGetterName(name),
       parent,
       decoratorFlags,
       getterDeclaration.toDeclarationBase(),
@@ -4550,7 +4547,7 @@ export class PropertyPrototype extends DeclaredElement {
       getterDeclaration.identifierAndSignatureRange
     );
     prototype.setterPrototype = new FunctionPrototype(
-      SETTER_PREFIX + name,
+      mangleSetterName(name),
       parent,
       decoratorFlags,
       setterDeclaration.toDeclarationBase(),

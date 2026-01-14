@@ -25,6 +25,11 @@ async function cmd(program, args) {
           resolve();
         }
       });
+      s.on("exit", (code) => {
+        if (code !== 0) {
+          reject(new Error(`Command exited with code ${code}`));
+        }
+      });
       s.on("error", (err) => {
         reject(err);
       });

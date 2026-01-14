@@ -1,0 +1,34 @@
+{
+  "$schema": "../../../asconfig.schema.json",
+  "entries": ["assembly/index.ts"],
+  "options": {
+    "exportRuntime": false,
+    "exportTable": true,
+    "optimizeLevel": 0,
+    "debug": true,
+    "disable": ["nontrapping-f2i"],
+    "use": {
+      "USE_VALUE": "5"
+    }
+  },
+  "targets": {
+    "release": {
+      "outFile": "build/asconfig.wasm",
+      "exportRuntime": true,
+      "optimizeLevel": 3,
+      "debug": false,
+      "use": {
+        "USE_VALUE": "10"
+      }
+    },
+    "release-update": {
+      "outFile": "tmp/asconfig.wasm",
+      "exportRuntime": true,
+      "optimizeLevel": 3,
+      "debug": false,
+      "use": {
+        "USE_VALUE": "10"
+      }
+    }
+  }
+}

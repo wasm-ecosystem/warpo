@@ -1,4 +1,5 @@
 {
+  "$schema": "./asconfig.schema.json",
   "entries": [
     "./assemblyscript/src/glue/wasm/index.ts",
     "./assemblyscript/src/index-wasm.ts",

@@ -40,7 +40,7 @@ static std::filesystem::path getProjectConfigPath() {
 BuildScriptRunner::BuildScriptRunner(std::filesystem::path const &buildScriptPath)
     : r_{this}, createFileDirName_{buildScriptPath.parent_path().string()} {
   constexpr const char *startFunctionName = "__create_start";
-  frontend::Config createConfig = frontend::getDefaultConfig();
+  frontend::Config createConfig = frontend::Config::getDefault();
   createConfig.emitDebugLine = true;
   createConfig.exportRuntime = true;
   createConfig.exportTable = true;

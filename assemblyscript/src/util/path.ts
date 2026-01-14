@@ -5,7 +5,7 @@
 
 import { CharCode } from "./text";
 
-import { PATH_DELIMITER } from "../common";
+import { PATH_DELIMITER } from "../mangle";
 
 const separator = CharCode.Slash;
 

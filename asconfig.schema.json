@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WARPO Configuration Schema",
+  "type": "object",
+  "properties": {
+    "entries": {
+      "type": "array",
+      "description": "List of entry AssemblyScript source files to be compiled. Each item is a file path.",
+      "items": {
+        "type": "string",
+        "description": "Path to an AssemblyScript entry file."
+      }
+    },
+    "options": {
+      "$ref": "#/$defs/OptionsSchema"
+    },
+    "targets": {
+      "type": "object",
+      "description": "Build targets configuration. Each property defines a build target with its own output and options.",
+      "additionalProperties": {
+        "$ref": "#/$defs/OptionsSchema"
+      }
+    }
+  },
+  "required": ["entries", "options", "targets"],
+
+  "$defs": {
+    "OptionsSchema": {
+      "type": "object",
+      "description": "Compiler options that control the build process and output.",
+      "properties": {
+        "exportStart": {
+          "type": "string",
+          "description": "Name of the exported start function for the WebAssembly module."
+        },
+        "exportRuntime": {
+          "type": "boolean",
+          "description": "Whether to export the runtime from the WebAssembly module."
+        },
+        "exportTable": {
+          "type": "boolean",
+          "description": "Whether to export the function table from the WebAssembly module."
+        },
+        "initialMemory": {
+          "type": "integer",
+          "description": "Initial memory size for the WebAssembly module, in WebAssembly pages."
+        },
+        "stackSize": {
+          "type": "integer",
+          "description": "Stack size for the WebAssembly module, in bytes."
+        },
+        "runtime": {
+          "type": "string",
+          "description": "Type of runtime to use, either 'incremental' or 'radical'.",
+          "enum": ["incremental", "radical"]
+        },
+        "stats": {
+          "type": "boolean",
+          "description": "Whether to output compilation statistics."
+        },
+        "outFile": {
+          "type": "string",
+          "description": "Path to the output WebAssembly (.wasm or .wat) file."
+        },
+        "disable": {
+          "type": "array",
+          "description": "List of compiler features to disable.",
+          "items": {
+            "type": "string",
+            "description": "Name of a feature to disable.",
+            "enum": ["mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory"]
+          }
+        },
+        "debug": {
+          "type": "boolean",
+          "description": "Enable debug information for this build target."
+        },
+        "sourceMap": {
+          "type": "boolean",
+          "description": "Generate source map for this build target."
+        },
+        "optimizeLevel": {
+          "type": "integer",
+          "description": "Optimization level for this build target (higher means more optimization).",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "shrinkLevel": {
+          "type": "integer",
+          "description": "Shrink level for this build target (higher means smaller output).",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "use": {
+          "type": "object",
+          "description": "Additional compiler flags or environment variables for this build target.",
+          "additionalProperties": {
+            "type": "string",
+            "description": "Value for the use option."
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

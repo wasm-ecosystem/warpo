@@ -2,7 +2,11 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#pragma once
+
 #include <cstdint>
+#include <string>
+#include <vector>
 
 namespace warpo::common {
 
@@ -21,6 +25,7 @@ class Features {
   constexpr explicit Features(FeaturesEnum features) : features(features) {}
 
 public:
+  static Features fromString(std::vector<std::string> const &featureStrs);
   static Features fromCLI();
   constexpr static Features none() { return Features{FeaturesEnum::None}; }
   constexpr static Features all() { return Features{FeaturesEnum::All}; }

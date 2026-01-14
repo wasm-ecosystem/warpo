@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { DeclarationBase, DecoratorKind, findDecorator, LiteralKind, StringLiteralExpression } from "./ast";
-import { CommonFlags, INNER_DELIMITER, INSTANCE_DELIMITER, PATH_DELIMITER, STATIC_DELIMITER } from "./common";
+import { CommonFlags } from "./common";
 import { DiagnosticCode } from "./diagnosticMessages.generated";
+import { Type } from "./types";
 import { DecoratorFlags, Element, ElementKind } from "./program";
 
 // =========================== Import Name Mangling ===========================
@@ -82,6 +83,25 @@ export function mangleImportName(element: Element, declarationBase: DeclarationB
   return new MangleImportName(mangleImportName_moduleName, mangleImportName_elementName);
 }
 
+/** Path delimiter inserted between file system levels. */
+export const PATH_DELIMITER = "/";
+/** Delimiter used between class and namespace names and static members. */
+export const STATIC_DELIMITER = ".";
+/** Library directory prefix. */
+export const LIBRARY_PREFIX = "~lib" + PATH_DELIMITER;
+/** Path index suffix. */
+export const INDEX_SUFFIX = PATH_DELIMITER + "index";
+/** Delimiter used between class names and instance members. */
+const INSTANCE_DELIMITER = "#";
+/** Function name prefix used for getters. */
+const GETTER_PREFIX = "get:";
+/** Function name prefix used for setters. */
+const SETTER_PREFIX = "set:";
+/** Delimiter used between a function and its inner elements. */
+const INNER_DELIMITER = "~";
+/** Stub function delimiter. */
+const STUB_DELIMITER = "@";
+
 // ===========================  Name Mangling ===========================
 /**
  * EBNF for mangled internal names:
@@ -100,10 +120,11 @@ export function mangleImportName(element: Element, declarationBase: DeclarationB
  *                                      | setter_name
  *                                      | computed_property_name
  *                                      ;
- * generic_instance_name            ::= ? TODO ?;
- * stub_name                        ::= ? TODO ?;
- * getter_name                      ::= 'get' name;
- * setter_name                      ::= 'set' name;
+ * generic_instance_name            ::= name [ generic_instance_key ];
+ * generic_instance_key             ::= '<' internal_name { ',' internal_name } '>';
+ * stub_name                        ::= name '@' identifier;
+ * getter_name                      ::= 'get:' name;
+ * setter_name                      ::= 'set:' name;
  * computed_property_name           ::= '[' internal_name ']';
  *
  * identifier                       ::= ? see parser ?;
@@ -136,6 +157,37 @@ export function mangleInternalName(name: string, parent: Element, isInstance: bo
   }
 }
 
+/** Mangles a getter name with the specified property name. */
+export function mangleGetterName(propertyName: string): string {
+  return GETTER_PREFIX + propertyName;
+}
+
+/** Mangles a setter name with the specified property name. */
+export function mangleSetterName(propertyName: string): string {
+  return SETTER_PREFIX + propertyName;
+}
+
 export function mangleComputedPropertyName(innerElement: Element): string {
   return `[${innerElement.internalName}]`;
+}
+
+export function mangleStubName(baseName: string, stubIdentifier: string): string {
+  return baseName + STUB_DELIMITER + stubIdentifier;
+}
+
+/** Converts an array of types to its combined string representation. */
+export function mangleGenericInstanceKey(types: Type[] | null): string {
+  if (types == null) return "";
+  let numTypes = types.length;
+  if (!numTypes) return "";
+  let sb = new Array<string>(numTypes);
+  for (let i = 0; i < numTypes; ++i) {
+    unchecked((sb[i] = types[i].toString(true)));
+  }
+  return sb.join(",");
+}
+
+export function mangleGenericInstanceName(name: string, instanceKey: string): string {
+  if (instanceKey.length == 0) return name;
+  return `${name}<${instanceKey}>`;
 }

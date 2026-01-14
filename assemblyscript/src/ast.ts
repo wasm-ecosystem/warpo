@@ -5,8 +5,8 @@
 // TODO: Make the AST more easily serializable by refactoring `Node#range` so
 // it doesn't reference the non-serializable `Source` object.
 
-import { CommonFlags, PATH_DELIMITER, LIBRARY_PREFIX } from "./common";
-
+import { CommonFlags } from "./common";
+import { PATH_DELIMITER, LIBRARY_PREFIX } from "./mangle";
 import { Range } from "./diagnostics";
 
 import { Token } from "./tokenizer";

@@ -156,9 +156,8 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     int32_t const option = r.callExportedFunctionWithName<1>("newOptions")[0].i32;
     r.callExportedFunctionWithName<1>("__pin", option);
 
-    constexpr uint32_t stackSize = 32768U;
     r.callExportedFunctionWithName<0>("setRuntime", option, config.runtime);
-    r.callExportedFunctionWithName<0>("setStackSize", option, stackSize);
+    r.callExportedFunctionWithName<0>("setStackSize", option, config.stackSize);
 
     enum class SetFeatureOn : uint32_t { OFF = 0, ON = 1 };
     uint32_t const asFeatureFlags = config.features.toASFeaturesFlags();

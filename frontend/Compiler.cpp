@@ -6,12 +6,12 @@
 #include <cstring>
 #include <fmt/base.h>
 #include <fmt/format.h>
-#include <map>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "CompilerImpl.hpp"
+#include "warpo/common/ConfigFile.hpp"
 #include "warpo/common/DebugLevel.hpp"
 #include "warpo/common/OptLevel.hpp"
 #include "warpo/frontend/Compiler.hpp"
@@ -27,10 +27,10 @@ static std::optional<std::string> convertEmptyStringToNullOpt(std::string const 
   return std::nullopt;
 }
 
-static cli::Opt<std::vector<std::string>> entryPaths{
+static cli::Opt<std::vector<std::string>> entryPathsOption{
     cli::Category::Frontend,
     "entries",
-    [](argparse::Argument &arg) -> void { arg.help("entry files").nargs(argparse::nargs_pattern::at_least_one); },
+    [](argparse::Argument &arg) -> void { arg.help("entry files").nargs(argparse::nargs_pattern::any); },
 };
 
 static cli::Opt<std::vector<std::string>> useOptions{
@@ -41,19 +41,6 @@ static cli::Opt<std::vector<std::string>> useOptions{
       arg.help("use option, format <name>=<value>").nargs(argparse::nargs_pattern::at_least_one).append();
     },
 };
-static std::map<std::string, std::string> getUses() {
-  std::map<std::string, std::string> res{};
-  std::vector<std::string> const &uses = useOptions.get();
-  for (std::string const &use : uses) {
-    size_t const eqPos = use.find('=');
-    if (eqPos == std::string::npos || eqPos == 0) {
-      fmt::println("ERROR: invalid use option: {}", use);
-      std::exit(1);
-    }
-    res.insert_or_assign(use.substr(0, eqPos), use.substr(eqPos + 1));
-  }
-  return res;
-}
 
 static cli::Opt<std::string> ascWasmOption{
     cli::Category::Frontend,
@@ -87,9 +74,13 @@ static cli::Opt<bool> exportRuntimeOption{
 static cli::Opt<uint32_t> initialMemoryOption{
     cli::Category::Frontend,
     "--initialMemory",
-    [](argparse::Argument &arg) -> void {
-      arg.help("Sets the initial memory size in pages.").nargs(1).default_value(static_cast<uint32_t>(-1));
-    },
+    [](argparse::Argument &arg) -> void { arg.help("Sets the initial memory size in pages.").nargs(1); },
+};
+
+static cli::Opt<uint32_t> stackSizeOption{
+    cli::Category::Frontend,
+    "--stackSize",
+    [](argparse::Argument &arg) -> void { arg.help("Sets the stack size in bytes.").nargs(1); },
 };
 
 static cli::Opt<std::string> runtimeOption{
@@ -105,6 +96,77 @@ static cli::Opt<std::string> runtimeOption{
 
 static RuntimeKind getRuntimeFromCLI() { return RuntimeUtils::fromString(runtimeOption.get()); }
 
+static void applyJsonConfig(Config &config, const common::FileConfigOptions &jsonConfig) {
+  if (jsonConfig.exportStart)
+    config.exportStart = *jsonConfig.exportStart;
+  if (jsonConfig.exportRuntime)
+    config.exportRuntime = *jsonConfig.exportRuntime;
+  if (jsonConfig.exportTable)
+    config.exportTable = *jsonConfig.exportTable;
+  if (jsonConfig.initialMemory)
+    config.initialMemory = *jsonConfig.initialMemory;
+  if (jsonConfig.runtime)
+    config.runtime = frontend::RuntimeUtils::fromString(*jsonConfig.runtime);
+  if (jsonConfig.use)
+    config.uses = *jsonConfig.use;
+  if (jsonConfig.stackSize)
+    config.stackSize = *jsonConfig.stackSize;
+}
+
+static void applyCLIConfig(Config &config) {
+  std::vector<std::string> const &uses = useOptions.get();
+  for (std::string const &use : uses) {
+    config.uses.merge(use);
+  }
+  if (ascWasmOption.isSet()) {
+    config.ascWasmPath = convertEmptyStringToNullOpt(ascWasmOption.get());
+  }
+  if (exportStartOption.isSet()) {
+    config.exportStart = convertEmptyStringToNullOpt(exportStartOption.get());
+  }
+  if (runtimeOption.isSet()) {
+    config.runtime = getRuntimeFromCLI();
+  }
+  if (exportRuntimeOption.isSet()) {
+    config.exportRuntime = exportRuntimeOption.get();
+  }
+  if (exportTableOption.isSet())
+    config.exportTable = exportTableOption.get();
+  if (initialMemoryOption.isSet())
+    config.initialMemory = initialMemoryOption.get();
+  if (stackSizeOption.isSet())
+    config.stackSize = stackSizeOption.get();
+}
+
+class EntryPaths {
+  std::set<std::string> entries_;
+
+public:
+  void merge(std::vector<std::string> const &other) { entries_.insert(other.begin(), other.end()); }
+  std::vector<std::string> toVector() const { return std::vector<std::string>{entries_.begin(), entries_.end()}; }
+};
+
+Config Config::getDefault() {
+  return Config{
+      .uses = common::UsesOption{},
+      .ascWasmPath = std::nullopt,
+      .exportStart = std::nullopt,
+      .runtime = RuntimeKind::Incremental,
+      .exportRuntime = false,
+      .exportTable = false,
+      .initialMemory = std::nullopt,
+      .stackSize = 32768U,
+
+      .useColorfulDiagMessage = support::isTTY(),
+
+      .features = common::Features::all(),
+      .optimizationLevel = 0U,
+      .shrinkLevel = 0U,
+      .emitDebugLine = false,
+      .emitDebugInfo = false,
+  };
+}
+
 } // namespace warpo::frontend
 
 namespace warpo {
@@ -113,48 +175,34 @@ void frontend::init() { FrontendCompiler::init(); }
 
 frontend::CompilationResult frontend::compile(Pluggable *plugin, std::vector<std::string> const &entryFilePaths,
                                               Config const &config) {
+  if (entryFilePaths.empty())
+    throw std::runtime_error("No entry files specified for compilation.");
   support::PerfRAII const r(support::PerfItemKind::CompilationHIR);
   FrontendCompiler compiler{config, plugin};
   return compiler.compile(entryFilePaths, config);
 }
 
-warpo::frontend::Config warpo::frontend::getDefaultConfig() {
-  return Config{
-      .uses = {},
-      .ascWasmPath = std::nullopt,
-      .features = common::Features::all(),
-      .exportStart = std::nullopt,
-      .runtime = RuntimeKind::Incremental,
-      .exportRuntime = false,
-      .exportTable = false,
-      .initialMemory = std::nullopt,
-      .optimizationLevel = 0U,
-      .shrinkLevel = 0U,
-      .emitDebugLine = false,
-      .emitDebugInfo = false,
-      .useColorfulDiagMessage = support::isTTY(),
-  };
-}
-
 frontend::CompilationResult frontend::compile(Pluggable *plugin) {
-  Config const config{
-      .uses = getUses(),
-      .ascWasmPath = convertEmptyStringToNullOpt(ascWasmOption.get()),
-      .features = common::Features::fromCLI(),
-      .exportStart = convertEmptyStringToNullOpt(exportStartOption.get()),
-      .runtime = getRuntimeFromCLI(),
-      .exportRuntime = exportRuntimeOption.get(),
-      .exportTable = exportTableOption.get(),
-      .initialMemory = initialMemoryOption.get() == static_cast<uint32_t>(-1)
-                           ? std::nullopt
-                           : std::optional<uint32_t>{initialMemoryOption.get()},
-      .optimizationLevel = common::getOptimizationLevel(),
-      .shrinkLevel = common::getShrinkLevel(),
-      .emitDebugLine = common::isEmitDebugLine(),
-      .emitDebugInfo = common::isEmitDebugInfo(),
-      .useColorfulDiagMessage = support::isTTY(),
-  };
-  return compile(plugin, entryPaths.get(), config);
+  // handle config
+  Config config = Config::getDefault();
+  std::optional<common::MergedFileConfig> const &fileConfig = common::getFileConfig();
+  if (fileConfig.has_value())
+    applyJsonConfig(config, fileConfig->options);
+  applyCLIConfig(config);
+
+  config.features = common::Features::fromCLI();
+  config.optimizationLevel = common::getOptimizationLevel();
+  config.shrinkLevel = common::getShrinkLevel();
+  config.emitDebugLine = common::isEmitDebugLine();
+  config.emitDebugInfo = common::isEmitDebugInfo();
+
+  // handle entries
+  EntryPaths entries;
+  if (fileConfig.has_value())
+    entries.merge(fileConfig->entries);
+  entries.merge(entryPathsOption.get());
+
+  return compile(plugin, entries.toVector(), config);
 }
 
 } // namespace warpo

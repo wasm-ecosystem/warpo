@@ -17,7 +17,6 @@
 #include "binaryen-c.h"
 #include "helper/ToString.hpp"
 #include "pass.h"
-#include "warpo/common/Features.hpp"
 #include "warpo/passes/RunnerForTest.hpp"
 #include "warpo/support/Opt.hpp"
 #include "wasm-validator.h"

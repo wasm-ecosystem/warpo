@@ -6,10 +6,10 @@
 
 #include <binaryen/src/binaryen-c.h>
 #include <filesystem>
-#include <map>
 #include <optional>
 #include <string>
 #include <vector>
+#include <warpo/common/ConfigFile.hpp>
 
 #include "warpo/common/AsModule.hpp"
 #include "warpo/common/Features.hpp"
@@ -51,22 +51,26 @@ inline RuntimeKind fromString(std::string const &str) {
 } // namespace RuntimeUtils
 
 struct Config {
-  std::map<std::string, std::string> uses;
+  common::UsesOption uses;
   std::optional<std::string> ascWasmPath;
-  common::Features features;
   std::optional<std::string> exportStart;
-  RuntimeKind runtime;
-  bool exportRuntime;
-  bool exportTable;
+  RuntimeKind runtime = RuntimeKind::Incremental;
+  bool exportRuntime = false;
+  bool exportTable = false;
   std::optional<uint32_t> initialMemory;
-  uint32_t optimizationLevel;
-  uint32_t shrinkLevel;
-  bool emitDebugLine;
-  bool emitDebugInfo;
-  bool useColorfulDiagMessage;
-};
+  uint32_t stackSize = 32768U;
 
-Config getDefaultConfig();
+  bool useColorfulDiagMessage = false;
+
+  // directly from common
+  common::Features features = common::Features::all();
+  uint32_t optimizationLevel = 0U;
+  uint32_t shrinkLevel = 0U;
+  bool emitDebugLine = false;
+  bool emitDebugInfo = false;
+
+  static Config getDefault();
+};
 
 class Pluggable {
 public:

@@ -25,7 +25,7 @@ endif()
 
 if(WARPO_RELEASE)
   add_compile_definitions(
-    -DWARPO_RELEASE_BUILD
+    WARPO_RELEASE_BUILD
   )
 endif()
 
