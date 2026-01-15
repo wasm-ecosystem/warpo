@@ -26,9 +26,7 @@ Features Features::fromString(std::vector<std::string> const &featureStrs) {
   return res;
 }
 
-Features Features::fromCLI() {
-  return ConfigProvider::instance().features();
-}
+Features Features::fromCLI() { return ConfigProvider::instance().features(); }
 
 namespace {
 // sync from assemblyscript/std/assembly/shared/feature.ts

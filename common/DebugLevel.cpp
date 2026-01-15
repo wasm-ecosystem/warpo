@@ -5,8 +5,6 @@
 #include "warpo/common/ConfigProvider.hpp"
 #include "warpo/common/DebugLevel.hpp"
 
-
-
 bool warpo::common::isEmitDebugName() { return ConfigProvider::instance().isDebugEnabled(); }
 bool warpo::common::isEmitDebugLine() { return ConfigProvider::instance().isDebugEnabled(); }
 bool warpo::common::isEmitDebugInfo() { return ConfigProvider::instance().isDebugEnabled(); }

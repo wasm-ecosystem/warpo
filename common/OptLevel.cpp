@@ -8,11 +8,7 @@
 #include "warpo/common/OptLevel.hpp"
 
 /// @brief merge optimization level from CLI and config file
-uint32_t warpo::common::getOptimizationLevel() {
-  return ConfigProvider::instance().optimizationLevel();
-}
+uint32_t warpo::common::getOptimizationLevel() { return ConfigProvider::instance().optimizationLevel(); }
 
 /// @brief merge shrink level from CLI and config file
-uint32_t warpo::common::getShrinkLevel() {
-  return ConfigProvider::instance().shrinkLevel();
-}
+uint32_t warpo::common::getShrinkLevel() { return ConfigProvider::instance().shrinkLevel(); }
