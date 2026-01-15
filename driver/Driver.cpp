@@ -3,30 +3,19 @@
 
 #include <filesystem>
 #include <fmt/base.h>
-#include <warpo/common/ConfigFile.hpp>
+#include <warpo/common/ConfigProvider.hpp>
 
 #include "BuildScript.hpp"
 #include "warpo/driver/Driver.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/passes/Runner.hpp"
-#include "warpo/support/Opt.hpp"
 
 namespace warpo::driver {
 
-static cli::Opt<std::filesystem::path> outputPathOption{
-    cli::Category::All,
-    "-o",
-    "--output",
-    [](argparse::Argument &arg) -> void { arg.help("output file"); },
-};
-
 static std::filesystem::path getOutputPath() {
-  if (outputPathOption.isSet()) {
-    return outputPathOption.get();
-  }
-  std::optional<warpo::common::MergedFileConfig> const &fileConfig = common::getFileConfig();
-  if (fileConfig.has_value() && fileConfig->options.outFile.has_value())
-    return fileConfig->options.outFile.value();
+  std::optional<std::filesystem::path> const outputPath = common::ConfigProvider::instance().outputPath();
+  if (outputPath.has_value())
+    return outputPath.value();
   throw std::runtime_error{"Output path not specified. Use -o or --output to specify the output file."};
 }
 

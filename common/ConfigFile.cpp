@@ -3,15 +3,15 @@
 
 #include <cstddef>
 #include <exception>
-#include <filesystem>
 #include <fmt/format.h>
+#include <map>
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <stdexcept>
 #include <string>
 #include <vector>
 
-#include "warpo/common/ConfigFile.hpp"
+#include "ConfigFile.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
 
@@ -23,6 +23,20 @@ struct FileConfigJson {
   std::vector<std::string> entries;
   FileConfigOptions options;
   std::map<std::string, FileConfigOptions> targets;
+};
+
+cli::Opt<std::string> configOption{
+    cli::Category::Frontend,
+    "--config",
+    [](argparse::Argument &arg) -> void { arg.help("Specifies the path to the asconfig.json file.").nargs(1); },
+};
+
+cli::Opt<std::string> targetOption{
+    cli::Category::Frontend,
+    "--target",
+    [](argparse::Argument &arg) -> void {
+      arg.help("Specifies the target configuration to use from asconfig.json.").nargs(1);
+    },
 };
 
 } // namespace
@@ -49,6 +63,8 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
       config.exportTable = jsonOptions["exportTable"].get<bool>();
     if (jsonOptions.contains("initialMemory"))
       config.initialMemory = jsonOptions["initialMemory"].get<uint32_t>();
+    if (jsonOptions.contains("stackSize"))
+      config.stackSize = jsonOptions["stackSize"].get<uint32_t>();
     if (jsonOptions.contains("runtime"))
       config.runtime = jsonOptions["runtime"].get<std::string>();
     if (jsonOptions.contains("optimizeLevel"))
@@ -86,6 +102,8 @@ static FileConfigOptions mergeFileConfigOptions(FileConfigOptions const &baseCon
     result.exportTable = overrideConfig.exportTable;
   if (overrideConfig.initialMemory.has_value())
     result.initialMemory = overrideConfig.initialMemory;
+  if (overrideConfig.stackSize.has_value())
+    result.stackSize = overrideConfig.stackSize;
   if (overrideConfig.runtime.has_value())
     result.runtime = overrideConfig.runtime;
   if (overrideConfig.optimizeLevel.has_value())
@@ -131,24 +149,8 @@ static FileConfigJson parseFileConfigJson(std::string const &configContent) {
   }
 }
 
-static cli::Opt<std::string> configOption{
-    cli::Category::Frontend,
-    "--config",
-    [](argparse::Argument &arg) -> void { arg.help("Specifies the path to the asconfig.json file.").nargs(1); },
-};
-
-static cli::Opt<std::string> targetOption{
-    cli::Category::Frontend,
-    "--target",
-    [](argparse::Argument &arg) -> void {
-      arg.help("Specifies the target configuration to use from asconfig.json.").nargs(1);
-    },
-};
-
-static std::optional<MergedFileConfig> getFileConfigImpl(std::string const configContent,
-                                                         std::optional<std::string> const &target) {
-
-  MergedFileConfig const fileConfig;
+static std::optional<MergedFileConfig> createFileConfigImpl(std::string const configContent,
+                                                            std::optional<std::string> const &target) {
   FileConfigJson const fileConfigJson = parseFileConfigJson(configContent);
   return MergedFileConfig{
       .entries = fileConfigJson.entries,
@@ -158,18 +160,19 @@ static std::optional<MergedFileConfig> getFileConfigImpl(std::string const confi
   };
 }
 
-} // namespace warpo::common
-
-std::optional<warpo::common::MergedFileConfig> const &warpo::common::getFileConfig() {
-  static std::optional<MergedFileConfig> fileConfig = std::nullopt;
+std::optional<MergedFileConfig> createFileConfig() {
   if (configOption.notSet())
-    return fileConfig;
-  if (fileConfig.has_value())
-    return fileConfig;
+    return std::nullopt;
   std::string const configContent = readTextFile(configOption.get());
-  fileConfig = getFileConfigImpl(configContent, targetOption.tryGet());
+  return createFileConfigImpl(configContent, targetOption.tryGet());
+}
+
+std::optional<MergedFileConfig> const &MergedFileConfig::getConfigFromFile() {
+  static std::optional<MergedFileConfig> const fileConfig = createFileConfig();
   return fileConfig;
 }
+
+} // namespace warpo::common
 
 #ifdef WARPO_ENABLE_UNIT_TESTS
 
@@ -370,7 +373,7 @@ TEST(TestConfigFile, TestGetFileConfigImpl) {
 
   // Test with config file but no target
   {
-    std::optional<MergedFileConfig> const result = getFileConfigImpl(configContent, std::nullopt);
+    std::optional<MergedFileConfig> const result = createFileConfigImpl(configContent, std::nullopt);
     ASSERT_TRUE(result.has_value());
     EXPECT_THAT(result->entries, ::testing::ElementsAre("src/main.ts", "src/utils.ts"));
     EXPECT_EQ(result->options.exportStart, "main");
@@ -381,7 +384,7 @@ TEST(TestConfigFile, TestGetFileConfigImpl) {
 
   // Test with config file and existing target
   {
-    std::optional<MergedFileConfig> const result = getFileConfigImpl(configContent, "debug");
+    std::optional<MergedFileConfig> const result = createFileConfigImpl(configContent, "debug");
     ASSERT_TRUE(result.has_value());
     EXPECT_THAT(result->entries, ::testing::ElementsAre("src/main.ts", "src/utils.ts"));
     EXPECT_EQ(result->options.exportStart, "main");
@@ -392,7 +395,7 @@ TEST(TestConfigFile, TestGetFileConfigImpl) {
 
   // Test with config file and existing target
   {
-    std::optional<MergedFileConfig> const result = getFileConfigImpl(configContent, "release");
+    std::optional<MergedFileConfig> const result = createFileConfigImpl(configContent, "release");
     ASSERT_TRUE(result.has_value());
     EXPECT_THAT(result->entries, ::testing::ElementsAre("src/main.ts", "src/utils.ts"));
     EXPECT_EQ(result->options.exportStart, "main"); // From global options
