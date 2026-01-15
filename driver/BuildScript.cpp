@@ -7,10 +7,10 @@
 
 #include "BuildScript.hpp"
 #include "LinkedAPI.hpp"
+#include "warpo/common/ConfigProvider.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/support/FileSystem.hpp"
-#include "warpo/support/Opt.hpp"
 #include "warpo/warp_runner/WarpRunner.hpp"
 
 #include "src/core/common/NativeSymbol.hpp"
@@ -18,23 +18,13 @@
 
 namespace warpo::driver {
 
-static cli::Opt<std::filesystem::path> projectOption{
-    cli::Category::All,
-    "-p",
-    "--project",
-    [](argparse::Argument &arg) -> void {
-      arg.help("Compile the project given the path to its configuration file, or to a folder with a 'create.ts'")
-          .nargs(1U);
-    },
-};
-
 static std::filesystem::path getProjectConfigPath() {
-  std::filesystem::path projectPath = projectOption.get();
-  if (projectPath.empty())
+  std::optional<std::filesystem::path> const projectPath = common::ConfigProvider::instance().projectPath();
+  if (!projectPath.has_value())
     return std::filesystem::current_path() / "create.ts";
-  if (isDirectory(projectPath))
-    return projectPath / "create.ts";
-  return projectPath;
+  if (isDirectory(projectPath.value()))
+    return projectPath.value() / "create.ts";
+  return projectPath.value();
 }
 
 BuildScriptRunner::BuildScriptRunner(std::filesystem::path const &buildScriptPath)

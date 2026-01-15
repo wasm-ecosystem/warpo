@@ -13,6 +13,7 @@
 namespace warpo::common {
 
 struct FileConfigOptions {
+  std::optional<std::filesystem::path> project = std::nullopt;
   std::optional<std::filesystem::path> outFile = std::nullopt;
   std::optional<std::string> exportStart = std::nullopt;
   std::optional<bool> exportRuntime = std::nullopt;

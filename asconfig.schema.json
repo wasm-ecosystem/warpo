@@ -29,6 +29,10 @@
       "type": "object",
       "description": "Compiler options that control the build process and output.",
       "properties": {
+        "project": {
+          "type": "string",
+          "description": "Path to the project root (folder containing 'create.ts') or a direct path to 'create.ts'."
+        },
         "exportStart": {
           "type": "string",
           "description": "Name of the exported start function for the WebAssembly module."

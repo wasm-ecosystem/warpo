@@ -53,6 +53,8 @@ void UsesOption::merge(std::string const &useStr) {
 static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOptions) {
   FileConfigOptions config;
   try {
+    if (jsonOptions.contains("project"))
+      config.project = std::filesystem::path{jsonOptions["project"].get<std::string>()};
     if (jsonOptions.contains("outFile"))
       config.outFile = jsonOptions["outFile"].get<std::string>();
     if (jsonOptions.contains("exportStart"))
@@ -92,6 +94,8 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
 static FileConfigOptions mergeFileConfigOptions(FileConfigOptions const &baseConfig,
                                                 FileConfigOptions const &overrideConfig) {
   FileConfigOptions result = baseConfig;
+  if (overrideConfig.project.has_value())
+    result.project = overrideConfig.project;
   if (overrideConfig.outFile.has_value())
     result.outFile = overrideConfig.outFile;
   if (overrideConfig.exportStart.has_value())
@@ -184,6 +188,7 @@ namespace warpo::common::ut {
 TEST(TestConfigFile, TestParseFileConfigOptions) {
   // Test parsing complete JSON options
   std::string const jsonStr = R"({
+    "project": "./",
     "exportStart": "start",
     "exportRuntime": true,
     "exportTable": false,
@@ -199,6 +204,8 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
 
   FileConfigOptions const config = parseFileConfigOptions(jsonOptions);
 
+  ASSERT_TRUE(config.project.has_value());
+  EXPECT_EQ(config.project.value(), std::filesystem::path{"./"});
   EXPECT_EQ(config.exportStart, "start");
   EXPECT_EQ(config.exportRuntime, true);
   EXPECT_EQ(config.exportTable, false);
@@ -221,6 +228,7 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
 
   EXPECT_EQ(partialConfig.exportStart, "main");
   EXPECT_EQ(partialConfig.debug, false);
+  EXPECT_FALSE(partialConfig.project.has_value());
   EXPECT_FALSE(partialConfig.exportRuntime.has_value());
   EXPECT_FALSE(partialConfig.initialMemory.has_value());
 
@@ -238,11 +246,13 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   EXPECT_FALSE(emptyConfig.debug.has_value());
   EXPECT_FALSE(emptyConfig.sourceMap.has_value());
   EXPECT_FALSE(emptyConfig.use.has_value());
+  EXPECT_FALSE(emptyConfig.project.has_value());
 }
 
 TEST(TestConfigFile, TestMergeFileConfigOptions) {
   // Create base config
   FileConfigOptions baseConfig;
+  baseConfig.project = "./base";
   baseConfig.exportStart = "base_start";
   baseConfig.exportRuntime = false;
   baseConfig.debug = true;
@@ -250,6 +260,7 @@ TEST(TestConfigFile, TestMergeFileConfigOptions) {
 
   // Create override config
   FileConfigOptions overrideConfig;
+  overrideConfig.project = "./override";
   overrideConfig.exportStart = "override_start";
   overrideConfig.exportTable = true;
   overrideConfig.optimizeLevel = 3;
@@ -259,6 +270,7 @@ TEST(TestConfigFile, TestMergeFileConfigOptions) {
   FileConfigOptions const mergedConfig = mergeFileConfigOptions(baseConfig, overrideConfig);
 
   // Verify merged values
+  EXPECT_EQ(mergedConfig.project.value(), std::filesystem::path{"./override"});
   EXPECT_EQ(mergedConfig.exportStart, "override_start"); // Override takes precedence
   EXPECT_EQ(mergedConfig.exportRuntime, false);          // From base
   EXPECT_EQ(mergedConfig.exportTable, true);             // From override
@@ -289,6 +301,7 @@ TEST(TestConfigFile, TestParseFileConfigJson) {
   {
     "entries": ["src/main.ts", "src/module.ts"],
     "options": {
+      "project": "./",
       "exportStart": "main",
       "debug": true,
       "optimizeLevel": 0
@@ -313,6 +326,8 @@ TEST(TestConfigFile, TestParseFileConfigJson) {
   EXPECT_THAT(configFile.entries, ::testing::ElementsAre("src/main.ts", "src/module.ts"));
 
   // Verify global options
+  ASSERT_TRUE(configFile.options.project.has_value());
+  EXPECT_EQ(configFile.options.project.value(), std::filesystem::path{"./"});
   EXPECT_EQ(configFile.options.exportStart, "main");
   EXPECT_EQ(configFile.options.debug, true);
   EXPECT_EQ(configFile.options.optimizeLevel, 0);

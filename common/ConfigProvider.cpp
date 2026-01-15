@@ -125,6 +125,16 @@ cli::Opt<std::filesystem::path> outputPathOption{
     [](argparse::Argument &arg) -> void { arg.help("output file"); },
 };
 
+cli::Opt<std::filesystem::path> projectOption{
+    cli::Category::All,
+    "-p",
+    "--project",
+    [](argparse::Argument &arg) -> void {
+      arg.help("Compile the project given the path to its configuration file, or to a folder with a 'create.ts'")
+          .nargs(1U);
+    },
+};
+
 } // namespace
 
 ConfigProvider &ConfigProvider::instance() {
@@ -192,6 +202,17 @@ std::optional<std::filesystem::path> ConfigProvider::outputPath() {
   std::optional<MergedFileConfig> const &fileCfg = MergedFileConfig::getConfigFromFile();
   if (fileCfg.has_value() && fileCfg->options.outFile.has_value())
     return fileCfg->options.outFile.value();
+
+  return std::nullopt;
+}
+
+std::optional<std::filesystem::path> ConfigProvider::projectPath() {
+  if (projectOption.isSet())
+    return projectOption.get();
+
+  std::optional<MergedFileConfig> const &fileCfg = MergedFileConfig::getConfigFromFile();
+  if (fileCfg.has_value() && fileCfg->options.project.has_value())
+    return fileCfg->options.project.value();
 
   return std::nullopt;
 }

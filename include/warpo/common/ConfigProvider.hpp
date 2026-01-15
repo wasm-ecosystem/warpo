@@ -27,6 +27,10 @@ public:
   /// Returns output path merged from CLI (-o/--output) and config file (outFile).
   std::optional<std::filesystem::path> outputPath();
 
+  /// Returns project path merged from CLI (-p/--project) and config file (options.project).
+  /// This is used to locate and run 'create.ts'.
+  std::optional<std::filesystem::path> projectPath();
+
   Features features();
   uint32_t optimizationLevel();
   uint32_t shrinkLevel();
