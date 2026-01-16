@@ -153,7 +153,7 @@
         (call $~lib/builtins/abort
          (i32.const 0)
          (i32.const 128)
-         (i32.const 170)
+         (i32.const 159)
          (i32.const 16)
         )
         (unreachable)
@@ -254,7 +254,7 @@
       (call $~lib/builtins/abort
        (i32.const 0)
        (i32.const 128)
-       (i32.const 138)
+       (i32.const 127)
        (i32.const 18)
       )
       (unreachable)
@@ -279,7 +279,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 128)
-     (i32.const 142)
+     (i32.const 131)
      (i32.const 16)
     )
     (unreachable)
@@ -419,7 +419,7 @@
        (call $~lib/builtins/abort
         (i32.const 0)
         (i32.const 128)
-        (i32.const 158)
+        (i32.const 147)
         (i32.const 30)
        )
        (unreachable)
@@ -467,9 +467,6 @@
     (local.get $ptr)
     (i32.const 20)
    )
-  )
-  (drop
-   (i32.const 0)
   )
   (if
    (i32.eq
@@ -706,7 +703,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 400)
-     (i32.const 246)
+     (i32.const 245)
      (i32.const 14)
     )
     (unreachable)
@@ -735,7 +732,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 400)
-     (i32.const 248)
+     (i32.const 247)
      (i32.const 14)
     )
     (unreachable)
@@ -831,7 +828,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 400)
-     (i32.const 262)
+     (i32.const 261)
      (i32.const 14)
     )
     (unreachable)
@@ -969,7 +966,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 400)
-     (i32.const 179)
+     (i32.const 178)
      (i32.const 14)
     )
     (unreachable)
@@ -994,7 +991,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 400)
-     (i32.const 181)
+     (i32.const 180)
      (i32.const 14)
     )
     (unreachable)
@@ -1080,7 +1077,7 @@
       (call $~lib/builtins/abort
        (i32.const 0)
        (i32.const 400)
-       (i32.const 199)
+       (i32.const 198)
        (i32.const 16)
       )
       (unreachable)
@@ -1143,7 +1140,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 400)
-     (i32.const 211)
+     (i32.const 210)
      (i32.const 14)
     )
     (unreachable)
@@ -1169,7 +1166,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 400)
-     (i32.const 212)
+     (i32.const 211)
      (i32.const 14)
     )
     (unreachable)
@@ -1272,7 +1269,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 400)
-     (i32.const 229)
+     (i32.const 228)
      (i32.const 14)
     )
     (unreachable)
@@ -1363,7 +1360,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 400)
-     (i32.const 358)
+     (i32.const 357)
      (i32.const 14)
     )
     (unreachable)
@@ -1424,7 +1421,7 @@
       (call $~lib/builtins/abort
        (i32.const 0)
        (i32.const 400)
-       (i32.const 366)
+       (i32.const 365)
        (i32.const 16)
       )
       (unreachable)
@@ -1474,7 +1471,7 @@
       (call $~lib/builtins/abort
        (i32.const 0)
        (i32.const 400)
-       (i32.const 379)
+       (i32.const 378)
        (i32.const 5)
       )
       (unreachable)
@@ -1574,9 +1571,6 @@
   (local $fl i32)
   (local $sl i32)
   (local $memStart i32)
-  (drop
-   (i32.const 0)
-  )
   (local.set $rootOffset
    (i32.and
     (i32.add
@@ -1769,7 +1763,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 400)
-     (i32.const 541)
+     (i32.const 532)
      (i32.const 3)
     )
     (unreachable)
@@ -1780,9 +1774,6 @@
   )
  )
  (func $~lib/rt/tlsf/freeBlock (param $root i32) (param $block i32)
-  (drop
-   (i32.const 0)
-  )
   (call $~lib/rt/common/BLOCK#set:mmInfo
    (local.get $block)
    (i32.or
@@ -2104,7 +2095,7 @@
         (call $~lib/builtins/abort
          (i32.const 0)
          (i32.const 128)
-         (i32.const 240)
+         (i32.const 229)
          (i32.const 20)
         )
         (unreachable)
@@ -2138,9 +2129,6 @@
  )
  (func $~lib/rt/itcms/interrupt
   (local $budget i32)
-  (drop
-   (i32.const 0)
-  )
   (drop
    (i32.const 0)
   )
@@ -2187,9 +2175,6 @@
        (i32.const 1024)
       )
      )
-     (drop
-      (i32.const 0)
-     )
      (return)
     )
    )
@@ -2217,9 +2202,6 @@
      )
     )
    )
-  )
-  (drop
-   (i32.const 0)
   )
  )
  (func $~lib/rt/tlsf/computeSize (param $size i32) (result i32)
@@ -2263,7 +2245,7 @@
     (call $~lib/builtins/abort
      (i32.const 64)
      (i32.const 400)
-     (i32.const 436)
+     (i32.const 435)
      (i32.const 29)
     )
     (unreachable)
@@ -2399,7 +2381,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 400)
-     (i32.const 310)
+     (i32.const 309)
      (i32.const 14)
     )
     (unreachable)
@@ -2477,7 +2459,7 @@
         (call $~lib/builtins/abort
          (i32.const 0)
          (i32.const 400)
-         (i32.const 323)
+         (i32.const 322)
          (i32.const 18)
         )
         (unreachable)
@@ -2654,7 +2636,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 400)
-     (i32.const 337)
+     (i32.const 336)
      (i32.const 14)
     )
     (unreachable)
@@ -2785,7 +2767,7 @@
       (call $~lib/builtins/abort
        (i32.const 0)
        (i32.const 400)
-       (i32.const 474)
+       (i32.const 472)
        (i32.const 16)
       )
       (unreachable)
@@ -2815,7 +2797,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 400)
-     (i32.const 476)
+     (i32.const 474)
      (i32.const 14)
     )
     (unreachable)
@@ -2829,9 +2811,6 @@
    (local.get $root)
    (local.get $block)
    (local.get $payloadSize)
-  )
-  (drop
-   (i32.const 0)
   )
   (return
    (local.get $block)
@@ -2880,7 +2859,7 @@
     (call $~lib/builtins/abort
      (i32.const 64)
      (i32.const 128)
-     (i32.const 273)
+     (i32.const 262)
      (i32.const 31)
     )
     (unreachable)

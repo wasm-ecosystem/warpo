@@ -42,7 +42,7 @@ Abbrev table for offset: 0x00000000
 
 
 .debug_info contents:
-0x00000000: Compile Unit: length = 0x000032cb version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x000032cf)
+0x00000000: Compile Unit: length = 0x00003272 version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04 (next unit at 0x00003276)
 DW_TAG_compile_unit
               DW_AT_producer	("warpo")
   DW_TAG_base_type
@@ -339,9 +339,6 @@ DW_TAG_compile_unit
   DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/OBJECT_OVERHEAD")
                 DW_AT_type	("usize")
-  DW_TAG_variable
-                DW_AT_name	("~lib/rt/common/PROFILE")
-                DW_AT_type	("bool")
   DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/RTRACE")
                 DW_AT_type	("bool")

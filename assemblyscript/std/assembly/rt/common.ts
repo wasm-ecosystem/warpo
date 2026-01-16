@@ -15,8 +15,6 @@
 @inline export const TRACE = false;
 // @ts-ignore: decorator
 @inline export const RTRACE = isDefined(ASC_RTRACE);
-// @ts-ignore: decorator
-@inline export const PROFILE = isDefined(ASC_PROFILE);
 
 // Memory manager
 
