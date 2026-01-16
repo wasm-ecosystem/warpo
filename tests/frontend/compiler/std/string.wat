@@ -37,7 +37,6 @@
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $std/string/str (mut i32) (i32.const 32))
  (global $std/string/nullStr (mut i32) (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
@@ -64,7 +63,6 @@
  (global $~lib/builtins/f64.MIN_VALUE f64 (f64.const 5e-324))
  (global $std/string/Ox1p_1073 f64 (f64.const 1e-323))
  (global $std/string/Ox1_0000000000001p_1022 f64 (f64.const 2.225073858507202e-308))
- (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $~lib/builtins/i8.MIN_VALUE i32 (i32.const -128))
  (global $~lib/builtins/i16.MIN_VALUE i32 (i32.const -32768))
  (global $~lib/builtins/i32.MIN_VALUE i32 (i32.const -2147483648))
@@ -10973,12 +10971,6 @@
       (local.get $newCapacity)
      )
     )
-    (drop
-     (i32.eq
-      (i32.const 2)
-      (global.get $~lib/shared/runtime/Runtime.Stub)
-     )
-    )
     (if
      (i32.ne
       (local.get $newData)
@@ -11038,7 +11030,7 @@
       (call $~lib/builtins/abort
        (i32.const 240)
        (i32.const 14640)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -11632,7 +11624,7 @@
     (call $~lib/builtins/abort
      (i32.const 240)
      (i32.const 14640)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -11672,7 +11664,7 @@
      (call $~lib/builtins/abort
       (i32.const 14688)
       (i32.const 14640)
-      (i32.const 133)
+      (i32.const 127)
       (i32.const 40)
      )
      (unreachable)

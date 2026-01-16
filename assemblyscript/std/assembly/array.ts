@@ -36,9 +36,6 @@ function ensureCapacity(array: usize, newSize: usize, alignLog2: u32, canGrow: b
     let newData = __renew(oldData, newCapacity);
     // __new / __renew already init memory range as zeros in Incremental runtime.
     // So try to avoid this.
-    if (ASC_RUNTIME == Runtime.Stub) {
-      memory.fill(newData + oldCapacity, 0, newCapacity - oldCapacity);
-    }
     if (newData != oldData) {
       // oldData has been free'd
       store<usize>(array, newData, offsetof<ArrayBufferView>("buffer"));
@@ -85,9 +82,6 @@ export class Array<T> implements Iterable<T> {
     // reserve capacity for at least MIN_SIZE elements
     let bufferSize = max(<usize>length, MIN_SIZE) << alignof<T>();
     let buffer = changetype<ArrayBuffer>(__new(bufferSize, idof<ArrayBuffer>()));
-    if (ASC_RUNTIME == Runtime.Stub) {
-      memory.fill(changetype<usize>(buffer), 0, bufferSize);
-    }
     this.buffer = buffer; // links
     this.dataStart = changetype<usize>(buffer);
     this.byteLength = <i32>bufferSize;

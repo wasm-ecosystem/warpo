@@ -22,13 +22,11 @@
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $~lib/rt/__rtti_base i32 (i32.const 672))
  (global $~lib/memory/__data_end i32 (i32.const 724))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33492))
@@ -3281,12 +3279,6 @@
      (call $~lib/rt/itcms/__renew
       (local.get $oldData)
       (local.get $newCapacity)
-     )
-    )
-    (drop
-     (i32.eq
-      (i32.const 2)
-      (global.get $~lib/shared/runtime/Runtime.Stub)
      )
     )
     (if

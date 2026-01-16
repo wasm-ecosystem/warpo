@@ -73,7 +73,6 @@
  (global $~lib/typedarray/Uint64Array.BYTES_PER_ELEMENT i32 (i32.const 8))
  (global $~lib/typedarray/Float32Array.BYTES_PER_ELEMENT i32 (i32.const 4))
  (global $~lib/typedarray/Float64Array.BYTES_PER_ELEMENT i32 (i32.const 8))
- (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -87,7 +86,6 @@
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
  (global $~argumentsLength (mut i32) (i32.const 0))
  (global $~lib/builtins/u32.MAX_VALUE i32 (i32.const -1))
@@ -3453,12 +3451,6 @@
      )
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/arraybuffer/ArrayBufferView#set:buffer
@@ -7196,7 +7188,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 736)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -7735,7 +7727,7 @@
     (call $~lib/builtins/abort
      (i32.const 336)
      (i32.const 736)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -56573,7 +56565,7 @@
     (call $~lib/builtins/abort
      (i32.const 32)
      (i32.const 80)
-     (i32.const 53)
+     (i32.const 50)
      (i32.const 43)
     )
     (unreachable)
@@ -56585,12 +56577,6 @@
      (local.get $length)
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (return

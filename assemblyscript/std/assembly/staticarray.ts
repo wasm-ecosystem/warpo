@@ -52,9 +52,6 @@ export class StaticArray<T> {
     if (<u32>length > (<u32>BLOCK_MAXSIZE) >>> alignof<T>()) throw new RangeError(E_INVALIDLENGTH);
     let outSize = (<usize>length) << alignof<T>();
     let out = changetype<StaticArray<T>>(__new(outSize, idof<StaticArray<T>>()));
-    if (ASC_RUNTIME == Runtime.Stub) {
-      memory.fill(changetype<usize>(out), 0, outSize);
-    }
     return out;
   }
 

@@ -1546,7 +1546,7 @@
   if
    i32.const 464
    i32.const 512
-   i32.const 53
+   i32.const 50
    i32.const 43
    call $~lib/builtins/abort
    unreachable

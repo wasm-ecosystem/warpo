@@ -20,7 +20,6 @@
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
- (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -3125,7 +3124,7 @@
     (call $~lib/builtins/abort
      (i32.const 256)
      (i32.const 464)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)

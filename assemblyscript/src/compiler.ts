@@ -9775,9 +9775,8 @@ export class Compiler extends DiagnosticEmitter {
 
   /** Check if possible to optimize the active initialization away if it's zero */
   canOptimizeZeroInitialization(valueExpr: ExpressionRef): bool {
-    const runtime = this.options.runtime;
     // Memory will be filled with 0 on itcms.__new and tcms.__new
-    return runtime != Runtime.Stub && isConstZero(valueExpr);
+    return isConstZero(valueExpr);
   }
 
   /** Makes a constant zero of the specified type. */
@@ -10195,7 +10194,7 @@ export class Compiler extends DiagnosticEmitter {
             stmts.push(expr);
           }
         } else {
-          if (unmanagedClass || this.options.runtime == Runtime.Stub) {
+          if (unmanagedClass) {
             let expr = this.makeCallDirect(
               setterInstance,
               [

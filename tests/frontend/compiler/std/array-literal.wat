@@ -14,7 +14,6 @@
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $std/array-literal/staticArrayI8 i32 (i32.const 64))
- (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $std/array-literal/staticArrayI32 i32 (i32.const 320))
@@ -31,7 +30,6 @@
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $std/array-literal/dynamicArrayI8 (mut i32) (i32.const 0))
  (global $std/array-literal/dynamicArrayI32 (mut i32) (i32.const 0))
  (global $std/array-literal/dynamicArrayRef (mut i32) (i32.const 0))
@@ -97,7 +95,7 @@
     (call $~lib/builtins/abort
      (i32.const 176)
      (i32.const 240)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -159,7 +157,7 @@
     (call $~lib/builtins/abort
      (i32.const 176)
      (i32.const 240)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -3412,12 +3410,6 @@
       (local.get $newCapacity)
      )
     )
-    (drop
-     (i32.eq
-      (i32.const 2)
-      (global.get $~lib/shared/runtime/Runtime.Stub)
-     )
-    )
     (if
      (i32.ne
       (local.get $newData)
@@ -3472,7 +3464,7 @@
       (call $~lib/builtins/abort
        (i32.const 176)
        (i32.const 240)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -3542,7 +3534,7 @@
       (call $~lib/builtins/abort
        (i32.const 176)
        (i32.const 240)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -3667,7 +3659,7 @@
       (call $~lib/builtins/abort
        (i32.const 176)
        (i32.const 240)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -3779,7 +3771,7 @@
       (call $~lib/builtins/abort
        (i32.const 176)
        (i32.const 240)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)

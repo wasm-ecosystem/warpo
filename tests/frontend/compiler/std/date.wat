@@ -36,7 +36,6 @@
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
@@ -45,7 +44,6 @@
  (global $~argumentsLength (mut i32) (i32.const 0))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
  (global $~lib/builtins/i32.MAX_VALUE i32 (i32.const 2147483647))
- (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $~lib/rt/__rtti_base i32 (i32.const 7408))
  (global $~lib/memory/__data_end i32 (i32.const 7452))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 40220))
@@ -8000,12 +7998,6 @@
       (local.get $newCapacity)
      )
     )
-    (drop
-     (i32.eq
-      (i32.const 2)
-      (global.get $~lib/shared/runtime/Runtime.Stub)
-     )
-    )
     (if
      (i32.ne
       (local.get $newData)
@@ -8065,7 +8057,7 @@
       (call $~lib/builtins/abort
        (i32.const 368)
        (i32.const 5712)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -8659,7 +8651,7 @@
     (call $~lib/builtins/abort
      (i32.const 368)
      (i32.const 5712)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -8699,7 +8691,7 @@
      (call $~lib/builtins/abort
       (i32.const 5808)
       (i32.const 5712)
-      (i32.const 133)
+      (i32.const 127)
       (i32.const 40)
      )
      (unreachable)

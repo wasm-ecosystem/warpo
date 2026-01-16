@@ -44,13 +44,11 @@
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $~lib/rt/__rtti_base i32 (i32.const 736))
  (global $~lib/memory/__data_end i32 (i32.const 912))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33680))
@@ -2945,7 +2943,7 @@
     (call $~lib/builtins/abort
      (i32.const 432)
      (i32.const 480)
-     (i32.const 53)
+     (i32.const 50)
      (i32.const 43)
     )
     (unreachable)
@@ -2957,12 +2955,6 @@
      (local.get $length)
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (return
@@ -3965,7 +3957,7 @@
     (call $~lib/builtins/abort
      (i32.const 432)
      (i32.const 704)
-     (i32.const 84)
+     (i32.const 81)
      (i32.const 62)
     )
     (unreachable)
@@ -3994,12 +3986,6 @@
      (local.get $bufferSize)
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<i8>#set:buffer
@@ -4225,12 +4211,6 @@
       (local.get $newCapacity)
      )
     )
-    (drop
-     (i32.eq
-      (i32.const 2)
-      (global.get $~lib/shared/runtime/Runtime.Stub)
-     )
-    )
     (if
      (i32.ne
       (local.get $newData)
@@ -4284,7 +4264,7 @@
       (call $~lib/builtins/abort
        (i32.const 224)
        (i32.const 704)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -4506,7 +4486,7 @@
     (call $~lib/builtins/abort
      (i32.const 432)
      (i32.const 704)
-     (i32.const 84)
+     (i32.const 81)
      (i32.const 62)
     )
     (unreachable)
@@ -4535,12 +4515,6 @@
      (local.get $bufferSize)
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<i32>#set:buffer
@@ -4601,7 +4575,7 @@
       (call $~lib/builtins/abort
        (i32.const 224)
        (i32.const 704)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -5034,7 +5008,7 @@
     (call $~lib/builtins/abort
      (i32.const 224)
      (i32.const 704)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -5077,7 +5051,7 @@
     (call $~lib/builtins/abort
      (i32.const 224)
      (i32.const 704)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -7960,7 +7934,7 @@
     (call $~lib/builtins/abort
      (i32.const 432)
      (i32.const 704)
-     (i32.const 84)
+     (i32.const 81)
      (i32.const 62)
     )
     (unreachable)
@@ -7989,12 +7963,6 @@
      (local.get $bufferSize)
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<u8>#set:buffer
@@ -8055,7 +8023,7 @@
       (call $~lib/builtins/abort
        (i32.const 224)
        (i32.const 704)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -8467,7 +8435,7 @@
     (call $~lib/builtins/abort
      (i32.const 224)
      (i32.const 704)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -10769,7 +10737,7 @@
     (call $~lib/builtins/abort
      (i32.const 432)
      (i32.const 704)
-     (i32.const 84)
+     (i32.const 81)
      (i32.const 62)
     )
     (unreachable)
@@ -10798,12 +10766,6 @@
      (local.get $bufferSize)
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<i16>#set:buffer
@@ -10864,7 +10826,7 @@
       (call $~lib/builtins/abort
        (i32.const 224)
        (i32.const 704)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -11276,7 +11238,7 @@
     (call $~lib/builtins/abort
      (i32.const 224)
      (i32.const 704)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -13579,7 +13541,7 @@
     (call $~lib/builtins/abort
      (i32.const 432)
      (i32.const 704)
-     (i32.const 84)
+     (i32.const 81)
      (i32.const 62)
     )
     (unreachable)
@@ -13608,12 +13570,6 @@
      (local.get $bufferSize)
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<u16>#set:buffer
@@ -13674,7 +13630,7 @@
       (call $~lib/builtins/abort
        (i32.const 224)
        (i32.const 704)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -14086,7 +14042,7 @@
     (call $~lib/builtins/abort
      (i32.const 224)
      (i32.const 704)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -17543,7 +17499,7 @@
     (call $~lib/builtins/abort
      (i32.const 432)
      (i32.const 704)
-     (i32.const 84)
+     (i32.const 81)
      (i32.const 62)
     )
     (unreachable)
@@ -17572,12 +17528,6 @@
      (local.get $bufferSize)
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<u32>#set:buffer
@@ -17638,7 +17588,7 @@
       (call $~lib/builtins/abort
        (i32.const 224)
        (i32.const 704)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -18050,7 +18000,7 @@
     (call $~lib/builtins/abort
      (i32.const 224)
      (i32.const 704)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -20442,7 +20392,7 @@
     (call $~lib/builtins/abort
      (i32.const 432)
      (i32.const 704)
-     (i32.const 84)
+     (i32.const 81)
      (i32.const 62)
     )
     (unreachable)
@@ -20471,12 +20421,6 @@
      (local.get $bufferSize)
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<i64>#set:buffer
@@ -20537,7 +20481,7 @@
       (call $~lib/builtins/abort
        (i32.const 224)
        (i32.const 704)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -20949,7 +20893,7 @@
     (call $~lib/builtins/abort
      (i32.const 224)
      (i32.const 704)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -23260,7 +23204,7 @@
     (call $~lib/builtins/abort
      (i32.const 432)
      (i32.const 704)
-     (i32.const 84)
+     (i32.const 81)
      (i32.const 62)
     )
     (unreachable)
@@ -23289,12 +23233,6 @@
      (local.get $bufferSize)
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<u64>#set:buffer
@@ -23355,7 +23293,7 @@
       (call $~lib/builtins/abort
        (i32.const 224)
        (i32.const 704)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -23767,7 +23705,7 @@
     (call $~lib/builtins/abort
      (i32.const 224)
      (i32.const 704)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -26075,7 +26013,7 @@
     (call $~lib/builtins/abort
      (i32.const 432)
      (i32.const 704)
-     (i32.const 84)
+     (i32.const 81)
      (i32.const 62)
     )
     (unreachable)
@@ -26104,12 +26042,6 @@
      (local.get $bufferSize)
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<f32>#set:buffer
@@ -26170,7 +26102,7 @@
       (call $~lib/builtins/abort
        (i32.const 224)
        (i32.const 704)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -26582,7 +26514,7 @@
     (call $~lib/builtins/abort
      (i32.const 224)
      (i32.const 704)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -28895,7 +28827,7 @@
     (call $~lib/builtins/abort
      (i32.const 432)
      (i32.const 704)
-     (i32.const 84)
+     (i32.const 81)
      (i32.const 62)
     )
     (unreachable)
@@ -28924,12 +28856,6 @@
      (local.get $bufferSize)
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/array/Array<f64>#set:buffer
@@ -28990,7 +28916,7 @@
       (call $~lib/builtins/abort
        (i32.const 224)
        (i32.const 704)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)
@@ -29402,7 +29328,7 @@
     (call $~lib/builtins/abort
      (i32.const 224)
      (i32.const 704)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)

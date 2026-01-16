@@ -13,7 +13,6 @@
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
- (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~argumentsLength (mut i32) (i32.const 0))
@@ -29,7 +28,6 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $call-rest/indirect (mut i32) (i32.const 624))
- (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $~lib/rt/__rtti_base i32 (i32.const 1072))
  (global $~lib/memory/__data_end i32 (i32.const 1124))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33892))
@@ -101,7 +99,7 @@
     (call $~lib/builtins/abort
      (i32.const 32)
      (i32.const 96)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -3446,12 +3444,6 @@
       (local.get $newCapacity)
      )
     )
-    (drop
-     (i32.eq
-      (i32.const 2)
-      (global.get $~lib/shared/runtime/Runtime.Stub)
-     )
-    )
     (if
      (i32.ne
       (local.get $newData)
@@ -3506,7 +3498,7 @@
       (call $~lib/builtins/abort
        (i32.const 32)
        (i32.const 96)
-       (i32.const 147)
+       (i32.const 141)
        (i32.const 22)
       )
       (unreachable)

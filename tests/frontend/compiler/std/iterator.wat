@@ -22,7 +22,6 @@
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
@@ -3269,7 +3268,7 @@
     (call $~lib/builtins/abort
      (i32.const 224)
      (i32.const 560)
-     (i32.const 129)
+     (i32.const 123)
      (i32.const 42)
     )
     (unreachable)
@@ -3309,7 +3308,7 @@
      (call $~lib/builtins/abort
       (i32.const 608)
       (i32.const 560)
-      (i32.const 133)
+      (i32.const 127)
       (i32.const 40)
      )
      (unreachable)

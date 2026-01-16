@@ -27,7 +27,6 @@
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
- (global $~lib/shared/runtime/Runtime.Stub i32 (i32.const 0))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
  (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -41,7 +40,6 @@
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
  (global $resolve-elementaccess/arr (mut i32) (i32.const 0))
  (global $~lib/util/number/_frc_plus (mut i64) (i64.const 0))
  (global $~lib/util/number/_frc_minus (mut i64) (i64.const 0))
@@ -3125,12 +3123,6 @@
      )
      (i32.const 1)
     )
-   )
-  )
-  (drop
-   (i32.eq
-    (i32.const 2)
-    (global.get $~lib/shared/runtime/Runtime.Stub)
    )
   )
   (call $~lib/arraybuffer/ArrayBufferView#set:buffer

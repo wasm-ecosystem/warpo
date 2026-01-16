@@ -2,8 +2,6 @@
 
 /** Runtime types. */
 export enum Runtime {
-  /** simple bump allocator without GC. */
-  Stub = 0,
   /** radical GC with stopping the world. */
   Radical = 1,
   /** incremental GC. */
