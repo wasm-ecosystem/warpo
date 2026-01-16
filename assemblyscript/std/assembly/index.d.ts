@@ -2025,7 +2025,7 @@ interface ArrayBufferView {
 }
 
 /** @internal */
-declare abstract class TypedArray<T> implements ArrayBufferView {
+declare abstract class TypedArray<T> implements ArrayBufferView, Iterable<T> {
   [key: number]: T;
   /** Number of bytes per element. */
   static readonly BYTES_PER_ELEMENT: usize;
@@ -2085,6 +2085,9 @@ declare abstract class TypedArray<T> implements ArrayBufferView {
   set<U extends ArrayLike<number>>(source: U, offset?: i32): void;
   /** The toString() method returns a string representing the specified array and its elements. This method has the same algorithm as Array.prototype.toString() */
   toString(): string;
+
+  /** Returns an iterator over the typed array's values. */
+  [Symbol.iterator](): Iterator<T>;
 }
 
 /** An array of twos-complement 8-bit signed integers. */

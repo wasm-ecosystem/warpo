@@ -5,7 +5,18 @@ import { REVERSE, FILL } from "./util/bytes";
 import { idof } from "./builtins";
 import { ArrayBufferView } from "./arraybuffer";
 
-export class Int8Array extends ArrayBufferView {
+class TypedArrayIterator<TArray extends ArrayLike<T>, T> implements Iterator<T> {
+  current: i32 = 0;
+  constructor(private readonly array: TArray) {}
+  next(): IteratorResult<T> {
+    const current = this.current;
+    if (current >= this.array.length) return IteratorResult.done<T>();
+    ++this.current;
+    return IteratorResult.fromValue<T>(unchecked(this.array[current]));
+  }
+}
+
+export class Int8Array extends ArrayBufferView implements Iterable<i8> {
   [key: number]: i8;
 
   // @ts-ignore: decorator
@@ -138,6 +149,10 @@ export class Int8Array extends ArrayBufferView {
     return this.join();
   }
 
+  [Symbol.iterator](): TypedArrayIterator<Int8Array, i8> {
+    return new TypedArrayIterator<Int8Array, i8>(this);
+  }
+
   set<U extends ArrayLike<number>>(source: U, offset: i32 = 0): void {
     SET(this, source, offset);
   }
@@ -147,7 +162,7 @@ export class Int8Array extends ArrayBufferView {
   }
 }
 
-export class Uint8Array extends ArrayBufferView {
+export class Uint8Array extends ArrayBufferView implements Iterable<u8> {
   [key: number]: u8;
 
   // @ts-ignore: decorator
@@ -284,12 +299,16 @@ export class Uint8Array extends ArrayBufferView {
     return this.join();
   }
 
+  [Symbol.iterator](): TypedArrayIterator<Uint8Array, u8> {
+    return new TypedArrayIterator<Uint8Array, u8>(this);
+  }
+
   static wrap(buffer: ArrayBuffer, byteOffset: i32 = 0, length: i32 = -1): Uint8Array {
     return WRAP<Uint8Array, u8>(buffer, byteOffset, length);
   }
 }
 
-export class Uint8ClampedArray extends ArrayBufferView {
+export class Uint8ClampedArray extends ArrayBufferView implements Iterable<u8> {
   [key: number]: u8;
 
   // @ts-ignore: decorator
@@ -427,12 +446,16 @@ export class Uint8ClampedArray extends ArrayBufferView {
     return this.join();
   }
 
+  [Symbol.iterator](): TypedArrayIterator<Uint8ClampedArray, u8> {
+    return new TypedArrayIterator<Uint8ClampedArray, u8>(this);
+  }
+
   static wrap(buffer: ArrayBuffer, byteOffset: i32 = 0, length: i32 = -1): Uint8ClampedArray {
     return WRAP<Uint8ClampedArray, u8>(buffer, byteOffset, length);
   }
 }
 
-export class Int16Array extends ArrayBufferView {
+export class Int16Array extends ArrayBufferView implements Iterable<i16> {
   [key: number]: i16;
 
   // @ts-ignore: decorator
@@ -569,12 +592,16 @@ export class Int16Array extends ArrayBufferView {
     return this.join();
   }
 
+  [Symbol.iterator](): TypedArrayIterator<Int16Array, i16> {
+    return new TypedArrayIterator<Int16Array, i16>(this);
+  }
+
   static wrap(buffer: ArrayBuffer, byteOffset: i32 = 0, length: i32 = -1): Int16Array {
     return WRAP<Int16Array, i16>(buffer, byteOffset, length);
   }
 }
 
-export class Uint16Array extends ArrayBufferView {
+export class Uint16Array extends ArrayBufferView implements Iterable<u16> {
   [key: number]: u16;
 
   // @ts-ignore: decorator
@@ -711,12 +738,16 @@ export class Uint16Array extends ArrayBufferView {
     return this.join();
   }
 
+  [Symbol.iterator](): TypedArrayIterator<Uint16Array, u16> {
+    return new TypedArrayIterator<Uint16Array, u16>(this);
+  }
+
   static wrap(buffer: ArrayBuffer, byteOffset: i32 = 0, length: i32 = -1): Uint16Array {
     return WRAP<Uint16Array, u16>(buffer, byteOffset, length);
   }
 }
 
-export class Int32Array extends ArrayBufferView {
+export class Int32Array extends ArrayBufferView implements Iterable<i32> {
   [key: number]: i32;
 
   // @ts-ignore: decorator
@@ -853,12 +884,16 @@ export class Int32Array extends ArrayBufferView {
     return this.join();
   }
 
+  [Symbol.iterator](): TypedArrayIterator<Int32Array, i32> {
+    return new TypedArrayIterator<Int32Array, i32>(this);
+  }
+
   static wrap(buffer: ArrayBuffer, byteOffset: i32 = 0, length: i32 = -1): Int32Array {
     return WRAP<Int32Array, i32>(buffer, byteOffset, length);
   }
 }
 
-export class Uint32Array extends ArrayBufferView {
+export class Uint32Array extends ArrayBufferView implements Iterable<u32> {
   [key: number]: u32;
 
   // @ts-ignore: decorator
@@ -995,12 +1030,16 @@ export class Uint32Array extends ArrayBufferView {
     return this.join();
   }
 
+  [Symbol.iterator](): TypedArrayIterator<Uint32Array, u32> {
+    return new TypedArrayIterator<Uint32Array, u32>(this);
+  }
+
   static wrap(buffer: ArrayBuffer, byteOffset: i32 = 0, length: i32 = -1): Uint32Array {
     return WRAP<Uint32Array, u32>(buffer, byteOffset, length);
   }
 }
 
-export class Int64Array extends ArrayBufferView {
+export class Int64Array extends ArrayBufferView implements Iterable<i64> {
   [key: number]: i64;
 
   // @ts-ignore: decorator
@@ -1137,12 +1176,16 @@ export class Int64Array extends ArrayBufferView {
     return this.join();
   }
 
+  [Symbol.iterator](): TypedArrayIterator<Int64Array, i64> {
+    return new TypedArrayIterator<Int64Array, i64>(this);
+  }
+
   static wrap(buffer: ArrayBuffer, byteOffset: i32 = 0, length: i32 = -1): Int64Array {
     return WRAP<Int64Array, i64>(buffer, byteOffset, length);
   }
 }
 
-export class Uint64Array extends ArrayBufferView {
+export class Uint64Array extends ArrayBufferView implements Iterable<u64> {
   [key: number]: u64;
 
   // @ts-ignore: decorator
@@ -1279,12 +1322,16 @@ export class Uint64Array extends ArrayBufferView {
     return this.join();
   }
 
+  [Symbol.iterator](): TypedArrayIterator<Uint64Array, u64> {
+    return new TypedArrayIterator<Uint64Array, u64>(this);
+  }
+
   static wrap(buffer: ArrayBuffer, byteOffset: i32 = 0, length: i32 = -1): Uint64Array {
     return WRAP<Uint64Array, u64>(buffer, byteOffset, length);
   }
 }
 
-export class Float32Array extends ArrayBufferView {
+export class Float32Array extends ArrayBufferView implements Iterable<f32> {
   [key: number]: f32;
 
   // @ts-ignore: decorator
@@ -1421,12 +1468,16 @@ export class Float32Array extends ArrayBufferView {
     return this.join();
   }
 
+  [Symbol.iterator](): TypedArrayIterator<Float32Array, f32> {
+    return new TypedArrayIterator<Float32Array, f32>(this);
+  }
+
   static wrap(buffer: ArrayBuffer, byteOffset: i32 = 0, length: i32 = -1): Float32Array {
     return WRAP<Float32Array, f32>(buffer, byteOffset, length);
   }
 }
 
-export class Float64Array extends ArrayBufferView {
+export class Float64Array extends ArrayBufferView implements Iterable<f64> {
   [key: number]: f64;
 
   // @ts-ignore: decorator
@@ -1561,6 +1612,10 @@ export class Float64Array extends ArrayBufferView {
 
   toString(): string {
     return this.join();
+  }
+
+  [Symbol.iterator](): TypedArrayIterator<Float64Array, f64> {
+    return new TypedArrayIterator<Float64Array, f64>(this);
   }
 
   static wrap(buffer: ArrayBuffer, byteOffset: i32 = 0, length: i32 = -1): Float64Array {

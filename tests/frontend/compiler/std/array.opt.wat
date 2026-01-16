@@ -651,7 +651,7 @@
  (data $298.1 (i32.const 14888) "\01\00\00\00\04\00\00\00\02")
  (data $299 (i32.const 14908) "\1c")
  (data $299.1 (i32.const 14920) "D\00\00\00\08\00\00\00>")
- (data $300 (i32.const 14944) "E\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00 \00\00\00 \00\00\00A\00\00\00B\00\00\00 \00\00\00\02\01\00\00 \00\00\00\02\19\00\00 \00\00\00\02A\00\00 \00\00\00\82\00\00\00 \00\00\00\02\1a\00\00 \00\00\00\02a\00\00 ")
+ (data $300 (i32.const 14944) "E\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\02\t\00\00 \00\00\00 \00\00\00A\00\00\00 \00\00\00B\00\00\00\02\01\00\00 \00\00\00\02\19\00\00 \00\00\00\02A\00\00 \00\00\00\82\00\00\00 \00\00\00\02\1a\00\00 \00\00\00\02a\00\00 ")
  (data $300.1 (i32.const 15044) "\02A\00\00 ")
  (data $300.2 (i32.const 15072) " \00\00\00\02A\00\00 ")
  (data $300.3 (i32.const 15104) "\02A\00\00 \00\00\00\00\00\00\00 \00\00\00\02A\00\00 \00\00\00\00\00\00\00\02a\00\00 ")
@@ -11762,7 +11762,7 @@
                                   i32.const 8
                                   i32.sub
                                   i32.load
-                                  br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner3 $folding-inner3 $~lib/iterator/Iterable<i32> $std/array/Ref $folding-inner3 $folding-inner3 $~lib/iterator/Iterable<u8> $folding-inner3 $~lib/iterator/Iterable<u32> $folding-inner3 $~lib/iterator/Iterable<f32> $folding-inner1 $~lib/iterator/Iterable<std/array/Ref> $folding-inner3 $~lib/iterator/Iterable<u16> $folding-inner3 $~lib/iterator/Iterable<f64> $folding-inner1 $~lib/iterator/Iterable<std/array/Ref|null> $folding-inner2 $folding-inner2 $folding-inner1 $~lib/iterator/Iterable<~lib/string/String> $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $std/array/Dim $folding-inner1 $~lib/iterator/Iterable<std/array/Dim> $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<i32>> $folding-inner2 $std/array/Proxy<i32> $folding-inner1 $~lib/iterator/Iterable<std/array/Proxy<i32>> $folding-inner2 $folding-inner1 $~lib/iterator/Iterable<~lib/string/String|null> $folding-inner2 $folding-inner2 $folding-inner3 $~lib/iterator/Iterable<bool> $folding-inner3 $~lib/iterator/Iterable<i8> $folding-inner3 $~lib/iterator/Iterable<i16> $folding-inner3 $~lib/iterator/Iterable<u64> $folding-inner3 $~lib/iterator/Iterable<i64> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<u8>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<u32>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/array/Array<u32>>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner2 $invalid
+                                  br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner3 $folding-inner3 $~lib/iterator/Iterable<i32> $std/array/Ref $folding-inner3 $~lib/iterator/Iterable<u8> $folding-inner3 $folding-inner3 $~lib/iterator/Iterable<u32> $folding-inner3 $~lib/iterator/Iterable<f32> $folding-inner1 $~lib/iterator/Iterable<std/array/Ref> $folding-inner3 $~lib/iterator/Iterable<u16> $folding-inner3 $~lib/iterator/Iterable<f64> $folding-inner1 $~lib/iterator/Iterable<std/array/Ref|null> $folding-inner2 $folding-inner2 $folding-inner1 $~lib/iterator/Iterable<~lib/string/String> $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $std/array/Dim $folding-inner1 $~lib/iterator/Iterable<std/array/Dim> $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<i32>> $folding-inner2 $std/array/Proxy<i32> $folding-inner1 $~lib/iterator/Iterable<std/array/Proxy<i32>> $folding-inner2 $folding-inner1 $~lib/iterator/Iterable<~lib/string/String|null> $folding-inner2 $folding-inner2 $folding-inner3 $~lib/iterator/Iterable<bool> $folding-inner3 $~lib/iterator/Iterable<i8> $folding-inner3 $~lib/iterator/Iterable<i16> $folding-inner3 $~lib/iterator/Iterable<u64> $folding-inner3 $~lib/iterator/Iterable<i64> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<u8>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<u32>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/array/Array<u32>>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner2 $invalid
                                  end
                                  return
                                 end
@@ -11981,7 +11981,7 @@
    call $~lib/rt/__decrease_sp
    i32.const 5
    i32.const 0
-   i32.const 8
+   i32.const 9
    i32.const 672
    call $~lib/rt/__newArray
    local.set $0
@@ -11996,7 +11996,7 @@
    local.get $0
    i32.const 5
    i32.const 0
-   i32.const 8
+   i32.const 9
    i32.const 704
    call $~lib/rt/__newArray
    call $std/array/isArraysEqual<u8>
@@ -12018,7 +12018,7 @@
    local.get $0
    i32.const 5
    i32.const 0
-   i32.const 8
+   i32.const 9
    i32.const 736
    call $~lib/rt/__newArray
    call $std/array/isArraysEqual<u8>
@@ -12039,7 +12039,7 @@
    local.get $0
    i32.const 5
    i32.const 0
-   i32.const 8
+   i32.const 9
    i32.const 768
    call $~lib/rt/__newArray
    call $std/array/isArraysEqual<u8>
@@ -12061,7 +12061,7 @@
    local.get $0
    i32.const 5
    i32.const 0
-   i32.const 8
+   i32.const 9
    i32.const 800
    call $~lib/rt/__newArray
    call $std/array/isArraysEqual<u8>
@@ -12082,7 +12082,7 @@
    local.get $0
    i32.const 5
    i32.const 0
-   i32.const 8
+   i32.const 9
    i32.const 832
    call $~lib/rt/__newArray
    call $std/array/isArraysEqual<u8>
@@ -12104,7 +12104,7 @@
    local.get $0
    i32.const 5
    i32.const 0
-   i32.const 8
+   i32.const 9
    i32.const 864
    call $~lib/rt/__newArray
    call $std/array/isArraysEqual<u8>
@@ -14163,7 +14163,7 @@
    local.set $0
    i32.const 4
    i32.const 0
-   i32.const 8
+   i32.const 9
    i32.const 3184
    call $~lib/rt/__newArray
    call $~lib/array/Array<u8>#reverse
@@ -14204,7 +14204,7 @@
    local.set $0
    i32.const 8
    i32.const 0
-   i32.const 8
+   i32.const 9
    i32.const 3216
    call $~lib/rt/__newArray
    call $~lib/array/Array<u8>#reverse
@@ -14245,7 +14245,7 @@
    local.set $0
    i32.const 17
    i32.const 0
-   i32.const 8
+   i32.const 9
    i32.const 3248
    call $~lib/rt/__newArray
    call $~lib/array/Array<u8>#reverse
@@ -21273,7 +21273,7 @@
    i32.const 0
    i32.const 2
    i32.const 0
-   i32.const 8
+   i32.const 9
    i32.const 14160
    call $~lib/rt/__newArray
    call $~lib/array/Array<std/array/Ref>#__set
@@ -21281,7 +21281,7 @@
    i32.const 1
    i32.const 2
    i32.const 0
-   i32.const 8
+   i32.const 9
    i32.const 14192
    call $~lib/rt/__newArray
    call $~lib/array/Array<std/array/Ref>#__set

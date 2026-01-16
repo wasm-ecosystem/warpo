@@ -2,9 +2,9 @@
  (type $0 (func (param i32 i32) (result i32)))
  (type $1 (func (param i32 i32 i32) (result i32)))
  (type $2 (func (param i32 i32 i32 i32) (result i32)))
- (type $3 (func (param i32 i32)))
- (type $4 (func (param i32 i32 i32)))
- (type $5 (func (param i32) (result i32)))
+ (type $3 (func (param i32) (result i32)))
+ (type $4 (func (param i32 i32)))
+ (type $5 (func (param i32 i32 i32)))
  (type $6 (func (param i64 i64) (result i32)))
  (type $7 (func (param i64 i32 i32) (result i32)))
  (type $8 (func (param i32)))
@@ -45,7 +45,7 @@
  (type $43 (func (param i32 i32 i64 i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "env" "trace" (func $~lib/builtins/trace (param i32 i32 f64 f64 f64 f64 f64)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 48072))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 48096))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -85,7 +85,7 @@
  (data $11 (i32.const 588) "<")
  (data $11.1 (i32.const 600) "\02\00\00\00$\00\00\00~\00l\00i\00b\00/\00t\00y\00p\00e\00d\00a\00r\00r\00a\00y\00.\00t\00s")
  (data $12 (i32.const 652) "\1c")
- (data $12.1 (i32.const 664) "\0f\00\00\00\08\00\00\00\01")
+ (data $12.1 (i32.const 664) "\19\00\00\00\08\00\00\00\01")
  (data $13 (i32.const 684) "\1c")
  (data $13.1 (i32.const 696) "\01\00\00\00\05\00\00\00\01\01\01\04\05")
  (data $14 (i32.const 716) ",")
@@ -142,303 +142,303 @@
  (data $39 (i32.const 1804) ",")
  (data $39.1 (i32.const 1816) "\01\00\00\00\14\00\00\00\01\00\00\00\03\00\00\00\04\00\00\00\05\00\00\00\05")
  (data $40 (i32.const 1852) "\1c")
- (data $40.1 (i32.const 1864) "\14\00\00\00\08\00\00\00\02")
+ (data $40.1 (i32.const 1864) "\1c\00\00\00\08\00\00\00\02")
  (data $41 (i32.const 1884) "\1c")
- (data $41.1 (i32.const 1896) "\15\00\00\00\08\00\00\00\03")
+ (data $41.1 (i32.const 1896) "\1d\00\00\00\08\00\00\00\03")
  (data $42 (i32.const 1916) "\1c")
- (data $42.1 (i32.const 1928) "\16\00\00\00\08\00\00\00\04")
+ (data $42.1 (i32.const 1928) "\1e\00\00\00\08\00\00\00\04")
  (data $43 (i32.const 1948) "\1c")
- (data $43.1 (i32.const 1960) "\17\00\00\00\08\00\00\00\05")
+ (data $43.1 (i32.const 1960) "\1f\00\00\00\08\00\00\00\05")
  (data $44 (i32.const 1980) "\1c")
- (data $44.1 (i32.const 1992) "\18\00\00\00\08\00\00\00\06")
+ (data $44.1 (i32.const 1992) " \00\00\00\08\00\00\00\06")
  (data $45 (i32.const 2012) "\1c")
- (data $45.1 (i32.const 2024) "\19\00\00\00\08\00\00\00\07")
+ (data $45.1 (i32.const 2024) "!\00\00\00\08\00\00\00\07")
  (data $46 (i32.const 2044) "\1c")
- (data $46.1 (i32.const 2056) "\1a\00\00\00\08\00\00\00\08")
+ (data $46.1 (i32.const 2056) "\"\00\00\00\08\00\00\00\08")
  (data $47 (i32.const 2076) "\1c")
- (data $47.1 (i32.const 2088) "\1b\00\00\00\08\00\00\00\t")
+ (data $47.1 (i32.const 2088) "#\00\00\00\08\00\00\00\t")
  (data $48 (i32.const 2108) "\1c")
- (data $48.1 (i32.const 2120) "\1c\00\00\00\08\00\00\00\n")
+ (data $48.1 (i32.const 2120) "$\00\00\00\08\00\00\00\n")
  (data $49 (i32.const 2140) "\1c")
- (data $49.1 (i32.const 2152) "\1d\00\00\00\08\00\00\00\0b")
+ (data $49.1 (i32.const 2152) "%\00\00\00\08\00\00\00\0b")
  (data $50 (i32.const 2172) "\1c")
- (data $50.1 (i32.const 2184) "\1e\00\00\00\08\00\00\00\0c")
+ (data $50.1 (i32.const 2184) "&\00\00\00\08\00\00\00\0c")
  (data $51 (i32.const 2204) "\1c")
- (data $51.1 (i32.const 2216) "\14\00\00\00\08\00\00\00\r")
+ (data $51.1 (i32.const 2216) "\1c\00\00\00\08\00\00\00\r")
  (data $52 (i32.const 2236) "\1c")
- (data $52.1 (i32.const 2248) "\15\00\00\00\08\00\00\00\0e")
+ (data $52.1 (i32.const 2248) "\1d\00\00\00\08\00\00\00\0e")
  (data $53 (i32.const 2268) "\1c")
- (data $53.1 (i32.const 2280) "\16\00\00\00\08\00\00\00\0f")
+ (data $53.1 (i32.const 2280) "\1e\00\00\00\08\00\00\00\0f")
  (data $54 (i32.const 2300) "\1c")
- (data $54.1 (i32.const 2312) "\17\00\00\00\08\00\00\00\10")
+ (data $54.1 (i32.const 2312) "\1f\00\00\00\08\00\00\00\10")
  (data $55 (i32.const 2332) "\1c")
- (data $55.1 (i32.const 2344) "\18\00\00\00\08\00\00\00\11")
+ (data $55.1 (i32.const 2344) " \00\00\00\08\00\00\00\11")
  (data $56 (i32.const 2364) "\1c")
- (data $56.1 (i32.const 2376) "\19\00\00\00\08\00\00\00\12")
+ (data $56.1 (i32.const 2376) "!\00\00\00\08\00\00\00\12")
  (data $57 (i32.const 2396) "\1c")
- (data $57.1 (i32.const 2408) "\1a\00\00\00\08\00\00\00\13")
+ (data $57.1 (i32.const 2408) "\"\00\00\00\08\00\00\00\13")
  (data $58 (i32.const 2428) "\1c")
- (data $58.1 (i32.const 2440) "\1b\00\00\00\08\00\00\00\14")
+ (data $58.1 (i32.const 2440) "#\00\00\00\08\00\00\00\14")
  (data $59 (i32.const 2460) "\1c")
- (data $59.1 (i32.const 2472) "\1c\00\00\00\08\00\00\00\15")
+ (data $59.1 (i32.const 2472) "$\00\00\00\08\00\00\00\15")
  (data $60 (i32.const 2492) "\1c")
- (data $60.1 (i32.const 2504) "\1d\00\00\00\08\00\00\00\16")
+ (data $60.1 (i32.const 2504) "%\00\00\00\08\00\00\00\16")
  (data $61 (i32.const 2524) "\1c")
- (data $61.1 (i32.const 2536) "\1e\00\00\00\08\00\00\00\17")
+ (data $61.1 (i32.const 2536) "&\00\00\00\08\00\00\00\17")
  (data $62 (i32.const 2556) "\1c")
- (data $62.1 (i32.const 2568) "\1f\00\00\00\08\00\00\00\18")
+ (data $62.1 (i32.const 2568) "\'\00\00\00\08\00\00\00\18")
  (data $63 (i32.const 2588) "\1c")
- (data $63.1 (i32.const 2600) " \00\00\00\08\00\00\00\19")
+ (data $63.1 (i32.const 2600) "(\00\00\00\08\00\00\00\19")
  (data $64 (i32.const 2620) "\1c")
- (data $64.1 (i32.const 2632) "!\00\00\00\08\00\00\00\1a")
+ (data $64.1 (i32.const 2632) ")\00\00\00\08\00\00\00\1a")
  (data $65 (i32.const 2652) "\1c")
- (data $65.1 (i32.const 2664) "\"\00\00\00\08\00\00\00\1b")
+ (data $65.1 (i32.const 2664) "*\00\00\00\08\00\00\00\1b")
  (data $66 (i32.const 2684) "\1c")
- (data $66.1 (i32.const 2696) "#\00\00\00\08\00\00\00\1c")
+ (data $66.1 (i32.const 2696) "+\00\00\00\08\00\00\00\1c")
  (data $67 (i32.const 2716) "\1c")
- (data $67.1 (i32.const 2728) "$\00\00\00\08\00\00\00\1d")
+ (data $67.1 (i32.const 2728) ",\00\00\00\08\00\00\00\1d")
  (data $68 (i32.const 2748) "\1c")
- (data $68.1 (i32.const 2760) "%\00\00\00\08\00\00\00\1e")
+ (data $68.1 (i32.const 2760) "-\00\00\00\08\00\00\00\1e")
  (data $69 (i32.const 2780) "\1c")
- (data $69.1 (i32.const 2792) "&\00\00\00\08\00\00\00\1f")
+ (data $69.1 (i32.const 2792) ".\00\00\00\08\00\00\00\1f")
  (data $70 (i32.const 2812) "\1c")
- (data $70.1 (i32.const 2824) "\'\00\00\00\08\00\00\00 ")
+ (data $70.1 (i32.const 2824) "/\00\00\00\08\00\00\00 ")
  (data $71 (i32.const 2844) "\1c")
- (data $71.1 (i32.const 2856) "(\00\00\00\08\00\00\00!")
+ (data $71.1 (i32.const 2856) "0\00\00\00\08\00\00\00!")
  (data $72 (i32.const 2876) "\1c")
- (data $72.1 (i32.const 2888) ")\00\00\00\08\00\00\00\"")
+ (data $72.1 (i32.const 2888) "1\00\00\00\08\00\00\00\"")
  (data $73 (i32.const 2908) "\1c")
- (data $73.1 (i32.const 2920) "*\00\00\00\08\00\00\00#")
+ (data $73.1 (i32.const 2920) "2\00\00\00\08\00\00\00#")
  (data $74 (i32.const 2940) "\1c")
- (data $74.1 (i32.const 2952) "+\00\00\00\08\00\00\00$")
+ (data $74.1 (i32.const 2952) "3\00\00\00\08\00\00\00$")
  (data $75 (i32.const 2972) "\1c")
- (data $75.1 (i32.const 2984) ",\00\00\00\08\00\00\00%")
+ (data $75.1 (i32.const 2984) "4\00\00\00\08\00\00\00%")
  (data $76 (i32.const 3004) "\1c")
- (data $76.1 (i32.const 3016) "-\00\00\00\08\00\00\00&")
+ (data $76.1 (i32.const 3016) "5\00\00\00\08\00\00\00&")
  (data $77 (i32.const 3036) "\1c")
- (data $77.1 (i32.const 3048) ".\00\00\00\08\00\00\00\'")
+ (data $77.1 (i32.const 3048) "6\00\00\00\08\00\00\00\'")
  (data $78 (i32.const 3068) "\1c")
- (data $78.1 (i32.const 3080) "/\00\00\00\08\00\00\00(")
+ (data $78.1 (i32.const 3080) "7\00\00\00\08\00\00\00(")
  (data $79 (i32.const 3100) "\1c")
- (data $79.1 (i32.const 3112) "0\00\00\00\08\00\00\00)")
+ (data $79.1 (i32.const 3112) "8\00\00\00\08\00\00\00)")
  (data $80 (i32.const 3132) "\1c")
- (data $80.1 (i32.const 3144) "1\00\00\00\08\00\00\00*")
+ (data $80.1 (i32.const 3144) "9\00\00\00\08\00\00\00*")
  (data $81 (i32.const 3164) "\1c")
- (data $81.1 (i32.const 3176) "2\00\00\00\08\00\00\00+")
+ (data $81.1 (i32.const 3176) ":\00\00\00\08\00\00\00+")
  (data $82 (i32.const 3196) "\1c")
- (data $82.1 (i32.const 3208) "3\00\00\00\08\00\00\00,")
+ (data $82.1 (i32.const 3208) ";\00\00\00\08\00\00\00,")
  (data $83 (i32.const 3228) "\1c")
- (data $83.1 (i32.const 3240) "4\00\00\00\08\00\00\00-")
+ (data $83.1 (i32.const 3240) "<\00\00\00\08\00\00\00-")
  (data $84 (i32.const 3260) "\1c")
- (data $84.1 (i32.const 3272) "*\00\00\00\08\00\00\00.")
+ (data $84.1 (i32.const 3272) "2\00\00\00\08\00\00\00.")
  (data $85 (i32.const 3292) "\1c")
- (data $85.1 (i32.const 3304) "*\00\00\00\08\00\00\00/")
+ (data $85.1 (i32.const 3304) "2\00\00\00\08\00\00\00/")
  (data $86 (i32.const 3324) "\1c")
- (data $86.1 (i32.const 3336) "+\00\00\00\08\00\00\000")
+ (data $86.1 (i32.const 3336) "3\00\00\00\08\00\00\000")
  (data $87 (i32.const 3356) "\1c")
- (data $87.1 (i32.const 3368) "+\00\00\00\08\00\00\001")
+ (data $87.1 (i32.const 3368) "3\00\00\00\08\00\00\001")
  (data $88 (i32.const 3388) "\1c")
- (data $88.1 (i32.const 3400) ",\00\00\00\08\00\00\002")
+ (data $88.1 (i32.const 3400) "4\00\00\00\08\00\00\002")
  (data $89 (i32.const 3420) "\1c")
- (data $89.1 (i32.const 3432) ",\00\00\00\08\00\00\003")
+ (data $89.1 (i32.const 3432) "4\00\00\00\08\00\00\003")
  (data $90 (i32.const 3452) "\1c")
- (data $90.1 (i32.const 3464) "-\00\00\00\08\00\00\004")
+ (data $90.1 (i32.const 3464) "5\00\00\00\08\00\00\004")
  (data $91 (i32.const 3484) "\1c")
- (data $91.1 (i32.const 3496) "-\00\00\00\08\00\00\005")
+ (data $91.1 (i32.const 3496) "5\00\00\00\08\00\00\005")
  (data $92 (i32.const 3516) "\1c")
- (data $92.1 (i32.const 3528) ".\00\00\00\08\00\00\006")
+ (data $92.1 (i32.const 3528) "6\00\00\00\08\00\00\006")
  (data $93 (i32.const 3548) "\1c")
- (data $93.1 (i32.const 3560) ".\00\00\00\08\00\00\007")
+ (data $93.1 (i32.const 3560) "6\00\00\00\08\00\00\007")
  (data $94 (i32.const 3580) "\1c")
- (data $94.1 (i32.const 3592) "/\00\00\00\08\00\00\008")
+ (data $94.1 (i32.const 3592) "7\00\00\00\08\00\00\008")
  (data $95 (i32.const 3612) "\1c")
- (data $95.1 (i32.const 3624) "/\00\00\00\08\00\00\009")
+ (data $95.1 (i32.const 3624) "7\00\00\00\08\00\00\009")
  (data $96 (i32.const 3644) "\1c")
- (data $96.1 (i32.const 3656) "0\00\00\00\08\00\00\00:")
+ (data $96.1 (i32.const 3656) "8\00\00\00\08\00\00\00:")
  (data $97 (i32.const 3676) "\1c")
- (data $97.1 (i32.const 3688) "0\00\00\00\08\00\00\00;")
+ (data $97.1 (i32.const 3688) "8\00\00\00\08\00\00\00;")
  (data $98 (i32.const 3708) "\1c")
- (data $98.1 (i32.const 3720) "1\00\00\00\08\00\00\00<")
+ (data $98.1 (i32.const 3720) "9\00\00\00\08\00\00\00<")
  (data $99 (i32.const 3740) "\1c")
- (data $99.1 (i32.const 3752) "1\00\00\00\08\00\00\00=")
+ (data $99.1 (i32.const 3752) "9\00\00\00\08\00\00\00=")
  (data $100 (i32.const 3772) "\1c")
- (data $100.1 (i32.const 3784) "2\00\00\00\08\00\00\00>")
+ (data $100.1 (i32.const 3784) ":\00\00\00\08\00\00\00>")
  (data $101 (i32.const 3804) "\1c")
- (data $101.1 (i32.const 3816) "2\00\00\00\08\00\00\00?")
+ (data $101.1 (i32.const 3816) ":\00\00\00\08\00\00\00?")
  (data $102 (i32.const 3836) "\1c")
- (data $102.1 (i32.const 3848) "3\00\00\00\08\00\00\00@")
+ (data $102.1 (i32.const 3848) ";\00\00\00\08\00\00\00@")
  (data $103 (i32.const 3868) "\1c")
- (data $103.1 (i32.const 3880) "3\00\00\00\08\00\00\00A")
+ (data $103.1 (i32.const 3880) ";\00\00\00\08\00\00\00A")
  (data $104 (i32.const 3900) "\1c")
- (data $104.1 (i32.const 3912) "4\00\00\00\08\00\00\00B")
+ (data $104.1 (i32.const 3912) "<\00\00\00\08\00\00\00B")
  (data $105 (i32.const 3932) "\1c")
- (data $105.1 (i32.const 3944) "4\00\00\00\08\00\00\00C")
+ (data $105.1 (i32.const 3944) "<\00\00\00\08\00\00\00C")
  (data $106 (i32.const 3964) "\1c")
- (data $106.1 (i32.const 3976) "*\00\00\00\08\00\00\00D")
+ (data $106.1 (i32.const 3976) "2\00\00\00\08\00\00\00D")
  (data $107 (i32.const 3996) "\1c")
- (data $107.1 (i32.const 4008) "*\00\00\00\08\00\00\00E")
+ (data $107.1 (i32.const 4008) "2\00\00\00\08\00\00\00E")
  (data $108 (i32.const 4028) "\1c")
- (data $108.1 (i32.const 4040) "+\00\00\00\08\00\00\00F")
+ (data $108.1 (i32.const 4040) "3\00\00\00\08\00\00\00F")
  (data $109 (i32.const 4060) "\1c")
- (data $109.1 (i32.const 4072) "+\00\00\00\08\00\00\00G")
+ (data $109.1 (i32.const 4072) "3\00\00\00\08\00\00\00G")
  (data $110 (i32.const 4092) "\1c")
- (data $110.1 (i32.const 4104) ",\00\00\00\08\00\00\00H")
+ (data $110.1 (i32.const 4104) "4\00\00\00\08\00\00\00H")
  (data $111 (i32.const 4124) "\1c")
- (data $111.1 (i32.const 4136) ",\00\00\00\08\00\00\00I")
+ (data $111.1 (i32.const 4136) "4\00\00\00\08\00\00\00I")
  (data $112 (i32.const 4156) "\1c")
- (data $112.1 (i32.const 4168) "-\00\00\00\08\00\00\00J")
+ (data $112.1 (i32.const 4168) "5\00\00\00\08\00\00\00J")
  (data $113 (i32.const 4188) "\1c")
- (data $113.1 (i32.const 4200) "-\00\00\00\08\00\00\00K")
+ (data $113.1 (i32.const 4200) "5\00\00\00\08\00\00\00K")
  (data $114 (i32.const 4220) "\1c")
- (data $114.1 (i32.const 4232) ".\00\00\00\08\00\00\00L")
+ (data $114.1 (i32.const 4232) "6\00\00\00\08\00\00\00L")
  (data $115 (i32.const 4252) "\1c")
- (data $115.1 (i32.const 4264) ".\00\00\00\08\00\00\00M")
+ (data $115.1 (i32.const 4264) "6\00\00\00\08\00\00\00M")
  (data $116 (i32.const 4284) "\1c")
- (data $116.1 (i32.const 4296) "/\00\00\00\08\00\00\00N")
+ (data $116.1 (i32.const 4296) "7\00\00\00\08\00\00\00N")
  (data $117 (i32.const 4316) "\1c")
- (data $117.1 (i32.const 4328) "/\00\00\00\08\00\00\00O")
+ (data $117.1 (i32.const 4328) "7\00\00\00\08\00\00\00O")
  (data $118 (i32.const 4348) "\1c")
- (data $118.1 (i32.const 4360) "0\00\00\00\08\00\00\00P")
+ (data $118.1 (i32.const 4360) "8\00\00\00\08\00\00\00P")
  (data $119 (i32.const 4380) "\1c")
- (data $119.1 (i32.const 4392) "0\00\00\00\08\00\00\00Q")
+ (data $119.1 (i32.const 4392) "8\00\00\00\08\00\00\00Q")
  (data $120 (i32.const 4412) "\1c")
- (data $120.1 (i32.const 4424) "1\00\00\00\08\00\00\00R")
+ (data $120.1 (i32.const 4424) "9\00\00\00\08\00\00\00R")
  (data $121 (i32.const 4444) "\1c")
- (data $121.1 (i32.const 4456) "1\00\00\00\08\00\00\00S")
+ (data $121.1 (i32.const 4456) "9\00\00\00\08\00\00\00S")
  (data $122 (i32.const 4476) "\1c")
- (data $122.1 (i32.const 4488) "2\00\00\00\08\00\00\00T")
+ (data $122.1 (i32.const 4488) ":\00\00\00\08\00\00\00T")
  (data $123 (i32.const 4508) "\1c")
- (data $123.1 (i32.const 4520) "2\00\00\00\08\00\00\00U")
+ (data $123.1 (i32.const 4520) ":\00\00\00\08\00\00\00U")
  (data $124 (i32.const 4540) "\1c")
- (data $124.1 (i32.const 4552) "3\00\00\00\08\00\00\00V")
+ (data $124.1 (i32.const 4552) ";\00\00\00\08\00\00\00V")
  (data $125 (i32.const 4572) "\1c")
- (data $125.1 (i32.const 4584) "3\00\00\00\08\00\00\00W")
+ (data $125.1 (i32.const 4584) ";\00\00\00\08\00\00\00W")
  (data $126 (i32.const 4604) "\1c")
- (data $126.1 (i32.const 4616) "4\00\00\00\08\00\00\00X")
+ (data $126.1 (i32.const 4616) "<\00\00\00\08\00\00\00X")
  (data $127 (i32.const 4636) "\1c")
- (data $127.1 (i32.const 4648) "4\00\00\00\08\00\00\00Y")
+ (data $127.1 (i32.const 4648) "<\00\00\00\08\00\00\00Y")
  (data $128 (i32.const 4668) "\1c")
- (data $128.1 (i32.const 4680) "*\00\00\00\08\00\00\00Z")
+ (data $128.1 (i32.const 4680) "2\00\00\00\08\00\00\00Z")
  (data $129 (i32.const 4700) "\1c")
- (data $129.1 (i32.const 4712) "*\00\00\00\08\00\00\00[")
+ (data $129.1 (i32.const 4712) "2\00\00\00\08\00\00\00[")
  (data $130 (i32.const 4732) "\1c")
- (data $130.1 (i32.const 4744) "+\00\00\00\08\00\00\00\\")
+ (data $130.1 (i32.const 4744) "3\00\00\00\08\00\00\00\\")
  (data $131 (i32.const 4764) "\1c")
- (data $131.1 (i32.const 4776) "+\00\00\00\08\00\00\00]")
+ (data $131.1 (i32.const 4776) "3\00\00\00\08\00\00\00]")
  (data $132 (i32.const 4796) "\1c")
- (data $132.1 (i32.const 4808) ",\00\00\00\08\00\00\00^")
+ (data $132.1 (i32.const 4808) "4\00\00\00\08\00\00\00^")
  (data $133 (i32.const 4828) "\1c")
- (data $133.1 (i32.const 4840) ",\00\00\00\08\00\00\00_")
+ (data $133.1 (i32.const 4840) "4\00\00\00\08\00\00\00_")
  (data $134 (i32.const 4860) "\1c")
- (data $134.1 (i32.const 4872) "-\00\00\00\08\00\00\00`")
+ (data $134.1 (i32.const 4872) "5\00\00\00\08\00\00\00`")
  (data $135 (i32.const 4892) "\1c")
- (data $135.1 (i32.const 4904) "-\00\00\00\08\00\00\00a")
+ (data $135.1 (i32.const 4904) "5\00\00\00\08\00\00\00a")
  (data $136 (i32.const 4924) "\1c")
- (data $136.1 (i32.const 4936) ".\00\00\00\08\00\00\00b")
+ (data $136.1 (i32.const 4936) "6\00\00\00\08\00\00\00b")
  (data $137 (i32.const 4956) "\1c")
- (data $137.1 (i32.const 4968) ".\00\00\00\08\00\00\00c")
+ (data $137.1 (i32.const 4968) "6\00\00\00\08\00\00\00c")
  (data $138 (i32.const 4988) "\1c")
- (data $138.1 (i32.const 5000) "/\00\00\00\08\00\00\00d")
+ (data $138.1 (i32.const 5000) "7\00\00\00\08\00\00\00d")
  (data $139 (i32.const 5020) "\1c")
- (data $139.1 (i32.const 5032) "/\00\00\00\08\00\00\00e")
+ (data $139.1 (i32.const 5032) "7\00\00\00\08\00\00\00e")
  (data $140 (i32.const 5052) "\1c")
- (data $140.1 (i32.const 5064) "0\00\00\00\08\00\00\00f")
+ (data $140.1 (i32.const 5064) "8\00\00\00\08\00\00\00f")
  (data $141 (i32.const 5084) "\1c")
- (data $141.1 (i32.const 5096) "0\00\00\00\08\00\00\00g")
+ (data $141.1 (i32.const 5096) "8\00\00\00\08\00\00\00g")
  (data $142 (i32.const 5116) "\1c")
- (data $142.1 (i32.const 5128) "1\00\00\00\08\00\00\00h")
+ (data $142.1 (i32.const 5128) "9\00\00\00\08\00\00\00h")
  (data $143 (i32.const 5148) "\1c")
- (data $143.1 (i32.const 5160) "1\00\00\00\08\00\00\00i")
+ (data $143.1 (i32.const 5160) "9\00\00\00\08\00\00\00i")
  (data $144 (i32.const 5180) "\1c")
- (data $144.1 (i32.const 5192) "2\00\00\00\08\00\00\00j")
+ (data $144.1 (i32.const 5192) ":\00\00\00\08\00\00\00j")
  (data $145 (i32.const 5212) "\1c")
- (data $145.1 (i32.const 5224) "2\00\00\00\08\00\00\00k")
+ (data $145.1 (i32.const 5224) ":\00\00\00\08\00\00\00k")
  (data $146 (i32.const 5244) "\1c")
- (data $146.1 (i32.const 5256) "3\00\00\00\08\00\00\00l")
+ (data $146.1 (i32.const 5256) ";\00\00\00\08\00\00\00l")
  (data $147 (i32.const 5276) "\1c")
- (data $147.1 (i32.const 5288) "3\00\00\00\08\00\00\00m")
+ (data $147.1 (i32.const 5288) ";\00\00\00\08\00\00\00m")
  (data $148 (i32.const 5308) "\1c")
- (data $148.1 (i32.const 5320) "4\00\00\00\08\00\00\00n")
+ (data $148.1 (i32.const 5320) "<\00\00\00\08\00\00\00n")
  (data $149 (i32.const 5340) "\1c")
- (data $149.1 (i32.const 5352) "4\00\00\00\08\00\00\00o")
+ (data $149.1 (i32.const 5352) "<\00\00\00\08\00\00\00o")
  (data $150 (i32.const 5372) "\1c")
- (data $150.1 (i32.const 5384) "*\00\00\00\08\00\00\00p")
+ (data $150.1 (i32.const 5384) "2\00\00\00\08\00\00\00p")
  (data $151 (i32.const 5404) "\1c")
- (data $151.1 (i32.const 5416) "*\00\00\00\08\00\00\00q")
+ (data $151.1 (i32.const 5416) "2\00\00\00\08\00\00\00q")
  (data $152 (i32.const 5436) "\1c")
- (data $152.1 (i32.const 5448) "+\00\00\00\08\00\00\00r")
+ (data $152.1 (i32.const 5448) "3\00\00\00\08\00\00\00r")
  (data $153 (i32.const 5468) "\1c")
- (data $153.1 (i32.const 5480) "+\00\00\00\08\00\00\00s")
+ (data $153.1 (i32.const 5480) "3\00\00\00\08\00\00\00s")
  (data $154 (i32.const 5500) "\1c")
- (data $154.1 (i32.const 5512) ",\00\00\00\08\00\00\00t")
+ (data $154.1 (i32.const 5512) "4\00\00\00\08\00\00\00t")
  (data $155 (i32.const 5532) "\1c")
- (data $155.1 (i32.const 5544) ",\00\00\00\08\00\00\00u")
+ (data $155.1 (i32.const 5544) "4\00\00\00\08\00\00\00u")
  (data $156 (i32.const 5564) "\1c")
- (data $156.1 (i32.const 5576) "-\00\00\00\08\00\00\00v")
+ (data $156.1 (i32.const 5576) "5\00\00\00\08\00\00\00v")
  (data $157 (i32.const 5596) "\1c")
- (data $157.1 (i32.const 5608) "-\00\00\00\08\00\00\00w")
+ (data $157.1 (i32.const 5608) "5\00\00\00\08\00\00\00w")
  (data $158 (i32.const 5628) "\1c")
- (data $158.1 (i32.const 5640) ".\00\00\00\08\00\00\00x")
+ (data $158.1 (i32.const 5640) "6\00\00\00\08\00\00\00x")
  (data $159 (i32.const 5660) "\1c")
- (data $159.1 (i32.const 5672) ".\00\00\00\08\00\00\00y")
+ (data $159.1 (i32.const 5672) "6\00\00\00\08\00\00\00y")
  (data $160 (i32.const 5692) "\1c")
- (data $160.1 (i32.const 5704) "/\00\00\00\08\00\00\00z")
+ (data $160.1 (i32.const 5704) "7\00\00\00\08\00\00\00z")
  (data $161 (i32.const 5724) "\1c")
- (data $161.1 (i32.const 5736) "/\00\00\00\08\00\00\00{")
+ (data $161.1 (i32.const 5736) "7\00\00\00\08\00\00\00{")
  (data $162 (i32.const 5756) "\1c")
- (data $162.1 (i32.const 5768) "0\00\00\00\08\00\00\00|")
+ (data $162.1 (i32.const 5768) "8\00\00\00\08\00\00\00|")
  (data $163 (i32.const 5788) "\1c")
- (data $163.1 (i32.const 5800) "0\00\00\00\08\00\00\00}")
+ (data $163.1 (i32.const 5800) "8\00\00\00\08\00\00\00}")
  (data $164 (i32.const 5820) "\1c")
- (data $164.1 (i32.const 5832) "1\00\00\00\08\00\00\00~")
+ (data $164.1 (i32.const 5832) "9\00\00\00\08\00\00\00~")
  (data $165 (i32.const 5852) "\1c")
- (data $165.1 (i32.const 5864) "1\00\00\00\08\00\00\00\7f")
+ (data $165.1 (i32.const 5864) "9\00\00\00\08\00\00\00\7f")
  (data $166 (i32.const 5884) "\1c")
- (data $166.1 (i32.const 5896) "2\00\00\00\08\00\00\00\80")
+ (data $166.1 (i32.const 5896) ":\00\00\00\08\00\00\00\80")
  (data $167 (i32.const 5916) "\1c")
- (data $167.1 (i32.const 5928) "2\00\00\00\08\00\00\00\81")
+ (data $167.1 (i32.const 5928) ":\00\00\00\08\00\00\00\81")
  (data $168 (i32.const 5948) "\1c")
- (data $168.1 (i32.const 5960) "3\00\00\00\08\00\00\00\82")
+ (data $168.1 (i32.const 5960) ";\00\00\00\08\00\00\00\82")
  (data $169 (i32.const 5980) "\1c")
- (data $169.1 (i32.const 5992) "3\00\00\00\08\00\00\00\83")
+ (data $169.1 (i32.const 5992) ";\00\00\00\08\00\00\00\83")
  (data $170 (i32.const 6012) "\1c")
- (data $170.1 (i32.const 6024) "4\00\00\00\08\00\00\00\84")
+ (data $170.1 (i32.const 6024) "<\00\00\00\08\00\00\00\84")
  (data $171 (i32.const 6044) "\1c")
- (data $171.1 (i32.const 6056) "4\00\00\00\08\00\00\00\85")
+ (data $171.1 (i32.const 6056) "<\00\00\00\08\00\00\00\85")
  (data $172 (i32.const 6076) "\1c")
  (data $172.1 (i32.const 6088) "\01\00\00\00\0c\00\00\00\n\00\00\00\0c\00\00\00\0e")
  (data $173 (i32.const 6108) ",")
- (data $173.1 (i32.const 6120) "\12\00\00\00\10\00\00\00\d0\17\00\00\d0\17\00\00\0c\00\00\00\03")
+ (data $173.1 (i32.const 6120) "\1b\00\00\00\10\00\00\00\d0\17\00\00\d0\17\00\00\0c\00\00\00\03")
  (data $174 (i32.const 6156) "\1c")
- (data $174.1 (i32.const 6168) "5\00\00\00\08\00\00\00\86")
+ (data $174.1 (i32.const 6168) "=\00\00\00\08\00\00\00\86")
  (data $175 (i32.const 6188) "\1c")
- (data $175.1 (i32.const 6200) "6\00\00\00\08\00\00\00\87")
+ (data $175.1 (i32.const 6200) ">\00\00\00\08\00\00\00\87")
  (data $176 (i32.const 6220) "\1c")
- (data $176.1 (i32.const 6232) "7\00\00\00\08\00\00\00\88")
+ (data $176.1 (i32.const 6232) "?\00\00\00\08\00\00\00\88")
  (data $177 (i32.const 6252) "\1c")
- (data $177.1 (i32.const 6264) "8\00\00\00\08\00\00\00\89")
+ (data $177.1 (i32.const 6264) "@\00\00\00\08\00\00\00\89")
  (data $178 (i32.const 6284) "\1c")
- (data $178.1 (i32.const 6296) "9\00\00\00\08\00\00\00\8a")
+ (data $178.1 (i32.const 6296) "A\00\00\00\08\00\00\00\8a")
  (data $179 (i32.const 6316) "\1c")
- (data $179.1 (i32.const 6328) ":\00\00\00\08\00\00\00\8b")
+ (data $179.1 (i32.const 6328) "B\00\00\00\08\00\00\00\8b")
  (data $180 (i32.const 6348) "\1c")
- (data $180.1 (i32.const 6360) ";\00\00\00\08\00\00\00\8c")
+ (data $180.1 (i32.const 6360) "C\00\00\00\08\00\00\00\8c")
  (data $181 (i32.const 6380) "\1c")
- (data $181.1 (i32.const 6392) "<\00\00\00\08\00\00\00\8d")
+ (data $181.1 (i32.const 6392) "D\00\00\00\08\00\00\00\8d")
  (data $182 (i32.const 6412) "\1c")
- (data $182.1 (i32.const 6424) "=\00\00\00\08\00\00\00\8e")
+ (data $182.1 (i32.const 6424) "E\00\00\00\08\00\00\00\8e")
  (data $183 (i32.const 6444) "\1c")
- (data $183.1 (i32.const 6456) ">\00\00\00\08\00\00\00\8f")
+ (data $183.1 (i32.const 6456) "F\00\00\00\08\00\00\00\8f")
  (data $184 (i32.const 6476) "\1c")
- (data $184.1 (i32.const 6488) "?\00\00\00\08\00\00\00\90")
+ (data $184.1 (i32.const 6488) "G\00\00\00\08\00\00\00\90")
  (data $185 (i32.const 6508) "<")
  (data $185.1 (i32.const 6520) "\01\00\00\00$\00\00\00\01\00\00\00\02\00\00\00\03\00\00\00\04\00\00\00\05\00\00\00\06\00\00\00\07\00\00\00\08\00\00\00\t")
  (data $186 (i32.const 6572) ",")
- (data $186.1 (i32.const 6584) "\12\00\00\00\10\00\00\00\80\19\00\00\80\19\00\00$\00\00\00\t")
+ (data $186.1 (i32.const 6584) "\1b\00\00\00\10\00\00\00\80\19\00\00\80\19\00\00$\00\00\00\t")
  (data $187 (i32.const 6620) "<")
  (data $187.1 (i32.const 6632) "\01\00\00\00,\00\00\00\00\00\00\00\01\00\00\00\02\00\00\00\03\00\00\00\04\00\00\00\05\00\00\00\06\00\00\00\07\00\00\00\08\00\00\00\t\00\00\00\n")
  (data $188 (i32.const 6684) ",")
- (data $188.1 (i32.const 6696) "\12\00\00\00\10\00\00\00\f0\19\00\00\f0\19\00\00,\00\00\00\0b")
+ (data $188.1 (i32.const 6696) "\1b\00\00\00\10\00\00\00\f0\19\00\00\f0\19\00\00,\00\00\00\0b")
  (data $189 (i32.const 6732) "\1c")
  (data $189.1 (i32.const 6744) "\02")
  (data $190 (i32.const 6764) "|")
@@ -472,24 +472,24 @@
  (data $207 (i32.const 9820) "<")
  (data $207.1 (i32.const 9832) "\01\00\00\00,\00\00\00\00\00\00\00\01\00\00\00\02\00\00\00\03\00\00\00\04\00\00\00\05\00\00\00\06\00\00\00\07\00\00\00\08\00\00\00\t\00\00\00\n")
  (data $208 (i32.const 9884) ",")
- (data $208.1 (i32.const 9896) "\12\00\00\00\10\00\00\00p&\00\00p&\00\00,\00\00\00\0b")
+ (data $208.1 (i32.const 9896) "\1b\00\00\00\10\00\00\00p&\00\00p&\00\00,\00\00\00\0b")
  (data $209 (i32.const 9932) "\1c")
  (data $209.1 (i32.const 9944) "\01\00\00\00\0c\00\00\00\01\00\00\00\02\00\00\00\03")
  (data $210 (i32.const 9964) ",")
- (data $210.1 (i32.const 9976) "\12\00\00\00\10\00\00\00\e0&\00\00\e0&\00\00\0c\00\00\00\03")
+ (data $210.1 (i32.const 9976) "\1b\00\00\00\10\00\00\00\e0&\00\00\e0&\00\00\0c\00\00\00\03")
  (data $211 (i32.const 10012) "\1c")
  (data $211.1 (i32.const 10024) "\01\00\00\00\0c\00\00\00\00\00\80@\00\00\a0@\00\00\c0@")
  (data $212 (i32.const 10044) ",")
- (data $212.1 (i32.const 10056) "@\00\00\00\10\00\00\000\'\00\000\'\00\00\0c\00\00\00\03")
+ (data $212.1 (i32.const 10056) "H\00\00\00\10\00\00\000\'\00\000\'\00\00\0c\00\00\00\03")
  (data $213 (i32.const 10092) ",")
  (data $213.1 (i32.const 10104) "\01\00\00\00\18")
  (data $213.2 (i32.const 10118) "\f0\7f\00\00\00\00\00\00\f8\7f\00\00\00\00\00\00\f0\ff")
  (data $214 (i32.const 10140) ",")
- (data $214.1 (i32.const 10152) "B\00\00\00\10\00\00\00\80\'\00\00\80\'\00\00\18\00\00\00\03")
+ (data $214.1 (i32.const 10152) "I\00\00\00\10\00\00\00\80\'\00\00\80\'\00\00\18\00\00\00\03")
  (data $215 (i32.const 10188) "\1c")
  (data $215.1 (i32.const 10200) "\01\00\00\00\03\00\00\00\92\91\90")
  (data $216 (i32.const 10220) ",")
- (data $216.1 (i32.const 10232) "\10\00\00\00\10\00\00\00\e0\'\00\00\e0\'\00\00\03\00\00\00\03")
+ (data $216.1 (i32.const 10232) "\1a\00\00\00\10\00\00\00\e0\'\00\00\e0\'\00\00\03\00\00\00\03")
  (data $217 (i32.const 10268) "\1c")
  (data $217.1 (i32.const 10280) "\01\00\00\00\n\00\00\00\01\02\03")
  (data $218 (i32.const 10300) ",")
@@ -669,9 +669,10 @@
  (data $301 (i32.const 14876) "\1c")
  (data $301.1 (i32.const 14888) "X\00\00\00\08\00\00\00\a3")
  (data $302 (i32.const 14908) "\1c")
- (data $302.1 (i32.const 14920) "\0f\00\00\00\08\00\00\00\a4")
- (data $303 (i32.const 14944) "Y\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00A\08\00\00A\00\00\00A\00\00\00\81\08\00\00\81\00\00\00\01\t\00\00\01\01\00\00\01\n\00\00\01\02\00\00\01\19\00\00\01\1a\00\00\00\00\00\00B\08\00\00 \00\00\00\02\t\00\00 ")
- (data $303.1 (i32.const 15204) "\02\19\00\00 \00\00\00\02\1a\00\00 \00\00\00B\00\00\00 \00\00\00\82\08\00\00 \00\00\00\82\00\00\00 \00\00\00\02\01\00\00 \00\00\00\02\n\00\00 \00\00\00\02\02\00\00 ")
+ (data $302.1 (i32.const 14920) "\19\00\00\00\08\00\00\00\a4")
+ (data $303 (i32.const 14944) "_\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00A\08\00\00 \00\00\00A\00\00\00 \00\00\00A\00\00\00\81\08\00\00 \00\00\00\81\00\00\00 \00\00\00\01\t\00\00 \00\00\00\01\01\00\00 \00\00\00\01\n\00\00 \00\00\00\01\02\00\00 \00\00\00\01\19\00\00 \00\00\00\01\1a\00\00 \00\00\00\00\00\00\00B\08\00\00\02\t")
+ (data $303.1 (i32.const 15236) "\02\19\00\00\02\1a\00\00B\00\00\00\82\08\00\00\82\00\00\00\02\01\00\00\02\n\00\00\02\02")
+ (data $303.2 (i32.const 15308) " \00\00\00 \00\00\00\00\00\00\00 \00\00\00 ")
  (table $0 165 165 funcref)
  (elem $0 (i32.const 1) $~lib/util/sort/COMPARATOR<f64>~anonymous|0 $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Float32Array,f32>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Float64Array,f64>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Float32Array,f32>~anonymous|0" $"std/typedarray/testReduce<~lib/typedarray/Float64Array,f64>~anonymous|0" $"std/typedarray/testArrayMap<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayMap<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayMap<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayMap<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayMap<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayMap<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayMap<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayMap<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArrayMap<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArrayMap<~lib/typedarray/Float32Array,f32>~anonymous|0" $"std/typedarray/testArrayMap<~lib/typedarray/Float64Array,f64>~anonymous|0" $"std/typedarray/testArrayFilter<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayFilter<~lib/typedarray/Uint8Array,u8>~anonymous|0" $"std/typedarray/testArrayFilter<~lib/typedarray/Uint8Array,u8>~anonymous|0" $"std/typedarray/testArrayFilter<~lib/typedarray/Int16Array,i16>~anonymous|0" $"std/typedarray/testArrayFilter<~lib/typedarray/Uint16Array,u16>~anonymous|0" $"std/typedarray/testArrayFilter<~lib/typedarray/Int32Array,i32>~anonymous|0" $"std/typedarray/testArrayFilter<~lib/typedarray/Uint32Array,u32>~anonymous|0" $"std/typedarray/testArrayFilter<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArrayFilter<~lib/typedarray/Uint64Array,u64>~anonymous|0" $"std/typedarray/testArrayFilter<~lib/typedarray/Float32Array,f32>~anonymous|0" $"std/typedarray/testArrayFilter<~lib/typedarray/Float64Array,f64>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int16Array,i16>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int16Array,i16>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int16Array,i16>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int16Array,i16>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int32Array,i32>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int32Array,i32>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int32Array,i32>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int32Array,i32>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int64Array,i64>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int64Array,i64>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Float32Array,f32>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Float32Array,f32>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Float64Array,f64>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Float64Array,f64>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int8Array,i8>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int8Array,i8>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int8Array,i8>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int16Array,i16>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int16Array,i16>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int16Array,i16>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int16Array,i16>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int32Array,i32>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int32Array,i32>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int32Array,i32>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int32Array,i32>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int64Array,i64>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int64Array,i64>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Float32Array,f32>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Float32Array,f32>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Float64Array,f64>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Float64Array,f64>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int8Array,i8>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int8Array,i8>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int8Array,i8>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int16Array,i16>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int16Array,i16>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int16Array,i16>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int16Array,i16>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int32Array,i32>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int32Array,i32>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int32Array,i32>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int32Array,i32>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int64Array,i64>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Int64Array,i64>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Float32Array,f32>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Float32Array,f32>~anonymous|1" $"std/typedarray/testArraySome<~lib/typedarray/Float64Array,f64>~anonymous|0" $"std/typedarray/testArrayFindIndex<~lib/typedarray/Float64Array,f64>~anonymous|1" $"std/typedarray/testArrayEvery<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayEvery<~lib/typedarray/Uint8Array,u8>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayEvery<~lib/typedarray/Uint8Array,u8>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayEvery<~lib/typedarray/Int16Array,i16>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int16Array,i16>~anonymous|0" $"std/typedarray/testArrayEvery<~lib/typedarray/Uint8Array,u8>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int16Array,i16>~anonymous|0" $"std/typedarray/testArrayEvery<~lib/typedarray/Uint8Array,u8>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int32Array,i32>~anonymous|0" $"std/typedarray/testArrayEvery<~lib/typedarray/Uint8Array,u8>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int32Array,i32>~anonymous|0" $"std/typedarray/testArrayEvery<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArrayEvery<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArrayEvery<~lib/typedarray/Float32Array,f32>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Float32Array,f32>~anonymous|0" $"std/typedarray/testArrayEvery<~lib/typedarray/Float64Array,f64>~anonymous|0" $"std/typedarray/testArraySome<~lib/typedarray/Float64Array,f64>~anonymous|0" $"std/typedarray/testArrayForEach<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayForEach<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayForEach<~lib/typedarray/Int8Array,i8>~anonymous|0" $"std/typedarray/testArrayForEach<~lib/typedarray/Int16Array,i16>~anonymous|0" $"std/typedarray/testArrayForEach<~lib/typedarray/Int16Array,i16>~anonymous|0" $"std/typedarray/testArrayForEach<~lib/typedarray/Int32Array,i32>~anonymous|0" $"std/typedarray/testArrayForEach<~lib/typedarray/Int32Array,i32>~anonymous|0" $"std/typedarray/testArrayForEach<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArrayForEach<~lib/typedarray/Int64Array,i64>~anonymous|0" $"std/typedarray/testArrayForEach<~lib/typedarray/Float32Array,f32>~anonymous|0" $"std/typedarray/testArrayForEach<~lib/typedarray/Float64Array,f64>~anonymous|0" $~lib/util/sort/COMPARATOR<i8>~anonymous|0 $"std/typedarray/testArraySort<~lib/typedarray/Int8Array,i8>~anonymous|0" $~lib/util/sort/COMPARATOR<u8>~anonymous|0 $"std/typedarray/testArraySort<~lib/typedarray/Uint8Array,u8>~anonymous|0" $"std/typedarray/testArraySort<~lib/typedarray/Uint8Array,u8>~anonymous|0" $~lib/util/sort/COMPARATOR<i16>~anonymous|0 $"std/typedarray/testArraySort<~lib/typedarray/Int16Array,i16>~anonymous|0" $~lib/util/sort/COMPARATOR<u16>~anonymous|0 $"std/typedarray/testArraySort<~lib/typedarray/Uint16Array,u16>~anonymous|0" $~lib/util/sort/COMPARATOR<i32>~anonymous|0 $"std/typedarray/testArraySort<~lib/typedarray/Int32Array,i32>~anonymous|0" $~lib/util/sort/COMPARATOR<u32>~anonymous|0 $"std/typedarray/testArraySort<~lib/typedarray/Uint32Array,u32>~anonymous|0" $~lib/util/sort/COMPARATOR<i64>~anonymous|0 $"std/typedarray/testArraySort<~lib/typedarray/Int64Array,i64>~anonymous|0" $~lib/util/sort/COMPARATOR<u64>~anonymous|0 $"std/typedarray/testArraySort<~lib/typedarray/Uint64Array,u64>~anonymous|0" $~lib/util/sort/COMPARATOR<f32>~anonymous|0 $"std/typedarray/testArraySort<~lib/typedarray/Float32Array,f32>~anonymous|0" $"std/typedarray/testArraySort<~lib/typedarray/Float64Array,f64>~anonymous|0")
  (export "memory" (memory $0))
@@ -780,7 +781,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$711
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$732
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -792,7 +793,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 48072
+    i32.const 48096
     i32.lt_u
     i32.and
     i32.eqz
@@ -804,7 +805,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$711
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$732
    end
    local.get $0
    i32.load offset=8
@@ -1422,10 +1423,10 @@
   if
    unreachable
   end
-  i32.const 48080
+  i32.const 48096
   i32.const 0
   i32.store
-  i32.const 49648
+  i32.const 49664
   i32.const 0
   i32.store
   i32.const 0
@@ -1438,7 +1439,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 48080
+    i32.const 48096
     i32.add
     i32.const 0
     i32.store offset=4
@@ -1456,7 +1457,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 48080
+      i32.const 48096
       i32.add
       i32.const 0
       i32.store offset=96
@@ -1474,21 +1475,21 @@
     br $for-loop|0
    end
   end
-  i32.const 48080
-  i32.const 49652
+  i32.const 48096
+  i32.const 49668
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 48080
+  i32.const 48096
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/tlsf/__free (param $0 i32)
   (local $1 i32)
   (local $2 i32)
   local.get $0
-  i32.const 48072
+  i32.const 48096
   i32.ge_u
   if
    global.get $~lib/rt/tlsf/ROOT
@@ -1616,7 +1617,7 @@
      local.set $0
      loop $while-continue|0
       local.get $0
-      i32.const 48072
+      i32.const 48096
       i32.lt_u
       if
        local.get $0
@@ -1712,7 +1713,7 @@
      unreachable
     end
     local.get $0
-    i32.const 48072
+    i32.const 48096
     i32.lt_u
     if
      local.get $0
@@ -2286,7 +2287,7 @@
   end
   local.get $0
   i32.const 0
-  i32.const 5
+  i32.const 6
   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
@@ -2324,7 +2325,7 @@
   end
   local.get $0
   i32.const 0
-  i32.const 6
+  i32.const 8
   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
@@ -2362,7 +2363,7 @@
   end
   local.get $0
   i32.const 1
-  i32.const 7
+  i32.const 9
   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
@@ -2404,7 +2405,7 @@
   end
   local.get $0
   i32.const 1
-  i32.const 8
+  i32.const 11
   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
@@ -2446,7 +2447,7 @@
   end
   local.get $0
   i32.const 2
-  i32.const 9
+  i32.const 13
   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
@@ -2488,7 +2489,7 @@
   end
   local.get $0
   i32.const 2
-  i32.const 10
+  i32.const 15
   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
@@ -2530,7 +2531,7 @@
   end
   local.get $0
   i32.const 3
-  i32.const 11
+  i32.const 17
   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
@@ -2572,7 +2573,7 @@
   end
   local.get $0
   i32.const 3
-  i32.const 12
+  i32.const 19
   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
@@ -2614,7 +2615,7 @@
   end
   local.get $0
   i32.const 2
-  i32.const 13
+  i32.const 21
   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
@@ -2656,7 +2657,7 @@
   end
   local.get $0
   i32.const 3
-  i32.const 14
+  i32.const 23
   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
@@ -2701,7 +2702,7 @@
   local.get $0
   local.get $1
   local.get $2
-  i32.const 747
+  i32.const 778
   call $byn$mgfn-shared$~lib/typedarray/Int32Array#__set
  )
  (func $~lib/typedarray/Int32Array#__get (param $0 i32) (param $1 i32) (result i32)
@@ -2714,7 +2715,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 736
+   i32.const 767
    i32.const 64
    call $~lib/builtins/abort
    unreachable
@@ -2732,7 +2733,7 @@
   local.get $1
   local.get $2
   i32.const 2
-  i32.const 9
+  i32.const 13
   call $byn$mgfn-shared$~lib/typedarray/Int32Array#subarray
  )
  (func $~lib/typedarray/Float64Array#__set (param $0 i32) (param $1 i32) (param $2 f64)
@@ -2745,7 +2746,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1457
+   i32.const 1508
    i32.const 64
    call $~lib/builtins/abort
    unreachable
@@ -2764,7 +2765,7 @@
   local.get $1
   local.get $2
   i32.const 3
-  i32.const 14
+  i32.const 23
   call $byn$mgfn-shared$~lib/typedarray/Int32Array#subarray
  )
  (func $~lib/util/sort/insertionSort<f64> (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (param $4 i32)
@@ -3632,7 +3633,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1446
+   i32.const 1497
    i32.const 64
    call $~lib/builtins/abort
    unreachable
@@ -3653,7 +3654,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 320
+   i32.const 339
    i32.const 45
    call $~lib/builtins/abort
    unreachable
@@ -3685,7 +3686,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 309
+   i32.const 328
    i32.const 45
    call $~lib/builtins/abort
    unreachable
@@ -3704,7 +3705,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 36
+   i32.const 47
    i32.const 45
    call $~lib/builtins/abort
    unreachable
@@ -3816,7 +3817,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 25
+   i32.const 36
    i32.const 45
    call $~lib/builtins/abort
    unreachable
@@ -4219,7 +4220,7 @@
   select
   local.tee $2
   i32.const 2
-  i32.const 9
+  i32.const 13
   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
   local.tee $3
   i32.load offset=4
@@ -4392,7 +4393,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 178
+   i32.const 193
    i32.const 45
    call $~lib/builtins/abort
    unreachable
@@ -4455,28 +4456,28 @@
   local.get $0
   local.get $1
   local.get $2
-  i32.const 463
+  i32.const 486
   call $byn$mgfn-shared$~lib/typedarray/Int16Array#__set
  )
  (func $~lib/typedarray/Uint16Array#__set (param $0 i32) (param $1 i32) (param $2 i32)
   local.get $0
   local.get $1
   local.get $2
-  i32.const 605
+  i32.const 632
   call $byn$mgfn-shared$~lib/typedarray/Int16Array#__set
  )
  (func $~lib/typedarray/Uint32Array#__set (param $0 i32) (param $1 i32) (param $2 i32)
   local.get $0
   local.get $1
   local.get $2
-  i32.const 889
+  i32.const 924
   call $byn$mgfn-shared$~lib/typedarray/Int32Array#__set
  )
  (func $~lib/typedarray/Int64Array#__set (param $0 i32) (param $1 i32) (param $2 i64)
   local.get $0
   local.get $1
   local.get $2
-  i32.const 1031
+  i32.const 1070
   call $byn$mgfn-shared$~lib/typedarray/Int64Array#__set
  )
  (func $"std/typedarray/testReduce<~lib/typedarray/Int64Array,i64>~anonymous|0" (param $0 i64) (param $1 i64) (param $2 i32) (param $3 i32) (result i64)
@@ -4488,7 +4489,7 @@
   local.get $0
   local.get $1
   local.get $2
-  i32.const 1173
+  i32.const 1216
   call $byn$mgfn-shared$~lib/typedarray/Int64Array#__set
  )
  (func $~lib/typedarray/Float32Array#__set (param $0 i32) (param $1 i32) (param $2 f32)
@@ -4501,7 +4502,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1315
+   i32.const 1362
    i32.const 64
    call $~lib/builtins/abort
    unreachable
@@ -4544,7 +4545,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 48
+   i32.const 59
    i32.const 33
    call $~lib/builtins/abort
    unreachable
@@ -4576,7 +4577,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 475
+   i32.const 498
    i32.const 33
    call $~lib/builtins/abort
    unreachable
@@ -4610,7 +4611,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 617
+   i32.const 644
    i32.const 33
    call $~lib/builtins/abort
    unreachable
@@ -4644,7 +4645,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 759
+   i32.const 790
    i32.const 33
    call $~lib/builtins/abort
    unreachable
@@ -4678,7 +4679,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 901
+   i32.const 936
    i32.const 33
    call $~lib/builtins/abort
    unreachable
@@ -4712,7 +4713,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1043
+   i32.const 1082
    i32.const 33
    call $~lib/builtins/abort
    unreachable
@@ -4746,7 +4747,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1185
+   i32.const 1228
    i32.const 33
    call $~lib/builtins/abort
    unreachable
@@ -4780,7 +4781,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1327
+   i32.const 1374
    i32.const 33
    call $~lib/builtins/abort
    unreachable
@@ -4814,7 +4815,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1469
+   i32.const 1520
    i32.const 33
    call $~lib/builtins/abort
    unreachable
@@ -4888,7 +4889,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 167
+   i32.const 182
    i32.const 45
    call $~lib/builtins/abort
    unreachable
@@ -4909,7 +4910,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 452
+   i32.const 475
    i32.const 64
    call $~lib/builtins/abort
    unreachable
@@ -4932,7 +4933,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 594
+   i32.const 621
    i32.const 64
    call $~lib/builtins/abort
    unreachable
@@ -4955,7 +4956,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 878
+   i32.const 913
    i32.const 64
    call $~lib/builtins/abort
    unreachable
@@ -4983,7 +4984,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1020
+   i32.const 1059
    i32.const 64
    call $~lib/builtins/abort
    unreachable
@@ -5006,7 +5007,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1162
+   i32.const 1205
    i32.const 64
    call $~lib/builtins/abort
    unreachable
@@ -5034,7 +5035,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1304
+   i32.const 1351
    i32.const 64
    call $~lib/builtins/abort
    unreachable
@@ -7794,7 +7795,7 @@
     global.set $~argumentsLength
     local.get $1
     i32.load
-    call_indirect (type $4)
+    call_indirect (type $5)
     local.get $2
     i32.const 1
     i32.add
@@ -11317,7 +11318,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinIntegerArray<i64>$758 (result i32)
+  block $__inlined_func$~lib/util/string/joinIntegerArray<i64>$779 (result i32)
    local.get $0
    i32.load offset=4
    local.set $4
@@ -11340,7 +11341,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     i32.const 6752
-    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$758
+    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$779
    end
    local.get $2
    i32.eqz
@@ -11417,7 +11418,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$758
+    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$779
    end
    i32.const 8556
    i32.load
@@ -11512,7 +11513,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$758
+    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$779
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 4
@@ -11569,7 +11570,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinIntegerArray<u64>$759 (result i32)
+  block $__inlined_func$~lib/util/string/joinIntegerArray<u64>$780 (result i32)
    local.get $0
    i32.load offset=4
    local.set $4
@@ -11592,7 +11593,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     i32.const 6752
-    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$759
+    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$780
    end
    local.get $2
    i32.eqz
@@ -11642,7 +11643,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$759
+    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$780
    end
    i32.const 8556
    i32.load
@@ -11737,7 +11738,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$759
+    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$780
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 4
@@ -12746,7 +12747,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinFloatArray<f32>$760 (result i32)
+  block $__inlined_func$~lib/util/string/joinFloatArray<f32>$781 (result i32)
    local.get $0
    i32.load offset=4
    local.set $4
@@ -12769,7 +12770,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     i32.const 6752
-    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$760
+    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$781
    end
    local.get $3
    i32.eqz
@@ -12825,7 +12826,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$760
+    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$781
    end
    i32.const 8556
    i32.load
@@ -12920,7 +12921,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$760
+    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$781
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 4
@@ -13010,7 +13011,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinFloatArray<f64>$761 (result i32)
+  block $__inlined_func$~lib/util/string/joinFloatArray<f64>$782 (result i32)
    local.get $0
    i32.load offset=4
    local.set $4
@@ -13033,7 +13034,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     i32.const 6752
-    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$761
+    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$782
    end
    local.get $3
    i32.eqz
@@ -13088,7 +13089,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$761
+    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$782
    end
    i32.const 8556
    i32.load
@@ -13183,7 +13184,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$761
+    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$782
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 4
@@ -13222,7 +13223,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1860
+   i32.const 1915
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -13241,7 +13242,7 @@
    else
     i32.const 32
     i32.const 608
-    i32.const 1869
+    i32.const 1924
     i32.const 7
     call $~lib/builtins/abort
     unreachable
@@ -13256,14 +13257,14 @@
    if
     i32.const 32
     i32.const 608
-    i32.const 1874
+    i32.const 1929
     i32.const 7
     call $~lib/builtins/abort
     unreachable
    end
   end
   i32.const 12
-  i32.const 5
+  i32.const 6
   call $~lib/rt/itcms/__new
   local.tee $2
   local.get $0
@@ -13363,7 +13364,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -13479,7 +13480,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -13528,7 +13529,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -13556,7 +13557,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -13607,7 +13608,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -13645,7 +13646,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -13724,7 +13725,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -13790,7 +13791,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -13915,7 +13916,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -13969,7 +13970,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -14030,7 +14031,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -14160,7 +14161,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -14265,7 +14266,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -14319,7 +14320,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -14373,7 +14374,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -14430,7 +14431,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -14552,7 +14553,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -14682,7 +14683,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -14736,7 +14737,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -14793,7 +14794,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -22182,30 +22183,117 @@
   f64.gt
   i32.sub
  )
+ (func $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Uint8Array,u8>#next" (param $0 i32) (result i32)
+  (local $1 i32)
+  local.get $0
+  i32.load
+  local.tee $1
+  local.get $0
+  i32.load offset=4
+  i32.load offset=8
+  i32.ge_s
+  if
+   i32.const 0
+   return
+  end
+  local.get $0
+  local.get $0
+  i32.load
+  i32.const 1
+  i32.add
+  i32.store
+  local.get $1
+  local.get $0
+  i32.load offset=4
+  i32.load offset=4
+  i32.add
+  i32.load8_u
+  local.set $0
+  i32.const 1
+  i32.const 91
+  call $~lib/rt/itcms/__new
+  local.tee $1
+  local.get $0
+  i32.store8
+  local.get $1
+ )
+ (func $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Int16Array,i16>#next" (param $0 i32) (result i32)
+  (local $1 i32)
+  local.get $0
+  i32.load
+  local.tee $1
+  local.get $0
+  i32.load offset=4
+  i32.load offset=8
+  i32.const 1
+  i32.shr_u
+  i32.ge_s
+  if
+   i32.const 0
+   return
+  end
+  local.get $0
+  local.get $0
+  i32.load
+  i32.const 1
+  i32.add
+  i32.store
+  local.get $0
+  i32.load offset=4
+  i32.load offset=4
+  local.get $1
+  i32.const 1
+  i32.shl
+  i32.add
+  i32.load16_s
+  local.set $0
+  i32.const 2
+  i32.const 94
+  call $~lib/rt/itcms/__new
+  local.tee $1
+  local.get $0
+  i32.store16
+  local.get $1
+ )
  (func $~lib/rt/__visit_members (param $0 i32)
-  block $folding-inner2
-   block $folding-inner1
+  block $folding-inner3
+   block $folding-inner2
     block $folding-inner0
      block $invalid
-      block $~lib/iterator/Iterable<u64>
-       block $~lib/iterator/Iterable<i64>
-        block $~lib/iterator/Iterable<u32>
-         block $~lib/iterator/Iterable<u16>
-          block $~lib/iterator/Iterable<i16>
-           block $~lib/iterator/Iterable<u8>
-            block $~lib/iterator/Iterable<f64>
-             block $~lib/iterator/Iterable<f32>
-              block $~lib/iterator/Iterable<i32>
-               block $~lib/iterator/Iterable<i8>
-                block $~lib/arraybuffer/ArrayBufferView
-                 block $~lib/string/String
-                  block $~lib/arraybuffer/ArrayBuffer
-                   block $~lib/object/Object
+      block $~lib/iterator/IteratorResult<i16>
+       block $~lib/iterator/Iterator<i16>
+        block $~lib/iterator/IteratorResult<u8>
+         block $~lib/iterator/Iterator<u8>
+          block $~lib/iterator/Iterable<f64>
+           block $~lib/iterator/Iterable<f32>
+            block $~lib/iterator/Iterable<u64>
+             block $~lib/iterator/Iterable<i64>
+              block $~lib/iterator/Iterable<u32>
+               block $~lib/iterator/Iterable<i32>
+                block $~lib/iterator/Iterable<u16>
+                 block $~lib/iterator/Iterable<i16>
+                  block $~lib/iterator/Iterable<u8>
+                   block $~lib/iterator/Iterable<i8>
+                    block $~lib/arraybuffer/ArrayBufferView
+                     block $~lib/string/String
+                      block $~lib/arraybuffer/ArrayBuffer
+                       block $~lib/object/Object
+                        local.get $0
+                        i32.const 8
+                        i32.sub
+                        i32.load
+                        br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $folding-inner0 $~lib/iterator/Iterable<i8> $folding-inner0 $~lib/iterator/Iterable<u8> $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<i16> $folding-inner0 $~lib/iterator/Iterable<u16> $folding-inner0 $~lib/iterator/Iterable<i32> $folding-inner0 $~lib/iterator/Iterable<u32> $folding-inner0 $~lib/iterator/Iterable<i64> $folding-inner0 $~lib/iterator/Iterable<u64> $folding-inner0 $~lib/iterator/Iterable<f32> $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner3 $folding-inner2 $folding-inner2 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $~lib/iterator/Iterator<u8> $~lib/iterator/IteratorResult<u8> $folding-inner3 $~lib/iterator/Iterator<i16> $~lib/iterator/IteratorResult<i16> $invalid
+                       end
+                       return
+                      end
+                      return
+                     end
+                     return
+                    end
                     local.get $0
-                    i32.const 8
-                    i32.sub
                     i32.load
-                    br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner1 $folding-inner2 $~lib/iterator/Iterable<i8> $folding-inner2 $~lib/iterator/Iterable<i32> $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner2 $~lib/iterator/Iterable<f32> $folding-inner2 $~lib/iterator/Iterable<f64> $folding-inner2 $~lib/iterator/Iterable<u8> $folding-inner2 $~lib/iterator/Iterable<i16> $folding-inner2 $~lib/iterator/Iterable<u16> $folding-inner2 $~lib/iterator/Iterable<u32> $folding-inner2 $~lib/iterator/Iterable<i64> $folding-inner2 $~lib/iterator/Iterable<u64> $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $folding-inner1 $invalid
+                    call $~lib/rt/itcms/__visit
+                    return
                    end
                    return
                   end
@@ -22213,9 +22301,6 @@
                  end
                  return
                 end
-                local.get $0
-                i32.load
-                call $~lib/rt/itcms/__visit
                 return
                end
                return
@@ -22246,12 +22331,12 @@
     return
    end
    local.get $0
-   i32.load offset=4
+   i32.load
    call $~lib/rt/itcms/__visit
    return
   end
   local.get $0
-  i32.load
+  i32.load offset=4
   call $~lib/rt/itcms/__visit
  )
  (func $~start
@@ -22267,13 +22352,13 @@
   (local $9 f64)
   (local $10 i32)
   (local $11 i64)
-  block $__inlined_func$start:std/typedarray$1010
+  block $__inlined_func$start:std/typedarray$1036
    i32.const 12
    call $~lib/rt/__decrease_sp
    memory.size
    i32.const 16
    i32.shl
-   i32.const 48072
+   i32.const 48096
    i32.sub
    i32.const 1
    i32.shr_u
@@ -22308,7 +22393,7 @@
    call $std/typedarray/testInstantiate
    i32.const 3
    i32.const 2
-   i32.const 9
+   i32.const 13
    call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
    local.set $1
    global.get $~lib/memory/__stack_pointer
@@ -22458,7 +22543,7 @@
    end
    i32.const 8
    i32.const 3
-   i32.const 14
+   i32.const 23
    call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
    local.set $1
    global.get $~lib/memory/__stack_pointer
@@ -22586,7 +22671,7 @@
    end
    i32.const 3
    i32.const 0
-   i32.const 6
+   i32.const 8
    call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
    local.tee $1
    i32.const 0
@@ -22673,7 +22758,7 @@
    local.get $1
    i32.const 5
    i32.const 0
-   i32.const 16
+   i32.const 26
    i32.const 704
    call $~lib/rt/__newArray
    call $std/typedarray/isInt8ArrayEqual
@@ -22695,7 +22780,7 @@
    local.get $1
    i32.const 5
    i32.const 0
-   i32.const 16
+   i32.const 26
    i32.const 784
    call $~lib/rt/__newArray
    call $std/typedarray/isInt8ArrayEqual
@@ -22716,7 +22801,7 @@
    local.get $1
    i32.const 5
    i32.const 0
-   i32.const 16
+   i32.const 26
    i32.const 816
    call $~lib/rt/__newArray
    call $std/typedarray/isInt8ArrayEqual
@@ -22738,7 +22823,7 @@
    local.get $1
    i32.const 5
    i32.const 0
-   i32.const 16
+   i32.const 26
    i32.const 848
    call $~lib/rt/__newArray
    call $std/typedarray/isInt8ArrayEqual
@@ -22759,7 +22844,7 @@
    local.get $1
    i32.const 5
    i32.const 0
-   i32.const 16
+   i32.const 26
    i32.const 880
    call $~lib/rt/__newArray
    call $std/typedarray/isInt8ArrayEqual
@@ -22825,7 +22910,7 @@
    local.get $2
    i32.const 3
    i32.const 0
-   i32.const 16
+   i32.const 26
    i32.const 912
    call $~lib/rt/__newArray
    call $std/typedarray/isInt8ArrayEqual
@@ -22841,7 +22926,7 @@
    local.get $1
    i32.const 5
    i32.const 0
-   i32.const 16
+   i32.const 26
    i32.const 944
    call $~lib/rt/__newArray
    call $std/typedarray/isInt8ArrayEqual
@@ -22856,7 +22941,7 @@
    end
    i32.const 5
    i32.const 2
-   i32.const 9
+   i32.const 13
    call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
    local.set $1
    global.get $~lib/memory/__stack_pointer
@@ -22890,7 +22975,7 @@
    local.get $1
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 976
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -22912,7 +22997,7 @@
    local.get $1
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1024
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -22933,7 +23018,7 @@
    local.get $1
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1072
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -22955,7 +23040,7 @@
    local.get $1
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1120
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -22976,7 +23061,7 @@
    local.get $1
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1168
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23044,7 +23129,7 @@
    local.get $2
    i32.const 3
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1216
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23060,7 +23145,7 @@
    local.get $1
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1248
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23274,7 +23359,7 @@
    end
    i32.const 5
    i32.const 2
-   i32.const 9
+   i32.const 13
    call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
    local.set $2
    global.get $~lib/memory/__stack_pointer
@@ -23322,7 +23407,7 @@
    local.get $2
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1296
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23352,7 +23437,7 @@
    local.get $2
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1344
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23382,7 +23467,7 @@
    local.get $2
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1392
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23412,7 +23497,7 @@
    local.get $2
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1440
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23440,7 +23525,7 @@
    local.get $2
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1488
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23468,7 +23553,7 @@
    local.get $2
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1536
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23496,7 +23581,7 @@
    local.get $2
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1584
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23526,7 +23611,7 @@
    local.get $2
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1632
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23554,7 +23639,7 @@
    local.get $2
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1680
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23582,7 +23667,7 @@
    local.get $2
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1728
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23610,7 +23695,7 @@
    local.get $2
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1776
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23640,7 +23725,7 @@
    local.get $1
    i32.const 5
    i32.const 2
-   i32.const 18
+   i32.const 27
    i32.const 1824
    call $~lib/rt/__newArray
    call $std/typedarray/isInt32ArrayEqual
@@ -23655,7 +23740,7 @@
    end
    i32.const 5
    i32.const 2
-   i32.const 9
+   i32.const 13
    call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
    local.set $1
    global.get $~lib/memory/__stack_pointer
@@ -24039,7 +24124,7 @@
                                                                        br_if $folding-inner0
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $1
                                                                        i32.const 0
@@ -24063,7 +24148,7 @@
                                                                        br_if $folding-inner0
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $1
                                                                        i32.const 0
@@ -24087,7 +24172,7 @@
                                                                        br_if $folding-inner0
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $1
                                                                        i32.const 0
@@ -24152,7 +24237,7 @@
                                                                        br_if $folding-inner0
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $1
                                                                        i32.const 0
@@ -24221,7 +24306,7 @@
                                                                        br_if $folding-inner0
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $1
                                                                        i32.const 0
@@ -24288,7 +24373,7 @@
                                                                        br_if $folding-inner0
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $1
                                                                        i32.const 0
@@ -24355,7 +24440,7 @@
                                                                        br_if $folding-inner0
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $1
                                                                        i32.const 0
@@ -24420,7 +24505,7 @@
                                                                        br_if $folding-inner0
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $1
                                                                        i32.const 0
@@ -24487,7 +24572,7 @@
                                                                        br_if $folding-inner0
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $1
                                                                        i32.const 0
@@ -24552,7 +24637,7 @@
                                                                        br_if $folding-inner0
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $1
                                                                        i32.const 0
@@ -24651,220 +24736,220 @@
                                                                        br_if $folding-inner3
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 5
-                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
-                                                                       local.tee $0
-                                                                       i32.const 0
-                                                                       i32.const 1
-                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                       local.get $0
-                                                                       i32.const 1
-                                                                       i32.const 2
-                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                       local.get $0
-                                                                       i32.const 2
-                                                                       i32.const 3
-                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                       local.get $0
-                                                                       i32.const 0
-                                                                       i32.const 190
-                                                                       call $byn$mgfn-shared$~lib/typedarray/Uint8Array#at
-                                                                       i32.const 1
-                                                                       i32.ne
-                                                                       br_if $folding-inner1
-                                                                       local.get $0
-                                                                       i32.const -1
-                                                                       i32.const 190
-                                                                       call $byn$mgfn-shared$~lib/typedarray/Uint8Array#at
-                                                                       i32.const 3
-                                                                       i32.ne
-                                                                       br_if $folding-inner2
-                                                                       local.get $0
-                                                                       i32.const -3
-                                                                       i32.const 190
-                                                                       call $byn$mgfn-shared$~lib/typedarray/Uint8Array#at
-                                                                       i32.const 1
-                                                                       i32.ne
-                                                                       br_if $folding-inner3
-                                                                       i32.const 3
-                                                                       i32.const 0
                                                                        i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
                                                                        i32.const 1
-                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
+                                                                       call $~lib/typedarray/Uint8Array#__set
                                                                        local.get $0
                                                                        i32.const 1
                                                                        i32.const 2
-                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
+                                                                       call $~lib/typedarray/Uint8Array#__set
                                                                        local.get $0
                                                                        i32.const 2
                                                                        i32.const 3
-                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
+                                                                       call $~lib/typedarray/Uint8Array#__set
                                                                        local.get $0
                                                                        i32.const 0
-                                                                       i32.const 332
+                                                                       i32.const 205
                                                                        call $byn$mgfn-shared$~lib/typedarray/Uint8Array#at
                                                                        i32.const 1
                                                                        i32.ne
                                                                        br_if $folding-inner1
                                                                        local.get $0
                                                                        i32.const -1
-                                                                       i32.const 332
+                                                                       i32.const 205
                                                                        call $byn$mgfn-shared$~lib/typedarray/Uint8Array#at
                                                                        i32.const 3
                                                                        i32.ne
                                                                        br_if $folding-inner2
                                                                        local.get $0
                                                                        i32.const -3
-                                                                       i32.const 332
+                                                                       i32.const 205
                                                                        call $byn$mgfn-shared$~lib/typedarray/Uint8Array#at
                                                                        i32.const 1
                                                                        i32.ne
                                                                        br_if $folding-inner3
                                                                        i32.const 3
-                                                                       i32.const 1
-                                                                       i32.const 7
-                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
-                                                                       local.tee $0
                                                                        i32.const 0
-                                                                       i32.const 1
-                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                       local.get $0
-                                                                       i32.const 1
-                                                                       i32.const 2
-                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                       local.get $0
-                                                                       i32.const 2
-                                                                       i32.const 3
-                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                       local.get $0
-                                                                       i32.const 0
-                                                                       call $~lib/typedarray/Int16Array#at
-                                                                       i32.const 1
-                                                                       i32.ne
-                                                                       br_if $folding-inner1
-                                                                       local.get $0
-                                                                       i32.const -1
-                                                                       call $~lib/typedarray/Int16Array#at
-                                                                       i32.const 3
-                                                                       i32.ne
-                                                                       br_if $folding-inner2
-                                                                       local.get $0
-                                                                       i32.const -3
-                                                                       call $~lib/typedarray/Int16Array#at
-                                                                       i32.const 1
-                                                                       i32.ne
-                                                                       br_if $folding-inner3
-                                                                       i32.const 3
-                                                                       i32.const 1
                                                                        i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
                                                                        i32.const 1
-                                                                       call $~lib/typedarray/Uint16Array#__set
+                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
                                                                        local.get $0
                                                                        i32.const 1
                                                                        i32.const 2
-                                                                       call $~lib/typedarray/Uint16Array#__set
+                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
                                                                        local.get $0
                                                                        i32.const 2
                                                                        i32.const 3
-                                                                       call $~lib/typedarray/Uint16Array#__set
+                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
                                                                        local.get $0
                                                                        i32.const 0
-                                                                       call $~lib/typedarray/Uint16Array#at
+                                                                       i32.const 351
+                                                                       call $byn$mgfn-shared$~lib/typedarray/Uint8Array#at
                                                                        i32.const 1
                                                                        i32.ne
                                                                        br_if $folding-inner1
                                                                        local.get $0
                                                                        i32.const -1
-                                                                       call $~lib/typedarray/Uint16Array#at
+                                                                       i32.const 351
+                                                                       call $byn$mgfn-shared$~lib/typedarray/Uint8Array#at
                                                                        i32.const 3
                                                                        i32.ne
                                                                        br_if $folding-inner2
                                                                        local.get $0
                                                                        i32.const -3
-                                                                       call $~lib/typedarray/Uint16Array#at
+                                                                       i32.const 351
+                                                                       call $byn$mgfn-shared$~lib/typedarray/Uint8Array#at
                                                                        i32.const 1
                                                                        i32.ne
                                                                        br_if $folding-inner3
                                                                        i32.const 3
-                                                                       i32.const 2
+                                                                       i32.const 1
                                                                        i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
                                                                        i32.const 1
-                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       call $~lib/typedarray/Int16Array#__set
                                                                        local.get $0
                                                                        i32.const 1
                                                                        i32.const 2
-                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       call $~lib/typedarray/Int16Array#__set
                                                                        local.get $0
                                                                        i32.const 2
                                                                        i32.const 3
-                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       call $~lib/typedarray/Int16Array#__set
                                                                        local.get $0
                                                                        i32.const 0
-                                                                       call $~lib/typedarray/Int32Array#at
+                                                                       call $~lib/typedarray/Int16Array#at
                                                                        i32.const 1
                                                                        i32.ne
                                                                        br_if $folding-inner1
                                                                        local.get $0
                                                                        i32.const -1
-                                                                       call $~lib/typedarray/Int32Array#at
+                                                                       call $~lib/typedarray/Int16Array#at
                                                                        i32.const 3
                                                                        i32.ne
                                                                        br_if $folding-inner2
                                                                        local.get $0
                                                                        i32.const -3
-                                                                       call $~lib/typedarray/Int32Array#at
+                                                                       call $~lib/typedarray/Int16Array#at
                                                                        i32.const 1
                                                                        i32.ne
                                                                        br_if $folding-inner3
                                                                        i32.const 3
-                                                                       i32.const 2
-                                                                       i32.const 10
-                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
-                                                                       local.tee $0
-                                                                       i32.const 0
                                                                        i32.const 1
-                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                       local.get $0
-                                                                       i32.const 1
-                                                                       i32.const 2
-                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                       local.get $0
-                                                                       i32.const 2
-                                                                       i32.const 3
-                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                       local.get $0
-                                                                       i32.const 0
-                                                                       call $~lib/typedarray/Uint32Array#at
-                                                                       i32.const 1
-                                                                       i32.ne
-                                                                       br_if $folding-inner1
-                                                                       local.get $0
-                                                                       i32.const -1
-                                                                       call $~lib/typedarray/Uint32Array#at
-                                                                       i32.const 3
-                                                                       i32.ne
-                                                                       br_if $folding-inner2
-                                                                       local.get $0
-                                                                       i32.const -3
-                                                                       call $~lib/typedarray/Uint32Array#at
-                                                                       i32.const 1
-                                                                       i32.ne
-                                                                       br_if $folding-inner3
-                                                                       i32.const 3
-                                                                       i32.const 3
                                                                        i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
+                                                                       i32.const 1
+                                                                       call $~lib/typedarray/Uint16Array#__set
+                                                                       local.get $0
+                                                                       i32.const 1
+                                                                       i32.const 2
+                                                                       call $~lib/typedarray/Uint16Array#__set
+                                                                       local.get $0
+                                                                       i32.const 2
+                                                                       i32.const 3
+                                                                       call $~lib/typedarray/Uint16Array#__set
+                                                                       local.get $0
+                                                                       i32.const 0
+                                                                       call $~lib/typedarray/Uint16Array#at
+                                                                       i32.const 1
+                                                                       i32.ne
+                                                                       br_if $folding-inner1
+                                                                       local.get $0
+                                                                       i32.const -1
+                                                                       call $~lib/typedarray/Uint16Array#at
+                                                                       i32.const 3
+                                                                       i32.ne
+                                                                       br_if $folding-inner2
+                                                                       local.get $0
+                                                                       i32.const -3
+                                                                       call $~lib/typedarray/Uint16Array#at
+                                                                       i32.const 1
+                                                                       i32.ne
+                                                                       br_if $folding-inner3
+                                                                       i32.const 3
+                                                                       i32.const 2
+                                                                       i32.const 13
+                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
+                                                                       local.tee $0
+                                                                       i32.const 0
+                                                                       i32.const 1
+                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 1
+                                                                       i32.const 2
+                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 2
+                                                                       i32.const 3
+                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 0
+                                                                       call $~lib/typedarray/Int32Array#at
+                                                                       i32.const 1
+                                                                       i32.ne
+                                                                       br_if $folding-inner1
+                                                                       local.get $0
+                                                                       i32.const -1
+                                                                       call $~lib/typedarray/Int32Array#at
+                                                                       i32.const 3
+                                                                       i32.ne
+                                                                       br_if $folding-inner2
+                                                                       local.get $0
+                                                                       i32.const -3
+                                                                       call $~lib/typedarray/Int32Array#at
+                                                                       i32.const 1
+                                                                       i32.ne
+                                                                       br_if $folding-inner3
+                                                                       i32.const 3
+                                                                       i32.const 2
+                                                                       i32.const 15
+                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
+                                                                       local.tee $0
+                                                                       i32.const 0
+                                                                       i32.const 1
+                                                                       call $~lib/typedarray/Uint32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 1
+                                                                       i32.const 2
+                                                                       call $~lib/typedarray/Uint32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 2
+                                                                       i32.const 3
+                                                                       call $~lib/typedarray/Uint32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 0
+                                                                       call $~lib/typedarray/Uint32Array#at
+                                                                       i32.const 1
+                                                                       i32.ne
+                                                                       br_if $folding-inner1
+                                                                       local.get $0
+                                                                       i32.const -1
+                                                                       call $~lib/typedarray/Uint32Array#at
+                                                                       i32.const 3
+                                                                       i32.ne
+                                                                       br_if $folding-inner2
+                                                                       local.get $0
+                                                                       i32.const -3
+                                                                       call $~lib/typedarray/Uint32Array#at
+                                                                       i32.const 1
+                                                                       i32.ne
+                                                                       br_if $folding-inner3
+                                                                       i32.const 3
+                                                                       i32.const 3
+                                                                       i32.const 17
+                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
+                                                                       local.tee $0
+                                                                       i32.const 0
                                                                        i64.const 1
                                                                        call $~lib/typedarray/Int64Array#__set
                                                                        local.get $0
@@ -24895,7 +24980,7 @@
                                                                        br_if $folding-inner3
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -24929,7 +25014,7 @@
                                                                        br_if $folding-inner3
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -24963,7 +25048,7 @@
                                                                        br_if $folding-inner3
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -25062,7 +25147,7 @@
                                                                        br_if $folding-inner4
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -25086,7 +25171,7 @@
                                                                        br_if $folding-inner4
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -25110,7 +25195,7 @@
                                                                        br_if $folding-inner4
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $2
                                                                        i32.const 0
@@ -25179,7 +25264,7 @@
                                                                        br_if $folding-inner4
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $2
                                                                        i32.const 0
@@ -25248,7 +25333,7 @@
                                                                        br_if $folding-inner4
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $2
                                                                        i32.const 0
@@ -25315,7 +25400,7 @@
                                                                        br_if $folding-inner4
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $2
                                                                        i32.const 0
@@ -25382,7 +25467,7 @@
                                                                        br_if $folding-inner4
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -25449,7 +25534,7 @@
                                                                        br_if $folding-inner4
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -25516,7 +25601,7 @@
                                                                        br_if $folding-inner4
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -25583,7 +25668,7 @@
                                                                        br_if $folding-inner4
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -25768,7 +25853,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -25800,7 +25885,7 @@
                                                                        i32.load offset=4
                                                                        local.set $6
                                                                        i32.const 12
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -25884,7 +25969,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -25916,7 +26001,7 @@
                                                                        i32.load offset=4
                                                                        local.set $6
                                                                        i32.const 12
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26000,7 +26085,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26032,7 +26117,7 @@
                                                                        i32.load offset=4
                                                                        local.set $5
                                                                        i32.const 12
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26122,7 +26207,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26156,7 +26241,7 @@
                                                                        i32.load offset=4
                                                                        local.set $5
                                                                        i32.const 12
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26246,7 +26331,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26280,7 +26365,7 @@
                                                                        i32.load offset=4
                                                                        local.set $5
                                                                        i32.const 12
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26370,7 +26455,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26404,7 +26489,7 @@
                                                                        i32.load offset=4
                                                                        local.set $5
                                                                        i32.const 12
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26494,7 +26579,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26528,7 +26613,7 @@
                                                                        i32.load offset=4
                                                                        local.set $5
                                                                        i32.const 12
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26618,7 +26703,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26652,7 +26737,7 @@
                                                                        i32.load offset=4
                                                                        local.set $5
                                                                        i32.const 12
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26742,7 +26827,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26776,7 +26861,7 @@
                                                                        i32.load offset=4
                                                                        local.set $5
                                                                        i32.const 12
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26866,7 +26951,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -26900,7 +26985,7 @@
                                                                        i32.load offset=4
                                                                        local.set $5
                                                                        i32.const 12
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -27136,7 +27221,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 6
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -27175,7 +27260,7 @@
                                                                        i32.load offset=8
                                                                        local.set $6
                                                                        i32.const 12
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -27282,7 +27367,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 6
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -27321,7 +27406,7 @@
                                                                        i32.load offset=8
                                                                        local.set $6
                                                                        i32.const 12
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -27428,7 +27513,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 6
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -27467,7 +27552,7 @@
                                                                        i32.shr_u
                                                                        local.set $6
                                                                        i32.const 12
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -27587,7 +27672,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 6
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -27626,7 +27711,7 @@
                                                                        i32.shr_u
                                                                        local.set $6
                                                                        i32.const 12
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -27746,7 +27831,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 6
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -27785,7 +27870,7 @@
                                                                        i32.shr_u
                                                                        local.set $6
                                                                        i32.const 12
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -27905,7 +27990,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 6
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -27944,7 +28029,7 @@
                                                                        i32.shr_u
                                                                        local.set $6
                                                                        i32.const 12
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -28064,7 +28149,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 6
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -28103,7 +28188,7 @@
                                                                        i32.shr_u
                                                                        local.set $6
                                                                        i32.const 12
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -28223,7 +28308,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 6
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -28262,7 +28347,7 @@
                                                                        i32.shr_u
                                                                        local.set $6
                                                                        i32.const 12
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -28382,7 +28467,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 6
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -28421,7 +28506,7 @@
                                                                        i32.shr_u
                                                                        local.set $6
                                                                        i32.const 12
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -28541,7 +28626,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 6
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -28580,7 +28665,7 @@
                                                                        i32.shr_u
                                                                        local.set $6
                                                                        i32.const 12
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $~lib/rt/itcms/__new
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -28723,7 +28808,7 @@
                                                                        br_if $folding-inner14
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -28748,7 +28833,7 @@
                                                                        br_if $folding-inner14
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -28773,7 +28858,7 @@
                                                                        br_if $folding-inner14
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -28798,7 +28883,7 @@
                                                                        br_if $folding-inner14
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -28823,7 +28908,7 @@
                                                                        br_if $folding-inner14
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -28848,7 +28933,7 @@
                                                                        br_if $folding-inner14
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -28873,7 +28958,7 @@
                                                                        br_if $folding-inner14
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -28898,7 +28983,7 @@
                                                                        br_if $folding-inner14
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -28923,7 +29008,7 @@
                                                                        br_if $folding-inner14
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -28948,7 +29033,7 @@
                                                                        br_if $folding-inner14
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29001,7 +29086,7 @@
                                                                        br_if $folding-inner16
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29029,7 +29114,7 @@
                                                                        br_if $folding-inner16
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29057,7 +29142,7 @@
                                                                        br_if $folding-inner16
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29085,7 +29170,7 @@
                                                                        br_if $folding-inner16
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29113,7 +29198,7 @@
                                                                        br_if $folding-inner16
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29141,7 +29226,7 @@
                                                                        br_if $folding-inner16
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29169,7 +29254,7 @@
                                                                        br_if $folding-inner16
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29197,7 +29282,7 @@
                                                                        br_if $folding-inner16
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29225,7 +29310,7 @@
                                                                        br_if $folding-inner16
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29253,7 +29338,7 @@
                                                                        br_if $folding-inner16
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29309,7 +29394,7 @@
                                                                        br_if $folding-inner18
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29337,7 +29422,7 @@
                                                                        br_if $folding-inner18
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29365,7 +29450,7 @@
                                                                        br_if $folding-inner18
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29393,7 +29478,7 @@
                                                                        br_if $folding-inner18
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29421,7 +29506,7 @@
                                                                        br_if $folding-inner18
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29449,7 +29534,7 @@
                                                                        br_if $folding-inner18
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29477,7 +29562,7 @@
                                                                        br_if $folding-inner18
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29505,7 +29590,7 @@
                                                                        br_if $folding-inner18
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29533,7 +29618,7 @@
                                                                        br_if $folding-inner18
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29561,7 +29646,7 @@
                                                                        br_if $folding-inner18
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29614,7 +29699,7 @@
                                                                        br_if $folding-inner20
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29639,7 +29724,7 @@
                                                                        br_if $folding-inner20
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29664,7 +29749,7 @@
                                                                        br_if $folding-inner20
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29689,7 +29774,7 @@
                                                                        br_if $folding-inner20
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29714,7 +29799,7 @@
                                                                        br_if $folding-inner20
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29739,7 +29824,7 @@
                                                                        br_if $folding-inner20
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29764,7 +29849,7 @@
                                                                        br_if $folding-inner20
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29789,7 +29874,7 @@
                                                                        br_if $folding-inner20
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29814,7 +29899,7 @@
                                                                        br_if $folding-inner20
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29839,7 +29924,7 @@
                                                                        br_if $folding-inner20
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -29918,7 +30003,7 @@
                                                                          i32.const 3
                                                                          global.set $~argumentsLength
                                                                          i32.const 134
-                                                                         call_indirect (type $4)
+                                                                         call_indirect (type $5)
                                                                          local.get $1
                                                                          i32.const 1
                                                                          i32.add
@@ -29938,7 +30023,7 @@
                                                                        global.set $std/typedarray/forEachCallCount
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        global.set $std/typedarray/forEachSelf
@@ -29977,7 +30062,7 @@
                                                                        global.set $std/typedarray/forEachCallCount
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        global.set $std/typedarray/forEachSelf
@@ -30016,7 +30101,7 @@
                                                                        global.set $std/typedarray/forEachCallCount
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $3
                                                                        global.set $std/typedarray/forEachSelf
@@ -30072,7 +30157,7 @@
                                                                          i32.const 3
                                                                          global.set $~argumentsLength
                                                                          i32.const 137
-                                                                         call_indirect (type $4)
+                                                                         call_indirect (type $5)
                                                                          local.get $0
                                                                          i32.const 1
                                                                          i32.add
@@ -30092,7 +30177,7 @@
                                                                        global.set $std/typedarray/forEachCallCount
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $3
                                                                        global.set $std/typedarray/forEachSelf
@@ -30151,7 +30236,7 @@
                                                                          i32.const 3
                                                                          global.set $~argumentsLength
                                                                          i32.const 138
-                                                                         call_indirect (type $4)
+                                                                         call_indirect (type $5)
                                                                          local.get $0
                                                                          i32.const 1
                                                                          i32.add
@@ -30171,7 +30256,7 @@
                                                                        global.set $std/typedarray/forEachCallCount
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $3
                                                                        global.set $std/typedarray/forEachSelf
@@ -30224,7 +30309,7 @@
                                                                          i32.const 3
                                                                          global.set $~argumentsLength
                                                                          i32.const 139
-                                                                         call_indirect (type $4)
+                                                                         call_indirect (type $5)
                                                                          local.get $0
                                                                          i32.const 1
                                                                          i32.add
@@ -30244,7 +30329,7 @@
                                                                        global.set $std/typedarray/forEachCallCount
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $3
                                                                        global.set $std/typedarray/forEachSelf
@@ -30297,7 +30382,7 @@
                                                                          i32.const 3
                                                                          global.set $~argumentsLength
                                                                          i32.const 140
-                                                                         call_indirect (type $4)
+                                                                         call_indirect (type $5)
                                                                          local.get $0
                                                                          i32.const 1
                                                                          i32.add
@@ -30317,7 +30402,7 @@
                                                                        global.set $std/typedarray/forEachCallCount
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $3
                                                                        global.set $std/typedarray/forEachSelf
@@ -30393,7 +30478,7 @@
                                                                        global.set $std/typedarray/forEachCallCount
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $3
                                                                        global.set $std/typedarray/forEachSelf
@@ -30469,7 +30554,7 @@
                                                                        global.set $std/typedarray/forEachCallCount
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $3
                                                                        global.set $std/typedarray/forEachSelf
@@ -30545,7 +30630,7 @@
                                                                        global.set $std/typedarray/forEachCallCount
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $3
                                                                        global.set $std/typedarray/forEachSelf
@@ -30740,7 +30825,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -30748,7 +30833,7 @@
                                                                        i32.store offset=4 align=1
                                                                        local.get $3
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -30817,7 +30902,7 @@
                                                                        end
                                                                        local.get $2
                                                                        i32.const 8
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Uint8Array#subarray
                                                                        call $~lib/typedarray/Int8Array#reverse
                                                                        local.tee $0
@@ -30857,7 +30942,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -30865,7 +30950,7 @@
                                                                        i32.store offset=4 align=1
                                                                        local.get $3
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -30934,7 +31019,7 @@
                                                                        end
                                                                        local.get $2
                                                                        i32.const 8
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Uint8Array#subarray
                                                                        call $~lib/typedarray/Int8Array#reverse
                                                                        local.tee $0
@@ -30974,7 +31059,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -30982,7 +31067,7 @@
                                                                        i32.store offset=4 align=1
                                                                        local.get $3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31048,7 +31133,7 @@
                                                                        end
                                                                        local.get $2
                                                                        i32.const 8
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
                                                                        call $~lib/typedarray/Int16Array#reverse
                                                                        local.tee $0
@@ -31088,7 +31173,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31096,7 +31181,7 @@
                                                                        i32.store offset=4 align=1
                                                                        local.get $3
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31165,7 +31250,7 @@
                                                                        end
                                                                        local.get $2
                                                                        i32.const 8
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
                                                                        call $~lib/typedarray/Int16Array#reverse
                                                                        local.tee $0
@@ -31205,7 +31290,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31213,7 +31298,7 @@
                                                                        i32.store offset=4 align=1
                                                                        local.get $3
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31316,7 +31401,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31324,7 +31409,7 @@
                                                                        i32.store offset=4 align=1
                                                                        local.get $3
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31387,7 +31472,7 @@
                                                                        end
                                                                        local.get $2
                                                                        i32.const 8
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Uint32Array#subarray
                                                                        call $~lib/typedarray/Int32Array#reverse
                                                                        local.tee $0
@@ -31427,7 +31512,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31435,7 +31520,7 @@
                                                                        i32.store offset=4 align=1
                                                                        local.get $3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31501,7 +31586,7 @@
                                                                        end
                                                                        local.get $2
                                                                        i32.const 8
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int64Array#subarray
                                                                        call $~lib/typedarray/Int64Array#reverse
                                                                        local.tee $0
@@ -31541,7 +31626,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31549,7 +31634,7 @@
                                                                        i32.store offset=4 align=1
                                                                        local.get $3
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31615,7 +31700,7 @@
                                                                        end
                                                                        local.get $2
                                                                        i32.const 8
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int64Array#subarray
                                                                        call $~lib/typedarray/Int64Array#reverse
                                                                        local.tee $0
@@ -31655,7 +31740,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31663,7 +31748,7 @@
                                                                        i32.store offset=4 align=1
                                                                        local.get $3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31729,7 +31814,7 @@
                                                                        end
                                                                        local.get $2
                                                                        i32.const 8
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Uint32Array#subarray
                                                                        call $~lib/typedarray/Float32Array#reverse
                                                                        local.tee $0
@@ -31769,7 +31854,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -31777,7 +31862,7 @@
                                                                        i32.store offset=4 align=1
                                                                        local.get $3
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -32116,7 +32201,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -32277,7 +32362,7 @@
                                                                        br_if $folding-inner45
                                                                        local.get $0
                                                                        i32.const 9
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Uint8Array#subarray
                                                                        local.tee $0
                                                                        i32.const 3
@@ -32348,7 +32433,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -32509,7 +32594,7 @@
                                                                        br_if $folding-inner45
                                                                        local.get $0
                                                                        i32.const 9
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Uint8Array#subarray
                                                                        local.tee $0
                                                                        i32.const 3
@@ -32580,7 +32665,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -32740,7 +32825,7 @@
                                                                        br_if $folding-inner45
                                                                        local.get $0
                                                                        i32.const 9
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
                                                                        local.tee $0
                                                                        i32.const 3
@@ -32811,7 +32896,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -32972,7 +33057,7 @@
                                                                        br_if $folding-inner45
                                                                        local.get $0
                                                                        i32.const 9
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
                                                                        local.tee $0
                                                                        i32.const 3
@@ -33043,7 +33128,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -33273,7 +33358,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -33432,7 +33517,7 @@
                                                                        br_if $folding-inner45
                                                                        local.get $0
                                                                        i32.const 9
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Uint32Array#subarray
                                                                        local.tee $0
                                                                        i32.const 3
@@ -33503,7 +33588,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -33663,7 +33748,7 @@
                                                                        br_if $folding-inner45
                                                                        local.get $0
                                                                        i32.const 9
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int64Array#subarray
                                                                        local.tee $0
                                                                        i64.const 3
@@ -33734,7 +33819,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -33894,7 +33979,7 @@
                                                                        br_if $folding-inner45
                                                                        local.get $0
                                                                        i32.const 9
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int64Array#subarray
                                                                        local.tee $0
                                                                        i64.const 3
@@ -33965,7 +34050,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -34125,7 +34210,7 @@
                                                                        br_if $folding-inner45
                                                                        local.get $0
                                                                        i32.const 9
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Uint32Array#subarray
                                                                        local.tee $0
                                                                        f32.const 3
@@ -34196,7 +34281,7 @@
                                                                        i32.load
                                                                        local.tee $3
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -34418,7 +34503,7 @@
                                                                        global.set $~lib/memory/__stack_pointer
                                                                        i32.const 1
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -34494,7 +34579,7 @@
                                                                        end
                                                                        i32.const 1
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 0
@@ -34618,52 +34703,6 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 5
                                                                        i32.const 0
-                                                                       i32.const 5
-                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
-                                                                       local.set $0
-                                                                       global.get $~lib/memory/__stack_pointer
-                                                                       local.get $0
-                                                                       i32.store align=1
-                                                                       local.get $0
-                                                                       i32.const 0
-                                                                       i32.const 1
-                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                       local.get $0
-                                                                       i32.const 1
-                                                                       i32.const 2
-                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                       local.get $0
-                                                                       i32.const 2
-                                                                       i32.const 3
-                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                       local.get $0
-                                                                       i32.const 3
-                                                                       i32.const 4
-                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                       local.get $0
-                                                                       i32.const 4
-                                                                       i32.const 5
-                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                       local.get $0
-                                                                       call $~lib/typedarray/Uint8Array#join
-                                                                       i32.const 8592
-                                                                       call $~lib/string/String.__eq
-                                                                       i32.eqz
-                                                                       br_if $folding-inner60
-                                                                       local.get $0
-                                                                       call $~lib/typedarray/Uint8Array#join
-                                                                       i32.const 8592
-                                                                       call $~lib/string/String.__eq
-                                                                       i32.eqz
-                                                                       br_if $folding-inner61
-                                                                       global.get $~lib/memory/__stack_pointer
-                                                                       i32.const 4
-                                                                       i32.add
-                                                                       global.set $~lib/memory/__stack_pointer
-                                                                       i32.const 4
-                                                                       call $~lib/rt/__decrease_sp
-                                                                       i32.const 5
-                                                                       i32.const 0
                                                                        i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
@@ -34673,23 +34712,23 @@
                                                                        local.get $0
                                                                        i32.const 0
                                                                        i32.const 1
-                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
+                                                                       call $~lib/typedarray/Uint8Array#__set
                                                                        local.get $0
                                                                        i32.const 1
                                                                        i32.const 2
-                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
+                                                                       call $~lib/typedarray/Uint8Array#__set
                                                                        local.get $0
                                                                        i32.const 2
                                                                        i32.const 3
-                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
+                                                                       call $~lib/typedarray/Uint8Array#__set
                                                                        local.get $0
                                                                        i32.const 3
                                                                        i32.const 4
-                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
+                                                                       call $~lib/typedarray/Uint8Array#__set
                                                                        local.get $0
                                                                        i32.const 4
                                                                        i32.const 5
-                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
+                                                                       call $~lib/typedarray/Uint8Array#__set
                                                                        local.get $0
                                                                        call $~lib/typedarray/Uint8Array#join
                                                                        i32.const 8592
@@ -34709,53 +34748,7 @@
                                                                        i32.const 4
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 5
-                                                                       i32.const 1
-                                                                       i32.const 7
-                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
-                                                                       local.set $0
-                                                                       global.get $~lib/memory/__stack_pointer
-                                                                       local.get $0
-                                                                       i32.store align=1
-                                                                       local.get $0
                                                                        i32.const 0
-                                                                       i32.const 1
-                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                       local.get $0
-                                                                       i32.const 1
-                                                                       i32.const 2
-                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                       local.get $0
-                                                                       i32.const 2
-                                                                       i32.const 3
-                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                       local.get $0
-                                                                       i32.const 3
-                                                                       i32.const 4
-                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                       local.get $0
-                                                                       i32.const 4
-                                                                       i32.const 5
-                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                       local.get $0
-                                                                       call $~lib/typedarray/Int16Array#join
-                                                                       i32.const 8592
-                                                                       call $~lib/string/String.__eq
-                                                                       i32.eqz
-                                                                       br_if $folding-inner60
-                                                                       local.get $0
-                                                                       call $~lib/typedarray/Int16Array#join
-                                                                       i32.const 8592
-                                                                       call $~lib/string/String.__eq
-                                                                       i32.eqz
-                                                                       br_if $folding-inner61
-                                                                       global.get $~lib/memory/__stack_pointer
-                                                                       i32.const 4
-                                                                       i32.add
-                                                                       global.set $~lib/memory/__stack_pointer
-                                                                       i32.const 4
-                                                                       call $~lib/rt/__decrease_sp
-                                                                       i32.const 5
-                                                                       i32.const 1
                                                                        i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
@@ -34765,31 +34758,31 @@
                                                                        local.get $0
                                                                        i32.const 0
                                                                        i32.const 1
-                                                                       call $~lib/typedarray/Uint16Array#__set
+                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
                                                                        local.get $0
                                                                        i32.const 1
                                                                        i32.const 2
-                                                                       call $~lib/typedarray/Uint16Array#__set
+                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
                                                                        local.get $0
                                                                        i32.const 2
                                                                        i32.const 3
-                                                                       call $~lib/typedarray/Uint16Array#__set
+                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
                                                                        local.get $0
                                                                        i32.const 3
                                                                        i32.const 4
-                                                                       call $~lib/typedarray/Uint16Array#__set
+                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
                                                                        local.get $0
                                                                        i32.const 4
                                                                        i32.const 5
-                                                                       call $~lib/typedarray/Uint16Array#__set
+                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
                                                                        local.get $0
-                                                                       call $~lib/typedarray/Uint16Array#join
+                                                                       call $~lib/typedarray/Uint8Array#join
                                                                        i32.const 8592
                                                                        call $~lib/string/String.__eq
                                                                        i32.eqz
                                                                        br_if $folding-inner60
                                                                        local.get $0
-                                                                       call $~lib/typedarray/Uint16Array#join
+                                                                       call $~lib/typedarray/Uint8Array#join
                                                                        i32.const 8592
                                                                        call $~lib/string/String.__eq
                                                                        i32.eqz
@@ -34801,7 +34794,7 @@
                                                                        i32.const 4
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 5
-                                                                       i32.const 2
+                                                                       i32.const 1
                                                                        i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
@@ -34811,31 +34804,31 @@
                                                                        local.get $0
                                                                        i32.const 0
                                                                        i32.const 1
-                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       call $~lib/typedarray/Int16Array#__set
                                                                        local.get $0
                                                                        i32.const 1
                                                                        i32.const 2
-                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       call $~lib/typedarray/Int16Array#__set
                                                                        local.get $0
                                                                        i32.const 2
                                                                        i32.const 3
-                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       call $~lib/typedarray/Int16Array#__set
                                                                        local.get $0
                                                                        i32.const 3
                                                                        i32.const 4
-                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       call $~lib/typedarray/Int16Array#__set
                                                                        local.get $0
                                                                        i32.const 4
                                                                        i32.const 5
-                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       call $~lib/typedarray/Int16Array#__set
                                                                        local.get $0
-                                                                       call $~lib/typedarray/Int32Array#join
+                                                                       call $~lib/typedarray/Int16Array#join
                                                                        i32.const 8592
                                                                        call $~lib/string/String.__eq
                                                                        i32.eqz
                                                                        br_if $folding-inner60
                                                                        local.get $0
-                                                                       call $~lib/typedarray/Int32Array#join
+                                                                       call $~lib/typedarray/Int16Array#join
                                                                        i32.const 8592
                                                                        call $~lib/string/String.__eq
                                                                        i32.eqz
@@ -34847,53 +34840,7 @@
                                                                        i32.const 4
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 5
-                                                                       i32.const 2
-                                                                       i32.const 10
-                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
-                                                                       local.set $0
-                                                                       global.get $~lib/memory/__stack_pointer
-                                                                       local.get $0
-                                                                       i32.store align=1
-                                                                       local.get $0
-                                                                       i32.const 0
                                                                        i32.const 1
-                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                       local.get $0
-                                                                       i32.const 1
-                                                                       i32.const 2
-                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                       local.get $0
-                                                                       i32.const 2
-                                                                       i32.const 3
-                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                       local.get $0
-                                                                       i32.const 3
-                                                                       i32.const 4
-                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                       local.get $0
-                                                                       i32.const 4
-                                                                       i32.const 5
-                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                       local.get $0
-                                                                       call $~lib/typedarray/Uint32Array#join
-                                                                       i32.const 8592
-                                                                       call $~lib/string/String.__eq
-                                                                       i32.eqz
-                                                                       br_if $folding-inner60
-                                                                       local.get $0
-                                                                       call $~lib/typedarray/Uint32Array#join
-                                                                       i32.const 8592
-                                                                       call $~lib/string/String.__eq
-                                                                       i32.eqz
-                                                                       br_if $folding-inner61
-                                                                       global.get $~lib/memory/__stack_pointer
-                                                                       i32.const 4
-                                                                       i32.add
-                                                                       global.set $~lib/memory/__stack_pointer
-                                                                       i32.const 4
-                                                                       call $~lib/rt/__decrease_sp
-                                                                       i32.const 5
-                                                                       i32.const 3
                                                                        i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
@@ -34902,78 +34849,32 @@
                                                                        i32.store align=1
                                                                        local.get $0
                                                                        i32.const 0
-                                                                       i64.const 1
-                                                                       call $~lib/typedarray/Int64Array#__set
+                                                                       i32.const 1
+                                                                       call $~lib/typedarray/Uint16Array#__set
                                                                        local.get $0
                                                                        i32.const 1
-                                                                       i64.const 2
-                                                                       call $~lib/typedarray/Int64Array#__set
+                                                                       i32.const 2
+                                                                       call $~lib/typedarray/Uint16Array#__set
                                                                        local.get $0
                                                                        i32.const 2
-                                                                       i64.const 3
-                                                                       call $~lib/typedarray/Int64Array#__set
+                                                                       i32.const 3
+                                                                       call $~lib/typedarray/Uint16Array#__set
                                                                        local.get $0
                                                                        i32.const 3
-                                                                       i64.const 4
-                                                                       call $~lib/typedarray/Int64Array#__set
+                                                                       i32.const 4
+                                                                       call $~lib/typedarray/Uint16Array#__set
                                                                        local.get $0
                                                                        i32.const 4
-                                                                       i64.const 5
-                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                       local.get $0
-                                                                       call $~lib/typedarray/Int64Array#join
-                                                                       i32.const 8592
-                                                                       call $~lib/string/String.__eq
-                                                                       i32.eqz
-                                                                       br_if $folding-inner60
-                                                                       local.get $0
-                                                                       call $~lib/typedarray/Int64Array#join
-                                                                       i32.const 8592
-                                                                       call $~lib/string/String.__eq
-                                                                       i32.eqz
-                                                                       br_if $folding-inner61
-                                                                       global.get $~lib/memory/__stack_pointer
-                                                                       i32.const 4
-                                                                       i32.add
-                                                                       global.set $~lib/memory/__stack_pointer
-                                                                       i32.const 4
-                                                                       call $~lib/rt/__decrease_sp
                                                                        i32.const 5
-                                                                       i32.const 3
-                                                                       i32.const 12
-                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
-                                                                       local.set $0
-                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       call $~lib/typedarray/Uint16Array#__set
                                                                        local.get $0
-                                                                       i32.store align=1
-                                                                       local.get $0
-                                                                       i32.const 0
-                                                                       i64.const 1
-                                                                       call $~lib/typedarray/Uint64Array#__set
-                                                                       local.get $0
-                                                                       i32.const 1
-                                                                       i64.const 2
-                                                                       call $~lib/typedarray/Uint64Array#__set
-                                                                       local.get $0
-                                                                       i32.const 2
-                                                                       i64.const 3
-                                                                       call $~lib/typedarray/Uint64Array#__set
-                                                                       local.get $0
-                                                                       i32.const 3
-                                                                       i64.const 4
-                                                                       call $~lib/typedarray/Uint64Array#__set
-                                                                       local.get $0
-                                                                       i32.const 4
-                                                                       i64.const 5
-                                                                       call $~lib/typedarray/Uint64Array#__set
-                                                                       local.get $0
-                                                                       call $~lib/typedarray/Uint64Array#join
+                                                                       call $~lib/typedarray/Uint16Array#join
                                                                        i32.const 8592
                                                                        call $~lib/string/String.__eq
                                                                        i32.eqz
                                                                        br_if $folding-inner60
                                                                        local.get $0
-                                                                       call $~lib/typedarray/Uint64Array#join
+                                                                       call $~lib/typedarray/Uint16Array#join
                                                                        i32.const 8592
                                                                        call $~lib/string/String.__eq
                                                                        i32.eqz
@@ -34987,6 +34888,190 @@
                                                                        i32.const 5
                                                                        i32.const 2
                                                                        i32.const 13
+                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
+                                                                       local.set $0
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       local.get $0
+                                                                       i32.store align=1
+                                                                       local.get $0
+                                                                       i32.const 0
+                                                                       i32.const 1
+                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 1
+                                                                       i32.const 2
+                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 2
+                                                                       i32.const 3
+                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 3
+                                                                       i32.const 4
+                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 4
+                                                                       i32.const 5
+                                                                       call $~lib/typedarray/Int32Array#__set
+                                                                       local.get $0
+                                                                       call $~lib/typedarray/Int32Array#join
+                                                                       i32.const 8592
+                                                                       call $~lib/string/String.__eq
+                                                                       i32.eqz
+                                                                       br_if $folding-inner60
+                                                                       local.get $0
+                                                                       call $~lib/typedarray/Int32Array#join
+                                                                       i32.const 8592
+                                                                       call $~lib/string/String.__eq
+                                                                       i32.eqz
+                                                                       br_if $folding-inner61
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       i32.const 4
+                                                                       i32.add
+                                                                       global.set $~lib/memory/__stack_pointer
+                                                                       i32.const 4
+                                                                       call $~lib/rt/__decrease_sp
+                                                                       i32.const 5
+                                                                       i32.const 2
+                                                                       i32.const 15
+                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
+                                                                       local.set $0
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       local.get $0
+                                                                       i32.store align=1
+                                                                       local.get $0
+                                                                       i32.const 0
+                                                                       i32.const 1
+                                                                       call $~lib/typedarray/Uint32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 1
+                                                                       i32.const 2
+                                                                       call $~lib/typedarray/Uint32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 2
+                                                                       i32.const 3
+                                                                       call $~lib/typedarray/Uint32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 3
+                                                                       i32.const 4
+                                                                       call $~lib/typedarray/Uint32Array#__set
+                                                                       local.get $0
+                                                                       i32.const 4
+                                                                       i32.const 5
+                                                                       call $~lib/typedarray/Uint32Array#__set
+                                                                       local.get $0
+                                                                       call $~lib/typedarray/Uint32Array#join
+                                                                       i32.const 8592
+                                                                       call $~lib/string/String.__eq
+                                                                       i32.eqz
+                                                                       br_if $folding-inner60
+                                                                       local.get $0
+                                                                       call $~lib/typedarray/Uint32Array#join
+                                                                       i32.const 8592
+                                                                       call $~lib/string/String.__eq
+                                                                       i32.eqz
+                                                                       br_if $folding-inner61
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       i32.const 4
+                                                                       i32.add
+                                                                       global.set $~lib/memory/__stack_pointer
+                                                                       i32.const 4
+                                                                       call $~lib/rt/__decrease_sp
+                                                                       i32.const 5
+                                                                       i32.const 3
+                                                                       i32.const 17
+                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
+                                                                       local.set $0
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       local.get $0
+                                                                       i32.store align=1
+                                                                       local.get $0
+                                                                       i32.const 0
+                                                                       i64.const 1
+                                                                       call $~lib/typedarray/Int64Array#__set
+                                                                       local.get $0
+                                                                       i32.const 1
+                                                                       i64.const 2
+                                                                       call $~lib/typedarray/Int64Array#__set
+                                                                       local.get $0
+                                                                       i32.const 2
+                                                                       i64.const 3
+                                                                       call $~lib/typedarray/Int64Array#__set
+                                                                       local.get $0
+                                                                       i32.const 3
+                                                                       i64.const 4
+                                                                       call $~lib/typedarray/Int64Array#__set
+                                                                       local.get $0
+                                                                       i32.const 4
+                                                                       i64.const 5
+                                                                       call $~lib/typedarray/Int64Array#__set
+                                                                       local.get $0
+                                                                       call $~lib/typedarray/Int64Array#join
+                                                                       i32.const 8592
+                                                                       call $~lib/string/String.__eq
+                                                                       i32.eqz
+                                                                       br_if $folding-inner60
+                                                                       local.get $0
+                                                                       call $~lib/typedarray/Int64Array#join
+                                                                       i32.const 8592
+                                                                       call $~lib/string/String.__eq
+                                                                       i32.eqz
+                                                                       br_if $folding-inner61
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       i32.const 4
+                                                                       i32.add
+                                                                       global.set $~lib/memory/__stack_pointer
+                                                                       i32.const 4
+                                                                       call $~lib/rt/__decrease_sp
+                                                                       i32.const 5
+                                                                       i32.const 3
+                                                                       i32.const 19
+                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
+                                                                       local.set $0
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       local.get $0
+                                                                       i32.store align=1
+                                                                       local.get $0
+                                                                       i32.const 0
+                                                                       i64.const 1
+                                                                       call $~lib/typedarray/Uint64Array#__set
+                                                                       local.get $0
+                                                                       i32.const 1
+                                                                       i64.const 2
+                                                                       call $~lib/typedarray/Uint64Array#__set
+                                                                       local.get $0
+                                                                       i32.const 2
+                                                                       i64.const 3
+                                                                       call $~lib/typedarray/Uint64Array#__set
+                                                                       local.get $0
+                                                                       i32.const 3
+                                                                       i64.const 4
+                                                                       call $~lib/typedarray/Uint64Array#__set
+                                                                       local.get $0
+                                                                       i32.const 4
+                                                                       i64.const 5
+                                                                       call $~lib/typedarray/Uint64Array#__set
+                                                                       local.get $0
+                                                                       call $~lib/typedarray/Uint64Array#join
+                                                                       i32.const 8592
+                                                                       call $~lib/string/String.__eq
+                                                                       i32.eqz
+                                                                       br_if $folding-inner60
+                                                                       local.get $0
+                                                                       call $~lib/typedarray/Uint64Array#join
+                                                                       i32.const 8592
+                                                                       call $~lib/string/String.__eq
+                                                                       i32.eqz
+                                                                       br_if $folding-inner61
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       i32.const 4
+                                                                       i32.add
+                                                                       global.set $~lib/memory/__stack_pointer
+                                                                       i32.const 4
+                                                                       call $~lib/rt/__decrease_sp
+                                                                       i32.const 5
+                                                                       i32.const 2
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -35032,7 +35117,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 5
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -35233,7 +35318,7 @@
                                                                        i32.load
                                                                        local.tee $1
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -35320,7 +35405,7 @@
                                                                        i32.load
                                                                        local.tee $4
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -35376,7 +35461,7 @@
                                                                        local.get $3
                                                                        local.set $0
                                                                        i32.const 12
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $~lib/rt/itcms/__new
                                                                        local.tee $3
                                                                        local.get $2
@@ -35427,7 +35512,7 @@
                                                                        i32.load
                                                                        local.tee $4
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -35481,7 +35566,7 @@
                                                                        i32.and
                                                                        br_if $folding-inner57
                                                                        i32.const 12
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $~lib/rt/itcms/__new
                                                                        local.tee $2
                                                                        local.get $1
@@ -35532,7 +35617,7 @@
                                                                        i32.load
                                                                        local.tee $4
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -35587,7 +35672,7 @@
                                                                        i32.and
                                                                        br_if $folding-inner57
                                                                        i32.const 12
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $~lib/rt/itcms/__new
                                                                        local.tee $2
                                                                        local.get $1
@@ -35638,7 +35723,7 @@
                                                                        i32.load
                                                                        local.tee $4
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -35691,7 +35776,7 @@
                                                                        i32.and
                                                                        br_if $folding-inner57
                                                                        i32.const 12
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $~lib/rt/itcms/__new
                                                                        local.tee $2
                                                                        local.get $1
@@ -35742,7 +35827,7 @@
                                                                        i32.load
                                                                        local.tee $4
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -35795,7 +35880,7 @@
                                                                        i32.and
                                                                        br_if $folding-inner57
                                                                        i32.const 12
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $~lib/rt/itcms/__new
                                                                        local.tee $2
                                                                        local.get $1
@@ -35846,7 +35931,7 @@
                                                                        i32.load
                                                                        local.tee $4
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -35900,7 +35985,7 @@
                                                                        i32.and
                                                                        br_if $folding-inner57
                                                                        i32.const 12
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $~lib/rt/itcms/__new
                                                                        local.tee $2
                                                                        local.get $1
@@ -35951,7 +36036,7 @@
                                                                        i32.load
                                                                        local.tee $4
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36005,7 +36090,7 @@
                                                                        i32.and
                                                                        br_if $folding-inner57
                                                                        i32.const 12
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $~lib/rt/itcms/__new
                                                                        local.tee $2
                                                                        local.get $1
@@ -36056,7 +36141,7 @@
                                                                        i32.load
                                                                        local.tee $4
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36110,7 +36195,7 @@
                                                                        i32.and
                                                                        br_if $folding-inner57
                                                                        i32.const 12
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $~lib/rt/itcms/__new
                                                                        local.tee $2
                                                                        local.get $1
@@ -36161,7 +36246,7 @@
                                                                        i32.load
                                                                        local.tee $4
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36215,7 +36300,7 @@
                                                                        i32.and
                                                                        br_if $folding-inner57
                                                                        i32.const 12
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $~lib/rt/itcms/__new
                                                                        local.tee $2
                                                                        local.get $1
@@ -36259,7 +36344,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36279,7 +36364,7 @@
                                                                        call $~lib/typedarray/Int64Array#__set
                                                                        i32.const 4
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36303,7 +36388,7 @@
                                                                        call $~lib/typedarray/Uint8Array#__set
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36334,7 +36419,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 16
+                                                                       i32.const 26
                                                                        i32.const 10288
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int8Array>
@@ -36393,7 +36478,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 16
+                                                                       i32.const 26
                                                                        i32.const 10368
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int8Array>
@@ -36403,7 +36488,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 16
+                                                                       i32.const 26
                                                                        i32.const 10400
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int8Array>
@@ -36462,7 +36547,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 16
+                                                                       i32.const 26
                                                                        i32.const 10432
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int8Array>
@@ -36477,7 +36562,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 16
+                                                                       i32.const 26
                                                                        i32.const 10464
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int8Array>
@@ -36489,7 +36574,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36509,7 +36594,7 @@
                                                                        call $~lib/typedarray/Int64Array#__set
                                                                        i32.const 4
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36533,7 +36618,7 @@
                                                                        call $~lib/typedarray/Uint8Array#__set
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36553,7 +36638,7 @@
                                                                        call $~lib/typedarray/Int16Array#__set
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36564,7 +36649,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 68
+                                                                       i32.const 74
                                                                        i32.const 10496
                                                                        call $~lib/rt/__newArray
                                                                        i32.const 10528
@@ -36624,7 +36709,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 68
+                                                                       i32.const 74
                                                                        i32.const 10576
                                                                        call $~lib/rt/__newArray
                                                                        i32.const 10528
@@ -36635,7 +36720,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 68
+                                                                       i32.const 74
                                                                        i32.const 10608
                                                                        call $~lib/rt/__newArray
                                                                        i32.const 10528
@@ -36695,7 +36780,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 68
+                                                                       i32.const 74
                                                                        i32.const 10640
                                                                        call $~lib/rt/__newArray
                                                                        i32.const 10528
@@ -36711,7 +36796,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 68
+                                                                       i32.const 74
                                                                        i32.const 10672
                                                                        call $~lib/rt/__newArray
                                                                        i32.const 10528
@@ -36724,7 +36809,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36744,7 +36829,7 @@
                                                                        call $~lib/typedarray/Int64Array#__set
                                                                        i32.const 4
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36768,7 +36853,7 @@
                                                                        call $~lib/typedarray/Uint8Array#__set
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36788,7 +36873,7 @@
                                                                        call $~lib/typedarray/Int16Array#__set
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -36847,7 +36932,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 68
+                                                                       i32.const 74
                                                                        i32.const 10704
                                                                        call $~lib/rt/__newArray
                                                                        i32.const 10736
@@ -36911,7 +36996,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 68
+                                                                       i32.const 74
                                                                        i32.const 10800
                                                                        call $~lib/rt/__newArray
                                                                        i32.const 10736
@@ -36923,7 +37008,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 68
+                                                                       i32.const 74
                                                                        i32.const 10832
                                                                        call $~lib/rt/__newArray
                                                                        i32.const 10736
@@ -36987,7 +37072,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 68
+                                                                       i32.const 74
                                                                        i32.const 10864
                                                                        call $~lib/rt/__newArray
                                                                        i32.const 10736
@@ -37054,7 +37139,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 68
+                                                                       i32.const 74
                                                                        i32.const 10896
                                                                        call $~lib/rt/__newArray
                                                                        i32.const 10736
@@ -37067,7 +37152,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37087,7 +37172,7 @@
                                                                        call $~lib/typedarray/Int64Array#__set
                                                                        i32.const 4
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37111,7 +37196,7 @@
                                                                        call $~lib/typedarray/Uint8Array#__set
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37131,7 +37216,7 @@
                                                                        call $~lib/typedarray/Int16Array#__set
                                                                        i32.const 10
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37142,7 +37227,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 1
-                                                                       i32.const 70
+                                                                       i32.const 75
                                                                        i32.const 10928
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int16Array>
@@ -37205,7 +37290,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 1
-                                                                       i32.const 70
+                                                                       i32.const 75
                                                                        i32.const 11024
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int16Array>
@@ -37215,7 +37300,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 1
-                                                                       i32.const 70
+                                                                       i32.const 75
                                                                        i32.const 11072
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int16Array>
@@ -37278,7 +37363,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 1
-                                                                       i32.const 70
+                                                                       i32.const 75
                                                                        i32.const 11120
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int16Array>
@@ -37293,7 +37378,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 1
-                                                                       i32.const 70
+                                                                       i32.const 75
                                                                        i32.const 11168
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int16Array>
@@ -37305,7 +37390,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37325,7 +37410,7 @@
                                                                        call $~lib/typedarray/Int64Array#__set
                                                                        i32.const 4
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37349,7 +37434,7 @@
                                                                        call $~lib/typedarray/Uint8Array#__set
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37369,7 +37454,7 @@
                                                                        call $~lib/typedarray/Int16Array#__set
                                                                        i32.const 10
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37380,7 +37465,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 1
-                                                                       i32.const 72
+                                                                       i32.const 76
                                                                        i32.const 11216
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint16Array>
@@ -37443,7 +37528,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 1
-                                                                       i32.const 72
+                                                                       i32.const 76
                                                                        i32.const 11312
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint16Array>
@@ -37453,7 +37538,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 1
-                                                                       i32.const 72
+                                                                       i32.const 76
                                                                        i32.const 11360
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint16Array>
@@ -37516,7 +37601,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 1
-                                                                       i32.const 72
+                                                                       i32.const 76
                                                                        i32.const 11408
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint16Array>
@@ -37531,7 +37616,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 1
-                                                                       i32.const 72
+                                                                       i32.const 76
                                                                        i32.const 11456
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint16Array>
@@ -37543,7 +37628,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37563,7 +37648,7 @@
                                                                        call $~lib/typedarray/Int64Array#__set
                                                                        i32.const 4
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37587,7 +37672,7 @@
                                                                        call $~lib/typedarray/Uint8Array#__set
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37607,7 +37692,7 @@
                                                                        call $~lib/typedarray/Int16Array#__set
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37620,7 +37705,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 18
+                                                                       i32.const 27
                                                                        i32.const 11504
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int32Array>
@@ -37682,7 +37767,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 18
+                                                                       i32.const 27
                                                                        i32.const 11616
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int32Array>
@@ -37692,7 +37777,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 18
+                                                                       i32.const 27
                                                                        i32.const 11680
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int32Array>
@@ -37755,7 +37840,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 18
+                                                                       i32.const 27
                                                                        i32.const 11744
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int32Array>
@@ -37770,7 +37855,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 18
+                                                                       i32.const 27
                                                                        i32.const 11808
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int32Array>
@@ -37782,7 +37867,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37802,7 +37887,7 @@
                                                                        call $~lib/typedarray/Int64Array#__set
                                                                        i32.const 4
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37826,7 +37911,7 @@
                                                                        call $~lib/typedarray/Uint8Array#__set
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37846,7 +37931,7 @@
                                                                        call $~lib/typedarray/Int16Array#__set
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -37859,7 +37944,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 74
+                                                                       i32.const 77
                                                                        i32.const 11872
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint32Array>
@@ -37921,7 +38006,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 74
+                                                                       i32.const 77
                                                                        i32.const 11984
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint32Array>
@@ -37931,7 +38016,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 74
+                                                                       i32.const 77
                                                                        i32.const 12048
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint32Array>
@@ -37994,7 +38079,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 74
+                                                                       i32.const 77
                                                                        i32.const 12112
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint32Array>
@@ -38009,7 +38094,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 74
+                                                                       i32.const 77
                                                                        i32.const 12176
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint32Array>
@@ -38021,7 +38106,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38041,7 +38126,7 @@
                                                                        call $~lib/typedarray/Int64Array#__set
                                                                        i32.const 4
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38065,7 +38150,7 @@
                                                                        call $~lib/typedarray/Uint8Array#__set
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38085,7 +38170,7 @@
                                                                        call $~lib/typedarray/Int16Array#__set
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38096,7 +38181,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 76
+                                                                       i32.const 78
                                                                        i32.const 12240
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int64Array>
@@ -38159,7 +38244,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 76
+                                                                       i32.const 78
                                                                        i32.const 12400
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int64Array>
@@ -38169,7 +38254,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 76
+                                                                       i32.const 78
                                                                        i32.const 12512
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int64Array>
@@ -38231,7 +38316,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 76
+                                                                       i32.const 78
                                                                        i32.const 12624
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int64Array>
@@ -38246,7 +38331,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 76
+                                                                       i32.const 78
                                                                        i32.const 12736
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Int64Array>
@@ -38258,7 +38343,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38278,7 +38363,7 @@
                                                                        call $~lib/typedarray/Int64Array#__set
                                                                        i32.const 4
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38302,7 +38387,7 @@
                                                                        call $~lib/typedarray/Uint8Array#__set
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38322,7 +38407,7 @@
                                                                        call $~lib/typedarray/Int16Array#__set
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38333,7 +38418,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 78
+                                                                       i32.const 79
                                                                        i32.const 12848
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint64Array>
@@ -38396,7 +38481,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 78
+                                                                       i32.const 79
                                                                        i32.const 13008
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint64Array>
@@ -38406,7 +38491,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 78
+                                                                       i32.const 79
                                                                        i32.const 13120
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint64Array>
@@ -38468,7 +38553,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 78
+                                                                       i32.const 79
                                                                        i32.const 13232
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint64Array>
@@ -38483,7 +38568,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 78
+                                                                       i32.const 79
                                                                        i32.const 13344
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Uint64Array>
@@ -38495,7 +38580,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38515,7 +38600,7 @@
                                                                        call $~lib/typedarray/Int64Array#__set
                                                                        i32.const 4
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38539,7 +38624,7 @@
                                                                        call $~lib/typedarray/Uint8Array#__set
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38559,7 +38644,7 @@
                                                                        call $~lib/typedarray/Int16Array#__set
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38609,7 +38694,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 64
+                                                                       i32.const 72
                                                                        i32.const 13456
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Float32Array>
@@ -38620,7 +38705,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 64
+                                                                       i32.const 72
                                                                        i32.const 13568
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Float32Array>
@@ -38675,7 +38760,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 64
+                                                                       i32.const 72
                                                                        i32.const 13632
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Float32Array>
@@ -38814,7 +38899,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 2
-                                                                       i32.const 64
+                                                                       i32.const 72
                                                                        i32.const 13696
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Float32Array>
@@ -38826,7 +38911,7 @@
                                                                        call $~lib/rt/__decrease_sp
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38846,7 +38931,7 @@
                                                                        call $~lib/typedarray/Int64Array#__set
                                                                        i32.const 4
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $1
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38870,7 +38955,7 @@
                                                                        call $~lib/typedarray/Uint8Array#__set
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $4
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38890,7 +38975,7 @@
                                                                        call $~lib/typedarray/Int16Array#__set
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -38941,7 +39026,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 66
+                                                                       i32.const 73
                                                                        i32.const 13760
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Float64Array>
@@ -38994,7 +39079,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 66
+                                                                       i32.const 73
                                                                        i32.const 13920
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Float64Array>
@@ -39048,7 +39133,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 66
+                                                                       i32.const 73
                                                                        i32.const 14032
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Float64Array>
@@ -39187,7 +39272,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 3
-                                                                       i32.const 66
+                                                                       i32.const 73
                                                                        i32.const 14144
                                                                        call $~lib/rt/__newArray
                                                                        call $std/typedarray/valuesEqual<~lib/typedarray/Float64Array>
@@ -39197,7 +39282,7 @@
                                                                        global.set $~lib/memory/__stack_pointer
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $0
                                                                        global.get $~lib/memory/__stack_pointer
@@ -39205,7 +39290,7 @@
                                                                        i32.store align=1
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -39225,7 +39310,7 @@
                                                                        call $~lib/typedarray/Float32Array#__set
                                                                        i32.const 4
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $2
                                                                        global.get $~lib/memory/__stack_pointer
@@ -39249,7 +39334,7 @@
                                                                        call $~lib/typedarray/Int64Array#__set
                                                                        i32.const 2
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $4
                                                                        i32.const 0
@@ -39380,14 +39465,14 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 68
+                                                                       i32.const 74
                                                                        i32.const 14256
                                                                        call $~lib/rt/__newArray
                                                                        i32.const 10736
                                                                        call $byn$mgfn-shared$std/typedarray/valuesEqual<~lib/typedarray/Uint8Array>
                                                                        i32.const 4
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.set $3
                                                                        global.get $~lib/memory/__stack_pointer
@@ -39411,7 +39496,7 @@
                                                                        call $~lib/typedarray/Uint32Array#__set
                                                                        i32.const 4
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $2
                                                                        i32.const 0
@@ -39481,7 +39566,7 @@
                                                                        local.get $0
                                                                        i32.const 10
                                                                        i32.const 0
-                                                                       i32.const 68
+                                                                       i32.const 74
                                                                        i32.const 14288
                                                                        call $~lib/rt/__newArray
                                                                        i32.const 10736
@@ -39549,7 +39634,7 @@
                                                                        br_if $folding-inner70
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 5
+                                                                       i32.const 6
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 2
@@ -39609,7 +39694,7 @@
                                                                        br_if $folding-inner70
                                                                        i32.const 3
                                                                        i32.const 0
-                                                                       i32.const 6
+                                                                       i32.const 8
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 2
@@ -39669,7 +39754,7 @@
                                                                        br_if $folding-inner70
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 7
+                                                                       i32.const 9
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 2
@@ -39730,7 +39815,7 @@
                                                                        br_if $folding-inner70
                                                                        i32.const 3
                                                                        i32.const 1
-                                                                       i32.const 8
+                                                                       i32.const 11
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 2
@@ -39791,7 +39876,7 @@
                                                                        br_if $folding-inner70
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 9
+                                                                       i32.const 13
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 2
@@ -39852,7 +39937,7 @@
                                                                        br_if $folding-inner70
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 10
+                                                                       i32.const 15
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 2
@@ -39913,7 +39998,7 @@
                                                                        br_if $folding-inner70
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 11
+                                                                       i32.const 17
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 2
@@ -39974,7 +40059,7 @@
                                                                        br_if $folding-inner70
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 12
+                                                                       i32.const 19
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 2
@@ -40035,7 +40120,7 @@
                                                                        br_if $folding-inner70
                                                                        i32.const 3
                                                                        i32.const 2
-                                                                       i32.const 13
+                                                                       i32.const 21
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 2
@@ -40096,7 +40181,7 @@
                                                                        br_if $folding-inner70
                                                                        i32.const 3
                                                                        i32.const 3
-                                                                       i32.const 14
+                                                                       i32.const 23
                                                                        call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
                                                                        local.tee $0
                                                                        i32.const 2
@@ -40154,7 +40239,134 @@
                                                                        f64.const 1
                                                                        f64.ne
                                                                        br_if $folding-inner70
-                                                                       i32.const 48072
+                                                                       i32.const 3
+                                                                       i32.const 0
+                                                                       i32.const 6
+                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
+                                                                       local.tee $3
+                                                                       i32.const 0
+                                                                       i32.const 10
+                                                                       call $~lib/typedarray/Uint8Array#__set
+                                                                       local.get $3
+                                                                       i32.const 1
+                                                                       i32.const 12
+                                                                       call $~lib/typedarray/Uint8Array#__set
+                                                                       local.get $3
+                                                                       i32.const 2
+                                                                       i32.const 14
+                                                                       call $~lib/typedarray/Uint8Array#__set
+                                                                       i32.const 0
+                                                                       local.set $0
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       local.get $3
+                                                                       i32.store align=1
+                                                                       i32.const 8
+                                                                       i32.const 89
+                                                                       call $~lib/rt/itcms/__new
+                                                                       local.tee $2
+                                                                       local.tee $1
+                                                                       local.get $3
+                                                                       i32.store offset=4
+                                                                       local.get $1
+                                                                       local.get $3
+                                                                       call $~lib/rt/itcms/__link
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       local.get $2
+                                                                       i32.store offset=4 align=1
+                                                                       local.get $2
+                                                                       call $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Uint8Array,u8>#next"
+                                                                       local.set $1
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       local.get $1
+                                                                       i32.store align=1
+                                                                       loop $for-of-loop|0
+                                                                        local.get $1
+                                                                        if
+                                                                         local.get $0
+                                                                         local.get $1
+                                                                         i32.load8_u
+                                                                         i32.add
+                                                                         local.set $0
+                                                                         local.get $2
+                                                                         call $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Uint8Array,u8>#next"
+                                                                         local.set $1
+                                                                         br $for-of-loop|0
+                                                                        end
+                                                                       end
+                                                                       local.get $0
+                                                                       i32.const 36
+                                                                       i32.ne
+                                                                       if
+                                                                        i32.const 0
+                                                                        i32.const 544
+                                                                        i32.const 916
+                                                                        i32.const 3
+                                                                        call $~lib/builtins/abort
+                                                                        unreachable
+                                                                       end
+                                                                       i32.const 2
+                                                                       i32.const 1
+                                                                       i32.const 9
+                                                                       call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor
+                                                                       local.tee $3
+                                                                       i32.const 0
+                                                                       i32.const -2
+                                                                       call $~lib/typedarray/Int16Array#__set
+                                                                       local.get $3
+                                                                       i32.const 1
+                                                                       i32.const 5
+                                                                       call $~lib/typedarray/Int16Array#__set
+                                                                       i32.const 0
+                                                                       local.set $0
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       local.get $3
+                                                                       i32.store align=1
+                                                                       i32.const 8
+                                                                       i32.const 92
+                                                                       call $~lib/rt/itcms/__new
+                                                                       local.tee $2
+                                                                       local.tee $1
+                                                                       local.get $3
+                                                                       i32.store offset=4
+                                                                       local.get $1
+                                                                       local.get $3
+                                                                       call $~lib/rt/itcms/__link
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       local.get $2
+                                                                       i32.store offset=4 align=1
+                                                                       local.get $2
+                                                                       call $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Int16Array,i16>#next"
+                                                                       local.set $1
+                                                                       global.get $~lib/memory/__stack_pointer
+                                                                       local.get $1
+                                                                       i32.store align=1
+                                                                       loop $for-of-loop|1
+                                                                        local.get $1
+                                                                        if
+                                                                         local.get $0
+                                                                         local.get $1
+                                                                         i32.load16_s
+                                                                         i32.extend16_s
+                                                                         i32.add
+                                                                         local.set $0
+                                                                         local.get $2
+                                                                         call $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Int16Array,i16>#next"
+                                                                         local.set $1
+                                                                         br $for-of-loop|1
+                                                                        end
+                                                                       end
+                                                                       local.get $0
+                                                                       i32.const 3
+                                                                       i32.ne
+                                                                       if
+                                                                        i32.const 0
+                                                                        i32.const 544
+                                                                        i32.const 925
+                                                                        i32.const 3
+                                                                        call $~lib/builtins/abort
+                                                                        unreachable
+                                                                       end
+                                                                       i32.const 48096
                                                                        global.set $~lib/memory/__stack_pointer
                                                                        global.get $~lib/rt/itcms/state
                                                                        i32.const 0
@@ -40193,7 +40405,7 @@
                                                                        i32.const 12
                                                                        i32.add
                                                                        global.set $~lib/memory/__stack_pointer
-                                                                       br $__inlined_func$start:std/typedarray$1010
+                                                                       br $__inlined_func$start:std/typedarray$1036
                                                                       end
                                                                       i32.const 0
                                                                       i32.const 544
@@ -40654,14 +40866,14 @@
     end
     i32.const 32
     i32.const 608
-    i32.const 1865
+    i32.const 1920
     i32.const 9
     call $~lib/builtins/abort
     unreachable
    end
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable
@@ -40677,7 +40889,7 @@
   local.get $0
   memory.fill
   global.get $~lib/memory/__stack_pointer
-  i32.const 15304
+  i32.const 15328
   i32.lt_s
   if
    unreachable
@@ -41078,7 +41290,7 @@
   if
    i32.const 336
    i32.const 608
-   i32.const 1902
+   i32.const 1957
    i32.const 5
    call $~lib/builtins/abort
    unreachable

@@ -905,5 +905,25 @@ testArraySort<Uint64Array, u64>();
 testArraySort<Float32Array, f32>();
 testArraySort<Float64Array, f64>();
 
+// Iterator support
+{
+  let a = new Uint8Array(3);
+  a[0] = 10;
+  a[1] = 12;
+  a[2] = 14;
+  let sum: i32 = 0;
+  for (let v of a) sum += v;
+  assert(sum == 36);
+}
+
+{
+  let a = new Int16Array(2);
+  a[0] = -2;
+  a[1] = 5;
+  let sum: i32 = 0;
+  for (let v of a) sum += v;
+  assert(sum == 3);
+}
+
 __stack_pointer = __heap_base;
 __collect();
