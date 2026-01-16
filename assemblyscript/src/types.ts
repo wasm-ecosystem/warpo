@@ -69,15 +69,6 @@ export const enum TypeKind {
   Array,
   /** 31-bit integer reference. */
   I31,
-  /** String reference. */
-  String,
-  /** WTF8 string view. */
-  StringviewWTF8,
-  /** WTF16 string view. */
-  StringviewWTF16,
-  /** String iterator. */
-  StringviewIter,
-
   // other
 
   /** No return type. */
@@ -111,10 +102,6 @@ export const enum TypeFlags {
   Vector = 1 << 10,
   /** Is an external type. */
   External = 1 << 11,
-  /** Is a class. */
-  Class = 1 << 12,
-  /** Is a function. */
-  Function = 1 << 13,
 }
 
 /** Represents a resolved type. */
@@ -641,14 +628,6 @@ export class Type {
         return CommonNames.ref_array;
       case TypeKind.I31:
         return CommonNames.ref_i31;
-      case TypeKind.String:
-        return CommonNames.ref_string;
-      case TypeKind.StringviewWTF8:
-        return CommonNames.ref_stringview_wtf8;
-      case TypeKind.StringviewWTF16:
-        return CommonNames.ref_stringview_wtf16;
-      case TypeKind.StringviewIter:
-        return CommonNames.ref_stringview_iter;
       default:
         assert(false);
       case TypeKind.Void:
@@ -746,9 +725,6 @@ export class Type {
       }
       case TypeKind.I31: {
         return binaryen._BinaryenTypeFromHeapType(HeapTypeRef.I31, this.is(TypeFlags.Nullable));
-      }
-      case TypeKind.String: {
-        return binaryen._BinaryenTypeFromHeapType(HeapTypeRef.String, this.is(TypeFlags.Nullable));
       }
       case TypeKind.Void:
         return TypeRef.None;
@@ -876,30 +852,6 @@ export class Type {
 
   /** Non-nullable 31-bit integer reference (`ref i31`). */
   static readonly i31: Type = new Type(TypeKind.I31, TypeFlags.External | TypeFlags.Reference, 0);
-
-  /** Non-nullable string reference (`ref string`). */
-  static readonly string: Type = new Type(TypeKind.String, TypeFlags.External | TypeFlags.Reference, 0);
-
-  /** Non-nullable WTF8 string view reference (`ref stringview_wtf8`). */
-  static readonly stringview_wtf8: Type = new Type(
-    TypeKind.StringviewWTF8,
-    TypeFlags.External | TypeFlags.Reference,
-    0
-  );
-
-  /** Non-nullable WTF16 string view reference (`ref stringview_wtf16`). */
-  static readonly stringview_wtf16: Type = new Type(
-    TypeKind.StringviewWTF16,
-    TypeFlags.External | TypeFlags.Reference,
-    0
-  );
-
-  /** Non-nullable string iterator reference (`ref stringview_iter`). */
-  static readonly stringview_iter: Type = new Type(
-    TypeKind.StringviewIter,
-    TypeFlags.External | TypeFlags.Reference,
-    0
-  );
 
   /** No return type. */
   static readonly void: Type = new Type(TypeKind.Void, TypeFlags.None, 0);

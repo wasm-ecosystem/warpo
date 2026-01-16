@@ -166,8 +166,6 @@ export const FEATURE_MEMORY64 = Feature.Memory64;
 export const FEATURE_RELAXED_SIMD = Feature.RelaxedSimd;
 /** Extended const expressions. */
 export const FEATURE_EXTENDED_CONST = Feature.ExtendedConst;
-/** String references. */
-export const FEATURE_STRINGREF = Feature.Stringref;
 /** All features. */
 export const FEATURES_ALL = Feature.All;
 /** Default features. */
