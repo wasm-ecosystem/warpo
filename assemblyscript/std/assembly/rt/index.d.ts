@@ -26,8 +26,6 @@ declare function __newArray(length: i32, alignLog2: usize, id: u32, data?: usize
 declare function __finalize(ptr: usize): void;
 
 // Debugging
-declare const ASC_RTRACE: bool;
-declare const ASC_PROFILE: bool;
 declare const ASC_GC_TESTING: bool;
 
 // Incremental GC constants

@@ -1,15 +1,4 @@
-import {
-  BLOCK,
-  BLOCK_OVERHEAD,
-  OBJECT_OVERHEAD,
-  OBJECT_MAXSIZE,
-  TOTAL_OVERHEAD,
-  DEBUG,
-  TRACE,
-  RTRACE,
-  PROFILE,
-} from "./common";
-import { onvisit, oncollect, oninterrupt, onyield } from "./rtrace";
+import { BLOCK, BLOCK_OVERHEAD, OBJECT_OVERHEAD, OBJECT_MAXSIZE, TOTAL_OVERHEAD, DEBUG, TRACE, RTRACE } from "./common";
 import { TypeinfoFlags } from "../shared/typeinfo";
 import { E_ALLOCATION_TOO_LARGE, E_ALREADY_PINNED, E_NOT_PINNED } from "../util/error";
 
@@ -334,7 +323,6 @@ export function __link(parentPtr: usize, childPtr: usize, expectMultiple: bool):
 export function __visit(ptr: usize, cookie: i32): void {
   if (!ptr) return;
   let obj = changetype<Object>(ptr - TOTAL_OVERHEAD);
-  if (RTRACE) if (!onvisit(obj)) return;
   if (obj.color == white) {
     obj.makeGray();
     ++visitCount;
@@ -387,7 +375,6 @@ export function __collect(): void {
   while (state != STATE_IDLE) step();
   threshold = <usize>((<u64>total * IDLEFACTOR) / 100) + GRANULARITY;
   if (TRACE) trace("GC (full) done at cur/max", 2, total, memory.size() << 16);
-  if (RTRACE || PROFILE) oncollect(total);
 }
 
 // Garbage collector automation
@@ -408,7 +395,6 @@ export function __collect(): void {
 
 /** Performs a reasonable amount of incremental GC steps. */
 function interrupt(): void {
-  if (PROFILE) oninterrupt(total);
   if (TRACE) trace("GC (auto) at", 1, total);
   let budget: isize = (GRANULARITY * STEPFACTOR) / 100;
   do {
@@ -416,11 +402,9 @@ function interrupt(): void {
     if (state == STATE_IDLE) {
       if (TRACE) trace("└ GC (auto) done at cur/max", 2, total, memory.size() << 16);
       threshold = <usize>((<u64>total * IDLEFACTOR) / 100) + GRANULARITY;
-      if (PROFILE) onyield(total);
       return;
     }
   } while (budget > 0);
   if (TRACE) trace("└ GC (auto) ongoing at", 1, total);
   threshold = total + GRANULARITY * usize(total - threshold < GRANULARITY);
-  if (PROFILE) onyield(total);
 }

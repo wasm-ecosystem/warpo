@@ -1,5 +1,4 @@
 import { AL_BITS, AL_SIZE, AL_MASK, DEBUG, BLOCK, BLOCK_OVERHEAD, BLOCK_MAXSIZE } from "./common";
-import { oninit, onalloc, onresize, onmove, onfree } from "./rtrace";
 import { E_ALLOCATION_TOO_LARGE } from "../util/error";
 
 // === The TLSF (Two-Level Segregate Fit) memory allocator ===
@@ -439,7 +438,6 @@ function prepareSize(size: usize): usize {
 
 /** Initializes the root structure. */
 function initialize(): void {
-  if (isDefined(ASC_RTRACE)) oninit(__heap_base);
   let rootOffset = (__heap_base + AL_MASK) & ~AL_MASK;
   let pagesBefore = memory.size();
   let pagesNeeded = <i32>(((rootOffset + ROOT_SIZE + 0xffff) & ~0xffff) >>> 16);
@@ -476,7 +474,6 @@ export function allocateBlock(root: Root, size: usize): Block {
   if (DEBUG) assert((block.mmInfo & ~TAGS_MASK) >= payloadSize); // must fit
   removeBlock(root, block);
   prepareBlock(root, block, payloadSize);
-  if (isDefined(ASC_RTRACE)) onalloc(block);
   return block;
 }
 
@@ -489,9 +486,6 @@ export function reallocateBlock(root: Root, block: Block, size: usize): Block {
   // possibly split and update runtime size if it still fits
   if (payloadSize <= blockSize) {
     prepareBlock(root, block, payloadSize);
-    if (isDefined(ASC_RTRACE)) {
-      if (payloadSize != blockSize) onresize(block, BLOCK_OVERHEAD + blockSize);
-    }
     return block;
   }
 
@@ -504,7 +498,6 @@ export function reallocateBlock(root: Root, block: Block, size: usize): Block {
       removeBlock(root, right);
       block.mmInfo = (blockInfo & TAGS_MASK) | mergeSize;
       prepareBlock(root, block, payloadSize);
-      if (isDefined(ASC_RTRACE)) onresize(block, BLOCK_OVERHEAD + blockSize);
       return block;
     }
   }
@@ -522,7 +515,6 @@ function moveBlock(root: Root, block: Block, newSize: usize): Block {
     block.mmInfo & ~TAGS_MASK
   );
   if (changetype<usize>(block) >= __heap_base) {
-    if (isDefined(ASC_RTRACE)) onmove(block, newBlock);
     freeBlock(root, block);
   }
   return newBlock;
@@ -530,7 +522,6 @@ function moveBlock(root: Root, block: Block, newSize: usize): Block {
 
 /** Frees a block. */
 export function freeBlock(root: Root, block: Block): void {
-  if (isDefined(ASC_RTRACE)) onfree(block);
   block.mmInfo = block.mmInfo | FREE;
   insertBlock(root, block);
 }

@@ -127,7 +127,6 @@ returnof
 revspace
 rotr
 rtid
-rtrace
 rtti
 scalbn
 schleifner
