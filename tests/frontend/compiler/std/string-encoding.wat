@@ -4289,7 +4289,7 @@
                 (call $~lib/builtins/abort
                  (i32.const 688)
                  (i32.const 752)
-                 (i32.const 752)
+                 (i32.const 786)
                  (i32.const 49)
                 )
                 (unreachable)
@@ -5093,7 +5093,7 @@
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 752)
-     (i32.const 780)
+     (i32.const 814)
      (i32.const 7)
     )
     (unreachable)

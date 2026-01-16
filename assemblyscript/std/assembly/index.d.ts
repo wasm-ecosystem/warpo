@@ -2234,7 +2234,7 @@ declare class StaticArray<T> {
 }
 
 /** Class representing a sequence of characters. */
-declare class String {
+declare class String implements Iterable<string> {
   [key: i32]: string;
   static fromCharCode(ls: i32, hs?: i32): string;
   static fromCharCodes(arr: i32[]): string;
@@ -2242,6 +2242,7 @@ declare class String {
   static fromCodePoints(arr: i32[]): string;
   static raw(parts: TemplateStringsArray, ...args: any[]): string;
   readonly length: i32;
+  [Symbol.iterator](): Iterator<string>;
   at(index: i32): string;
   charAt(index: i32): string;
   charCodeAt(index: i32): i32;

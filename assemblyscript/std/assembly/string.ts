@@ -7,8 +7,37 @@ import { E_INDEXOUTOFRANGE, E_INVALIDLENGTH, E_UNPAIRED_SURROGATE } from "./util
 import { idof } from "./builtins";
 import { Array } from "./array";
 
+class StringIterator implements Iterator<string> {
+  private index: i32 = 0;
+  private len: i32;
 
-@final export abstract class String {
+  constructor(private readonly str: String) {
+    this.len = str.length;
+  }
+
+  next(): IteratorResult<string> {
+    const current = this.index;
+    const len = this.len;
+    if (current >= len) return IteratorResult.done<string>();
+
+    const ptr = changetype<usize>(this.str) + ((<usize>current) << 1);
+    const first = <i32>load<u16>(ptr);
+
+    if ((first & 0xfc00) == 0xd800 && current + 1 < len) {
+      const second = <i32>load<u16>(ptr, 2);
+      if ((second & 0xfc00) == 0xdc00) {
+        this.index = current + 2;
+        return IteratorResult.fromValue<string>(changetype<string>(String.fromCharCode(first, second)));
+      }
+    }
+
+    this.index = current + 1;
+    return IteratorResult.fromValue<string>(changetype<string>(String.fromCharCode(first)));
+  }
+}
+
+
+@final export abstract class String implements Iterable<string> {
 
   @lazy static readonly MAX_LENGTH: i32 = <i32>(BLOCK_MAXSIZE >>> alignof<u16>());
 
@@ -53,6 +82,10 @@ import { Array } from "./array";
 
   get length(): i32 {
     return changetype<OBJECT>(changetype<usize>(this) - TOTAL_OVERHEAD).rtSize >> 1;
+  }
+
+  [Symbol.iterator](): StringIterator {
+    return new StringIterator(this);
   }
 
   at(pos: i32): String {
