@@ -7,6 +7,7 @@
 #include <regex>
 #include <string>
 
+#include "warpo/common/ConfigProvider.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/passes/RunnerForTest.hpp"
@@ -14,12 +15,6 @@
 #include "warpo/support/Opt.hpp"
 
 namespace warpo {
-static cli::Opt<std::filesystem::path> outputPath{
-    cli::Category::All,
-    "-o",
-    "--output",
-    [](argparse::Argument &arg) -> void { arg.help("output file").required(); },
-};
 static cli::Opt<std::string> functionRegex{
     cli::Category::All,
     "--func",
@@ -36,9 +31,13 @@ int main(int argc, char const *argv[]) {
     argparse::ArgumentParser program("warpo_test_runner");
     cli::init(cli::Category::All, program, argc, argv);
 
+    std::optional<std::filesystem::path> const outputPath = common::ConfigProvider::instance().outputPath();
+    if (!outputPath.has_value())
+      throw std::runtime_error{"Output path not specified. Use -o or --output to specify the output file."};
+
     frontend::CompilationResult const result = frontend::compile(nullptr);
     std::string const wat = passes::runOnWatForTest(result.m, std::regex{functionRegex.get()});
-    writeBinaryFile(outputPath.get(), wat);
+    writeBinaryFile(outputPath.value(), wat);
   } catch (const std::exception &e) {
     fmt::print(stderr, "ERROR: {}\n", e.what());
     return 1;

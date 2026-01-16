@@ -2,23 +2,11 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-#include "warpo/common/ConfigFile.hpp"
+#include "warpo/common/ConfigProvider.hpp"
 #include "warpo/common/Features.hpp"
-#include "warpo/support/Opt.hpp"
 #include "wasm-features.h"
 
 namespace warpo::common {
-
-static cli::Opt<std::vector<std::string>> disableFeatureOptions{
-    cli::Category::Frontend | cli::Category::Optimization,
-    "--disable-feature",
-    [](argparse::Argument &arg) -> void {
-      arg.help("disable WebAssembly features, mutable-globals, sign-extension, nontrapping-f2i, bulk-memory")
-          .nargs(argparse::nargs_pattern::at_least_one)
-          .choices("mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory")
-          .append();
-    },
-};
 
 Features Features::fromString(std::vector<std::string> const &featureStrs) {
   Features res = Features::none();
@@ -38,14 +26,7 @@ Features Features::fromString(std::vector<std::string> const &featureStrs) {
   return res;
 }
 
-Features Features::fromCLI() {
-  if (disableFeatureOptions.isSet())
-    return Features::all() & ~Features::fromString(disableFeatureOptions.get());
-  std::optional<MergedFileConfig> const &fileConfig = getFileConfig();
-  if (fileConfig.has_value() && fileConfig->options.features.has_value())
-    return fileConfig->options.features.value();
-  return Features::all();
-}
+Features Features::fromCLI() { return ConfigProvider::instance().features(); }
 
 namespace {
 // sync from assemblyscript/std/assembly/shared/feature.ts

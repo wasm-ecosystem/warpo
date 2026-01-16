@@ -9,10 +9,10 @@
 #include <optional>
 #include <string>
 #include <vector>
-#include <warpo/common/ConfigFile.hpp>
 
 #include "warpo/common/AsModule.hpp"
 #include "warpo/common/Features.hpp"
+#include "warpo/common/UsesOption.hpp"
 #include "warpo/support/Unreachable.hpp"
 
 namespace wasm {

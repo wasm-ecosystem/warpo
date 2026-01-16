@@ -61,6 +61,10 @@ export default defineConfig({
         link: "/using_compiler/quick_start",
         items: [
           {
+            text: "manage build configurations",
+            link: "/using_compiler/config",
+          },
+          {
             text: "third-party libraries",
             link: "/using_compiler/module_resolution",
           },
