@@ -1399,14 +1399,6 @@ export class Module {
     return binaryen._BinaryenRefEq(this.ref, left, right);
   }
 
-  string_eq(left: ExpressionRef, right: ExpressionRef): ExpressionRef {
-    return binaryen._BinaryenStringEq(this.ref, StringEqOp.Equal, left, right);
-  }
-
-  string_compare(left: ExpressionRef, right: ExpressionRef): ExpressionRef {
-    return binaryen._BinaryenStringEq(this.ref, StringEqOp.Compare, left, right);
-  }
-
   // expressions
 
   unary(op: UnaryOp, value: ExpressionRef): ExpressionRef {
@@ -3658,9 +3650,6 @@ function tryEnsureBasicType(type: Type): TypeRef {
     }
     case TypeKind.I31: {
       return binaryen._BinaryenTypeFromHeapType(HeapTypeRef.I31, type.is(TypeFlags.Nullable));
-    }
-    case TypeKind.String: {
-      return binaryen._BinaryenTypeFromHeapType(HeapTypeRef.String, type.is(TypeFlags.Nullable));
     }
     case TypeKind.Void:
       assert(false); // invalid here

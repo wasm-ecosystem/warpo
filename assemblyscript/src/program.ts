@@ -1081,10 +1081,6 @@ export class Program extends DiagnosticEmitter {
     this.registerNativeType(CommonNames.ref_struct, Type.struct);
     this.registerNativeType(CommonNames.ref_array, Type.array);
     this.registerNativeType(CommonNames.ref_i31, Type.i31);
-    this.registerNativeType(CommonNames.ref_string, Type.string);
-    this.registerNativeType(CommonNames.ref_stringview_wtf8, Type.stringview_wtf8);
-    this.registerNativeType(CommonNames.ref_stringview_wtf16, Type.stringview_wtf16);
-    this.registerNativeType(CommonNames.ref_stringview_iter, Type.stringview_iter);
 
     // register compiler hints
     this.registerConstantInteger(
@@ -1174,11 +1170,6 @@ export class Program extends DiagnosticEmitter {
       CommonNames.ASC_FEATURE_EXTENDED_CONST,
       Type.bool,
       i64_new(options.hasFeature(Feature.ExtendedConst) ? 1 : 0, 0)
-    );
-    this.registerConstantInteger(
-      CommonNames.ASC_FEATURE_STRINGREF,
-      Type.bool,
-      i64_new(options.hasFeature(Feature.Stringref) ? 1 : 0, 0)
     );
 
     // remember deferred elements
@@ -1422,9 +1413,6 @@ export class Program extends DiagnosticEmitter {
         this.registerWrapperClass(Type.struct, CommonNames.RefStruct);
         this.registerWrapperClass(Type.array, CommonNames.RefArray);
         this.registerWrapperClass(Type.i31, CommonNames.RefI31);
-      }
-      if (options.hasFeature(Feature.Stringref)) {
-        this.registerWrapperClass(Type.string, CommonNames.RefString);
       }
     }
 
@@ -2192,15 +2180,6 @@ export class Program extends DiagnosticEmitter {
         return (
           this.checkFeatureEnabled(Feature.ReferenceTypes, reportNode) &&
           this.checkFeatureEnabled(Feature.GC, reportNode)
-        );
-      }
-      case TypeKind.String:
-      case TypeKind.StringviewWTF8:
-      case TypeKind.StringviewWTF16:
-      case TypeKind.StringviewIter: {
-        return (
-          this.checkFeatureEnabled(Feature.ReferenceTypes, reportNode) &&
-          this.checkFeatureEnabled(Feature.Stringref, reportNode)
         );
       }
     }

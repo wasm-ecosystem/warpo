@@ -111,10 +111,6 @@ export namespace CommonNames {
   export const ref_struct = "ref_struct";
   export const ref_array = "ref_array";
   export const ref_i31 = "ref_i31";
-  export const ref_string = "ref_string";
-  export const ref_stringview_wtf8 = "ref_stringview_wtf8";
-  export const ref_stringview_wtf16 = "ref_stringview_wtf16";
-  export const ref_stringview_iter = "ref_stringview_iter";
   export const i8x16 = "i8x16";
   export const u8x16 = "u8x16";
   export const i16x8 = "i16x8";
@@ -166,7 +162,6 @@ export namespace CommonNames {
   export const ASC_FEATURE_MEMORY64 = "ASC_FEATURE_MEMORY64";
   export const ASC_FEATURE_RELAXED_SIMD = "ASC_FEATURE_RELAXED_SIMD";
   export const ASC_FEATURE_EXTENDED_CONST = "ASC_FEATURE_EXTENDED_CONST";
-  export const ASC_FEATURE_STRINGREF = "ASC_FEATURE_STRINGREF";
   export const ASC_VERSION_MAJOR = "ASC_VERSION_MAJOR";
   export const ASC_VERSION_MINOR = "ASC_VERSION_MINOR";
   export const ASC_VERSION_PATCH = "ASC_VERSION_PATCH";

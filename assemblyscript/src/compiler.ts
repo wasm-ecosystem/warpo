@@ -279,8 +279,6 @@ export class Options {
   /** Sets whether a feature is enabled. */
   setFeature(feature: Feature, on: bool = true): void {
     if (on) {
-      // Enabling Stringref also enables GC
-      if (feature & Feature.Stringref) feature |= Feature.GC;
       // Enabling GC also enables Reference Types
       if (feature & Feature.GC) feature |= Feature.ReferenceTypes;
       // Enabling Relaxed SIMD also enables SIMD
@@ -289,8 +287,6 @@ export class Options {
     } else {
       // Disabling Reference Types also disables GC
       if (feature & Feature.ReferenceTypes) feature |= Feature.GC;
-      // Disabling GC also disables Stringref
-      if (feature & Feature.GC) feature |= Feature.Stringref;
       // Disabling SIMD also disables Relaxed SIMD
       if (feature & Feature.Simd) feature |= Feature.RelaxedSimd;
       this.features &= ~feature;
@@ -478,7 +474,6 @@ export class Compiler extends DiagnosticEmitter {
     if (options.hasFeature(Feature.Memory64)) featureFlags |= FeatureFlags.Memory64;
     if (options.hasFeature(Feature.RelaxedSimd)) featureFlags |= FeatureFlags.RelaxedSIMD;
     if (options.hasFeature(Feature.ExtendedConst)) featureFlags |= FeatureFlags.ExtendedConst;
-    if (options.hasFeature(Feature.Stringref)) featureFlags |= FeatureFlags.Stringref;
     module.setFeatures(featureFlags);
 
     // set up the main start function
@@ -5008,11 +5003,6 @@ export class Compiler extends DiagnosticEmitter {
       case TypeKind.Array:
       case TypeKind.I31:
         return module.ref_eq(leftExpr, rightExpr);
-      case TypeKind.String:
-        return module.string_eq(leftExpr, rightExpr);
-      case TypeKind.StringviewWTF8:
-      case TypeKind.StringviewWTF16:
-      case TypeKind.StringviewIter:
       case TypeKind.Func:
       case TypeKind.Extern:
       case TypeKind.Any: {
@@ -5059,12 +5049,6 @@ export class Compiler extends DiagnosticEmitter {
       case TypeKind.I31: {
         return module.unary(UnaryOp.EqzI32, module.ref_eq(leftExpr, rightExpr));
       }
-      case TypeKind.String: {
-        return module.unary(UnaryOp.EqzI32, module.string_eq(leftExpr, rightExpr));
-      }
-      case TypeKind.StringviewWTF8:
-      case TypeKind.StringviewWTF16:
-      case TypeKind.StringviewIter:
       case TypeKind.Func:
       case TypeKind.Extern:
       case TypeKind.Any: {
@@ -9811,11 +9795,7 @@ export class Compiler extends DiagnosticEmitter {
       case TypeKind.Any:
       case TypeKind.Eq:
       case TypeKind.Struct:
-      case TypeKind.Array:
-      case TypeKind.String:
-      case TypeKind.StringviewWTF8:
-      case TypeKind.StringviewWTF16:
-      case TypeKind.StringviewIter: {
+      case TypeKind.Array: {
         if (type.is(TypeFlags.Nullable)) return module.ref_null(type.toRef());
         assert(false); // TODO: check that refs are nullable in callers?
         return module.unreachable();
@@ -9975,11 +9955,7 @@ export class Compiler extends DiagnosticEmitter {
       case TypeKind.Eq:
       case TypeKind.Struct:
       case TypeKind.Array:
-      case TypeKind.I31:
-      case TypeKind.String:
-      case TypeKind.StringviewWTF8:
-      case TypeKind.StringviewWTF16:
-      case TypeKind.StringviewIter: {
+      case TypeKind.I31: {
         // Needs to be true (i.e. not zero) when the ref is _not_ null,
         // which means `ref.is_null` returns false (i.e. zero).
         return module.unary(UnaryOp.EqzI32, module.ref_is_null(expr));

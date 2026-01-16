@@ -32,8 +32,6 @@ export const enum Feature {
   RelaxedSimd = 1 << 12, // see: https://github.com/WebAssembly/relaxed-simd
   /** Extended const expressions. */
   ExtendedConst = 1 << 13, // see: https://github.com/WebAssembly/extended-const
-  /** Reference typed strings. */
-  Stringref = 1 << 14, // see: https://github.com/WebAssembly/stringref
   /** All features. */
   All = (1 << 15) - 1,
 }
@@ -69,8 +67,6 @@ export function featureToString(feature: Feature): string {
       return "relaxed-simd";
     case Feature.ExtendedConst:
       return "extended-const";
-    case Feature.Stringref:
-      return "stringref";
   }
   assert(false);
   return "";
