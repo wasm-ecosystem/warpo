@@ -4704,18 +4704,8 @@ export class IndexSignature extends TypedElement {
       parent.internalName + "[]",
       parent.program,
       parent,
-      parent.program.makeNativeVariableDeclaration("[]").toDeclarationBase() // is fine
+      new DeclarationBase(null, CommonFlags.None, Source.native.range, null)
     );
-  }
-
-  /** Obtains the getter instance. */
-  getGetterInstance(isUnchecked: bool): Function | null {
-    return (<Class>this.parent).lookupOverload(OperatorKind.IndexedGet, isUnchecked);
-  }
-
-  /** Obtains the setter instance. */
-  getSetterInstance(isUnchecked: bool): Function | null {
-    return (<Class>this.parent).lookupOverload(OperatorKind.IndexedSet, isUnchecked);
   }
 }
 
