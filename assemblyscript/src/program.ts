@@ -4029,7 +4029,7 @@ export class Global extends VariableLikeElement {
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags,
     /** Declaration reference. Creates a native declaration if omitted. */
-    declaration: VariableLikeDeclarationStatement = parent.program.makeNativeVariableDeclaration(name)
+    declaration: VariableLikeDeclarationStatement
   ) {
     super(ElementKind.Global, name, parent, declaration.toVariableLikeBase(), declaration.toDeclarationBase());
     this.decoratorFlags = decoratorFlags;
@@ -4051,9 +4051,6 @@ export class Parameter {
 
 /** A local variable. */
 export class Local extends VariableLikeElement {
-  /** Original name of the (temporary) local. */
-  private originalName: string;
-
   /** Constructs a new local variable. */
   constructor(
     /** Simple name. */
@@ -4068,7 +4065,6 @@ export class Local extends VariableLikeElement {
     declaration: VariableLikeDeclarationStatement = parent.program.makeNativeVariableDeclaration(name)
   ) {
     super(ElementKind.Local, name, parent, declaration.toVariableLikeBase(), declaration.toDeclarationBase());
-    this.originalName = name;
     this.index = index;
     assert(type != Type.void);
     this.setType(type);
