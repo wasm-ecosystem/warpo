@@ -3942,19 +3942,20 @@ export abstract class VariableLikeElement extends TypedElement {
     name: string,
     /** Parent element, usually a file, namespace or class. */
     parent: Element,
-    /** Declaration reference. Creates a native declaration if omitted. */
-    declaration: VariableLikeDeclarationStatement = parent.program.makeNativeVariableDeclaration(name)
+    /** Variable-like base of the declaration. */
+    variableLikeBase: VariableLikeBase,
+    /** Declaration base. */
+    declarationBase: DeclarationBase
   ) {
     super(
       kind,
       name,
-      mangleInternalName(name, parent, declaration.is(CommonFlags.Instance)),
+      mangleInternalName(name, parent, declarationBase.is(CommonFlags.Instance)),
       parent.program,
       parent,
-      declaration.toDeclarationBase()
+      declarationBase
     );
-    this.flags = declaration.flags;
-    this.variableLikeBase = declaration.toVariableLikeBase();
+    this.variableLikeBase = variableLikeBase;
   }
 
   get identifierNode(): IdentifierExpression {
@@ -4003,7 +4004,7 @@ export class EnumValue extends VariableLikeElement {
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags = DecoratorFlags.None
   ) {
-    super(ElementKind.EnumValue, name, parent, declaration);
+    super(ElementKind.EnumValue, name, parent, declaration.toVariableLikeBase(), declaration.toDeclarationBase());
     this.decoratorFlags = decoratorFlags;
     this.setType(Type.i32);
   }
@@ -4030,7 +4031,7 @@ export class Global extends VariableLikeElement {
     /** Declaration reference. Creates a native declaration if omitted. */
     declaration: VariableLikeDeclarationStatement = parent.program.makeNativeVariableDeclaration(name)
   ) {
-    super(ElementKind.Global, name, parent, declaration);
+    super(ElementKind.Global, name, parent, declaration.toVariableLikeBase(), declaration.toDeclarationBase());
     this.decoratorFlags = decoratorFlags;
   }
 }
@@ -4066,7 +4067,7 @@ export class Local extends VariableLikeElement {
     /** Declaration reference. */
     declaration: VariableLikeDeclarationStatement = parent.program.makeNativeVariableDeclaration(name)
   ) {
-    super(ElementKind.Local, name, parent, declaration);
+    super(ElementKind.Local, name, parent, declaration.toVariableLikeBase(), declaration.toDeclarationBase());
     this.originalName = name;
     this.index = index;
     assert(type != Type.void);
@@ -4649,20 +4650,22 @@ export class Property extends VariableLikeElement {
     /** Parent element, usually a static class prototype or class instance. */
     parent: Element
   ) {
+    const declaration = prototype.isField
+      ? <VariableLikeDeclarationStatement>assert(prototype.fieldDeclaration)
+      : Node.createVariableDeclaration(
+          prototype.identifierNode,
+          null,
+          prototype.flags & CommonFlags.Instance,
+          null,
+          null,
+          prototype.nameRange
+        );
     super(
       ElementKind.Property,
       prototype.name,
       parent,
-      prototype.isField
-        ? <VariableLikeDeclarationStatement>assert(prototype.fieldDeclaration)
-        : Node.createVariableDeclaration(
-            prototype.identifierNode,
-            null,
-            prototype.flags & CommonFlags.Instance,
-            null,
-            null,
-            prototype.nameRange
-          )
+      declaration.toVariableLikeBase(),
+      declaration.toDeclarationBase()
     );
     this.prototype = prototype;
     this.flags = prototype.flags;
