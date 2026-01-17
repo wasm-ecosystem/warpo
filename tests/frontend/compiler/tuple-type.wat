@@ -28,10 +28,10 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
- (global $~lib/rt/__rtti_base i32 (i32.const 496))
- (global $~lib/memory/__data_end i32 (i32.const 520))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33288))
- (global $~lib/memory/__heap_base i32 (i32.const 33288))
+ (global $~lib/rt/__rtti_base i32 (i32.const 528))
+ (global $~lib/memory/__data_end i32 (i32.const 552))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33320))
+ (global $~lib/memory/__heap_base i32 (i32.const 33320))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -43,7 +43,8 @@
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $8 (i32.const 412) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\002\00\00\00\00\00\00\00\00\00\00\00")
  (data $9 (i32.const 444) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00t\00u\00p\00l\00e\00-\00t\00y\00p\00e\00.\00t\00s\00\00\00")
- (data $10 (i32.const 496) "\05\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00")
+ (data $10 (i32.const 492) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\004\00\00\00\00\00\00\00\00\00\00\00")
+ (data $11 (i32.const 528) "\05\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -3424,6 +3425,66 @@
      (i32.const 0)
      (i32.const 464)
      (i32.const 4)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $~lib/tuple/SmallTuple#__set<i32>
+   (call $~lib/rt/__tmptostack
+    (local.get $tuple)
+   )
+   (i32.const 0)
+   (i32.const 3)
+  )
+  (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+   (call $~lib/rt/__tmptostack
+    (local.get $tuple)
+   )
+   (i32.const 4)
+   (i32.const 512)
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $tuple)
+      )
+      (i32.const 0)
+     )
+     (i32.const 3)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 8)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (local.get $tuple)
+       )
+       (i32.const 4)
+      )
+     )
+     (i32.const 512)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 9)
      (i32.const 3)
     )
     (unreachable)

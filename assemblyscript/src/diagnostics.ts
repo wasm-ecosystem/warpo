@@ -445,6 +445,7 @@ export abstract class DiagnosticEmitter {
     arg2: string | null = null
   ): void {
     this.emitDiagnostic(code, DiagnosticCategory.Error, range, null, arg0, arg1, arg2);
+    // unreachable();
   }
 
   /** Emits an error diagnostic message with a related range. */

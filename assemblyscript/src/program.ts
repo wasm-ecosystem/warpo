@@ -648,6 +648,16 @@ export class Program extends DiagnosticEmitter {
   }
   private _float64ArrayPrototype: ClassPrototype | null = null;
 
+  get smallTupleInstance(): Class {
+    let cached = this._smallTupleInstance;
+    if (!cached) this._smallTupleInstance = cached = this.requireClass(CommonNames.SmallTuple);
+    return cached;
+  }
+  isTupleInstance(instance: Class): bool {
+    return instance == this._smallTupleInstance;
+  }
+  private _smallTupleInstance: Class | null = null;
+
   /** Gets the standard `String` instance. */
   get stringInstance(): Class {
     let cached = this._stringInstance;
@@ -3213,6 +3223,8 @@ export const enum ElementKind {
   TypeDefinition,
   /** An {@link IndexSignature}. */
   IndexSignature,
+  /** A {@link TupleIndexSignature}. */
+  TupleIndexSignature,
 }
 
 /** Indicates built-in decorators that are present. */
@@ -4724,6 +4736,16 @@ export class IndexSignature extends TypedElement {
   /** Obtains the setter instance. */
   getSetterInstance(isUnchecked: bool): Function | null {
     return (<Class>this.parent).lookupOverload(OperatorKind.IndexedSet, isUnchecked);
+  }
+}
+
+export class TupleIndexSignature extends Element {
+  constructor(
+    program: Program,
+    public tupleType: Type
+  ) {
+    const smallTupleInstance = program.smallTupleInstance;
+    super(ElementKind.TupleIndexSignature, "[]", smallTupleInstance.internalName + "[]", program, smallTupleInstance);
   }
 }
 

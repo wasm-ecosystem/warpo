@@ -26,6 +26,7 @@ import {
   DeclaredElement,
   CompiledNameKind,
   CompiledNameNode,
+  TupleIndexSignature,
 } from "./program";
 
 import { Flow } from "./flow";
@@ -398,7 +399,7 @@ export class Resolver extends DiagnosticEmitter {
     // small tuple use u64 for memory layout, so that it can hold max 64 * sizeof<usize> bytes
     const smallTupleThreshold = 64 * this.program.options.usizeType.byteSize;
     if (memoryOffset <= smallTupleThreshold) {
-      let smallTupleClass = this.program.requireClass(CommonNames.SmallTuple);
+      let smallTupleClass = this.program.smallTupleInstance;
       let baseType = smallTupleClass.type;
 
       let tupleType = new Type(baseType.kind, baseType.flags, baseType.size);
@@ -1357,6 +1358,12 @@ export class Resolver extends DiagnosticEmitter {
     const elementExpression = node.elementExpression;
     const targetType = this.resolveExpression(targetExpression, ctxFlow, ctxType, reportMode);
     if (!targetType) return null;
+
+    if (targetType.isTuple) {
+      this.currentThisExpression = targetExpression;
+      this.currentElementExpression = elementExpression;
+      return new TupleIndexSignature(this.program, targetType);
+    }
 
     let elementElement = this.lookupExpression(elementExpression, ctxFlow, ctxType, reportMode);
     if (elementElement && elementElement.kind != ElementKind.Global) elementElement = null;
