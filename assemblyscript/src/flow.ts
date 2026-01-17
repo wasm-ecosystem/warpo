@@ -62,7 +62,7 @@ import { UncheckedBehavior } from "./compiler";
 
 import { DiagnosticCode } from "./diagnostics";
 
-import { Node } from "./ast";
+import { DeclarationBase, Node, Source, VariableLikeBase } from "./ast";
 
 import { cloneMap } from "./util";
 
@@ -408,7 +408,14 @@ export class Flow {
 
   /** Adds a new scoped dummy local of the specified name. */
   addScopedDummyLocal(name: string, type: Type, declarationNode: Node): Local {
-    let scopedDummy = new Local(name, -1, type, this.targetFunction);
+    let scopedDummy = new Local(
+      name,
+      -1,
+      type,
+      this.targetFunction,
+      new VariableLikeBase(Node.createIdentifierExpression(name, Source.native.range), null, null),
+      new DeclarationBase(null, CommonFlags.None, Source.native.range, null)
+    );
     let scopedLocals = this.scopedLocals;
     if (!scopedLocals) this.scopedLocals = scopedLocals = new Map();
     else if (scopedLocals.has(name)) {
@@ -441,7 +448,14 @@ export class Flow {
       return existingLocal;
     }
     assert(index < this.targetFunction.localsByIndex.length);
-    let scopedAlias = new Local(name, index, type, this.targetFunction);
+    let scopedAlias = new Local(
+      name,
+      index,
+      type,
+      this.targetFunction,
+      new VariableLikeBase(Node.createIdentifierExpression(name, Source.native.range), null, null),
+      new DeclarationBase(null, CommonFlags.None, Source.native.range, null)
+    );
     scopedAlias.set(CommonFlags.Scoped);
     scopedLocals.set(name, scopedAlias);
     return scopedAlias;

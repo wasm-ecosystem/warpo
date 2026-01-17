@@ -152,6 +152,7 @@ import {
   TypeDeclaration,
   ParameterKind,
   DeclarationBase,
+  VariableLikeBase,
 } from "./ast";
 
 import { Type, TypeKind, TypeFlags, Signature, typesToRefs } from "./types";
@@ -3122,14 +3123,20 @@ export class Compiler extends DiagnosticEmitter {
           if (precomp) {
             initExpr = precomp; // always use precomputed initExpr
             let local: Local | null = null;
+            const variableLikeBase = new VariableLikeBase(
+              Node.createIdentifierExpression(name, Source.native.range),
+              null,
+              null
+            );
+            const declarationBase = new DeclarationBase(null, CommonFlags.None, Source.native.range, null);
             switch (<u32>getExpressionType(initExpr)) {
               case <u32>TypeRef.I32: {
-                local = new Local(name, -1, type, flow.targetFunction);
+                local = new Local(name, -1, type, flow.targetFunction, variableLikeBase, declarationBase);
                 local.setConstantIntegerValue(i64_new(getConstValueI32(initExpr), 0), type);
                 break;
               }
               case <u32>TypeRef.I64: {
-                local = new Local(name, -1, type, flow.targetFunction);
+                local = new Local(name, -1, type, flow.targetFunction, variableLikeBase, declarationBase);
                 local.setConstantIntegerValue(
                   i64_new(getConstValueI64Low(initExpr), getConstValueI64High(initExpr)),
                   type
@@ -3137,12 +3144,12 @@ export class Compiler extends DiagnosticEmitter {
                 break;
               }
               case <u32>TypeRef.F32: {
-                local = new Local(name, -1, type, flow.targetFunction);
+                local = new Local(name, -1, type, flow.targetFunction, variableLikeBase, declarationBase);
                 local.setConstantFloatValue(<f64>getConstValueF32(initExpr), type);
                 break;
               }
               case <u32>TypeRef.F64: {
-                local = new Local(name, -1, type, flow.targetFunction);
+                local = new Local(name, -1, type, flow.targetFunction, variableLikeBase, declarationBase);
                 local.setConstantFloatValue(getConstValueF64(initExpr), type);
                 break;
               }
