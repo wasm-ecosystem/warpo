@@ -9,6 +9,7 @@ import { Class, Program, DecoratorFlags, OperatorKind, Function } from "./progra
 import { TypeRef, createType, HeapTypeRef, ensureType } from "./module";
 
 import * as binaryen from "./glue/binaryen";
+import { alignUpToPowerOf2 } from "./util";
 
 /** Indicates the kind of a type. */
 export const enum TypeKind {
@@ -104,6 +105,47 @@ export const enum TypeFlags {
   External = 1 << 11,
 }
 
+export class TupleElementInfo {
+  constructor(
+    /** Tuple element types */
+    public type: Type,
+    /** Tuple element offset in bytes. */
+    public offset: i32
+  ) {}
+}
+
+export class SmallTupleTypeInfo {
+  private usizeByteSize: i32 = 0;
+  constructor(
+    /** Tuple element information, if this is a tuple type. */
+    public elements: TupleElementInfo[],
+    program: Program
+  ) {
+    this.usizeByteSize = program.options.usizeType.byteSize;
+    assert(elements.length != 0);
+  }
+
+  get elementCount(): i32 {
+    return this.elements.length;
+  }
+
+  getElementsAreaByteSize(): i32 {
+    let lastElement = this.elements[this.elements.length - 1];
+    return alignUpToPowerOf2(lastElement.offset + lastElement.type.byteSize, this.usizeByteSize);
+  }
+
+  getBitmap(): i64 {
+    let bitmap = i64_new(0);
+    for (let i = 0, k = this.elements.length; i < k; ++i) {
+      let element = this.elements[i];
+      if (element.type.isReference) {
+        bitmap = i64_or(bitmap, i64_shl(i64_new(1), i64_new(element.offset / this.usizeByteSize)));
+      }
+    }
+    return bitmap;
+  }
+}
+
 /** Represents a resolved type. */
 export class Type {
   /** Type kind. */
@@ -116,6 +158,8 @@ export class Type {
   classReference: Class | null = null;
   /** Underlying signature reference, if a function type. */
   signatureReference: Signature | null = null;
+  /** Tuple element information, if this is a tuple type. */
+  tupleInfo: SmallTupleTypeInfo | null = null;
   /** Respective non-nullable type, if nullable. */
   private _nonNullableType: Type | null = null;
   /** Respective nullable type, if non-nullable. */
@@ -276,6 +320,10 @@ export class Type {
   /** Tests if this type represents a class. */
   get isClass(): bool {
     return this.getClass() != null;
+  }
+
+  get isTuple(): bool {
+    return this.tupleInfo != null;
   }
 
   /** Gets the underlying class or wrapper class of this type, if any. */
@@ -660,6 +708,16 @@ export class Type {
   toString(validWat: bool = false): string {
     const nullablePostfix = validWat ? "|null" : " | null";
     if (this.isReference) {
+      if (this.isTuple) {
+        const tupleInfo = this.tupleInfo!;
+        const elementCount = tupleInfo.elementCount;
+        const tupleName = new Array<string>(elementCount);
+        for (let i = 0; i < elementCount; ++i) {
+          tupleName[i] = tupleInfo.elements[i].type.toString(validWat);
+        }
+        const name = "[" + tupleName.join(validWat ? ", " : ", ") + "]";
+        return this.isNullableReference ? name + nullablePostfix : name;
+      }
       let classReference = this.getClass();
       if (classReference) {
         return this.isNullableReference ? classReference.internalName + nullablePostfix : classReference.internalName;

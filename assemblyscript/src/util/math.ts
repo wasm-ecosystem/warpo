@@ -19,3 +19,14 @@ export function accuratePow64(x: f64, y: f64): f64 {
   }
   return Math.pow(x, y);
 }
+
+/**
+ * Aligns `value` up to the next multiple of `alignmentPow2`.
+ *
+ * `alignmentPow2` must be a power of two.
+ * This function does not validate the precondition; call `isPowerOf2` if needed.
+ */
+export function alignUpToPowerOf2(value: i32, alignmentPow2: i32): i32 {
+  assert(isPowerOf2(alignmentPow2));
+  return (value + (alignmentPow2 - 1)) & ~(alignmentPow2 - 1);
+}

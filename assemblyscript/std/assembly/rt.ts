@@ -46,6 +46,24 @@ export function __newArray(length: i32, alignLog2: usize, id: u32, data: usize =
   return array;
 }
 
+import { SmallTuple } from "tuple";
+
+/**
+ * {@link elementSize} is the number of elements in the tuple
+ * - 32 bit data will be counted 1
+ * - 64 bit data will be counted 2
+ * {@link elementSize} must be <= 64
+ */
+// @ts-ignore: decorator
+@unsafe
+export function __newTuple(elementSize: usize, bitmap: u64): usize {
+  const bitmapSize = sizeof<u64>();
+  const totalSize = elementSize + bitmapSize;
+  const ptr = __new(totalSize, idof<SmallTuple>());
+  store<u64>(changetype<usize>(ptr) + elementSize, bitmap);
+  return ptr;
+}
+
 // @ts-ignore: decorator
 @global @unsafe
 function __tostack(ptr: usize): usize {

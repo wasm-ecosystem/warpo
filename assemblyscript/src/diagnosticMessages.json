@@ -163,6 +163,7 @@
   "Property '{0}' in type '{1}' is not assignable to the same property in base type '{2}'.": 2416,
   "A class can only implement an interface.": 2422,
   "A namespace declaration cannot be located prior to a class or function with which it is merged.": 2434,
+  "Tuple type '{0}' of length '{1}' has no element at index '{2}'.": 2439,
   "Types have separate declarations of a private property '{0}'.": 2442,
   "Property '{0}' is protected in type '{1}' but public in type '{2}'.": 2444,
   "Property '{0}' is protected and only accessible within class '{1}' and its subclasses.": 2445,

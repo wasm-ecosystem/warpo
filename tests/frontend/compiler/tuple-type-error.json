@@ -1,3 +1,8 @@
 {
-  "stderr": ["ERROR TS2456: Type alias 'TupleType' circularly references itself."]
+  "stderr": [
+    "ERROR TS2322: Type '~lib/string/String' is not assignable to type 'i32'.",
+    "let type_mismtach: [i32, i32] = [1, \"2\"];",
+    "ERROR TS2439: Tuple type '[i32, ~lib/string/String]' of length '2' has no element at index '3'.",
+    "out_of_index[3];"
+  ]
 }

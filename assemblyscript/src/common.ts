@@ -218,6 +218,7 @@ export namespace CommonNames {
   export const TemplateStringsArray = "TemplateStringsArray";
   export const Error = "Error";
   export const Iterable = "Iterable";
+  export const SmallTuple = "SmallTuple";
   export const Symbol = "Symbol";
   export const SymbolIterator = "iterator";
   // runtime
@@ -238,6 +239,7 @@ export namespace CommonNames {
   export const visit = "__visit";
   export const newBuffer = "__newBuffer";
   export const newArray = "__newArray";
+  export const newTuple = "__newTuple";
   export const BLOCK = "~lib/rt/common/BLOCK";
   export const OBJECT = "~lib/rt/common/OBJECT";
   // memory & table
