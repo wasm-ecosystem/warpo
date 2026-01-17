@@ -1,5 +1,6 @@
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
+import { argv } from "node:process";
 import { pathToFileURL } from "node:url";
 
 const __dirname = import.meta.dirname;
@@ -15,4 +16,6 @@ async function importRunFiles() {
   }
 }
 
+const isUpdateMode = argv.includes("--update") || argv.includes("-u");
+if (isUpdateMode) console.log("Running in update mode...");
 importRunFiles();
