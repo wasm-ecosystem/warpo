@@ -372,24 +372,6 @@ export class Resolver extends DiagnosticEmitter {
     return null;
   }
 
-  private resolveBuiltinNotNullableType(
-    /** The type to resolve. */
-    node: NamedTypeNode,
-    /** Contextual element. */
-    ctxElement: Element,
-    /** Contextual types, i.e. `T`. */
-    ctxTypes: Map<string, Type> | null = null,
-    /** How to proceed with eventual diagnostics. */
-    reportMode: ReportMode = ReportMode.Report
-  ): Type | null {
-    const typeArgumentNode = this.ensureOneTypeArgument(node, reportMode);
-    if (!typeArgumentNode) return null;
-    let typeArgument = this.resolveType(typeArgumentNode, null, ctxElement, ctxTypes, reportMode);
-    if (!typeArgument) return null;
-    if (!typeArgument.isNullableReference) return typeArgument;
-    return typeArgument.nonNullableType;
-  }
-
   /** Resolves a type name to the program element it refers to. */
   resolveTypeName(
     /** The type name to resolve. */
