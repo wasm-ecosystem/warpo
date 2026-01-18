@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <cstddef>
+#include <deque>
 #include <filesystem>
 #include <gtest/gtest.h>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <support/colors.h>
@@ -24,105 +26,201 @@ warpo::cli::Opt<bool> updateFixturesFlag{
     [](argparse::Argument &arg) { arg.help("update fixture files instead of comparing").flag(); },
 };
 
+class LineReader {
+public:
+  explicit LineReader(std::istream &input) : input_(input) {}
+
+  bool next(std::string &line) { return static_cast<bool>(std::getline(input_, line)); }
+
+private:
+  std::istream &input_;
+};
+
 // Filter out subprogram sections with names starting with "~lib" or "start:~lib"
-std::string
-filterLibSubprograms(std::string const &dump,
-                     std::deque<std::pair<size_t, const wasm::Function::DebugLocation *>> const &sourceMapLocations,
-                     std::vector<std::string> const &debugInfoFileNames) {
-  // Cache filenames without paths
-  std::vector<std::string> fileNamesOnly;
-  fileNamesOnly.reserve(debugInfoFileNames.size());
-  for (std::string const &fullPath : debugInfoFileNames) {
-    fileNamesOnly.push_back(std::filesystem::path(fullPath).filename().string());
-  }
+class LibSubprogramSkipper {
+public:
+  // Returns:
+  // - std::nullopt: not handled; caller should continue processing the line.
+  // - string: handled; caller may append returned text (can be empty to indicate skip).
+  std::optional<std::string> processLine(std::string const &line) {
+    if (hasPendingSubprogram_) {
+      return handlePendingSubprogramNameLine(line);
+    }
 
-  std::istringstream input(dump);
-  std::ostringstream output;
-  std::string line;
-
-  bool skipping = false;
-  size_t skipIndent = 0;
-
-  while (std::getline(input, line)) {
-    if (skipping) {
+    if (skipping_) {
       // Count leading spaces (indentation)
       size_t const currentIndent = line.find_first_not_of(' ');
       size_t const indentLevel = (currentIndent == std::string::npos) ? line.size() : currentIndent;
 
       // If we're back to the same or lower indentation level, stop skipping
-      if (indentLevel <= skipIndent) {
-        skipping = false;
-        // Fall through to process this line normally
+      if (indentLevel <= skipIndent_) {
+        skipping_ = false;
       } else {
         // Still inside the subprogram, skip this line
-        continue;
+        return std::string{};
       }
     }
 
-    // Check for DW_AT_low_pc or DW_AT_high_pc
-    size_t const lowPcPos = line.find("DW_AT_low_pc");
-    size_t const highPcPos = line.find("DW_AT_high_pc");
-    if ((lowPcPos != std::string::npos) || (highPcPos != std::string::npos)) {
-      // Extract the hex address from the line
-      size_t const openParen = line.find('(');
-      if (openParen != std::string::npos) {
-        size_t const closeParen = line.find(')');
-        assert(closeParen != std::string::npos && closeParen > openParen);
-        std::string const addressStr = line.substr(openParen + 1U, closeParen - openParen - 1);
-        assert(addressStr.find("0x") == 0);
-        // Parse the hex address
-        uint64_t const address = std::stoull(addressStr, nullptr, 16);
+    if (line.find("DW_TAG_subprogram") == std::string::npos)
+      return std::nullopt;
 
-        // Find the corresponding source location using binary search
-        auto const it = std::lower_bound(sourceMapLocations.begin(), sourceMapLocations.end(), address,
-                                         [](auto const &pair, size_t addr) { return pair.first < addr; });
-        assert(it != sourceMapLocations.end() && it->first == address &&
-               "Address should be found in source map locations");
-        wasm::Function::DebugLocation const *const debugLoc = it->second;
+    pendingSubprogramLine_ = line;
+    pendingSubprogramIndent_ = getLineIndent(line);
+    hasPendingSubprogram_ = true;
+    return std::string{};
+  }
 
-        // Replace the address with file:line
-        size_t const indentEnd = line.find_first_not_of(' ');
-        std::string const indent = (indentEnd != std::string::npos) ? line.substr(0, indentEnd) : "";
-        std::string const attrName = (lowPcPos != std::string::npos) ? "scope start" : "scope end";
-        std::string const &fileName = fileNamesOnly[debugLoc->fileIndex];
-        output << indent << attrName << "\t" << fileName << ":" << debugLoc->lineNumber << "\n";
-        continue;
-      }
+  std::optional<std::string> finalize() {
+    if (!hasPendingSubprogram_)
+      return std::nullopt;
+
+    hasPendingSubprogram_ = false;
+    return pendingSubprogramLine_ + "\n";
+  }
+
+private:
+  static size_t getLineIndent(std::string const &line) {
+    size_t const firstNonSpace = line.find_first_not_of(' ');
+    return (firstNonSpace == std::string::npos) ? line.size() : firstNonSpace;
+  }
+
+  std::optional<std::string> handlePendingSubprogramNameLine(std::string const &nameLine) {
+    hasPendingSubprogram_ = false;
+
+    size_t const namePos = nameLine.find("DW_AT_name");
+    size_t const libPos = nameLine.find("(\"~lib");
+    size_t const startLibPos = nameLine.find("(\"start:~lib");
+    if (namePos != std::string::npos && (libPos != std::string::npos || startLibPos != std::string::npos)) {
+      skipping_ = true;
+      skipIndent_ = pendingSubprogramIndent_;
+      return std::string{};
     }
 
-    // Check for DW_TAG_subprogram
-    size_t const subprogramPos = line.find("DW_TAG_subprogram");
-    if (subprogramPos != std::string::npos) {
-      // Count indentation of this subprogram
-      size_t const firstNonSpace = line.find_first_not_of(' ');
-      size_t const subprogramIndent = (firstNonSpace == std::string::npos) ? line.size() : firstNonSpace;
+    return pendingSubprogramLine_ + "\n" + nameLine + "\n";
+  }
 
-      // Read next line to check the name
-      std::string nameLine;
-      if (std::getline(input, nameLine)) {
-        size_t const namePos = nameLine.find("DW_AT_name");
-        size_t const libPos = nameLine.find("(\"~lib");
-        size_t const startLibPos = nameLine.find("(\"start:~lib");
-        if (namePos != std::string::npos && (libPos != std::string::npos || startLibPos != std::string::npos)) {
-          // This is a ~lib subprogram, start skipping
-          skipping = true;
-          skipIndent = subprogramIndent;
-          continue; // Skip both the subprogram line and name line
-        } else {
-          // Not a ~lib subprogram, output both lines
-          output << line << '\n' << nameLine << '\n';
-          continue;
-        }
-      } else {
-        // No next line, just output this line
-        output << line << '\n';
-        break;
-      }
+  bool skipping_ = false;
+  size_t skipIndent_ = 0;
+
+  bool hasPendingSubprogram_ = false;
+  size_t pendingSubprogramIndent_ = 0;
+  std::string pendingSubprogramLine_;
+};
+
+std::vector<std::string> getFileNamesOnly(std::vector<std::string> const &debugInfoFileNames) {
+  std::vector<std::string> fileNamesOnly;
+  fileNamesOnly.reserve(debugInfoFileNames.size());
+  for (std::string const &fullPath : debugInfoFileNames) {
+    fileNamesOnly.push_back(std::filesystem::path(fullPath).filename().string());
+  }
+  return fileNamesOnly;
+}
+
+bool isUnitHeaderLine(std::string const &line) {
+  return line.find("Compile Unit:") != std::string::npos || line.find("Type Unit:") != std::string::npos;
+}
+
+void normalizeUnitHeaderLine(std::string &line) {
+  if (!isUnitHeaderLine(line))
+    return;
+
+  size_t const lengthPos = line.find("length = 0x");
+  if (lengthPos != std::string::npos) {
+    size_t const hexPos = line.find("0x", lengthPos);
+    assert(hexPos != std::string::npos);
+
+    size_t const hexEnd = line.find(' ', hexPos);
+    if (hexEnd != std::string::npos) {
+      // Erase: `length = 0x... ` (so we end up with `Compile Unit: version = ...`).
+      line.erase(lengthPos, (hexEnd + 1U) - lengthPos);
+    }
+  }
+
+  size_t const nextUnitPos = line.find("(next unit at 0x");
+  if (nextUnitPos != std::string::npos) {
+    size_t const closeParenPos = line.find(')', nextUnitPos);
+    assert(closeParenPos != std::string::npos);
+
+    size_t start = nextUnitPos;
+    if (start > 0U && line[start - 1U] == ' ')
+      start--;
+    line.erase(start, (closeParenPos + 1U) - start);
+  }
+}
+
+std::optional<std::string>
+tryReplacePcWithFileLine(std::string const &line,
+                         std::deque<std::pair<size_t, const wasm::Function::DebugLocation *>> const &sourceMapLocations,
+                         std::vector<std::string> const &fileNamesOnly) {
+  // Check for DW_AT_low_pc or DW_AT_high_pc
+  size_t const lowPcPos = line.find("DW_AT_low_pc");
+  size_t const highPcPos = line.find("DW_AT_high_pc");
+  if ((lowPcPos == std::string::npos) && (highPcPos == std::string::npos))
+    return std::nullopt;
+
+  // Extract the hex address from the line
+  size_t const openParen = line.find('(');
+  if (openParen == std::string::npos)
+    return std::nullopt;
+
+  size_t const closeParen = line.find(')');
+  assert(closeParen != std::string::npos && closeParen > openParen);
+  std::string const addressStr = line.substr(openParen + 1U, closeParen - openParen - 1);
+  assert(addressStr.find("0x") == 0);
+
+  // Parse the hex address
+  uint64_t const address = std::stoull(addressStr, nullptr, 16);
+
+  // Find the corresponding source location using binary search
+  auto const it = std::lower_bound(sourceMapLocations.begin(), sourceMapLocations.end(), address,
+                                   [](auto const &pair, size_t addr) { return pair.first < addr; });
+  assert(it != sourceMapLocations.end() && it->first == address && "Address should be found in source map locations");
+  wasm::Function::DebugLocation const *const debugLoc = it->second;
+
+  // Replace the address with file:line
+  size_t const indentEnd = line.find_first_not_of(' ');
+  std::string const indent = (indentEnd != std::string::npos) ? line.substr(0, indentEnd) : "";
+  std::string const attrName = (lowPcPos != std::string::npos) ? "scope start" : "scope end";
+  std::string const &fileName = fileNamesOnly[debugLoc->fileIndex];
+
+  return indent + attrName + "\t" + fileName + ":" + std::to_string(debugLoc->lineNumber) + "\n";
+}
+
+std::string
+filterLibSubprograms(std::string const &dump,
+                     std::deque<std::pair<size_t, const wasm::Function::DebugLocation *>> const &sourceMapLocations,
+                     std::vector<std::string> const &debugInfoFileNames) {
+  // Cache filenames without paths
+  std::vector<std::string> const fileNamesOnly = getFileNamesOnly(debugInfoFileNames);
+
+  std::istringstream input(dump);
+  LineReader reader(input);
+  std::ostringstream output;
+  std::string line;
+
+  LibSubprogramSkipper libSkipper;
+
+  while (reader.next(line)) {
+    normalizeUnitHeaderLine(line);
+
+    if (std::optional<std::string> const handled = libSkipper.processLine(line); handled.has_value()) {
+      if (!handled->empty())
+        output << *handled;
+      continue;
+    }
+
+    if (std::optional<std::string> const replacement =
+            tryReplacePcWithFileLine(line, sourceMapLocations, fileNamesOnly);
+        replacement.has_value()) {
+      output << *replacement;
+      continue;
     }
 
     output << line << '\n';
   }
 
+  if (std::optional<std::string> const tail = libSkipper.finalize(); tail.has_value())
+    output << *tail;
   return output.str();
 }
 
