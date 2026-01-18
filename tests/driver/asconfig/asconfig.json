@@ -13,7 +13,7 @@
   },
   "targets": {
     "release": {
-      "outFile": "build/asconfig.wasm",
+      "outFile": "tmp/asconfig.wasm",
       "exportRuntime": true,
       "optimizeLevel": 3,
       "debug": false,
@@ -22,7 +22,7 @@
       }
     },
     "release-update": {
-      "outFile": "tmp/asconfig.wasm",
+      "outFile": "build/asconfig.wasm",
       "exportRuntime": true,
       "optimizeLevel": 3,
       "debug": false,

@@ -13,8 +13,8 @@ file(GLOB_RECURSE asc_sources
   "${PROJECT_SOURCE_DIR}/assemblyscript/std/*.ts"
 
   # warpo extension
-  "${PROJECT_SOURCE_DIR}/assemblyscript_extension/src/*.ts"
-  "${PROJECT_SOURCE_DIR}/assemblyscript_extension/std/*.ts"
+  "${PROJECT_SOURCE_DIR}/warpo_extension/src/*.ts"
+  "${PROJECT_SOURCE_DIR}/warpo_extension/std/*.ts"
 
   # generator
   "${PROJECT_SOURCE_DIR}/frontend/ASC/*.mjs"

@@ -922,8 +922,14 @@ export class Program extends DiagnosticEmitter {
     /** Flags indicating specific traits, e.g. `CONST`. */
     flags: CommonFlags = CommonFlags.None
   ): VariableDeclaration {
-    let range = Source.native.range;
-    return Node.createVariableDeclaration(Node.createIdentifierExpression(name, range), null, flags, null, null, range);
+    return Node.createVariableDeclaration(
+      Node.createIdentifierExpression(name, Source.native.range),
+      null,
+      flags,
+      null,
+      null,
+      Source.native.range
+    );
   }
 
   /** Creates a native type declaration. */
@@ -933,9 +939,14 @@ export class Program extends DiagnosticEmitter {
     /** Flags indicating specific traits, e.g. `GENERIC`. */
     flags: CommonFlags = CommonFlags.None
   ): TypeDeclaration {
-    let range = Source.native.range;
-    let identifier = Node.createIdentifierExpression(name, range);
-    return Node.createTypeDeclaration(identifier, null, flags, null, Node.createOmittedType(range), range);
+    return Node.createTypeDeclaration(
+      Node.createIdentifierExpression(name, Source.native.range),
+      null,
+      flags,
+      null,
+      Node.createOmittedType(Source.native.range),
+      Source.native.range
+    );
   }
 
   // a dummy signature for programmatically generated native functions
@@ -948,32 +959,31 @@ export class Program extends DiagnosticEmitter {
     /** Flags indicating specific traits, e.g. `DECLARE`. */
     flags: CommonFlags = CommonFlags.None
   ): FunctionDeclaration {
-    let range = Source.native.range;
     let signature = this.nativeDummySignature;
     if (!signature) {
       this.nativeDummySignature = signature = Node.createFunctionType(
         [],
         Node.createNamedType(
           // ^ AST signature doesn't really matter, is overridden anyway
-          Node.createSimpleTypeName(CommonNames.void_, range),
+          Node.createSimpleTypeName(CommonNames.void_, Source.native.range),
           null,
           false,
-          range
+          Source.native.range
         ),
         null,
         false,
-        range
+        Source.native.range
       );
     }
     return Node.createFunctionDeclaration(
-      Node.createIdentifierExpression(name, range),
+      Node.createIdentifierExpression(name, Source.native.range),
       null,
       flags,
       null,
       signature,
       null,
       ArrowKind.None,
-      range
+      Source.native.range
     );
   }
 
@@ -984,8 +994,13 @@ export class Program extends DiagnosticEmitter {
     /** Flags indicating specific traits, e.g. `EXPORT`. */
     flags: CommonFlags = CommonFlags.None
   ): NamespaceDeclaration {
-    let range = Source.native.range;
-    return Node.createNamespaceDeclaration(Node.createIdentifierExpression(name, range), null, flags, [], range);
+    return Node.createNamespaceDeclaration(
+      Node.createIdentifierExpression(name, Source.native.range),
+      null,
+      flags,
+      [],
+      Source.native.range
+    );
   }
 
   /** Creates a native function. */
@@ -3962,19 +3977,20 @@ export abstract class VariableLikeElement extends TypedElement {
     name: string,
     /** Parent element, usually a file, namespace or class. */
     parent: Element,
-    /** Declaration reference. Creates a native declaration if omitted. */
-    declaration: VariableLikeDeclarationStatement = parent.program.makeNativeVariableDeclaration(name)
+    /** Variable-like base of the declaration. */
+    variableLikeBase: VariableLikeBase,
+    /** Declaration base. */
+    declarationBase: DeclarationBase
   ) {
     super(
       kind,
       name,
-      mangleInternalName(name, parent, declaration.is(CommonFlags.Instance)),
+      mangleInternalName(name, parent, declarationBase.is(CommonFlags.Instance)),
       parent.program,
       parent,
-      declaration.toDeclarationBase()
+      declarationBase
     );
-    this.flags = declaration.flags;
-    this.variableLikeBase = declaration.toVariableLikeBase();
+    this.variableLikeBase = variableLikeBase;
   }
 
   get identifierNode(): IdentifierExpression {
@@ -4023,7 +4039,7 @@ export class EnumValue extends VariableLikeElement {
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags = DecoratorFlags.None
   ) {
-    super(ElementKind.EnumValue, name, parent, declaration);
+    super(ElementKind.EnumValue, name, parent, declaration.toVariableLikeBase(), declaration.toDeclarationBase());
     this.decoratorFlags = decoratorFlags;
     this.setType(Type.i32);
   }
@@ -4048,9 +4064,9 @@ export class Global extends VariableLikeElement {
     /** Pre-checked flags indicating built-in decorators. */
     decoratorFlags: DecoratorFlags,
     /** Declaration reference. Creates a native declaration if omitted. */
-    declaration: VariableLikeDeclarationStatement = parent.program.makeNativeVariableDeclaration(name)
+    declaration: VariableLikeDeclarationStatement
   ) {
-    super(ElementKind.Global, name, parent, declaration);
+    super(ElementKind.Global, name, parent, declaration.toVariableLikeBase(), declaration.toDeclarationBase());
     this.decoratorFlags = decoratorFlags;
   }
 }
@@ -4070,9 +4086,6 @@ export class Parameter {
 
 /** A local variable. */
 export class Local extends VariableLikeElement {
-  /** Original name of the (temporary) local. */
-  private originalName: string;
-
   /** Constructs a new local variable. */
   constructor(
     /** Simple name. */
@@ -4083,11 +4096,12 @@ export class Local extends VariableLikeElement {
     type: Type,
     /** Parent function. */
     parent: Function,
-    /** Declaration reference. */
-    declaration: VariableLikeDeclarationStatement = parent.program.makeNativeVariableDeclaration(name)
+    /** Variable-like base of the declaration. */
+    variableLikeBase: VariableLikeBase,
+    /** Declaration base. */
+    declarationBase: DeclarationBase
   ) {
-    super(ElementKind.Local, name, parent, declaration);
-    this.originalName = name;
+    super(ElementKind.Local, name, parent, variableLikeBase, declarationBase);
     this.index = index;
     assert(type != Type.void);
     this.setType(type);
@@ -4324,7 +4338,14 @@ export class Function extends TypedElement {
       let localIndex = 0;
       let thisType = signature.thisType;
       if (thisType) {
-        let local = new Local(CommonNames.this_, localIndex++, thisType, this);
+        let local = new Local(
+          CommonNames.this_,
+          localIndex++,
+          thisType,
+          this,
+          new VariableLikeBase(Node.createIdentifierExpression(CommonNames.this_, Source.native.range), null, null),
+          new DeclarationBase(null, CommonFlags.None, Source.native.range, null)
+        );
         let scopedLocals = this.flow.scopedLocals;
         if (!scopedLocals) this.flow.scopedLocals = scopedLocals = new Map();
         scopedLocals.set(CommonNames.this_, local);
@@ -4337,7 +4358,14 @@ export class Function extends TypedElement {
       for (let i = 0, k = parameterTypes.length; i < k; ++i) {
         let parameterType = parameterTypes[i];
         let parameterName = this.getParameterName(i);
-        let local = new Local(parameterName, localIndex++, parameterType, this);
+        let local = new Local(
+          parameterName,
+          localIndex++,
+          parameterType,
+          this,
+          new VariableLikeBase(Node.createIdentifierExpression(parameterName, Source.native.range), null, null),
+          new DeclarationBase(null, CommonFlags.None, Source.native.range, null)
+        );
         let scopedLocals = this.flow.scopedLocals;
         if (!scopedLocals) this.flow.scopedLocals = scopedLocals = new Map();
         scopedLocals.set(parameterName, local);
@@ -4400,8 +4428,20 @@ export class Function extends TypedElement {
     let localsByIndex = this.localsByIndex;
     let localIndex = localsByIndex.length;
     let localName = name != null ? name : localIndex.toString();
-    if (!declaration) declaration = this.program.makeNativeVariableDeclaration(localName);
-    let local = new Local(localName, localIndex, type, this, declaration);
+    let variableLikeBase: VariableLikeBase;
+    let declarationBase: DeclarationBase;
+    if (declaration) {
+      variableLikeBase = declaration.toVariableLikeBase();
+      declarationBase = declaration.toDeclarationBase();
+    } else {
+      variableLikeBase = new VariableLikeBase(
+        Node.createIdentifierExpression(localName, Source.native.range),
+        null,
+        null
+      );
+      declarationBase = new DeclarationBase(null, CommonFlags.None, Source.native.range, null);
+    }
+    let local = new Local(localName, localIndex, type, this, variableLikeBase, declarationBase);
     if (name) {
       let defaultFlow = this.flow;
       let scopedLocals = defaultFlow.scopedLocals;
@@ -4669,20 +4709,22 @@ export class Property extends VariableLikeElement {
     /** Parent element, usually a static class prototype or class instance. */
     parent: Element
   ) {
+    const declaration = prototype.isField
+      ? <VariableLikeDeclarationStatement>assert(prototype.fieldDeclaration)
+      : Node.createVariableDeclaration(
+          prototype.identifierNode,
+          null,
+          prototype.flags & CommonFlags.Instance,
+          null,
+          null,
+          prototype.nameRange
+        );
     super(
       ElementKind.Property,
       prototype.name,
       parent,
-      prototype.isField
-        ? <VariableLikeDeclarationStatement>assert(prototype.fieldDeclaration)
-        : Node.createVariableDeclaration(
-            prototype.identifierNode,
-            null,
-            prototype.flags & CommonFlags.Instance,
-            null,
-            null,
-            prototype.nameRange
-          )
+      declaration.toVariableLikeBase(),
+      declaration.toDeclarationBase()
     );
     this.prototype = prototype;
     this.flags = prototype.flags;
@@ -4724,18 +4766,8 @@ export class IndexSignature extends TypedElement {
       parent.internalName + "[]",
       parent.program,
       parent,
-      parent.program.makeNativeVariableDeclaration("[]").toDeclarationBase() // is fine
+      new DeclarationBase(null, CommonFlags.None, Source.native.range, null)
     );
-  }
-
-  /** Obtains the getter instance. */
-  getGetterInstance(isUnchecked: bool): Function | null {
-    return (<Class>this.parent).lookupOverload(OperatorKind.IndexedGet, isUnchecked);
-  }
-
-  /** Obtains the setter instance. */
-  getSetterInstance(isUnchecked: bool): Function | null {
-    return (<Class>this.parent).lookupOverload(OperatorKind.IndexedSet, isUnchecked);
   }
 }
 
