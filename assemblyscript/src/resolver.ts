@@ -79,6 +79,7 @@ import { BuiltinNames, builtinTypes, BuiltinTypesContext } from "./builtins";
 
 import { addField, createClass, addTemplateType } from "./warpo";
 import { mangleComputedPropertyName, mangleGenericInstanceKey, mangleGenericInstanceName } from "./mangle";
+import { Evaluator } from "./eval";
 
 /** Indicates whether errors are reported or not. */
 export const enum ReportMode {
@@ -1218,6 +1219,25 @@ export class Resolver extends DiagnosticEmitter {
         target = classReference;
         break;
       }
+      case ElementKind.TupleIndexSignature: {
+        // someTuple[x].prop
+        let type = this.getTypeOfElement(target);
+        if (!type) return null;
+        let classReference = type.getClassOrWrapper(this.program);
+        if (!classReference) {
+          if (reportMode == ReportMode.Report) {
+            this.error(
+              DiagnosticCode.Property_0_does_not_exist_on_type_1,
+              node.property.range,
+              propertyName,
+              type.toString()
+            );
+          }
+          return null;
+        }
+        target = classReference;
+        break;
+      }
       case ElementKind.FunctionPrototype: {
         // Function with shadow type, i.e. function Symbol() + type Symbol = _Symbol
         let shadowType = target.shadowType;
@@ -1360,9 +1380,31 @@ export class Resolver extends DiagnosticEmitter {
     if (!targetType) return null;
 
     if (targetType.isTuple) {
+      const tupleInfo = assert(targetType.tupleInfo);
+      const evaluator = new Evaluator(elementExpression);
+      const tupleIndexEvalResult = evaluator.evalI32();
+      if (!tupleIndexEvalResult.success) {
+        this.error(DiagnosticCode.Expression_must_be_a_compile_time_constant, elementExpression.range);
+        return null;
+      }
+      const tupleIndex = tupleIndexEvalResult.value;
+      if (tupleIndex < 0 || tupleIndex >= tupleInfo.elementCount) {
+        if (reportMode == ReportMode.Report) {
+          this.error(
+            DiagnosticCode.Tuple_type_0_of_length_1_has_no_element_at_index_2,
+            node.range,
+            targetType.toString(),
+            tupleInfo.elementCount.toString(),
+            tupleIndex.toString()
+          );
+        }
+        return null;
+      }
       this.currentThisExpression = targetExpression;
       this.currentElementExpression = elementExpression;
-      return new TupleIndexSignature(this.program, targetType);
+      const signature = new TupleIndexSignature(this.program, targetType);
+      signature.setType(tupleInfo.elements[tupleIndex].type);
+      return signature;
     }
 
     let elementElement = this.lookupExpression(elementExpression, ctxFlow, ctxType, reportMode);

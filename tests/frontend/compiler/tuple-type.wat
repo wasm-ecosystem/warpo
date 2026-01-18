@@ -1,12 +1,12 @@
 (module
  (type $0 (func (param i32) (result i32)))
  (type $1 (func (param i32 i32)))
- (type $2 (func (param i32)))
- (type $3 (func (param i32 i32) (result i32)))
+ (type $2 (func (param i32 i32) (result i32)))
+ (type $3 (func))
  (type $4 (func (param i32 i32 i32)))
- (type $5 (func))
- (type $6 (func (param i32 i32 i32 i32)))
- (type $7 (func (param i32 i32 i32) (result i32)))
+ (type $5 (func (param i32)))
+ (type $6 (func (param i32 i32 i32) (result i32)))
+ (type $7 (func (param i32 i32 i32 i32)))
  (type $8 (func (param i32 i32 i64) (result i32)))
  (type $9 (func (result i32)))
  (type $10 (func (param i32 i64) (result i32)))
@@ -28,10 +28,10 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
- (global $~lib/rt/__rtti_base i32 (i32.const 528))
- (global $~lib/memory/__data_end i32 (i32.const 552))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33320))
- (global $~lib/memory/__heap_base i32 (i32.const 33320))
+ (global $~lib/rt/__rtti_base i32 (i32.const 1136))
+ (global $~lib/memory/__data_end i32 (i32.const 1160))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33928))
+ (global $~lib/memory/__heap_base i32 (i32.const 33928))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -44,7 +44,26 @@
  (data $8 (i32.const 412) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\002\00\00\00\00\00\00\00\00\00\00\00")
  (data $9 (i32.const 444) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00t\00u\00p\00l\00e\00-\00t\00y\00p\00e\00.\00t\00s\00\00\00")
  (data $10 (i32.const 492) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\004\00\00\00\00\00\00\00\00\00\00\00")
- (data $11 (i32.const 528) "\05\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00")
+ (data $11 (i32.const 524) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\06\00\00\00a\00b\00c\00\00\00\00\00\00\00")
+ (data $12 (i32.const 556) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\04\00\00\00z\00z\00\00\00\00\00\00\00\00\00")
+ (data $13 (i32.const 588) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00d\00\00\00\00\00\00\00\00\00\00\00")
+ (data $14 (i32.const 620) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $15 (i32.const 652) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\08\00\00\00a\00b\00c\00d\00\00\00\00\00")
+ (data $16 (i32.const 684) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\n\00\00\00h\00e\00l\00l\00o\00\00\00")
+ (data $17 (i32.const 716) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00x\00\00\00\00\00\00\00\00\00\00\00")
+ (data $18 (i32.const 748) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\04\00\00\00o\00k\00\00\00\00\00\00\00\00\00")
+ (data $19 (i32.const 780) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\06\00\00\00y\00e\00s\00\00\00\00\00\00\00")
+ (data $20 (i32.const 812) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00k\00\00\00\00\00\00\00\00\00\00\00")
+ (data $21 (i32.const 844) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\04\00\00\00h\00i\00\00\00\00\00\00\00\00\00")
+ (data $22 (i32.const 876) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00z\00\00\00\00\00\00\00\00\00\00\00")
+ (data $23 (i32.const 908) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00a\00\00\00\00\00\00\00\00\00\00\00")
+ (data $24 (i32.const 940) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00b\00\00\00\00\00\00\00\00\00\00\00")
+ (data $25 (i32.const 972) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\04\00\00\00a\00b\00\00\00\00\00\00\00\00\00")
+ (data $26 (i32.const 1004) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\06\00\00\00h\00e\00y\00\00\00\00\00\00\00")
+ (data $27 (i32.const 1036) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\06\00\00\00c\00c\00c\00\00\00\00\00\00\00")
+ (data $28 (i32.const 1068) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\08\00\00\00d\00d\00d\00d\00\00\00\00\00")
+ (data $29 (i32.const 1100) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\04\00\00\00x\00y\00\00\00\00\00\00\00\00\00")
+ (data $30 (i32.const 1136) "\05\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -3491,6 +3510,1975 @@
    )
   )
  )
+ (func $tuple-type/takeTuple (param $t i32) (result i32)
+  (if
+   (i32.eqz
+    (i32.gt_s
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $t)
+      )
+      (i32.const 0)
+     )
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 13)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.gt_s
+     (call $~lib/string/String#get:length
+      (call $~lib/rt/__tmptostack
+       (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+        (call $~lib/rt/__tmptostack
+         (local.get $t)
+        )
+        (i32.const 4)
+       )
+      )
+     )
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 14)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (return
+   (call $~lib/tuple/SmallTuple#__get<i32>
+    (call $~lib/rt/__tmptostack
+     (local.get $t)
+    )
+    (i32.const 0)
+   )
+  )
+ )
+ (func $tuple-type/makeTuple (param $a i32) (param $b i32) (result i32)
+  (local $2 i32)
+  (return
+   (block (result i32)
+    (local.set $2
+     (call $~lib/rt/__localtostack
+      (call $~lib/rt/__newTuple
+       (i32.const 8)
+       (i64.const 2)
+      )
+     )
+    )
+    (call $~lib/tuple/SmallTuple#__set<i32>
+     (call $~lib/rt/__tmptostack
+      (local.get $2)
+     )
+     (i32.const 0)
+     (local.get $a)
+    )
+    (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+     (call $~lib/rt/__tmptostack
+      (local.get $2)
+     )
+     (i32.const 4)
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+    (local.get $2)
+   )
+  )
+ )
+ (func $~lib/string/String#concat (param $this i32) (param $other i32) (result i32)
+  (local $thisSize i32)
+  (local $otherSize i32)
+  (local $outSize i32)
+  (local $out i32)
+  (local.set $thisSize
+   (i32.shl
+    (call $~lib/string/String#get:length
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.const 1)
+   )
+  )
+  (local.set $otherSize
+   (i32.shl
+    (call $~lib/string/String#get:length
+     (call $~lib/rt/__tmptostack
+      (local.get $other)
+     )
+    )
+    (i32.const 1)
+   )
+  )
+  (local.set $outSize
+   (i32.add
+    (local.get $thisSize)
+    (local.get $otherSize)
+   )
+  )
+  (if
+   (i32.eq
+    (local.get $outSize)
+    (i32.const 0)
+   )
+   (then
+    (return
+     (i32.const 640)
+    )
+   )
+  )
+  (local.set $out
+   (call $~lib/rt/__localtostack
+    (call $~lib/rt/itcms/__new
+     (local.get $outSize)
+     (i32.const 2)
+    )
+   )
+  )
+  (memory.copy
+   (local.get $out)
+   (local.get $this)
+   (local.get $thisSize)
+  )
+  (memory.copy
+   (i32.add
+    (local.get $out)
+    (local.get $thisSize)
+   )
+   (local.get $other)
+   (local.get $otherSize)
+  )
+  (return
+   (local.get $out)
+  )
+ )
+ (func $~lib/string/String.__concat (param $left i32) (param $right i32) (result i32)
+  (return
+   (call $~lib/string/String#concat
+    (call $~lib/rt/__tmptostack
+     (local.get $left)
+    )
+    (call $~lib/rt/__tmptostack
+     (local.get $right)
+    )
+   )
+  )
+ )
+ (func $tuple-type/testTupleTypeAsParamAndResult
+  (local $0 i32)
+  (local $t0 i32)
+  (local $t1 i32)
+  (local $t2 i32)
+  (local.set $t0
+   (call $~lib/rt/__localtostack
+    (block (result i32)
+     (local.set $0
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/__newTuple
+        (i32.const 8)
+        (i64.const 2)
+       )
+      )
+     )
+     (call $~lib/tuple/SmallTuple#__set<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $0)
+      )
+      (i32.const 0)
+      (i32.const 7)
+     )
+     (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+      (call $~lib/rt/__tmptostack
+       (local.get $0)
+      )
+      (i32.const 4)
+      (i32.const 544)
+     )
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $tuple-type/takeTuple
+      (call $~lib/rt/__tmptostack
+       (local.get $t0)
+      )
+     )
+     (i32.const 7)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 28)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $t1
+   (call $~lib/rt/__localtostack
+    (call $tuple-type/makeTuple
+     (i32.const 9)
+     (i32.const 576)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $t1)
+      )
+      (i32.const 0)
+     )
+     (i32.const 9)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 31)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (local.get $t1)
+       )
+       (i32.const 4)
+      )
+     )
+     (i32.const 576)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 32)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $t2
+   (call $~lib/rt/__localtostack
+    (call $tuple-type/makeTuple
+     (i32.add
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $t0)
+       )
+       (i32.const 0)
+      )
+      (i32.const 1)
+     )
+     (call $~lib/rt/__tmptostack
+      (call $~lib/string/String.__concat
+       (call $~lib/rt/__tmptostack
+        (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+         (call $~lib/rt/__tmptostack
+          (local.get $t0)
+         )
+         (i32.const 4)
+        )
+       )
+       (i32.const 608)
+      )
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $t2)
+      )
+      (i32.const 0)
+     )
+     (i32.const 8)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 35)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (local.get $t2)
+       )
+       (i32.const 4)
+      )
+     )
+     (i32.const 672)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 36)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
+ (func $tuple-type/sumLen (param $a i32) (param $b i32) (result i32)
+  (return
+   (i32.add
+    (local.get $a)
+    (call $~lib/string/String#get:length
+     (call $~lib/rt/__tmptostack
+      (local.get $b)
+     )
+    )
+   )
+  )
+ )
+ (func $tuple-type/testTupleElementsAsArguments
+  (local $0 i32)
+  (local $t i32)
+  (local.set $t
+   (call $~lib/rt/__localtostack
+    (block (result i32)
+     (local.set $0
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/__newTuple
+        (i32.const 8)
+        (i64.const 2)
+       )
+      )
+     )
+     (call $~lib/tuple/SmallTuple#__set<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $0)
+      )
+      (i32.const 0)
+      (i32.const 5)
+     )
+     (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+      (call $~lib/rt/__tmptostack
+       (local.get $0)
+      )
+      (i32.const 4)
+      (i32.const 704)
+     )
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $tuple-type/sumLen
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $t)
+       )
+       (i32.const 0)
+      )
+      (call $~lib/rt/__tmptostack
+       (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+        (call $~lib/rt/__tmptostack
+         (local.get $t)
+        )
+        (i32.const 4)
+       )
+      )
+     )
+     (i32.const 10)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 41)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $~lib/tuple/SmallTuple#__set<i32>
+   (call $~lib/rt/__tmptostack
+    (local.get $t)
+   )
+   (i32.const 0)
+   (i32.const 1)
+  )
+  (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+   (call $~lib/rt/__tmptostack
+    (local.get $t)
+   )
+   (i32.const 4)
+   (i32.const 736)
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $tuple-type/sumLen
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $t)
+       )
+       (i32.const 0)
+      )
+      (call $~lib/rt/__tmptostack
+       (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+        (call $~lib/rt/__tmptostack
+         (local.get $t)
+        )
+        (i32.const 4)
+       )
+      )
+     )
+     (i32.const 2)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 44)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
+ (func $"~lib/tuple/SmallTuple#__set<[i32, ~lib/string/String]>" (param $this i32) (param $offset i32) (param $value i32)
+  (local $elementPtr i32)
+  (local.set $elementPtr
+   (i32.add
+    (local.get $this)
+    (local.get $offset)
+   )
+  )
+  (i32.store
+   (local.get $elementPtr)
+   (local.get $value)
+  )
+  (drop
+   (i32.const 1)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $value)
+   (i32.const 0)
+  )
+ )
+ (func $"~lib/tuple/SmallTuple#__get<[i32, ~lib/string/String]>" (param $this i32) (param $offset i32) (result i32)
+  (local $elementPtr i32)
+  (local.set $elementPtr
+   (i32.add
+    (local.get $this)
+    (local.get $offset)
+   )
+  )
+  (return
+   (i32.load
+    (local.get $elementPtr)
+   )
+  )
+ )
+ (func $tuple-type/testNestedTupleType
+  (local $0 i32)
+  (local $1 i32)
+  (local $nested i32)
+  (local.set $nested
+   (call $~lib/rt/__localtostack
+    (block (result i32)
+     (local.set $0
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/__newTuple
+        (i32.const 8)
+        (i64.const 2)
+       )
+      )
+     )
+     (call $~lib/tuple/SmallTuple#__set<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $0)
+      )
+      (i32.const 0)
+      (i32.const 1)
+     )
+     (call $"~lib/tuple/SmallTuple#__set<[i32, ~lib/string/String]>"
+      (call $~lib/rt/__tmptostack
+       (local.get $0)
+      )
+      (i32.const 4)
+      (call $~lib/rt/__tmptostack
+       (block (result i32)
+        (local.set $1
+         (call $~lib/rt/__localtostack
+          (call $~lib/rt/__newTuple
+           (i32.const 8)
+           (i64.const 2)
+          )
+         )
+        )
+        (call $~lib/tuple/SmallTuple#__set<i32>
+         (call $~lib/rt/__tmptostack
+          (local.get $1)
+         )
+         (i32.const 0)
+         (i32.const 2)
+        )
+        (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+         (call $~lib/rt/__tmptostack
+          (local.get $1)
+         )
+         (i32.const 4)
+         (i32.const 768)
+        )
+        (local.get $1)
+       )
+      )
+     )
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $nested)
+      )
+      (i32.const 0)
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 49)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (call $"~lib/tuple/SmallTuple#__get<[i32, ~lib/string/String]>"
+        (call $~lib/rt/__tmptostack
+         (local.get $nested)
+        )
+        (i32.const 4)
+       )
+      )
+      (i32.const 0)
+     )
+     (i32.const 2)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 50)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (call $"~lib/tuple/SmallTuple#__get<[i32, ~lib/string/String]>"
+         (call $~lib/rt/__tmptostack
+          (local.get $nested)
+         )
+         (i32.const 4)
+        )
+       )
+       (i32.const 4)
+      )
+     )
+     (i32.const 768)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 51)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $~lib/tuple/SmallTuple#__set<i32>
+   (call $~lib/rt/__tmptostack
+    (call $"~lib/tuple/SmallTuple#__get<[i32, ~lib/string/String]>"
+     (call $~lib/rt/__tmptostack
+      (local.get $nested)
+     )
+     (i32.const 4)
+    )
+   )
+   (i32.const 0)
+   (i32.const 3)
+  )
+  (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+   (call $~lib/rt/__tmptostack
+    (call $"~lib/tuple/SmallTuple#__get<[i32, ~lib/string/String]>"
+     (call $~lib/rt/__tmptostack
+      (local.get $nested)
+     )
+     (i32.const 4)
+    )
+   )
+   (i32.const 4)
+   (i32.const 800)
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (call $"~lib/tuple/SmallTuple#__get<[i32, ~lib/string/String]>"
+        (call $~lib/rt/__tmptostack
+         (local.get $nested)
+        )
+        (i32.const 4)
+       )
+      )
+      (i32.const 0)
+     )
+     (i32.const 3)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 55)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (call $"~lib/tuple/SmallTuple#__get<[i32, ~lib/string/String]>"
+         (call $~lib/rt/__tmptostack
+          (local.get $nested)
+         )
+         (i32.const 4)
+        )
+       )
+       (i32.const 4)
+      )
+     )
+     (i32.const 800)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 56)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
+ (func $tuple-type/incFirst (param $t i32) (param $delta i32) (result i32)
+  (local $2 i32)
+  (return
+   (block (result i32)
+    (local.set $2
+     (call $~lib/rt/__localtostack
+      (call $~lib/rt/__newTuple
+       (i32.const 8)
+       (i64.const 2)
+      )
+     )
+    )
+    (call $~lib/tuple/SmallTuple#__set<i32>
+     (call $~lib/rt/__tmptostack
+      (local.get $2)
+     )
+     (i32.const 0)
+     (i32.add
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $t)
+       )
+       (i32.const 0)
+      )
+      (local.get $delta)
+     )
+    )
+    (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+     (call $~lib/rt/__tmptostack
+      (local.get $2)
+     )
+     (i32.const 4)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (local.get $t)
+       )
+       (i32.const 4)
+      )
+     )
+    )
+    (local.get $2)
+   )
+  )
+ )
+ (func $tuple-type/testTupleLiteralAsParameter
+  (local $0 i32)
+  (local $1 i32)
+  (local $t i32)
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $tuple-type/takeTuple
+      (call $~lib/rt/__tmptostack
+       (block (result i32)
+        (local.set $0
+         (call $~lib/rt/__localtostack
+          (call $~lib/rt/__newTuple
+           (i32.const 8)
+           (i64.const 2)
+          )
+         )
+        )
+        (call $~lib/tuple/SmallTuple#__set<i32>
+         (call $~lib/rt/__tmptostack
+          (local.get $0)
+         )
+         (i32.const 0)
+         (i32.const 11)
+        )
+        (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+         (call $~lib/rt/__tmptostack
+          (local.get $0)
+         )
+         (i32.const 4)
+         (i32.const 832)
+        )
+        (local.get $0)
+       )
+      )
+     )
+     (i32.const 11)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 81)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $t
+   (call $~lib/rt/__localtostack
+    (call $tuple-type/incFirst
+     (call $~lib/rt/__tmptostack
+      (block (result i32)
+       (local.set $1
+        (call $~lib/rt/__localtostack
+         (call $~lib/rt/__newTuple
+          (i32.const 8)
+          (i64.const 2)
+         )
+        )
+       )
+       (call $~lib/tuple/SmallTuple#__set<i32>
+        (call $~lib/rt/__tmptostack
+         (local.get $1)
+        )
+        (i32.const 0)
+        (i32.const 1)
+       )
+       (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+        (call $~lib/rt/__tmptostack
+         (local.get $1)
+        )
+        (i32.const 4)
+        (i32.const 736)
+       )
+       (local.get $1)
+      )
+     )
+     (i32.const 4)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $t)
+      )
+      (i32.const 0)
+     )
+     (i32.const 5)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 84)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (local.get $t)
+       )
+       (i32.const 4)
+      )
+     )
+     (i32.const 736)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 85)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
+ (func $tuple-type/idTuple (param $t i32) (result i32)
+  (return
+   (local.get $t)
+  )
+ )
+ (func $tuple-type/combineTuples (param $a i32) (param $b i32) (result i32)
+  (local $2 i32)
+  (return
+   (block (result i32)
+    (local.set $2
+     (call $~lib/rt/__localtostack
+      (call $~lib/rt/__newTuple
+       (i32.const 8)
+       (i64.const 2)
+      )
+     )
+    )
+    (call $~lib/tuple/SmallTuple#__set<i32>
+     (call $~lib/rt/__tmptostack
+      (local.get $2)
+     )
+     (i32.const 0)
+     (i32.add
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $a)
+       )
+       (i32.const 0)
+      )
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $b)
+       )
+       (i32.const 0)
+      )
+     )
+    )
+    (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+     (call $~lib/rt/__tmptostack
+      (local.get $2)
+     )
+     (i32.const 4)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/string/String.__concat
+       (call $~lib/rt/__tmptostack
+        (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+         (call $~lib/rt/__tmptostack
+          (local.get $a)
+         )
+         (i32.const 4)
+        )
+       )
+       (call $~lib/rt/__tmptostack
+        (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+         (call $~lib/rt/__tmptostack
+          (local.get $b)
+         )
+         (i32.const 4)
+        )
+       )
+      )
+     )
+    )
+    (local.get $2)
+   )
+  )
+ )
+ (func $tuple-type/testTuplePassThroughAndComposition
+  (local $0 i32)
+  (local $t0 i32)
+  (local $t1 i32)
+  (local $t2 i32)
+  (local.set $t0
+   (call $~lib/rt/__localtostack
+    (block (result i32)
+     (local.set $0
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/__newTuple
+        (i32.const 8)
+        (i64.const 2)
+       )
+      )
+     )
+     (call $~lib/tuple/SmallTuple#__set<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $0)
+      )
+      (i32.const 0)
+      (i32.const 2)
+     )
+     (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+      (call $~lib/rt/__tmptostack
+       (local.get $0)
+      )
+      (i32.const 4)
+      (i32.const 864)
+     )
+     (local.get $0)
+    )
+   )
+  )
+  (local.set $t1
+   (call $~lib/rt/__localtostack
+    (call $tuple-type/idTuple
+     (call $~lib/rt/__tmptostack
+      (local.get $t0)
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $t1)
+      )
+      (i32.const 0)
+     )
+     (i32.const 2)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 91)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (local.get $t1)
+       )
+       (i32.const 4)
+      )
+     )
+     (i32.const 864)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 92)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $tuple-type/takeTuple
+      (call $~lib/rt/__tmptostack
+       (call $tuple-type/makeTuple
+        (i32.const 9)
+        (i32.const 896)
+       )
+      )
+     )
+     (i32.const 9)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 94)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $t2
+   (call $~lib/rt/__localtostack
+    (call $tuple-type/combineTuples
+     (call $~lib/rt/__tmptostack
+      (call $tuple-type/makeTuple
+       (i32.const 1)
+       (i32.const 928)
+      )
+     )
+     (call $~lib/rt/__tmptostack
+      (call $tuple-type/makeTuple
+       (i32.const 2)
+       (i32.const 960)
+      )
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $t2)
+      )
+      (i32.const 0)
+     )
+     (i32.const 3)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 96)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (local.get $t2)
+       )
+       (i32.const 4)
+      )
+     )
+     (i32.const 992)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 97)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $tuple-type/sumLen
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (call $tuple-type/makeTuple
+         (i32.const 5)
+         (i32.const 1024)
+        )
+       )
+       (i32.const 0)
+      )
+      (call $~lib/rt/__tmptostack
+       (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+        (call $~lib/rt/__tmptostack
+         (call $tuple-type/makeTuple
+          (i32.const 5)
+          (i32.const 1024)
+         )
+        )
+        (i32.const 4)
+       )
+      )
+     )
+     (i32.const 8)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 99)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
+ (func $tuple-type/testWholeTupleReassignAndConditional
+  (local $0 i32)
+  (local $t i32)
+  (local $pick i32)
+  (local $t2 i32)
+  (local.set $t
+   (call $~lib/rt/__localtostack
+    (block (result i32)
+     (local.set $0
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/__newTuple
+        (i32.const 8)
+        (i64.const 2)
+       )
+      )
+     )
+     (call $~lib/tuple/SmallTuple#__set<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $0)
+      )
+      (i32.const 0)
+      (i32.const 1)
+     )
+     (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+      (call $~lib/rt/__tmptostack
+       (local.get $0)
+      )
+      (i32.const 4)
+      (i32.const 928)
+     )
+     (local.get $0)
+    )
+   )
+  )
+  (local.set $t
+   (call $~lib/rt/__localtostack
+    (call $tuple-type/makeTuple
+     (i32.const 2)
+     (i32.const 960)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $t)
+      )
+      (i32.const 0)
+     )
+     (i32.const 2)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 105)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (local.get $t)
+       )
+       (i32.const 4)
+      )
+     )
+     (i32.const 960)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 106)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $pick
+   (i32.const 1)
+  )
+  (local.set $t2
+   (call $~lib/rt/__localtostack
+    (if (result i32)
+     (local.get $pick)
+     (then
+      (call $tuple-type/makeTuple
+       (i32.const 3)
+       (i32.const 1056)
+      )
+     )
+     (else
+      (call $tuple-type/makeTuple
+       (i32.const 4)
+       (i32.const 1088)
+      )
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $t2)
+      )
+      (i32.const 0)
+     )
+     (i32.const 3)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 110)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (local.get $t2)
+       )
+       (i32.const 4)
+      )
+     )
+     (i32.const 1056)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 111)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
+ (func $~lib/tuple/SmallTuple#__set<bool> (param $this i32) (param $offset i32) (param $value i32)
+  (local $elementPtr i32)
+  (local.set $elementPtr
+   (i32.add
+    (local.get $this)
+    (local.get $offset)
+   )
+  )
+  (i32.store8
+   (local.get $elementPtr)
+   (local.get $value)
+  )
+  (drop
+   (i32.const 0)
+  )
+ )
+ (func $tuple-type/makeTriple (param $a i32) (param $b i32) (param $c i32) (result i32)
+  (local $3 i32)
+  (return
+   (block (result i32)
+    (local.set $3
+     (call $~lib/rt/__localtostack
+      (call $~lib/rt/__newTuple
+       (i32.const 12)
+       (i64.const 4)
+      )
+     )
+    )
+    (call $~lib/tuple/SmallTuple#__set<i32>
+     (call $~lib/rt/__tmptostack
+      (local.get $3)
+     )
+     (i32.const 0)
+     (local.get $a)
+    )
+    (call $~lib/tuple/SmallTuple#__set<bool>
+     (call $~lib/rt/__tmptostack
+      (local.get $3)
+     )
+     (i32.const 4)
+     (local.get $b)
+    )
+    (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+     (call $~lib/rt/__tmptostack
+      (local.get $3)
+     )
+     (i32.const 8)
+     (call $~lib/rt/__tmptostack
+      (local.get $c)
+     )
+    )
+    (local.get $3)
+   )
+  )
+ )
+ (func $~lib/tuple/SmallTuple#__get<bool> (param $this i32) (param $offset i32) (result i32)
+  (local $elementPtr i32)
+  (local.set $elementPtr
+   (i32.add
+    (local.get $this)
+    (local.get $offset)
+   )
+  )
+  (return
+   (i32.load8_u
+    (local.get $elementPtr)
+   )
+  )
+ )
+ (func $tuple-type/scoreTriple (param $t i32) (result i32)
+  (if
+   (call $~lib/tuple/SmallTuple#__get<bool>
+    (call $~lib/rt/__tmptostack
+     (local.get $t)
+    )
+    (i32.const 4)
+   )
+   (then
+    (return
+     (i32.add
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $t)
+       )
+       (i32.const 0)
+      )
+      (call $~lib/string/String#get:length
+       (call $~lib/rt/__tmptostack
+        (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+         (call $~lib/rt/__tmptostack
+          (local.get $t)
+         )
+         (i32.const 8)
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+  (return
+   (i32.sub
+    (call $~lib/tuple/SmallTuple#__get<i32>
+     (call $~lib/rt/__tmptostack
+      (local.get $t)
+     )
+     (i32.const 0)
+    )
+    (call $~lib/string/String#get:length
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (local.get $t)
+       )
+       (i32.const 8)
+      )
+     )
+    )
+   )
+  )
+ )
+ (func $tuple-type/testTripleElementTuple
+  (local $t i32)
+  (local.set $t
+   (call $~lib/rt/__localtostack
+    (call $tuple-type/makeTriple
+     (i32.const 10)
+     (i32.const 1)
+     (i32.const 672)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $t)
+      )
+      (i32.const 0)
+     )
+     (i32.const 10)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 116)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (i32.ne
+      (call $~lib/tuple/SmallTuple#__get<bool>
+       (call $~lib/rt/__tmptostack
+        (local.get $t)
+       )
+       (i32.const 4)
+      )
+      (i32.const 0)
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 117)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (local.get $t)
+       )
+       (i32.const 8)
+      )
+     )
+     (i32.const 672)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 118)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $~lib/tuple/SmallTuple#__set<i32>
+   (call $~lib/rt/__tmptostack
+    (local.get $t)
+   )
+   (i32.const 0)
+   (i32.const 3)
+  )
+  (call $~lib/tuple/SmallTuple#__set<bool>
+   (call $~lib/rt/__tmptostack
+    (local.get $t)
+   )
+   (i32.const 4)
+   (i32.const 0)
+  )
+  (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+   (call $~lib/rt/__tmptostack
+    (local.get $t)
+   )
+   (i32.const 8)
+   (i32.const 736)
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $t)
+      )
+      (i32.const 0)
+     )
+     (i32.const 3)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 123)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (i32.ne
+      (call $~lib/tuple/SmallTuple#__get<bool>
+       (call $~lib/rt/__tmptostack
+        (local.get $t)
+       )
+       (i32.const 4)
+      )
+      (i32.const 0)
+     )
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 124)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (local.get $t)
+       )
+       (i32.const 8)
+      )
+     )
+     (i32.const 736)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 125)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $tuple-type/scoreTriple
+      (call $~lib/rt/__tmptostack
+       (call $tuple-type/makeTriple
+        (i32.const 7)
+        (i32.const 1)
+        (i32.const 576)
+       )
+      )
+     )
+     (i32.const 9)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 127)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $tuple-type/scoreTriple
+      (call $~lib/rt/__tmptostack
+       (call $tuple-type/makeTriple
+        (i32.const 7)
+        (i32.const 0)
+        (i32.const 576)
+       )
+      )
+     )
+     (i32.const 5)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 128)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
+ (func $tuple-type/makeNested (param $a i32) (param $b i32) (param $s i32) (result i32)
+  (local $3 i32)
+  (local $4 i32)
+  (return
+   (block (result i32)
+    (local.set $3
+     (call $~lib/rt/__localtostack
+      (call $~lib/rt/__newTuple
+       (i32.const 8)
+       (i64.const 2)
+      )
+     )
+    )
+    (call $~lib/tuple/SmallTuple#__set<i32>
+     (call $~lib/rt/__tmptostack
+      (local.get $3)
+     )
+     (i32.const 0)
+     (local.get $a)
+    )
+    (call $"~lib/tuple/SmallTuple#__set<[i32, ~lib/string/String]>"
+     (call $~lib/rt/__tmptostack
+      (local.get $3)
+     )
+     (i32.const 4)
+     (call $~lib/rt/__tmptostack
+      (block (result i32)
+       (local.set $4
+        (call $~lib/rt/__localtostack
+         (call $~lib/rt/__newTuple
+          (i32.const 8)
+          (i64.const 2)
+         )
+        )
+       )
+       (call $~lib/tuple/SmallTuple#__set<i32>
+        (call $~lib/rt/__tmptostack
+         (local.get $4)
+        )
+        (i32.const 0)
+        (local.get $b)
+       )
+       (call $~lib/tuple/SmallTuple#__set<~lib/string/String>
+        (call $~lib/rt/__tmptostack
+         (local.get $4)
+        )
+        (i32.const 4)
+        (call $~lib/rt/__tmptostack
+         (local.get $s)
+        )
+       )
+       (local.get $4)
+      )
+     )
+    )
+    (local.get $3)
+   )
+  )
+ )
+ (func $tuple-type/testNestedTupleAsResultAndArgument
+  (local $n i32)
+  (local $t i32)
+  (local.set $n
+   (call $~lib/rt/__localtostack
+    (call $tuple-type/makeNested
+     (i32.const 5)
+     (i32.const 6)
+     (i32.const 1120)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $n)
+      )
+      (i32.const 0)
+     )
+     (i32.const 5)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 137)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (call $"~lib/tuple/SmallTuple#__get<[i32, ~lib/string/String]>"
+        (call $~lib/rt/__tmptostack
+         (local.get $n)
+        )
+        (i32.const 4)
+       )
+      )
+      (i32.const 0)
+     )
+     (i32.const 6)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 138)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (call $"~lib/tuple/SmallTuple#__get<[i32, ~lib/string/String]>"
+         (call $~lib/rt/__tmptostack
+          (local.get $n)
+         )
+         (i32.const 4)
+        )
+       )
+       (i32.const 4)
+      )
+     )
+     (i32.const 1120)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 139)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $tuple-type/takeTuple
+      (call $~lib/rt/__tmptostack
+       (call $"~lib/tuple/SmallTuple#__get<[i32, ~lib/string/String]>"
+        (call $~lib/rt/__tmptostack
+         (local.get $n)
+        )
+        (i32.const 4)
+       )
+      )
+     )
+     (i32.const 6)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 141)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $t
+   (call $~lib/rt/__localtostack
+    (call $tuple-type/incFirst
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/tuple/SmallTuple#__get<[i32, ~lib/string/String]>"
+       (call $~lib/rt/__tmptostack
+        (local.get $n)
+       )
+       (i32.const 4)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $~lib/tuple/SmallTuple#__get<i32>
+      (call $~lib/rt/__tmptostack
+       (local.get $t)
+      )
+      (i32.const 0)
+     )
+     (i32.const 8)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 144)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $~lib/string/String.__eq
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+       (call $~lib/rt/__tmptostack
+        (local.get $t)
+       )
+       (i32.const 4)
+      )
+     )
+     (i32.const 1120)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 145)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $tuple-type/sumLen
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (call $"~lib/tuple/SmallTuple#__get<[i32, ~lib/string/String]>"
+         (call $~lib/rt/__tmptostack
+          (local.get $n)
+         )
+         (i32.const 4)
+        )
+       )
+       (i32.const 0)
+      )
+      (call $~lib/rt/__tmptostack
+       (call $~lib/tuple/SmallTuple#__get<~lib/string/String>
+        (call $~lib/rt/__tmptostack
+         (call $"~lib/tuple/SmallTuple#__get<[i32, ~lib/string/String]>"
+          (call $~lib/rt/__tmptostack
+           (local.get $n)
+          )
+          (i32.const 4)
+         )
+        )
+        (i32.const 4)
+       )
+      )
+     )
+     (i32.const 8)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 464)
+     (i32.const 147)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
  (func $start:tuple-type
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
@@ -3520,6 +5508,14 @@
    )
   )
   (call $tuple-type/testTupleType)
+  (call $tuple-type/testTupleTypeAsParamAndResult)
+  (call $tuple-type/testTupleElementsAsArguments)
+  (call $tuple-type/testNestedTupleType)
+  (call $tuple-type/testTupleLiteralAsParameter)
+  (call $tuple-type/testTuplePassThroughAndComposition)
+  (call $tuple-type/testWholeTupleReassignAndConditional)
+  (call $tuple-type/testTripleElementTuple)
+  (call $tuple-type/testNestedTupleAsResultAndArgument)
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)

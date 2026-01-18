@@ -4739,13 +4739,20 @@ export class IndexSignature extends TypedElement {
   }
 }
 
-export class TupleIndexSignature extends Element {
+export class TupleIndexSignature extends TypedElement {
   constructor(
     program: Program,
     public tupleType: Type
   ) {
     const smallTupleInstance = program.smallTupleInstance;
-    super(ElementKind.TupleIndexSignature, "[]", smallTupleInstance.internalName + "[]", program, smallTupleInstance);
+    super(
+      ElementKind.TupleIndexSignature,
+      "[]",
+      smallTupleInstance.internalName + "[]",
+      program,
+      smallTupleInstance,
+      program.makeNativeVariableDeclaration("[]").toDeclarationBase() // is fine
+    );
   }
 }
 
