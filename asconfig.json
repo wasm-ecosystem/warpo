@@ -3,7 +3,7 @@
   "entries": [
     "./assemblyscript/src/glue/wasm/index.ts",
     "./assemblyscript/src/index-wasm.ts",
-    "./assemblyscript_extension/src/index.ts"
+    "./warpo_extension/src/index.ts"
   ],
   "options": {
     "exportStart": "_initialize",

@@ -6,7 +6,7 @@ import { sep, join } from "node:path";
 import { project_root, readAllFiles, stringToHexCArray } from "./helper.mjs";
 
 const libs_path = join(project_root, "assemblyscript", "std", "assembly");
-const ext_libs_path = join(project_root, "assemblyscript_extension", "std");
+const ext_libs_path = join(project_root, "warpo_extension", "std");
 
 /**
  * @param {string} target_folder

@@ -10,7 +10,7 @@
 ### major logic
 
 - assemblyscript: code base of assemblyscript, modify from https://github.com/AssemblyScript/assemblyscript/.
-- assemblyscript_extension: new functions for AS.
+- warpo_extension: new functions for AS.
 - common: function related common code, most of them are cli options.
 - frontend: assemblyscript frontend compiler.
 - passes: additional optimization passes.
@@ -86,7 +86,7 @@ git push binaryen-fork binaryen-backport -u
 
 ### Builtin Functions
 
-1. In `assemblyscript_extension/src/builtins.ts`, add
+1. In `warpo_extension/src/builtins.ts`, add
 
    ```ts
    namespace ExtNames {
@@ -99,10 +99,10 @@ git push binaryen-fork binaryen-backport -u
    builtinFunctions.set(ExtNames.{{name}}, builtin_{{name}});
    ```
 
-2. In `assemblyscript_extension/std/`, create `{{filename}}.ts` and declare function with `@builtin`
-3. In `assemblyscript_extension/index.d.ts`, declare function manually.
+2. In `warpo_extension/std/`, create `{{filename}}.ts` and declare function with `@builtin`
+3. In `warpo_extension/index.d.ts`, declare function manually.
 
 ### Builtin Class
 
-1. In `assemblyscript_extension/std/`, create `{{filename}}.ts` and implement class.
-2. In `assemblyscript_extension/index.d.ts`, declare class manually.
+1. In `warpo_extension/std/`, create `{{filename}}.ts` and implement class.
+2. In `warpo_extension/index.d.ts`, declare class manually.
