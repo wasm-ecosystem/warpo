@@ -5,7 +5,6 @@ anyref
 arrayref
 asconfig
 assemblyscript
-asyncify
 avgr
 Bayerische
 Binaryen
