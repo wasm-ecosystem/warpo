@@ -713,7 +713,7 @@ export class Program extends DiagnosticEmitter {
       const iteratorElement = symbolElement.getMember(CommonNames.SymbolIterator);
       if (iteratorElement == null) throw new Error(`Missing standard library component: Symbol.iterator`);
       if (iteratorElement.kind != ElementKind.Global)
-        throw Error(`Invalid standard library component kind: Symbol.iterator`);
+        throw new Error(`Invalid standard library component kind: Symbol.iterator`);
       this._iteratorMethodName = cached = mangleComputedPropertyName(iteratorElement);
     }
     return cached;
@@ -1900,7 +1900,7 @@ export class Program extends DiagnosticEmitter {
   private require(name: string, kind: ElementKind): Element {
     let element = this.lookup(name);
     if (!element) throw new Error(`Missing standard library component: ${name}`);
-    if (element.kind != kind) throw Error(`Invalid standard library component kind: ${name}`);
+    if (element.kind != kind) throw new Error(`Invalid standard library component kind: ${name}`);
     return element;
   }
 
@@ -5267,14 +5267,14 @@ export class Class extends TypedElement {
         case TypeKind.Usize: {
           if (this.program.options.isWasm64) {
             if (i64_is(value)) {
-              writeI64(value, buffer, offset);
+              writeI64(i64(value), buffer, offset);
             } else {
               writeI32AsI64(i32(value), buffer, offset, typeKind == TypeKind.Usize);
             }
             return 8;
           } else {
             if (i64_is(value)) {
-              writeI64AsI32(value, buffer, offset, typeKind == TypeKind.Usize);
+              writeI64AsI32(i64(value), buffer, offset, typeKind == TypeKind.Usize);
             } else {
               writeI32(i32(value), buffer, offset);
             }
@@ -5284,7 +5284,7 @@ export class Class extends TypedElement {
         case TypeKind.I64:
         case TypeKind.U64: {
           if (i64_is(value)) {
-            writeI64(value, buffer, offset);
+            writeI64(i64(value), buffer, offset);
           } else {
             writeI32AsI64(i32(value), buffer, offset, typeKind == TypeKind.U64);
           }

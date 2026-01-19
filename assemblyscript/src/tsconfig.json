@@ -1,5 +1,5 @@
 {
-  "extends": "../std/portable.json",
+  "extends": "../std/assembly.json",
   "compilerOptions": {
     "target": "esnext",
     "outDir": "../build",
@@ -10,8 +10,9 @@
     "strict": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "noEmit": true
   },
   "include": ["./**/*.ts"],
-  "exclude": ["../**/node_modules/", "../tests/**", "../lib/**", "./glue/wasm/**"]
+  "exclude": ["../**/node_modules/", "../tests/**", "../lib/**"]
 }

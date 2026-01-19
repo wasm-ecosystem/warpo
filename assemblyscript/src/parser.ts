@@ -1121,7 +1121,7 @@ export class Parser extends DiagnosticEmitter {
     // before: ('public' | 'private' | 'protected' | '...')? Identifier '?'? (':' Type)? ('=' Expression)?
 
     let isRest = false;
-    let isOptional = false;
+    let isOptional: bool = false;
     let startRange: Range | null = null;
     let accessFlags: CommonFlags = CommonFlags.None;
     if (isConstructor) {
