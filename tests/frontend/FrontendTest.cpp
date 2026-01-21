@@ -34,10 +34,21 @@
 #include "wasm-validator.h"
 #include "wasm.h"
 
+#include "src/core/common/function_traits.hpp"
 #include "src/core/runtime/TrapException.hpp"
 
 namespace warpo {
 namespace {
+
+double mathRandomForSnapshotTest(vb::WasmModule * /*ctx*/) {
+  // Deterministic stub for snapshot-test execution.
+  return 0.5;
+}
+
+double seedForSnapshotTest(vb::WasmModule * /*ctx*/) {
+  // Deterministic stub for snapshot-test execution.
+  return 1.0;
+}
 
 cli::Opt<bool> updateFlag{
     cli::Category::All,
@@ -132,7 +143,12 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
   // run
   WarpRunner r{nullptr};
   try {
-    static std::vector<vb::NativeSymbol> const linkedAPI = frontend::createAssemblyscriptAPI();
+    static std::vector<vb::NativeSymbol> const linkedAPI = []() {
+      std::vector<vb::NativeSymbol> api = frontend::createAssemblyscriptAPI();
+      api.push_back(STATIC_LINK("env", "Math.random", mathRandomForSnapshotTest));
+      api.push_back(STATIC_LINK("env", "seed", seedForSnapshotTest));
+      return api;
+    }();
     r.initFromBytecode(vb::Span<const uint8_t>{wasm.data(), wasm.size()},
                        vb::Span<vb::NativeSymbol const>{linkedAPI.data(), linkedAPI.size()}, false);
     r.start();
