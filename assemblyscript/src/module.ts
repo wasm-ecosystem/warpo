@@ -1350,7 +1350,7 @@ export class Module {
   //     : this.i32(i32(value));
   // }
 
-  usize<T>(value: T): ExpressionRef {
+  usize(value: i64): ExpressionRef {
     if (i64_is(value)) {
       if (this.sizeType == TypeRef.I64) {
         return this.i64(i64_low(value), i64_high(value));
@@ -2330,7 +2330,7 @@ export class Module {
     binaryen._BinaryenSetShrinkLevel(level);
   }
 
-  getDebugInfo(): boolean {
+  getDebugInfo(): bool {
     return binaryen._BinaryenGetDebugInfo();
   }
 
