@@ -1,3 +1,3 @@
 {
-  "stderr": ["ERROR TS220: Expression must be a compile time constant.", "t[i];"]
+  "stderr": ["ERROR AS220: Expression must be a compile-time constant.", "t[i];"]
 }
