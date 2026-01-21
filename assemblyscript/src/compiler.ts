@@ -8184,7 +8184,7 @@ export class Compiler extends DiagnosticEmitter {
     return this.compileCallExpressionLike(tag, null, args, expression.range, stringType);
   }
 
-  /** Makes a new array instance from a static buffer segment. */
+  /** Makes a new tuple instance from a static buffer segment. */
   private makeNewTuple(elementSlotSize: i32, bitmap: i64, reportNode: Node): ExpressionRef {
     const program = this.program;
     const module = this.module;

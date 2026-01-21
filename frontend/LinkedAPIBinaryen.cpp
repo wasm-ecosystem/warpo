@@ -8,7 +8,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <fmt/base.h>
-#include <iostream>
 #include <vector>
 
 #include "LinkedAPI.hpp"

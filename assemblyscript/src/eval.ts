@@ -79,10 +79,12 @@ export class Evaluator {
           case Token.Asterisk:
             return new EvalResult<i32>(l * r, true);
           case Token.Slash:
-            if (!r) return new EvalResult<i32>(0, false);
+            if (r == 0) return new EvalResult<i32>(0, false); // divide by zero
+            if (r == -1 && l == i32.MIN_VALUE) return new EvalResult<i32>(0, false); // overflow
             return new EvalResult<i32>(l / r, true);
           case Token.Percent:
-            if (!r) return new EvalResult<i32>(0, false);
+            if (r == 0) return new EvalResult<i32>(0, false); // divide by zero
+            if (r == -1 && l == i32.MIN_VALUE) return new EvalResult<i32>(0, false); // overflow
             return new EvalResult<i32>(l % r, true);
           case Token.Ampersand:
             return new EvalResult<i32>(l & r, true);

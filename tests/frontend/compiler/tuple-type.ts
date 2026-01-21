@@ -1,3 +1,5 @@
+export const disableScriptMode = true;
+
 function testTupleType(): void {
   let tuple: [i32, string] = [1, "2"];
   assert(tuple[0] == 1);

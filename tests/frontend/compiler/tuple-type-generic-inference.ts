@@ -1,3 +1,5 @@
+export const disableScriptMode = true;
+
 function id<T>(x: T): T {
   return x;
 }
