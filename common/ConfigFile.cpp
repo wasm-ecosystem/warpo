@@ -79,8 +79,17 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
       config.sourceMap = jsonOptions["sourceMap"].get<bool>();
     if (jsonOptions.contains("use")) {
       config.use = UsesOption{};
-      for (const auto &[useKey, useEntry] : jsonOptions["use"].items()) {
-        config.use->insert_or_assign(useKey, useEntry.get<std::string>());
+      nlohmann::json const &useJson = jsonOptions["use"];
+      if (useJson.is_object()) {
+        for (auto const &[useKey, useEntry] : useJson.items()) {
+          config.use->insert_or_assign(useKey, useEntry.get<std::string>());
+        }
+      } else if (useJson.is_array()) {
+        for (auto const &useEntry : useJson) {
+          config.use->merge(useEntry.get<std::string>());
+        }
+      } else {
+        throw std::runtime_error{"'use' must be an object or an array of strings"};
       }
     }
     if (jsonOptions.contains("disable"))
@@ -89,6 +98,21 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
     throw std::runtime_error{fmt::format("Failed to parse json options: {}", e.what())};
   }
   return config;
+}
+
+static std::optional<UsesOption> mergeUsesOptions(std::optional<UsesOption> const &baseUse,
+                                                  std::optional<UsesOption> const &overrideUse) {
+  if (baseUse.has_value() && overrideUse.has_value()) {
+    UsesOption mergedUse = baseUse.value();
+    for (auto const &[key, value] : overrideUse.value()) {
+      mergedUse.insert_or_assign(key, value);
+    }
+    return mergedUse;
+  } else if (overrideUse.has_value()) {
+    return overrideUse;
+  } else {
+    return baseUse;
+  }
 }
 
 static FileConfigOptions mergeFileConfigOptions(FileConfigOptions const &baseConfig,
@@ -118,8 +142,7 @@ static FileConfigOptions mergeFileConfigOptions(FileConfigOptions const &baseCon
     result.debug = overrideConfig.debug;
   if (overrideConfig.sourceMap.has_value())
     result.sourceMap = overrideConfig.sourceMap;
-  if (overrideConfig.use.has_value())
-    result.use = overrideConfig.use;
+  result.use = mergeUsesOptions(baseConfig.use, overrideConfig.use);
   if (overrideConfig.features.has_value())
     result.features = overrideConfig.features;
   return result;
@@ -216,6 +239,23 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   EXPECT_EQ(config.debug, true);
   EXPECT_EQ(config.sourceMap, false);
   EXPECT_EQ(config.use->at("U1"), "10");
+
+  // Test parsing `use` as array (CLI-style)
+  std::string const useArrayJsonStr = R"({
+    "use": ["U1=10", "U2=20"]
+  })";
+  nlohmann::json const useArrayJson = nlohmann::json::parse(useArrayJsonStr);
+  FileConfigOptions const useArrayConfig = parseFileConfigOptions(useArrayJson);
+  ASSERT_TRUE(useArrayConfig.use.has_value());
+  EXPECT_EQ(useArrayConfig.use->at("U1"), "10");
+  EXPECT_EQ(useArrayConfig.use->at("U2"), "20");
+
+  // Invalid `use` entry should throw
+  std::string const invalidUseArrayJsonStr = R"({
+    "use": ["NO_EQUALS"]
+  })";
+  nlohmann::json const invalidUseArrayJson = nlohmann::json::parse(invalidUseArrayJsonStr);
+  EXPECT_THROW((void)parseFileConfigOptions(invalidUseArrayJson), std::runtime_error);
 
   // Test parsing partial JSON options
   std::string const partialJsonStr = R"({

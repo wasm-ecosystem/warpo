@@ -8,7 +8,8 @@
     "debug": true,
     "disable": ["nontrapping-f2i"],
     "use": {
-      "USE_VALUE": "5"
+      "U1": "5",
+      "U2": "12"
     }
   },
   "targets": {
@@ -17,18 +18,14 @@
       "exportRuntime": true,
       "optimizeLevel": 3,
       "debug": false,
-      "use": {
-        "USE_VALUE": "10"
-      }
+      "use": ["U1=11"]
     },
     "release-update": {
       "outFile": "build/asconfig.wasm",
       "exportRuntime": true,
       "optimizeLevel": 3,
       "debug": false,
-      "use": {
-        "USE_VALUE": "10"
-      }
+      "use": ["U1=11"]
     }
   }
 }

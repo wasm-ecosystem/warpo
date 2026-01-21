@@ -80,7 +80,7 @@ struct FileConfigOptions {
   std::optional<bool> sourceMap = std::nullopt;
 
   /// "use" key/value pairs (AssemblyScript `--use <name>=<value>`).
-  /// - config: `options.use` / `targets.<name>.use` (object)
+  /// - config: `options.use` / `targets.<name>.use` (object or ["name=value", ...])
   /// - cli: `-u` / `--use <name>=<value>` (repeatable; merged)
   std::optional<UsesOption> use = std::nullopt;
 

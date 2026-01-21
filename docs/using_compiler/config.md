@@ -26,6 +26,24 @@ The WARPO compiler uses a configuration file named `asconfig.json` to control th
 Options control the build process and output. They can be specified globally (under `options`) or per target (under `targets`).</br>
 Detail description for each items see schema.
 
+### `use`
+
+`use` corresponds to AssemblyScript's `--use <name>=<value>` option.
+
+It supports two forms:
+
+```json
+{
+  "use": { "NAME": "VALUE" }
+}
+```
+
+```json
+{
+  "use": ["NAME=VALUE"]
+}
+```
+
 ## Targets
 
 Targets allow you to define multiple build configurations (e.g., `debug`, `release`). Each target is an object with its own options, overriding the global options.

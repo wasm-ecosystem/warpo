@@ -96,15 +96,32 @@
           "maximum": 2
         },
         "use": {
+          "$ref": "#/$defs/UseSchema"
+        }
+      },
+      "additionalProperties": false
+    },
+    "UseSchema": {
+      "description": "AssemblyScript --use options. Either an object map (name -> value) or an array of strings in A=B form.",
+      "oneOf": [
+        {
           "type": "object",
-          "description": "Additional compiler flags or environment variables for this build target.",
+          "description": "Map form: { \"NAME\": \"VALUE\" }",
           "additionalProperties": {
             "type": "string",
             "description": "Value for the use option."
           }
+        },
+        {
+          "type": "array",
+          "description": "Array form: [\"NAME=VALUE\", ...] (same format as CLI --use)",
+          "items": {
+            "type": "string",
+            "description": "A single use entry in NAME=VALUE form.",
+            "pattern": "^\\s*[^=\\s]+\\s*=.*$"
+          }
         }
-      },
-      "additionalProperties": false
+      ]
     }
   }
 }
