@@ -29,6 +29,14 @@
       "type": "object",
       "description": "Compiler options that control the build process and output.",
       "properties": {
+        "lib": {
+          "type": "array",
+          "description": "Additional library inputs parsed before entry files. Each item is a file or a folder path.",
+          "items": {
+            "type": "string",
+            "description": "Path to a library file (.ts) or a folder containing library files."
+          }
+        },
         "project": {
           "type": "string",
           "description": "Path to the project root (folder containing 'create.ts') or a direct path to 'create.ts'."

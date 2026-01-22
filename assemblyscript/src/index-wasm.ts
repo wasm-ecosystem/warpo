@@ -7,7 +7,7 @@ import { Compiler, Options, UncheckedBehavior, defaultFeatures } from "./compile
 import { Range, DiagnosticMessage, DiagnosticCategory, formatDiagnosticMessage } from "./diagnostics";
 import { Module, ModuleRef } from "./module";
 import { Program } from "./program";
-import { Source } from "./ast";
+import { Source, SourceKind } from "./ast";
 
 // Options
 
@@ -294,9 +294,9 @@ export function parse(
   /** Normalized path of the file. */
   path: string,
   /** Whether this is an entry file. */
-  isEntry: bool = false
+  kind: SourceKind
 ): void {
-  program.parser.parseFile(text, path, isEntry);
+  program.parser.parseFile(text, path, kind);
 }
 
 /** Obtains the next required file's path. Returns `null` once complete. */

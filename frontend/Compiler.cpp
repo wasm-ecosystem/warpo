@@ -32,6 +32,8 @@ static cli::Opt<std::string> ascWasmOption{
 };
 
 static void applyJsonConfig(Config &config, const common::FileConfigOptions &jsonConfig) {
+  if (jsonConfig.lib)
+    config.libPaths.insert(jsonConfig.lib->begin(), jsonConfig.lib->end());
   if (jsonConfig.exportStart)
     config.exportStart = *jsonConfig.exportStart;
   if (jsonConfig.exportRuntime)
@@ -57,6 +59,7 @@ static void applyCLIConfig(Config &config) {
 Config Config::getDefault() {
   return Config{
       .uses = common::UsesOption{},
+      .libPaths = {},
       .ascWasmPath = std::nullopt,
       .exportStart = std::nullopt,
       .runtime = RuntimeKind::Incremental,

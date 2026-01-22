@@ -26,7 +26,8 @@
 namespace warpo::frontend {
 
 class FrontendCompiler final {
-  enum class IsEntry : uint32_t { NO, YES };
+  // see assemblyscript/src/ast.ts SourceKind
+  enum class SourceKind : uint32_t { User = 0, UserEntry = 1, Library = 2, LibraryEntry = 3, Auto = 4 };
 
   WarpRunner r;
   ModuleResolver moduleResolver_;
@@ -35,7 +36,7 @@ class FrontendCompiler final {
   std::string errorMessage_;
 
   void parseFile(int32_t const program, std::optional<std::string_view> const &code, std::string_view path,
-                 IsEntry isEntry);
+                 SourceKind kind);
 
   Dependency getDependency(std::string const &nextFileInternalPath, int32_t program, int32_t nextFile);
 

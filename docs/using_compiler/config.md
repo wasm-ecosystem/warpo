@@ -26,6 +26,25 @@ The WARPO compiler uses a configuration file named `asconfig.json` to control th
 Options control the build process and output. They can be specified globally (under `options`) or per target (under `targets`).</br>
 Detail description for each items see schema.
 
+### `lib`
+
+`lib` specifies additional library inputs that are parsed before the entry files.
+
+- Each item can be either a file path or a folder path.
+- If an item is a folder, all source files directly in that folder are treated as library files.
+
+Example:
+
+```json
+{
+  "options": {
+    "lib": ["src/prelude.ts", "src/lib"]
+  }
+}
+```
+
+CLI equivalent: `--lib <path...>` (repeatable).
+
 ### `use`
 
 `use` corresponds to AssemblyScript's `--use <name>=<value>` option.

@@ -111,18 +111,11 @@ export class Parser extends DiagnosticEmitter {
     /** Normalized path of the file. */
     path: string,
     /** Whether this is an entry file. */
-    isEntry: bool
+    kind: SourceKind
   ): void {
     // the frontend gives us paths with file extensions
     let normalizedPath = normalizePath(path);
     let internalPath = mangleInternalPath(normalizedPath);
-    const kind = isEntry
-      ? SourceKind.UserEntry
-      : path.startsWith(LIBRARY_PREFIX)
-        ? path.indexOf(PATH_DELIMITER, LIBRARY_PREFIX.length) < 0
-          ? SourceKind.LibraryEntry
-          : SourceKind.Library
-        : SourceKind.User;
 
     // check if already processed
     if (this.donelog.has(internalPath)) return;

@@ -84,6 +84,24 @@ bool warpo::isDirectory(std::filesystem::path const &path) { return std::filesys
 
 bool warpo::isRegularFile(std::filesystem::path const &path) { return std::filesystem::is_regular_file(path); }
 
+std::vector<std::filesystem::path> warpo::listDirectory(std::filesystem::path const &path) {
+  if (!std::filesystem::exists(path))
+    throw std::runtime_error(fmt::format("Path '{}' does not exist", path.string()));
+  if (!std::filesystem::is_directory(path))
+    throw std::runtime_error(fmt::format("Path '{}' is not a directory", path.string()));
+
+  std::vector<std::filesystem::path> result;
+  std::error_code ec;
+  for (std::filesystem::directory_iterator it{path, ec}; !ec && it != std::filesystem::directory_iterator{};
+       it.increment(ec))
+    result.push_back(it->path());
+
+  if (ec)
+    throw std::runtime_error(fmt::format("Failed to list directory '{}': {}", path.string(), ec.message()));
+
+  return result;
+}
+
 #ifdef WARPO_ENABLE_UNIT_TESTS
 
 #include <gtest/gtest.h>

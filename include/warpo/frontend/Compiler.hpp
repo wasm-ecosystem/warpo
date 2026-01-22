@@ -52,6 +52,7 @@ inline RuntimeKind fromString(std::string const &str) {
 
 struct Config {
   common::UsesOption uses;
+  std::set<std::filesystem::path> libPaths;
   std::optional<std::string> ascWasmPath;
   std::optional<std::string> exportStart;
   RuntimeKind runtime = RuntimeKind::Incremental;

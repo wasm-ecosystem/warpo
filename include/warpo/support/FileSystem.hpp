@@ -30,4 +30,6 @@ void writeBinaryFile(std::filesystem::path const &path, std::vector<uint8_t> con
 bool isDirectory(const std::filesystem::path &path);
 bool isRegularFile(std::filesystem::path const &path);
 
+std::vector<std::filesystem::path> listDirectory(std::filesystem::path const &path);
+
 } // namespace warpo

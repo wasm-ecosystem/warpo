@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../asconfig.schema.json",
+  "entries": ["assembly/index.ts"],
+  "options": {
+    "use": {
+      "import_lib": "lib"
+    }
+  },
+  "targets": {
+    "opt": {
+      "lib": ["assembly/lib1.ts", "assembly/libs"],
+      "outFile": "tmp/opt.wasm"
+    },
+    "cli": {
+      "outFile": "tmp/cli.wasm"
+    }
+  }
+}

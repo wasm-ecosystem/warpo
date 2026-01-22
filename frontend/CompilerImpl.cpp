@@ -8,10 +8,9 @@
 #include <cstring>
 #include <exception>
 #include <filesystem>
-#include <fmt/base.h>
-#include <fmt/format.h>
 #include <map>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -51,12 +50,12 @@ std::string normalizePathForPlatform(std::filesystem::path const &filePath) {
 } // namespace
 
 void FrontendCompiler::parseFile(int32_t const program, std::optional<std::string_view> const &code,
-                                 std::string_view path, IsEntry isEntry) {
+                                 std::string_view path, SourceKind kind) {
   r.callExportedFunctionWithName<0>("__setArgumentsLength", 4U);
   if (code.has_value()) {
-    r.callExportedFunctionWithName<0>("parse", program, r.allocString(code.value()), r.allocString(path), isEntry);
+    r.callExportedFunctionWithName<0>("parse", program, r.allocString(code.value()), r.allocString(path), kind);
   } else {
-    r.callExportedFunctionWithName<0>("parse", program, 0U, r.allocString(path), isEntry);
+    r.callExportedFunctionWithName<0>("parse", program, 0U, r.allocString(path), kind);
   }
 }
 
@@ -191,25 +190,45 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
       // in sub-directory: imported on demand
       if (libName.find('/') != std::string::npos)
         continue;
-      parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
+      parseFile(program, libSource, libraryPrefix + libName + extension, SourceKind::LibraryEntry);
     }
 
     std::string_view const rtIndexSource = warpo::frontend::embed_library_sources.at(
         config.runtime == RuntimeKind::Incremental ? "rt/index-incremental" : "rt/index-radical");
     std::string const rtIndexFilePath = libraryPrefix + std::string{"rt/index"} + extension;
-    parseFile(program, rtIndexSource, rtIndexFilePath, IsEntry::NO);
+    parseFile(program, rtIndexSource, rtIndexFilePath, SourceKind::Library);
     parseLibStat.release();
+
+    if (!config.libPaths.empty()) {
+      support::PerfRAII const parseUserLibStat{support::PerfItemKind::CompilationHIR_Parsing_UserLib};
+      auto const handleFile = [this, program](std::filesystem::path const &path) {
+        if (isRegularFile(path)) {
+          parseFile(program, readTextFile(path), libraryPrefix + normalizePathForPlatform(path),
+                    SourceKind::LibraryEntry);
+        }
+      };
+      for (std::filesystem::path const &libPath : config.libPaths) {
+        if (isDirectory(libPath)) {
+          for (std::filesystem::path const &libFilePath : listDirectory(libPath)) {
+            std::string const basename = getBaseName(libFilePath);
+            if ((basename.ends_with(".ts") && !basename.ends_with(".d.ts")) || basename.ends_with(".json"))
+              handleFile(libFilePath);
+          }
+        }
+        handleFile(libPath);
+      }
+    }
 
     for (std::string const &filePath : entryFilePaths) {
       std::string const relativeFilePath = normalizePathForPlatform(filePath);
-      parseFile(program, readTextFile(filePath), relativeFilePath, IsEntry::YES);
+      parseFile(program, readTextFile(filePath), relativeFilePath, SourceKind::UserEntry);
     }
     while (true) {
       std::vector<Dependency> const deps = getAllDependencies(program);
       if (deps.empty())
         break;
       for (auto const &[text, path] : deps)
-        parseFile(program, text, path, IsEntry::NO);
+        parseFile(program, text, path, path.starts_with(libraryPrefix) ? SourceKind::Library : SourceKind::User);
     }
     if (checkDiag(program, config.useColorfulDiagMessage))
       return {.m = {}, .errorMessage = errorMessage_};

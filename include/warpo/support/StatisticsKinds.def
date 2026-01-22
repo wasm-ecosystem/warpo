@@ -18,6 +18,7 @@ PERF_ITEM_KIND_CHILD(CompilationHIR, Compilation)
 
 PERF_ITEM_KIND_CHILD(CompilationHIR_Parsing, DepsResolve)
 PERF_ITEM_KIND_CHILD(CompilationHIR_Parsing, BuiltinLib)
+PERF_ITEM_KIND_CHILD(CompilationHIR_Parsing, UserLib)
 
 #undef PERF_ITEM_KIND_CHILD
 #undef PERF_ITEM_KIND_TOP

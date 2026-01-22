@@ -38,6 +38,16 @@ cli::Opt<std::vector<std::string>> useOptions{
     },
 };
 
+cli::Opt<std::vector<std::string>> libOptions{
+    cli::Category::Frontend,
+    "--lib",
+    [](argparse::Argument &arg) -> void {
+      arg.help("Additional library inputs parsed before entry files. Each path may be a file or a folder.")
+          .nargs(argparse::nargs_pattern::at_least_one)
+          .append();
+    },
+};
+
 cli::Opt<std::string> exportStartOption{
     cli::Category::Frontend,
     "--exportStart",
@@ -155,6 +165,20 @@ FileConfigOptions ConfigProvider::mergedFrontendOptions() {
     uses.merge(useStr);
   if (!uses.empty() || merged.use.has_value())
     merged.use = uses;
+
+  // Merge CLI libs into config-file libs (preserve order, keep first occurrence).
+  if (libOptions.isSet() || merged.lib.has_value()) {
+    std::vector<std::string> const &cliLibs = libOptions.get();
+    std::vector<std::string> mergedLibs = merged.lib.value_or(std::vector<std::string>{});
+    std::set<std::string> seen{mergedLibs.begin(), mergedLibs.end()};
+    for (std::string const &lib : cliLibs) {
+      if (!seen.contains(lib)) {
+        mergedLibs.push_back(lib);
+        seen.insert(lib);
+      }
+    }
+    merged.lib = mergedLibs;
+  }
 
   if (exportStartOption.isSet())
     merged.exportStart = convertEmptyStringToNullOpt(exportStartOption.get());

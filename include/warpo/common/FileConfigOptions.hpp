@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "warpo/common/Features.hpp"
 #include "warpo/common/UsesOption.hpp"
@@ -18,6 +19,13 @@ namespace warpo::common {
 /// - config file parsing: `common/ConfigFile.cpp`
 /// - cli parsing/merge: `common/ConfigProvider.cpp`
 struct FileConfigOptions {
+  /// Additional library inputs parsed before entry files.
+  /// Each path may point to a file or a folder. When a folder is specified, all `.ts` files
+  /// directly within it are treated as libraries.
+  /// - config: `options.lib` / `targets.<name>.lib`
+  /// - cli: `--lib <path...>` (repeatable; merged)
+  std::optional<std::vector<std::string>> lib = std::nullopt;
+
   /// Project path.
   /// - config: `options.project` / `targets.<name>.project`
   /// - cli: `-p` / `--project`
