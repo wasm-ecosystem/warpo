@@ -30,7 +30,138 @@
   and src/math/crlibm/* for details
 */
 
-const js = true; // also test, and thus compare to, JS math?
+export declare namespace JSMath {
+  // @ts-ignore
+  @external("env", "Math.E")
+  export const E: f64;
+  // @ts-ignore
+  @external("env", "Math.LN2")
+  export const LN2: f64;
+  // @ts-ignore
+  @external("env", "Math.LN10")
+  export const LN10: f64;
+  // @ts-ignore
+  @external("env", "Math.LOG2E")
+  export const LOG2E: f64;
+  // @ts-ignore
+  @external("env", "Math.LOG10E")
+  export const LOG10E: f64;
+  // @ts-ignore
+  @external("env", "Math.PI")
+  export const PI: f64;
+  // @ts-ignore
+  @external("env", "Math.SQRT1_2")
+  export const SQRT1_2: f64;
+  // @ts-ignore
+  @external("env", "Math.SQRT2")
+  export const SQRT2: f64;  // @ts-ignore
+  @external("env", "Math.abs")
+  export function abs(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.acos")
+  export function acos(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.acosh")
+  export function acosh(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.asin")
+  export function asin(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.asinh")
+  export function asinh(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.atan")
+  export function atan(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.atan2")
+  export function atan2(y: f64, x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.atanh")
+  export function atanh(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.cbrt")
+  export function cbrt(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.ceil")
+  export function ceil(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.clz32")
+  export function clz32(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.cos")
+  export function cos(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.cosh")
+  export function cosh(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.exp")
+  export function exp(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.expm1")
+  export function expm1(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.floor")
+  export function floor(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.fround")
+  export function fround(x: f64): f32;  // @ts-ignore
+  @external("env", "Math.hypot")
+  export function hypot(value1: f64, value2: f64): f64; // TODO: rest
+
+  // @ts-ignore
+  @external("env", "Math.imul")
+  export function imul(a: f64, b: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.log")
+  export function log(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.log10")
+  export function log10(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.log1p")
+  export function log1p(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.log2")
+  export function log2(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.max")
+  export function max(value1: f64, value2: f64): f64; // TODO: rest
+
+  // @ts-ignore
+  @external("env", "Math.min")
+  export function min(value1: f64, value2: f64): f64; // TODO: rest
+
+  // @ts-ignore
+  @external("env", "Math.pow")
+  export function pow(base: f64, exponent: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.random")
+  export function random(): f64;
+  // @ts-ignore
+  @external("env", "Math.round")
+  export function round(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.sign")
+  export function sign(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.sin")
+  export function sin(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.sinh")
+  export function sinh(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.sqrt")
+  export function sqrt(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.tan")
+  export function tan(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.tanh")
+  export function tanh(x: f64): f64;
+  // @ts-ignore
+  @external("env", "Math.trunc")
+  export function trunc(x: f64): f64;
+}
 
 // these flags are unused, but kept in case these might just so happen to become useful
 const INEXACT   = 1 << 0;
@@ -209,8 +340,7 @@ assert(test_scalbnf(0.5000006557, -128, 1.469369340e-39, 0.0, INEXACT | UNDERFLO
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_abs(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.abs(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.abs(value), expected, error, flags));
+  return  check<f64>(NativeMath.abs(value), expected, error, flags);
 }
 
 // sanity
@@ -266,8 +396,7 @@ assert(test_absf(NaN, NaN, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_acos(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.acos(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.acos(value), expected, error, flags));
+  return  check<f64>(NativeMath.acos(value), expected, error, flags);
 }
 
 // sanity
@@ -330,8 +459,7 @@ assert(test_acosf(-0.5189794898, 2.116452932, -0.146008268, INEXACT));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_acosh(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.acosh(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.acosh(value), expected, error, flags));
+  return  check<f64>(NativeMath.acosh(value), expected, error, flags);
 }
 
 // sanity
@@ -408,8 +536,7 @@ assert(test_acoshf(-1.125899907e+15, NaN, 0.0, INVALID));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_asin(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.asin(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.asin(value), expected, error, flags));
+  return  check<f64>(NativeMath.asin(value), expected, error, flags);
 }
 
 // sanity
@@ -471,8 +598,7 @@ assert(test_asinf(0.500477016, 0.5241496563, -0.2942709923, INEXACT));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_asinh(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.asinh(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.asinh(value), expected, error, flags));
+  return  check<f64>(NativeMath.asinh(value), expected, error, flags);
 }
 
 // sanity
@@ -544,8 +670,7 @@ assert(test_asinhf(-0.0, -0.0, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_atan(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.atan(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.atan(value), expected, error, flags));
+  return  check<f64>(NativeMath.atan(value), expected, error, flags);
 }
 
 // sanity
@@ -602,8 +727,7 @@ assert(test_atanf(NaN, NaN, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_atanh(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.atanh(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.atanh(value), expected, error, flags));
+  return  check<f64>(NativeMath.atanh(value), expected, error, flags);
 }
 
 // sanity
@@ -673,8 +797,7 @@ assert(test_atanhf(1.701411835e+38, NaN, 0.0, INVALID));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_atan2(value1: f64, value2: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.atan2(value1, value2), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.atan2(value1, value2), expected, error, flags));
+  return  check<f64>(NativeMath.atan2(value1, value2), expected, error, flags);
 }
 
 // sanity
@@ -774,8 +897,7 @@ assert(test_atan2f(1.0, 1.701411835e+38, 5.877471754e-39, 0.0, INEXACT | UNDERFL
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_cbrt(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.cbrt(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.cbrt(value), expected, error, flags));
+  return  check<f64>(NativeMath.cbrt(value), expected, error, flags);
 }
 
 // sanity
@@ -837,8 +959,7 @@ assert(test_cbrtf(8.0, 2.0, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_ceil(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.ceil(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.ceil(value), expected, error, flags));
+  return  check<f64>(NativeMath.ceil(value), expected, error, flags);
 }
 
 // sanity
@@ -969,8 +1090,7 @@ assert(test_ceilf(-7.888609052e-31, -0.0, 0.0, INEXACT));
 // Math.cos
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 function test_cos(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.cos(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.cos(value), expected, error, flags));
+  return  check<f64>(NativeMath.cos(value), expected, error, flags);
 }
 
 // sanity
@@ -1227,8 +1347,7 @@ assert(test_cosf(-f32.MAX_VALUE,   0.853021025657653800, 0.0, INEXACT));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_cosh(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.cosh(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.cosh(value), expected, error, flags));
+  return  check<f64>(NativeMath.cosh(value), expected, error, flags);
 }
 // sanity
 assert(test_cosh(-8.06684839057968084, 1593.52099388623287, -0.380988568067550659, INEXACT));
@@ -1279,8 +1398,7 @@ assert(test_coshf(NaN, NaN, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_exp(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.exp(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.exp(value), expected, error, flags));
+  return  check<f64>(NativeMath.exp(value), expected, error, flags);
 }
 
 // sanity
@@ -1482,8 +1600,7 @@ assert(test_expf(0.346573621, 1.414213657, 0.4321174324, INEXACT));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_expm1(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.expm1(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.expm1(value), expected, error, flags));
+  return  check<f64>(NativeMath.expm1(value), expected, error, flags);
 }
 
 // sanity
@@ -1541,8 +1658,7 @@ assert(test_expm1f(NaN, NaN, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_exp2(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.exp2(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.pow(2, value), expected, error, flags));
+  return  check<f64>(NativeMath.exp2(value), expected, error, flags);
 }
 
 // sanity
@@ -1609,8 +1725,7 @@ assert(test_exp2f(<f32>reinterpret<f64>(0xBFE5B86EA0000000), <f32>reinterpret<f6
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_floor(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.floor(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.floor(value), expected, error, flags));
+  return  check<f64>(NativeMath.floor(value), expected, error, flags);
 }
 
 // sanity
@@ -1682,8 +1797,7 @@ assert(test_floorf(-7.888609052e-31, -1.0, 0.0, INEXACT));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_hypot(value1: f64, value2: f64, expected: f64, error: f64, flags: i32): bool {
-  return check<f64>(NativeMath.hypot(value1, value2), expected, error, flags) /* &&
-  (!js || check<f64>(    JSMath.hypot(value1, value2), expected, error, flags))*/;
+  return check<f64>(NativeMath.hypot(value1, value2), expected, error, flags);
   // ^ FIXME: Math.hypot is broken in v8 7.7 (node 12.11) due to
   //   https://bugs.chromium.org/p/v8/issues/detail?id=9546
 }
@@ -1767,8 +1881,7 @@ assert(test_hypotf(1.0, NaN, NaN, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_log(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.log(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.log(value), expected, error, flags));
+  return  check<f64>(NativeMath.log(value), expected, error, flags);
 }
 
 // sanity
@@ -1824,8 +1937,7 @@ assert(test_logf(NaN, NaN, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_log10(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.log10(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.log10(value), expected, error, flags));
+  return  check<f64>(NativeMath.log10(value), expected, error, flags);
 }
 
 // sanity
@@ -1883,8 +1995,7 @@ assert(test_log10f(NaN, NaN, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_log1p(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.log1p(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.log1p(value), expected, error, flags));
+  return  check<f64>(NativeMath.log1p(value), expected, error, flags);
 }
 
 // sanity
@@ -1943,8 +2054,7 @@ assert(test_log1pf(-1.175494211e-38,-1.175494211e-38, 4.930380658e-32, INEXACT |
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_log2(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.log2(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.log2(value), expected, error, flags));
+  return  check<f64>(NativeMath.log2(value), expected, error, flags);
 }
 
 // sanity
@@ -2002,8 +2112,7 @@ assert(test_log2f(NaN, NaN, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_max(left: f64, right: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.max(left, right), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.max(left, right), expected, error, flags));
+  return  check<f64>(NativeMath.max(left, right), expected, error, flags);
 }
 
 // sanity
@@ -2161,8 +2270,7 @@ assert(test_maxf(-1.75, -0.5, -0.5, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_min(left: f64, right: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.min(left, right), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.min(left, right), expected, error, flags));
+  return  check<f64>(NativeMath.min(left, right), expected, error, flags);
 }
 
 // sanity
@@ -2322,8 +2430,7 @@ assert(test_minf(-1.75, -0.5, -1.75, 0.0, 0));
 declare function mod(x: f64, y: f64): f64;
 
 function test_mod(left: f64, right: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.mod(left, right), expected, error, flags) &&
-  (!js || check<f64>(           mod(left, right), expected, error, flags));
+  return  check<f64>(NativeMath.mod(left, right), expected, error, flags);
 }
 
 // sanity
@@ -2575,8 +2682,7 @@ assert(test_modf(-1.75, -0.5, -0.25, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_pow(left: f64, right: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.pow(left, right), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.pow(left, right), expected, error, flags));
+  return  check<f64>(NativeMath.pow(left, right), expected, error, flags);
 }
 
 // sanity
@@ -3014,7 +3120,6 @@ for (let i = 0; i < 1e6; ++i) {
 
 function test_round(value: f64, expected: f64, error: f64, flags: i32): bool {
   return  check<f64>(NativeMath.round(value), expected, error, flags);
-  // (!js || check<f64>(    JSMath.round(value), expected, error, flags));
   // FIXME: JS rounds fractional 0.5 towards +inf (why would one do that?)
 }
 
@@ -3097,8 +3202,7 @@ assert(test_roundf(-7.888609052e-31, -0.0, 0.0, INEXACT));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_sign(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.sign(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.sign(value), expected, error, flags));
+  return  check<f64>(NativeMath.sign(value), expected, error, flags);
 }
 
 assert(test_sign(0.0, 0.0, 0.0, 0));
@@ -3334,8 +3438,7 @@ assert(test_remf(5.877471754e-39, Infinity, 5.877471754e-39, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_sin(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.sin(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.sin(value), expected, error, flags));
+  return  check<f64>(NativeMath.sin(value), expected, error, flags);
 }
 
 // sanity
@@ -3512,8 +3615,7 @@ assert(test_sinf(-f32.MAX_VALUE,  0.5218765139579773,  0.0, INEXACT));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_sinh(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.sinh(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.sinh(value), expected, error, flags));
+  return  check<f64>(NativeMath.sinh(value), expected, error, flags);
 }
 
 // sanity
@@ -3565,8 +3667,7 @@ assert(test_sinhf(NaN, NaN, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_sqrt(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.sqrt(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.sqrt(value), expected, error, flags));
+  return  check<f64>(NativeMath.sqrt(value), expected, error, flags);
 }
 
 // sanity
@@ -3704,8 +3805,7 @@ assert(test_sqrtf(2.000000477, 1.414213777, 0.3827550709, INEXACT));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_tan(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.tan(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.tan(value), expected, error, flags));
+  return  check<f64>(NativeMath.tan(value), expected, error, flags);
 }
 
 // sanity
@@ -3854,8 +3954,7 @@ assert(test_tanf(-1.175494211e-38,-1.175494211e-38,             0.0, INEXACT | U
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_tanh(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return check<f64>(NativeMath.tanh(value), expected, error, flags) &&
-  (!js || check<f64>(   JSMath.tanh(value), expected, error, flags));
+  return check<f64>(NativeMath.tanh(value), expected, error, flags);
 }
 
 // sanity
@@ -3907,8 +4006,7 @@ assert(test_tanhf(NaN, NaN, 0.0, 0));
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function test_trunc(value: f64, expected: f64, error: f64, flags: i32): bool {
-  return  check<f64>(NativeMath.trunc(value), expected, error, flags) &&
-  (!js || check<f64>(    JSMath.trunc(value), expected, error, flags));
+  return  check<f64>(NativeMath.trunc(value), expected, error, flags);
 }
 
 // sanity

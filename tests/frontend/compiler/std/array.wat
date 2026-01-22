@@ -16,12 +16,12 @@
  (type $14 (func (param i32 i64 i32)))
  (type $15 (func (param i32 i32 i32 i32)))
  (type $16 (func (param i64 i32) (result i32)))
- (type $17 (func (result f64)))
- (type $18 (func (param i32 f32 i32 i32) (result i32)))
- (type $19 (func (param f64) (result i32)))
- (type $20 (func (param i64) (result i64)))
- (type $21 (func (param i32 f32 i32) (result i32)))
- (type $22 (func (param i32 i32 i32) (result f32)))
+ (type $17 (func (param i32 f32 i32 i32) (result i32)))
+ (type $18 (func (param f64) (result i32)))
+ (type $19 (func (param i64) (result i64)))
+ (type $20 (func (param i32 f32 i32) (result i32)))
+ (type $21 (func (param i32 i32 i32) (result f32)))
+ (type $22 (func (result f64)))
  (type $23 (func (param i32 i32 i32 i32 i32) (result i32)))
  (type $24 (func (param i32 i64) (result i32)))
  (type $25 (func (param i32 i32 i64) (result i32)))
@@ -40,7 +40,6 @@
  (type $38 (func (param i32 f64) (result i32)))
  (type $39 (func (param i64) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (import "env" "Math.random" (func $~lib/bindings/dom/Math.random (result f64)))
  (import "env" "seed" (func $~lib/builtins/seed (result f64)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -62,11 +61,11 @@
  (global $~argumentsLength (mut i32) (i32.const 0))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
  (global $std/array/i (mut i32) (i32.const 0))
+ (global $~lib/math/random_seeded (mut i32) (i32.const 0))
  (global $~lib/math/random_state0_64 (mut i64) (i64.const 0))
  (global $~lib/math/random_state1_64 (mut i64) (i64.const 0))
  (global $~lib/math/random_state0_32 (mut i32) (i32.const 0))
  (global $~lib/math/random_state1_32 (mut i32) (i32.const 0))
- (global $~lib/math/random_seeded (mut i32) (i32.const 0))
  (global $std/array/charset i32 (i32.const 9008))
  (global $std/array/inputStabArr (mut i32) (i32.const 0))
  (global $std/array/outputStabArr (mut i32) (i32.const 0))
@@ -10390,7 +10389,7 @@
     )
     (then
      (local.set $result
-      (call_indirect (type $22)
+      (call_indirect (type $21)
        (i32.load
         (i32.add
          (call $~lib/array/Array<i32>#get:dataStart
@@ -11455,6 +11454,85 @@
   )
   (global.set $~lib/math/random_seeded
    (i32.const 1)
+  )
+ )
+ (func $~lib/math/NativeMath.random (result f64)
+  (local $s1 i64)
+  (local $s0 i64)
+  (local $r i64)
+  (if
+   (i32.eqz
+    (global.get $~lib/math/random_seeded)
+   )
+   (then
+    (call $~lib/math/NativeMath.seedRandom
+     (i64.reinterpret_f64
+      (call $~lib/builtins/seed)
+     )
+    )
+   )
+  )
+  (local.set $s1
+   (global.get $~lib/math/random_state0_64)
+  )
+  (local.set $s0
+   (global.get $~lib/math/random_state1_64)
+  )
+  (global.set $~lib/math/random_state0_64
+   (local.get $s0)
+  )
+  (local.set $s1
+   (i64.xor
+    (local.get $s1)
+    (i64.shl
+     (local.get $s1)
+     (i64.const 23)
+    )
+   )
+  )
+  (local.set $s1
+   (i64.xor
+    (local.get $s1)
+    (i64.shr_u
+     (local.get $s1)
+     (i64.const 17)
+    )
+   )
+  )
+  (local.set $s1
+   (i64.xor
+    (local.get $s1)
+    (local.get $s0)
+   )
+  )
+  (local.set $s1
+   (i64.xor
+    (local.get $s1)
+    (i64.shr_u
+     (local.get $s0)
+     (i64.const 26)
+    )
+   )
+  )
+  (global.set $~lib/math/random_state1_64
+   (local.get $s1)
+  )
+  (local.set $r
+   (i64.or
+    (i64.shr_u
+     (local.get $s0)
+     (i64.const 12)
+    )
+    (i64.const 4607182418800017408)
+   )
+  )
+  (return
+   (f64.sub
+    (f64.reinterpret_i64
+     (local.get $r)
+    )
+    (f64.const 1)
+   )
   )
  )
  (func $std/array/Dim#set:height (param $this i32) (param $height i32)
@@ -17582,85 +17660,6 @@
   )
   (return
    (local.get $arr)
-  )
- )
- (func $~lib/math/NativeMath.random (result f64)
-  (local $s1 i64)
-  (local $s0 i64)
-  (local $r i64)
-  (if
-   (i32.eqz
-    (global.get $~lib/math/random_seeded)
-   )
-   (then
-    (call $~lib/math/NativeMath.seedRandom
-     (i64.reinterpret_f64
-      (call $~lib/builtins/seed)
-     )
-    )
-   )
-  )
-  (local.set $s1
-   (global.get $~lib/math/random_state0_64)
-  )
-  (local.set $s0
-   (global.get $~lib/math/random_state1_64)
-  )
-  (global.set $~lib/math/random_state0_64
-   (local.get $s0)
-  )
-  (local.set $s1
-   (i64.xor
-    (local.get $s1)
-    (i64.shl
-     (local.get $s1)
-     (i64.const 23)
-    )
-   )
-  )
-  (local.set $s1
-   (i64.xor
-    (local.get $s1)
-    (i64.shr_u
-     (local.get $s1)
-     (i64.const 17)
-    )
-   )
-  )
-  (local.set $s1
-   (i64.xor
-    (local.get $s1)
-    (local.get $s0)
-   )
-  )
-  (local.set $s1
-   (i64.xor
-    (local.get $s1)
-    (i64.shr_u
-     (local.get $s0)
-     (i64.const 26)
-    )
-   )
-  )
-  (global.set $~lib/math/random_state1_64
-   (local.get $s1)
-  )
-  (local.set $r
-   (i64.or
-    (i64.shr_u
-     (local.get $s0)
-     (i64.const 12)
-    )
-    (i64.const 4607182418800017408)
-   )
-  )
-  (return
-   (f64.sub
-    (f64.reinterpret_i64
-     (local.get $r)
-    )
-    (f64.const 1)
-   )
   )
  )
  (func $std/array/createRandomOrderedArray (param $size i32) (result i32)
@@ -46000,7 +45999,7 @@
   )
   (call $~lib/math/NativeMath.seedRandom
    (i64.reinterpret_f64
-    (call $~lib/bindings/dom/Math.random)
+    (call $~lib/math/NativeMath.random)
    )
   )
   (global.set $std/array/inputStabArr

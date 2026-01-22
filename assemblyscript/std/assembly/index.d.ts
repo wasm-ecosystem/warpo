@@ -2323,16 +2323,9 @@ declare class Object {
   static is<T>(value1: T, value2: T): bool;
 }
 
-declare namespace performance {
-  /** Gets a high resolution timestamp measured in milliseconds. */
-  export function now(): f64;
-}
-
 declare class Date {
   /** Returns the UTC timestamp in milliseconds of the specified date. */
-  static UTC(year: i32, month: i32, day: i32, hour: i32, minute: i32, second: i32, millisecond: i32): i64;
-  /** Returns the current UTC timestamp in milliseconds. */
-  static now(): i64;
+  static UTC(year: i32, month?: i32, day?: i32, hour?: i32, minute?: i32, second?: i32, millisecond?: i32): i64;
   /** Parses a string representation of a date, and returns the number of milliseconds since January 1, 1970, 00:00:00 UTC. */
   static parse(dateString: string): Date;
   static fromString(dateString: string): Date;
@@ -2669,15 +2662,13 @@ interface INativeMath<T> extends IMath<T> {
   exp2(x: T): T;
 }
 
-/** Double precision math imported from JavaScript. */
-declare const JSMath: IMath<f64>;
 /** Double precision math implemented natively. */
 declare const NativeMath: INativeMath<f64>;
 /** Single precision math implemented natively. */
 declare const NativeMathf: INativeMath<f32>;
-/** Alias of {@link NativeMath} or {@link JSMath} respectively. Defaults to `NativeMath`. */
+/** Alias of {@link NativeMath}. */
 declare const Math: IMath<f64>;
-/** Alias of {@link NativeMathf} or {@link JSMath} respectively. Defaults to `NativeMathf`. */
+/** Alias of {@link NativeMathf}. */
 declare const Mathf: IMath<f32>;
 
 /** Environmental abort function. */
@@ -2693,65 +2684,6 @@ declare namespace process {
   export const arch: string;
   /** String representing the operating system platform for which the binary was compiled. Always `wasm`. */
   export const platform: string;
-  /** Array of command line arguments passed to the binary upon instantiation. */
-  export const argv: string[];
-  /** Map of variables in the binary's user environment. */
-  export const env: Map<string, string>;
-  /** Terminates the process with either the given exit code, or `process.exitCode` if omitted. */
-  export function exit(code?: i32): void;
-  /** `exit()`’s default value. Defaults to `0`. */
-  export let exitCode: i32;
-  /** Stream connected to `stdin` (fd `0`). */
-  export const stdin: ReadableStream;
-  /** Stream connected to `stdout` (fd `1`). */
-  export const stdout: WritableStream;
-  /** Stream connected to `stderr` (fd `2`). */
-  export const stderr: WritableStream;
-  /** Obtains the system's current time of day, in milliseconds since Unix epoch. */
-  export function time(): i64;
-  /** Obtains the system's monotonic high resolution time, in nanoseconds since an arbitrary time in the past. */
-  export function hrtime(): u64;
-
-  interface Stream {
-    /** Closes the stream. Throws if already closed or if the stream cannot be closed. */
-    close(): void;
-  }
-  interface ReadableStream extends Stream {
-    /** Reads available data from the stream, into `buffer` at offset `offset`, returning the number of bytes read. */
-    read(buffer: ArrayBuffer, offset?: isize): i32;
-  }
-  interface WritableStream extends Stream {
-    /** Writes string or buffer to the stream. */
-    write<T extends string | ArrayBuffer>(data: T): void;
-  }
-}
-
-/** Browser-like console. */
-declare namespace console {
-  /** Logs `message` to console if `assertion` is false-ish. */
-  export function assert<T>(assertion: T, message?: string): void;
-  /** Outputs `message` to the console. */
-  export function log(message?: string): void;
-  /** Outputs `message` to the console, prefixed with "Debug:". */
-  export function debug(message?: string): void;
-  /** Outputs `message` to the console, prefixed with "Info:". */
-  export function info(message?: string): void;
-  /** Outputs `message` to the console, prefixed with "Warning:". */
-  export function warn(message?: string): void;
-  /** Outputs `message` to the console, prefixed with "Error:". */
-  export function error(message?: string): void;
-  /** Starts a new timer using the specified `label`. */
-  export function time(label?: string): void;
-  /** Logs the current value of a timer previously started with `console.time`. */
-  export function timeLog(label?: string): void;
-  /** Logs the current value of a timer previously started with `console.time` and discards the timer. */
-  export function timeEnd(label?: string): void;
-}
-
-/** Browser-like crypto utilities. */
-declare namespace crypto {
-  /** Fills `array` with cryptographically strong random values. */
-  export function getRandomValues(array: Uint8Array): void;
 }
 
 // Decorators

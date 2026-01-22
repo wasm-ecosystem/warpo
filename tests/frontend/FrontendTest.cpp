@@ -40,11 +40,6 @@
 namespace warpo {
 namespace {
 
-double mathRandomForSnapshotTest(vb::WasmModule * /*ctx*/) {
-  // Deterministic stub for snapshot-test execution.
-  return 0.5;
-}
-
 double seedForSnapshotTest(vb::WasmModule * /*ctx*/) {
   // Deterministic stub for snapshot-test execution.
   return 1.0;
@@ -145,7 +140,6 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
   try {
     static std::vector<vb::NativeSymbol> const linkedAPI = []() {
       std::vector<vb::NativeSymbol> api = frontend::createAssemblyscriptAPI();
-      api.push_back(STATIC_LINK("env", "Math.random", mathRandomForSnapshotTest));
       api.push_back(STATIC_LINK("env", "seed", seedForSnapshotTest));
       return api;
     }();

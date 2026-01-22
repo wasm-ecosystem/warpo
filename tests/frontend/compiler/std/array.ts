@@ -979,7 +979,7 @@ function createReverseOrderedArray(size: i32): Array<i32> {
   return arr;
 }
 
-NativeMath.seedRandom(reinterpret<u64>(JSMath.random()));
+NativeMath.seedRandom(reinterpret<u64>(Math.random()));
 
 function createRandomOrderedArray(size: i32): Array<i32> {
   var arr = new Array<i32>(size);

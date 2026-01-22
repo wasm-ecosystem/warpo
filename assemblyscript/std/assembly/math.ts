@@ -1,6 +1,3 @@
-import { Math as JSMath } from "./bindings/dom";
-export { JSMath };
-
 import {
   pow_lut,
   exp_lut,

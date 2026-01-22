@@ -1,5 +1,4 @@
 import { E_INVALIDDATE } from "util/error";
-import { Date as Date_binding } from "./bindings/dom";
 
 // @ts-ignore: decorator
 @inline const MILLIS_PER_DAY = 1000 * 60 * 60 * 24,
@@ -34,11 +33,6 @@ export class Date {
     let ms = epochMillis(year, month + 1, day, hour, minute, second, millisecond);
     if (invalidDate(ms)) throw new RangeError(E_INVALIDDATE);
     return ms;
-  }
-
-
-  @inline static now(): i64 {
-    return <i64>Date_binding.now();
   }
 
   // It can parse only ISO 8601 inputs like YYYY-MM-DDTHH:MM:SS.000Z
