@@ -43,26 +43,26 @@ struct ContinuationView {
   }
 };
 
-std::size_t hashContinuation(ContinuationView const &c) {
-  if (!c.valid())
+std::size_t hashContinuation(ContinuationView const &continuation) {
+  if (!continuation.valid())
     return 0;
   std::size_t digest = 0;
-  digest = hashCombine(digest, static_cast<std::size_t>(c.size()));
-  for (wasm::Index i = c.start; i < c.parent->list.size(); i++) {
-    digest = hashCombine(digest, wasm::ExpressionAnalyzer::hash(c.parent->list[i]));
+  digest = hashCombine(digest, static_cast<std::size_t>(continuation.size()));
+  for (wasm::Index index = continuation.start; index < continuation.parent->list.size(); index++) {
+    digest = hashCombine(digest, wasm::ExpressionAnalyzer::hash(continuation.parent->list[index]));
   }
   return digest;
 }
 
-bool equalContinuation(ContinuationView const &a, ContinuationView const &b) {
-  if (!a.valid() || !b.valid())
+bool equalContinuation(ContinuationView const &left, ContinuationView const &right) {
+  if (!left.valid() || !right.valid())
     return false;
-  if (a.size() != b.size())
+  if (left.size() != right.size())
     return false;
-  for (wasm::Index i = 0; i < a.size(); i++) {
-    wasm::Expression *const ae = a.parent->list[a.start + i];
-    wasm::Expression *const be = b.parent->list[b.start + i];
-    if (!wasm::ExpressionAnalyzer::equal(ae, be))
+  for (wasm::Index offset = 0; offset < left.size(); offset++) {
+    wasm::Expression *const leftExpression = left.parent->list[left.start + offset];
+    wasm::Expression *const rightExpression = right.parent->list[right.start + offset];
+    if (!wasm::ExpressionAnalyzer::equal(leftExpression, rightExpression))
       return false;
   }
   return true;
@@ -71,55 +71,55 @@ bool equalContinuation(ContinuationView const &a, ContinuationView const &b) {
 struct TargetInfo {
   wasm::Name name;
   wasm::Index stackIndex = 0;
-  ContinuationView cont;
+  ContinuationView continuation;
 };
 
 bool findChildIndex(wasm::Block const *parent, wasm::Expression const *child, wasm::Index &outIndex) {
-  for (wasm::Index i = 0; i < parent->list.size(); i++) {
-    if (parent->list[i] == child) {
-      outIndex = i;
+  for (wasm::Index index = 0; index < parent->list.size(); index++) {
+    if (parent->list[index] == child) {
+      outIndex = index;
       return true;
     }
   }
   return false;
 }
 
-void rewriteSwitchTarget(wasm::Switch *sw, wasm::Name const &from, wasm::Name const &to) {
-  for (auto &t : sw->targets) {
-    if (t == from) {
-      t = to;
+void rewriteSwitchTarget(wasm::Switch *switchInstruction, wasm::Name const &fromName, wasm::Name const &toName) {
+  for (auto &targetName : switchInstruction->targets) {
+    if (targetName == fromName) {
+      targetName = toName;
     }
   }
-  if (sw->default_ == from) {
-    sw->default_ = to;
+  if (switchInstruction->default_ == fromName) {
+    switchInstruction->default_ = toName;
   }
 }
 
-TargetInfo const *chooseCanonical(std::vector<TargetInfo> const &group) {
-  TargetInfo const *canonical = &group.front();
-  for (auto const &g : group) {
-    if (g.stackIndex < canonical->stackIndex)
-      canonical = &g;
+TargetInfo const *chooseCanonical(std::vector<TargetInfo> const &targetGroup) {
+  TargetInfo const *canonicalTarget = &targetGroup.front();
+  for (auto const &targetInfo : targetGroup) {
+    if (targetInfo.stackIndex < canonicalTarget->stackIndex)
+      canonicalTarget = &targetInfo;
   }
-  return canonical;
+  return canonicalTarget;
 }
 
-std::vector<std::vector<TargetInfo>> groupByContinuationEquality(std::vector<TargetInfo> const &bucket) {
-  std::vector<std::vector<TargetInfo>> groups;
-  for (auto const &candidate : bucket) {
-    bool placed = false;
-    for (auto &group : groups) {
-      if (equalContinuation(candidate.cont, group.front().cont)) {
-        group.push_back(candidate);
-        placed = true;
+std::vector<std::vector<TargetInfo>> groupByContinuationEquality(std::vector<TargetInfo> const &targetBucket) {
+  std::vector<std::vector<TargetInfo>> groupedTargets;
+  for (auto const &targetCandidate : targetBucket) {
+    bool wasPlaced = false;
+    for (auto &existingGroup : groupedTargets) {
+      if (equalContinuation(targetCandidate.continuation, existingGroup.front().continuation)) {
+        existingGroup.push_back(targetCandidate);
+        wasPlaced = true;
         break;
       }
     }
-    if (!placed) {
-      groups.push_back({candidate});
+    if (!wasPlaced) {
+      groupedTargets.push_back({targetCandidate});
     }
   }
-  return groups;
+  return groupedTargets;
 }
 
 // This pass looks for the common switch-lowering pattern:
@@ -146,14 +146,14 @@ struct CombineSwitchTargets final
   std::unique_ptr<wasm::Pass> create() override { return std::make_unique<CombineSwitchTargets>(); }
 
   wasm::Index findInExpressionStack(wasm::Expression *needle) const {
-    for (wasm::Index i = 0; i < this->expressionStack.size(); i++) {
-      if (this->expressionStack[i] == needle)
-        return i;
+    for (wasm::Index index = 0; index < this->expressionStack.size(); index++) {
+      if (this->expressionStack[index] == needle)
+        return index;
     }
     return static_cast<wasm::Index>(-1);
   }
 
-  void appendTargetInfo(wasm::Name const &name, std::vector<TargetInfo> &infos) {
+  void appendTargetInfo(wasm::Name const &name, std::vector<TargetInfo> &targetInfos) {
     if (name.isNull())
       return;
 
@@ -171,49 +171,49 @@ struct CombineSwitchTargets final
     if (parentBlock == nullptr)
       return;
 
-    wasm::Index childPos = 0;
-    if (!findChildIndex(parentBlock, target, childPos))
+    wasm::Index childIndex = 0;
+    if (!findChildIndex(parentBlock, target, childIndex))
       return;
 
-    ContinuationView const cont{.parent = parentBlock, .start = childPos + 1U};
-    if (cont.start > cont.parent->list.size())
+    ContinuationView const continuation{.parent = parentBlock, .start = childIndex + 1U};
+    if (continuation.start > continuation.parent->list.size())
       return;
 
-    infos.push_back(TargetInfo{.name = name, .stackIndex = stackIndex, .cont = cont});
+    targetInfos.push_back(TargetInfo{.name = name, .stackIndex = stackIndex, .continuation = continuation});
   }
 
-  void visitSwitch(wasm::Switch *sw) {
-    std::vector<TargetInfo> infos;
-    infos.reserve(sw->targets.size() + 1U);
-    for (auto const &t : sw->targets)
-      appendTargetInfo(t, infos);
-    appendTargetInfo(sw->default_, infos);
+  void visitSwitch(wasm::Switch *switchInstruction) {
+    std::vector<TargetInfo> targetInfos;
+    targetInfos.reserve(switchInstruction->targets.size() + 1U);
+    for (auto const &targetName : switchInstruction->targets)
+      appendTargetInfo(targetName, targetInfos);
+    appendTargetInfo(switchInstruction->default_, targetInfos);
 
-    if (infos.size() < 2U)
+    if (targetInfos.size() < 2U)
       return;
 
-    std::unordered_map<std::size_t, std::vector<TargetInfo>> buckets;
-    buckets.reserve(infos.size());
-    for (auto const &info : infos) {
-      if (!info.cont.endsUnreachable())
+    std::unordered_map<std::size_t, std::vector<TargetInfo>> targetsByHash;
+    targetsByHash.reserve(targetInfos.size());
+    for (auto const &targetInfo : targetInfos) {
+      if (!targetInfo.continuation.endsUnreachable())
         continue;
-      buckets[hashContinuation(info.cont)].push_back(info);
+      targetsByHash[hashContinuation(targetInfo.continuation)].push_back(targetInfo);
     }
 
-    for (auto &it : buckets) {
-      auto &bucket = it.second;
-      if (bucket.size() < 2U)
+    for (auto &bucketEntry : targetsByHash) {
+      auto &targetBucket = bucketEntry.second;
+      if (targetBucket.size() < 2U)
         continue;
 
-      for (auto &group : groupByContinuationEquality(bucket)) {
-        if (group.size() < 2U)
+      for (auto &targetGroup : groupByContinuationEquality(targetBucket)) {
+        if (targetGroup.size() < 2U)
           continue;
 
-        TargetInfo const *const canonical = chooseCanonical(group);
-        for (auto const &g : group) {
-          if (g.name == canonical->name)
+        TargetInfo const *const canonicalTarget = chooseCanonical(targetGroup);
+        for (auto const &targetInfo : targetGroup) {
+          if (targetInfo.name == canonicalTarget->name)
             continue;
-          rewriteSwitchTarget(sw, g.name, canonical->name);
+          rewriteSwitchTarget(switchInstruction, targetInfo.name, canonicalTarget->name);
         }
       }
     }
