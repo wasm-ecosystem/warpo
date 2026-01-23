@@ -1419,34 +1419,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $logical/C
-    block $logical/A
-     block $logical/B
-      block $logical/Obj
-       block $~lib/arraybuffer/ArrayBufferView
-        block $~lib/string/String
-         block $~lib/arraybuffer/ArrayBuffer
-          block $~lib/object/Object
-           local.get $0
-           i32.const 8
-           i32.sub
-           i32.load
-           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $logical/Obj $logical/B $logical/A $logical/C $invalid
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       local.get $0
-       i32.load
-       call $~lib/rt/itcms/__visit
-       return
-      end
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $logical/C $logical/C $logical/C $~lib/arraybuffer/ArrayBufferView $logical/C $logical/C $logical/C $logical/C $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

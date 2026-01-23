@@ -1406,20 +1406,11 @@
    block $invalid
     block $function-call/Foo
      block $~lib/arraybuffer/ArrayBufferView
-      block $~lib/string/String
-       block $~lib/arraybuffer/ArrayBuffer
-        block $~lib/object/Object
-         local.get $0
-         i32.const 8
-         i32.sub
-         i32.load
-         br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $folding-inner0 $folding-inner0 $folding-inner0 $function-call/Foo $folding-inner0 $folding-inner0 $invalid
-        end
-        return
-       end
-       return
-      end
-      return
+      local.get $0
+      i32.const 8
+      i32.sub
+      i32.load
+      br_table $function-call/Foo $function-call/Foo $function-call/Foo $~lib/arraybuffer/ArrayBufferView $folding-inner0 $folding-inner0 $folding-inner0 $function-call/Foo $folding-inner0 $folding-inner0 $invalid
      end
      local.get $0
      i32.load

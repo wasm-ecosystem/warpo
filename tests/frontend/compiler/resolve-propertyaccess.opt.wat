@@ -1846,20 +1846,11 @@
   block $invalid
    block $resolve-propertyaccess/Class
     block $~lib/arraybuffer/ArrayBufferView
-     block $~lib/string/String
-      block $~lib/arraybuffer/ArrayBuffer
-       block $~lib/object/Object
-        local.get $0
-        i32.const 8
-        i32.sub
-        i32.load
-        br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $resolve-propertyaccess/Class $invalid
-       end
-       return
-      end
-      return
-     end
-     return
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $resolve-propertyaccess/Class $resolve-propertyaccess/Class $resolve-propertyaccess/Class $~lib/arraybuffer/ArrayBufferView $resolve-propertyaccess/Class $invalid
     end
     local.get $0
     i32.load

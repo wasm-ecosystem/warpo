@@ -1387,20 +1387,11 @@
   block $invalid
    block $for/Ref
     block $~lib/arraybuffer/ArrayBufferView
-     block $~lib/string/String
-      block $~lib/arraybuffer/ArrayBuffer
-       block $~lib/object/Object
-        local.get $0
-        i32.const 8
-        i32.sub
-        i32.load
-        br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $for/Ref $invalid
-       end
-       return
-      end
-      return
-     end
-     return
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $for/Ref $for/Ref $for/Ref $~lib/arraybuffer/ArrayBufferView $for/Ref $invalid
     end
     local.get $0
     i32.load

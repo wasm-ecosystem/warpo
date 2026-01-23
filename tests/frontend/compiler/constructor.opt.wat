@@ -1611,58 +1611,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $constructor/CtorFieldInitOrder
-    block $constructor/CtorFieldInitWithoutConstructor
-     block $constructor/CtorConditionallyReturnsThis
-      block $constructor/CtorConditionallyReturns
-       block $constructor/CtorReturns
-        block $constructor/JustFieldNoInit
-         block $constructor/JustFieldInit
-          block $constructor/None
-           block $constructor/EmptyCtorWithFieldAccess
-            block $constructor/EmptyCtorWithFieldNoInit
-             block $constructor/EmptyCtorWithFieldInit
-              block $constructor/EmptyCtor
-               block $~lib/arraybuffer/ArrayBufferView
-                block $~lib/string/String
-                 block $~lib/arraybuffer/ArrayBuffer
-                  block $~lib/object/Object
-                   local.get $0
-                   i32.const 8
-                   i32.sub
-                   i32.load
-                   br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $constructor/EmptyCtor $constructor/EmptyCtorWithFieldInit $constructor/EmptyCtorWithFieldNoInit $constructor/EmptyCtorWithFieldAccess $constructor/None $constructor/JustFieldInit $constructor/JustFieldNoInit $constructor/CtorReturns $constructor/CtorConditionallyReturns $constructor/CtorConditionallyReturnsThis $constructor/CtorFieldInitWithoutConstructor $constructor/CtorFieldInitOrder $invalid
-                  end
-                  return
-                 end
-                 return
-                end
-                return
-               end
-               local.get $0
-               i32.load
-               call $~lib/rt/itcms/__visit
-               return
-              end
-              return
-             end
-             return
-            end
-            return
-           end
-           return
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       return
-      end
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $constructor/CtorFieldInitOrder $constructor/CtorFieldInitOrder $constructor/CtorFieldInitOrder $~lib/arraybuffer/ArrayBufferView $constructor/CtorFieldInitOrder $constructor/CtorFieldInitOrder $constructor/CtorFieldInitOrder $constructor/CtorFieldInitOrder $constructor/CtorFieldInitOrder $constructor/CtorFieldInitOrder $constructor/CtorFieldInitOrder $constructor/CtorFieldInitOrder $constructor/CtorFieldInitOrder $constructor/CtorFieldInitOrder $constructor/CtorFieldInitOrder $constructor/CtorFieldInitOrder $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

@@ -1651,28 +1651,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $assignment-chain/B
-    block $assignment-chain/A
-     block $~lib/arraybuffer/ArrayBufferView
-      block $~lib/string/String
-       block $~lib/arraybuffer/ArrayBuffer
-        block $~lib/object/Object
-         local.get $0
-         i32.const 8
-         i32.sub
-         i32.load
-         br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $assignment-chain/A $assignment-chain/B $invalid
-        end
-        return
-       end
-       return
-      end
-      return
-     end
+    block $~lib/arraybuffer/ArrayBufferView
      local.get $0
+     i32.const 8
+     i32.sub
      i32.load
-     call $~lib/rt/itcms/__visit
-     return
+     br_table $assignment-chain/B $assignment-chain/B $assignment-chain/B $~lib/arraybuffer/ArrayBufferView $assignment-chain/B $assignment-chain/B $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

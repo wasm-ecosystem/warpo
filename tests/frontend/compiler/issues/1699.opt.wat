@@ -1784,28 +1784,16 @@
   block $invalid
    block $~lib/iterator/Iterable<issues/1699/MultiAssignmentTest>
     block $~lib/array/Array<issues/1699/MultiAssignmentTest>
-     block $issues/1699/MultiAssignmentTest
-      block $~lib/arraybuffer/ArrayBufferView
-       block $~lib/string/String
-        block $~lib/arraybuffer/ArrayBuffer
-         block $~lib/object/Object
-          local.get $0
-          i32.const 8
-          i32.sub
-          i32.load
-          br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $issues/1699/MultiAssignmentTest $~lib/array/Array<issues/1699/MultiAssignmentTest> $~lib/iterator/Iterable<issues/1699/MultiAssignmentTest> $invalid
-         end
-         return
-        end
-        return
-       end
-       return
-      end
+     block $~lib/arraybuffer/ArrayBufferView
       local.get $0
+      i32.const 8
+      i32.sub
       i32.load
-      call $~lib/rt/itcms/__visit
-      return
+      br_table $~lib/iterator/Iterable<issues/1699/MultiAssignmentTest> $~lib/iterator/Iterable<issues/1699/MultiAssignmentTest> $~lib/iterator/Iterable<issues/1699/MultiAssignmentTest> $~lib/arraybuffer/ArrayBufferView $~lib/iterator/Iterable<issues/1699/MultiAssignmentTest> $~lib/array/Array<issues/1699/MultiAssignmentTest> $~lib/iterator/Iterable<issues/1699/MultiAssignmentTest> $invalid
      end
+     local.get $0
+     i32.load
+     call $~lib/rt/itcms/__visit
      return
     end
     local.get $0

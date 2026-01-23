@@ -1772,32 +1772,11 @@
       block $field-initialization/Inherit_Ctor
        block $field-initialization/Inherit
         block $field-initialization/Value_Ctor_Init
-         block $field-initialization/Value_Init_Ctor
-          block $field-initialization/Value_Ctor
-           block $field-initialization/Value
-            block $field-initialization/Value_Init
-             block $~lib/string/String
-              block $~lib/arraybuffer/ArrayBuffer
-               block $~lib/object/Object
-                local.get $0
-                i32.const 8
-                i32.sub
-                i32.load
-                br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $field-initialization/Value_Init $field-initialization/Value $folding-inner0 $folding-inner0 $folding-inner0 $field-initialization/Value_Ctor $field-initialization/Value_Init_Ctor $field-initialization/Value_Ctor_Init $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $field-initialization/Inherit $folding-inner0 $field-initialization/Inherit_Ctor $field-initialization/SomeObject $field-initialization/SomeOtherObject $folding-inner0 $folding-inner0 $folding-inner0 $invalid
-               end
-               return
-              end
-              return
-             end
-             return
-            end
-            return
-           end
-           return
-          end
-          return
-         end
-         return
+         local.get $0
+         i32.const 8
+         i32.sub
+         i32.load
+         br_table $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $folding-inner0 $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $folding-inner0 $folding-inner0 $folding-inner0 $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $field-initialization/Inherit $folding-inner0 $field-initialization/Inherit_Ctor $field-initialization/SomeObject $field-initialization/SomeOtherObject $folding-inner0 $folding-inner0 $folding-inner0 $invalid
         end
         return
        end

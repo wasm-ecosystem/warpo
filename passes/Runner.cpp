@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "AdvancedInlining.hpp"
+#include "CombineSwitchTargets.hpp"
 #include "ConditionalReturn.hpp"
 #include "ExtractMostFrequentlyUsedGlobals.hpp"
 #include "GC/FastLower.hpp"
@@ -116,6 +117,7 @@ static void optimize(AsModule const &m, Config const &config) {
     passRunner->add(std::unique_ptr<wasm::Pass>{createImmutableLoadEliminatingPass(m.immutableRanges_)});
     passRunner->add(std::unique_ptr<wasm::Pass>{createExtractMostFrequentlyUsedGlobalsPass()});
     passRunner->add(std::unique_ptr<wasm::Pass>{createConditionalReturnPass()});
+    passRunner->add(std::unique_ptr<wasm::Pass>{createCombineSwitchTargetsPass()});
     passRunner->run();
   }
 #ifndef WARPO_RELEASE_BUILD

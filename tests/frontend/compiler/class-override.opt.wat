@@ -1403,34 +1403,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $class-override/B
-    block $class-override/C
-     block $class-override/D
-      block $class-override/A
-       block $~lib/arraybuffer/ArrayBufferView
-        block $~lib/string/String
-         block $~lib/arraybuffer/ArrayBuffer
-          block $~lib/object/Object
-           local.get $0
-           i32.const 8
-           i32.sub
-           i32.load
-           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $class-override/A $class-override/D $class-override/C $class-override/B $invalid
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       local.get $0
-       i32.load
-       call $~lib/rt/itcms/__visit
-       return
-      end
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $class-override/B $class-override/B $class-override/B $~lib/arraybuffer/ArrayBufferView $class-override/B $class-override/B $class-override/B $class-override/B $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

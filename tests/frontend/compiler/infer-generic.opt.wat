@@ -1556,34 +1556,16 @@
   block $folding-inner0
    block $invalid
     block $infer-generic/Ref
-     block $~lib/iterator/Iterable<f32>
-      block $~lib/array/Array<f32>
-       block $~lib/arraybuffer/ArrayBufferView
-        block $~lib/string/String
-         block $~lib/arraybuffer/ArrayBuffer
-          block $~lib/object/Object
-           local.get $0
-           i32.const 8
-           i32.sub
-           i32.load
-           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/array/Array<f32> $~lib/iterator/Iterable<f32> $folding-inner0 $infer-generic/Ref $folding-inner0 $folding-inner0 $folding-inner0 $invalid
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       local.get $0
-       i32.load
-       call $~lib/rt/itcms/__visit
-       return
-      end
+     block $~lib/array/Array<f32>
       local.get $0
+      i32.const 8
+      i32.sub
       i32.load
-      call $~lib/rt/itcms/__visit
-      return
+      br_table $infer-generic/Ref $infer-generic/Ref $infer-generic/Ref $~lib/array/Array<f32> $~lib/array/Array<f32> $infer-generic/Ref $folding-inner0 $infer-generic/Ref $folding-inner0 $folding-inner0 $folding-inner0 $invalid
      end
+     local.get $0
+     i32.load
+     call $~lib/rt/itcms/__visit
      return
     end
     return

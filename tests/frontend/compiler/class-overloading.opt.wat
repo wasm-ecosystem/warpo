@@ -1735,64 +1735,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $class-overloading/A1
-    block $class-overloading/B1
-     block $class-overloading/B2
-      block $class-overloading/A2
-       block $class-overloading/CC
-        block $class-overloading/IC
-         block $class-overloading/CA
-          block $class-overloading/IA
-           block $class-overloading/F
-            block $class-overloading/E
-             block $class-overloading/D
-              block $class-overloading/C
-               block $class-overloading/B
-                block $class-overloading/A
-                 block $~lib/arraybuffer/ArrayBufferView
-                  block $~lib/string/String
-                   block $~lib/arraybuffer/ArrayBuffer
-                    block $~lib/object/Object
-                     local.get $0
-                     i32.const 8
-                     i32.sub
-                     i32.load
-                     br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $class-overloading/A $class-overloading/B $class-overloading/C $class-overloading/D $class-overloading/E $class-overloading/F $class-overloading/IA $class-overloading/CA $class-overloading/IC $class-overloading/CC $class-overloading/A2 $class-overloading/B2 $class-overloading/B1 $class-overloading/A1 $invalid
-                    end
-                    return
-                   end
-                   return
-                  end
-                  return
-                 end
-                 local.get $0
-                 i32.load
-                 call $~lib/rt/itcms/__visit
-                 return
-                end
-                return
-               end
-               return
-              end
-              return
-             end
-             return
-            end
-            return
-           end
-           return
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       return
-      end
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $~lib/arraybuffer/ArrayBufferView $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $class-overloading/A1 $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

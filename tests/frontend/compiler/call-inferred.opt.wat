@@ -1525,31 +1525,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $call-inferred/Baz<i32>
-    block $call-inferred/Bar
-     block $call-inferred/Foo<i32>
-      block $~lib/arraybuffer/ArrayBufferView
-       block $~lib/string/String
-        block $~lib/arraybuffer/ArrayBuffer
-         block $~lib/object/Object
-          local.get $0
-          i32.const 8
-          i32.sub
-          i32.load
-          br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $call-inferred/Foo<i32> $call-inferred/Bar $call-inferred/Baz<i32> $invalid
-         end
-         return
-        end
-        return
-       end
-       return
-      end
-      local.get $0
-      i32.load
-      call $~lib/rt/itcms/__visit
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $call-inferred/Baz<i32> $call-inferred/Baz<i32> $call-inferred/Baz<i32> $~lib/arraybuffer/ArrayBufferView $call-inferred/Baz<i32> $call-inferred/Baz<i32> $call-inferred/Baz<i32> $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

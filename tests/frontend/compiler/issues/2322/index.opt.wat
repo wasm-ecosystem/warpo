@@ -1545,20 +1545,11 @@
   block $invalid
    block $issues/2322/lib/Wrapper<i32>
     block $~lib/arraybuffer/ArrayBufferView
-     block $~lib/string/String
-      block $~lib/arraybuffer/ArrayBuffer
-       block $~lib/object/Object
-        local.get $0
-        i32.const 8
-        i32.sub
-        i32.load
-        br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $issues/2322/lib/Wrapper<i32> $invalid
-       end
-       return
-      end
-      return
-     end
-     return
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $issues/2322/lib/Wrapper<i32> $issues/2322/lib/Wrapper<i32> $issues/2322/lib/Wrapper<i32> $~lib/arraybuffer/ArrayBufferView $issues/2322/lib/Wrapper<i32> $invalid
     end
     local.get $0
     i32.load

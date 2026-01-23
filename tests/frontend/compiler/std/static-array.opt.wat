@@ -1772,34 +1772,16 @@
   block $folding-inner0
    block $invalid
     block $~lib/iterator/Iterable<f64>
-     block $~lib/iterator/Iterable<f32>
-      block $~lib/iterator/Iterable<i64>
-       block $~lib/iterator/Iterable<i32>
-        block $~lib/arraybuffer/ArrayBufferView
-         block $~lib/string/String
-          block $~lib/arraybuffer/ArrayBuffer
-           block $~lib/object/Object
-            local.get $0
-            i32.const 8
-            i32.sub
-            i32.load
-            br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $folding-inner0 $~lib/iterator/Iterable<i32> $folding-inner0 $~lib/iterator/Iterable<i64> $folding-inner0 $~lib/iterator/Iterable<f32> $folding-inner0 $~lib/iterator/Iterable<f64> $invalid
-           end
-           return
-          end
-          return
-         end
-         return
-        end
-        local.get $0
-        i32.load
-        call $~lib/rt/itcms/__visit
-        return
-       end
-       return
-      end
-      return
+     block $~lib/arraybuffer/ArrayBufferView
+      local.get $0
+      i32.const 8
+      i32.sub
+      i32.load
+      br_table $~lib/iterator/Iterable<f64> $~lib/iterator/Iterable<f64> $~lib/iterator/Iterable<f64> $~lib/arraybuffer/ArrayBufferView $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner0 $~lib/iterator/Iterable<f64> $invalid
      end
+     local.get $0
+     i32.load
+     call $~lib/rt/itcms/__visit
      return
     end
     return

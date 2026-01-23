@@ -1872,28 +1872,16 @@
   block $invalid
    block $~lib/function/Function<%28%29=>void>
     block $resolve-unary/Bar
-     block $resolve-unary/Foo
-      block $~lib/arraybuffer/ArrayBufferView
-       block $~lib/string/String
-        block $~lib/arraybuffer/ArrayBuffer
-         block $~lib/object/Object
-          local.get $0
-          i32.const 8
-          i32.sub
-          i32.load
-          br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $resolve-unary/Foo $resolve-unary/Bar $~lib/function/Function<%28%29=>void> $invalid
-         end
-         return
-        end
-        return
-       end
-       return
-      end
+     block $~lib/arraybuffer/ArrayBufferView
       local.get $0
+      i32.const 8
+      i32.sub
       i32.load
-      call $~lib/rt/itcms/__visit
-      return
+      br_table $resolve-unary/Bar $resolve-unary/Bar $resolve-unary/Bar $~lib/arraybuffer/ArrayBufferView $resolve-unary/Bar $resolve-unary/Bar $~lib/function/Function<%28%29=>void> $invalid
      end
+     local.get $0
+     i32.load
+     call $~lib/rt/itcms/__visit
      return
     end
     return

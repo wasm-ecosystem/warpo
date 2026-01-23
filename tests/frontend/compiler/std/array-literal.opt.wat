@@ -1,8 +1,8 @@
 (module
  (type $0 (func (param i32 i32 i32)))
  (type $1 (func (param i32 i32) (result i32)))
- (type $2 (func (param i32)))
- (type $3 (func))
+ (type $2 (func))
+ (type $3 (func (param i32)))
  (type $4 (func (param i32 i32)))
  (type $5 (func (result i32)))
  (type $6 (func (param i32 i32 i32 i32)))
@@ -1977,87 +1977,51 @@
   i32.const 1
   call $~lib/rt/itcms/__link
  )
- (func $~lib/array/Array<std/array-literal/Ref>~visit (param $0 i32)
+ (func $~lib/rt/__visit_members (param $0 i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
-  local.get $0
-  i32.load offset=4
-  local.tee $1
-  local.get $0
-  i32.load offset=12
-  i32.const 2
-  i32.shl
-  i32.add
-  local.set $2
-  loop $while-continue|0
-   local.get $1
-   local.get $2
-   i32.lt_u
-   if
-    local.get $1
-    i32.load
-    local.tee $3
-    if
-     local.get $3
-     call $~lib/rt/itcms/__visit
-    end
-    local.get $1
-    i32.const 4
-    i32.add
-    local.set $1
-    br $while-continue|0
-   end
-  end
-  local.get $0
-  i32.load
-  call $~lib/rt/itcms/__visit
- )
- (func $~lib/rt/__visit_members (param $0 i32)
   block $folding-inner0
    block $invalid
     block $~lib/iterator/Iterable<std/array-literal/RefWithCtor>
      block $~lib/array/Array<std/array-literal/RefWithCtor>
-      block $std/array-literal/RefWithCtor
-       block $~lib/iterator/Iterable<std/array-literal/Ref>
-        block $~lib/array/Array<std/array-literal/Ref>
-         block $std/array-literal/Ref
-          block $~lib/iterator/Iterable<i32>
-           block $~lib/iterator/Iterable<i8>
-            block
-             block $~lib/string/String
-              block $~lib/arraybuffer/ArrayBuffer
-               block $~lib/object/Object
-                local.get $0
-                i32.const 8
-                i32.sub
-                i32.load
-                br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<i8> $folding-inner0 $~lib/iterator/Iterable<i32> $std/array-literal/Ref $~lib/array/Array<std/array-literal/Ref> $~lib/iterator/Iterable<std/array-literal/Ref> $std/array-literal/RefWithCtor $~lib/array/Array<std/array-literal/RefWithCtor> $~lib/iterator/Iterable<std/array-literal/RefWithCtor> $invalid
-               end
-               return
-              end
-              return
-             end
-             return
-            end
-            unreachable
-           end
-           return
-          end
-          return
-         end
-         return
-        end
-        local.get $0
-        call $~lib/array/Array<std/array-literal/Ref>~visit
-        return
-       end
-       return
-      end
-      return
+      local.get $0
+      i32.const 8
+      i32.sub
+      i32.load
+      br_table $~lib/iterator/Iterable<std/array-literal/RefWithCtor> $~lib/iterator/Iterable<std/array-literal/RefWithCtor> $~lib/iterator/Iterable<std/array-literal/RefWithCtor> $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<std/array-literal/RefWithCtor> $folding-inner0 $~lib/iterator/Iterable<std/array-literal/RefWithCtor> $~lib/iterator/Iterable<std/array-literal/RefWithCtor> $~lib/array/Array<std/array-literal/RefWithCtor> $~lib/iterator/Iterable<std/array-literal/RefWithCtor> $~lib/iterator/Iterable<std/array-literal/RefWithCtor> $~lib/array/Array<std/array-literal/RefWithCtor> $~lib/iterator/Iterable<std/array-literal/RefWithCtor> $invalid
      end
      local.get $0
-     call $~lib/array/Array<std/array-literal/Ref>~visit
+     i32.load offset=4
+     local.tee $1
+     local.get $0
+     i32.load offset=12
+     i32.const 2
+     i32.shl
+     i32.add
+     local.set $2
+     loop $while-continue|0
+      local.get $1
+      local.get $2
+      i32.lt_u
+      if
+       local.get $1
+       i32.load
+       local.tee $3
+       if
+        local.get $3
+        call $~lib/rt/itcms/__visit
+       end
+       local.get $1
+       i32.const 4
+       i32.add
+       local.set $1
+       br $while-continue|0
+      end
+     end
+     local.get $0
+     i32.load
+     call $~lib/rt/itcms/__visit
      return
     end
     return

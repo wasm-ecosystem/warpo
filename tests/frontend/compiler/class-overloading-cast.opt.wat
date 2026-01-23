@@ -1535,52 +1535,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $class-overloading-cast/A<f32>
-    block $"class-overloading-cast/B<f32,f64>"
-     block $class-overloading-cast/D
-      block $class-overloading-cast/A<~lib/string/String>
-       block $class-overloading-cast/C
-        block $class-overloading-cast/A<f64>
-         block $"class-overloading-cast/B<f64,~lib/string/String>"
-          block $"class-overloading-cast/B<i32,~lib/string/String>"
-           block $class-overloading-cast/A<i32>
-            block $"class-overloading-cast/B<i32,f64>"
-             block $~lib/arraybuffer/ArrayBufferView
-              block $~lib/string/String
-               block $~lib/arraybuffer/ArrayBuffer
-                block $~lib/object/Object
-                 local.get $0
-                 i32.const 8
-                 i32.sub
-                 i32.load
-                 br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $"class-overloading-cast/B<i32,f64>" $class-overloading-cast/A<i32> $"class-overloading-cast/B<i32,~lib/string/String>" $"class-overloading-cast/B<f64,~lib/string/String>" $class-overloading-cast/A<f64> $class-overloading-cast/C $class-overloading-cast/A<~lib/string/String> $class-overloading-cast/D $"class-overloading-cast/B<f32,f64>" $class-overloading-cast/A<f32> $invalid
-                end
-                return
-               end
-               return
-              end
-              return
-             end
-             local.get $0
-             i32.load
-             call $~lib/rt/itcms/__visit
-             return
-            end
-            return
-           end
-           return
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       return
-      end
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $class-overloading-cast/A<f32> $class-overloading-cast/A<f32> $class-overloading-cast/A<f32> $~lib/arraybuffer/ArrayBufferView $class-overloading-cast/A<f32> $class-overloading-cast/A<f32> $class-overloading-cast/A<f32> $class-overloading-cast/A<f32> $class-overloading-cast/A<f32> $class-overloading-cast/A<f32> $class-overloading-cast/A<f32> $class-overloading-cast/A<f32> $class-overloading-cast/A<f32> $class-overloading-cast/A<f32> $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

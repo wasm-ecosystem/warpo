@@ -1432,26 +1432,11 @@
    block $~lib/iterator/Iterable<i32>
     block $~lib/array/Array<i32>
      block $rt/runtime-radical/RadicalObject
-      block $~lib/arraybuffer/ArrayBufferView
-       block $~lib/string/String
-        block $~lib/arraybuffer/ArrayBuffer
-         block $~lib/object/Object
-          local.get $0
-          i32.const 8
-          i32.sub
-          i32.load
-          br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $rt/runtime-radical/RadicalObject $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $invalid
-         end
-         return
-        end
-        return
-       end
-       return
-      end
       local.get $0
+      i32.const 8
+      i32.sub
       i32.load
-      call $~lib/rt/tcms/__visit
-      return
+      br_table $~lib/iterator/Iterable<i32> $~lib/iterator/Iterable<i32> $~lib/iterator/Iterable<i32> $~lib/array/Array<i32> $rt/runtime-radical/RadicalObject $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $invalid
      end
      local.get $0
      i32.load

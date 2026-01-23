@@ -1406,28 +1406,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $super-inline/Bar
-    block $super-inline/Foo
-     block $~lib/arraybuffer/ArrayBufferView
-      block $~lib/string/String
-       block $~lib/arraybuffer/ArrayBuffer
-        block $~lib/object/Object
-         local.get $0
-         i32.const 8
-         i32.sub
-         i32.load
-         br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $super-inline/Foo $super-inline/Bar $invalid
-        end
-        return
-       end
-       return
-      end
-      return
-     end
+    block $~lib/arraybuffer/ArrayBufferView
      local.get $0
+     i32.const 8
+     i32.sub
      i32.load
-     call $~lib/rt/itcms/__visit
-     return
+     br_table $super-inline/Bar $super-inline/Bar $super-inline/Bar $~lib/arraybuffer/ArrayBufferView $super-inline/Bar $super-inline/Bar $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

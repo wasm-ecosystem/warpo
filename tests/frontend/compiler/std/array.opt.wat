@@ -11730,92 +11730,11 @@
     block $folding-inner1
      block $invalid
       block $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>>
-       block $~lib/iterator/Iterable<~lib/array/Array<~lib/array/Array<u32>>>
-        block $~lib/iterator/Iterable<~lib/array/Array<u32>>
-         block $~lib/iterator/Iterable<~lib/array/Array<u8>>
-          block $~lib/iterator/Iterable<i64>
-           block $~lib/iterator/Iterable<u64>
-            block $~lib/iterator/Iterable<i16>
-             block $~lib/iterator/Iterable<i8>
-              block $~lib/iterator/Iterable<bool>
-               block $~lib/iterator/Iterable<~lib/string/String|null>
-                block $~lib/iterator/Iterable<std/array/Proxy<i32>>
-                 block $std/array/Proxy<i32>
-                  block $~lib/iterator/Iterable<~lib/array/Array<i32>>
-                   block $~lib/iterator/Iterable<std/array/Dim>
-                    block $std/array/Dim
-                     block $~lib/iterator/Iterable<~lib/string/String>
-                      block $~lib/iterator/Iterable<std/array/Ref|null>
-                       block $~lib/iterator/Iterable<f64>
-                        block $~lib/iterator/Iterable<u16>
-                         block $~lib/iterator/Iterable<std/array/Ref>
-                          block $~lib/iterator/Iterable<f32>
-                           block $~lib/iterator/Iterable<u32>
-                            block $~lib/iterator/Iterable<u8>
-                             block $std/array/Ref
-                              block $~lib/iterator/Iterable<i32>
-                               block $~lib/string/String
-                                block $~lib/arraybuffer/ArrayBuffer
-                                 block $~lib/object/Object
-                                  local.get $0
-                                  i32.const 8
-                                  i32.sub
-                                  i32.load
-                                  br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner3 $folding-inner3 $~lib/iterator/Iterable<i32> $std/array/Ref $folding-inner3 $~lib/iterator/Iterable<u8> $folding-inner3 $folding-inner3 $~lib/iterator/Iterable<u32> $folding-inner3 $~lib/iterator/Iterable<f32> $folding-inner1 $~lib/iterator/Iterable<std/array/Ref> $folding-inner3 $~lib/iterator/Iterable<u16> $folding-inner3 $~lib/iterator/Iterable<f64> $folding-inner1 $~lib/iterator/Iterable<std/array/Ref|null> $folding-inner2 $folding-inner2 $folding-inner1 $~lib/iterator/Iterable<~lib/string/String> $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $std/array/Dim $folding-inner1 $~lib/iterator/Iterable<std/array/Dim> $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<i32>> $folding-inner2 $std/array/Proxy<i32> $folding-inner1 $~lib/iterator/Iterable<std/array/Proxy<i32>> $folding-inner2 $folding-inner1 $~lib/iterator/Iterable<~lib/string/String|null> $folding-inner2 $folding-inner2 $folding-inner3 $~lib/iterator/Iterable<bool> $folding-inner3 $~lib/iterator/Iterable<i8> $folding-inner3 $~lib/iterator/Iterable<i16> $folding-inner3 $~lib/iterator/Iterable<u64> $folding-inner3 $~lib/iterator/Iterable<i64> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<u8>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<u32>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/array/Array<u32>>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner2 $invalid
-                                 end
-                                 return
-                                end
-                                return
-                               end
-                               return
-                              end
-                              return
-                             end
-                             return
-                            end
-                            return
-                           end
-                           return
-                          end
-                          return
-                         end
-                         return
-                        end
-                        return
-                       end
-                       return
-                      end
-                      return
-                     end
-                     return
-                    end
-                    return
-                   end
-                   return
-                  end
-                  return
-                 end
-                 return
-                end
-                return
-               end
-               return
-              end
-              return
-             end
-             return
-            end
-            return
-           end
-           return
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       return
+       local.get $0
+       i32.const 8
+       i32.sub
+       i32.load
+       br_table $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner3 $folding-inner3 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner3 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner3 $folding-inner3 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner3 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner3 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner3 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner2 $folding-inner2 $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner2 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner2 $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner2 $folding-inner2 $folding-inner3 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner3 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner3 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner3 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner3 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<~lib/string/String|null>> $folding-inner2 $invalid
       end
       return
      end

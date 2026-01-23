@@ -1357,31 +1357,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $impl-interface-in-base/impl_interface_in_base.Base
-    block $impl-interface-in-base/impl_interface_in_base.C
-     block $impl-interface-in-base/impl_interface_in_base.I
-      block $~lib/arraybuffer/ArrayBufferView
-       block $~lib/string/String
-        block $~lib/arraybuffer/ArrayBuffer
-         block $~lib/object/Object
-          local.get $0
-          i32.const 8
-          i32.sub
-          i32.load
-          br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $impl-interface-in-base/impl_interface_in_base.I $impl-interface-in-base/impl_interface_in_base.C $impl-interface-in-base/impl_interface_in_base.Base $invalid
-         end
-         return
-        end
-        return
-       end
-       return
-      end
-      local.get $0
-      i32.load
-      call $~lib/rt/itcms/__visit
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $impl-interface-in-base/impl_interface_in_base.Base $impl-interface-in-base/impl_interface_in_base.Base $impl-interface-in-base/impl_interface_in_base.Base $~lib/arraybuffer/ArrayBufferView $impl-interface-in-base/impl_interface_in_base.Base $impl-interface-in-base/impl_interface_in_base.Base $impl-interface-in-base/impl_interface_in_base.Base $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

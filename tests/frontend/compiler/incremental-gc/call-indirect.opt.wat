@@ -1656,28 +1656,16 @@
   block $invalid
    block $incremental-gc/call-indirect/B
     block $~lib/function/Function<%28incremental-gc/call-indirect/A%29=>i32>
-     block $incremental-gc/call-indirect/A
-      block $~lib/arraybuffer/ArrayBufferView
-       block $~lib/string/String
-        block $~lib/arraybuffer/ArrayBuffer
-         block $~lib/object/Object
-          local.get $0
-          i32.const 8
-          i32.sub
-          i32.load
-          br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $incremental-gc/call-indirect/A $~lib/function/Function<%28incremental-gc/call-indirect/A%29=>i32> $incremental-gc/call-indirect/B $invalid
-         end
-         return
-        end
-        return
-       end
-       return
-      end
+     block $~lib/arraybuffer/ArrayBufferView
       local.get $0
+      i32.const 8
+      i32.sub
       i32.load
-      call $~lib/rt/itcms/__visit
-      return
+      br_table $incremental-gc/call-indirect/B $incremental-gc/call-indirect/B $incremental-gc/call-indirect/B $~lib/arraybuffer/ArrayBufferView $incremental-gc/call-indirect/B $~lib/function/Function<%28incremental-gc/call-indirect/A%29=>i32> $incremental-gc/call-indirect/B $invalid
      end
+     local.get $0
+     i32.load
+     call $~lib/rt/itcms/__visit
      return
     end
     local.get $0

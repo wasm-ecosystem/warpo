@@ -2068,29 +2068,11 @@
   block $folding-inner0
    block $invalid
     block $resolve-access/Container
-     block $~lib/iterator/Iterable<i32>
-      block $~lib/iterator/Iterable<u64>
-       block
-        block $~lib/string/String
-         block $~lib/arraybuffer/ArrayBuffer
-          block $~lib/object/Object
-           local.get $0
-           i32.const 8
-           i32.sub
-           i32.load
-           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<u64> $folding-inner0 $~lib/iterator/Iterable<i32> $resolve-access/Container $invalid
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       unreachable
-      end
-      return
-     end
-     return
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $resolve-access/Container $resolve-access/Container $resolve-access/Container $folding-inner0 $folding-inner0 $resolve-access/Container $folding-inner0 $resolve-access/Container $resolve-access/Container $invalid
     end
     return
    end

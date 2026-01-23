@@ -1369,20 +1369,11 @@
   block $invalid
    block $issues/2622/_a/T1
     block $~lib/arraybuffer/ArrayBufferView
-     block $~lib/string/String
-      block $~lib/arraybuffer/ArrayBuffer
-       block $~lib/object/Object
-        local.get $0
-        i32.const 8
-        i32.sub
-        i32.load
-        br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $issues/2622/_a/T1 $invalid
-       end
-       return
-      end
-      return
-     end
-     return
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $issues/2622/_a/T1 $issues/2622/_a/T1 $issues/2622/_a/T1 $~lib/arraybuffer/ArrayBufferView $issues/2622/_a/T1 $invalid
     end
     local.get $0
     i32.load

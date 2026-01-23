@@ -1510,52 +1510,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $call-super/I
-    block $call-super/J
-     block $call-super/G
-      block $call-super/H
-       block $call-super/E
-        block $call-super/F
-         block $call-super/C
-          block $call-super/D
-           block $call-super/A
-            block $call-super/B
-             block $~lib/arraybuffer/ArrayBufferView
-              block $~lib/string/String
-               block $~lib/arraybuffer/ArrayBuffer
-                block $~lib/object/Object
-                 local.get $0
-                 i32.const 8
-                 i32.sub
-                 i32.load
-                 br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $call-super/B $call-super/A $call-super/D $call-super/C $call-super/F $call-super/E $call-super/H $call-super/G $call-super/J $call-super/I $invalid
-                end
-                return
-               end
-               return
-              end
-              return
-             end
-             local.get $0
-             i32.load
-             call $~lib/rt/itcms/__visit
-             return
-            end
-            return
-           end
-           return
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       return
-      end
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $call-super/I $call-super/I $call-super/I $~lib/arraybuffer/ArrayBufferView $call-super/I $call-super/I $call-super/I $call-super/I $call-super/I $call-super/I $call-super/I $call-super/I $call-super/I $call-super/I $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

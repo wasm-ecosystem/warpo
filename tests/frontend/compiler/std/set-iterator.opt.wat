@@ -2393,46 +2393,31 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $~lib/iterator/IteratorResult<i32>
-    block $~lib/iterator/Iterator<i32>
-     block $~lib/set/SetIterator<i32>
-      block $~lib/iterator/Iterable<i32>
-       block $~lib/set/Set<i32>
-        block $~lib/arraybuffer/ArrayBufferView
-         block $~lib/string/String
-          block $~lib/arraybuffer/ArrayBuffer
-           block $~lib/object/Object
-            local.get $0
-            i32.const 8
-            i32.sub
-            i32.load
-            br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/set/Set<i32> $~lib/iterator/Iterable<i32> $~lib/set/SetIterator<i32> $~lib/iterator/Iterator<i32> $~lib/iterator/IteratorResult<i32> $invalid
-           end
-           return
-          end
-          return
-         end
-         return
-        end
-        local.get $0
-        i32.load
-        call $~lib/rt/itcms/__visit
-        return
-       end
+    block $~lib/set/SetIterator<i32>
+     block $~lib/set/Set<i32>
+      block $~lib/arraybuffer/ArrayBufferView
        local.get $0
+       i32.const 8
+       i32.sub
        i32.load
-       call $~lib/rt/itcms/__visit
-       local.get $0
-       i32.load offset=8
-       call $~lib/rt/itcms/__visit
-       return
+       br_table $~lib/iterator/IteratorResult<i32> $~lib/iterator/IteratorResult<i32> $~lib/iterator/IteratorResult<i32> $~lib/arraybuffer/ArrayBufferView $~lib/set/Set<i32> $~lib/iterator/IteratorResult<i32> $~lib/set/SetIterator<i32> $~lib/iterator/IteratorResult<i32> $~lib/iterator/IteratorResult<i32> $invalid
       end
+      local.get $0
+      i32.load
+      call $~lib/rt/itcms/__visit
       return
      end
      local.get $0
-     i32.load offset=4
+     i32.load
+     call $~lib/rt/itcms/__visit
+     local.get $0
+     i32.load offset=8
      call $~lib/rt/itcms/__visit
      return
     end
+    local.get $0
+    i32.load offset=4
+    call $~lib/rt/itcms/__visit
     return
    end
    return

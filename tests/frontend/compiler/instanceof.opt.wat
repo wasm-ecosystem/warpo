@@ -1655,82 +1655,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $instanceof/IE
-    block $instanceof/Z
-     block $instanceof/IC
-      block $instanceof/ID
-       block $instanceof/Y
-        block $instanceof/IA
-         block $instanceof/IB
-          block $instanceof/X
-           block $instanceof/W
-            block $instanceof/BlackCat
-             block $instanceof/Cat
-              block $instanceof/Animal
-               block $instanceof/SomethingElse<i32>
-                block $instanceof/Parent<f32>
-                 block $instanceof/Child<f32>
-                  block $instanceof/Parent<i32>
-                   block $instanceof/Child<i32>
-                    block $instanceof/C
-                     block $instanceof/B
-                      block $instanceof/A
-                       block $~lib/arraybuffer/ArrayBufferView
-                        block $~lib/string/String
-                         block $~lib/arraybuffer/ArrayBuffer
-                          block $~lib/object/Object
-                           local.get $0
-                           i32.const 8
-                           i32.sub
-                           i32.load
-                           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $instanceof/A $instanceof/B $instanceof/C $instanceof/Child<i32> $instanceof/Parent<i32> $instanceof/Child<f32> $instanceof/Parent<f32> $instanceof/SomethingElse<i32> $instanceof/Animal $instanceof/Cat $instanceof/BlackCat $instanceof/W $instanceof/X $instanceof/IB $instanceof/IA $instanceof/Y $instanceof/ID $instanceof/IC $instanceof/Z $instanceof/IE $invalid
-                          end
-                          return
-                         end
-                         return
-                        end
-                        return
-                       end
-                       local.get $0
-                       i32.load
-                       call $~lib/rt/itcms/__visit
-                       return
-                      end
-                      return
-                     end
-                     return
-                    end
-                    return
-                   end
-                   return
-                  end
-                  return
-                 end
-                 return
-                end
-                return
-               end
-               return
-              end
-              return
-             end
-             return
-            end
-            return
-           end
-           return
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       return
-      end
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $instanceof/IE $instanceof/IE $instanceof/IE $~lib/arraybuffer/ArrayBufferView $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $instanceof/IE $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

@@ -1400,20 +1400,11 @@
    block $~lib/function/Function<%28%29=>i32>
     block $getter-call/C
      block $~lib/arraybuffer/ArrayBufferView
-      block $~lib/string/String
-       block $~lib/arraybuffer/ArrayBuffer
-        block $~lib/object/Object
-         local.get $0
-         i32.const 8
-         i32.sub
-         i32.load
-         br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $getter-call/C $~lib/function/Function<%28%29=>i32> $invalid
-        end
-        return
-       end
-       return
-      end
-      return
+      local.get $0
+      i32.const 8
+      i32.sub
+      i32.load
+      br_table $getter-call/C $getter-call/C $getter-call/C $~lib/arraybuffer/ArrayBufferView $getter-call/C $~lib/function/Function<%28%29=>i32> $invalid
      end
      local.get $0
      i32.load

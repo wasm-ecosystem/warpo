@@ -22261,65 +22261,20 @@
     block $folding-inner0
      block $invalid
       block $~lib/iterator/IteratorResult<i16>
-       block $~lib/iterator/Iterator<i16>
-        block $~lib/iterator/IteratorResult<u8>
-         block $~lib/iterator/Iterator<u8>
-          block $~lib/iterator/Iterable<f64>
-           block $~lib/iterator/Iterable<f32>
-            block $~lib/iterator/Iterable<u64>
-             block $~lib/iterator/Iterable<i64>
-              block $~lib/iterator/Iterable<u32>
-               block $~lib/iterator/Iterable<i32>
-                block $~lib/iterator/Iterable<u16>
-                 block $~lib/iterator/Iterable<i16>
-                  block $~lib/iterator/Iterable<u8>
-                   block $~lib/iterator/Iterable<i8>
-                    block $~lib/arraybuffer/ArrayBufferView
-                     block $~lib/string/String
-                      block $~lib/arraybuffer/ArrayBuffer
-                       block $~lib/object/Object
-                        local.get $0
-                        i32.const 8
-                        i32.sub
-                        i32.load
-                        br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $folding-inner0 $~lib/iterator/Iterable<i8> $folding-inner0 $~lib/iterator/Iterable<u8> $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<i16> $folding-inner0 $~lib/iterator/Iterable<u16> $folding-inner0 $~lib/iterator/Iterable<i32> $folding-inner0 $~lib/iterator/Iterable<u32> $folding-inner0 $~lib/iterator/Iterable<i64> $folding-inner0 $~lib/iterator/Iterable<u64> $folding-inner0 $~lib/iterator/Iterable<f32> $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner3 $folding-inner2 $folding-inner2 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $~lib/iterator/Iterator<u8> $~lib/iterator/IteratorResult<u8> $folding-inner3 $~lib/iterator/Iterator<i16> $~lib/iterator/IteratorResult<i16> $invalid
-                       end
-                       return
-                      end
-                      return
-                     end
-                     return
-                    end
-                    local.get $0
-                    i32.load
-                    call $~lib/rt/itcms/__visit
-                    return
-                   end
-                   return
-                  end
-                  return
-                 end
-                 return
-                end
-                return
-               end
-               return
-              end
-              return
-             end
-             return
-            end
-            return
-           end
-           return
-          end
-          return
-         end
-         return
+       block
+        block $~lib/arraybuffer/ArrayBufferView
+         local.get $0
+         i32.const 8
+         i32.sub
+         i32.load
+         br_table $~lib/iterator/IteratorResult<i16> $~lib/iterator/IteratorResult<i16> $~lib/iterator/IteratorResult<i16> $~lib/arraybuffer/ArrayBufferView $folding-inner0 $~lib/iterator/IteratorResult<i16> $folding-inner0 $~lib/iterator/IteratorResult<i16> $folding-inner0 $folding-inner0 $~lib/iterator/IteratorResult<i16> $folding-inner0 $~lib/iterator/IteratorResult<i16> $folding-inner0 $~lib/iterator/IteratorResult<i16> $folding-inner0 $~lib/iterator/IteratorResult<i16> $folding-inner0 $~lib/iterator/IteratorResult<i16> $folding-inner0 $~lib/iterator/IteratorResult<i16> $folding-inner0 $~lib/iterator/IteratorResult<i16> $folding-inner0 $~lib/iterator/IteratorResult<i16> $folding-inner3 $folding-inner2 $folding-inner2 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner2 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $folding-inner3 $~lib/iterator/IteratorResult<i16> $~lib/iterator/IteratorResult<i16> $folding-inner3 $~lib/iterator/IteratorResult<i16> $~lib/iterator/IteratorResult<i16> $invalid
         end
+        local.get $0
+        i32.load
+        call $~lib/rt/itcms/__visit
         return
        end
-       return
+       unreachable
       end
       return
      end

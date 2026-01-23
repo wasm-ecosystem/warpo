@@ -2142,34 +2142,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $std/operator-overloading/TesterElementAccess
-    block $std/operator-overloading/TesterInlineInstance
-     block $std/operator-overloading/TesterInlineStatic
-      block $std/operator-overloading/Tester
-       block $~lib/arraybuffer/ArrayBufferView
-        block $~lib/string/String
-         block $~lib/arraybuffer/ArrayBuffer
-          block $~lib/object/Object
-           local.get $0
-           i32.const 8
-           i32.sub
-           i32.load
-           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $std/operator-overloading/Tester $std/operator-overloading/TesterInlineStatic $std/operator-overloading/TesterInlineInstance $std/operator-overloading/TesterElementAccess $invalid
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       local.get $0
-       i32.load
-       call $~lib/rt/itcms/__visit
-       return
-      end
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $std/operator-overloading/TesterElementAccess $std/operator-overloading/TesterElementAccess $std/operator-overloading/TesterElementAccess $~lib/arraybuffer/ArrayBufferView $std/operator-overloading/TesterElementAccess $std/operator-overloading/TesterElementAccess $std/operator-overloading/TesterElementAccess $std/operator-overloading/TesterElementAccess $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

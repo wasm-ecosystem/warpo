@@ -1862,50 +1862,11 @@
    block $folding-inner0
     block $invalid
      block $~lib/iterator/Iterable<~lib/array/Array<i32>>
-      block $~lib/iterator/Iterable<usize>
-       block $~lib/iterator/Iterable<~lib/string/String|null>
-        block $~lib/iterator/Iterable<infer-array/Ref|null>
-         block $infer-array/Ref
-          block $~lib/iterator/Iterable<f32>
-           block $~lib/iterator/Iterable<u32>
-            block $~lib/iterator/Iterable<f64>
-             block $~lib/iterator/Iterable<i32>
-              block $~lib/arraybuffer/ArrayBufferView
-               block $~lib/string/String
-                block $~lib/arraybuffer/ArrayBuffer
-                 block $~lib/object/Object
-                  local.get $0
-                  i32.const 8
-                  i32.sub
-                  i32.load
-                  br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $folding-inner0 $~lib/iterator/Iterable<i32> $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner0 $~lib/iterator/Iterable<u32> $folding-inner0 $~lib/iterator/Iterable<f32> $infer-array/Ref $folding-inner1 $~lib/iterator/Iterable<infer-array/Ref|null> $folding-inner1 $~lib/iterator/Iterable<~lib/string/String|null> $folding-inner0 $~lib/iterator/Iterable<usize> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<i32>> $invalid
-                 end
-                 return
-                end
-                return
-               end
-               return
-              end
-              local.get $0
-              i32.load
-              call $~lib/rt/itcms/__visit
-              return
-             end
-             return
-            end
-            return
-           end
-           return
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       return
-      end
-      return
+      local.get $0
+      i32.const 8
+      i32.sub
+      i32.load
+      br_table $~lib/iterator/Iterable<~lib/array/Array<i32>> $~lib/iterator/Iterable<~lib/array/Array<i32>> $~lib/iterator/Iterable<~lib/array/Array<i32>> $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<~lib/array/Array<i32>> $folding-inner0 $~lib/iterator/Iterable<~lib/array/Array<i32>> $folding-inner0 $~lib/iterator/Iterable<~lib/array/Array<i32>> $folding-inner0 $~lib/iterator/Iterable<~lib/array/Array<i32>> $~lib/iterator/Iterable<~lib/array/Array<i32>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<i32>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<i32>> $folding-inner0 $~lib/iterator/Iterable<~lib/array/Array<i32>> $folding-inner1 $~lib/iterator/Iterable<~lib/array/Array<i32>> $invalid
      end
      return
     end

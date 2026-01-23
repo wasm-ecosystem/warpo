@@ -1626,18 +1626,13 @@
   block $folding-inner0
    block $default
     block $case3
-     block $case2
-      local.get $0
-      i32.const 8
-      i32.sub
-      i32.load
-      i32.const 14
-      i32.sub
-      br_table $folding-inner0 $default $folding-inner0 $folding-inner0 $folding-inner0 $case2 $case3 $default
-     end
      local.get $0
-     i32.load offset=4
-     return
+     i32.const 8
+     i32.sub
+     i32.load
+     i32.const 14
+     i32.sub
+     br_table $folding-inner0 $default $folding-inner0 $folding-inner0 $folding-inner0 $case3 $case3 $default
     end
     local.get $0
     i32.load offset=4
@@ -1653,19 +1648,13 @@
    block $default
     block $case5
      block $case3
-      block $case2
-       local.get $0
-       i32.const 8
-       i32.sub
-       i32.load
-       i32.const 14
-       i32.sub
-       br_table $folding-inner0 $default $folding-inner0 $folding-inner0 $case5 $case2 $case3 $default
-      end
       local.get $0
-      local.get $1
-      i32.store offset=4
-      return
+      i32.const 8
+      i32.sub
+      i32.load
+      i32.const 14
+      i32.sub
+      br_table $folding-inner0 $default $folding-inner0 $folding-inner0 $case5 $case3 $case3 $default
      end
      local.get $0
      local.get $1
@@ -1715,73 +1704,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $class-implements/B4
-    block $class-implements/B3
-     block $class-implements/B2
-      block $class-implements/A4
-       block $class-implements/A3
-        block $class-implements/I2
-         block $class-implements/A2
-          block $class-implements/K
-           block $class-implements/G
-            block $class-implements/F
-             block $class-implements/E
-              block $class-implements/J
-               block $class-implements/D
-                block $class-implements/B
-                 block $class-implements/C
-                  block $class-implements/I
-                   block $class-implements/A
-                    block $~lib/arraybuffer/ArrayBufferView
-                     block $~lib/string/String
-                      block $~lib/arraybuffer/ArrayBuffer
-                       block $~lib/object/Object
-                        local.get $0
-                        i32.const 8
-                        i32.sub
-                        i32.load
-                        br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $class-implements/A $class-implements/I $class-implements/C $class-implements/B $class-implements/D $class-implements/J $class-implements/E $class-implements/F $class-implements/G $class-implements/K $class-implements/A2 $class-implements/I2 $class-implements/A3 $class-implements/A4 $class-implements/B2 $class-implements/B3 $class-implements/B4 $invalid
-                       end
-                       return
-                      end
-                      return
-                     end
-                     return
-                    end
-                    local.get $0
-                    i32.load
-                    call $~lib/rt/itcms/__visit
-                    return
-                   end
-                   return
-                  end
-                  return
-                 end
-                 return
-                end
-                return
-               end
-               return
-              end
-              return
-             end
-             return
-            end
-            return
-           end
-           return
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       return
-      end
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $class-implements/B4 $class-implements/B4 $class-implements/B4 $~lib/arraybuffer/ArrayBufferView $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $class-implements/B4 $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

@@ -3046,26 +3046,11 @@
   block $folding-inner0
    block $invalid
     block $~lib/iterator/Iterable<f64>
-     block $~lib/iterator/Iterable<f32>
-      block
-       block $~lib/string/String
-        block $~lib/arraybuffer/ArrayBuffer
-         block $~lib/object/Object
-          local.get $0
-          i32.const 8
-          i32.sub
-          i32.load
-          br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<f32> $folding-inner0 $~lib/iterator/Iterable<f64> $invalid
-         end
-         return
-        end
-        return
-       end
-       return
-      end
-      unreachable
-     end
-     return
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $~lib/iterator/Iterable<f64> $~lib/iterator/Iterable<f64> $~lib/iterator/Iterable<f64> $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<f64> $folding-inner0 $~lib/iterator/Iterable<f64> $invalid
     end
     return
    end

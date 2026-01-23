@@ -1449,34 +1449,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $new/GenExt
-    block $new/ns.Ref
-     block $new/Gen<i32>
-      block $new/Ref
-       block $~lib/arraybuffer/ArrayBufferView
-        block $~lib/string/String
-         block $~lib/arraybuffer/ArrayBuffer
-          block $~lib/object/Object
-           local.get $0
-           i32.const 8
-           i32.sub
-           i32.load
-           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $new/Ref $new/Gen<i32> $new/ns.Ref $new/GenExt $invalid
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       local.get $0
-       i32.load
-       call $~lib/rt/itcms/__visit
-       return
-      end
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $new/GenExt $new/GenExt $new/GenExt $~lib/arraybuffer/ArrayBufferView $new/GenExt $new/GenExt $new/GenExt $new/GenExt $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

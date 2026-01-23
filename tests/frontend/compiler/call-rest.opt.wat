@@ -2033,29 +2033,11 @@
     block $~lib/iterator/Iterable<~lib/string/String>
      block $~lib/array/Array<~lib/string/String>
       block $~lib/function/Function<%28i32%2Ci32?%2C...~lib/array/Array<i32>%29=>i32>
-       block $~lib/iterator/Iterable<usize>
-        block $~lib/iterator/Iterable<i32>
-         block
-          block $~lib/string/String
-           block $~lib/arraybuffer/ArrayBuffer
-            block $~lib/object/Object
-             local.get $0
-             i32.const 8
-             i32.sub
-             i32.load
-             br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<i32> $folding-inner0 $~lib/iterator/Iterable<usize> $~lib/function/Function<%28i32%2Ci32?%2C...~lib/array/Array<i32>%29=>i32> $folding-inner0 $~lib/array/Array<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $invalid
-            end
-            return
-           end
-           return
-          end
-          return
-         end
-         unreachable
-        end
-        return
-       end
-       return
+       local.get $0
+       i32.const 8
+       i32.sub
+       i32.load
+       br_table $~lib/iterator/Iterable<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<~lib/string/String> $folding-inner0 $~lib/iterator/Iterable<~lib/string/String> $~lib/function/Function<%28i32%2Ci32?%2C...~lib/array/Array<i32>%29=>i32> $folding-inner0 $~lib/array/Array<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $invalid
       end
       local.get $0
       i32.load offset=4

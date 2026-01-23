@@ -2121,23 +2121,11 @@
   block $folding-inner0
    block $invalid
     block $~lib/iterator/Iterable<u8>
-     block
-      block $~lib/string/String
-       block $~lib/arraybuffer/ArrayBuffer
-        block $~lib/object/Object
-         local.get $0
-         i32.const 8
-         i32.sub
-         i32.load
-         br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<u8> $folding-inner0 $invalid
-        end
-        return
-       end
-       return
-      end
-      return
-     end
-     unreachable
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $~lib/iterator/Iterable<u8> $~lib/iterator/Iterable<u8> $~lib/iterator/Iterable<u8> $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<u8> $folding-inner0 $invalid
     end
     return
    end

@@ -1673,37 +1673,22 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $inlining/Baz
-    block $inlining/Bar
-     block $inlining/Foo
-      block $~lib/function/Function<%28i32%29=>i32>
-       block $~lib/arraybuffer/ArrayBufferView
-        block $~lib/string/String
-         block $~lib/arraybuffer/ArrayBuffer
-          block $~lib/object/Object
-           local.get $0
-           i32.const 8
-           i32.sub
-           i32.load
-           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/function/Function<%28i32%29=>i32> $inlining/Foo $inlining/Bar $inlining/Baz $invalid
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       local.get $0
-       i32.load
-       call $~lib/rt/itcms/__visit
-       return
-      end
+    block $~lib/function/Function<%28i32%29=>i32>
+     block $~lib/arraybuffer/ArrayBufferView
       local.get $0
-      i32.load offset=4
-      call $~lib/rt/itcms/__visit
-      return
+      i32.const 8
+      i32.sub
+      i32.load
+      br_table $inlining/Baz $inlining/Baz $inlining/Baz $~lib/arraybuffer/ArrayBufferView $~lib/function/Function<%28i32%29=>i32> $inlining/Baz $inlining/Baz $inlining/Baz $invalid
      end
+     local.get $0
+     i32.load
+     call $~lib/rt/itcms/__visit
      return
     end
+    local.get $0
+    i32.load offset=4
+    call $~lib/rt/itcms/__visit
     return
    end
    return

@@ -1397,20 +1397,11 @@
   block $invalid
    block $exports/Car
     block $~lib/arraybuffer/ArrayBufferView
-     block $~lib/string/String
-      block $~lib/arraybuffer/ArrayBuffer
-       block $~lib/object/Object
-        local.get $0
-        i32.const 8
-        i32.sub
-        i32.load
-        br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $exports/Car $invalid
-       end
-       return
-      end
-      return
-     end
-     return
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $exports/Car $exports/Car $exports/Car $~lib/arraybuffer/ArrayBufferView $exports/Car $invalid
     end
     local.get $0
     i32.load

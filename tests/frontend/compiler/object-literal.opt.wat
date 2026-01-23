@@ -1716,20 +1716,11 @@
      block $object-literal/OmittedTypes
       block $object-literal/Managed
        block $~lib/arraybuffer/ArrayBufferView
-        block $~lib/string/String
-         block $~lib/arraybuffer/ArrayBuffer
-          block $~lib/object/Object
-           local.get $0
-           i32.const 8
-           i32.sub
-           i32.load
-           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $object-literal/Managed $object-literal/OmittedTypes $object-literal/MixedOmitted $object-literal/OmittedFoo $invalid
-          end
-          return
-         end
-         return
-        end
-        return
+        local.get $0
+        i32.const 8
+        i32.sub
+        i32.load
+        br_table $object-literal/OmittedTypes $object-literal/OmittedTypes $object-literal/OmittedTypes $~lib/arraybuffer/ArrayBufferView $object-literal/Managed $object-literal/OmittedTypes $object-literal/MixedOmitted $object-literal/OmittedFoo $invalid
        end
        local.get $0
        i32.load

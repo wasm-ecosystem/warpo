@@ -1403,34 +1403,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $operator-overload-non-ambiguity/T1
-    block $operator-overload-non-ambiguity/P2
-     block $operator-overload-non-ambiguity/Base
-      block $operator-overload-non-ambiguity/P1
-       block $~lib/arraybuffer/ArrayBufferView
-        block $~lib/string/String
-         block $~lib/arraybuffer/ArrayBuffer
-          block $~lib/object/Object
-           local.get $0
-           i32.const 8
-           i32.sub
-           i32.load
-           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $operator-overload-non-ambiguity/P1 $operator-overload-non-ambiguity/Base $operator-overload-non-ambiguity/P2 $operator-overload-non-ambiguity/T1 $invalid
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       local.get $0
-       i32.load
-       call $~lib/rt/itcms/__visit
-       return
-      end
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $operator-overload-non-ambiguity/T1 $operator-overload-non-ambiguity/T1 $operator-overload-non-ambiguity/T1 $~lib/arraybuffer/ArrayBufferView $operator-overload-non-ambiguity/T1 $operator-overload-non-ambiguity/T1 $operator-overload-non-ambiguity/T1 $operator-overload-non-ambiguity/T1 $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return

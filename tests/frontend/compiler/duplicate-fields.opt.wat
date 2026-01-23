@@ -1584,38 +1584,17 @@
   block $folding-inner0
    block $invalid
     block $duplicate-fields/A3
-     block $duplicate-fields/B3
-      block $duplicate-fields/B2
-       block $duplicate-fields/Foo
-        block $duplicate-fields/B
-         block $duplicate-fields/A
-          block $~lib/string/String
-           block $~lib/arraybuffer/ArrayBuffer
-            block $~lib/object/Object
-             local.get $0
-             i32.const 8
-             i32.sub
-             i32.load
-             br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $duplicate-fields/A $duplicate-fields/B $folding-inner0 $duplicate-fields/Foo $duplicate-fields/B2 $duplicate-fields/B3 $duplicate-fields/A3 $invalid
-            end
-            return
-           end
-           return
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       return
-      end
+     block $duplicate-fields/B2
       local.get $0
+      i32.const 8
+      i32.sub
       i32.load
-      call $~lib/rt/itcms/__visit
-      br $folding-inner0
+      br_table $duplicate-fields/A3 $duplicate-fields/A3 $duplicate-fields/A3 $folding-inner0 $duplicate-fields/A3 $duplicate-fields/A3 $folding-inner0 $duplicate-fields/A3 $duplicate-fields/B2 $duplicate-fields/A3 $duplicate-fields/A3 $invalid
      end
-     return
+     local.get $0
+     i32.load
+     call $~lib/rt/itcms/__visit
+     br $folding-inner0
     end
     return
    end

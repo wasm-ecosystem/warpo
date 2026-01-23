@@ -8672,68 +8672,57 @@
   (local $1 i32)
   (local $2 i32)
   (local $3 i32)
-  block $folding-inner0
-   block $invalid
-    block $~lib/iterator/Iterable<~lib/string/String>
-     block $~lib/array/Array<~lib/string/String>
-      block $~lib/iterator/Iterable<i32>
-       block
-        block $~lib/string/String
-         block $~lib/arraybuffer/ArrayBuffer
-          block $~lib/object/Object
-           local.get $0
-           i32.const 8
-           i32.sub
-           i32.load
-           br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $folding-inner0 $folding-inner0 $~lib/iterator/Iterable<i32> $~lib/array/Array<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $invalid
-          end
-          return
-         end
-         return
-        end
-        return
-       end
-       unreachable
-      end
-      return
+  block $invalid
+   block $~lib/iterator/Iterable<~lib/string/String>
+    block $~lib/array/Array<~lib/string/String>
+     block $~lib/array/Array<i32>
+      local.get $0
+      i32.const 8
+      i32.sub
+      i32.load
+      br_table $~lib/iterator/Iterable<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $~lib/array/Array<i32> $~lib/array/Array<i32> $~lib/iterator/Iterable<~lib/string/String> $~lib/array/Array<~lib/string/String> $~lib/iterator/Iterable<~lib/string/String> $invalid
      end
      local.get $0
-     i32.load offset=4
-     local.tee $1
-     local.get $0
-     i32.load offset=12
-     i32.const 2
-     i32.shl
-     i32.add
-     local.set $2
-     loop $while-continue|0
-      local.get $1
-      local.get $2
-      i32.lt_u
-      if
-       local.get $1
-       i32.load
-       local.tee $3
-       if
-        local.get $3
-        call $~lib/rt/itcms/__visit
-       end
-       local.get $1
-       i32.const 4
-       i32.add
-       local.set $1
-       br $while-continue|0
-      end
-     end
-     br $folding-inner0
+     i32.load
+     call $~lib/rt/itcms/__visit
+     return
     end
+    local.get $0
+    i32.load offset=4
+    local.tee $1
+    local.get $0
+    i32.load offset=12
+    i32.const 2
+    i32.shl
+    i32.add
+    local.set $2
+    loop $while-continue|0
+     local.get $1
+     local.get $2
+     i32.lt_u
+     if
+      local.get $1
+      i32.load
+      local.tee $3
+      if
+       local.get $3
+       call $~lib/rt/itcms/__visit
+      end
+      local.get $1
+      i32.const 4
+      i32.add
+      local.set $1
+      br $while-continue|0
+     end
+    end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
-   unreachable
+   return
   end
-  local.get $0
-  i32.load
-  call $~lib/rt/itcms/__visit
+  unreachable
  )
  (func $~start
   (local $0 i32)

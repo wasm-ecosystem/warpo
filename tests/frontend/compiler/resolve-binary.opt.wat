@@ -2997,31 +2997,16 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $resolve-binary/Baz
-    block $resolve-binary/Bar
-     block $resolve-binary/Foo
-      block $~lib/arraybuffer/ArrayBufferView
-       block $~lib/string/String
-        block $~lib/arraybuffer/ArrayBuffer
-         block $~lib/object/Object
-          local.get $0
-          i32.const 8
-          i32.sub
-          i32.load
-          br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $resolve-binary/Foo $resolve-binary/Bar $resolve-binary/Baz $invalid
-         end
-         return
-        end
-        return
-       end
-       return
-      end
-      local.get $0
-      i32.load
-      call $~lib/rt/itcms/__visit
-      return
-     end
-     return
+    block $~lib/arraybuffer/ArrayBufferView
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $resolve-binary/Baz $resolve-binary/Baz $resolve-binary/Baz $~lib/arraybuffer/ArrayBufferView $resolve-binary/Baz $resolve-binary/Baz $resolve-binary/Baz $invalid
     end
+    local.get $0
+    i32.load
+    call $~lib/rt/itcms/__visit
     return
    end
    return
