@@ -14,7 +14,6 @@ namespace warpo::passes {
 namespace {
 
 std::size_t hashCombine(std::size_t seed, std::size_t value) {
-  // A simple hash combiner (similar to boost::hash_combine).
   return seed ^ (value + 0x9e3779b97f4a7c15ULL + (seed << 6U) + (seed >> 2U));
 }
 
@@ -35,14 +34,14 @@ struct ContinuationView {
       return nullptr;
     return parent->list.back();
   }
-};
 
-bool hasNoFallthrough(ContinuationView const &c) {
-  wasm::Expression *const last = c.back();
-  if (last == nullptr)
-    return false;
-  return last->type == wasm::Type::unreachable;
-}
+  bool endsUnreachable() const {
+    wasm::Expression *const last = back();
+    if (last == nullptr)
+      return false;
+    return last->type == wasm::Type::unreachable;
+  }
+};
 
 std::size_t hashContinuation(ContinuationView const &c) {
   if (!c.valid())
@@ -75,6 +74,54 @@ struct TargetInfo {
   ContinuationView cont;
 };
 
+bool findChildIndex(wasm::Block const *parent, wasm::Expression const *child, wasm::Index &outIndex) {
+  for (wasm::Index i = 0; i < parent->list.size(); i++) {
+    if (parent->list[i] == child) {
+      outIndex = i;
+      return true;
+    }
+  }
+  return false;
+}
+
+void rewriteSwitchTarget(wasm::Switch *sw, wasm::Name const &from, wasm::Name const &to) {
+  for (auto &t : sw->targets) {
+    if (t == from) {
+      t = to;
+    }
+  }
+  if (sw->default_ == from) {
+    sw->default_ = to;
+  }
+}
+
+TargetInfo const *chooseCanonical(std::vector<TargetInfo> const &group) {
+  TargetInfo const *canonical = &group.front();
+  for (auto const &g : group) {
+    if (g.stackIndex < canonical->stackIndex)
+      canonical = &g;
+  }
+  return canonical;
+}
+
+std::vector<std::vector<TargetInfo>> groupByContinuationEquality(std::vector<TargetInfo> const &bucket) {
+  std::vector<std::vector<TargetInfo>> groups;
+  for (auto const &candidate : bucket) {
+    bool placed = false;
+    for (auto &group : groups) {
+      if (equalContinuation(candidate.cont, group.front().cont)) {
+        group.push_back(candidate);
+        placed = true;
+        break;
+      }
+    }
+    if (!placed) {
+      groups.push_back({candidate});
+    }
+  }
+  return groups;
+}
+
 // This pass looks for the common switch-lowering pattern:
 //
 //   block $break
@@ -94,78 +141,61 @@ struct TargetInfo {
 struct CombineSwitchTargets final
     : public wasm::WalkerPass<
           wasm::ExpressionStackWalker<CombineSwitchTargets, wasm::UnifiedExpressionVisitor<CombineSwitchTargets>>> {
-  bool changed_ = false;
 
   bool isFunctionParallel() override { return true; }
-  bool modifiesBinaryenIR() override { return changed_; }
   std::unique_ptr<wasm::Pass> create() override { return std::make_unique<CombineSwitchTargets>(); }
 
+  wasm::Index findInExpressionStack(wasm::Expression *needle) const {
+    for (wasm::Index i = 0; i < this->expressionStack.size(); i++) {
+      if (this->expressionStack[i] == needle)
+        return i;
+    }
+    return static_cast<wasm::Index>(-1);
+  }
+
+  void appendTargetInfo(wasm::Name const &name, std::vector<TargetInfo> &infos) {
+    if (name.isNull())
+      return;
+
+    wasm::Expression *const target = this->findBreakTarget(name);
+    if (target == nullptr)
+      return;
+    if (!target->is<wasm::Block>())
+      return;
+
+    wasm::Index const stackIndex = findInExpressionStack(target);
+    if (stackIndex == static_cast<wasm::Index>(-1) || stackIndex == 0)
+      return;
+
+    auto *const parentBlock = this->expressionStack[stackIndex - 1]->dynCast<wasm::Block>();
+    if (parentBlock == nullptr)
+      return;
+
+    wasm::Index childPos = 0;
+    if (!findChildIndex(parentBlock, target, childPos))
+      return;
+
+    ContinuationView const cont{.parent = parentBlock, .start = childPos + 1U};
+    if (cont.start > cont.parent->list.size())
+      return;
+
+    infos.push_back(TargetInfo{.name = name, .stackIndex = stackIndex, .cont = cont});
+  }
+
   void visitSwitch(wasm::Switch *sw) {
-    // Collect info for each label in the switch.
     std::vector<TargetInfo> infos;
     infos.reserve(sw->targets.size() + 1U);
-
-    auto addTarget = [&](wasm::Name const &name) {
-      if (name.isNull())
-        return;
-      wasm::Expression *const target = this->findBreakTarget(name);
-      if (!target)
-        return;
-      auto *const targetBlock = target->dynCast<wasm::Block>();
-      if (!targetBlock)
-        return;
-
-      // Find the target in the expression stack to get its parent.
-      wasm::Index idx = 0;
-      bool found = false;
-      for (wasm::Index i = 0; i < this->expressionStack.size(); i++) {
-        if (this->expressionStack[i] == target) {
-          idx = i;
-          found = true;
-          break;
-        }
-      }
-      if (!found || idx == 0)
-        return;
-
-      auto *const parentBlock = this->expressionStack[idx - 1]->dynCast<wasm::Block>();
-      if (!parentBlock)
-        return;
-
-      // Find the exact child position in the parent list.
-      wasm::Index childPos = 0;
-      bool inList = false;
-      for (wasm::Index i = 0; i < parentBlock->list.size(); i++) {
-        if (parentBlock->list[i] == target) {
-          childPos = i;
-          inList = true;
-          break;
-        }
-      }
-      if (!inList)
-        return;
-
-      ContinuationView const cont{.parent = parentBlock, .start = childPos + 1U};
-      if (!cont.valid() || cont.start > cont.parent->list.size())
-        return;
-
-      infos.push_back(TargetInfo{.name = name, .stackIndex = idx, .cont = cont});
-    };
-
-    for (auto const &t : sw->targets) {
-      addTarget(t);
-    }
-    addTarget(sw->default_);
+    for (auto const &t : sw->targets)
+      appendTargetInfo(t, infos);
+    appendTargetInfo(sw->default_, infos);
 
     if (infos.size() < 2U)
       return;
 
-    // Bucket by hash first, then verify by structural equality.
     std::unordered_map<std::size_t, std::vector<TargetInfo>> buckets;
     buckets.reserve(infos.size());
     for (auto const &info : infos) {
-      // Only merge targets whose case body does not fallthrough.
-      if (!hasNoFallthrough(info.cont))
+      if (!info.cont.endsUnreachable())
         continue;
       buckets[hashContinuation(info.cont)].push_back(info);
     }
@@ -175,46 +205,15 @@ struct CombineSwitchTargets final
       if (bucket.size() < 2U)
         continue;
 
-      // Partition by exact equality inside the bucket.
-      std::vector<std::vector<TargetInfo>> groups;
-      for (auto const &candidate : bucket) {
-        bool placed = false;
-        for (auto &group : groups) {
-          if (equalContinuation(candidate.cont, group.front().cont)) {
-            group.push_back(candidate);
-            placed = true;
-            break;
-          }
-        }
-        if (!placed) {
-          groups.push_back({candidate});
-        }
-      }
-
-      for (auto &group : groups) {
+      for (auto &group : groupByContinuationEquality(bucket)) {
         if (group.size() < 2U)
           continue;
 
-        // Choose the outermost equivalent label (smallest stack index).
-        TargetInfo const *canonical = &group[0];
-        for (auto const &g : group) {
-          if (g.stackIndex < canonical->stackIndex)
-            canonical = &g;
-        }
-
+        TargetInfo const *const canonical = chooseCanonical(group);
         for (auto const &g : group) {
           if (g.name == canonical->name)
             continue;
-          for (auto &t : sw->targets) {
-            if (t == g.name) {
-              t = canonical->name;
-              changed_ = true;
-            }
-          }
-          if (sw->default_ == g.name) {
-            sw->default_ = canonical->name;
-            changed_ = true;
-          }
+          rewriteSwitchTarget(sw, g.name, canonical->name);
         }
       }
     }
