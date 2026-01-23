@@ -145,7 +145,7 @@ struct CombineSwitchTargets final
       if (!inList)
         return;
 
-      ContinuationView cont{.parent = parentBlock, .start = childPos + 1U};
+      ContinuationView const cont{.parent = parentBlock, .start = childPos + 1U};
       if (!cont.valid() || cont.start > cont.parent->list.size())
         return;
 
