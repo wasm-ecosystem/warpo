@@ -194,7 +194,7 @@ struct CombineSwitchTargets final
     ContinuationView const continuation{.parent = parentBlock, .start = childIndex + 1U};
 
     // no further expressions after the target block
-    if (continuation.start > continuation.parent->list.size())
+    if (continuation.start >= parentBlock->list.size())
       return;
 
     // only merge continuations that end in unreachable to avoid there have different usage.
@@ -310,6 +310,255 @@ TEST(CombineSwitchTargetsTest, DoesNotMergeFallthroughCases) {
             i32.const 7
             drop
             ;; fallthrough (no branch)
+          )
+          i32.const 7
+          drop
+          br $break
+        )
+      )
+    )
+  )");
+
+  wasm::Function *const f = m->getFunction("f");
+  struct Finder : public wasm::PostWalker<Finder> {
+    wasm::Switch *sw = nullptr;
+    void visitSwitch(wasm::Switch *curr) { sw = curr; }
+  } finder;
+  finder.walk(f->body);
+  ASSERT_NE(finder.sw, nullptr);
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{createCombineSwitchTargetsPass()});
+  runner.run();
+
+  ASSERT_EQ(finder.sw->targets.size(), 2U);
+  EXPECT_EQ(finder.sw->targets[0], wasm::Name("case0"));
+  EXPECT_EQ(finder.sw->targets[1], wasm::Name("case1"));
+  EXPECT_EQ(finder.sw->default_, wasm::Name("break"));
+}
+
+TEST(CombineSwitchTargetsTest, DoesNotMergeWhenContinuationNotUnreachable) {
+  auto m = loadWat(R"(
+    (module
+      (func $f (param $x i32)
+        (block $break
+          (block $case1
+            (block $case0
+              local.get $x
+              br_table $case0 $case1 $break
+            )
+            local.get $x
+            br_if $break
+            i32.const 42
+            drop
+          )
+          local.get $x
+          br_if $break
+          i32.const 42
+          drop
+        )
+      )
+    )
+  )");
+
+  wasm::Function *const f = m->getFunction("f");
+  struct Finder : public wasm::PostWalker<Finder> {
+    wasm::Switch *sw = nullptr;
+    void visitSwitch(wasm::Switch *curr) { sw = curr; }
+  } finder;
+  finder.walk(f->body);
+  ASSERT_NE(finder.sw, nullptr);
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{createCombineSwitchTargetsPass()});
+  runner.run();
+
+  ASSERT_EQ(finder.sw->targets.size(), 2U);
+  EXPECT_EQ(finder.sw->targets[0], wasm::Name("case0"));
+  EXPECT_EQ(finder.sw->targets[1], wasm::Name("case1"));
+  EXPECT_EQ(finder.sw->default_, wasm::Name("break"));
+}
+
+TEST(CombineSwitchTargetsTest, DoesNotMergeWhenContinuationEndsWithLoop) {
+  auto m = loadWat(R"(
+    (module
+      (func $f (param $x i32)
+        (block $break
+          (block $case1
+            (block $case0
+              local.get $x
+              br_table $case0 $case1 $break
+            )
+            (loop $L
+              nop
+            )
+          )
+          (loop $L
+            nop
+          )
+        )
+      )
+    )
+  )");
+
+  wasm::Function *const f = m->getFunction("f");
+  struct Finder : public wasm::PostWalker<Finder> {
+    wasm::Switch *sw = nullptr;
+    void visitSwitch(wasm::Switch *curr) { sw = curr; }
+  } finder;
+  finder.walk(f->body);
+  ASSERT_NE(finder.sw, nullptr);
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{createCombineSwitchTargetsPass()});
+  runner.run();
+
+  ASSERT_EQ(finder.sw->targets.size(), 2U);
+  EXPECT_EQ(finder.sw->targets[0], wasm::Name("case0"));
+  EXPECT_EQ(finder.sw->targets[1], wasm::Name("case1"));
+  EXPECT_EQ(finder.sw->default_, wasm::Name("break"));
+}
+
+TEST(CombineSwitchTargetsTest, DoesNotMergeWhenParentIsNotBlock) {
+  auto m = loadWat(R"(
+    (module
+      (func $f (param $x i32)
+        (block $break
+          (block $case1
+            (if (i32.const 1)
+              (then
+                (block $case0
+                  local.get $x
+                  br_table $case0 $case1 $break
+                )
+              )
+            )
+            i32.const 7
+            drop
+            br $break
+          )
+          i32.const 7
+          drop
+          br $break
+        )
+      )
+    )
+  )");
+
+  wasm::Function *const f = m->getFunction("f");
+  struct Finder : public wasm::PostWalker<Finder> {
+    wasm::Switch *sw = nullptr;
+    void visitSwitch(wasm::Switch *curr) { sw = curr; }
+  } finder;
+  finder.walk(f->body);
+  ASSERT_NE(finder.sw, nullptr);
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{createCombineSwitchTargetsPass()});
+  runner.run();
+
+  ASSERT_EQ(finder.sw->targets.size(), 2U);
+  EXPECT_EQ(finder.sw->targets[0], wasm::Name("case0"));
+  EXPECT_EQ(finder.sw->targets[1], wasm::Name("case1"));
+  EXPECT_EQ(finder.sw->default_, wasm::Name("break"));
+}
+
+TEST(CombineSwitchTargetsTest, RewritesDefaultTargetWhenEquivalent) {
+  auto m = loadWat(R"(
+    (module
+      (func $f (param $x i32)
+        (block $break
+          (block $case1
+            (block $case0
+              local.get $x
+              br_table $case0 $case1 $case0
+            )
+            i32.const 7
+            drop
+            br $break
+          )
+          i32.const 7
+          drop
+          br $break
+        )
+      )
+    )
+  )");
+
+  wasm::Function *const f = m->getFunction("f");
+  struct Finder : public wasm::PostWalker<Finder> {
+    wasm::Switch *sw = nullptr;
+    void visitSwitch(wasm::Switch *curr) { sw = curr; }
+  } finder;
+  finder.walk(f->body);
+  ASSERT_NE(finder.sw, nullptr);
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{createCombineSwitchTargetsPass()});
+  runner.run();
+
+  ASSERT_EQ(finder.sw->targets.size(), 2U);
+  EXPECT_EQ(finder.sw->targets[0], wasm::Name("case1"));
+  EXPECT_EQ(finder.sw->targets[1], wasm::Name("case1"));
+  EXPECT_EQ(finder.sw->default_, wasm::Name("case1"));
+}
+
+TEST(CombineSwitchTargetsTest, ChoosesOutermostCanonicalTarget) {
+  auto m = loadWat(R"(
+    (module
+      (func $f (param $x i32)
+        (block $break
+          (block $case2
+            (block $case1
+              (block $case0
+                local.get $x
+                br_table $case0 $case1 $case2 $break
+              )
+              i32.const 7
+              drop
+              br $break
+            )
+            i32.const 7
+            drop
+            br $break
+          )
+          i32.const 7
+          drop
+          br $break
+        )
+      )
+    )
+  )");
+
+  wasm::Function *const f = m->getFunction("f");
+  struct Finder : public wasm::PostWalker<Finder> {
+    wasm::Switch *sw = nullptr;
+    void visitSwitch(wasm::Switch *curr) { sw = curr; }
+  } finder;
+  finder.walk(f->body);
+  ASSERT_NE(finder.sw, nullptr);
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{createCombineSwitchTargetsPass()});
+  runner.run();
+
+  ASSERT_EQ(finder.sw->targets.size(), 3U);
+  EXPECT_EQ(finder.sw->targets[0], wasm::Name("case2"));
+  EXPECT_EQ(finder.sw->targets[1], wasm::Name("case2"));
+  EXPECT_EQ(finder.sw->targets[2], wasm::Name("case2"));
+  EXPECT_EQ(finder.sw->default_, wasm::Name("break"));
+}
+
+TEST(CombineSwitchTargetsTest, DoesNotMergeWhenNoContinuation) {
+  auto m = loadWat(R"(
+    (module
+      (func $f (param $x i32)
+        (block $break
+          (block $case1
+            (block $case0
+              local.get $x
+              br_table $case0 $case1 $break
+            )
           )
           i32.const 7
           drop
