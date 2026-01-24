@@ -21,6 +21,11 @@ std::size_t hashCombine(std::size_t seed, std::size_t value) {
 }
 
 struct ContinuationView {
+  // A lightweight view of a "case continuation": the suffix of the parent block that
+  // executes after a particular case label's block ends.
+  //
+  // We represent continuations as (parent block, start index) so we can hash and
+  // compare the continuation bodies without copying or re-owning any expressions.
   wasm::Block *parent = nullptr;
   wasm::Index start = 0;
 
@@ -72,8 +77,19 @@ bool equalContinuation(ContinuationView const &left, ContinuationView const &rig
 }
 
 struct TargetInfo {
+  struct SwitchTargetRef {
+    wasm::Index index = 0;
+    bool isDefault = false;
+
+    static SwitchTargetRef makeIndex(wasm::Index targetIndex) {
+      return SwitchTargetRef{.index = targetIndex, .isDefault = false};
+    }
+    static SwitchTargetRef makeDefault() { return SwitchTargetRef{.index = 0, .isDefault = true}; }
+  };
+
   wasm::Name name;
   wasm::Index stackIndex = 0;
+  SwitchTargetRef switchTarget;
   ContinuationView continuation;
 };
 
@@ -87,18 +103,16 @@ bool findChildIndex(wasm::Block const *parent, wasm::Expression const *child, wa
   return false;
 }
 
-void rewriteSwitchTarget(wasm::Switch *switchInstruction, wasm::Name const &fromName, wasm::Name const &toName) {
-  for (auto &targetName : switchInstruction->targets) {
-    if (targetName == fromName) {
-      targetName = toName;
-    }
-  }
-  if (switchInstruction->default_ == fromName) {
-    switchInstruction->default_ = toName;
+void rewriteSwitchTarget(wasm::Switch *expr, TargetInfo const &targetInfo, wasm::Name const &toName) {
+  if (targetInfo.switchTarget.isDefault) {
+    expr->default_ = toName;
+  } else {
+    expr->targets[targetInfo.switchTarget.index] = toName;
   }
 }
 
 TargetInfo const *chooseCanonical(std::vector<TargetInfo> const &targetGroup) {
+  // use the most outside block as canonical
   TargetInfo const *canonicalTarget = &targetGroup.front();
   for (auto const &targetInfo : targetGroup) {
     if (targetInfo.stackIndex < canonicalTarget->stackIndex)
@@ -156,7 +170,8 @@ struct CombineSwitchTargets final
     return static_cast<wasm::Index>(-1);
   }
 
-  void appendTargetInfo(wasm::Name const &name, std::vector<TargetInfo> &targetInfos) {
+  void appendTargetInfo(wasm::Name const &name, std::vector<TargetInfo> &targetInfos,
+                        TargetInfo::SwitchTargetRef switchTarget) {
     if (name.isNull())
       return;
 
@@ -170,53 +185,59 @@ struct CombineSwitchTargets final
     if (stackIndex == static_cast<wasm::Index>(-1) || stackIndex == 0)
       return;
 
+    // limit parenet as a block. otherwise the result of continuation view may have different usage.
     auto *const parentBlock = this->expressionStack[stackIndex - 1]->dynCast<wasm::Block>();
     if (parentBlock == nullptr)
       return;
 
+    // br to block means jump to the end of the block. It means we will start to execute the next expr after the block
+    // in its parent block.
     wasm::Index childIndex = 0;
     if (!findChildIndex(parentBlock, target, childIndex))
       return;
 
+    // no further expressions after the target block
     ContinuationView const continuation{.parent = parentBlock, .start = childIndex + 1U};
     if (continuation.start > continuation.parent->list.size())
       return;
 
-    targetInfos.push_back(TargetInfo{.name = name, .stackIndex = stackIndex, .continuation = continuation});
+    // only merge continuations that end in unreachable to avoid there have different usage.
+    if (!continuation.endsUnreachable())
+      return;
+
+    targetInfos.push_back(
+        TargetInfo{.name = name, .stackIndex = stackIndex, .switchTarget = switchTarget, .continuation = continuation});
   }
 
-  void visitSwitch(wasm::Switch *switchInstruction) {
+  void visitSwitch(wasm::Switch *expr) {
     std::vector<TargetInfo> targetInfos;
-    targetInfos.reserve(switchInstruction->targets.size() + 1U);
-    for (auto const &targetName : switchInstruction->targets)
-      appendTargetInfo(targetName, targetInfos);
-    appendTargetInfo(switchInstruction->default_, targetInfos);
+    targetInfos.reserve(expr->targets.size() + 1U);
+    for (wasm::Index targetIndex = 0; targetIndex < expr->targets.size(); targetIndex++)
+      appendTargetInfo(expr->targets[targetIndex], targetInfos, TargetInfo::SwitchTargetRef::makeIndex(targetIndex));
+    appendTargetInfo(expr->default_, targetInfos, TargetInfo::SwitchTargetRef::makeDefault());
 
     if (targetInfos.size() < 2U)
       return;
 
+    // hash can avoid expensive equal check for most cases
     std::unordered_map<std::size_t, std::vector<TargetInfo>> targetsByHash;
     targetsByHash.reserve(targetInfos.size());
-    for (auto const &targetInfo : targetInfos) {
-      if (!targetInfo.continuation.endsUnreachable())
-        continue;
+    for (auto const &targetInfo : targetInfos)
       targetsByHash[hashContinuation(targetInfo.continuation)].push_back(targetInfo);
-    }
 
     for (auto &bucketEntry : targetsByHash) {
       auto &targetBucket = bucketEntry.second;
       if (targetBucket.size() < 2U)
         continue;
 
-      for (auto &targetGroup : groupByContinuationEquality(targetBucket)) {
+      for (std::vector<TargetInfo> const &targetGroup : groupByContinuationEquality(targetBucket)) {
         if (targetGroup.size() < 2U)
           continue;
 
         TargetInfo const *const canonicalTarget = chooseCanonical(targetGroup);
-        for (auto const &targetInfo : targetGroup) {
-          if (targetInfo.name == canonicalTarget->name)
-            continue;
-          rewriteSwitchTarget(switchInstruction, targetInfo.name, canonicalTarget->name);
+        for (TargetInfo const &targetInfo : targetGroup) {
+          if (targetInfo.name != canonicalTarget->name)
+            rewriteSwitchTarget(expr, targetInfo, canonicalTarget->name);
         }
       }
     }
