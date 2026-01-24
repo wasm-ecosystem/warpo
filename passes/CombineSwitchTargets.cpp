@@ -93,14 +93,12 @@ struct TargetInfo {
   ContinuationView continuation;
 };
 
-bool findChildIndex(wasm::Block const *parent, wasm::Expression const *child, wasm::Index &outIndex) {
+wasm::Index findChildIndex(wasm::Block const *parent, wasm::Expression const *child) {
   for (wasm::Index index = 0; index < parent->list.size(); index++) {
-    if (parent->list[index] == child) {
-      outIndex = index;
-      return true;
-    }
+    if (parent->list[index] == child)
+      return index;
   }
-  return false;
+  assert(false && "child not found in parent");
 }
 
 void rewriteSwitchTarget(wasm::Switch *expr, TargetInfo const &targetInfo, wasm::Name const &toName) {
@@ -192,12 +190,10 @@ struct CombineSwitchTargets final
 
     // br to block means jump to the end of the block. It means we will start to execute the next expr after the block
     // in its parent block.
-    wasm::Index childIndex = 0;
-    if (!findChildIndex(parentBlock, target, childIndex))
-      return;
+    wasm::Index const childIndex = findChildIndex(parentBlock, target);
+    ContinuationView const continuation{.parent = parentBlock, .start = childIndex + 1U};
 
     // no further expressions after the target block
-    ContinuationView const continuation{.parent = parentBlock, .start = childIndex + 1U};
     if (continuation.start > continuation.parent->list.size())
       return;
 
