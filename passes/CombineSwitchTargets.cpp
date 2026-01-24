@@ -1,3 +1,6 @@
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 #include <cstddef>
 #include <ir/utils.h>
 #include <memory>

@@ -4,6 +4,14 @@ warpo is a compiler project to compile TS-like language to WebAssembly.
 
 Please follow these instructions after modifying the code.
 
+## Basic instructions
+
+- When create new **source code** file, add following license header at the beginning of files.
+  ```
+  // Copyright (C) 2025 wasm-ecosystem
+  // SPDX-License-Identifier: Apache-2.0
+  ```
+
 ## Build instructions
 
 - After changing the code, run `npm run build` to make sure project can be built.
