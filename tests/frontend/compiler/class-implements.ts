@@ -158,3 +158,49 @@ class B4 extends B2 implements I2 {
   assert(b4.foo == 12);
   assert((<I2>b4).foo == 12);
 }
+
+interface I3 {
+  get i(): i32;
+}
+class C1 implements I3 {
+  i: i32 = 42;
+}
+class C2 implements I3 {
+  private _i: i32 = 7;
+  get i(): i32 {
+    return this._i;
+  }
+}
+{
+  let c1: I3 = new C1();
+  assert(c1.i == 42);
+  let c2: I3 = new C2();
+  assert(c2.i == 7);
+}
+
+interface I4 {
+  get i(): i32;
+  set i(value: i32);
+}
+class D1 implements I4 {
+  i: i32 = 1;
+}
+class D2 implements I4 {
+  private _i: i32 = 3;
+  get i(): i32 {
+    return this._i;
+  }
+  set i(value: i32) {
+    this._i = value;
+  }
+}
+{
+  let d1: I4 = new D1();
+  assert(d1.i == 1);
+  d1.i = 2;
+  assert(d1.i == 2);
+  let d2: I4 = new D2();
+  assert(d2.i == 3);
+  d2.i = 4;
+  assert(d2.i == 4);
+}

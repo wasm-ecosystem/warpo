@@ -1862,54 +1862,44 @@ export class Parser extends DiagnosticEmitter {
     let isSetter = false;
     let setStart = 0;
     let setEnd = 0;
-    if (!isInterface) {
-      if (tn.skip(Token.Get)) {
-        if (tn.peek(IdentifierHandling.Prefer) == Token.Identifier && !tn.peekOnNewLine()) {
-          flags |= CommonFlags.Get;
-          isGetter = true;
-          getStart = tn.tokenPos;
-          getEnd = tn.pos;
-          if (!startPos) startPos = getStart;
-          if (flags & CommonFlags.Readonly) {
-            this.error(
-              DiagnosticCode._0_modifier_cannot_be_used_here,
-              tn.range(readonlyStart, readonlyEnd),
-              "readonly"
-            ); // recoverable
-          }
-        } else {
-          tn.reset(state);
-        }
-      } else if (tn.skip(Token.Set)) {
-        if (tn.peek(IdentifierHandling.Prefer) == Token.Identifier && !tn.peekOnNewLine()) {
-          flags |= CommonFlags.Set;
-          isSetter = true;
-          setStart = tn.tokenPos;
-          setEnd = tn.pos;
-          if (!startPos) startPos = setStart;
-          if (flags & CommonFlags.Readonly) {
-            this.error(
-              DiagnosticCode._0_modifier_cannot_be_used_here,
-              tn.range(readonlyStart, readonlyEnd),
-              "readonly"
-            ); // recoverable
-          }
-        } else {
-          tn.reset(state);
-        }
-      } else if (tn.skip(Token.Constructor)) {
-        flags |= CommonFlags.Constructor;
-        isConstructor = true;
-        if (!startPos) startPos = tn.tokenPos;
-        if (flags & CommonFlags.Static) {
-          this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(staticStart, staticEnd), "static"); // recoverable
-        }
-        if (flags & CommonFlags.Abstract) {
-          this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(abstractStart, abstractEnd), "abstract"); // recoverable
-        }
+    if (tn.skip(Token.Get)) {
+      if (tn.peek(IdentifierHandling.Prefer) == Token.Identifier && !tn.peekOnNewLine()) {
+        flags |= CommonFlags.Get;
+        isGetter = true;
+        getStart = tn.tokenPos;
+        getEnd = tn.pos;
+        if (!startPos) startPos = getStart;
         if (flags & CommonFlags.Readonly) {
           this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(readonlyStart, readonlyEnd), "readonly"); // recoverable
         }
+      } else {
+        tn.reset(state);
+      }
+    } else if (tn.skip(Token.Set)) {
+      if (tn.peek(IdentifierHandling.Prefer) == Token.Identifier && !tn.peekOnNewLine()) {
+        flags |= CommonFlags.Set;
+        isSetter = true;
+        setStart = tn.tokenPos;
+        setEnd = tn.pos;
+        if (!startPos) startPos = setStart;
+        if (flags & CommonFlags.Readonly) {
+          this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(readonlyStart, readonlyEnd), "readonly"); // recoverable
+        }
+      } else {
+        tn.reset(state);
+      }
+    } else if (!isInterface && tn.skip(Token.Constructor)) {
+      flags |= CommonFlags.Constructor;
+      isConstructor = true;
+      if (!startPos) startPos = tn.tokenPos;
+      if (flags & CommonFlags.Static) {
+        this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(staticStart, staticEnd), "static"); // recoverable
+      }
+      if (flags & CommonFlags.Abstract) {
+        this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(abstractStart, abstractEnd), "abstract"); // recoverable
+      }
+      if (flags & CommonFlags.Readonly) {
+        this.error(DiagnosticCode._0_modifier_cannot_be_used_here, tn.range(readonlyStart, readonlyEnd), "readonly"); // recoverable
       }
     }
 

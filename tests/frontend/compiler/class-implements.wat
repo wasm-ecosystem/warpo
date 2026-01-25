@@ -33,9 +33,9 @@
  (global $class-implements/g (mut i32) (i32.const 0))
  (global $class-implements/h (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 480))
- (global $~lib/memory/__data_end i32 (i32.const 568))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33336))
- (global $~lib/memory/__heap_base i32 (i32.const 33336))
+ (global $~lib/memory/__data_end i32 (i32.const 592))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33360))
+ (global $~lib/memory/__heap_base i32 (i32.const 33360))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -46,7 +46,7 @@
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $8 (i32.const 412) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00&\00\00\00c\00l\00a\00s\00s\00-\00i\00m\00p\00l\00e\00m\00e\00n\00t\00s\00.\00t\00s\00\00\00\00\00\00\00")
- (data $9 (i32.const 480) "\15\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00")
+ (data $9 (i32.const 480) "\1b\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -3440,6 +3440,171 @@
    )
   )
  )
+ (func $class-implements/C1#set:i (param $this i32) (param $i i32)
+  (i32.store
+   (local.get $this)
+   (local.get $i)
+  )
+ )
+ (func $class-implements/C1#constructor (param $this i32) (result i32)
+  (if
+   (i32.eqz
+    (local.get $this)
+   )
+   (then
+    (local.set $this
+     (call $~lib/rt/__localtostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 4)
+       (i32.const 22)
+      )
+     )
+    )
+   )
+  )
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $~lib/object/Object#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (call $class-implements/C1#set:i
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.const 42)
+  )
+  (local.get $this)
+ )
+ (func $class-implements/I3#get:i (param $this i32) (result i32)
+  (unreachable)
+ )
+ (func $class-implements/C2#set:_i (param $this i32) (param $_i i32)
+  (i32.store
+   (local.get $this)
+   (local.get $_i)
+  )
+ )
+ (func $class-implements/C2#constructor (param $this i32) (result i32)
+  (if
+   (i32.eqz
+    (local.get $this)
+   )
+   (then
+    (local.set $this
+     (call $~lib/rt/__localtostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 4)
+       (i32.const 23)
+      )
+     )
+    )
+   )
+  )
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $~lib/object/Object#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (call $class-implements/C2#set:_i
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.const 7)
+  )
+  (local.get $this)
+ )
+ (func $class-implements/D1#set:i (param $this i32) (param $i i32)
+  (i32.store
+   (local.get $this)
+   (local.get $i)
+  )
+ )
+ (func $class-implements/D1#constructor (param $this i32) (result i32)
+  (if
+   (i32.eqz
+    (local.get $this)
+   )
+   (then
+    (local.set $this
+     (call $~lib/rt/__localtostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 4)
+       (i32.const 25)
+      )
+     )
+    )
+   )
+  )
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $~lib/object/Object#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (call $class-implements/D1#set:i
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.const 1)
+  )
+  (local.get $this)
+ )
+ (func $class-implements/I4#get:i (param $this i32) (result i32)
+  (unreachable)
+ )
+ (func $class-implements/I4#set:i (param $this i32) (param $value i32)
+  (unreachable)
+ )
+ (func $class-implements/D2#set:_i (param $this i32) (param $_i i32)
+  (i32.store
+   (local.get $this)
+   (local.get $_i)
+  )
+ )
+ (func $class-implements/D2#constructor (param $this i32) (result i32)
+  (if
+   (i32.eqz
+    (local.get $this)
+   )
+   (then
+    (local.set $this
+     (call $~lib/rt/__localtostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 4)
+       (i32.const 26)
+      )
+     )
+    )
+   )
+  )
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $~lib/object/Object#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (call $class-implements/D2#set:_i
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.const 3)
+  )
+  (local.get $this)
+ )
  (func $start:class-implements
   (local $a2 i32)
   (local $a3 i32)
@@ -3447,6 +3612,10 @@
   (local $b2 i32)
   (local $b3 i32)
   (local $b4 i32)
+  (local $c1 i32)
+  (local $c2 i32)
+  (local $d1 i32)
+  (local $d2 i32)
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -4273,6 +4442,176 @@
     )
    )
   )
+  (block
+   (local.set $c1
+    (call $~lib/rt/__localtostack
+     (call $class-implements/C1#constructor
+      (i32.const 0)
+     )
+    )
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $class-implements/I3#get:i@override
+       (call $~lib/rt/__tmptostack
+        (local.get $c1)
+       )
+      )
+      (i32.const 42)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 432)
+      (i32.const 176)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (local.set $c2
+    (call $~lib/rt/__localtostack
+     (call $class-implements/C2#constructor
+      (i32.const 0)
+     )
+    )
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $class-implements/I3#get:i@override
+       (call $~lib/rt/__tmptostack
+        (local.get $c2)
+       )
+      )
+      (i32.const 7)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 432)
+      (i32.const 178)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+  )
+  (block
+   (local.set $d1
+    (call $~lib/rt/__localtostack
+     (call $class-implements/D1#constructor
+      (i32.const 0)
+     )
+    )
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $class-implements/I4#get:i@override
+       (call $~lib/rt/__tmptostack
+        (local.get $d1)
+       )
+      )
+      (i32.const 1)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 432)
+      (i32.const 199)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $class-implements/I4#set:i@override
+    (call $~lib/rt/__tmptostack
+     (local.get $d1)
+    )
+    (i32.const 2)
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $class-implements/I4#get:i@override
+       (call $~lib/rt/__tmptostack
+        (local.get $d1)
+       )
+      )
+      (i32.const 2)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 432)
+      (i32.const 201)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (local.set $d2
+    (call $~lib/rt/__localtostack
+     (call $class-implements/D2#constructor
+      (i32.const 0)
+     )
+    )
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $class-implements/I4#get:i@override
+       (call $~lib/rt/__tmptostack
+        (local.get $d2)
+       )
+      )
+      (i32.const 3)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 432)
+      (i32.const 203)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+   (call $class-implements/I4#set:i@override
+    (call $~lib/rt/__tmptostack
+     (local.get $d2)
+    )
+    (i32.const 4)
+   )
+   (if
+    (i32.eqz
+     (i32.eq
+      (call $class-implements/I4#get:i@override
+       (call $~lib/rt/__tmptostack
+        (local.get $d2)
+       )
+      )
+      (i32.const 4)
+     )
+    )
+    (then
+     (call $~lib/builtins/abort
+      (i32.const 0)
+      (i32.const 432)
+      (i32.const 205)
+      (i32.const 3)
+     )
+     (unreachable)
+    )
+   )
+  )
  )
  (func $class-implements/G#foo (param $this i32) (result i32)
   (return
@@ -4301,6 +4640,52 @@
     (local.get $this)
    )
    (local.get $foo)
+  )
+ )
+ (func $class-implements/C1#get:i (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $class-implements/C2#get:_i (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $class-implements/C2#get:i (param $this i32) (result i32)
+  (return
+   (call $class-implements/C2#get:_i
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+ )
+ (func $class-implements/D1#get:i (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $class-implements/D2#get:_i (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $class-implements/D2#get:i (param $this i32) (result i32)
+  (return
+   (call $class-implements/D2#get:_i
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+ )
+ (func $class-implements/D2#set:i (param $this i32) (param $value i32)
+  (call $class-implements/D2#set:_i
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $value)
   )
  )
  (func $class-implements/D#foo@override (param $0 i32) (result i32)
@@ -4695,6 +5080,129 @@
    (local.get $0)
   )
  )
+ (func $class-implements/I3#get:i@override (param $0 i32) (result i32)
+  (local $1 i32)
+  (block $default
+   (block $case1
+    (block $case0
+     (local.set $1
+      (i32.load
+       (i32.sub
+        (local.get $0)
+        (i32.const 8)
+       )
+      )
+     )
+     (br_if $case0
+      (i32.eq
+       (local.get $1)
+       (i32.const 22)
+      )
+     )
+     (br_if $case1
+      (i32.eq
+       (local.get $1)
+       (i32.const 23)
+      )
+     )
+     (br $default)
+    )
+    (return
+     (call $class-implements/C1#get:i
+      (local.get $0)
+     )
+    )
+   )
+   (return
+    (call $class-implements/C2#get:i
+     (local.get $0)
+    )
+   )
+  )
+  (unreachable)
+ )
+ (func $class-implements/I4#get:i@override (param $0 i32) (result i32)
+  (local $1 i32)
+  (block $default
+   (block $case1
+    (block $case0
+     (local.set $1
+      (i32.load
+       (i32.sub
+        (local.get $0)
+        (i32.const 8)
+       )
+      )
+     )
+     (br_if $case0
+      (i32.eq
+       (local.get $1)
+       (i32.const 25)
+      )
+     )
+     (br_if $case1
+      (i32.eq
+       (local.get $1)
+       (i32.const 26)
+      )
+     )
+     (br $default)
+    )
+    (return
+     (call $class-implements/D1#get:i
+      (local.get $0)
+     )
+    )
+   )
+   (return
+    (call $class-implements/D2#get:i
+     (local.get $0)
+    )
+   )
+  )
+  (unreachable)
+ )
+ (func $class-implements/I4#set:i@override (param $0 i32) (param $1 i32)
+  (local $2 i32)
+  (block $default
+   (block $case1
+    (block $case0
+     (local.set $2
+      (i32.load
+       (i32.sub
+        (local.get $0)
+        (i32.const 8)
+       )
+      )
+     )
+     (br_if $case0
+      (i32.eq
+       (local.get $2)
+       (i32.const 25)
+      )
+     )
+     (br_if $case1
+      (i32.eq
+       (local.get $2)
+       (i32.const 26)
+      )
+     )
+     (br $default)
+    )
+    (call $class-implements/D1#set:i
+     (local.get $0)
+     (local.get $1)
+    )
+    (return)
+   )
+   (call $class-implements/D2#set:i
+    (local.get $0)
+    (local.get $1)
+   )
+   (return)
+  )
+  (unreachable)
+ )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
   (if
@@ -4793,35 +5301,59 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $class-implements/B4
-    (block $class-implements/B3
-     (block $class-implements/B2
-      (block $class-implements/A4
-       (block $class-implements/A3
-        (block $class-implements/I2
-         (block $class-implements/A2
-          (block $class-implements/K
-           (block $class-implements/G
-            (block $class-implements/F
-             (block $class-implements/E
-              (block $class-implements/J
-               (block $class-implements/D
-                (block $class-implements/B
-                 (block $class-implements/C
-                  (block $class-implements/I
-                   (block $class-implements/A
-                    (block $~lib/arraybuffer/ArrayBufferView
-                     (block $~lib/string/String
-                      (block $~lib/arraybuffer/ArrayBuffer
-                       (block $~lib/object/Object
-                        (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $class-implements/A $class-implements/I $class-implements/C $class-implements/B $class-implements/D $class-implements/J $class-implements/E $class-implements/F $class-implements/G $class-implements/K $class-implements/A2 $class-implements/I2 $class-implements/A3 $class-implements/A4 $class-implements/B2 $class-implements/B3 $class-implements/B4 $invalid
-                         (i32.load
-                          (i32.sub
-                           (local.get $0)
-                           (i32.const 8)
+   (block $class-implements/D2
+    (block $class-implements/D1
+     (block $class-implements/I4
+      (block $class-implements/C2
+       (block $class-implements/C1
+        (block $class-implements/I3
+         (block $class-implements/B4
+          (block $class-implements/B3
+           (block $class-implements/B2
+            (block $class-implements/A4
+             (block $class-implements/A3
+              (block $class-implements/I2
+               (block $class-implements/A2
+                (block $class-implements/K
+                 (block $class-implements/G
+                  (block $class-implements/F
+                   (block $class-implements/E
+                    (block $class-implements/J
+                     (block $class-implements/D
+                      (block $class-implements/B
+                       (block $class-implements/C
+                        (block $class-implements/I
+                         (block $class-implements/A
+                          (block $~lib/arraybuffer/ArrayBufferView
+                           (block $~lib/string/String
+                            (block $~lib/arraybuffer/ArrayBuffer
+                             (block $~lib/object/Object
+                              (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $class-implements/A $class-implements/I $class-implements/C $class-implements/B $class-implements/D $class-implements/J $class-implements/E $class-implements/F $class-implements/G $class-implements/K $class-implements/A2 $class-implements/I2 $class-implements/A3 $class-implements/A4 $class-implements/B2 $class-implements/B3 $class-implements/B4 $class-implements/I3 $class-implements/C1 $class-implements/C2 $class-implements/I4 $class-implements/D1 $class-implements/D2 $invalid
+                               (i32.load
+                                (i32.sub
+                                 (local.get $0)
+                                 (i32.const 8)
+                                )
+                               )
+                              )
+                             )
+                             (return)
+                            )
+                            (return)
+                           )
+                           (return)
+                          )
+                          (block
+                           (call $~lib/arraybuffer/ArrayBufferView~visit
+                            (local.get $0)
+                            (local.get $1)
+                           )
+                           (return)
                           )
                          )
+                         (return)
                         )
+                        (return)
                        )
                        (return)
                       )
@@ -4829,13 +5361,7 @@
                      )
                      (return)
                     )
-                    (block
-                     (call $~lib/arraybuffer/ArrayBufferView~visit
-                      (local.get $0)
-                      (local.get $1)
-                     )
-                     (return)
-                    )
+                    (return)
                    )
                    (return)
                   )
