@@ -33,9 +33,9 @@
  (global $computed-property/computed_property_symbol (mut i32) (i32.const 0))
  (global $computed-property/myfn (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 784))
- (global $~lib/memory/__data_end i32 (i32.const 820))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33588))
- (global $~lib/memory/__heap_base i32 (i32.const 33588))
+ (global $~lib/memory/__data_end i32 (i32.const 832))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33600))
+ (global $~lib/memory/__heap_base i32 (i32.const 33600))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\04\00\00\00f\00n\00\00\00\00\00\00\00\00\00")
  (data $1 (i32.const 44) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
@@ -52,7 +52,7 @@
  (data $12 (i32.const 620) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\16\00\00\00~\00l\00i\00b\00/\00m\00a\00p\00.\00t\00s\00\00\00\00\00\00\00")
  (data $13 (i32.const 668) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00H\00e\00l\00l\00o\00,\00 \00W\00o\00r\00l\00d\00!\00\00\00")
  (data $14 (i32.const 716) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00c\00o\00m\00p\00u\00t\00e\00d\00-\00p\00r\00o\00p\00e\00r\00t\00y\00.\00t\00s\00\00\00\00\00")
- (data $15 (i32.const 784) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10\01\82\00\10A\02\00 \00\00\00 \00\00\00")
+ (data $15 (i32.const 784) "\0b\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10\01\82\00\00\00\00\00 \00\00\00\10A\02\00 \00\00\00 \00\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -315,7 +315,7 @@
     (call $~lib/builtins/abort
      (i32.const 256)
      (i32.const 320)
-     (i32.const 21)
+     (i32.const 22)
      (i32.const 28)
     )
     (unreachable)
@@ -3907,7 +3907,7 @@
     (call $~lib/builtins/abort
      (i32.const 576)
      (i32.const 640)
-     (i32.const 105)
+     (i32.const 143)
      (i32.const 17)
     )
     (unreachable)
@@ -4446,7 +4446,7 @@
       (call $~lib/rt/__localtostack
        (call $~lib/rt/itcms/__new
         (i32.const 24)
-        (i32.const 5)
+        (i32.const 7)
        )
       )
      )
@@ -5267,7 +5267,7 @@
      (call $~lib/rt/__localtostack
       (call $~lib/rt/itcms/__new
        (i32.const 0)
-       (i32.const 7)
+       (i32.const 10)
       )
      )
     )
@@ -5379,7 +5379,7 @@
     (br_if $case0
      (i32.eq
       (local.get $1)
-      (i32.const 7)
+      (i32.const 10)
      )
     )
     (br $default)
@@ -5555,6 +5555,102 @@
    (local.get $1)
   )
  )
+ (func $~lib/tuple/SmallTuple#__visit (param $this i32) (param $cookie i32)
+  (local $rtSize i32)
+  (local $elemntCount i32)
+  (local $bitmap i64)
+  (local $i i32)
+  (local $elementPtr i32)
+  (local.set $rtSize
+   (call $~lib/rt/common/OBJECT#get:rtSize
+    (i32.sub
+     (local.get $this)
+     (i32.const 20)
+    )
+   )
+  )
+  (local.set $elemntCount
+   (i32.shr_u
+    (i32.sub
+     (local.get $rtSize)
+     (i32.const 8)
+    )
+    (i32.const 2)
+   )
+  )
+  (local.set $bitmap
+   (i64.load
+    (i32.sub
+     (i32.add
+      (local.get $this)
+      (local.get $rtSize)
+     )
+     (i32.const 8)
+    )
+   )
+  )
+  (local.set $i
+   (i32.const 0)
+  )
+  (loop $for-loop|0
+   (if
+    (i32.lt_u
+     (local.get $i)
+     (local.get $elemntCount)
+    )
+    (then
+     (if
+      (i64.ne
+       (i64.and
+        (local.get $bitmap)
+        (i64.shl
+         (i64.const 1)
+         (i64.extend_i32_u
+          (local.get $i)
+         )
+        )
+       )
+       (i64.const 0)
+      )
+      (then
+       (local.set $elementPtr
+        (i32.add
+         (local.get $this)
+         (i32.shl
+          (local.get $i)
+          (i32.const 2)
+         )
+        )
+       )
+       (call $~lib/rt/itcms/__visit
+        (i32.load
+         (local.get $elementPtr)
+        )
+        (local.get $cookie)
+       )
+      )
+     )
+     (local.set $i
+      (i32.add
+       (local.get $i)
+       (i32.const 1)
+      )
+     )
+     (br $for-loop|0)
+    )
+   )
+  )
+ )
+ (func $~lib/tuple/SmallTuple~visit (param $0 i32) (param $1 i32)
+  (call $~lib/object/Object~visit
+   (local.get $0)
+   (local.get $1)
+  )
+  (call $~lib/tuple/SmallTuple#__visit
+   (local.get $0)
+   (local.get $1)
+  )
+ )
  (func $"~lib/map/Map<usize,~lib/string/String>#__visit" (param $this i32) (param $cookie i32)
   (local $entries i32)
   (local $cur i32)
@@ -5670,50 +5766,65 @@
   (block $invalid
    (block $computed-property/ComputedPropertyFn
     (block $computed-property/IComputedPropertyFn
-     (block $"~lib/map/Map<usize,~lib/string/String>"
-      (block $"~lib/map/Map<~lib/string/String,usize>"
-       (block $~lib/arraybuffer/ArrayBufferView
-        (block $~lib/string/String
-         (block $~lib/arraybuffer/ArrayBuffer
-          (block $~lib/object/Object
-           (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $"~lib/map/Map<~lib/string/String,usize>" $"~lib/map/Map<usize,~lib/string/String>" $computed-property/IComputedPropertyFn $computed-property/ComputedPropertyFn $invalid
-            (i32.load
-             (i32.sub
-              (local.get $0)
-              (i32.const 8)
+     (block $"~lib/iterator/Iterable<[usize, ~lib/string/String]>"
+      (block $"~lib/map/Map<usize,~lib/string/String>"
+       (block $"~lib/iterator/Iterable<[~lib/string/String, usize]>"
+        (block $~lib/tuple/SmallTuple
+         (block $"~lib/map/Map<~lib/string/String,usize>"
+          (block $~lib/arraybuffer/ArrayBufferView
+           (block $~lib/string/String
+            (block $~lib/arraybuffer/ArrayBuffer
+             (block $~lib/object/Object
+              (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $"~lib/map/Map<~lib/string/String,usize>" $~lib/tuple/SmallTuple $"~lib/iterator/Iterable<[~lib/string/String, usize]>" $"~lib/map/Map<usize,~lib/string/String>" $"~lib/iterator/Iterable<[usize, ~lib/string/String]>" $computed-property/IComputedPropertyFn $computed-property/ComputedPropertyFn $invalid
+               (i32.load
+                (i32.sub
+                 (local.get $0)
+                 (i32.const 8)
+                )
+               )
+              )
              )
+             (return)
             )
+            (return)
            )
+           (return)
+          )
+          (block
+           (call $~lib/arraybuffer/ArrayBufferView~visit
+            (local.get $0)
+            (local.get $1)
+           )
+           (return)
+          )
+         )
+         (block
+          (call $"~lib/map/Map<~lib/string/String,usize>~visit"
+           (local.get $0)
+           (local.get $1)
           )
           (return)
          )
+        )
+        (block
+         (call $~lib/tuple/SmallTuple~visit
+          (local.get $0)
+          (local.get $1)
+         )
          (return)
         )
-        (return)
        )
-       (block
-        (call $~lib/arraybuffer/ArrayBufferView~visit
-         (local.get $0)
-         (local.get $1)
-        )
-        (return)
-       )
+       (return)
       )
       (block
-       (call $"~lib/map/Map<~lib/string/String,usize>~visit"
+       (call $"~lib/map/Map<usize,~lib/string/String>~visit"
         (local.get $0)
         (local.get $1)
        )
        (return)
       )
      )
-     (block
-      (call $"~lib/map/Map<usize,~lib/string/String>~visit"
-       (local.get $0)
-       (local.get $1)
-      )
-      (return)
-     )
+     (return)
     )
     (return)
    )

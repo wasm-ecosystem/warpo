@@ -1,6 +1,7 @@
 import { Typeinfo, TypeinfoFlags } from "./shared/typeinfo";
 import { E_INDEXOUTOFRANGE } from "./util/error";
 import { ArrayBufferView } from "./arraybuffer";
+import { SmallTuple } from "./tuple";
 
 // @ts-ignore: decorator
 @builtin
@@ -45,8 +46,6 @@ export function __newArray(length: i32, alignLog2: usize, id: u32, data: usize =
   store<i32>(array, length, offsetof<i32[]>("length_"));
   return array;
 }
-
-import { SmallTuple } from "tuple";
 
 /**
  * {@link elementSize} is the number of elements in the tuple

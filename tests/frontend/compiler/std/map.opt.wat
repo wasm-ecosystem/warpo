@@ -25,7 +25,7 @@
  (type $23 (func (param i32 f64 i32)))
  (type $24 (func (param i32 f64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33680))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33760))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -59,7 +59,7 @@
  (data $12.1 (i32.const 648) "\02\00\00\00\16\00\00\00~\00l\00i\00b\00/\00m\00a\00p\00.\00t\00s")
  (data $13 (i32.const 684) ",")
  (data $13.1 (i32.const 696) "\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s")
- (data $14 (i32.const 736) "+\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10\89\10\00B\08\00\00 \00\00\00\02\t\00\00 \00\00\00P\88\10\00\10\t\12\00\10\89\00\00B\00\00\00 \00\00\00P\80\00\00\10\t\11\00\82\08\00\00 \00\00\00\90\08\11\00\10\t\01\00\82\00\00\00 \00\00\00\90\00\01\00\10\t\02\00\02\01\00\00 \00\00\00\10\01\02\00\10\t\14\00\02\n\00\00 \00\00\00\10\n\14\00\10\t\04\00\02\02\00\00 \00\00\00\10\02\04\00\10\t2\00\02\19\00\00 \00\00\00\10\192\00\10\t4\00\02\1a\00\00 \00\00\00\10\1a4")
+ (data $14 (i32.const 736) "?\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10\89\10\00\00\00\00\00 \00\00\00B\08\00\00 \00\00\00\02\t\00\00 \00\00\00P\88\10\00 \00\00\00\10\t\12\00 \00\00\00\10\89\00\00 \00\00\00B\00\00\00 \00\00\00P\80\00\00 \00\00\00\10\t\11\00 \00\00\00\82\08\00\00 \00\00\00\90\08\11\00 \00\00\00\10\t\01\00 \00\00\00\82\00\00\00 \00\00\00\90\00\01\00 \00\00\00\10\t\02\00 \00\00\00\02\01\00\00 \00\00\00\10\01\02\00 \00\00\00\10\t\14\00 \00\00\00\02\n\00\00 \00\00\00\10\n\14\00 \00\00\00\10\t\04\00 \00\00\00\02\02\00\00 \00\00\00\10\02\04\00 \00\00\00\10\t2\00 \00\00\00\02\19\00\00 \00\00\00\10\192\00 \00\00\00\10\t4\00 \00\00\00\02\1a\00\00 \00\00\00\10\1a4\00 ")
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -150,7 +150,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$973
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$975
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -162,7 +162,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33680
+    i32.const 33760
     i32.lt_u
     i32.and
     i32.eqz
@@ -174,7 +174,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$973
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$975
    end
    local.get $0
    i32.load offset=8
@@ -217,7 +217,7 @@
    if
     i32.const 224
     i32.const 288
-    i32.const 21
+    i32.const 22
     i32.const 28
     call $~lib/builtins/abort
     unreachable
@@ -792,10 +792,10 @@
   if
    unreachable
   end
-  i32.const 33680
+  i32.const 33760
   i32.const 0
   i32.store
-  i32.const 35248
+  i32.const 35328
   i32.const 0
   i32.store
   i32.const 0
@@ -808,7 +808,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 33680
+    i32.const 33760
     i32.add
     i32.const 0
     i32.store offset=4
@@ -826,7 +826,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 33680
+      i32.const 33760
       i32.add
       i32.const 0
       i32.store offset=96
@@ -844,14 +844,14 @@
     br $for-loop|0
    end
   end
-  i32.const 33680
-  i32.const 35252
+  i32.const 33760
+  i32.const 35332
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 33680
+  i32.const 33760
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/itcms/step (result i32)
@@ -936,7 +936,7 @@
      local.set $0
      loop $while-continue|0
       local.get $0
-      i32.const 33680
+      i32.const 33760
       i32.lt_u
       if
        local.get $0
@@ -1032,7 +1032,7 @@
      unreachable
     end
     local.get $0
-    i32.const 33680
+    i32.const 33760
     i32.lt_u
     if
      local.get $0
@@ -1055,7 +1055,7 @@
      i32.const 4
      i32.add
      local.tee $1
-     i32.const 33680
+     i32.const 33760
      i32.ge_u
      if
       global.get $~lib/rt/tlsf/ROOT
@@ -1921,7 +1921,7 @@
   if
    i32.const 592
    i32.const 656
-   i32.const 105
+   i32.const 143
    i32.const 17
    call $~lib/builtins/abort
    unreachable
@@ -1964,7 +1964,7 @@
    local.get $0
    i32.load
    local.tee $2
-   block $__inlined_func$~lib/rt/itcms/__renew$978 (result i32)
+   block $__inlined_func$~lib/rt/itcms/__renew$980 (result i32)
     local.get $3
     if
      i32.const 1073741820
@@ -2000,7 +2000,7 @@
      local.get $1
      i32.store offset=16
      local.get $2
-     br $__inlined_func$~lib/rt/itcms/__renew$978
+     br $__inlined_func$~lib/rt/itcms/__renew$980
     end
     local.get $1
     local.get $3
@@ -2081,7 +2081,7 @@
   i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 16
-  i32.const 7
+  i32.const 9
   call $~lib/rt/itcms/__new
   local.set $1
   global.get $~lib/memory/__stack_pointer
@@ -2246,7 +2246,7 @@
   i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 24
-  i32.const 10
+  i32.const 13
   call $~lib/rt/itcms/__new
   local.set $0
   global.get $~lib/memory/__stack_pointer
@@ -2847,7 +2847,7 @@
   if
    i32.const 592
    i32.const 656
-   i32.const 105
+   i32.const 143
    i32.const 17
    call $~lib/builtins/abort
    unreachable
@@ -3206,7 +3206,7 @@
   if
    i32.const 592
    i32.const 656
-   i32.const 105
+   i32.const 143
    i32.const 17
    call $~lib/builtins/abort
    unreachable
@@ -3536,7 +3536,7 @@
   if
    i32.const 592
    i32.const 656
-   i32.const 105
+   i32.const 143
    i32.const 17
    call $~lib/builtins/abort
    unreachable
@@ -3621,7 +3621,7 @@
   if
    i32.const 592
    i32.const 656
-   i32.const 105
+   i32.const 143
    i32.const 17
    call $~lib/builtins/abort
    unreachable
@@ -3947,7 +3947,7 @@
   if
    i32.const 592
    i32.const 656
-   i32.const 105
+   i32.const 143
    i32.const 17
    call $~lib/builtins/abort
    unreachable
@@ -4317,7 +4317,7 @@
   if
    i32.const 592
    i32.const 656
-   i32.const 105
+   i32.const 143
    i32.const 17
    call $~lib/builtins/abort
    unreachable
@@ -4749,7 +4749,7 @@
   if
    i32.const 592
    i32.const 656
-   i32.const 105
+   i32.const 143
    i32.const 17
    call $~lib/builtins/abort
    unreachable
@@ -5109,7 +5109,7 @@
   if
    i32.const 592
    i32.const 656
-   i32.const 105
+   i32.const 143
    i32.const 17
    call $~lib/builtins/abort
    unreachable
@@ -5483,7 +5483,7 @@
   if
    i32.const 592
    i32.const 656
-   i32.const 105
+   i32.const 143
    i32.const 17
    call $~lib/builtins/abort
    unreachable
@@ -5550,20 +5550,74 @@
   end
  )
  (func $~lib/rt/__visit_members (param $0 i32)
+  (local $1 i32)
+  (local $2 i32)
+  (local $3 i64)
   block $folding-inner1
    block $folding-inner0
     block $invalid
-     block $~lib/iterator/Iterable<f64>
-      block $~lib/arraybuffer/ArrayBufferView
+     block $"~lib/iterator/Iterable<[f64, f64]>"
+      block $~lib/tuple/SmallTuple
+       block $~lib/arraybuffer/ArrayBufferView
+        local.get $0
+        i32.const 8
+        i32.sub
+        i32.load
+        br_table $"~lib/iterator/Iterable<[f64, f64]>" $"~lib/iterator/Iterable<[f64, f64]>" $"~lib/iterator/Iterable<[f64, f64]>" $~lib/arraybuffer/ArrayBufferView $folding-inner0 $~lib/tuple/SmallTuple $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner1 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner1 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner1 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner1 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner1 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner1 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner1 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner1 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner1 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner1 $"~lib/iterator/Iterable<[f64, f64]>" $folding-inner0 $"~lib/iterator/Iterable<[f64, f64]>" $invalid
+       end
        local.get $0
-       i32.const 8
-       i32.sub
        i32.load
-       br_table $~lib/iterator/Iterable<f64> $~lib/iterator/Iterable<f64> $~lib/iterator/Iterable<f64> $~lib/arraybuffer/ArrayBufferView $folding-inner0 $folding-inner1 $~lib/iterator/Iterable<f64> $folding-inner1 $~lib/iterator/Iterable<f64> $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner1 $~lib/iterator/Iterable<f64> $folding-inner0 $folding-inner0 $folding-inner1 $~lib/iterator/Iterable<f64> $folding-inner0 $folding-inner0 $folding-inner1 $~lib/iterator/Iterable<f64> $folding-inner0 $folding-inner0 $folding-inner1 $~lib/iterator/Iterable<f64> $folding-inner0 $folding-inner0 $folding-inner1 $~lib/iterator/Iterable<f64> $folding-inner0 $folding-inner0 $folding-inner1 $~lib/iterator/Iterable<f64> $folding-inner0 $folding-inner0 $folding-inner1 $~lib/iterator/Iterable<f64> $folding-inner0 $folding-inner0 $folding-inner1 $~lib/iterator/Iterable<f64> $folding-inner0 $invalid
+       call $~lib/rt/itcms/__visit
+       return
       end
       local.get $0
-      i32.load
-      call $~lib/rt/itcms/__visit
+      i32.const 20
+      i32.sub
+      i32.load offset=16
+      local.tee $1
+      i32.const 8
+      i32.sub
+      i32.const 2
+      i32.shr_u
+      local.set $2
+      local.get $0
+      local.get $1
+      i32.add
+      i32.const 8
+      i32.sub
+      i64.load
+      local.set $3
+      i32.const 0
+      local.set $1
+      loop $for-loop|0
+       local.get $1
+       local.get $2
+       i32.lt_u
+       if
+        local.get $3
+        i64.const 1
+        local.get $1
+        i64.extend_i32_u
+        i64.shl
+        i64.and
+        i64.const 0
+        i64.ne
+        if
+         local.get $0
+         local.get $1
+         i32.const 2
+         i32.shl
+         i32.add
+         i32.load
+         call $~lib/rt/itcms/__visit
+        end
+        local.get $1
+        i32.const 1
+        i32.add
+        local.set $1
+        br $for-loop|0
+       end
+      end
       return
      end
      return
@@ -5606,11 +5660,11 @@
   (local $20 i64)
   (local $21 f32)
   (local $22 f64)
-  block $__inlined_func$start:std/map$1140
+  block $__inlined_func$start:std/map$1144
    memory.size
    i32.const 16
    i32.shl
-   i32.const 33680
+   i32.const 33760
    i32.sub
    i32.const 1
    i32.shr_u
@@ -5797,7 +5851,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 16
-                            i32.const 5
+                            i32.const 7
                             call $~lib/rt/itcms/__new
                             local.set $6
                             global.get $~lib/memory/__stack_pointer
@@ -5895,7 +5949,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 9
+                            i32.const 11
                             call $~lib/rt/itcms/__new
                             local.set $3
                             global.get $~lib/memory/__stack_pointer
@@ -5963,7 +6017,7 @@
                               call $"~lib/map/Map<i8,i32>#has"
                               i32.eqz
                               br_if $folding-inner10
-                              block $"__inlined_func$~lib/map/Map<i8,i8>#find$980" (result i32)
+                              block $"__inlined_func$~lib/map/Map<i8,i8>#find$982" (result i32)
                                local.get $7
                                call $~lib/util/hash/HASH<i8>
                                local.tee $17
@@ -5998,7 +6052,7 @@
                                   i32.and
                                   i32.eq
                                  end
-                                 br_if $"__inlined_func$~lib/map/Map<i8,i8>#find$980"
+                                 br_if $"__inlined_func$~lib/map/Map<i8,i8>#find$982"
                                  drop
                                  local.get $2
                                  i32.const -2
@@ -6306,7 +6360,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 11
+                            i32.const 15
                             call $~lib/rt/itcms/__new
                             local.set $0
                             global.get $~lib/memory/__stack_pointer
@@ -6436,7 +6490,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 16
-                            i32.const 12
+                            i32.const 17
                             call $~lib/rt/itcms/__new
                             local.set $6
                             global.get $~lib/memory/__stack_pointer
@@ -6534,7 +6588,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 14
+                            i32.const 19
                             call $~lib/rt/itcms/__new
                             local.set $3
                             global.get $~lib/memory/__stack_pointer
@@ -6602,7 +6656,7 @@
                               call $"~lib/map/Map<u8,i32>#has"
                               i32.eqz
                               br_if $folding-inner10
-                              block $"__inlined_func$~lib/map/Map<u8,u8>#find$983" (result i32)
+                              block $"__inlined_func$~lib/map/Map<u8,u8>#find$985" (result i32)
                                local.get $7
                                call $~lib/util/hash/HASH<u8>
                                local.tee $17
@@ -6635,7 +6689,7 @@
                                   local.get $7
                                   i32.eq
                                  end
-                                 br_if $"__inlined_func$~lib/map/Map<u8,u8>#find$983"
+                                 br_if $"__inlined_func$~lib/map/Map<u8,u8>#find$985"
                                  drop
                                  local.get $2
                                  i32.const -2
@@ -6943,7 +6997,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 15
+                            i32.const 21
                             call $~lib/rt/itcms/__new
                             local.set $0
                             global.get $~lib/memory/__stack_pointer
@@ -7073,7 +7127,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 16
-                            i32.const 16
+                            i32.const 23
                             call $~lib/rt/itcms/__new
                             local.set $6
                             global.get $~lib/memory/__stack_pointer
@@ -7173,7 +7227,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 18
+                            i32.const 25
                             call $~lib/rt/itcms/__new
                             local.set $3
                             global.get $~lib/memory/__stack_pointer
@@ -7243,7 +7297,7 @@
                               call $"~lib/map/Map<i16,i32>#has"
                               i32.eqz
                               br_if $folding-inner10
-                              block $"__inlined_func$~lib/map/Map<i16,i16>#find$986" (result i32)
+                              block $"__inlined_func$~lib/map/Map<i16,i16>#find$988" (result i32)
                                local.get $7
                                call $~lib/util/hash/HASH<i16>
                                local.tee $17
@@ -7278,7 +7332,7 @@
                                   i32.and
                                   i32.eq
                                  end
-                                 br_if $"__inlined_func$~lib/map/Map<i16,i16>#find$986"
+                                 br_if $"__inlined_func$~lib/map/Map<i16,i16>#find$988"
                                  drop
                                  local.get $2
                                  i32.const -2
@@ -7586,7 +7640,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 19
+                            i32.const 27
                             call $~lib/rt/itcms/__new
                             local.set $0
                             global.get $~lib/memory/__stack_pointer
@@ -7716,7 +7770,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 16
-                            i32.const 20
+                            i32.const 29
                             call $~lib/rt/itcms/__new
                             local.set $6
                             global.get $~lib/memory/__stack_pointer
@@ -7816,7 +7870,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 22
+                            i32.const 31
                             call $~lib/rt/itcms/__new
                             local.set $3
                             global.get $~lib/memory/__stack_pointer
@@ -7886,7 +7940,7 @@
                               call $"~lib/map/Map<u16,i32>#has"
                               i32.eqz
                               br_if $folding-inner10
-                              block $"__inlined_func$~lib/map/Map<u16,u16>#find$989" (result i32)
+                              block $"__inlined_func$~lib/map/Map<u16,u16>#find$991" (result i32)
                                local.get $7
                                call $~lib/util/hash/HASH<u16>
                                local.tee $17
@@ -7919,7 +7973,7 @@
                                   local.get $7
                                   i32.eq
                                  end
-                                 br_if $"__inlined_func$~lib/map/Map<u16,u16>#find$989"
+                                 br_if $"__inlined_func$~lib/map/Map<u16,u16>#find$991"
                                  drop
                                  local.get $2
                                  i32.const -2
@@ -8546,7 +8600,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 23
+                            i32.const 33
                             call $~lib/rt/itcms/__new
                             local.set $0
                             global.get $~lib/memory/__stack_pointer
@@ -8676,7 +8730,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 16
-                            i32.const 24
+                            i32.const 35
                             call $~lib/rt/itcms/__new
                             local.set $6
                             global.get $~lib/memory/__stack_pointer
@@ -8771,7 +8825,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 26
+                            i32.const 37
                             call $~lib/rt/itcms/__new
                             local.set $3
                             global.get $~lib/memory/__stack_pointer
@@ -9142,7 +9196,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 27
+                            i32.const 39
                             call $~lib/rt/itcms/__new
                             local.set $0
                             global.get $~lib/memory/__stack_pointer
@@ -9275,7 +9329,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 16
-                            i32.const 28
+                            i32.const 41
                             call $~lib/rt/itcms/__new
                             local.set $6
                             global.get $~lib/memory/__stack_pointer
@@ -9375,7 +9429,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 30
+                            i32.const 43
                             call $~lib/rt/itcms/__new
                             local.set $4
                             global.get $~lib/memory/__stack_pointer
@@ -9446,7 +9500,7 @@
                               call $"~lib/map/Map<i64,i32>#has"
                               i32.eqz
                               br_if $folding-inner10
-                              block $"__inlined_func$~lib/map/Map<i64,i64>#find$994" (result i32)
+                              block $"__inlined_func$~lib/map/Map<i64,i64>#find$996" (result i32)
                                local.get $8
                                call $~lib/util/hash/HASH<i64>
                                local.tee $15
@@ -9479,7 +9533,7 @@
                                   i64.load
                                   i64.eq
                                  end
-                                 br_if $"__inlined_func$~lib/map/Map<i64,i64>#find$994"
+                                 br_if $"__inlined_func$~lib/map/Map<i64,i64>#find$996"
                                  drop
                                  local.get $5
                                  i32.const -2
@@ -9789,7 +9843,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 31
+                            i32.const 45
                             call $~lib/rt/itcms/__new
                             local.set $0
                             global.get $~lib/memory/__stack_pointer
@@ -9922,7 +9976,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 16
-                            i32.const 32
+                            i32.const 47
                             call $~lib/rt/itcms/__new
                             local.set $6
                             global.get $~lib/memory/__stack_pointer
@@ -10022,7 +10076,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 34
+                            i32.const 49
                             call $~lib/rt/itcms/__new
                             local.set $4
                             global.get $~lib/memory/__stack_pointer
@@ -10093,7 +10147,7 @@
                               call $"~lib/map/Map<u64,i32>#has"
                               i32.eqz
                               br_if $folding-inner10
-                              block $"__inlined_func$~lib/map/Map<u64,u64>#find$997" (result i32)
+                              block $"__inlined_func$~lib/map/Map<u64,u64>#find$999" (result i32)
                                local.get $8
                                call $~lib/util/hash/HASH<i64>
                                local.tee $15
@@ -10126,7 +10180,7 @@
                                   i64.load
                                   i64.eq
                                  end
-                                 br_if $"__inlined_func$~lib/map/Map<u64,u64>#find$997"
+                                 br_if $"__inlined_func$~lib/map/Map<u64,u64>#find$999"
                                  drop
                                  local.get $5
                                  i32.const -2
@@ -10434,7 +10488,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 35
+                            i32.const 51
                             call $~lib/rt/itcms/__new
                             local.set $0
                             global.get $~lib/memory/__stack_pointer
@@ -10567,7 +10621,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 16
-                            i32.const 36
+                            i32.const 53
                             call $~lib/rt/itcms/__new
                             local.set $6
                             global.get $~lib/memory/__stack_pointer
@@ -10689,7 +10743,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 38
+                            i32.const 55
                             call $~lib/rt/itcms/__new
                             local.set $4
                             global.get $~lib/memory/__stack_pointer
@@ -11063,7 +11117,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 39
+                            i32.const 57
                             call $~lib/rt/itcms/__new
                             local.set $0
                             global.get $~lib/memory/__stack_pointer
@@ -11196,7 +11250,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 16
-                            i32.const 40
+                            i32.const 59
                             call $~lib/rt/itcms/__new
                             local.set $6
                             global.get $~lib/memory/__stack_pointer
@@ -11323,7 +11377,7 @@
                             i32.const 4
                             call $~lib/rt/__decrease_sp
                             i32.const 24
-                            i32.const 42
+                            i32.const 61
                             call $~lib/rt/itcms/__new
                             local.set $4
                             global.get $~lib/memory/__stack_pointer
@@ -11394,7 +11448,7 @@
                               call $"~lib/map/Map<f64,i32>#has"
                               i32.eqz
                               br_if $folding-inner10
-                              block $"__inlined_func$~lib/map/Map<f64,f64>#find$1004" (result i32)
+                              block $"__inlined_func$~lib/map/Map<f64,f64>#find$1006" (result i32)
                                local.get $10
                                call $~lib/util/hash/HASH<f64>
                                local.tee $15
@@ -11427,7 +11481,7 @@
                                   f64.load
                                   f64.eq
                                  end
-                                 br_if $"__inlined_func$~lib/map/Map<f64,f64>#find$1004"
+                                 br_if $"__inlined_func$~lib/map/Map<f64,f64>#find$1006"
                                  drop
                                  local.get $5
                                  i32.const -2
@@ -11763,7 +11817,7 @@
                             i32.const 1024
                             i32.add
                             global.set $~lib/rt/itcms/threshold
-                            br $__inlined_func$start:std/map$1140
+                            br $__inlined_func$start:std/map$1144
                            end
                            i32.const 0
                            i32.const 544
@@ -11951,7 +12005,7 @@
   local.get $0
   memory.fill
   global.get $~lib/memory/__stack_pointer
-  i32.const 912
+  i32.const 992
   i32.lt_s
   if
    unreachable

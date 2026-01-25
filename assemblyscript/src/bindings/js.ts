@@ -518,12 +518,6 @@ export class JSBuilder extends ExportsWalker {
         sb.push(escapeString(moduleName, CharCode.DoubleQuote));
         sb.push('"');
       }
-      if (!shouldInstrument(moduleName)) {
-        sb.push(": __module");
-        sb.push(moduleId.toString());
-        sb.push(",\n");
-        continue;
-      }
       let resetPos = sb.length;
 
       // Use Object.setPrototypeOf to avoid issues with read-only properties

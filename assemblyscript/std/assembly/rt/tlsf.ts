@@ -67,9 +67,9 @@ import { E_ALLOCATION_TOO_LARGE } from "../util/error";
 // └───────────────────────────────────────────────────────────────┘ >= MIN SIZE
 // F: FREE, L: LEFTFREE
 @unmanaged export class Block extends BLOCK {
-  /** Previous free block, if any. Only valid if free, otherwise part of payload. */
+  /** @ts-ignore:no initializer. Previous free block, if any. Only valid if free, otherwise part of payload. */
   prev: Block | null;
-  /** Next free block, if any. Only valid if free, otherwise part of payload. */
+  /** @ts-ignore:no initializer. Next free block, if any. Only valid if free, otherwise part of payload. */
   next: Block | null;
 
   // If the block is free, there is a 'back'reference at its end pointing at its start.
@@ -117,7 +117,7 @@ import { E_ALLOCATION_TOO_LARGE } from "../util/error";
 // └───────────────────────────────────────────────────────────────┘   SIZE   ┘
 // S: Small blocks map
 @unmanaged class Root {
-  /** First level bitmap. */
+  /** @ts-ignore:no initializer. First level bitmap. */
   flMap: usize;
 }
 

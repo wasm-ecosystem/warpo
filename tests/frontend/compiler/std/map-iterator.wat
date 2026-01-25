@@ -1,14 +1,15 @@
 (module
  (type $0 (func (param i32) (result i32)))
  (type $1 (func (param i32 i32)))
- (type $2 (func (param i32)))
- (type $3 (func))
- (type $4 (func (param i32 i32 i32)))
- (type $5 (func (param i32 i32) (result i32)))
- (type $6 (func (param i32 i32 i32 i32)))
+ (type $2 (func (param i32 i32) (result i32)))
+ (type $3 (func (param i32)))
+ (type $4 (func))
+ (type $5 (func (param i32 i32 i32)))
+ (type $6 (func (result i32)))
  (type $7 (func (param i32 i32 i32) (result i32)))
- (type $8 (func (param i32 i32 i64) (result i32)))
- (type $9 (func (result i32)))
+ (type $8 (func (param i32 i32 i32 i32)))
+ (type $9 (func (param i32 i32 i64) (result i32)))
+ (type $10 (func (param i32 i64) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -25,10 +26,10 @@
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $~lib/rt/__rtti_base i32 (i32.const 480))
- (global $~lib/memory/__data_end i32 (i32.const 504))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33272))
- (global $~lib/memory/__heap_base i32 (i32.const 33272))
+ (global $~lib/rt/__rtti_base i32 (i32.const 592))
+ (global $~lib/memory/__data_end i32 (i32.const 636))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33404))
+ (global $~lib/memory/__heap_base i32 (i32.const 33404))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -38,10 +39,16 @@
  (data $5 (i32.const 268) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $8 (i32.const 412) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00r\00t\00/\00i\00s\00s\00u\00e\00-\002\007\001\009\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $9 (i32.const 480) "\05\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00")
+ (data $8 (i32.const 412) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
+ (data $9 (i32.const 460) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00&\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00b\00u\00f\00f\00e\00r\00.\00t\00s\00\00\00\00\00\00\00")
+ (data $10 (i32.const 524) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00&\00\00\00s\00t\00d\00/\00m\00a\00p\00-\00i\00t\00e\00r\00a\00t\00o\00r\00.\00t\00s\00\00\00\00\00\00\00")
+ (data $11 (i32.const 592) "\n\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10\t\12\00\00\00\00\00 \00\00\00\00\00\00\00 \00\00\00\00\00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
+ (export "map_iterator_add" (func $std/map-iterator/map_iterator_add))
+ (export "map_iterator_del" (func $std/map-iterator/map_iterator_del))
+ (export "map_iterator_reassign" (func $std/map-iterator/map_iterator_reassign))
+ (export "map_iterator_clear" (func $std/map-iterator/map_iterator_clear))
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
@@ -2903,175 +2910,2155 @@
    (local.get $ptr)
   )
  )
- (func $~lib/object/Object#constructor (param $this i32) (result i32)
+ (func $~lib/arraybuffer/ArrayBuffer#constructor (param $this i32) (param $length i32) (result i32)
+  (local $buffer i32)
   (if
-   (i32.eqz
-    (local.get $this)
+   (i32.gt_u
+    (local.get $length)
+    (i32.const 1073741820)
    )
    (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
+    (call $~lib/builtins/abort
+     (i32.const 432)
+     (i32.const 480)
+     (i32.const 50)
+     (i32.const 43)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $buffer
+   (call $~lib/rt/__localtostack
+    (call $~lib/rt/itcms/__new
+     (local.get $length)
+     (i32.const 1)
+    )
+   )
+  )
+  (return
+   (local.get $buffer)
+  )
+ )
+ (func $~lib/rt/itcms/__link (param $parentPtr i32) (param $childPtr i32) (param $expectMultiple i32)
+  (local $child i32)
+  (local $parent i32)
+  (local $parentColor i32)
+  (if
+   (i32.eqz
+    (local.get $childPtr)
+   )
+   (then
+    (return)
+   )
+  )
+  (drop
+   (i32.const 1)
+  )
+  (if
+   (i32.eqz
+    (local.get $parentPtr)
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 96)
+     (i32.const 296)
+     (i32.const 14)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $child
+   (i32.sub
+    (local.get $childPtr)
+    (i32.const 20)
+   )
+  )
+  (if
+   (i32.eq
+    (call $~lib/rt/itcms/Object#get:color
+     (local.get $child)
+    )
+    (global.get $~lib/rt/itcms/white)
+   )
+   (then
+    (local.set $parent
+     (i32.sub
+      (local.get $parentPtr)
+      (i32.const 20)
+     )
+    )
+    (local.set $parentColor
+     (call $~lib/rt/itcms/Object#get:color
+      (local.get $parent)
+     )
+    )
+    (if
+     (i32.eq
+      (local.get $parentColor)
+      (i32.eqz
+       (global.get $~lib/rt/itcms/white)
       )
      )
+     (then
+      (if
+       (local.get $expectMultiple)
+       (then
+        (call $~lib/rt/itcms/Object#makeGray
+         (local.get $parent)
+        )
+       )
+       (else
+        (call $~lib/rt/itcms/Object#makeGray
+         (local.get $child)
+        )
+       )
+      )
+     )
+     (else
+      (if
+       (if (result i32)
+        (i32.eq
+         (local.get $parentColor)
+         (i32.const 3)
+        )
+        (then
+         (i32.eq
+          (global.get $~lib/rt/itcms/state)
+          (i32.const 1)
+         )
+        )
+        (else
+         (i32.const 0)
+        )
+       )
+       (then
+        (call $~lib/rt/itcms/Object#makeGray
+         (local.get $child)
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#set:buckets" (param $this i32) (param $buckets i32)
+  (i32.store
+   (local.get $this)
+   (local.get $buckets)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $buckets)
+   (i32.const 0)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#set:bucketsMask" (param $this i32) (param $bucketsMask i32)
+  (i32.store offset=4
+   (local.get $this)
+   (local.get $bucketsMask)
+  )
+ )
+ (func $"~lib/map/ENTRY_ALIGN<i32,i32>" (result i32)
+  (return
+   (i32.const 3)
+  )
+ )
+ (func $"~lib/map/ENTRY_SIZE<i32,i32>" (result i32)
+  (local $align i32)
+  (local $size i32)
+  (local.set $align
+   (call $"~lib/map/ENTRY_ALIGN<i32,i32>")
+  )
+  (local.set $size
+   (i32.and
+    (i32.add
+     (i32.const 12)
+     (local.get $align)
+    )
+    (i32.xor
+     (local.get $align)
+     (i32.const -1)
+    )
+   )
+  )
+  (return
+   (local.get $size)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#set:entries" (param $this i32) (param $entries i32)
+  (i32.store offset=8
+   (local.get $this)
+   (local.get $entries)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $entries)
+   (i32.const 0)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#set:entriesCapacity" (param $this i32) (param $entriesCapacity i32)
+  (i32.store offset=12
+   (local.get $this)
+   (local.get $entriesCapacity)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#constructor" (param $this i32) (result i32)
+  (block
+   (if
+    (i32.eqz
+     (local.get $this)
+    )
+    (then
+     (local.set $this
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
+     )
+    )
+   )
+   (call $"~lib/map/Map<i32,i32>#set:buckets"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (call $~lib/rt/__tmptostack
+     (call $~lib/arraybuffer/ArrayBuffer#constructor
+      (i32.const 0)
+      (i32.mul
+       (i32.const 4)
+       (i32.const 4)
+      )
+     )
+    )
+   )
+   (call $"~lib/map/Map<i32,i32>#set:bucketsMask"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (i32.sub
+     (i32.const 4)
+     (i32.const 1)
+    )
+   )
+   (call $"~lib/map/Map<i32,i32>#set:entries"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (call $~lib/rt/__tmptostack
+     (call $~lib/arraybuffer/ArrayBuffer#constructor
+      (i32.const 0)
+      (i32.mul
+       (i32.const 4)
+       (call $"~lib/map/ENTRY_SIZE<i32,i32>")
+      )
+     )
+    )
+   )
+   (call $"~lib/map/Map<i32,i32>#set:entriesCapacity"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (i32.const 4)
+   )
+  )
+  (local.get $this)
+ )
+ (func $~lib/util/hash/hash32 (param $key i32) (param $len i32) (result i32)
+  (local $h i32)
+  (local.set $h
+   (i32.add
+    (i32.add
+     (i32.const 0)
+     (i32.const 374761393)
+    )
+    (local.get $len)
+   )
+  )
+  (local.set $h
+   (i32.add
+    (local.get $h)
+    (i32.mul
+     (local.get $key)
+     (i32.const -1028477379)
+    )
+   )
+  )
+  (local.set $h
+   (i32.mul
+    (i32.rotl
+     (local.get $h)
+     (i32.const 17)
+    )
+    (i32.const 668265263)
+   )
+  )
+  (local.set $h
+   (i32.xor
+    (local.get $h)
+    (i32.shr_u
+     (local.get $h)
+     (i32.const 15)
+    )
+   )
+  )
+  (local.set $h
+   (i32.mul
+    (local.get $h)
+    (i32.const -2048144777)
+   )
+  )
+  (local.set $h
+   (i32.xor
+    (local.get $h)
+    (i32.shr_u
+     (local.get $h)
+     (i32.const 13)
+    )
+   )
+  )
+  (local.set $h
+   (i32.mul
+    (local.get $h)
+    (i32.const -1028477379)
+   )
+  )
+  (local.set $h
+   (i32.xor
+    (local.get $h)
+    (i32.shr_u
+     (local.get $h)
+     (i32.const 16)
+    )
+   )
+  )
+  (return
+   (local.get $h)
+  )
+ )
+ (func $~lib/util/hash/HASH<i32> (param $key i32) (result i32)
+  (drop
+   (i32.const 0)
+  )
+  (block
+   (drop
+    (i32.const 0)
+   )
+   (block
+    (drop
+     (i32.const 0)
+    )
+    (block
+     (drop
+      (i32.le_u
+       (i32.const 4)
+       (i32.const 4)
+      )
+     )
+     (return
+      (call $~lib/util/hash/hash32
+       (local.get $key)
+       (i32.const 4)
+      )
+     )
+    )
+   )
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#get:buckets" (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#get:bucketsMask" (param $this i32) (result i32)
+  (i32.load offset=4
+   (local.get $this)
+  )
+ )
+ (func $"~lib/map/MapEntry<i32,i32>#get:taggedNext" (param $this i32) (result i32)
+  (i32.load offset=8
+   (local.get $this)
+  )
+ )
+ (func $"~lib/map/MapEntry<i32,i32>#get:key" (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#find" (param $this i32) (param $key i32) (param $hashCode i32) (result i32)
+  (local $entry i32)
+  (local $taggedNext i32)
+  (local.set $entry
+   (i32.load
+    (i32.add
+     (call $"~lib/map/Map<i32,i32>#get:buckets"
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+     (i32.mul
+      (i32.and
+       (local.get $hashCode)
+       (call $"~lib/map/Map<i32,i32>#get:bucketsMask"
+        (call $~lib/rt/__tmptostack
+         (local.get $this)
+        )
+       )
+      )
+      (i32.const 4)
+     )
+    )
+   )
+  )
+  (block $while-break|0
+   (loop $while-continue|0
+    (if
+     (local.get $entry)
+     (then
+      (local.set $taggedNext
+       (call $"~lib/map/MapEntry<i32,i32>#get:taggedNext"
+        (local.get $entry)
+       )
+      )
+      (if
+       (if (result i32)
+        (i32.eqz
+         (i32.and
+          (local.get $taggedNext)
+          (i32.const 1)
+         )
+        )
+        (then
+         (i32.eq
+          (call $"~lib/map/MapEntry<i32,i32>#get:key"
+           (local.get $entry)
+          )
+          (local.get $key)
+         )
+        )
+        (else
+         (i32.const 0)
+        )
+       )
+       (then
+        (return
+         (local.get $entry)
+        )
+       )
+      )
+      (local.set $entry
+       (i32.and
+        (local.get $taggedNext)
+        (i32.xor
+         (i32.const 1)
+         (i32.const -1)
+        )
+       )
+      )
+      (br $while-continue|0)
+     )
+    )
+   )
+  )
+  (return
+   (i32.const 0)
+  )
+ )
+ (func $"~lib/map/MapEntry<i32,i32>#set:value" (param $this i32) (param $value i32)
+  (i32.store offset=4
+   (local.get $this)
+   (local.get $value)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#get:entriesOffset" (param $this i32) (result i32)
+  (i32.load offset=16
+   (local.get $this)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#get:entriesCapacity" (param $this i32) (result i32)
+  (i32.load offset=12
+   (local.get $this)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#get:entriesCount" (param $this i32) (result i32)
+  (i32.load offset=20
+   (local.get $this)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#get:entries" (param $this i32) (result i32)
+  (i32.load offset=8
+   (local.get $this)
+  )
+ )
+ (func $"~lib/map/MapEntry<i32,i32>#set:key" (param $this i32) (param $key i32)
+  (i32.store
+   (local.get $this)
+   (local.get $key)
+  )
+ )
+ (func $"~lib/map/MapEntry<i32,i32>#get:value" (param $this i32) (result i32)
+  (i32.load offset=4
+   (local.get $this)
+  )
+ )
+ (func $"~lib/map/MapEntry<i32,i32>#set:taggedNext" (param $this i32) (param $taggedNext i32)
+  (i32.store offset=8
+   (local.get $this)
+   (local.get $taggedNext)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#set:entriesOffset" (param $this i32) (param $entriesOffset i32)
+  (i32.store offset=16
+   (local.get $this)
+   (local.get $entriesOffset)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#rehash" (param $this i32) (param $newBucketsMask i32)
+  (local $newBucketsCapacity i32)
+  (local $newBuckets i32)
+  (local $newEntriesCapacity i32)
+  (local $newEntries i32)
+  (local $oldPtr i32)
+  (local $oldEnd i32)
+  (local $newPtr i32)
+  (local $oldEntry i32)
+  (local $newEntry i32)
+  (local $oldEntryKey i32)
+  (local $newBucketIndex i32)
+  (local $newBucketPtrBase i32)
+  (local.set $newBucketsCapacity
+   (i32.add
+    (local.get $newBucketsMask)
+    (i32.const 1)
+   )
+  )
+  (local.set $newBuckets
+   (call $~lib/rt/__localtostack
+    (call $~lib/arraybuffer/ArrayBuffer#constructor
+     (i32.const 0)
+     (i32.mul
+      (local.get $newBucketsCapacity)
+      (i32.const 4)
+     )
+    )
+   )
+  )
+  (local.set $newEntriesCapacity
+   (i32.div_s
+    (i32.mul
+     (local.get $newBucketsCapacity)
+     (i32.const 8)
+    )
+    (i32.const 3)
+   )
+  )
+  (local.set $newEntries
+   (call $~lib/rt/__localtostack
+    (call $~lib/arraybuffer/ArrayBuffer#constructor
+     (i32.const 0)
+     (i32.mul
+      (local.get $newEntriesCapacity)
+      (call $"~lib/map/ENTRY_SIZE<i32,i32>")
+     )
+    )
+   )
+  )
+  (local.set $oldPtr
+   (call $"~lib/map/Map<i32,i32>#get:entries"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+  (local.set $oldEnd
+   (i32.add
+    (local.get $oldPtr)
+    (i32.mul
+     (call $"~lib/map/Map<i32,i32>#get:entriesOffset"
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+     (call $"~lib/map/ENTRY_SIZE<i32,i32>")
+    )
+   )
+  )
+  (local.set $newPtr
+   (local.get $newEntries)
+  )
+  (block $while-break|0
+   (loop $while-continue|0
+    (if
+     (i32.ne
+      (local.get $oldPtr)
+      (local.get $oldEnd)
+     )
+     (then
+      (local.set $oldEntry
+       (local.get $oldPtr)
+      )
+      (if
+       (i32.eqz
+        (i32.and
+         (call $"~lib/map/MapEntry<i32,i32>#get:taggedNext"
+          (local.get $oldEntry)
+         )
+         (i32.const 1)
+        )
+       )
+       (then
+        (local.set $newEntry
+         (local.get $newPtr)
+        )
+        (local.set $oldEntryKey
+         (call $"~lib/map/MapEntry<i32,i32>#get:key"
+          (local.get $oldEntry)
+         )
+        )
+        (call $"~lib/map/MapEntry<i32,i32>#set:key"
+         (local.get $newEntry)
+         (local.get $oldEntryKey)
+        )
+        (call $"~lib/map/MapEntry<i32,i32>#set:value"
+         (local.get $newEntry)
+         (call $"~lib/map/MapEntry<i32,i32>#get:value"
+          (local.get $oldEntry)
+         )
+        )
+        (local.set $newBucketIndex
+         (i32.and
+          (call $~lib/util/hash/HASH<i32>
+           (local.get $oldEntryKey)
+          )
+          (local.get $newBucketsMask)
+         )
+        )
+        (local.set $newBucketPtrBase
+         (i32.add
+          (local.get $newBuckets)
+          (i32.mul
+           (local.get $newBucketIndex)
+           (i32.const 4)
+          )
+         )
+        )
+        (call $"~lib/map/MapEntry<i32,i32>#set:taggedNext"
+         (local.get $newEntry)
+         (i32.load
+          (local.get $newBucketPtrBase)
+         )
+        )
+        (i32.store
+         (local.get $newBucketPtrBase)
+         (local.get $newPtr)
+        )
+        (local.set $newPtr
+         (i32.add
+          (local.get $newPtr)
+          (call $"~lib/map/ENTRY_SIZE<i32,i32>")
+         )
+        )
+       )
+      )
+      (local.set $oldPtr
+       (i32.add
+        (local.get $oldPtr)
+        (call $"~lib/map/ENTRY_SIZE<i32,i32>")
+       )
+      )
+      (br $while-continue|0)
+     )
+    )
+   )
+  )
+  (call $"~lib/map/Map<i32,i32>#set:buckets"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (local.get $newBuckets)
+   )
+  )
+  (call $"~lib/map/Map<i32,i32>#set:bucketsMask"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $newBucketsMask)
+  )
+  (call $"~lib/map/Map<i32,i32>#set:entries"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (local.get $newEntries)
+   )
+  )
+  (call $"~lib/map/Map<i32,i32>#set:entriesCapacity"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $newEntriesCapacity)
+  )
+  (call $"~lib/map/Map<i32,i32>#set:entriesOffset"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $"~lib/map/Map<i32,i32>#get:entriesCount"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#set:entriesCount" (param $this i32) (param $entriesCount i32)
+  (i32.store offset=20
+   (local.get $this)
+   (local.get $entriesCount)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#set" (param $this i32) (param $key i32) (param $value i32) (result i32)
+  (local $hashCode i32)
+  (local $entry i32)
+  (local $entries i32)
+  (local $6 i32)
+  (local $bucketPtrBase i32)
+  (local.set $hashCode
+   (call $~lib/util/hash/HASH<i32>
+    (local.get $key)
+   )
+  )
+  (local.set $entry
+   (call $"~lib/map/Map<i32,i32>#find"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (local.get $key)
+    (local.get $hashCode)
+   )
+  )
+  (if
+   (local.get $entry)
+   (then
+    (call $"~lib/map/MapEntry<i32,i32>#set:value"
+     (local.get $entry)
+     (local.get $value)
+    )
+    (drop
+     (i32.const 0)
+    )
+   )
+   (else
+    (if
+     (i32.eq
+      (call $"~lib/map/Map<i32,i32>#get:entriesOffset"
+       (call $~lib/rt/__tmptostack
+        (local.get $this)
+       )
+      )
+      (call $"~lib/map/Map<i32,i32>#get:entriesCapacity"
+       (call $~lib/rt/__tmptostack
+        (local.get $this)
+       )
+      )
+     )
+     (then
+      (call $"~lib/map/Map<i32,i32>#rehash"
+       (call $~lib/rt/__tmptostack
+        (local.get $this)
+       )
+       (if (result i32)
+        (i32.lt_s
+         (call $"~lib/map/Map<i32,i32>#get:entriesCount"
+          (call $~lib/rt/__tmptostack
+           (local.get $this)
+          )
+         )
+         (i32.div_s
+          (i32.mul
+           (call $"~lib/map/Map<i32,i32>#get:entriesCapacity"
+            (call $~lib/rt/__tmptostack
+             (local.get $this)
+            )
+           )
+           (i32.const 3)
+          )
+          (i32.const 4)
+         )
+        )
+        (then
+         (call $"~lib/map/Map<i32,i32>#get:bucketsMask"
+          (call $~lib/rt/__tmptostack
+           (local.get $this)
+          )
+         )
+        )
+        (else
+         (i32.or
+          (i32.shl
+           (call $"~lib/map/Map<i32,i32>#get:bucketsMask"
+            (call $~lib/rt/__tmptostack
+             (local.get $this)
+            )
+           )
+           (i32.const 1)
+          )
+          (i32.const 1)
+         )
+        )
+       )
+      )
+     )
+    )
+    (local.set $entries
+     (call $~lib/rt/__localtostack
+      (call $"~lib/map/Map<i32,i32>#get:entries"
+       (call $~lib/rt/__tmptostack
+        (local.get $this)
+       )
+      )
+     )
+    )
+    (local.set $entry
+     (i32.add
+      (local.get $entries)
+      (i32.mul
+       (block (result i32)
+        (call $"~lib/map/Map<i32,i32>#set:entriesOffset"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+         (i32.add
+          (local.tee $6
+           (call $"~lib/map/Map<i32,i32>#get:entriesOffset"
+            (call $~lib/rt/__tmptostack
+             (local.get $this)
+            )
+           )
+          )
+          (i32.const 1)
+         )
+        )
+        (local.get $6)
+       )
+       (call $"~lib/map/ENTRY_SIZE<i32,i32>")
+      )
+     )
+    )
+    (call $"~lib/map/MapEntry<i32,i32>#set:key"
+     (local.get $entry)
+     (local.get $key)
+    )
+    (drop
+     (i32.const 0)
+    )
+    (call $"~lib/map/MapEntry<i32,i32>#set:value"
+     (local.get $entry)
+     (local.get $value)
+    )
+    (drop
+     (i32.const 0)
+    )
+    (call $"~lib/map/Map<i32,i32>#set:entriesCount"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (i32.add
+      (call $"~lib/map/Map<i32,i32>#get:entriesCount"
+       (call $~lib/rt/__tmptostack
+        (local.get $this)
+       )
+      )
+      (i32.const 1)
+     )
+    )
+    (local.set $bucketPtrBase
+     (i32.add
+      (call $"~lib/map/Map<i32,i32>#get:buckets"
+       (call $~lib/rt/__tmptostack
+        (local.get $this)
+       )
+      )
+      (i32.mul
+       (i32.and
+        (local.get $hashCode)
+        (call $"~lib/map/Map<i32,i32>#get:bucketsMask"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+       )
+       (i32.const 4)
+      )
+     )
+    )
+    (call $"~lib/map/MapEntry<i32,i32>#set:taggedNext"
+     (local.get $entry)
+     (i32.load
+      (local.get $bucketPtrBase)
+     )
+    )
+    (i32.store
+     (local.get $bucketPtrBase)
+     (local.get $entry)
+    )
+   )
+  )
+  (return
+   (local.get $this)
+  )
+ )
+ (func $"~lib/map/MapIterator<i32,i32>#set:map" (param $this i32) (param $map i32)
+  (i32.store offset=4
+   (local.get $this)
+   (local.get $map)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $map)
+   (i32.const 0)
+  )
+ )
+ (func $"~lib/map/MapIterator<i32,i32>#constructor" (param $this i32) (param $map i32) (result i32)
+  (block
+   (if
+    (i32.eqz
+     (local.get $this)
+    )
+    (then
+     (local.set $this
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 8)
+        (i32.const 7)
+       )
+      )
+     )
+    )
+   )
+   (call $"~lib/map/MapIterator<i32,i32>#set:map"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (call $~lib/rt/__tmptostack
+     (local.get $map)
     )
    )
   )
   (local.get $this)
  )
- (func $rt/issue-2719/issue2719_T#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
+ (func $"~lib/map/Map<i32,i32>#[~lib/symbol/Symbol.iterator]" (param $this i32) (result i32)
+  (return
+   (call $"~lib/map/MapIterator<i32,i32>#constructor"
+    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
    )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 4)
+  )
+ )
+ (func $"~lib/map/MapIterator<i32,i32>#get:map" (param $this i32) (result i32)
+  (i32.load offset=4
+   (local.get $this)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#[~lib/map/GET_START]" (param $this i32) (result i32)
+  (return
+   (call $"~lib/map/Map<i32,i32>#get:entries"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#[~lib/map/GET_ENTRIES_OFFSET]" (param $this i32) (result i32)
+  (return
+   (call $"~lib/map/Map<i32,i32>#get:entriesOffset"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+ )
+ (func $"~lib/map/MapIterator<i32,i32>#get:i" (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $"~lib/map/MapIterator<i32,i32>#set:i" (param $this i32) (param $i i32)
+  (i32.store
+   (local.get $this)
+   (local.get $i)
+  )
+ )
+ (func $~lib/rt/__newTuple (param $elementSize i32) (param $bitmap i64) (result i32)
+  (local $totalSize i32)
+  (local $ptr i32)
+  (local.set $totalSize
+   (i32.add
+    (local.get $elementSize)
+    (i32.const 8)
+   )
+  )
+  (local.set $ptr
+   (call $~lib/rt/itcms/__new
+    (local.get $totalSize)
+    (i32.const 5)
+   )
+  )
+  (i64.store
+   (i32.add
+    (local.get $ptr)
+    (local.get $elementSize)
+   )
+   (local.get $bitmap)
+  )
+  (return
+   (local.get $ptr)
+  )
+ )
+ (func $~lib/tuple/SmallTuple#__set<i32> (param $this i32) (param $offset i32) (param $value i32)
+  (local $elementPtr i32)
+  (local.set $elementPtr
+   (i32.add
+    (local.get $this)
+    (local.get $offset)
+   )
+  )
+  (i32.store
+   (local.get $elementPtr)
+   (local.get $value)
+  )
+  (drop
+   (i32.const 0)
+  )
+ )
+ (func $"~lib/iterator/IteratorResult<[i32, i32]>#set:value" (param $this i32) (param $value i32)
+  (i32.store
+   (local.get $this)
+   (local.get $value)
+  )
+  (call $~lib/rt/itcms/__link
+   (local.get $this)
+   (local.get $value)
+   (i32.const 0)
+  )
+ )
+ (func $"~lib/iterator/IteratorResult<[i32, i32]>#constructor" (param $this i32) (param $value i32) (result i32)
+  (block
+   (if
+    (i32.eqz
+     (local.get $this)
+    )
+    (then
+     (local.set $this
+      (call $~lib/rt/__localtostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 9)
+       )
       )
      )
     )
    )
+   (call $"~lib/iterator/IteratorResult<[i32, i32]>#set:value"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (call $~lib/rt/__tmptostack
+     (local.get $value)
+    )
+   )
   )
-  (local.set $this
+  (local.get $this)
+ )
+ (func $"~lib/iterator/IteratorResult.fromValue<[i32, i32]>" (param $value i32) (result i32)
+  (return
+   (call $"~lib/iterator/IteratorResult<[i32, i32]>#constructor"
+    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (local.get $value)
+    )
+   )
+  )
+ )
+ (func $"~lib/iterator/IteratorResult.done<[i32, i32]>" (result i32)
+  (return
+   (i32.const 0)
+  )
+ )
+ (func $"~lib/map/MapIterator<i32,i32>#next" (param $this i32) (result i32)
+  (local $map i32)
+  (local $start i32)
+  (local $size i32)
+  (local $i i32)
+  (local $entry i32)
+  (local $6 i32)
+  (local.set $map
    (call $~lib/rt/__localtostack
-    (call $~lib/object/Object#constructor
+    (call $"~lib/map/MapIterator<i32,i32>#get:map"
      (call $~lib/rt/__tmptostack
       (local.get $this)
      )
     )
    )
   )
-  (local.get $this)
- )
- (func $~lib/rt/itcms/__collect
-  (drop
-   (i32.const 0)
-  )
-  (if
-   (i32.gt_s
-    (global.get $~lib/rt/itcms/state)
-    (i32.const 0)
+  (local.set $start
+   (call $"~lib/map/Map<i32,i32>#[~lib/map/GET_START]"
+    (call $~lib/rt/__tmptostack
+     (local.get $map)
+    )
    )
-   (then
-    (block $while-break|0
-     (loop $while-continue|0
-      (if
-       (i32.ne
-        (global.get $~lib/rt/itcms/state)
-        (i32.const 0)
+  )
+  (local.set $size
+   (call $"~lib/map/Map<i32,i32>#[~lib/map/GET_ENTRIES_OFFSET]"
+    (call $~lib/rt/__tmptostack
+     (local.get $map)
+    )
+   )
+  )
+  (local.set $i
+   (call $"~lib/map/MapIterator<i32,i32>#get:i"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+  (loop $for-loop|0
+   (if
+    (i32.lt_s
+     (local.get $i)
+     (local.get $size)
+    )
+    (then
+     (local.set $entry
+      (i32.add
+       (local.get $start)
+       (i32.mul
+        (local.get $i)
+        (call $"~lib/map/ENTRY_SIZE<i32,i32>")
        )
-       (then
-        (drop
-         (call $~lib/rt/itcms/step)
+      )
+     )
+     (if
+      (i32.eqz
+       (i32.and
+        (call $"~lib/map/MapEntry<i32,i32>#get:taggedNext"
+         (local.get $entry)
         )
-        (br $while-continue|0)
+        (i32.const 1)
+       )
+      )
+      (then
+       (call $"~lib/map/MapIterator<i32,i32>#set:i"
+        (call $~lib/rt/__tmptostack
+         (local.get $this)
+        )
+        (i32.add
+         (local.get $i)
+         (i32.const 1)
+        )
+       )
+       (return
+        (call $"~lib/iterator/IteratorResult.fromValue<[i32, i32]>"
+         (call $~lib/rt/__tmptostack
+          (block (result i32)
+           (local.set $6
+            (call $~lib/rt/__localtostack
+             (call $~lib/rt/__newTuple
+              (i32.const 8)
+              (i64.const 0)
+             )
+            )
+           )
+           (call $~lib/tuple/SmallTuple#__set<i32>
+            (call $~lib/rt/__tmptostack
+             (local.get $6)
+            )
+            (i32.const 0)
+            (call $"~lib/map/MapEntry<i32,i32>#get:key"
+             (local.get $entry)
+            )
+           )
+           (call $~lib/tuple/SmallTuple#__set<i32>
+            (call $~lib/rt/__tmptostack
+             (local.get $6)
+            )
+            (i32.const 4)
+            (call $"~lib/map/MapEntry<i32,i32>#get:value"
+             (local.get $entry)
+            )
+           )
+           (local.get $6)
+          )
+         )
+        )
        )
       )
      )
-    )
-   )
-  )
-  (drop
-   (call $~lib/rt/itcms/step)
-  )
-  (block $while-break|1
-   (loop $while-continue|1
-    (if
-     (i32.ne
-      (global.get $~lib/rt/itcms/state)
-      (i32.const 0)
-     )
-     (then
-      (drop
-       (call $~lib/rt/itcms/step)
+     (local.set $i
+      (i32.add
+       (local.get $i)
+       (i32.const 1)
       )
-      (br $while-continue|1)
      )
+     (br $for-loop|0)
     )
    )
-  )
-  (global.set $~lib/rt/itcms/threshold
-   (i32.add
-    (i32.wrap_i64
-     (i64.div_u
-      (i64.mul
-       (i64.extend_i32_u
-        (global.get $~lib/rt/itcms/total)
-       )
-       (i64.extend_i32_u
-        (i32.const 200)
-       )
-      )
-      (i64.const 100)
-     )
-    )
-    (i32.const 1024)
-   )
-  )
-  (drop
-   (i32.const 0)
-  )
- )
- (func $rt/issue-2719/issue2719_T#set:v (param $this i32) (param $v i32)
-  (i32.store
-   (local.get $this)
-   (local.get $v)
-  )
- )
- (func $rt/issue-2719/issue2719_f2 (param $t i32) (result i32)
-  (local $c i32)
-  (call $~lib/rt/itcms/__collect)
-  (local.set $c
-   (call $~lib/rt/__localtostack
-    (call $rt/issue-2719/issue2719_T#constructor
-     (i32.const 0)
-    )
-   )
-  )
-  (call $rt/issue-2719/issue2719_T#set:v
-   (call $~lib/rt/__tmptostack
-    (local.get $c)
-   )
-   (i32.const 100)
   )
   (return
-   (i32.const 1)
+   (call $"~lib/iterator/IteratorResult.done<[i32, i32]>")
   )
  )
- (func $rt/issue-2719/issue2719_T#get:v (param $this i32) (result i32)
+ (func $"~lib/iterator/IteratorResult<[i32, i32]>#get:value" (param $this i32) (result i32)
   (i32.load
    (local.get $this)
   )
  )
- (func $rt/issue-2719/issue2719_f1 (param $a i32) (param $t i32) (param $b i32)
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $rt/issue-2719/issue2719_T#get:v
+ (func $~lib/tuple/SmallTuple#__get<i32> (param $this i32) (param $offset i32) (result i32)
+  (local $elementPtr i32)
+  (local.set $elementPtr
+   (i32.add
+    (local.get $this)
+    (local.get $offset)
+   )
+  )
+  (return
+   (i32.load
+    (local.get $elementPtr)
+   )
+  )
+ )
+ (func $"~lib/iterator/IteratorResult<[i32, i32]>#get:done" (param $this i32) (result i32)
+  (return
+   (i32.eq
+    (i32.const 0)
+    (local.get $this)
+   )
+  )
+ )
+ (func $std/map-iterator/map_iterator_add
+  (local $m i32)
+  (local $it i32)
+  (local $kv i32)
+  (local.set $m
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i32,i32>#constructor"
+     (i32.const 0)
+    )
+   )
+  )
+  (drop
+   (call $"~lib/map/Map<i32,i32>#set"
+    (call $~lib/rt/__tmptostack
+     (call $"~lib/map/Map<i32,i32>#set"
       (call $~lib/rt/__tmptostack
-       (local.get $t)
+       (call $"~lib/map/Map<i32,i32>#set"
+        (call $~lib/rt/__tmptostack
+         (local.get $m)
+        )
+        (i32.const 1)
+        (i32.const 10)
+       )
+      )
+      (i32.const 3)
+      (i32.const 30)
+     )
+    )
+    (i32.const 2)
+    (i32.const 20)
+   )
+  )
+  (local.set $it
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i32,i32>#[~lib/symbol/Symbol.iterator]"
+     (call $~lib/rt/__tmptostack
+      (local.get $m)
+     )
+    )
+   )
+  )
+  (local.set $kv
+   (call $~lib/rt/__localtostack
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>#get:value"
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/map/MapIterator<i32,i32>#next"
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
       )
      )
-     (i32.const 0)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (if (result i32)
+     (i32.eq
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $kv)
+       )
+       (i32.const 0)
+      )
+      (i32.const 1)
+     )
+     (then
+      (i32.eq
+       (call $~lib/tuple/SmallTuple#__get<i32>
+        (call $~lib/rt/__tmptostack
+         (local.get $kv)
+        )
+        (i32.const 4)
+       )
+       (i32.const 10)
+      )
+     )
+     (else
+      (i32.const 0)
+     )
     )
    )
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 432)
+     (i32.const 544)
      (i32.const 6)
      (i32.const 3)
     )
     (unreachable)
    )
   )
+  (local.set $kv
+   (call $~lib/rt/__localtostack
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>#get:value"
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/map/MapIterator<i32,i32>#next"
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
+      )
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (if (result i32)
+     (i32.eq
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $kv)
+       )
+       (i32.const 0)
+      )
+      (i32.const 3)
+     )
+     (then
+      (i32.eq
+       (call $~lib/tuple/SmallTuple#__get<i32>
+        (call $~lib/rt/__tmptostack
+         (local.get $kv)
+        )
+        (i32.const 4)
+       )
+       (i32.const 30)
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 8)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (drop
+   (call $"~lib/map/Map<i32,i32>#set"
+    (call $~lib/rt/__tmptostack
+     (local.get $m)
+    )
+    (i32.const 4)
+    (i32.const 40)
+   )
+  )
+  (local.set $kv
+   (call $~lib/rt/__localtostack
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>#get:value"
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/map/MapIterator<i32,i32>#next"
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
+      )
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (if (result i32)
+     (i32.eq
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $kv)
+       )
+       (i32.const 0)
+      )
+      (i32.const 2)
+     )
+     (then
+      (i32.eq
+       (call $~lib/tuple/SmallTuple#__get<i32>
+        (call $~lib/rt/__tmptostack
+         (local.get $kv)
+        )
+        (i32.const 4)
+       )
+       (i32.const 20)
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 11)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $kv
+   (call $~lib/rt/__localtostack
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>#get:value"
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/map/MapIterator<i32,i32>#next"
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
+      )
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (if (result i32)
+     (i32.eq
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $kv)
+       )
+       (i32.const 0)
+      )
+      (i32.const 4)
+     )
+     (then
+      (i32.eq
+       (call $~lib/tuple/SmallTuple#__get<i32>
+        (call $~lib/rt/__tmptostack
+         (local.get $kv)
+        )
+        (i32.const 4)
+       )
+       (i32.const 40)
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 13)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>#get:done"
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/map/MapIterator<i32,i32>#next"
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
+      )
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 14)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
  )
- (func $start:rt/issue-2719
+ (func $"~lib/map/Map<i32,i32>#delete" (param $this i32) (param $key i32) (result i32)
+  (local $entry i32)
+  (local $halfBucketsMask i32)
+  (local $4 i32)
+  (local $5 i32)
+  (local.set $entry
+   (call $"~lib/map/Map<i32,i32>#find"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (local.get $key)
+    (call $~lib/util/hash/HASH<i32>
+     (local.get $key)
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (local.get $entry)
+   )
+   (then
+    (return
+     (i32.const 0)
+    )
+   )
+  )
+  (call $"~lib/map/MapEntry<i32,i32>#set:taggedNext"
+   (local.get $entry)
+   (i32.or
+    (call $"~lib/map/MapEntry<i32,i32>#get:taggedNext"
+     (local.get $entry)
+    )
+    (i32.const 1)
+   )
+  )
+  (call $"~lib/map/Map<i32,i32>#set:entriesCount"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.sub
+    (call $"~lib/map/Map<i32,i32>#get:entriesCount"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.const 1)
+   )
+  )
+  (local.set $halfBucketsMask
+   (i32.shr_u
+    (call $"~lib/map/Map<i32,i32>#get:bucketsMask"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.const 1)
+   )
+  )
+  (if
+   (if (result i32)
+    (i32.ge_u
+     (i32.add
+      (local.get $halfBucketsMask)
+      (i32.const 1)
+     )
+     (select
+      (local.tee $4
+       (i32.const 4)
+      )
+      (local.tee $5
+       (call $"~lib/map/Map<i32,i32>#get:entriesCount"
+        (call $~lib/rt/__tmptostack
+         (local.get $this)
+        )
+       )
+      )
+      (i32.gt_u
+       (local.get $4)
+       (local.get $5)
+      )
+     )
+    )
+    (then
+     (i32.lt_s
+      (call $"~lib/map/Map<i32,i32>#get:entriesCount"
+       (call $~lib/rt/__tmptostack
+        (local.get $this)
+       )
+      )
+      (i32.div_s
+       (i32.mul
+        (call $"~lib/map/Map<i32,i32>#get:entriesCapacity"
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+        )
+        (i32.const 3)
+       )
+       (i32.const 4)
+      )
+     )
+    )
+    (else
+     (i32.const 0)
+    )
+   )
+   (then
+    (call $"~lib/map/Map<i32,i32>#rehash"
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (local.get $halfBucketsMask)
+    )
+   )
+  )
+  (return
+   (i32.const 1)
+  )
+ )
+ (func $std/map-iterator/map_iterator_del
+  (local $m i32)
+  (local $it i32)
+  (local $kv i32)
+  (local.set $m
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i32,i32>#constructor"
+     (i32.const 0)
+    )
+   )
+  )
+  (drop
+   (call $"~lib/map/Map<i32,i32>#set"
+    (call $~lib/rt/__tmptostack
+     (call $"~lib/map/Map<i32,i32>#set"
+      (call $~lib/rt/__tmptostack
+       (call $"~lib/map/Map<i32,i32>#set"
+        (call $~lib/rt/__tmptostack
+         (local.get $m)
+        )
+        (i32.const 1)
+        (i32.const 10)
+       )
+      )
+      (i32.const 3)
+      (i32.const 30)
+     )
+    )
+    (i32.const 2)
+    (i32.const 20)
+   )
+  )
+  (local.set $it
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i32,i32>#[~lib/symbol/Symbol.iterator]"
+     (call $~lib/rt/__tmptostack
+      (local.get $m)
+     )
+    )
+   )
+  )
+  (local.set $kv
+   (call $~lib/rt/__localtostack
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>#get:value"
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/map/MapIterator<i32,i32>#next"
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
+      )
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (if (result i32)
+     (i32.eq
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $kv)
+       )
+       (i32.const 0)
+      )
+      (i32.const 1)
+     )
+     (then
+      (i32.eq
+       (call $~lib/tuple/SmallTuple#__get<i32>
+        (call $~lib/rt/__tmptostack
+         (local.get $kv)
+        )
+        (i32.const 4)
+       )
+       (i32.const 10)
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 23)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $kv
+   (call $~lib/rt/__localtostack
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>#get:value"
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/map/MapIterator<i32,i32>#next"
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
+      )
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (if (result i32)
+     (i32.eq
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $kv)
+       )
+       (i32.const 0)
+      )
+      (i32.const 3)
+     )
+     (then
+      (i32.eq
+       (call $~lib/tuple/SmallTuple#__get<i32>
+        (call $~lib/rt/__tmptostack
+         (local.get $kv)
+        )
+        (i32.const 4)
+       )
+       (i32.const 30)
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 25)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (drop
+   (call $"~lib/map/Map<i32,i32>#delete"
+    (call $~lib/rt/__tmptostack
+     (local.get $m)
+    )
+    (i32.const 2)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>#get:done"
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/map/MapIterator<i32,i32>#next"
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
+      )
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 27)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
+ (func $std/map-iterator/map_iterator_reassign
+  (local $m i32)
+  (local $it i32)
+  (local $kv i32)
+  (local.set $m
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i32,i32>#constructor"
+     (i32.const 0)
+    )
+   )
+  )
+  (drop
+   (call $"~lib/map/Map<i32,i32>#set"
+    (call $~lib/rt/__tmptostack
+     (call $"~lib/map/Map<i32,i32>#set"
+      (call $~lib/rt/__tmptostack
+       (call $"~lib/map/Map<i32,i32>#set"
+        (call $~lib/rt/__tmptostack
+         (local.get $m)
+        )
+        (i32.const 1)
+        (i32.const 10)
+       )
+      )
+      (i32.const 3)
+      (i32.const 30)
+     )
+    )
+    (i32.const 2)
+    (i32.const 20)
+   )
+  )
+  (local.set $it
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i32,i32>#[~lib/symbol/Symbol.iterator]"
+     (call $~lib/rt/__tmptostack
+      (local.get $m)
+     )
+    )
+   )
+  )
+  (local.set $m
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i32,i32>#constructor"
+     (i32.const 0)
+    )
+   )
+  )
+  (local.set $kv
+   (call $~lib/rt/__localtostack
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>#get:value"
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/map/MapIterator<i32,i32>#next"
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
+      )
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (if (result i32)
+     (i32.eq
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $kv)
+       )
+       (i32.const 0)
+      )
+      (i32.const 1)
+     )
+     (then
+      (i32.eq
+       (call $~lib/tuple/SmallTuple#__get<i32>
+        (call $~lib/rt/__tmptostack
+         (local.get $kv)
+        )
+        (i32.const 4)
+       )
+       (i32.const 10)
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 37)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $kv
+   (call $~lib/rt/__localtostack
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>#get:value"
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/map/MapIterator<i32,i32>#next"
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
+      )
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (if (result i32)
+     (i32.eq
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $kv)
+       )
+       (i32.const 0)
+      )
+      (i32.const 3)
+     )
+     (then
+      (i32.eq
+       (call $~lib/tuple/SmallTuple#__get<i32>
+        (call $~lib/rt/__tmptostack
+         (local.get $kv)
+        )
+        (i32.const 4)
+       )
+       (i32.const 30)
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 39)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $kv
+   (call $~lib/rt/__localtostack
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>#get:value"
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/map/MapIterator<i32,i32>#next"
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
+      )
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (if (result i32)
+     (i32.eq
+      (call $~lib/tuple/SmallTuple#__get<i32>
+       (call $~lib/rt/__tmptostack
+        (local.get $kv)
+       )
+       (i32.const 0)
+      )
+      (i32.const 2)
+     )
+     (then
+      (i32.eq
+       (call $~lib/tuple/SmallTuple#__get<i32>
+        (call $~lib/rt/__tmptostack
+         (local.get $kv)
+        )
+        (i32.const 4)
+       )
+       (i32.const 20)
+      )
+     )
+     (else
+      (i32.const 0)
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 41)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>#get:done"
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/map/MapIterator<i32,i32>#next"
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
+      )
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 42)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>#clear" (param $this i32)
+  (call $"~lib/map/Map<i32,i32>#set:buckets"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/arraybuffer/ArrayBuffer#constructor
+     (i32.const 0)
+     (i32.mul
+      (i32.const 4)
+      (i32.const 4)
+     )
+    )
+   )
+  )
+  (call $"~lib/map/Map<i32,i32>#set:bucketsMask"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.sub
+    (i32.const 4)
+    (i32.const 1)
+   )
+  )
+  (call $"~lib/map/Map<i32,i32>#set:entries"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/arraybuffer/ArrayBuffer#constructor
+     (i32.const 0)
+     (i32.mul
+      (i32.const 4)
+      (call $"~lib/map/ENTRY_SIZE<i32,i32>")
+     )
+    )
+   )
+  )
+  (call $"~lib/map/Map<i32,i32>#set:entriesCapacity"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.const 4)
+  )
+  (call $"~lib/map/Map<i32,i32>#set:entriesOffset"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.const 0)
+  )
+  (call $"~lib/map/Map<i32,i32>#set:entriesCount"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.const 0)
+  )
+ )
+ (func $std/map-iterator/map_iterator_clear
+  (local $m i32)
+  (local $it i32)
+  (local.set $m
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i32,i32>#constructor"
+     (i32.const 0)
+    )
+   )
+  )
+  (drop
+   (call $"~lib/map/Map<i32,i32>#set"
+    (call $~lib/rt/__tmptostack
+     (call $"~lib/map/Map<i32,i32>#set"
+      (call $~lib/rt/__tmptostack
+       (call $"~lib/map/Map<i32,i32>#set"
+        (call $~lib/rt/__tmptostack
+         (local.get $m)
+        )
+        (i32.const 1)
+        (i32.const 10)
+       )
+      )
+      (i32.const 3)
+      (i32.const 30)
+     )
+    )
+    (i32.const 2)
+    (i32.const 20)
+   )
+  )
+  (local.set $it
+   (call $~lib/rt/__localtostack
+    (call $"~lib/map/Map<i32,i32>#[~lib/symbol/Symbol.iterator]"
+     (call $~lib/rt/__tmptostack
+      (local.get $m)
+     )
+    )
+   )
+  )
+  (call $"~lib/map/Map<i32,i32>#clear"
+   (call $~lib/rt/__tmptostack
+    (local.get $m)
+   )
+  )
+  (if
+   (i32.eqz
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>#get:done"
+     (call $~lib/rt/__tmptostack
+      (call $"~lib/map/MapIterator<i32,i32>#next"
+       (call $~lib/rt/__tmptostack
+        (local.get $it)
+       )
+      )
+     )
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 544)
+     (i32.const 51)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
+ (func $start:std/map-iterator
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -3099,21 +5086,10 @@
     (i32.const 320)
    )
   )
-  (call $rt/issue-2719/issue2719_f1
-   (i32.const 1)
-   (call $~lib/rt/__tmptostack
-    (call $rt/issue-2719/issue2719_T#constructor
-     (i32.const 0)
-    )
-   )
-   (call $rt/issue-2719/issue2719_f2
-    (call $~lib/rt/__tmptostack
-     (call $rt/issue-2719/issue2719_T#constructor
-      (i32.const 0)
-     )
-    )
-   )
-  )
+  (call $std/map-iterator/map_iterator_add)
+  (call $std/map-iterator/map_iterator_del)
+  (call $std/map-iterator/map_iterator_reassign)
+  (call $std/map-iterator/map_iterator_clear)
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
@@ -3135,41 +5111,242 @@
  (func $~lib/object/Object~visit (param $0 i32) (param $1 i32)
   (nop)
  )
- (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
-  (block $invalid
-   (block $rt/issue-2719/issue2719_T
-    (block $~lib/arraybuffer/ArrayBufferView
-     (block $~lib/string/String
-      (block $~lib/arraybuffer/ArrayBuffer
-       (block $~lib/object/Object
-        (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $rt/issue-2719/issue2719_T $invalid
-         (i32.load
-          (i32.sub
-           (local.get $0)
-           (i32.const 8)
-          )
+ (func $"~lib/map/Map<i32,i32>#__visit" (param $this i32) (param $cookie i32)
+  (local $entries i32)
+  (call $~lib/rt/itcms/__visit
+   (call $"~lib/map/Map<i32,i32>#get:buckets"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+   (local.get $cookie)
+  )
+  (local.set $entries
+   (call $"~lib/map/Map<i32,i32>#get:entries"
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+  (drop
+   (i32.const 0)
+  )
+  (call $~lib/rt/itcms/__visit
+   (local.get $entries)
+   (local.get $cookie)
+  )
+ )
+ (func $"~lib/map/Map<i32,i32>~visit" (param $0 i32) (param $1 i32)
+  (call $~lib/object/Object~visit
+   (local.get $0)
+   (local.get $1)
+  )
+  (call $"~lib/map/Map<i32,i32>#__visit"
+   (local.get $0)
+   (local.get $1)
+  )
+ )
+ (func $~lib/rt/common/OBJECT#get:rtSize (param $this i32) (result i32)
+  (i32.load offset=16
+   (local.get $this)
+  )
+ )
+ (func $~lib/tuple/SmallTuple#__visit (param $this i32) (param $cookie i32)
+  (local $rtSize i32)
+  (local $elemntCount i32)
+  (local $bitmap i64)
+  (local $i i32)
+  (local $elementPtr i32)
+  (local.set $rtSize
+   (call $~lib/rt/common/OBJECT#get:rtSize
+    (i32.sub
+     (local.get $this)
+     (i32.const 20)
+    )
+   )
+  )
+  (local.set $elemntCount
+   (i32.shr_u
+    (i32.sub
+     (local.get $rtSize)
+     (i32.const 8)
+    )
+    (i32.const 2)
+   )
+  )
+  (local.set $bitmap
+   (i64.load
+    (i32.sub
+     (i32.add
+      (local.get $this)
+      (local.get $rtSize)
+     )
+     (i32.const 8)
+    )
+   )
+  )
+  (local.set $i
+   (i32.const 0)
+  )
+  (loop $for-loop|0
+   (if
+    (i32.lt_u
+     (local.get $i)
+     (local.get $elemntCount)
+    )
+    (then
+     (if
+      (i64.ne
+       (i64.and
+        (local.get $bitmap)
+        (i64.shl
+         (i64.const 1)
+         (i64.extend_i32_u
+          (local.get $i)
          )
         )
        )
-       (return)
+       (i64.const 0)
+      )
+      (then
+       (local.set $elementPtr
+        (i32.add
+         (local.get $this)
+         (i32.shl
+          (local.get $i)
+          (i32.const 2)
+         )
+        )
+       )
+       (call $~lib/rt/itcms/__visit
+        (i32.load
+         (local.get $elementPtr)
+        )
+        (local.get $cookie)
+       )
+      )
+     )
+     (local.set $i
+      (i32.add
+       (local.get $i)
+       (i32.const 1)
+      )
+     )
+     (br $for-loop|0)
+    )
+   )
+  )
+ )
+ (func $~lib/tuple/SmallTuple~visit (param $0 i32) (param $1 i32)
+  (call $~lib/object/Object~visit
+   (local.get $0)
+   (local.get $1)
+  )
+  (call $~lib/tuple/SmallTuple#__visit
+   (local.get $0)
+   (local.get $1)
+  )
+ )
+ (func $"~lib/map/MapIterator<i32,i32>~visit" (param $0 i32) (param $1 i32)
+  (local $2 i32)
+  (call $~lib/object/Object~visit
+   (local.get $0)
+   (local.get $1)
+  )
+  (call $~lib/rt/itcms/__visit
+   (i32.load offset=4
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+ )
+ (func $"~lib/iterator/IteratorResult<[i32, i32]>~visit" (param $0 i32) (param $1 i32)
+  (local $2 i32)
+  (call $~lib/object/Object~visit
+   (local.get $0)
+   (local.get $1)
+  )
+  (call $~lib/rt/itcms/__visit
+   (i32.load
+    (local.get $0)
+   )
+   (local.get $1)
+  )
+ )
+ (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
+  (block $invalid
+   (block $"~lib/iterator/IteratorResult<[i32, i32]>"
+    (block $"~lib/iterator/Iterator<[i32, i32]>"
+     (block $"~lib/map/MapIterator<i32,i32>"
+      (block $"~lib/iterator/Iterable<[i32, i32]>"
+       (block $~lib/tuple/SmallTuple
+        (block $"~lib/map/Map<i32,i32>"
+         (block $~lib/arraybuffer/ArrayBufferView
+          (block $~lib/string/String
+           (block $~lib/arraybuffer/ArrayBuffer
+            (block $~lib/object/Object
+             (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $"~lib/map/Map<i32,i32>" $~lib/tuple/SmallTuple $"~lib/iterator/Iterable<[i32, i32]>" $"~lib/map/MapIterator<i32,i32>" $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/iterator/IteratorResult<[i32, i32]>" $invalid
+              (i32.load
+               (i32.sub
+                (local.get $0)
+                (i32.const 8)
+               )
+              )
+             )
+            )
+            (return)
+           )
+           (return)
+          )
+          (return)
+         )
+         (block
+          (call $~lib/arraybuffer/ArrayBufferView~visit
+           (local.get $0)
+           (local.get $1)
+          )
+          (return)
+         )
+        )
+        (block
+         (call $"~lib/map/Map<i32,i32>~visit"
+          (local.get $0)
+          (local.get $1)
+         )
+         (return)
+        )
+       )
+       (block
+        (call $~lib/tuple/SmallTuple~visit
+         (local.get $0)
+         (local.get $1)
+        )
+        (return)
+       )
       )
       (return)
      )
-     (return)
-    )
-    (block
-     (call $~lib/arraybuffer/ArrayBufferView~visit
-      (local.get $0)
-      (local.get $1)
+     (block
+      (call $"~lib/map/MapIterator<i32,i32>~visit"
+       (local.get $0)
+       (local.get $1)
+      )
+      (return)
      )
-     (return)
     )
+    (return)
    )
-   (return)
+   (block
+    (call $"~lib/iterator/IteratorResult<[i32, i32]>~visit"
+     (local.get $0)
+     (local.get $1)
+    )
+    (return)
+   )
   )
   (unreachable)
  )
  (func $~start
-  (call $start:rt/issue-2719)
+  (call $start:std/map-iterator)
  )
 )
