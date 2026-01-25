@@ -2508,6 +2508,7 @@ declare class Map<K, V> {
   keys(): K[]; // preliminary
   values(): V[]; // preliminary
   toString(): string;
+  [Symbol.iterator](): Iterator<[K, V]>;
 }
 
 declare class Set<K> {

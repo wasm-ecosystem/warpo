@@ -54,7 +54,33 @@ function ENTRY_SIZE<K, V>(): usize {
   return size;
 }
 
-export class Map<K, V> {
+// @ts-ignore: decorator
+@lazy
+const GET_START = Symbol();
+
+// @ts-ignore: decorator
+@lazy
+const GET_ENTRIES_OFFSET = Symbol();
+
+class MapIterator<K, V> implements Iterator<[K, V]> {
+  private i: i32 = 0;
+  constructor(private map: Map<K, V>) {}
+  next(): IteratorResult<[K, V]> {
+    const map = this.map;
+    const start = map[GET_START]();
+    const size = map[GET_ENTRIES_OFFSET]();
+    for (let i = this.i; i < size; ++i) {
+      let entry = changetype<MapEntry<K, V>>(start + <usize>i * ENTRY_SIZE<K, V>());
+      if (!(entry.taggedNext & EMPTY)) {
+        this.i = i + 1;
+        return IteratorResult.fromValue<[K, V]>([entry.key, entry.value]);
+      }
+    }
+    return IteratorResult.done<[K, V]>();
+  }
+}
+
+export class Map<K, V> implements Iterable<[K, V]> {
   // buckets referencing their respective first entry, usize[bucketsMask + 1]
   private buckets: ArrayBuffer = new ArrayBuffer(INITIAL_CAPACITY * <i32>BUCKET_SIZE);
   private bucketsMask: u32 = INITIAL_CAPACITY - 1;
@@ -67,6 +93,16 @@ export class Map<K, V> {
 
   constructor() {
     /* nop */
+  }
+
+  // we don't want to explore these fields but they are needed by iterator.
+  @inline
+  [GET_START](): usize {
+    return changetype<usize>(this.entries);
+  }
+  @inline
+  [GET_ENTRIES_OFFSET](): i32 {
+    return this.entriesOffset;
   }
 
   get size(): i32 {
@@ -98,14 +134,12 @@ export class Map<K, V> {
     return this.find(key, HASH<K>(key)) != null;
   }
 
-
   @operator("[]")
   get(key: K): V {
     let entry = this.find(key, HASH<K>(key));
     if (!entry) throw new Error(E_KEYNOTFOUND); // cannot represent `undefined`
     return entry.value;
   }
-
 
   @operator("[]=")
   set(key: K, value: V): this {
@@ -225,6 +259,10 @@ export class Map<K, V> {
     }
     values.length = length;
     return values;
+  }
+
+  [Symbol.iterator](): MapIterator<K, V> {
+    return new MapIterator<K, V>(this);
   }
 
   toString(): string {
