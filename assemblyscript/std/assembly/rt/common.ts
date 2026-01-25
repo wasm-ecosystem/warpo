@@ -26,7 +26,7 @@
 // ╞>ptr═══════════════════════════════════════════════════════════╡
 // │                              ...                              │
 @unmanaged export class BLOCK {
-  /** Memory manager info. */
+  /** @ts-ignore:no initializer. Memory manager info. */
   mmInfo: usize;
 }
 
@@ -56,13 +56,13 @@
 // ╞>ptr═══════════════════════════════════════════════════════════╡
 // │                              ...                              │
 @unmanaged export class OBJECT extends BLOCK {
-  /** Garbage collector info. */
+  /** @ts-ignore:no initializer. Garbage collector info. */
   gcInfo: u32;
-  /** Garbage collector info. */
+  /** @ts-ignore:no initializer. Garbage collector info. */
   gcInfo2: u32;
-  /** Runtime class id. */
+  /** @ts-ignore:no initializer. Runtime class id. */
   rtId: u32;
-  /** Runtime object size. */
+  /** @ts-ignore:no initializer. Runtime object size. */
   rtSize: u32;
 }
 

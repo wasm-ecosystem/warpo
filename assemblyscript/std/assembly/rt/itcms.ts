@@ -77,15 +77,15 @@ function initLazy(space: Object): Object {
 // │                               ...                             │
 // C: color
 
-/** Represents a managed object in memory, consisting of a header followed by the object's data. */
+/** @ts-ignore: object. Represents a managed object in memory, consisting of a header followed by the object's data. */
 @unmanaged class Object extends BLOCK {
-  /** Pointer to the next object with color flags stored in the alignment bits. */
+  /** @ts-ignore:no initializer. Pointer to the next object with color flags stored in the alignment bits. */
   nextWithColor: usize; // *u32
-  /** Pointer to the previous object. */
+  /** @ts-ignore:no initializer. Pointer to the previous object. */
   prev: Object; // *u32
-  /** Runtime id. */
+  /** @ts-ignore:no initializer. Runtime id. */
   rtId: u32;
-  /** Runtime size. */
+  /** @ts-ignore:no initializer. Runtime size. */
   rtSize: u32;
 
   /** Gets the pointer to the next object. */

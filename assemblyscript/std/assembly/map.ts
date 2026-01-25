@@ -22,8 +22,11 @@ import { E_KEYNOTFOUND } from "./util/error";
 
 /** Structure of a map entry. */
 @unmanaged class MapEntry<K, V> {
+  // @ts-ignore:no initializer.
   key: K;
+  // @ts-ignore:no initializer.
   value: V;
+  // @ts-ignore:no initializer.
   taggedNext: usize; // LSB=1 indicates EMPTY
 }
 

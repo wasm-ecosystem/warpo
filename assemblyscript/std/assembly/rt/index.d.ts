@@ -21,6 +21,7 @@ declare function __visit_members(ptr: usize, cookie: u32): void;
 // Allocation helpers
 declare function __newBuffer(size: usize, id: u32, data?: usize): usize;
 declare function __newArray(length: i32, alignLog2: usize, id: u32, data?: usize): usize;
+declare function __newTuple(elementSize: usize, bitmap: u64): usize;
 
 // Finalization
 declare function __finalize(ptr: usize): void;

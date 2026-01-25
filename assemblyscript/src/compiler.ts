@@ -6091,7 +6091,7 @@ export class Compiler extends DiagnosticEmitter {
         }
       }
       case ElementKind.TupleIndexSignature: {
-        throw Error("NYI");
+        throw new Error("NYI");
       }
       default: {
         this.error(
