@@ -1,0 +1,3 @@
+{
+  "asc_flags": ["--host wasi_snapshot_preview1"]
+}

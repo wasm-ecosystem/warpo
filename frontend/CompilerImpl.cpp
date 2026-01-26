@@ -2,6 +2,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <array>
 #include <cassert>
 #include <cstdint>
 #include <cstdlib>
@@ -180,6 +181,36 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     for (auto const &[useName, useValue] : config.uses) {
       r.callExportedFunctionWithName<0>("addGlobalAlias", option, r.allocString(useName), r.allocString(useValue));
     }
+    if (config.host == HostKind::WasiSnapshotPreview1) {
+      struct WasiAlias final {
+        std::string_view alias;
+        std::string_view libName;
+        std::string_view elementName;
+      };
+      static constexpr std::array<WasiAlias, 7> wasiAliases{
+          WasiAlias{"console", "wasi_snapshot_preview1/wasi_console", "wasi_console"},
+          WasiAlias{"process", "wasi_snapshot_preview1/wasi_process", "wasi_process"},
+          WasiAlias{"Date", "wasi_snapshot_preview1/wasi_date", "wasi_Date"},
+          WasiAlias{"performance", "wasi_snapshot_preview1/wasi_performance", "wasi_performance"},
+          WasiAlias{"crypto", "wasi_snapshot_preview1/wasi_crypto", "wasi_crypto"},
+          WasiAlias{"abort", "wasi_snapshot_preview1/wasi_internal", "wasi_abort"},
+          WasiAlias{"seed", "wasi_snapshot_preview1/wasi_internal", "wasi_seed"},
+      };
+      auto const makeInternalName = [](std::string_view libName, std::string_view elementName) {
+        std::string internalName{libraryPrefix};
+        internalName.append(libName);
+        internalName.push_back('/');
+        internalName.append(elementName);
+        return internalName;
+      };
+      for (auto const &alias : wasiAliases) {
+        if (config.uses.contains(std::string{alias.alias}))
+          continue;
+        std::string const targetName = makeInternalName(alias.libName, alias.elementName);
+        r.callExportedFunctionWithName<0>("addGlobalAlias", option, r.allocString(std::string{alias.alias}),
+                                          r.allocString(targetName));
+      }
+    }
     r.callExportedFunctionWithName<0>("setOptimizeLevelHints", option, config.optimizationLevel, config.shrinkLevel);
 
     int32_t const program = r.callExportedFunctionWithName<1>("newProgram", option)[0].i32;
@@ -194,8 +225,19 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
         continue;
       parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
     }
-    if (config.host == HostKind::WasiSnapshotPreview1)
-      return {.m = {}, .errorMessage = "not implemented: wasi_snapshot_preview1 host"};
+    if (config.host == HostKind::WasiSnapshotPreview1) {
+      static constexpr std::array<std::string_view, 5> wasiStdLibs{
+          "wasi_snapshot_preview1/wasi_console", "wasi_snapshot_preview1/wasi_crypto",
+          "wasi_snapshot_preview1/wasi_date",    "wasi_snapshot_preview1/wasi_performance",
+          "wasi_snapshot_preview1/wasi_process",
+      };
+      for (auto const &libName : wasiStdLibs) {
+        auto const it = embed_extension_library_sources.find(std::string{libName});
+        if (it == embed_extension_library_sources.end())
+          continue;
+        parseFile(program, it->second, libraryPrefix + std::string{libName} + extension, IsEntry::NO);
+      }
+    }
 
     std::string_view const rtIndexSource = warpo::frontend::embed_library_sources.at(
         config.runtime == RuntimeKind::Incremental ? "rt/index-incremental" : "rt/index-radical");

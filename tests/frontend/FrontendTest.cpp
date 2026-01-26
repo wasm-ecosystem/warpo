@@ -90,6 +90,10 @@ public:
           config.runtime = frontend::RuntimeKind::Incremental;
         else if (flag == "--runtime radical")
           config.runtime = frontend::RuntimeKind::Radical;
+        else if (flag == "--host none")
+          config.host = frontend::HostKind::None;
+        else if (flag == "--host wasi_snapshot_preview1")
+          config.host = frontend::HostKind::WasiSnapshotPreview1;
         else if (flag == "--bindings raw")
           static_cast<void>(0); // do nothing, raw binding is default
         else if (flag == "--shrinkLevel 3")
