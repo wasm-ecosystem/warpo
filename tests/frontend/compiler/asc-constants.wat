@@ -5,6 +5,7 @@
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $~lib/native/ASC_TARGET i32 (i32.const 1))
  (global $~lib/native/ASC_RUNTIME i32 (i32.const 2))
+ (global $~lib/native/ASC_HOST i32 (i32.const 0))
  (global $~lib/native/ASC_NO_ASSERT i32 (i32.const 0))
  (global $~lib/native/ASC_MEMORY_BASE i32 (i32.const 0))
  (global $~lib/native/ASC_OPTIMIZE_LEVEL i32 (i32.const 0))
@@ -37,6 +38,9 @@
   )
   (drop
    (i32.const 2)
+  )
+  (drop
+   (i32.const 0)
   )
   (drop
    (i32.const 0)

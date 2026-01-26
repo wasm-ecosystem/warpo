@@ -1118,6 +1118,7 @@ export class Program extends DiagnosticEmitter {
     // register compiler hints
     this.registerConstantInteger(CommonNames.ASC_TARGET, Type.i32, i64_new(Target.Wasm32));
     this.registerConstantInteger(CommonNames.ASC_RUNTIME, Type.i32, i64_new(options.runtime));
+    this.registerConstantInteger(CommonNames.ASC_HOST, Type.i32, i64_new(options.host));
     this.registerConstantInteger(CommonNames.ASC_NO_ASSERT, Type.bool, i64_new(options.noAssert ? 1 : 0, 0));
     this.registerConstantInteger(CommonNames.ASC_MEMORY_BASE, Type.i32, i64_new(options.memoryBase, 0));
     this.registerConstantInteger(CommonNames.ASC_TABLE_BASE, Type.i32, i64_new(options.tableBase, 0));

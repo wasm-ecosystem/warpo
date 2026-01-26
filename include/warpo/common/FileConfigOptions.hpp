@@ -88,5 +88,10 @@ struct FileConfigOptions {
   /// - config: derived from `disable` (list of features to disable)
   /// - cli: derived from `--disable-feature <feature...>`
   std::optional<Features> features = std::nullopt;
+
+  /// Host API selection.
+  /// - config: `options.host` / `targets.<name>.host`
+  /// - cli: `--host none|wasi_snapshot_preview1`
+  std::optional<std::string> host = std::nullopt;
 };
 } // namespace warpo::common

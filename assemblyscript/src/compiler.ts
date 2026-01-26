@@ -53,7 +53,7 @@ import {
   isConstZero,
 } from "./module";
 
-import { CommonFlags, CommonNames, Feature, Target, Runtime } from "./common";
+import { CommonFlags, CommonNames, Feature, Host, Target, Runtime } from "./common";
 
 import {
   Program,
@@ -189,6 +189,8 @@ export class Options {
   target: Target = Target.Wasm32;
   /** Runtime type. Defaults to Incremental GC. */
   runtime: Runtime = Runtime.Incremental;
+  /** Host API selection. Defaults to {@link Host.None}. */
+  host: Host = Host.None;
   /** If true, indicates that debug information will be emitted by Binaryen. */
   debugInfo: bool = false;
   /** If true, replaces assertions with nop. */

@@ -85,6 +85,16 @@ cli::Opt<std::string> runtimeOption{
     },
 };
 
+cli::Opt<std::string> hostOption{
+    cli::Category::Frontend,
+    "--host",
+    [](argparse::Argument &arg) -> void {
+      arg.help("Specifies the host API to use. Options are 'none' and 'wasi_snapshot_preview1'.")
+          .nargs(1)
+          .choices("none", "wasi_snapshot_preview1");
+    },
+};
+
 cli::Opt<uint32_t> optimizeLevelOption{
     cli::Category::Frontend | cli::Category::Optimization,
     "--optimizeLevel",
@@ -168,6 +178,8 @@ FileConfigOptions ConfigProvider::mergedFrontendOptions() {
     merged.stackSize = stackSizeOption.get();
   if (runtimeOption.isSet())
     merged.runtime = convertEmptyStringToNullOpt(runtimeOption.get());
+  if (hostOption.isSet())
+    merged.host = hostOption.get();
 
   if (optimizeLevelOption.isSet())
     merged.optimizeLevel = std::min(3U, optimizeLevelOption.get());
