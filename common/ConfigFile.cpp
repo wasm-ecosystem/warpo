@@ -69,8 +69,13 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
       config.stackSize = jsonOptions["stackSize"].get<uint32_t>();
     if (jsonOptions.contains("runtime"))
       config.runtime = jsonOptions["runtime"].get<std::string>();
-    if (jsonOptions.contains("host"))
-      config.host = jsonOptions["host"].get<std::string>();
+    if (jsonOptions.contains("host")) {
+      std::string const hostStr = jsonOptions["host"].get<std::string>();
+      if (hostStr != "none" && hostStr != "wasi_snapshot_preview1") {
+        throw std::runtime_error{fmt::format("Invalid host value: '{}'. Valid values are: 'none', 'wasi_snapshot_preview1'", hostStr)};
+      }
+      config.host = hostStr;
+    }
     if (jsonOptions.contains("optimizeLevel"))
       config.optimizeLevel = jsonOptions["optimizeLevel"].get<uint32_t>();
     if (jsonOptions.contains("shrinkLevel"))
@@ -262,6 +267,28 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   })";
   nlohmann::json const invalidUseArrayJson = nlohmann::json::parse(invalidUseArrayJsonStr);
   EXPECT_THROW((void)parseFileConfigOptions(invalidUseArrayJson), std::runtime_error);
+
+  // Invalid `host` value should throw
+  std::string const invalidHostJsonStr = R"({
+    "host": "invalid_host"
+  })";
+  nlohmann::json const invalidHostJson = nlohmann::json::parse(invalidHostJsonStr);
+  EXPECT_THROW((void)parseFileConfigOptions(invalidHostJson), std::runtime_error);
+
+  // Valid `host` values should not throw
+  std::string const validHostNoneJsonStr = R"({
+    "host": "none"
+  })";
+  nlohmann::json const validHostNoneJson = nlohmann::json::parse(validHostNoneJsonStr);
+  FileConfigOptions const validHostNoneConfig = parseFileConfigOptions(validHostNoneJson);
+  EXPECT_EQ(validHostNoneConfig.host, "none");
+
+  std::string const validHostWasiJsonStr = R"({
+    "host": "wasi_snapshot_preview1"
+  })";
+  nlohmann::json const validHostWasiJson = nlohmann::json::parse(validHostWasiJsonStr);
+  FileConfigOptions const validHostWasiConfig = parseFileConfigOptions(validHostWasiJson);
+  EXPECT_EQ(validHostWasiConfig.host, "wasi_snapshot_preview1");
 
   // Test parsing partial JSON options
   std::string const partialJsonStr = R"({
