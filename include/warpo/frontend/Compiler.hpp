@@ -6,6 +6,7 @@
 
 #include <binaryen/src/binaryen-c.h>
 #include <filesystem>
+#include <fmt/format.h>
 #include <optional>
 #include <string>
 #include <vector>
@@ -46,7 +47,7 @@ inline RuntimeKind fromString(std::string const &str) {
     return RuntimeKind::Radical;
   if (str == "incremental")
     return RuntimeKind::Incremental;
-  WARPO_UNREACHABLE;
+  throw std::runtime_error{fmt::format("Invalid runtime kind: {}", str)};
 }
 } // namespace RuntimeUtils
 

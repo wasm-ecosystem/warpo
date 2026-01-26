@@ -41,7 +41,7 @@ static void applyJsonConfig(Config &config, const common::FileConfigOptions &jso
   if (jsonConfig.initialMemory)
     config.initialMemory = *jsonConfig.initialMemory;
   if (jsonConfig.runtime)
-    config.runtime = frontend::RuntimeUtils::fromString(*jsonConfig.runtime);
+    config.runtime = RuntimeUtils::fromString(*jsonConfig.runtime);
   if (jsonConfig.use)
     config.uses = *jsonConfig.use;
   if (jsonConfig.stackSize)
