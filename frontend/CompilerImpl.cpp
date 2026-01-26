@@ -193,6 +193,8 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
         continue;
       parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
     }
+    if (config.host == HostKind::WasiSnapshotPreview1)
+      return {.m = {}, .errorMessage = "not implemented: wasi_snapshot_preview1 host"};
 
     std::string_view const rtIndexSource = warpo::frontend::embed_library_sources.at(
         config.runtime == RuntimeKind::Incremental ? "rt/index-incremental" : "rt/index-radical");

@@ -42,6 +42,8 @@ static void applyJsonConfig(Config &config, const common::FileConfigOptions &jso
     config.initialMemory = *jsonConfig.initialMemory;
   if (jsonConfig.runtime)
     config.runtime = frontend::RuntimeUtils::fromString(*jsonConfig.runtime);
+  if (jsonConfig.host)
+    config.host = frontend::HostUtils::fromString(*jsonConfig.host);
   if (jsonConfig.use)
     config.uses = *jsonConfig.use;
   if (jsonConfig.stackSize)
@@ -64,6 +66,7 @@ Config Config::getDefault() {
       .exportTable = false,
       .initialMemory = std::nullopt,
       .stackSize = 32768U,
+      .host = HostKind::None,
 
       .useColorfulDiagMessage = support::isTTY(),
 

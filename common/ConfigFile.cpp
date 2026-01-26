@@ -69,6 +69,8 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
       config.stackSize = jsonOptions["stackSize"].get<uint32_t>();
     if (jsonOptions.contains("runtime"))
       config.runtime = jsonOptions["runtime"].get<std::string>();
+    if (jsonOptions.contains("host"))
+      config.host = jsonOptions["host"].get<std::string>();
     if (jsonOptions.contains("optimizeLevel"))
       config.optimizeLevel = jsonOptions["optimizeLevel"].get<uint32_t>();
     if (jsonOptions.contains("shrinkLevel"))
@@ -134,6 +136,8 @@ static FileConfigOptions mergeFileConfigOptions(FileConfigOptions const &baseCon
     result.stackSize = overrideConfig.stackSize;
   if (overrideConfig.runtime.has_value())
     result.runtime = overrideConfig.runtime;
+  if (overrideConfig.host.has_value())
+    result.host = overrideConfig.host;
   if (overrideConfig.optimizeLevel.has_value())
     result.optimizeLevel = overrideConfig.optimizeLevel;
   if (overrideConfig.shrinkLevel.has_value())
@@ -217,6 +221,7 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
     "exportTable": false,
     "initialMemory": 65536,
     "runtime": "instantiate",
+    "host": "none",
     "optimizeLevel": 3,
     "shrinkLevel": 2,
     "debug": true,
@@ -234,6 +239,7 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   EXPECT_EQ(config.exportTable, false);
   EXPECT_EQ(config.initialMemory, 65536);
   EXPECT_EQ(config.runtime, "instantiate");
+  EXPECT_EQ(config.host, "none");
   EXPECT_EQ(config.optimizeLevel, 3);
   EXPECT_EQ(config.shrinkLevel, 2);
   EXPECT_EQ(config.debug, true);
@@ -271,6 +277,7 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   EXPECT_FALSE(partialConfig.project.has_value());
   EXPECT_FALSE(partialConfig.exportRuntime.has_value());
   EXPECT_FALSE(partialConfig.initialMemory.has_value());
+  EXPECT_FALSE(partialConfig.host.has_value());
 
   // Test empty JSON options
   nlohmann::json const emptyJson = {};
@@ -281,6 +288,7 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   EXPECT_FALSE(emptyConfig.exportTable.has_value());
   EXPECT_FALSE(emptyConfig.initialMemory.has_value());
   EXPECT_FALSE(emptyConfig.runtime.has_value());
+  EXPECT_FALSE(emptyConfig.host.has_value());
   EXPECT_FALSE(emptyConfig.optimizeLevel.has_value());
   EXPECT_FALSE(emptyConfig.shrinkLevel.has_value());
   EXPECT_FALSE(emptyConfig.debug.has_value());

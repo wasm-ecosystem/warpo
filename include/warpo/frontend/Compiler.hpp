@@ -29,6 +29,11 @@ enum class RuntimeKind : uint32_t {
   Incremental = 2U,
 };
 
+enum class HostKind : uint32_t {
+  None = 0U,
+  WasiSnapshotPreview1 = 1U,
+};
+
 namespace RuntimeUtils {
 inline std::string toString(RuntimeKind runtime) {
   switch (runtime) {
@@ -50,6 +55,27 @@ inline RuntimeKind fromString(std::string const &str) {
 }
 } // namespace RuntimeUtils
 
+namespace HostUtils {
+inline std::string toString(HostKind host) {
+  switch (host) {
+  case HostKind::None:
+    return "none";
+  case HostKind::WasiSnapshotPreview1:
+    return "wasi_snapshot_preview1";
+  default:
+    WARPO_UNREACHABLE;
+  }
+}
+
+inline HostKind fromString(std::string const &str) {
+  if (str == "none")
+    return HostKind::None;
+  if (str == "wasi_snapshot_preview1")
+    return HostKind::WasiSnapshotPreview1;
+  WARPO_UNREACHABLE;
+}
+} // namespace HostUtils
+
 struct Config {
   common::UsesOption uses;
   std::optional<std::string> ascWasmPath;
@@ -59,6 +85,7 @@ struct Config {
   bool exportTable = false;
   std::optional<uint32_t> initialMemory;
   uint32_t stackSize = 32768U;
+  HostKind host = HostKind::None;
 
   bool useColorfulDiagMessage = false;
 

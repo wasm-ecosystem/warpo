@@ -58,6 +58,11 @@
           "description": "Type of runtime to use, either 'incremental' or 'radical'.",
           "enum": ["incremental", "radical"]
         },
+        "host": {
+          "type": "string",
+          "description": "Host API selection for imports.",
+          "enum": ["none", "wasi_snapshot_preview1"]
+        },
         "stats": {
           "type": "boolean",
           "description": "Whether to output compilation statistics."
