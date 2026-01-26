@@ -21,6 +21,8 @@
 #include <string>
 #include <support/colors.h>
 #include <thread>
+#include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 #include <wasm-binary.h>
@@ -344,18 +346,24 @@ void frontendTestMain(int argc, const char *argv[]) {
   std::vector<std::filesystem::path> testFiles;
   auto const testFileNames = program.present<std::vector<std::string>>("test_files");
   if (testFileNames.has_value() && !testFileNames.value().empty()) {
-    // User specified specific test files
+    // Build a map from stem to path for efficient lookup
+    std::unordered_map<std::string, std::filesystem::path> stemToPath;
+    for (std::filesystem::path const &testPath : allTestFiles) {
+      stemToPath[testPath.stem().string()] = testPath;
+    }
+    
+    // User specified specific test files - collect unique matches
+    std::unordered_set<std::string> seenTests;
     for (std::string const &testName : testFileNames.value()) {
-      bool found = false;
-      for (std::filesystem::path const &testPath : allTestFiles) {
-        // Match against stem (filename without extension)
-        if (testPath.stem().string() == testName) {
-          testFiles.push_back(testPath);
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
+      // Skip if we've already added this test (avoid duplicates)
+      if (seenTests.contains(testName))
+        continue;
+      seenTests.insert(testName);
+      
+      auto it = stemToPath.find(testName);
+      if (it != stemToPath.end()) {
+        testFiles.push_back(it->second);
+      } else {
         fmt::println("Warning: test file '{}' not found", testName);
       }
     }
