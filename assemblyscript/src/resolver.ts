@@ -439,7 +439,7 @@ export class Resolver extends DiagnosticEmitter {
     }
 
     // small tuple use u64 for memory layout, so that it can hold max 64 * sizeof<usize> bytes
-    const smallTupleThreshold = 64 * this.program.options.usizeType.byteSize;
+    const smallTupleThreshold = 64 * Type.usize32.byteSize;
     if (memoryOffset <= smallTupleThreshold) {
       let smallTupleClass = this.program.smallTupleInstance;
       let baseType = smallTupleClass.type;
@@ -1114,7 +1114,7 @@ export class Resolver extends DiagnosticEmitter {
             return ctxType; // TODO: nullable?
           }
         }
-        return this.program.options.usizeType;
+        return Type.usize32;
       }
     }
     let element = this.lookupIdentifierExpression(node, ctxFlow, ctxElement, reportMode);
@@ -1566,18 +1566,12 @@ export class Resolver extends DiagnosticEmitter {
           break;
         }
         case TypeKind.Isize: {
-          if (!this.program.options.isWasm64) {
-            if (i64_is_i32(intValue)) return Type.isize32;
-            break;
-          }
-          return Type.isize64;
+          if (i64_is_i32(intValue)) return Type.isize32;
+          break;
         }
         case TypeKind.Usize: {
-          if (!this.program.options.isWasm64) {
-            if (i64_is_u32(intValue)) return Type.usize32;
-            break;
-          }
-          return Type.usize64;
+          if (i64_is_u32(intValue)) return Type.usize32;
+          break;
         }
         case TypeKind.I64:
           return Type.i64;
@@ -2306,7 +2300,7 @@ export class Resolver extends DiagnosticEmitter {
         if (elementType /* still */ == Type.auto) {
           if (numNullLiterals == length) {
             // all nulls infers as usize
-            elementType = this.program.options.usizeType;
+            elementType = Type.usize32;
           } else {
             if (reportMode == ReportMode.Report) {
               this.error(

@@ -82,7 +82,7 @@ declare type stringview_iter = ref_stringview_iter | null;
 
 // Compiler hints
 
-/** Compiler target. 0 = JS, 1 = WASM32, 2 = WASM64. */
+/** Compiler target. 0 = JS, 1 = WASM32. */
 declare const ASC_TARGET: i32;
 /** Runtime type. 0 = Stub, 1 = Radical, 2 = Incremental. */
 declare const ASC_RUNTIME: i32;
@@ -612,8 +612,8 @@ declare namespace i64 {
     }
   }
 }
-/** Converts any other numeric value to a 32-bit (in WASM32) respectively 64-bit (in WASM64) signed integer. */
-declare let isize: typeof i32 | typeof i64;
+/** Converts any other numeric value to a 32-bit signed integer. */
+declare let isize: typeof i32;
 /** Converts any other numeric value to an 8-bit unsigned integer. */
 declare function u8(value: any): u8;
 declare namespace u8 {
@@ -654,8 +654,8 @@ declare namespace u64 {
   /** Parses a string as an u64. */
   export function parse(value: string, radix?: i32): u64;
 }
-/** Converts any other numeric value to a 32-bit (in WASM32) respectively 64-bit (in WASM64) unsigned integer. */
-declare let usize: typeof u32 | typeof u64;
+/** Converts any other numeric value to a 32-bit unsigned integer. */
+declare let usize: typeof u32;
 /** Converts any other numeric value to a 1-bit unsigned integer. */
 declare function bool(value: any): bool;
 declare namespace bool {
@@ -2681,7 +2681,7 @@ declare function seed(): f64;
 
 /** Node-like process. */
 declare namespace process {
-  /** String representing the CPU architecture for which the binary was compiled. Either `wasm32` or `wasm64`. */
+  /** String representing the CPU architecture for which the binary was compiled. Always `wasm32`. */
   export const arch: string;
   /** String representing the operating system platform for which the binary was compiled. Always `wasm`. */
   export const platform: string;

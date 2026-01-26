@@ -1426,82 +1426,82 @@ export class Module {
 
   binary(op: BinaryOp, left: ExpressionRef, right: ExpressionRef): ExpressionRef {
     if (op > BinaryOp._last) {
-      let isWasm64 = this.sizeType == TypeRef.I64;
+      let is64BitSizeType = this.sizeType == TypeRef.I64;
       switch (op) {
         case BinaryOp.AddSize:
-          op = isWasm64 ? BinaryOp.AddI64 : BinaryOp.AddI32;
+          op = is64BitSizeType ? BinaryOp.AddI64 : BinaryOp.AddI32;
           break;
         case BinaryOp.SubSize:
-          op = isWasm64 ? BinaryOp.SubI64 : BinaryOp.SubI32;
+          op = is64BitSizeType ? BinaryOp.SubI64 : BinaryOp.SubI32;
           break;
         case BinaryOp.MulSize:
-          op = isWasm64 ? BinaryOp.MulI64 : BinaryOp.MulI32;
+          op = is64BitSizeType ? BinaryOp.MulI64 : BinaryOp.MulI32;
           break;
         case BinaryOp.DivISize:
-          op = isWasm64 ? BinaryOp.DivI64 : BinaryOp.DivI32;
+          op = is64BitSizeType ? BinaryOp.DivI64 : BinaryOp.DivI32;
           break;
         case BinaryOp.DivUSize:
-          op = isWasm64 ? BinaryOp.DivU64 : BinaryOp.DivU32;
+          op = is64BitSizeType ? BinaryOp.DivU64 : BinaryOp.DivU32;
           break;
         case BinaryOp.RemISize:
-          op = isWasm64 ? BinaryOp.RemI64 : BinaryOp.RemI32;
+          op = is64BitSizeType ? BinaryOp.RemI64 : BinaryOp.RemI32;
           break;
         case BinaryOp.RemUSize:
-          op = isWasm64 ? BinaryOp.RemU64 : BinaryOp.RemU32;
+          op = is64BitSizeType ? BinaryOp.RemU64 : BinaryOp.RemU32;
           break;
         case BinaryOp.AndSize:
-          op = isWasm64 ? BinaryOp.AndI64 : BinaryOp.AndI32;
+          op = is64BitSizeType ? BinaryOp.AndI64 : BinaryOp.AndI32;
           break;
         case BinaryOp.OrSize:
-          op = isWasm64 ? BinaryOp.OrI64 : BinaryOp.OrI32;
+          op = is64BitSizeType ? BinaryOp.OrI64 : BinaryOp.OrI32;
           break;
         case BinaryOp.XorSize:
-          op = isWasm64 ? BinaryOp.XorI64 : BinaryOp.XorI32;
+          op = is64BitSizeType ? BinaryOp.XorI64 : BinaryOp.XorI32;
           break;
         case BinaryOp.ShlSize:
-          op = isWasm64 ? BinaryOp.ShlI64 : BinaryOp.ShlI32;
+          op = is64BitSizeType ? BinaryOp.ShlI64 : BinaryOp.ShlI32;
           break;
         case BinaryOp.ShrISize:
-          op = isWasm64 ? BinaryOp.ShrI64 : BinaryOp.ShrI32;
+          op = is64BitSizeType ? BinaryOp.ShrI64 : BinaryOp.ShrI32;
           break;
         case BinaryOp.ShrUSize:
-          op = isWasm64 ? BinaryOp.ShrU64 : BinaryOp.ShrU32;
+          op = is64BitSizeType ? BinaryOp.ShrU64 : BinaryOp.ShrU32;
           break;
         case BinaryOp.RotlSize:
-          op = isWasm64 ? BinaryOp.RotlI64 : BinaryOp.RotlI32;
+          op = is64BitSizeType ? BinaryOp.RotlI64 : BinaryOp.RotlI32;
           break;
         case BinaryOp.RotrSize:
-          op = isWasm64 ? BinaryOp.RotrI64 : BinaryOp.RotrI32;
+          op = is64BitSizeType ? BinaryOp.RotrI64 : BinaryOp.RotrI32;
           break;
         case BinaryOp.EqSize:
-          op = isWasm64 ? BinaryOp.EqI64 : BinaryOp.EqI32;
+          op = is64BitSizeType ? BinaryOp.EqI64 : BinaryOp.EqI32;
           break;
         case BinaryOp.NeSize:
-          op = isWasm64 ? BinaryOp.NeI64 : BinaryOp.NeI32;
+          op = is64BitSizeType ? BinaryOp.NeI64 : BinaryOp.NeI32;
           break;
         case BinaryOp.LtISize:
-          op = isWasm64 ? BinaryOp.LtI64 : BinaryOp.LtI32;
+          op = is64BitSizeType ? BinaryOp.LtI64 : BinaryOp.LtI32;
           break;
         case BinaryOp.LtUSize:
-          op = isWasm64 ? BinaryOp.LtU64 : BinaryOp.LtU32;
+          op = is64BitSizeType ? BinaryOp.LtU64 : BinaryOp.LtU32;
           break;
         case BinaryOp.LeISize:
-          op = isWasm64 ? BinaryOp.LeI64 : BinaryOp.LeI32;
+          op = is64BitSizeType ? BinaryOp.LeI64 : BinaryOp.LeI32;
           break;
         case BinaryOp.LeUSize:
-          op = isWasm64 ? BinaryOp.LeU64 : BinaryOp.LeU32;
+          op = is64BitSizeType ? BinaryOp.LeU64 : BinaryOp.LeU32;
           break;
         case BinaryOp.GtISize:
-          op = isWasm64 ? BinaryOp.GtI64 : BinaryOp.GtI32;
+          op = is64BitSizeType ? BinaryOp.GtI64 : BinaryOp.GtI32;
           break;
         case BinaryOp.GtUSize:
-          op = isWasm64 ? BinaryOp.GtU64 : BinaryOp.GtU32;
+          op = is64BitSizeType ? BinaryOp.GtU64 : BinaryOp.GtU32;
           break;
         case BinaryOp.GeISize:
-          op = isWasm64 ? BinaryOp.GeI64 : BinaryOp.GeI32;
+          op = is64BitSizeType ? BinaryOp.GeI64 : BinaryOp.GeI32;
           break;
         case BinaryOp.GeUSize:
-          op = isWasm64 ? BinaryOp.GeU64 : BinaryOp.GeU32;
+          op = is64BitSizeType ? BinaryOp.GeU64 : BinaryOp.GeU32;
           break;
         default:
           assert(false);
@@ -2228,9 +2228,7 @@ export class Module {
       let offset = segment.offset;
       unchecked((segs[i] = allocU8Array(buffer)));
       unchecked((isPassive[i] = 0)); // no passive segments currently
-      unchecked(
-        (offsets[i] = target == Target.Wasm64 ? this.i64(i64_low(offset), i64_high(offset)) : this.i32(i64_low(offset)))
-      );
+      unchecked((offsets[i] = this.i32(i64_low(offset))));
       unchecked((sizes[i] = buffer.length));
     }
     let cSegs = allocPtrArray(segs);
@@ -2892,16 +2890,8 @@ export function getConstValueI64High(expr: ExpressionRef): i32 {
   return binaryen._BinaryenConstGetValueI64High(expr);
 }
 
-export function getConstValueInteger(expr: ExpressionRef, isWasm64: bool): i64 {
-  let lo: i32 = 0;
-  let hi: i32 = 0;
-  if (isWasm64) {
-    lo = getConstValueI64Low(expr);
-    hi = getConstValueI64High(expr);
-  } else {
-    lo = getConstValueI32(expr);
-  }
-  return i64_new(lo, hi);
+export function getConstValueInteger(expr: ExpressionRef): i64 {
+  return i64_new(getConstValueI32(expr), 0);
 }
 
 export function getConstValueF32(expr: ExpressionRef): f32 {
@@ -3389,8 +3379,6 @@ function allocU32Array(u32s: u32[] | null): binaryen.ArrayRef<u32> {
 
 export function allocPtrArray(ptrs: binaryen.Ref[] | null): binaryen.ArrayRef<binaryen.Ref> {
   if (!ptrs) return 0;
-  // TODO: WASM64
-  assert(ASC_TARGET != Target.Wasm64);
   let len = ptrs.length;
   let ptr = binaryen._malloc(len << 3);
   let idx = ptr;
@@ -3517,8 +3505,6 @@ export class BinaryModule {
 
 // TypeBuilder
 
-const DEBUG_TYPEBUILDER = false;
-
 /** Ensures that the given potentially complex type has a corresponding GC type. */
 export function ensureType(type: Type): TypeRef {
   // Obtain basic type if applicable
@@ -3564,9 +3550,6 @@ export function ensureType(type: Type): TypeRef {
     let fullType = binaryen._BinaryenTypeFromHeapType(heapType, false);
     assert(!seenType.ref);
     seenType.ref = fullType;
-    if (DEBUG_TYPEBUILDER) {
-      console.log(` set ${seenType.toString()}`);
-    }
     let classInstance = seenType.getClass();
     if (classInstance) {
       let module = classInstance.program.module;
@@ -3595,9 +3578,6 @@ export function ensureType(type: Type): TypeRef {
   binaryen._free(out);
 
   // Initial type should now exist in its non-nullable variant
-  if (DEBUG_TYPEBUILDER) {
-    console.log(` finalize ${type.toString()}`);
-  }
   typeRef = assert(type.ref);
   return binaryen._BinaryenTypeFromHeapType(
     binaryen._BinaryenTypeGetHeapType(typeRef),
@@ -3685,14 +3665,7 @@ function prepareType(builder: binaryen.TypeBuilderRef, seen: Map<Type, HeapTypeR
 
   // Reuse seen temporary type if it exists
   if (seen.has(type)) {
-    if (DEBUG_TYPEBUILDER) {
-      console.log(` prepare ${type.toString()} (seen)`);
-    }
     return changetype<HeapTypeRef>(seen.get(type));
-  }
-
-  if (DEBUG_TYPEBUILDER) {
-    console.log(`prepare ${type.toString()}`);
   }
 
   // Otherwise construct a new class type. Note that arrays are not supported, as these would
@@ -3708,9 +3681,6 @@ function prepareType(builder: binaryen.TypeBuilderRef, seen: Map<Type, HeapTypeR
     // Block this index with a temporary type and cache
     let index = binaryen._TypeBuilderGetSize(builder);
     binaryen._TypeBuilderGrow(builder, 1);
-    if (DEBUG_TYPEBUILDER) {
-      console.log(` block [${index}]: ${type.toString()}`);
-    }
     let heapTypeRef = binaryen._TypeBuilderGetTempHeapType(builder, index);
     typeRef = binaryen._TypeBuilderGetTempRefType(builder, heapTypeRef, false);
     seen.set(type, typeRef);
@@ -3728,9 +3698,6 @@ function prepareType(builder: binaryen.TypeBuilderRef, seen: Map<Type, HeapTypeR
         let property = (<PropertyPrototype>member).instance;
         if (!property || !property.isField) continue;
         let fieldType = property.type;
-        if (DEBUG_TYPEBUILDER) {
-          console.log(`  field ${fieldType.toString()}`);
-        }
         if (fieldType.is(TypeFlags.Nullable)) {
           fieldTypes.push(
             binaryen._TypeBuilderGetTempRefType(
@@ -3749,16 +3716,8 @@ function prepareType(builder: binaryen.TypeBuilderRef, seen: Map<Type, HeapTypeR
     let cArrFT = allocPtrArray(fieldTypes);
     let cArrPT = allocU32Array(packedTypes);
     let cArrFM = allocU32Array(fieldMutables);
-    if (DEBUG_TYPEBUILDER) {
-      console.log(` concretize [${index}]: ${type.toString()}`);
-    }
     binaryen._TypeBuilderSetStructType(builder, index, cArrFT, cArrPT, cArrFM, fieldTypes.length);
     if (base) {
-      if (DEBUG_TYPEBUILDER) {
-        console.log(
-          ` set super [${index}]: ${type.toString()} <: ${base.type.toString()} ${baseRef == base.type.ref ? " (known)" : ""}`
-        );
-      }
       binaryen._TypeBuilderSetSubType(builder, index, binaryen._BinaryenTypeGetHeapType(baseRef));
     }
     binaryen._free(cArrFM);
@@ -3824,9 +3783,6 @@ function prepareType(builder: binaryen.TypeBuilderRef, seen: Map<Type, HeapTypeR
       binaryen._free(cArrRT);
     } else {
       tempResultType = resultTypes[0];
-    }
-    if (DEBUG_TYPEBUILDER) {
-      console.log(` concretize [${index}]: ${type.toString()}`);
     }
     binaryen._TypeBuilderSetSignatureType(builder, index, tempParamType, tempResultType);
     return tempTypeRef;

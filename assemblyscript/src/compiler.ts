@@ -155,9 +155,7 @@ import {
   DeclarationBase,
   VariableLikeBase,
 } from "./ast";
-
 import { Type, TypeKind, TypeFlags, Signature, typesToRefs, SmallTupleTypeInfo } from "./types";
-
 import {
   writeI8,
   writeI16,
@@ -174,10 +172,9 @@ import {
   v128_zero,
   v128_ones,
 } from "./util";
-
-import { liftRequiresExportRuntime, lowerRequiresExportRuntime } from "./bindings/js";
 import { markDataElementImmutable, addGlobal, addSubProgram, markCallInlined } from "./warpo";
 import { mangleImportName, STATIC_DELIMITER, INDEX_SUFFIX } from "./mangle";
+import { liftRequiresExportRuntime, lowerRequiresExportRuntime } from "./bindings/js";
 
 /** Features enabled by default. */
 export const defaultFeatures =
@@ -252,26 +249,6 @@ export class Options {
   basenameHint: string = "output";
   /** Hinted bindings generation. */
   bindingsHint: bool = false;
-
-  /** Tests if the target is WASM64 or, otherwise, WASM32. */
-  get isWasm64(): bool {
-    return this.target == Target.Wasm64;
-  }
-
-  /** Gets the unsigned size type matching the target. */
-  get usizeType(): Type {
-    return this.target == Target.Wasm64 ? Type.usize64 : Type.usize32;
-  }
-
-  /** Gets the signed size type matching the target. */
-  get isizeType(): Type {
-    return this.target == Target.Wasm64 ? Type.isize64 : Type.isize32;
-  }
-
-  /** Gets the size type reference matching the target. */
-  get sizeTypeRef(): TypeRef {
-    return this.target == Target.Wasm64 ? TypeRef.I64 : TypeRef.I32;
-  }
 
   /** Gets if any optimizations will be performed. */
   get willOptimize(): bool {
@@ -613,52 +590,25 @@ export class Compiler extends DiagnosticEmitter {
     if (this.runtimeFeatures & RuntimeFeatures.visitGlobals) compileVisitGlobals(this);
     if (this.runtimeFeatures & RuntimeFeatures.visitMembers) compileVisitMembers(this);
 
-    let memoryOffset = i64_align(this.memoryOffset, options.usizeType.byteSize);
+    let memoryOffset = i64_align(this.memoryOffset, Type.usize32.byteSize);
 
     // finalize data
     module.removeGlobal(BuiltinNames.data_end);
     if ((this.runtimeFeatures & RuntimeFeatures.Data) != 0 || hasShadowStack) {
-      if (options.isWasm64) {
-        module.addGlobal(
-          BuiltinNames.data_end,
-          TypeRef.I64,
-          false,
-          module.i64(i64_low(memoryOffset), i64_high(memoryOffset))
-        );
-      } else {
-        module.addGlobal(BuiltinNames.data_end, TypeRef.I32, false, module.i32(i64_low(memoryOffset)));
-      }
+      module.addGlobal(BuiltinNames.data_end, TypeRef.I32, false, module.i32(i64_low(memoryOffset)));
     }
 
     // finalize stack (grows down from __heap_base to __data_end)
     module.removeGlobal(BuiltinNames.stack_pointer);
     if ((this.runtimeFeatures & RuntimeFeatures.Stack) != 0 || hasShadowStack) {
-      memoryOffset = i64_align(i64_add(memoryOffset, i64_new(options.stackSize)), options.usizeType.byteSize);
-      if (options.isWasm64) {
-        module.addGlobal(
-          BuiltinNames.stack_pointer,
-          TypeRef.I64,
-          true,
-          module.i64(i64_low(memoryOffset), i64_high(memoryOffset))
-        );
-      } else {
-        module.addGlobal(BuiltinNames.stack_pointer, TypeRef.I32, true, module.i32(i64_low(memoryOffset)));
-      }
+      memoryOffset = i64_align(i64_add(memoryOffset, i64_new(options.stackSize)), Type.usize32.byteSize);
+      module.addGlobal(BuiltinNames.stack_pointer, TypeRef.I32, true, module.i32(i64_low(memoryOffset)));
     }
 
     // finalize heap
     module.removeGlobal(BuiltinNames.heap_base);
     if ((this.runtimeFeatures & RuntimeFeatures.Heap) != 0 || hasShadowStack) {
-      if (options.isWasm64) {
-        module.addGlobal(
-          BuiltinNames.heap_base,
-          TypeRef.I64,
-          false,
-          module.i64(i64_low(memoryOffset), i64_high(memoryOffset))
-        );
-      } else {
-        module.addGlobal(BuiltinNames.heap_base, TypeRef.I32, false, module.i32(i64_low(memoryOffset)));
-      }
+      module.addGlobal(BuiltinNames.heap_base, TypeRef.I32, false, module.i32(i64_low(memoryOffset)));
     }
 
     // setup default memory & table
@@ -1774,7 +1724,7 @@ export class Compiler extends DiagnosticEmitter {
     let module = this.module;
     let valueType = property.type;
     let valueTypeRef = valueType.toRef();
-    let thisTypeRef = this.options.sizeTypeRef;
+    let thisTypeRef = TypeRef.I32;
     getterInstance.set(CommonFlags.Compiled);
     let body = module.load(
       valueType.byteSize,
@@ -1804,7 +1754,7 @@ export class Compiler extends DiagnosticEmitter {
     let setterInstance = assert(property.setterInstance);
     let module = this.module;
     let valueType = property.type;
-    let thisTypeRef = this.options.sizeTypeRef;
+    let thisTypeRef = TypeRef.I32;
     let valueTypeRef = valueType.toRef();
     // void(this.field = value)
     let bodyExpr = module.store(
@@ -3372,12 +3322,9 @@ export class Compiler extends DiagnosticEmitter {
       }
       case TypeKind.Isize:
       case TypeKind.Usize: {
-        if (!element.program.options.isWasm64) {
-          return this.module.i32(
-            element.constantValueKind == ConstantValueKind.Integer ? i64_low(element.constantIntegerValue) : 0
-          );
-        }
-        // fall-through
+        return this.module.i32(
+          element.constantValueKind == ConstantValueKind.Integer ? i64_low(element.constantIntegerValue) : 0
+        );
       }
       case TypeKind.I64:
       case TypeKind.U64: {
@@ -3754,14 +3701,6 @@ export class Compiler extends DiagnosticEmitter {
           }
           // same size
         } else {
-          if (!explicit && !this.options.isWasm64 && fromType.isVaryingIntegerValue && !toType.isVaryingIntegerValue) {
-            this.warning(
-              DiagnosticCode.Conversion_from_type_0_to_1_will_require_an_explicit_cast_when_switching_between_32_64_bit,
-              reportNode.range,
-              fromType.toString(),
-              toType.toString()
-            );
-          }
         }
       }
     }
@@ -5227,39 +5166,25 @@ export class Compiler extends DiagnosticEmitter {
       }
       case TypeKind.Isize:
       case TypeKind.Usize: {
-        let isWasm64 = this.options.isWasm64;
         if (this.options.willOptimize) {
           // Precompute power if LHS and RHS constants
           // TODO: move this optimization to AIR
           if (getExpressionId(leftExpr) == ExpressionId.Const && getExpressionId(rightExpr) == ExpressionId.Const) {
-            if (isWasm64) {
-              let leftValue = i64_new(getConstValueI64Low(leftExpr), getConstValueI64High(leftExpr));
-              let rightValue = i64_new(getConstValueI64Low(rightExpr), getConstValueI64High(rightExpr));
-              let result = i64_pow(leftValue, rightValue);
-              this.currentType = type;
-              return module.i64(i64_low(result), i64_high(result));
-            } else {
-              let leftValue = getConstValueI32(leftExpr);
-              let rightValue = getConstValueI32(rightExpr);
-              this.currentType = type;
-              return module.i32(i64_low(i64_pow(i64_new(leftValue), i64_new(rightValue))));
-            }
+            let leftValue = getConstValueI32(leftExpr);
+            let rightValue = getConstValueI32(rightExpr);
+            this.currentType = type;
+            return module.i32(i64_low(i64_pow(i64_new(leftValue), i64_new(rightValue))));
           }
         }
-        let instance = isWasm64 ? this.i64PowInstance : this.i32PowInstance;
+        let instance = this.i32PowInstance;
         if (!instance) {
-          let prototype = this.program.lookup(isWasm64 ? CommonNames.ipow64 : CommonNames.ipow32);
+          let prototype = this.program.lookup(CommonNames.ipow32);
           if (!prototype) {
-            this.error(DiagnosticCode.Cannot_find_name_0, reportNode.range, isWasm64 ? "ipow64" : "ipow32");
+            this.error(DiagnosticCode.Cannot_find_name_0, reportNode.range, "ipow32");
             return module.unreachable();
           }
           assert(prototype.kind == ElementKind.FunctionPrototype);
-          instance = this.resolver.resolveFunction(<FunctionPrototype>prototype, null);
-          if (isWasm64) {
-            this.i64PowInstance = instance;
-          } else {
-            this.i32PowInstance = instance;
-          }
+          this.i32PowInstance = instance = this.resolver.resolveFunction(<FunctionPrototype>prototype, null);
         }
         if (!instance || !this.compileFunction(instance)) {
           return module.unreachable();
@@ -5829,7 +5754,7 @@ export class Compiler extends DiagnosticEmitter {
       tupleClass.type,
       Constraints.ConvImplicit | Constraints.IsThis
     );
-    const usizeType = this.program.options.usizeType;
+    const usizeType = Type.usize32;
     let indexExpr = this.compileExpression(indexExpression, usizeType, Constraints.ConvImplicit);
     const precomp = module.runExpression(indexExpr, ExpressionRunnerFlags.Default);
     if (precomp == 0) {
@@ -6209,7 +6134,7 @@ export class Compiler extends DiagnosticEmitter {
         return module.unreachable();
       }
       let thisLocal = assert(flow.lookupLocal(CommonNames.this_));
-      let sizeTypeRef = this.options.sizeTypeRef;
+      let sizeTypeRef = TypeRef.I32;
 
       let baseCtorInstance = this.ensureConstructor(baseClassInstance, expression);
       this.checkFieldInitialization(baseClassInstance, expression);
@@ -6671,7 +6596,7 @@ export class Compiler extends DiagnosticEmitter {
 
     assert(instance.parent.kind == ElementKind.Class || instance.parent.kind == ElementKind.Interface);
     let module = this.module;
-    let usizeType = this.options.usizeType;
+    let usizeType = Type.usize32;
     let sizeTypeRef = usizeType.toRef();
     let parameterTypes = instance.signature.parameterTypes;
     let returnType = instance.signature.returnType;
@@ -6801,7 +6726,7 @@ export class Compiler extends DiagnosticEmitter {
     const precomp = this.module.runExpression(expr, ExpressionRunnerFlags.Default);
     // cannot precompute, so must go to stack
     if (precomp == 0) return true;
-    const value = getConstValueInteger(precomp, this.options.isWasm64);
+    const value = getConstValueInteger(precomp);
     // zero constant doesn't need to go to stack
     if (i64_eq(value, i64_zero)) return false;
     // static GC objects doesn't need to go to stack
@@ -7031,10 +6956,10 @@ export class Compiler extends DiagnosticEmitter {
     // provided, so we must set `argumentsLength` in any case. Inject setting it
     // into the index argument, which becomes executed last after any operands.
     let argumentsLength = this.ensureArgumentsLength();
-    let sizeTypeRef = this.options.sizeTypeRef;
+    let sizeTypeRef = TypeRef.I32;
     if (getSideEffects(functionArg, module.ref) & SideEffects.WritesGlobal) {
       let flow = this.currentFlow;
-      let temp = flow.getTempLocal(this.options.usizeType);
+      let temp = flow.getTempLocal(Type.usize32);
       let tempIndex = temp.index;
       functionArg = module.block(
         null,
@@ -7294,7 +7219,7 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     let offset = this.ensureRuntimeFunction(instance); // reports
-    let expr = this.options.isWasm64 ? module.i64(i64_low(offset), i64_high(offset)) : module.i32(i64_low(offset));
+    let expr = module.i32(i64_low(offset));
 
     // add a constant local referring to the function if applicable
     if (!isSemanticallyAnonymous) {
@@ -7351,22 +7276,22 @@ export class Compiler extends DiagnosticEmitter {
           let classReference = contextualType.getClass();
           if (classReference) {
             this.currentType = classReference.type.asNullable();
-            return options.isWasm64 ? module.i64(0) : module.i32(0);
+            return module.i32(0);
           }
           let signatureReference = contextualType.getSignature();
           if (signatureReference) {
             this.currentType = signatureReference.type.asNullable();
-            return options.isWasm64 ? module.i64(0) : module.i32(0);
+            return module.i32(0);
           }
           return this.makeZero(contextualType);
         }
-        this.currentType = options.usizeType;
+        this.currentType = Type.usize32;
         this.warning(
           DiagnosticCode.Expression_resolves_to_unusual_type_0,
           expression.range,
           this.currentType.toString()
         );
-        return options.isWasm64 ? module.i64(0) : module.i32(0);
+        return module.i32(0);
       }
       case NodeKind.True: {
         this.currentType = Type.bool;
@@ -7380,7 +7305,7 @@ export class Compiler extends DiagnosticEmitter {
         let thisType = sourceFunction.signature.thisType;
         if (!thisType) {
           this.error(DiagnosticCode._this_cannot_be_referenced_in_current_location, expression.range);
-          this.currentType = this.options.usizeType;
+          this.currentType = Type.usize32;
           return module.unreachable();
         }
         if (sourceFunction.is(CommonFlags.Constructor)) {
@@ -7422,7 +7347,7 @@ export class Compiler extends DiagnosticEmitter {
           }
         }
         this.error(DiagnosticCode._super_can_only_be_referenced_in_a_derived_class, expression.range);
-        this.currentType = this.options.usizeType;
+        this.currentType = Type.usize32;
         return module.unreachable();
       }
     }
@@ -7554,7 +7479,7 @@ export class Compiler extends DiagnosticEmitter {
         }
         let offset = this.ensureRuntimeFunction(functionInstance);
         this.currentType = functionInstance.signature.type;
-        return this.options.isWasm64 ? module.i64(i64_low(offset), i64_high(offset)) : module.i32(i64_low(offset));
+        return module.i32(i64_low(offset));
       }
     }
     this.error(DiagnosticCode.Expression_does_not_compile_to_a_value_at_runtime, expression.range);
@@ -7718,7 +7643,7 @@ export class Compiler extends DiagnosticEmitter {
     if (pending.has(instance)) return assert(pending.get(instance));
     pending.set(instance, name);
     let module = this.module;
-    module.addFunction(name, this.options.sizeTypeRef, TypeRef.I32, null, module.unreachable());
+    module.addFunction(name, TypeRef.I32, TypeRef.I32, null, module.unreachable());
     return name;
   }
 
@@ -7731,7 +7656,7 @@ export class Compiler extends DiagnosticEmitter {
   ): void {
     let program = this.program;
     let module = this.module;
-    let sizeType = this.options.sizeTypeRef;
+    let sizeType = TypeRef.I32;
     let stmts = new Array<ExpressionRef>();
     // (block $is_instance
     //  (local.set $1 (i32.load (...))) ;; class id
@@ -7843,14 +7768,14 @@ export class Compiler extends DiagnosticEmitter {
     if (pending.has(prototype)) return assert(pending.get(prototype));
     pending.set(prototype, name);
     let module = this.module;
-    module.addFunction(name, this.options.sizeTypeRef, TypeRef.I32, null, module.unreachable());
+    module.addFunction(name, TypeRef.I32, TypeRef.I32, null, module.unreachable());
     return name;
   }
 
   /** Finalizes the instanceof helper of the given class prototype. */
   private finalizeAnyInstanceOf(prototype: ClassPrototype, name: string): void {
     let module = this.module;
-    let sizeType = this.options.sizeTypeRef;
+    let sizeType = TypeRef.I32;
     let stmts = new Array<ExpressionRef>();
     let instances = prototype.instances;
     // (block $is_instance
@@ -7956,11 +7881,11 @@ export class Compiler extends DiagnosticEmitter {
         }
         switch (type.kind) {
           case TypeKind.Isize:
-            if (!this.options.isWasm64) return module.i32(i64_low(intValue));
+            return module.i32(i64_low(intValue));
           case TypeKind.I64:
             return module.i64(i64_low(intValue), i64_high(intValue));
           case TypeKind.Usize:
-            if (!this.options.isWasm64) return module.i32(i64_low(intValue));
+            return module.i32(i64_low(intValue));
           case TypeKind.U64:
             return module.i64(i64_low(intValue), i64_high(intValue));
           case TypeKind.F32:
@@ -8150,13 +8075,10 @@ export class Compiler extends DiagnosticEmitter {
       }
       arraySegment = this.addStaticArrayHeader(
         stringType,
-        this.addStaticBuffer(this.options.usizeType, partExprs),
+        this.addStaticBuffer(Type.usize32, partExprs),
         arrayInstance
       );
-      let rawHeaderSegment = this.addStaticArrayHeader(
-        stringType,
-        this.addStaticBuffer(this.options.usizeType, rawExprs)
-      );
+      let rawHeaderSegment = this.addStaticArrayHeader(stringType, this.addStaticBuffer(Type.usize32, rawExprs));
       arrayInstance.writeField(
         "raw",
         i64_add(rawHeaderSegment.offset, i64_new(this.program.totalOverhead)),
@@ -8165,7 +8087,7 @@ export class Compiler extends DiagnosticEmitter {
     } else {
       arraySegment = this.addStaticArrayHeader(
         stringType,
-        this.addStaticBuffer(this.options.usizeType, partExprs),
+        this.addStaticBuffer(Type.usize32, partExprs),
         arrayInstance
       );
     }
@@ -8224,7 +8146,7 @@ export class Compiler extends DiagnosticEmitter {
       return module.unreachable();
     }
 
-    const tempThis = flow.getTempLocal(this.options.usizeType);
+    const tempThis = flow.getTempLocal(Type.usize32);
 
     let stmts = new Array<ExpressionRef>();
     stmts.push(
@@ -8284,7 +8206,7 @@ export class Compiler extends DiagnosticEmitter {
     let elementType = arrayInstance.getTypeArgumentsTo(program.arrayPrototype)![0];
 
     // block those here so compiling expressions doesn't conflict
-    let tempThis = flow.getTempLocal(this.options.usizeType);
+    let tempThis = flow.getTempLocal(Type.usize32);
 
     // compile value expressions and find out whether all are constant
     let expressions = expression.elementExpressions;
@@ -8323,9 +8245,7 @@ export class Compiler extends DiagnosticEmitter {
         let arraySegment = this.addStaticArrayHeader(elementType, bufferSegment);
         let arrayAddress = i64_add(arraySegment.offset, i64_new(totalOverhead));
         this.currentType = arrayType;
-        return program.options.isWasm64
-          ? this.module.i64(i64_low(arrayAddress), i64_high(arrayAddress))
-          : this.module.i32(i64_low(arrayAddress));
+        return this.module.i32(i64_low(arrayAddress));
 
         // otherwise allocate a new array header and make it wrap a copy of the static buffer
       } else {
@@ -8402,9 +8322,9 @@ export class Compiler extends DiagnosticEmitter {
       program.newArrayInstance,
       [
         module.i32(length),
-        program.options.isWasm64 ? module.i64(elementType.alignLog2) : module.i32(elementType.alignLog2),
+        module.i32(elementType.alignLog2),
         module.i32(arrayInstance.id),
-        program.options.isWasm64 ? module.i64(i64_low(source), i64_high(source)) : module.i32(i64_low(source)),
+        module.i32(i64_low(source)),
       ],
       reportNode
     );
@@ -8429,7 +8349,7 @@ export class Compiler extends DiagnosticEmitter {
     let elementType = typeArguments[0];
 
     // block those here so compiling expressions doesn't conflict
-    let tempThis = flow.getTempLocal(this.options.usizeType);
+    let tempThis = flow.getTempLocal(Type.usize32);
 
     // compile value expressions and check if all are compile-time constants
     let expressions = expression.elementExpressions;
@@ -8452,7 +8372,6 @@ export class Compiler extends DiagnosticEmitter {
       }
     }
 
-    let isWasm64 = this.options.isWasm64;
     let bufferSize = values.length << elementType.alignLog2;
 
     // if the array is static, make a static arraybuffer segment
@@ -8462,9 +8381,7 @@ export class Compiler extends DiagnosticEmitter {
 
       // return the static buffer directly if assigned to a global
       if (constraints & Constraints.PreferStatic) {
-        let expr = this.options.isWasm64
-          ? module.i64(i64_low(bufferAddress), i64_high(bufferAddress))
-          : module.i32(i64_low(bufferAddress));
+        let expr = module.i32(i64_low(bufferAddress));
         this.currentType = arrayType;
         return expr;
 
@@ -8473,11 +8390,7 @@ export class Compiler extends DiagnosticEmitter {
         // __newBuffer(bufferSize, id, buffer)
         let expr = this.makeCallDirect(
           program.newBufferInstance,
-          [
-            isWasm64 ? module.i64(bufferSize) : module.i32(bufferSize),
-            module.i32(arrayInstance.id),
-            isWasm64 ? module.i64(i64_low(bufferAddress), i64_high(bufferAddress)) : module.i32(i64_low(bufferAddress)),
-          ],
+          [module.i32(bufferSize), module.i32(arrayInstance.id), module.i32(i64_low(bufferAddress))],
           expression
         );
         this.currentType = arrayType;
@@ -8505,7 +8418,7 @@ export class Compiler extends DiagnosticEmitter {
         tempThis.index,
         this.makeCallDirect(
           program.newBufferInstance,
-          [isWasm64 ? module.i64(bufferSize) : module.i32(bufferSize), module.i32(arrayInstance.id)],
+          [module.i32(bufferSize), module.i32(arrayInstance.id)],
           expression
         ),
         arrayType.isManaged
@@ -8908,7 +8821,7 @@ export class Compiler extends DiagnosticEmitter {
       // generate body
       let signature = instance.signature;
       let module = this.module;
-      let sizeTypeRef = this.options.sizeTypeRef;
+      let sizeTypeRef = TypeRef.I32;
       let stmts = new Array<ExpressionRef>();
 
       // {
@@ -9035,7 +8948,7 @@ export class Compiler extends DiagnosticEmitter {
       ctorInstance,
       argumentExpressions,
       reportNode,
-      this.makeZero(this.options.usizeType),
+      this.makeZero(Type.usize32),
       constraints
     );
     if (getExpressionType(expr) != TypeRef.None) {
@@ -9159,7 +9072,7 @@ export class Compiler extends DiagnosticEmitter {
         }
 
         let offset = this.ensureRuntimeFunction(functionInstance);
-        return this.options.isWasm64 ? module.i64(i64_low(offset), i64_high(offset)) : module.i32(i64_low(offset));
+        return module.i32(i64_low(offset));
       }
     }
     this.error(DiagnosticCode.Expression_does_not_compile_to_a_value_at_runtime, expression.range);
@@ -9856,7 +9769,7 @@ export class Compiler extends DiagnosticEmitter {
     }
     this.currentType = stringInstance.type;
     return expr
-      ? this.module.block(null, [expr, this.ensureStaticString(typeString)], this.options.sizeTypeRef)
+      ? this.module.block(null, [expr, this.ensureStaticString(typeString)], TypeRef.I32)
       : this.ensureStaticString(typeString);
   }
 
@@ -10249,21 +10162,14 @@ export class Compiler extends DiagnosticEmitter {
     if (classInstance.hasDecorator(DecoratorFlags.Unmanaged)) {
       let allocInstance = program.allocInstance;
       this.compileFunction(allocInstance);
-      return module.call(
-        allocInstance.internalName,
-        [options.isWasm64 ? module.i64(classInstance.nextMemoryOffset) : module.i32(classInstance.nextMemoryOffset)],
-        options.sizeTypeRef
-      );
+      return module.call(allocInstance.internalName, [module.i32(classInstance.nextMemoryOffset)], TypeRef.I32);
     } else {
       let newInstance = program.newInstance;
       this.compileFunction(newInstance);
       return module.call(
         newInstance.internalName,
-        [
-          options.isWasm64 ? module.i64(classInstance.nextMemoryOffset) : module.i32(classInstance.nextMemoryOffset),
-          module.i32(classInstance.id),
-        ],
-        options.sizeTypeRef
+        [module.i32(classInstance.nextMemoryOffset), module.i32(classInstance.id)],
+        TypeRef.I32
       );
     }
   }
@@ -10273,7 +10179,7 @@ export class Compiler extends DiagnosticEmitter {
     let module = this.module;
     let classType = classInstance.type;
     let classTypeRef = classType.toRef();
-    assert(classTypeRef == this.options.sizeTypeRef);
+    assert(classTypeRef == TypeRef.I32);
     return module.if(
       module.unary(
         classTypeRef == TypeRef.I64 ? UnaryOp.EqzI64 : UnaryOp.EqzI32,
@@ -10296,7 +10202,7 @@ export class Compiler extends DiagnosticEmitter {
     let module = this.module;
     let flow = this.currentFlow;
     const thisLocalIndex = 0;
-    let sizeTypeRef = this.options.sizeTypeRef;
+    let sizeTypeRef = TypeRef.I32;
     let nonParameterFields: Property[] | null = null;
 
     // TODO: for (let member of members.values()) {

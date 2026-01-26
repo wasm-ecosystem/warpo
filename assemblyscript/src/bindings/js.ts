@@ -1152,9 +1152,9 @@ export class JSBuilder extends ExportsWalker {
             sb.push("Uint32Array");
           } else if (valueType == Type.i32 || valueType == Type.isize32) {
             sb.push("Int32Array");
-          } else if (valueType == Type.u64 || valueType == Type.usize64) {
+          } else if (valueType == Type.u64) {
             sb.push("BigUint64Array");
-          } else if (valueType == Type.i64 || valueType == Type.isize64) {
+          } else if (valueType == Type.i64) {
             sb.push("BigInt64Array");
           } else if (valueType == Type.f32) {
             sb.push("Float32Array");
@@ -1185,13 +1185,8 @@ export class JSBuilder extends ExportsWalker {
 
   ensureLiftFromMemoryFn(valueType: Type): string {
     if (valueType.isInternalReference) {
-      if (this.program.options.isWasm64) {
-        this.needsGetU64 = true;
-        return "__getU64";
-      } else {
-        this.needsGetU32 = true;
-        return "__getU32";
-      }
+      this.needsGetU32 = true;
+      return "__getU32";
     }
     if (valueType == Type.i8) {
       this.needsGetI8 = true;
@@ -1217,11 +1212,11 @@ export class JSBuilder extends ExportsWalker {
       this.needsGetU32 = true;
       return "__getU32";
     }
-    if (valueType == Type.i64 || valueType == Type.isize64) {
+    if (valueType == Type.i64) {
       this.needsGetI64 = true;
       return "__getI64";
     }
-    if (valueType == Type.u64 || valueType == Type.usize64) {
+    if (valueType == Type.u64) {
       this.needsGetU64 = true;
       return "__getU64";
     }
@@ -1271,13 +1266,8 @@ export class JSBuilder extends ExportsWalker {
 
   ensureLowerToMemoryFn(valueType: Type): string {
     if (valueType.isInternalReference) {
-      if (this.program.options.isWasm64) {
-        this.needsSetU64 = true;
-        return "__setU64";
-      } else {
-        this.needsSetU32 = true;
-        return "__setU32";
-      }
+      this.needsSetU32 = true;
+      return "__setU32";
     }
     if (valueType == Type.i8 || valueType == Type.u8 || valueType == Type.bool) {
       this.needsSetU8 = true;
@@ -1291,7 +1281,7 @@ export class JSBuilder extends ExportsWalker {
       this.needsSetU32 = true;
       return "__setU32";
     }
-    if (valueType == Type.i64 || valueType == Type.u64 || valueType == Type.isize64 || valueType == Type.usize64) {
+    if (valueType == Type.i64 || valueType == Type.u64) {
       this.needsSetU64 = true;
       return "__setU64";
     }

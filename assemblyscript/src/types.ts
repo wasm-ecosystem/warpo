@@ -121,7 +121,7 @@ export class SmallTupleTypeInfo {
     public elements: TupleElementInfo[],
     program: Program
   ) {
-    this.usizeByteSize = program.options.usizeType.byteSize;
+    this.usizeByteSize = Type.usize32.byteSize;
     assert(elements.length != 0);
   }
 
@@ -195,7 +195,7 @@ export class Type {
       case TypeKind.I64:
         return Type.i64;
       case TypeKind.Isize:
-        return this.size == 64 ? Type.isize64 : Type.isize32;
+        return Type.isize32;
       case TypeKind.U8:
         return Type.u8;
       case TypeKind.U16:
@@ -205,7 +205,7 @@ export class Type {
       case TypeKind.U64:
         return Type.u64;
       case TypeKind.Usize:
-        return this.size == 64 ? Type.usize64 : Type.usize32;
+        return Type.usize32;
       default:
         return Type.i32;
     }
@@ -466,7 +466,7 @@ export class Type {
       case TypeKind.I64:
         return Type.u64;
       case TypeKind.Isize:
-        return this.size == 64 ? Type.usize64 : Type.usize32;
+        return Type.usize32;
     }
     return this;
   }
@@ -825,13 +825,6 @@ export class Type {
     32
   );
 
-  /** A 64-bit signed size. WASM64 only. */
-  static readonly isize64: Type = new Type(
-    TypeKind.Isize,
-    TypeFlags.Signed | TypeFlags.Long | TypeFlags.Integer | TypeFlags.Varying | TypeFlags.Value,
-    64
-  );
-
   /** An 8-bit unsigned integer. */
   static readonly u8: Type = new Type(
     TypeKind.U8,
@@ -861,13 +854,6 @@ export class Type {
     TypeKind.Usize,
     TypeFlags.Unsigned | TypeFlags.Integer | TypeFlags.Varying | TypeFlags.Value,
     32
-  );
-
-  /** A 64-bit unsigned size. WASM64 only. */
-  static readonly usize64: Type = new Type(
-    TypeKind.Usize,
-    TypeFlags.Unsigned | TypeFlags.Long | TypeFlags.Integer | TypeFlags.Varying | TypeFlags.Value,
-    64
   );
 
   /** A 1-bit unsigned integer. */
@@ -946,7 +932,7 @@ export class Signature {
     hasRest: bool = false
   ): Signature {
     // get the usize type, and the type of the signature
-    let usizeType = program.options.usizeType;
+    let usizeType = Type.usize32;
     let type = new Type(usizeType.kind, (usizeType.flags & ~TypeFlags.Value) | TypeFlags.Reference, usizeType.size);
 
     // calculate the properties

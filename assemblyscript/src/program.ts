@@ -78,7 +78,7 @@ import {
   ComputedPropertyName,
 } from "./ast";
 
-import { Module, ExpressionRef, FunctionRef, MemorySegment, getFunctionName } from "./module";
+import { Module, ExpressionRef, FunctionRef, MemorySegment, getFunctionName, TypeRef } from "./module";
 
 import {
   CharCode,
@@ -418,7 +418,7 @@ export class Program extends DiagnosticEmitter {
     diagnostics: DiagnosticMessage[] | null = null
   ) {
     super(diagnostics);
-    this.module = Module.create(options.stackSize > 0, options.sizeTypeRef);
+    this.module = Module.create(options.stackSize > 0, TypeRef.I32);
     this.parser = new Parser(this.diagnostics, this.sources);
     this.resolver = new Resolver(this);
     let nativeFile = createFile(this, Source.native);
@@ -905,7 +905,7 @@ export class Program extends DiagnosticEmitter {
     let blockSize = this.computeBlockStart(payloadSize);
     // make sure that block size is valid according to TLSF requirements
     let blockOverhead = this.blockOverhead;
-    let blockMinSize = ((3 * this.options.usizeType.byteSize + blockOverhead + AL_MASK) & ~AL_MASK) - blockOverhead;
+    let blockMinSize = ((3 * Type.usize32.byteSize + blockOverhead + AL_MASK) & ~AL_MASK) - blockOverhead;
     if (blockSize < blockMinSize) blockSize = blockMinSize;
     const blockMaxSize = 1 << 30; // 1 << (FL_BITS + SB_BITS - 1), exclusive
     const tagsMask = 3;
@@ -1045,12 +1045,12 @@ export class Program extends DiagnosticEmitter {
     this.registerNativeType(CommonNames.i16, Type.i16);
     this.registerNativeType(CommonNames.i32, Type.i32);
     this.registerNativeType(CommonNames.i64, Type.i64);
-    this.registerNativeType(CommonNames.isize, options.isizeType);
+    this.registerNativeType(CommonNames.isize, Type.isize32);
     this.registerNativeType(CommonNames.u8, Type.u8);
     this.registerNativeType(CommonNames.u16, Type.u16);
     this.registerNativeType(CommonNames.u32, Type.u32);
     this.registerNativeType(CommonNames.u64, Type.u64);
-    this.registerNativeType(CommonNames.usize, options.usizeType);
+    this.registerNativeType(CommonNames.usize, Type.usize32);
     this.registerNativeType(CommonNames.bool, Type.bool);
     this.registerNativeType(CommonNames.f32, Type.f32);
     this.registerNativeType(CommonNames.f64, Type.f64);
@@ -1116,11 +1116,7 @@ export class Program extends DiagnosticEmitter {
     this.registerNativeType(CommonNames.ref_i31, Type.i31);
 
     // register compiler hints
-    this.registerConstantInteger(
-      CommonNames.ASC_TARGET,
-      Type.i32,
-      i64_new(options.isWasm64 ? Target.Wasm64 : Target.Wasm32)
-    );
+    this.registerConstantInteger(CommonNames.ASC_TARGET, Type.i32, i64_new(Target.Wasm32));
     this.registerConstantInteger(CommonNames.ASC_RUNTIME, Type.i32, i64_new(options.runtime));
     this.registerConstantInteger(CommonNames.ASC_NO_ASSERT, Type.bool, i64_new(options.noAssert ? 1 : 0, 0));
     this.registerConstantInteger(CommonNames.ASC_MEMORY_BASE, Type.i32, i64_new(options.memoryBase, 0));
@@ -1427,12 +1423,12 @@ export class Program extends DiagnosticEmitter {
     this.registerWrapperClass(Type.i16, CommonNames.I16);
     this.registerWrapperClass(Type.i32, CommonNames.I32);
     this.registerWrapperClass(Type.i64, CommonNames.I64);
-    this.registerWrapperClass(options.isizeType, CommonNames.Isize);
+    this.registerWrapperClass(Type.isize32, CommonNames.Isize);
     this.registerWrapperClass(Type.u8, CommonNames.U8);
     this.registerWrapperClass(Type.u16, CommonNames.U16);
     this.registerWrapperClass(Type.u32, CommonNames.U32);
     this.registerWrapperClass(Type.u64, CommonNames.U64);
-    this.registerWrapperClass(options.usizeType, CommonNames.Usize);
+    this.registerWrapperClass(Type.usize32, CommonNames.Usize);
     this.registerWrapperClass(Type.bool, CommonNames.Bool);
     this.registerWrapperClass(Type.f32, CommonNames.F32);
     this.registerWrapperClass(Type.f64, CommonNames.F64);
@@ -5019,7 +5015,7 @@ export class Class extends TypedElement {
     this.decoratorFlags = prototype.decoratorFlags;
     this.typeArguments = typeArguments;
     let program = this.program;
-    let usizeType = program.options.usizeType;
+    let usizeType = Type.usize32;
     let type = new Type(usizeType.kind, (usizeType.flags & ~TypeFlags.Value) | TypeFlags.Reference, usizeType.size);
     type.classReference = this;
     this.setType(type);
@@ -5303,21 +5299,12 @@ export class Class extends TypedElement {
         }
         case TypeKind.Isize:
         case TypeKind.Usize: {
-          if (this.program.options.isWasm64) {
-            if (i64_is(value)) {
-              writeI64(i64(value), buffer, offset);
-            } else {
-              writeI32AsI64(i32(value), buffer, offset, typeKind == TypeKind.Usize);
-            }
-            return 8;
+          if (i64_is(value)) {
+            writeI64AsI32(i64(value), buffer, offset, typeKind == TypeKind.Usize);
           } else {
-            if (i64_is(value)) {
-              writeI64AsI32(i64(value), buffer, offset, typeKind == TypeKind.Usize);
-            } else {
-              writeI32(i32(value), buffer, offset);
-            }
-            return 4;
+            writeI32(i32(value), buffer, offset);
           }
+          return 4;
         }
         case TypeKind.I64:
         case TypeKind.U64: {
