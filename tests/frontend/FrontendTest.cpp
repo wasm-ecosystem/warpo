@@ -331,11 +331,41 @@ void frontendTestMain(int argc, const char *argv[]) {
   std::atomic<size_t> numSkipped = 0;
 
   argparse::ArgumentParser program("FrontendTest", "git@" GIT_COMMIT);
+  program.add_argument("test_files")
+      .help("optional test file names to run (without .ts extension)")
+      .remaining();
   cli::init(cli::Category::OnlyForTest, program, argc, argv);
 
   std::filesystem::path const testFolder = getTestFolder();
   std::filesystem::current_path(testFolder);
-  std::vector<std::filesystem::path> const testFiles = collectTestFiles(testFolder);
+  std::vector<std::filesystem::path> allTestFiles = collectTestFiles(testFolder);
+  
+  // Filter test files if specific test names are provided
+  std::vector<std::filesystem::path> testFiles;
+  auto const testFileNames = program.present<std::vector<std::string>>("test_files");
+  if (testFileNames.has_value() && !testFileNames.value().empty()) {
+    // User specified specific test files
+    for (std::string const &testName : testFileNames.value()) {
+      bool found = false;
+      for (std::filesystem::path const &testPath : allTestFiles) {
+        // Match against stem (filename without extension)
+        if (testPath.stem().string() == testName) {
+          testFiles.push_back(testPath);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        fmt::println("Warning: test file '{}' not found", testName);
+      }
+    }
+    if (testFiles.empty()) {
+      throw std::runtime_error("no matching test files found");
+    }
+  } else {
+    // No specific test files provided, run all tests
+    testFiles = std::move(allTestFiles);
+  }
 
   size_t const numThreads = std::max(1U, std::thread::hardware_concurrency());
   fmt::println("using {} threads for test execution.", numThreads);
