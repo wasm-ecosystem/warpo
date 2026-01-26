@@ -174,7 +174,6 @@ import {
 } from "./util";
 import { markDataElementImmutable, addGlobal, addSubProgram, markCallInlined } from "./warpo";
 import { mangleImportName, STATIC_DELIMITER, INDEX_SUFFIX } from "./mangle";
-import { liftRequiresExportRuntime, lowerRequiresExportRuntime } from "./bindings/js";
 
 /** Features enabled by default. */
 export const defaultFeatures =
@@ -245,10 +244,6 @@ export class Options {
   optimizeLevelHint: i32 = 0;
   /** Hinted shrink level. Not applied by the compiler itself. */
   shrinkLevelHint: i32 = 0;
-  /** Hinted basename. */
-  basenameHint: string = "output";
-  /** Hinted bindings generation. */
-  bindingsHint: bool = false;
 
   /** Gets if any optimizations will be performed. */
   get willOptimize(): bool {
@@ -412,8 +407,6 @@ export class Compiler extends DiagnosticEmitter {
   pendingElements: Set<Element> = new Set();
   /** Elements, that are module exports, already processed */
   doneModuleExports: Set<Element> = new Set();
-  /** Whether the module would use the exported runtime to lift/lower. */
-  desiresExportRuntime: bool = false;
 
   /** Compiles a {@link Program} to a {@link Module} using the specified options. */
   static compile(program: Program): Module {
@@ -499,7 +492,7 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     // compile and export runtime if requested or necessary
-    if (this.options.exportRuntime || (this.options.bindingsHint && this.desiresExportRuntime)) {
+    if (this.options.exportRuntime) {
       for (let i = 0, k = runtimeFunctions.length; i < k; ++i) {
         let name = runtimeFunctions[i];
         let instance = program.requireFunction(name);
@@ -860,23 +853,6 @@ export class Compiler extends DiagnosticEmitter {
             let exportName = prefix + name;
             if (!module.hasExport(exportName)) {
               module.addFunctionExport(functionInstance.internalName, exportName);
-              if (!this.desiresExportRuntime) {
-                let thisType = signature.thisType;
-                if (
-                  (thisType && lowerRequiresExportRuntime(thisType)) ||
-                  liftRequiresExportRuntime(signature.returnType)
-                ) {
-                  this.desiresExportRuntime = true;
-                } else {
-                  let parameterTypes = signature.parameterTypes;
-                  for (let i = 0, k = parameterTypes.length; i < k; ++i) {
-                    if (lowerRequiresExportRuntime(parameterTypes[i])) {
-                      this.desiresExportRuntime = true;
-                      break;
-                    }
-                  }
-                }
-              }
               if (functionInstance.signature.returnType.kind == TypeKind.Func) this.module.setClosedWorld(false);
             }
             return;
@@ -896,15 +872,6 @@ export class Compiler extends DiagnosticEmitter {
           let exportName = prefix + name;
           if (!module.hasExport(exportName)) {
             module.addGlobalExport(element.internalName, exportName);
-            if (!this.desiresExportRuntime) {
-              let type = global.type;
-              if (
-                liftRequiresExportRuntime(type) ||
-                (!global.is(CommonFlags.Const) && lowerRequiresExportRuntime(type))
-              ) {
-                this.desiresExportRuntime = true;
-              }
-            }
             if (global.type.kind == TypeKind.Func) this.module.setClosedWorld(false);
           }
           if (global.type == Type.v128) {
@@ -1157,9 +1124,6 @@ export class Compiler extends DiagnosticEmitter {
           !isDeclaredConstant
         );
         pendingElements.delete(global);
-        if (!this.desiresExportRuntime && lowerRequiresExportRuntime(type)) {
-          this.desiresExportRuntime = true;
-        }
         return true;
       }
 
@@ -1540,20 +1504,6 @@ export class Compiler extends DiagnosticEmitter {
         signature.resultRefs
       );
       funcRef = module.getFunction(instance.internalName);
-      if (!this.desiresExportRuntime) {
-        let thisType = signature.thisType;
-        if ((thisType && liftRequiresExportRuntime(thisType)) || lowerRequiresExportRuntime(signature.returnType)) {
-          this.desiresExportRuntime = true;
-        } else {
-          let parameterTypes = signature.parameterTypes;
-          for (let i = 0, k = parameterTypes.length; i < k; ++i) {
-            if (liftRequiresExportRuntime(parameterTypes[i])) {
-              this.desiresExportRuntime = true;
-              break;
-            }
-          }
-        }
-      }
 
       // abstract or interface function
     } else if (instance.is(CommonFlags.Abstract) || instance.parent.kind == ElementKind.Interface) {

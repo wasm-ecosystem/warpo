@@ -160,8 +160,6 @@ export const FEATURE_REFERENCE_TYPES = Feature.ReferenceTypes;
 export const FEATURE_MULTI_VALUE = Feature.MultiValue;
 /** Garbage collection. */
 export const FEATURE_GC = Feature.GC;
-/** Memory64. */
-export const FEATURE_MEMORY64 = Feature.Memory64;
 /** Relaxed SIMD. */
 export const FEATURE_RELAXED_SIMD = Feature.RelaxedSimd;
 /** Extended const expressions. */
@@ -180,16 +178,6 @@ export function setFeature(options: Options, feature: Feature, on: bool): void {
 export function setOptimizeLevelHints(options: Options, optimizeLevel: i32, shrinkLevel: i32): void {
   options.optimizeLevelHint = optimizeLevel;
   options.shrinkLevelHint = shrinkLevel;
-}
-
-/** Gives the compiler a hint of the emitted module's basename. */
-export function setBasenameHint(options: Options, basename: string): void {
-  options.basenameHint = basename;
-}
-
-/** Gives the compiler a hint that bindings will be generated. */
-export function setBindingsHint(options: Options, bindings: bool): void {
-  options.bindingsHint = bindings;
 }
 
 /** Sets the `pedantic` option. */
