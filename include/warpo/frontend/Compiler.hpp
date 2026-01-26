@@ -72,7 +72,7 @@ inline HostKind fromString(std::string const &str) {
     return HostKind::None;
   if (str == "wasi_snapshot_preview1")
     return HostKind::WasiSnapshotPreview1;
-  WARPO_UNREACHABLE;
+  throw std::runtime_error{"unknown host kind"};
 }
 } // namespace HostUtils
 
