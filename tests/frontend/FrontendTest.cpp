@@ -21,8 +21,6 @@
 #include <string>
 #include <support/colors.h>
 #include <thread>
-#include <unordered_map>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 #include <wasm-binary.h>
@@ -52,6 +50,14 @@ cli::Opt<bool> updateFlag{
     "-u",
     "--update",
     [](argparse::Argument &arg) { arg.help("update snapshot").flag(); },
+};
+
+cli::Opt<std::vector<std::string>> testFilesOpt{
+    cli::Category::OnlyForTest,
+    "test_files",
+    [](argparse::Argument &arg) {
+      arg.help("optional test file names to run (without .ts extension)").remaining();
+    },
 };
 
 enum class TestResult : uint8_t { Success, Failure, Skip };
@@ -333,9 +339,6 @@ void frontendTestMain(int argc, const char *argv[]) {
   std::atomic<size_t> numSkipped = 0;
 
   argparse::ArgumentParser program("FrontendTest", "git@" GIT_COMMIT);
-  program.add_argument("test_files")
-      .help("optional test file names to run (without .ts extension)")
-      .remaining();
   cli::init(cli::Category::OnlyForTest, program, argc, argv);
 
   std::filesystem::path const testFolder = getTestFolder();
@@ -344,26 +347,23 @@ void frontendTestMain(int argc, const char *argv[]) {
   
   // Filter test files if specific test names are provided
   std::vector<std::filesystem::path> testFiles;
-  auto const testFileNames = program.present<std::vector<std::string>>("test_files");
+  std::optional<std::vector<std::string>> const testFileNames = testFilesOpt.tryGet();
   if (testFileNames.has_value() && !testFileNames.value().empty()) {
-    // Build a map from stem to path for efficient lookup
-    std::unordered_map<std::string, std::filesystem::path> stemToPath;
-    for (std::filesystem::path const &testPath : allTestFiles) {
-      stemToPath[testPath.stem().string()] = testPath;
-    }
-    
-    // User specified specific test files - collect unique matches
-    std::unordered_set<std::string> seenTests;
+    // User specified specific test files
     for (std::string const &testName : testFileNames.value()) {
-      // Skip if we've already added this test (avoid duplicates)
-      if (seenTests.contains(testName))
-        continue;
-      seenTests.insert(testName);
-      
-      auto it = stemToPath.find(testName);
-      if (it != stemToPath.end()) {
-        testFiles.push_back(it->second);
-      } else {
+      bool found = false;
+      for (std::filesystem::path const &testPath : allTestFiles) {
+        // Match against stem (filename without extension)
+        if (testPath.stem().string() == testName) {
+          // Skip if we've already added this test (avoid duplicates)
+          if (std::ranges::find(testFiles, testPath) == testFiles.end()) {
+            testFiles.push_back(testPath);
+          }
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
         fmt::println("Warning: test file '{}' not found", testName);
       }
     }
