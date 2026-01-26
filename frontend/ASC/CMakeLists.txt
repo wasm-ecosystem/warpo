@@ -1,3 +1,8 @@
+# Check if node_modules exists (npm dependencies must be installed first)
+if(NOT EXISTS "${PROJECT_SOURCE_DIR}/node_modules")
+  message(FATAL_ERROR "node_modules directory not found. Please run 'npm ci' or 'npm install' before building.")
+endif()
+
 if(WARPO_RELEASE)
   set(AS_BUILD_TARGET release)
 else()
