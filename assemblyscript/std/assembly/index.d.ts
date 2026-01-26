@@ -86,6 +86,8 @@ declare type stringview_iter = ref_stringview_iter | null;
 declare const ASC_TARGET: i32;
 /** Runtime type. 0 = Stub, 1 = Radical, 2 = Incremental. */
 declare const ASC_RUNTIME: i32;
+/** Host selection. 0 = None, 1 = WASI Snapshot Preview 1. */
+declare const ASC_HOST: i32;
 /** Provided noAssert option. */
 declare const ASC_NO_ASSERT: bool;
 /** Provided memoryBase option. */

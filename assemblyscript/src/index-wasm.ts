@@ -2,7 +2,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-import { Target, Runtime, Feature } from "./common";
+import { Target, Runtime, Host, Feature } from "./common";
 import { Compiler, Options, UncheckedBehavior, defaultFeatures } from "./compiler";
 import { Range, DiagnosticMessage, DiagnosticCategory, formatDiagnosticMessage } from "./diagnostics";
 import { Module, ModuleRef } from "./module";
@@ -23,6 +23,11 @@ export function setTarget(options: Options, target: Target): void {
 
 export function setRuntime(options: Options, runtime: Runtime): void {
   options.runtime = runtime;
+}
+
+/** Sets the `host` option. */
+export function setHost(options: Options, host: Host): void {
+  options.host = host;
 }
 
 /** Sets the `noAssert` option. */
