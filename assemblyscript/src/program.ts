@@ -3005,18 +3005,19 @@ export class Program extends DiagnosticEmitter {
     }
     let typeNode = declaration.type;
     if (!typeNode) typeNode = Node.createOmittedType(declaration.name.range.atEnd);
-    this.defineProperty(
-      Node.createMethodDeclaration(
-        declaration.name,
-        declaration.decorators,
-        declaration.flags | CommonFlags.Get,
-        null,
-        Node.createFunctionType([], typeNode, null, false, declaration.range),
-        null,
-        declaration.range
-      ),
-      parent
+    const getterDeclaration = Node.createMethodDeclaration(
+      declaration.name,
+      declaration.decorators,
+      declaration.flags | CommonFlags.Get,
+      null,
+      Node.createFunctionType([], typeNode, null, false, declaration.range),
+      null,
+      declaration.range
     );
+    let property = this.ensureProperty(getterDeclaration, parent);
+    if (!property) return;
+    property.fieldDeclaration = declaration;
+    this.defineProperty(getterDeclaration, parent);
     if (!declaration.is(CommonFlags.Readonly)) {
       this.defineProperty(
         Node.createMethodDeclaration(

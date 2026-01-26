@@ -78,7 +78,13 @@ import { Token, operatorTokenToString } from "./tokenizer";
 import { BuiltinNames, builtinTypes, BuiltinTypesContext } from "./builtins";
 
 import { addField, createClass, addTemplateType } from "./warpo";
-import { mangleComputedPropertyName, mangleGenericInstanceKey, mangleGenericInstanceName } from "./mangle";
+import {
+  mangleComputedPropertyName,
+  mangleGenericInstanceKey,
+  mangleGenericInstanceName,
+  mangleGetterName,
+  mangleSetterName,
+} from "./mangle";
 import { Evaluator } from "./eval";
 
 /** Indicates whether errors are reported or not. */
@@ -87,6 +93,41 @@ export const enum ReportMode {
   Report,
   /** Swallow errors. */
   Swallow,
+}
+
+class ClassImplementationTracker {
+  unimplemented: Map<string, DeclaredElement> = new Map();
+  setFromInterface(name: string, decl: DeclaredElement): void {
+    if (decl.kind == ElementKind.PropertyPrototype) {
+      const ifaceProperty = <PropertyPrototype>decl;
+      const getterPrototype = ifaceProperty.getterPrototype;
+      if (getterPrototype) this.unimplemented.set(mangleGetterName(decl.name), getterPrototype);
+      const setterPrototype = ifaceProperty.setterPrototype;
+      if (setterPrototype) this.unimplemented.set(mangleSetterName(decl.name), setterPrototype);
+    } else {
+      this.unimplemented.set(name, decl);
+    }
+  }
+  setFromAbstractClass(name: string, decl: DeclaredElement): void {
+    this.unimplemented.set(name, decl);
+  }
+  delete(name: string, decl: DeclaredElement): void {
+    this.unimplemented.delete(name);
+    if (decl.kind == ElementKind.PropertyPrototype) {
+      const property = <PropertyPrototype>decl;
+      if (property.getterPrototype) this.unimplemented.delete(mangleGetterName(decl.name));
+      if (property.setterPrototype) this.unimplemented.delete(mangleSetterName(decl.name));
+    }
+  }
+  get(name: string): DeclaredElement {
+    return this.unimplemented.get(name);
+  }
+  get size(): i32 {
+    return this.unimplemented.size;
+  }
+  keys(): string[] {
+    return this.unimplemented.keys();
+  }
 }
 
 /** Provides tools to resolve types and expressions. */
@@ -3265,7 +3306,7 @@ export class Resolver extends DiagnosticEmitter {
     if (!members) instance.members = members = new Map();
 
     let pendingClasses = this.resolveClassPending;
-    let unimplemented = new Map<string, DeclaredElement>();
+    let unimplemented = new ClassImplementationTracker();
     // Alias implemented interface members
     let interfaces = instance.interfaces;
     if (interfaces) {
@@ -3285,7 +3326,7 @@ export class Resolver extends DiagnosticEmitter {
               continue; // keep previous
             }
             members.set(memberName, ifaceMember);
-            unimplemented.set(memberName, ifaceMember);
+            unimplemented.setFromInterface(memberName, ifaceMember);
           }
         }
       }
@@ -3313,9 +3354,9 @@ export class Resolver extends DiagnosticEmitter {
           }
           members.set(memberName, baseMember);
           if (baseMember.is(CommonFlags.Abstract)) {
-            unimplemented.set(memberName, baseMember);
+            unimplemented.setFromAbstractClass(memberName, baseMember);
           } else {
-            unimplemented.delete(memberName);
+            unimplemented.delete(memberName, baseMember);
           }
         }
       }
@@ -3409,7 +3450,7 @@ export class Resolver extends DiagnosticEmitter {
             assert(false);
         }
         if (!member.is(CommonFlags.Abstract)) {
-          unimplemented.delete(memberName);
+          unimplemented.delete(memberName, member);
         }
       }
     }
@@ -3417,7 +3458,7 @@ export class Resolver extends DiagnosticEmitter {
     if (instance.kind != ElementKind.Interface) {
       // Check that all required members are implemented
       if (!instance.is(CommonFlags.Abstract) && unimplemented.size > 0) {
-        for (let _keys = Map_keys(unimplemented), i = 0, k = _keys.length; i < k; ++i) {
+        for (let _keys = unimplemented.keys(), i = 0, k = _keys.length; i < k; ++i) {
           let memberName = _keys[i];
           let member = assert(unimplemented.get(memberName));
           this.errorRelated(

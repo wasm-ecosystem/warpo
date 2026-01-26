@@ -1,0 +1,17 @@
+{
+  "stderr": [
+    "ERROR TS2416: Property 'i' in type 'interface-getter-setter-errors/MethodInsteadOfProperty' is not assignable to the same property in base type 'interface-getter-setter-errors/IGetSet'.",
+    "i(): i32 {",
+    "get i(): i32;",
+
+    "ERROR TS2515: Non-abstract class 'interface-getter-setter-errors/B' does not implement inherited abstract member 'get:a' from 'interface-getter-setter-errors/A'.",
+    "class B implements A {",
+    "get a(): string;",
+
+    "ERROR TS2515: Non-abstract class 'interface-getter-setter-errors/WithoutField' does not implement inherited abstract member 'get:a' from 'interface-getter-setter-errors/BaseField'.",
+    "ERROR TS2515: Non-abstract class 'interface-getter-setter-errors/WithoutField' does not implement inherited abstract member 'set:a' from 'interface-getter-setter-errors/BaseField'.",
+
+    "ERROR TS2322: Type '(this: interface-getter-setter-errors/WrongType, ~lib/string/String) => void' is not assignable to type '(this: interface-getter-setter-errors/IGetSet, i32) => void'.",
+    "ERROR TS2322: Type '(this: interface-getter-setter-errors/WrongType) => ~lib/string/String' is not assignable to type '(this: interface-getter-setter-errors/IGetSet) => i32'."
+  ]
+}
