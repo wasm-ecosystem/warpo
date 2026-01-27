@@ -1,8 +1,8 @@
 # WARPO Configuration File (`asconfig.json`)
 
 <p style="display: flex; gap: 10px;">
-  <img src="/version/2.3.0.svg" />
-  <img src="/stability/stable.svg" />
+  <img src="/version/2.3.0.svg" alt="2.3.0" />
+  <img src="/stability/stable.svg" alt="stable" />
 </p>
 
 The WARPO compiler uses a configuration file named `asconfig.json` to control the build process, specify entry points, and customize output options. This file must be a valid JSON object matching the schema below.
@@ -52,8 +52,8 @@ It supports two forms:
 ### `host`
 
 <p style="display: flex; gap: 10px;">
-  <img src="/version/nightly.svg" />
-  <img src="/stability/stable.svg" />
+  <img src="/version/nightly.svg" alt="nightly" />
+  <img src="/stability/stable.svg" alt="stable" />
 </p>
 
 Selects which host API surface the compiler targets for imports. The default is `none`.

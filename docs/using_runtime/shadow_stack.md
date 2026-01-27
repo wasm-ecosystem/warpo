@@ -1,8 +1,8 @@
 # Shadow Stack
 
 <p style="display: flex; gap: 10px;">
-  <img src="/version/2.2.3.svg" />
-  <img src="/stability/stable.svg"  />
+  <img src="/version/2.2.3.svg" alt="2.2.3" />
+  <img src="/stability/stable.svg" alt="stable" />
 </p>
 
 WARPO uses [shadow stack GC algorithm](https://llvm.org/docs/GarbageCollection.html#the-shadow-stack-gc).

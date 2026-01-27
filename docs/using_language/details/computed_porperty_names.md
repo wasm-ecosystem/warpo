@@ -19,8 +19,8 @@ In AssemblyScript, we hope everything is static, TS/JS computed property name wi
 ### Computed Property Names as Method Name
 
 <p style="display: flex; gap: 10px;">
-  <img src="/version/2.3.0.svg" />
-  <img src="/stability/stable.svg"  />
+  <img src="/version/2.3.0.svg" alt="2.3.0" />
+  <img src="/stability/stable.svg" alt="stable" />
 </p>
 
 Here is an example to declare a interface `IComputedPropertyFn` which requires a special method `[computed_property_symbol]`.<br/>

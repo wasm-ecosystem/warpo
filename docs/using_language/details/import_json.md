@@ -2,7 +2,7 @@
 
 <p style="display: flex; gap: 10px;">
   <img src="/version/2.2.3.svg" alt="2.2.3" />
-  <img src="/stability/rc.svg" alt="2.2.3" />
+  <img src="/stability/rc.svg" alt="rc" />
 </p>
 
 WARPO support to import json file like TS.

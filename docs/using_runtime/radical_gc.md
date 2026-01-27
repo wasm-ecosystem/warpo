@@ -1,8 +1,8 @@
 # Radical GC runtime
 
 <p style="display: flex; gap: 10px;">
-  <img src="/version/2.3.0.svg" />
-  <img src="/stability/experimental.svg"  />
+  <img src="/version/2.3.0.svg" alt="2.3.0" />
+  <img src="/stability/experimental.svg" alt="experimental" />
 </p>
 
 Radical Runtime is a lightweight garbage collection (GC) runtime with the following features:
