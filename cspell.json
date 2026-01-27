@@ -8,9 +8,9 @@
       "addWords": true
     }
   ],
-  "dictionaries": ["project-words"],
+  "dictionaries": ["project-words", "typescript", "node", "powershell", "cpp", "html", "bash"],
   "ignorePaths": [
-    "build/**",
+    "build*",
     "*.svg",
     "*.wast",
     "*.wat",
