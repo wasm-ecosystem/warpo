@@ -330,6 +330,37 @@ std::vector<std::filesystem::path> collectTestFiles(std::filesystem::path const 
   collectTestFilesImpl(testFiles, folder);
   return testFiles;
 }
+
+/// @brief Filter test files by provided test names.
+/// @param allTestFiles All available test files.
+/// @param testFileNames Test file names to filter by (without .ts extension).
+/// @return Filtered list of test files matching the provided names.
+std::vector<std::filesystem::path> filterTestFilesByNames(std::vector<std::filesystem::path> const &allTestFiles,
+                                                           std::vector<std::string> const &testFileNames) {
+  std::vector<std::filesystem::path> testFiles;
+  for (std::string const &testName : testFileNames) {
+    bool found = false;
+    for (std::filesystem::path const &testPath : allTestFiles) {
+      // Match against stem (filename without extension)
+      if (testPath.stem().string() == testName) {
+        // Skip if we've already added this test (avoid duplicates)
+        if (std::ranges::find(testFiles, testPath) == testFiles.end()) {
+          testFiles.push_back(testPath);
+        }
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      fmt::println("Warning: test file '{}' not found", testName);
+    }
+  }
+  if (testFiles.empty()) {
+    throw std::runtime_error("no matching test files found");
+  }
+  return testFiles;
+}
+
 // NOLINTNEXTLINE(modernize-avoid-c-arrays)
 void frontendTestMain(int argc, const char *argv[]) {
   frontend::init();
@@ -349,27 +380,7 @@ void frontendTestMain(int argc, const char *argv[]) {
   std::vector<std::filesystem::path> testFiles;
   std::optional<std::vector<std::string>> const testFileNames = testFilesOpt.tryGet();
   if (testFileNames.has_value() && !testFileNames.value().empty()) {
-    // User specified specific test files
-    for (std::string const &testName : testFileNames.value()) {
-      bool found = false;
-      for (std::filesystem::path const &testPath : allTestFiles) {
-        // Match against stem (filename without extension)
-        if (testPath.stem().string() == testName) {
-          // Skip if we've already added this test (avoid duplicates)
-          if (std::ranges::find(testFiles, testPath) == testFiles.end()) {
-            testFiles.push_back(testPath);
-          }
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        fmt::println("Warning: test file '{}' not found", testName);
-      }
-    }
-    if (testFiles.empty()) {
-      throw std::runtime_error("no matching test files found");
-    }
+    testFiles = filterTestFilesByNames(allTestFiles, testFileNames.value());
   } else {
     // No specific test files provided, run all tests
     testFiles = std::move(allTestFiles);
