@@ -340,15 +340,24 @@ std::vector<std::filesystem::path> filterTestFilesByNames(std::vector<std::files
   std::vector<std::filesystem::path> testFiles;
   for (std::string const &testName : testFileNames) {
     bool found = false;
+    bool duplicateWarned = false;
     for (std::filesystem::path const &testPath : allTestFiles) {
       // Match against stem (filename without extension)
       if (testPath.stem().string() == testName) {
-        // Skip if we've already added this test (avoid duplicates)
-        if (std::ranges::find(testFiles, testPath) == testFiles.end()) {
-          testFiles.push_back(testPath);
+        if (!found) {
+          // First matching test file for this name.
+          // Skip if we've already added this test (avoid duplicates in the final list)
+          if (std::ranges::find(testFiles, testPath) == testFiles.end()) {
+            testFiles.push_back(testPath);
+          }
+          found = true;
+        } else if (!duplicateWarned) {
+          // Additional matching files exist; keep using the first one but warn the user.
+          fmt::println("Warning: multiple test files match '{}'; using '{}'",
+                       testName,
+                       testFiles.back().string());
+          duplicateWarned = true;
         }
-        found = true;
-        break;
       }
     }
     if (!found) {
