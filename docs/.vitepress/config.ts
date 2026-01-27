@@ -65,6 +65,10 @@ export default defineConfig({
             link: "/using_compiler/config",
           },
           {
+            text: "host APIs",
+            items: listItems("using_compiler/hosts"),
+          },
+          {
             text: "third-party libraries",
             link: "/using_compiler/module_resolution",
           },

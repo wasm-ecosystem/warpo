@@ -17,4 +17,5 @@ Comparison with AS, we support some new features.
 <img src="/version/nightly.svg" alt="nightly" />
 
 - [host API](/using_compiler/config#host)
+  - [wasi_snapshot_preview1 host](/using_compiler/hosts/wasi_snapshot_preview1)
 - [tuple](/using_language/details/tuple)
