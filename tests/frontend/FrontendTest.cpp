@@ -55,7 +55,9 @@ cli::Opt<bool> updateFlag{
 cli::Opt<std::vector<std::string>> testFilesOpt{
     cli::Category::OnlyForTest,
     "test_files",
-    [](argparse::Argument &arg) { arg.help("optional test file names to run (without .ts extension)").remaining(); },
+    [](argparse::Argument &arg) {
+      arg.help("optional test file names to run (without .ts extension)").nargs(argparse::nargs_pattern::any);
+    },
 };
 
 enum class TestResult : uint8_t { Success, Failure, Skip };
@@ -369,9 +371,9 @@ void frontendTestMain(int argc, const char *argv[]) {
 
   // Filter test files if specific test names are provided
   std::vector<std::filesystem::path> testFiles;
-  std::optional<std::vector<std::string>> const testFileNames = testFilesOpt.tryGet();
-  if (testFileNames.has_value() && !testFileNames.value().empty()) {
-    testFiles = filterTestFilesByNames(allTestFiles, testFileNames.value());
+  std::vector<std::string> const testFileNames = testFilesOpt.get();
+  if (!testFileNames.empty()) {
+    testFiles = filterTestFilesByNames(allTestFiles, testFileNames);
   } else {
     // No specific test files provided, run all tests
     testFiles = std::move(allTestFiles);
