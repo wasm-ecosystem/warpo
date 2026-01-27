@@ -40,8 +40,8 @@ Please follow these instructions after modifying the code.
 - When add new features in documents, add version and stability svg also.
   ```html
   <p style="display: flex; gap: 10px;">
-    <img src="/version/nightly.svg" />
-    <img src="/stability/experimental.svg" />
+    <img src="/version/nightly.svg" alt="nightly" />
+    <img src="/stability/experimental.svg" alt="experimental" />
   </p>
   ```
 - When add new features in documents, maintain the link in `docs/new_features.md`.
