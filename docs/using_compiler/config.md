@@ -1,5 +1,10 @@
 # WARPO Configuration File (`asconfig.json`)
 
+<p style="display: flex; gap: 10px;">
+  <img src="/version/2.3.0.svg" />
+  <img src="/stability/stable.svg" />
+</p>
+
 The WARPO compiler uses a configuration file named `asconfig.json` to control the build process, specify entry points, and customize output options. This file must be a valid JSON object matching the schema below.
 
 ## Top-Level Structure
@@ -42,6 +47,36 @@ It supports two forms:
 {
   "use": ["NAME=VALUE"]
 }
+```
+
+### `host`
+
+<p style="display: flex; gap: 10px;">
+  <img src="/version/nightly.svg" />
+  <img src="/stability/stable.svg" />
+</p>
+
+Selects which host API surface the compiler targets for imports. The default is `none`.
+
+Supported values:
+
+- `none`: do not assume any host APIs.
+- `wasi_snapshot_preview1`: use WASI Snapshot Preview 1 host imports.
+
+You can set it in the config file:
+
+```json
+{
+  "options": {
+    "host": "wasi_snapshot_preview1"
+  }
+}
+```
+
+Or via CLI:
+
+```bash
+warpo assembly/index.ts -o build/app.wasm --host wasi_snapshot_preview1
 ```
 
 ## Targets
