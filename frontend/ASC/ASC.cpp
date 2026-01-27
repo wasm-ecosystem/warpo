@@ -10,6 +10,7 @@
 
 namespace {
 #include "assemblyscript.inc"
+#include "extension_library_sources.inc"
 #include "library_sources.inc"
 } // namespace
 
@@ -18,5 +19,5 @@ const std::map<std::string, std::string_view> warpo::frontend::embed_library_sou
 #include "library_sources_map.inc"
 };
 const std::map<std::string, std::string_view> warpo::frontend::embed_extension_library_sources{
-#include "extension_library_sources.inc"
+#include "extension_library_sources_map.inc"
 };
