@@ -1,12 +1,6 @@
-import {
-  clock_time_get,
-  clockid,
-  errnoToString
-} from "./bindings/wasi_snapshot_preview1";
+import { clock_time_get, clockid, errnoToString } from "./bindings/wasi_snapshot_preview1";
 
-import {
-  tempbuf
-} from "./wasi_internal";
+import { tempbuf } from "./wasi_internal";
 
 export namespace wasi_performance {
   export function now(): f64 {

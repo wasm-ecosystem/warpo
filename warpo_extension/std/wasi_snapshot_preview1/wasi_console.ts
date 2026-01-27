@@ -1,12 +1,9 @@
-import {
-  wasi_process
-} from "./wasi_process";
+import { wasi_process } from "./wasi_process";
 
 // @ts-ignore: decorator
-@lazy var timers = new Map<string,u64>();
+@lazy var timers = new Map<string, u64>();
 
 export namespace wasi_console {
-
   export function assert<T>(condition: T, message: string = ""): void {
     if (!condition) {
       let stderr = wasi_process.stderr;

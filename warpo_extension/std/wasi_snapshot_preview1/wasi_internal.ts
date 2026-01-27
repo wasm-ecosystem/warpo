@@ -1,20 +1,11 @@
-import {
-  proc_exit,
-  fd_write,
-  iovec,
-  random_get
-} from "./bindings/wasi_snapshot_preview1";
+import { proc_exit, fd_write, iovec, random_get } from "./bindings/wasi_snapshot_preview1";
 
 // A WASI-wide reusable temporary buffer to store and work with out values. Must
 // be large enough to fit any operation it is used in, i.e. process/writeString.
 // @ts-ignore: decorator
 @lazy export const tempbuf = memory.data(4 * sizeof<usize>());
 
-import {
-  MAX_DOUBLE_LENGTH,
-  decimalCount32,
-  dtoa_buffered
-} from "util/number";
+import { MAX_DOUBLE_LENGTH, decimalCount32, dtoa_buffered } from "util/number";
 
 export function wasi_abort(
   message: string | null = null,
@@ -31,29 +22,36 @@ export function wasi_abort(
   const bufPtr: usize = lenPtr + sizeof<usize>();
   changetype<iovec>(iovPtr).buf = bufPtr;
   var ptr = bufPtr;
-  store<u64>(ptr, 0x203A74726F6261); ptr += 7; // 'abort: '
+  store<u64>(ptr, 0x203a74726f6261);
+  ptr += 7; // 'abort: '
   if (message != null) {
     ptr += String.UTF8.encodeUnsafe(changetype<usize>(message), message.length, ptr);
   }
-  store<u32>(ptr, 0x206E6920); ptr += 4; // ' in '
+  store<u32>(ptr, 0x206e6920);
+  ptr += 4; // ' in '
   if (fileName != null) {
     ptr += String.UTF8.encodeUnsafe(changetype<usize>(fileName), fileName.length, ptr);
   }
   store<u8>(ptr++, 0x28); // (
-  var len = decimalCount32(lineNumber); ptr += len;
+  var len = decimalCount32(lineNumber);
+  ptr += len;
   do {
     let t = lineNumber / 10;
-    store<u8>(--ptr, 0x30 + lineNumber % 10);
+    store<u8>(--ptr, 0x30 + (lineNumber % 10));
     lineNumber = t;
-  } while (lineNumber); ptr += len;
-  store<u8>(ptr++, 0x3A); // :
-  len = decimalCount32(columnNumber); ptr += len;
+  } while (lineNumber);
+  ptr += len;
+  store<u8>(ptr++, 0x3a); // :
+  len = decimalCount32(columnNumber);
+  ptr += len;
   do {
     let t = columnNumber / 10;
-    store<u8>(--ptr, 0x30 + columnNumber % 10);
+    store<u8>(--ptr, 0x30 + (columnNumber % 10));
     columnNumber = t;
-  } while (columnNumber); ptr += len;
-  store<u16>(ptr, 0x0A29); ptr += 2; // )\n
+  } while (columnNumber);
+  ptr += len;
+  store<u16>(ptr, 0x0a29);
+  ptr += 2; // )\n
   changetype<iovec>(iovPtr).buf_len = ptr - bufPtr;
   fd_write(2, iovPtr, 1, lenPtr);
   proc_exit(255);
@@ -72,11 +70,13 @@ export function wasi_trace(
   // 4: iov.buf_len
   // 8: len
   // 12: buf...
-  var iovPtr = __alloc(offsetof<iovec>() + sizeof<usize>() + 1 + <usize>(max(String.UTF8.byteLength(message), MAX_DOUBLE_LENGTH << 1)));
+  var iovPtr = __alloc(
+    offsetof<iovec>() + sizeof<usize>() + 1 + <usize>max(String.UTF8.byteLength(message), MAX_DOUBLE_LENGTH << 1)
+  );
   var lenPtr = iovPtr + offsetof<iovec>();
   var bufPtr = lenPtr + sizeof<usize>();
   changetype<iovec>(iovPtr).buf = bufPtr;
-  store<u64>(bufPtr, 0x203A6563617274); // 'trace: '
+  store<u64>(bufPtr, 0x203a6563617274); // 'trace: '
   changetype<iovec>(iovPtr).buf_len = 7;
   fd_write(2, iovPtr, 1, lenPtr);
   changetype<iovec>(iovPtr).buf_len = String.UTF8.encodeUnsafe(changetype<usize>(message), message.length, bufPtr);
@@ -103,7 +103,7 @@ export function wasi_trace(
     }
     --bufPtr;
   }
-  store<u8>(bufPtr, 0x0A); // \n
+  store<u8>(bufPtr, 0x0a); // \n
   changetype<iovec>(iovPtr).buf_len = 1;
   fd_write(2, iovPtr, 1, lenPtr);
   __free(iovPtr);

@@ -184,31 +184,22 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     if (config.host == HostKind::WasiSnapshotPreview1) {
       struct WasiAlias final {
         std::string_view alias;
-        std::string_view libName;
-        std::string_view elementName;
+        std::string_view internalName;
       };
       static constexpr std::array<WasiAlias, 7> wasiAliases{
-          WasiAlias{"console", "wasi_snapshot_preview1/wasi_console", "wasi_console"},
-          WasiAlias{"process", "wasi_snapshot_preview1/wasi_process", "wasi_process"},
-          WasiAlias{"Date", "wasi_snapshot_preview1/wasi_date", "wasi_Date"},
-          WasiAlias{"performance", "wasi_snapshot_preview1/wasi_performance", "wasi_performance"},
-          WasiAlias{"crypto", "wasi_snapshot_preview1/wasi_crypto", "wasi_crypto"},
-          WasiAlias{"abort", "wasi_snapshot_preview1/wasi_internal", "wasi_abort"},
-          WasiAlias{"seed", "wasi_snapshot_preview1/wasi_internal", "wasi_seed"},
-      };
-      auto const makeInternalName = [](std::string_view libName, std::string_view elementName) {
-        std::string internalName{libraryPrefix};
-        internalName.append(libName);
-        internalName.push_back('/');
-        internalName.append(elementName);
-        return internalName;
+          WasiAlias{"console", "~lib/wasi_snapshot_preview1/wasi_console/wasi_console"},
+          WasiAlias{"process", "~lib/wasi_snapshot_preview1/wasi_process/wasi_process"},
+          WasiAlias{"Date", "~lib/wasi_snapshot_preview1/wasi_date/wasi_Date"},
+          WasiAlias{"performance", "~lib/wasi_snapshot_preview1/wasi_performance/wasi_performance"},
+          WasiAlias{"crypto", "~lib/wasi_snapshot_preview1/wasi_crypto/wasi_crypto"},
+          WasiAlias{"abort", "~lib/wasi_snapshot_preview1/wasi_internal/wasi_abort"},
+          WasiAlias{"seed", "~lib/wasi_snapshot_preview1/wasi_internal/wasi_seed"},
       };
       for (auto const &alias : wasiAliases) {
         if (config.uses.contains(std::string{alias.alias}))
           continue;
-        std::string const targetName = makeInternalName(alias.libName, alias.elementName);
         r.callExportedFunctionWithName<0>("addGlobalAlias", option, r.allocString(std::string{alias.alias}),
-                                          r.allocString(targetName));
+                                          r.allocString(std::string{alias.internalName}));
       }
     }
     r.callExportedFunctionWithName<0>("setOptimizeLevelHints", option, config.optimizationLevel, config.shrinkLevel);

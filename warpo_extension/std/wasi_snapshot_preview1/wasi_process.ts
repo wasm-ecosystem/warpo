@@ -10,19 +10,14 @@ import {
   clock_time_get,
   clockid,
   errnoToString,
-  fd
+  fd,
 } from "./bindings/wasi_snapshot_preview1";
 
-import {
-  tempbuf
-} from "./wasi_internal";
+import { tempbuf } from "./wasi_internal";
 
-import {
-  E_INDEXOUTOFRANGE
-} from "util/error";
+import { E_INDEXOUTOFRANGE } from "util/error";
 
 export namespace wasi_process {
-
   // @ts-ignore: decorator
   @lazy export const arch = sizeof<usize>() == 4 ? "wasm32" : "wasm64";
   // @ts-ignore: decorator
@@ -79,7 +74,7 @@ function lazyArgv(): string[] {
   return argv;
 }
 
-function lazyEnv(): Map<string,string> {
+function lazyEnv(): Map<string, string> {
   let err = environ_sizes_get(tempbuf, tempbuf + 4);
   if (err) throw new Error(errnoToString(err));
   let count = load<usize>(tempbuf);
@@ -89,7 +84,7 @@ function lazyEnv(): Map<string,string> {
   let buf = __alloc(bufSize);
   err = environ_get(buf, buf + ptrsSize);
   if (err) throw new Error(errnoToString(err));
-  let env = new Map<string,string>();
+  let env = new Map<string, string>();
   for (let i: usize = 0; i < count; ++i) {
     let ptr = load<usize>(buf + i * sizeof<usize>());
     let str = String.UTF8.decodeUnsafe(ptr, ptr + bufSize - buf, true);
@@ -105,6 +100,7 @@ function lazyEnv(): Map<string,string> {
   return env;
 }
 
+
 @unmanaged
 abstract class Stream {
   close(): void {
@@ -112,6 +108,7 @@ abstract class Stream {
     if (err) throw new Error(errnoToString(err));
   }
 }
+
 
 @unmanaged
 abstract class WritableStream extends Stream {
@@ -125,6 +122,7 @@ abstract class WritableStream extends Stream {
     }
   }
 }
+
 
 @unmanaged
 abstract class ReadableStream extends Stream {
@@ -150,33 +148,37 @@ function writeBuffer(fd: fd, data: ArrayBuffer): void {
 
 function writeString(fd: fd, data: string): void {
   var len = data.length;
-  var
-    char2: u32 = 0,
+  var char2: u32 = 0,
     char3: u32 = 0,
     char4: u32 = 0;
   switch (len) {
-    case 4: { // "null"
+    case 4: {
+      // "null"
       char4 = <u32>load<u16>(changetype<usize>(data), 6);
       if (char4 >= 0x80) break;
     }
-    case 3: { // "ms\n"
+    case 3: {
+      // "ms\n"
       char3 = <u32>load<u16>(changetype<usize>(data), 4);
       if (char3 >= 0x80) break;
     }
-    case 2: { // "\r\n"
+    case 2: {
+      // "\r\n"
       char2 = <u32>load<u16>(changetype<usize>(data), 2);
       if (char2 >= 0x80) break;
     }
-    case 1: { // "\n"
+    case 1: {
+      // "\n"
       let char1 = <u32>load<u16>(changetype<usize>(data));
       if (char1 >= 0x80) break;
       store<usize>(tempbuf, tempbuf + 2 * sizeof<usize>());
       store<usize>(tempbuf, len, sizeof<usize>());
-      store<u32>(tempbuf, char1 | char2 << 8 | char3 << 16 | char4 << 24, 2 * sizeof<usize>());
+      store<u32>(tempbuf, char1 | (char2 << 8) | (char3 << 16) | (char4 << 24), 2 * sizeof<usize>());
       let err = fd_write(<u32>fd, tempbuf, 1, tempbuf + 3 * sizeof<usize>());
       if (err) throw new Error(errnoToString(err));
     }
-    case 0: return;
+    case 0:
+      return;
   }
   var utf8len = <usize>String.UTF8.byteLength(data);
   var utf8buf = __alloc(utf8len);

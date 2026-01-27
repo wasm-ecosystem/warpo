@@ -1,16 +1,8 @@
-import {
-  clockid,
-  clock_time_get,
-  errnoToString
-} from "./bindings/wasi_snapshot_preview1";
+import { clockid, clock_time_get, errnoToString } from "./bindings/wasi_snapshot_preview1";
 
-import {
-  tempbuf
-} from "./wasi_internal";
+import { tempbuf } from "./wasi_internal";
 
-import {
-  Date
-} from "date";
+import { Date } from "date";
 
 export class wasi_Date extends Date {
   static now(): i64 {
