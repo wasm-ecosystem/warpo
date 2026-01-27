@@ -1,5 +1,5 @@
 {
-  "extends": "../../assemblyscript/std/assembly.json",
+  "extends": "../../types/tsconfig-std.json",
   "compilerOptions": {
     "target": "esnext",
     "allowJs": false,

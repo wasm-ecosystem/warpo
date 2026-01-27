@@ -1,5 +1,5 @@
 {
-  "extends": "../std/assembly.json",
+  "extends": "../../types/tsconfig-std.json",
   "compilerOptions": {
     "target": "esnext",
     "outDir": "../build",

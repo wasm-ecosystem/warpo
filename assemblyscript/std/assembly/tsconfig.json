@@ -1,4 +1,4 @@
 {
-  "extends": "../assembly.json",
+  "extends": "../../../types/tsconfig-std.json",
   "include": ["./**/*.ts"]
 }

@@ -1,4 +1,4 @@
-/// <reference path="../../../std/assembly/rt/index.d.ts" />
+/// <reference path="../../../../assemblyscript/std/assembly/rt/index.d.ts" />
 
 import { TypeinfoFlags } from "shared/typeinfo";
 

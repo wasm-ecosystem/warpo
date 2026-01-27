@@ -1,4 +1,4 @@
-/// <reference path="../../assemblyscript/std/assembly/index.d.ts" />
+/// <reference path="../std/index.d.ts" />
 
 declare module "rt/index" {
   // allocate new object with size and rtid

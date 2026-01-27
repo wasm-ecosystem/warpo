@@ -1,5 +1,0 @@
-{
-  "extends": "../../std/assembly.json",
-  "include": ["../**/*.ts"],
-  "exclude": ["../**/node_modules/", "../tests/**", "../lib/**", "./glue/wasm/**"]
-}
