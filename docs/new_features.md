@@ -17,3 +17,4 @@ Comparison with AS, we support some new features.
 <img src="/version/nightly.svg" />
 
 - [host API](/using_compiler/config#host)
+- [tuple](/using_language/details/tuple)

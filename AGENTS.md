@@ -44,3 +44,4 @@ Please follow these instructions after modifying the code.
     <img src="/stability/experimental.svg" />
   </p>
   ```
+- When add new features in documents, maintain the link in `docs/new_features.md`.
