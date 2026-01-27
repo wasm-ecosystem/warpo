@@ -52,7 +52,7 @@ It supports two forms:
 ### `host`
 
 <p style="display: flex; gap: 10px;">
-  <img src="/version/nightly.svg" alt="nightly" />
+  <img src="/version/2.4.0.svg" alt="2.4.0" />
   <img src="/stability/stable.svg" alt="stable" />
 </p>
 

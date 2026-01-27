@@ -14,8 +14,10 @@ Comparison with AS, we support some new features.
 - [for...of](/using_language/details/for_of)
 - [compilation option config](/using_compiler/config)
 
-<img src="/version/nightly.svg" alt="nightly" />
+<img src="/version/2.4.0.svg" alt="2.4.0" />
 
 - [host API](/using_compiler/config#host)
   - [wasi_snapshot_preview1 host](/using_compiler/hosts/wasi_snapshot_preview1)
 - [tuple](/using_language/details/tuple)
+
+<img src="/version/nightly.svg" alt="nightly" />
