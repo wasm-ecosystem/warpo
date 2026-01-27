@@ -5,7 +5,7 @@
   <img src="/stability/rc.svg" alt="rc" />
 </p>
 
-WARPO supports tuple types to describe fixed-length, heterogenous values.
+WARPO supports tuple types to describe fixed-length, heterogeneous values.
 
 ## Basic usage
 
