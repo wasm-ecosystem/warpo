@@ -55,9 +55,7 @@ cli::Opt<bool> updateFlag{
 cli::Opt<std::vector<std::string>> testFilesOpt{
     cli::Category::OnlyForTest,
     "test_files",
-    [](argparse::Argument &arg) {
-      arg.help("optional test file names to run (without .ts extension)").remaining();
-    },
+    [](argparse::Argument &arg) { arg.help("optional test file names to run (without .ts extension)").remaining(); },
 };
 
 enum class TestResult : uint8_t { Success, Failure, Skip };
@@ -336,37 +334,21 @@ std::vector<std::filesystem::path> collectTestFiles(std::filesystem::path const 
 /// @param testFileNames Test file names to filter by (without .ts extension).
 /// @return Filtered list of test files matching the provided names.
 std::vector<std::filesystem::path> filterTestFilesByNames(std::vector<std::filesystem::path> const &allTestFiles,
-                                                           std::vector<std::string> const &testFileNames) {
+                                                          std::vector<std::string> const &testFileNames) {
   std::vector<std::filesystem::path> testFiles;
   for (std::string const &testName : testFileNames) {
     bool found = false;
-    bool duplicateWarned = false;
     for (std::filesystem::path const &testPath : allTestFiles) {
-      // Match against stem (filename without extension)
       if (testPath.stem().string() == testName) {
-        if (!found) {
-          // First matching test file for this name.
-          // Skip if we've already added this test (avoid duplicates in the final list)
-          if (std::ranges::find(testFiles, testPath) == testFiles.end()) {
-            testFiles.push_back(testPath);
-          }
-          found = true;
-        } else if (!duplicateWarned) {
-          // Additional matching files exist; keep using the first one but warn the user.
-          fmt::println("Warning: multiple test files match '{}'; using '{}'",
-                       testName,
-                       testFiles.back().string());
-          duplicateWarned = true;
-        }
+        testFiles.push_back(testPath);
+        found = true;
       }
     }
-    if (!found) {
+    if (!found)
       fmt::println("Warning: test file '{}' not found", testName);
-    }
   }
-  if (testFiles.empty()) {
+  if (testFiles.empty())
     throw std::runtime_error("no matching test files found");
-  }
   return testFiles;
 }
 
@@ -384,7 +366,7 @@ void frontendTestMain(int argc, const char *argv[]) {
   std::filesystem::path const testFolder = getTestFolder();
   std::filesystem::current_path(testFolder);
   std::vector<std::filesystem::path> allTestFiles = collectTestFiles(testFolder);
-  
+
   // Filter test files if specific test names are provided
   std::vector<std::filesystem::path> testFiles;
   std::optional<std::vector<std::string>> const testFileNames = testFilesOpt.tryGet();
