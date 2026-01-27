@@ -1,0 +1,1 @@
+{"version":3,"file":"wasmparser.d.ts","sourceRoot":"","sources":["../../../src/utils/wasmparser.ts"],"names":[],"mappings":"AAUA,OAAO,EAAE,kBAAkB,EAAE,MAAM,iBAAiB,CAAC;AAGrD,wBAAgB,uBAAuB,CAAC,GAAG,EAAE,WAAW,wBAgEvD;AAED,wBAAgB,kBAAkB,CAAC,GAAG,EAAE,WAAW,GAAG,MAAM,GAAG,IAAI,CAiBlE"}
