@@ -186,7 +186,7 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
         std::string_view alias;
         std::string_view internalName;
       };
-      static constexpr std::array<WasiAlias, 7> wasiAliases{
+      static constexpr std::array<WasiAlias, 8> wasiAliases{
           WasiAlias{"console", "~lib/wasi_snapshot_preview1/wasi_console/wasi_console"},
           WasiAlias{"process", "~lib/wasi_snapshot_preview1/wasi_process/wasi_process"},
           WasiAlias{"Date", "~lib/wasi_snapshot_preview1/wasi_date/wasi_Date"},
@@ -194,6 +194,7 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
           WasiAlias{"crypto", "~lib/wasi_snapshot_preview1/wasi_crypto/wasi_crypto"},
           WasiAlias{"abort", "~lib/wasi_snapshot_preview1/wasi_internal/wasi_abort"},
           WasiAlias{"seed", "~lib/wasi_snapshot_preview1/wasi_internal/wasi_seed"},
+          WasiAlias{"trace", "~lib/wasi_snapshot_preview1/wasi_internal/wasi_trace"},
       };
       for (auto const &alias : wasiAliases) {
         if (config.uses.contains(std::string{alias.alias}))
