@@ -68,6 +68,13 @@ export class Value<T> {
   }
 
   isa<ExpectType>(codeInfoIndex: u32 = EXPECT_MAX_INDEX): Value<T> {
+    if (isNullable<T>()) {
+      if (this.data == null) {
+        this.collect(false, codeInfoIndex, `<<null>>`, `RTID<${idof<ExpectType>()}>`);
+        return this;
+      }
+    }
+    assert(this.data != null, "data should not be null here");
     this.collect(
       // @ts-ignore
       this.data instanceof ExpectType,
@@ -86,6 +93,7 @@ export class Value<T> {
         return this;
       }
     }
+    assert(this.data != null, "data should not be null here");
     const rtid = load<u32>(changetype<usize>(this.data) - 8);
     this.collect(rtid == idof<ExpectType>(), codeInfoIndex, `RTID<${rtid}>`, `RTID<${idof<ExpectType>()}>`);
     return this;

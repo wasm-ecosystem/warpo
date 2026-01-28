@@ -64,7 +64,7 @@ export function afterEach(func: () => void): void {
  *  mock some function
  * @param originalFunction function you want to mock
  * @param mockFunction the new function.
- * @returns Mock Status { callTime : u32}
+ * @returns MockFn with call information (e.g. via its `calls` property)
  */
 export function mock<T extends Function>(originalFunction: T, mockFunction: T): MockFn {
   return mockImpl<T>(originalFunction, mockFunction);

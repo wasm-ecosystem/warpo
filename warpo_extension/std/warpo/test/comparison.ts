@@ -117,6 +117,6 @@ export function equal<T>(a: T, b: T): bool {
   if (nonnull_a instanceof Set && nonnull_b instanceof Set) {
     return equalSet(nonnull_a, nonnull_b);
   }
-  ERROR("type is not supported to equal, hint: cannot comparison user-defined object");
+  ERROR("type is not supported for equality, hint: cannot compare user-defined objects");
   return false;
 }

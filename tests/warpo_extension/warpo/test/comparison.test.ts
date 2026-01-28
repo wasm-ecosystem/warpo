@@ -179,8 +179,8 @@ describe("single level container type equal", () => {
   });
 });
 
-describe("mutli-level container type equal", () => {
-  test("", () => {
+describe("multi-level container type equal", () => {
+  test("multi-level nested container equality", () => {
     let arr = new Array<Map<i32, Set<f64>>>();
     for (let i = 0; i < 5; i++) {
       let map = new Map<i32, Set<f64>>();
