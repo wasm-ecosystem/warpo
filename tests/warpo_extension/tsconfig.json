@@ -1,0 +1,4 @@
+{
+  "extends": "../../tsconfig-warpo.json",
+  "include": ["./**/*.ts"]
+}
