@@ -73,8 +73,16 @@ class TestCase {
 
     const functionFilter = fileConfig.func ? ["--func", fileConfig.func] : [];
 
-    await cmd(`${buildDir}/tools/test_runner/warpo_test_runner`, [this.file, ...optArgs, ...functionFilter]);
-    await cmd(`${buildDir}/tools/test_runner/warpo_test_runner`, [this.file, ...baseArgs, ...functionFilter]);
+    await cmd(`${buildDir}/tests/snapshot_diff/test_runner/warpo_test_runner`, [
+      this.file,
+      ...optArgs,
+      ...functionFilter,
+    ]);
+    await cmd(`${buildDir}/tests/snapshot_diff/test_runner/warpo_test_runner`, [
+      this.file,
+      ...baseArgs,
+      ...functionFilter,
+    ]);
 
     const commentLine = (l) => (l.startsWith("  ") ? `;;${l.slice(2)}` : l.length > 0 ? `;;${l}` : l);
     const commentLines = (lines) => lines.split("\n").map(commentLine).join("\n");
