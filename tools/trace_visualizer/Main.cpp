@@ -31,17 +31,22 @@
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
 
-#if defined(__x86_64__)
+#if defined(__x86_64__) || defined(_M_X64)
 #if defined(__clang__) || defined(__GNUC__)
 #include <x86intrin.h>
-#endif
 #elif defined(_MSC_VER)
 #include <intrin.h>
-#endif // defined(__x86_64__)
+#endif
+#elif defined(__aarch64__) || defined(_M_ARM64) || defined(_M_ARM64EC)
+#if defined(_MSC_VER)
+#include <intrin.h>
+#include <winnt.h>
+#endif
+#endif
 
 namespace warpo {
 
-#if defined(__aarch64__)
+#if defined(__aarch64__) || defined(_M_ARM64) || defined(_M_ARM64EC)
 #if defined(__clang__) || defined(__GNUC__)
 static uint64_t getCurrentCPUCounterImpl() {
   uint64_t result;
@@ -49,22 +54,25 @@ static uint64_t getCurrentCPUCounterImpl() {
   return result;
 }
 #elif defined(_MSC_VER)
-static uint64_t getCurrentCPUCounterImpl() { throw std::runtime_error("Not implemented on MSVC for ARM64"); }
+static uint64_t getCurrentCPUCounterImpl() {
+  return static_cast<uint64_t>(_ReadStatusReg(ARM64_SYSREG(3, 3, 14, 0, 2)));
+}
 #endif
-#endif // defined(__aarch64__)
+#endif // defined(__aarch64__) || defined(_M_ARM64) || defined(_M_ARM64EC)
 
-#if defined(__x86_64__)
+#if defined(__x86_64__) || defined(_M_X64)
 #if defined(__clang__) || defined(__GNUC__)
 static uint64_t getCurrentCPUCounterImpl() { return static_cast<uint64_t>(__rdtsc()); }
-#endif
 #elif defined(_MSC_VER)
 static uint64_t getCurrentCPUCounterImpl() { return static_cast<uint64_t>(__rdtsc()); }
-#endif // defined(__x86_64__)
+#endif
+#endif // defined(__x86_64__) || defined(_M_X64)
 
 static uint64_t getCurrentCPUCounter() {
   std::atomic_signal_fence(std::memory_order_seq_cst);
-  return getCurrentCPUCounterImpl();
+  uint64_t const counter = getCurrentCPUCounterImpl();
   std::atomic_signal_fence(std::memory_order_seq_cst);
+  return counter;
 };
 
 static double measureCountToPerfettoTimestampRate() {
