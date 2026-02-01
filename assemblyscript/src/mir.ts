@@ -47,7 +47,7 @@ export function addGlobal(variable: Global, type: Type): void {
   _WarpoAddGlobal(
     variable.internalName,
     decodeURIComponent(typeToMIRName(type)),
-    false,
+    type.is(TypeFlags.Nullable),
     !variable.is(CommonFlags.Const)
   );
 }
