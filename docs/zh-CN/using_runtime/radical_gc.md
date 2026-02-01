@@ -9,7 +9,7 @@ Radical Runtime 是一个轻量级的垃圾回收（GC）运行时，具备如�
 
 - Stop-The-World（STW）机制：GC 期间暂停执行以确保一致性。
 - Two-Color Mark & Sweep（TCMS）算法：将对象分为 active（可达）与 inactive（不可达），以便高效回收内存。
-- Shadow Stack 集成：通过“[shadow stack](/zh-CN/using_runtime/garbage_collection.md)”在栈上动态跟踪 GC roots，避免复杂的 stack maps。
+- Shadow Stack 集成：通过“[shadow stack](/zh-CN/using_runtime/shadow_stack)”在栈上动态跟踪 GC roots，避免复杂的 stack maps。
 
 该设计确保了 GC 过程的确定性与简洁性。
 
