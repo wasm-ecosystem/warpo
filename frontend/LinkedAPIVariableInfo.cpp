@@ -20,13 +20,20 @@ void createBaseType(uint32_t const typeNamePtr, vb::WasmModule const *const ctx)
   pCompiler->asModule_.variableInfo_.createBaseType(WarpRunner::getString(ctx, typeNamePtr));
 }
 
-void createClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, uint32_t const rtid,
-                 vb::WasmModule const *const ctx) {
+void createClass(uint32_t const classNamePtr, uint32_t const rtid, vb::WasmModule const *const ctx) {
   std::string const className{WarpRunner::getString(ctx, classNamePtr)};
-  std::string const parentName{WarpRunner::getString(ctx, parentNamePtr)};
-
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
-  pCompiler->asModule_.variableInfo_.createClass(className, parentName, rtid);
+  pCompiler->asModule_.variableInfo_.createClass(className, rtid);
+}
+
+void addBaseClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, vb::WasmModule const *const ctx) {
+  std::string const className = WarpRunner::getString(ctx, classNamePtr);
+  std::string parentClassName;
+  if (parentNamePtr != 0U) {
+    parentClassName = WarpRunner::getString(ctx, parentNamePtr);
+    FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+    pCompiler->asModule_.variableInfo_.addBaseClass(className, parentClassName);
+  }
 }
 
 void addField(uint32_t const classNamePtr, uint32_t const fieldNamePtr, uint32_t const typeNamePtr,
@@ -96,6 +103,7 @@ std::vector<vb::NativeSymbol> createVariableInfoAPI() {
   return std::vector<vb::NativeSymbol>{
       STATIC_LINK("warpo", "_WarpoCreateBaseType", createBaseType),
       STATIC_LINK("warpo", "_WarpoCreateClass", createClass),
+      STATIC_LINK("warpo", "_WarpoAddBaseClass", addBaseClass),
       STATIC_LINK("warpo", "_WarpoAddField", addField),
       STATIC_LINK("warpo", "_WarpoAddTemplateType", addTemplateType),
       STATIC_LINK("warpo", "_WarpoAddGlobal", addGlobal),

@@ -7,7 +7,8 @@ declare function _WarpoMarkDataElementImmutable(begin: u32, size: u32): void;
 declare function _WarpoMarkCallInlined(expr: ExpressionRef): void;
 
 declare function _WarpoCreateBaseType(typeName: string): void;
-declare function _WarpoCreateClass(className: string, parentClassName: string | null, rtid: u32): void;
+declare function _WarpoCreateClass(className: string, rtid: u32): void;
+declare function _WarpoAddBaseClass(className: string, parentClassName: string | null): void;
 declare function _WarpoAddTemplateType(className: string, templateTypeName: string): void;
 
 declare function _WarpoAddField(
@@ -52,13 +53,15 @@ export function markCallInlined(expr: ExpressionRef): void {
 export function createBaseType(typeName: string): void {
   _WarpoCreateBaseType(typeName);
 }
-export function createClass(className: string, parentClassName: string | null, rtid: u32): void {
+export function createClass(className: string, rtid: u32): void {
+  _WarpoCreateClass(decodeURIComponent(className), rtid);
+}
+export function addBaseClass(className: string, parentClassName: string | null): void {
   if (parentClassName !== null) {
     parentClassName = decodeURIComponent(parentClassName);
   }
-  _WarpoCreateClass(decodeURIComponent(className), parentClassName, rtid);
+  _WarpoAddBaseClass(decodeURIComponent(className), parentClassName);
 }
-
 export function addField(className: string, fieldName: string, typeName: string, offset: u32, nullable: bool): void {
   _WarpoAddField(decodeURIComponent(className), fieldName, decodeURIComponent(typeName), offset, nullable);
 }

@@ -3280,14 +3280,6 @@ export class Resolver extends DiagnosticEmitter {
     /** How to proceed with eventual diagnostics. */
     reportMode: ReportMode
   ): void {
-    // Create the class in C++ registry first, before processing any members
-    let parentName: string | null = null;
-    let baseClass = instance.base;
-    if (baseClass) {
-      parentName = baseClass.internalName;
-    }
-    createClass(instance.internalName, parentName, instance.id);
-
     // Add template types if present
     let typeArguments = instance.typeArguments;
     if (typeArguments) {

@@ -99,7 +99,7 @@ import { Flow, LocalFlags } from "./flow";
 import { Parser } from "./parser";
 
 import { BuiltinNames, builtinFunctions, builtinVariables_onAccess } from "./builtins";
-import { addParameter, addSubProgram, createBaseType, createClass } from "./warpo";
+import { addBaseClass, addParameter, addSubProgram, createBaseType, createClass } from "./warpo";
 import { isScalarJsonKind, JsonArray, JsonObject, JsonValue, JsonValueKind } from "./json";
 import {
   mangleComputedPropertyName,
@@ -5027,6 +5027,8 @@ export class Class extends TypedElement {
       program.managedClasses.set(id, this);
     }
 
+    createClass(this.internalName, this._id);
+
     // apply pre-checked instance-specific contextual type arguments
     let typeParameters = prototype.typeParameterNodes;
     if (typeArguments) {
@@ -5072,6 +5074,7 @@ export class Class extends TypedElement {
   setBase(base: Class): void {
     assert(!this.base);
     this.base = base;
+    addBaseClass(this.internalName, base.internalName);
 
     // Inherit contextual type arguments from base class
     let inheritedTypeArguments = base.contextualTypeArguments;

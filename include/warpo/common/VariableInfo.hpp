@@ -29,7 +29,8 @@ public:
   using GlobalTypes = std::map<std::string, GlobalTypeInfo>;
 
   void createBaseType(std::string_view typeName);
-  void createClass(std::string_view className, std::string parentName, uint32_t const rtid);
+  void createClass(std::string_view className, uint32_t const rtid);
+  void addBaseClass(std::string_view const className, std::string const parentName);
 
   void addField(std::string_view const className, std::string fieldName, std::string typeName, uint32_t const offset,
                 uint32_t const nullable);

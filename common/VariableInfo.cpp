@@ -24,10 +24,16 @@ void VariableInfo::createBaseType(std::string_view typeName) {
   baseTypeRegistry_.emplace(internedTypeName);
 }
 
-void VariableInfo::createClass(std::string_view const className, std::string const parentName, uint32_t const rtid) {
+void VariableInfo::createClass(std::string_view const className, uint32_t const rtid) {
   std::string_view const internedClassName = stringPool_.internString(className);
+  // std::string_view const internedParentName = stringPool_.internString(parentName);
+  classRegistry_.emplace(internedClassName, ClassInfo{internedClassName, rtid});
+}
+
+void VariableInfo::addBaseClass(std::string_view const className, std::string const parentName) {
   std::string_view const internedParentName = stringPool_.internString(parentName);
-  classRegistry_.emplace(internedClassName, ClassInfo{internedClassName, internedParentName, rtid});
+  ClassRegistry::iterator const classIt = classRegistry_.find(className);
+  classIt->second.addBaseClass(internedParentName);
 }
 
 void VariableInfo::addTemplateType(std::string_view const className, std::string_view const templateTypeName) {
@@ -108,8 +114,10 @@ TEST(TestVariableInfo, TestCreateClass) {
   VariableInfo variableInfo;
 
   // 1. Add two classes
-  variableInfo.createClass("Person", "Object", 1);
-  variableInfo.createClass("Employee", "Person", 2);
+  variableInfo.createClass("Person", 1);
+  variableInfo.addBaseClass("Person", "Object");
+  variableInfo.createClass("Employee", 2);
+  variableInfo.addBaseClass("Employee", "Person");
 
   // 2. Add several members to each class
   // Person class members
@@ -202,7 +210,8 @@ TEST(TestVariableInfo, TestTemplateTypes) {
   VariableInfo variableInfo;
 
   // Create a generic container class
-  variableInfo.createClass("Container<T>", "Object", 10);
+  variableInfo.createClass("Container<T>", 10);
+  variableInfo.addBaseClass("Container<T>", "Object");
 
   // Add template types - one basic type (i32) and one complex type (String)
   variableInfo.addTemplateType("Container<T>", "i32");
@@ -271,7 +280,8 @@ TEST(TestVariableInfo, TestAddParameter) {
   EXPECT_FALSE(calcParams[1].isNullable());
 
   // Test adding parameters to class member function
-  variableInfo.createClass("Math", "Object", 200);
+  variableInfo.createClass("Math", 200);
+  variableInfo.addBaseClass("Math", "Object");
   variableInfo.addSubProgram("multiply", "Math");
   variableInfo.addParameter("multiply", "x", "i32", 0, false);
   variableInfo.addParameter("multiply", "y", "i32", 1, false);
@@ -335,7 +345,8 @@ TEST(TestVariableInfo, TestAddLocalToClassMemberFunction) {
   VariableInfo variableInfo;
 
   // Test class member function
-  variableInfo.createClass("Math", "Object", 300);
+  variableInfo.createClass("Math", 300);
+  variableInfo.addBaseClass("Math", "Object");
   variableInfo.addSubProgram("compute", "Math");
   BinaryenExpressionRef const startExpr2 = reinterpret_cast<BinaryenExpressionRef>(0x3000);
   BinaryenExpressionRef const endExpr2 = reinterpret_cast<BinaryenExpressionRef>(0x4000);
