@@ -4,6 +4,7 @@ aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} warpo_passes_sources)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/GC warpo_passes_sources)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/helper warpo_passes_sources)
 aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/DwarfGenerator warpo_passes_sources)
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/Instrumentation warpo_passes_sources)
 
 if(NOT WARPO_RELEASE)
   include(GoogleTest)
