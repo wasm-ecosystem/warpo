@@ -27,8 +27,6 @@ public:
     return it->second;
   }
 
-  std::unordered_map<std::string_view, uint64_t> const &getOffsetMap() const { return offsetMap_; }
-
 private:
   uint64_t currentOffset_ = 0U;
   std::unordered_map<std::string_view, uint64_t> offsetMap_;
