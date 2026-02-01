@@ -33,6 +33,7 @@ void VariableInfo::createClass(std::string_view const className, uint32_t const 
 void VariableInfo::addBaseClass(std::string_view const className, std::string const parentName) {
   std::string_view const internedParentName = stringPool_.internString(parentName);
   ClassRegistry::iterator const classIt = classRegistry_.find(className);
+  assert(classIt != classRegistry_.end());
   classIt->second.addBaseClass(internedParentName);
 }
 
