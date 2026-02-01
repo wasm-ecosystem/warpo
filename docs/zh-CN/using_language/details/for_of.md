@@ -1,5 +1,27 @@
-# for...of
+# `for ... of`
 
-`for...of` 语句依赖 [iterator](./iterator)。
+<p style="display: flex; gap: 10px;">
+	<img src="/version/2.3.0.svg" alt="2.3.0" />
+	<img src="/stability/experimental.svg" alt="experimental" />
+</p>
 
-> 中文版内容持续补充中；若本页信息不足，可先参考英文版：[/using_language/details/for_of](/en/using_language/details/for_of)
+`for...of` 语句依赖 [iterator](/zh-CN/using_language/details/iterator)。
+
+编译期间，for...of 会使用 iterator 展开（desugar）。
+
+```ts
+for (const value of myIterable) {
+}
+```
+
+等价于：
+
+```ts
+for (
+  let it: MyIterator = myIterable[Symbol.iterator](), ret: IteratorResult<string> = it.next();
+  !ret.done;
+  ret = it.next()
+) {
+  const value = it.value;
+}
+```

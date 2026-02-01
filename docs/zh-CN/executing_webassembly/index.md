@@ -1,5 +1,5 @@
-# 执行 WebAssembly
+编译产物可以在任意 WebAssembly 运行时中执行，包括 nodejs、wasmtime 等。
 
-本节介绍在不同环境中执行 warpo 产出的 WebAssembly 模块的常见方式。
+我们强烈推荐使用 [wasm-compiler](https://github.com/wasm-ecosystem/wasm-compiler) 来运行由 WARPO 编译的 WebAssembly 字节码。
 
-> 中文版内容持续补充中；若本页信息不足，可先参考英文版：[/executing_webassembly/index](/en/executing_webassembly/index)
+它们是协同设计的，具备最佳的端到端（E2E）性能。

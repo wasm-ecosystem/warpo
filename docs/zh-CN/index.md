@@ -4,15 +4,15 @@ layout: home
 
 hero:
   name: "WARPO"
-  tagline: "next generation AssemblyScript compiler with optimizations"
+  tagline: "新一代 AssemblyScript 编译器（含优化）"
   actions:
     - theme: brand
-      text: Get Started
-      link: /en/using_language/index.md
+      text: 开始使用
+      link: /zh-CN/using_language/index.md
     - theme: alt
-      text: View on GitHub
+      text: 在 GitHub 查看
       link: https://github.com/wasm-ecosystem/warpo
     - theme: alt
-      text: Download from NPM
+      text: 从 NPM 下载
       link: https://www.npmjs.com/package/warpo
 ---
