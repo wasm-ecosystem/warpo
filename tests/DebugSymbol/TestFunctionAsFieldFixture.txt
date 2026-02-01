@@ -1,0 +1,445 @@
+
+.debug_abbrev contents:
+Abbrev table for offset: 0x00000000
+[1] DW_TAG_compile_unit	DW_CHILDREN_yes
+	DW_AT_producer	DW_FORM_strp
+
+[2] DW_TAG_class_type	DW_CHILDREN_yes
+	DW_AT_name	DW_FORM_string
+	DW_AT_signature	DW_FORM_data4
+
+[3] DW_TAG_member	DW_CHILDREN_no
+	DW_AT_name	DW_FORM_string
+	DW_AT_type	DW_FORM_ref4
+	DW_AT_data_member_location	DW_FORM_data4
+
+[4] DW_TAG_base_type	DW_CHILDREN_no
+	DW_AT_name	DW_FORM_string
+
+[5] DW_TAG_template_type_parameter	DW_CHILDREN_no
+	DW_AT_type	DW_FORM_ref4
+
+[6] DW_TAG_variable	DW_CHILDREN_no
+	DW_AT_name	DW_FORM_string
+	DW_AT_type	DW_FORM_ref4
+
+[7] DW_TAG_variable	DW_CHILDREN_no
+	DW_AT_name	DW_FORM_string
+	DW_AT_type	DW_FORM_ref4
+	DW_AT_location	DW_FORM_data4
+
+[8] DW_TAG_formal_parameter	DW_CHILDREN_no
+	DW_AT_name	DW_FORM_string
+	DW_AT_type	DW_FORM_ref4
+	DW_AT_location	DW_FORM_data4
+
+[9] DW_TAG_lexical_block	DW_CHILDREN_yes
+	DW_AT_low_pc	DW_FORM_addr
+	DW_AT_high_pc	DW_FORM_addr
+
+[10] DW_TAG_subprogram	DW_CHILDREN_yes
+	DW_AT_name	DW_FORM_string
+
+
+.debug_info contents:
+0x00000000: Compile Unit: version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04
+DW_TAG_compile_unit
+              DW_AT_producer	("warpo")
+  DW_TAG_base_type
+                DW_AT_name	("bool")
+  DW_TAG_base_type
+                DW_AT_name	("f32")
+  DW_TAG_base_type
+                DW_AT_name	("f64")
+  DW_TAG_base_type
+                DW_AT_name	("i16")
+  DW_TAG_base_type
+                DW_AT_name	("i32")
+  DW_TAG_base_type
+                DW_AT_name	("i64")
+  DW_TAG_base_type
+                DW_AT_name	("i8")
+  DW_TAG_base_type
+                DW_AT_name	("isize")
+  DW_TAG_base_type
+                DW_AT_name	("u16")
+  DW_TAG_base_type
+                DW_AT_name	("u32")
+  DW_TAG_base_type
+                DW_AT_name	("u64")
+  DW_TAG_base_type
+                DW_AT_name	("u8")
+  DW_TAG_base_type
+                DW_AT_name	("usize")
+  DW_TAG_class_type
+                DW_AT_name	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass")
+                DW_AT_signature	(0x00000004)
+    DW_TAG_member
+                  DW_AT_name	("fnField")
+                  DW_AT_type	("")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass#get:fnField")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass")
+                    DW_AT_location	(0x00000000)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass#set:fnField")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_formal_parameter
+                    DW_AT_name	("fnField")
+                    DW_AT_type	("")
+                    DW_AT_location	(0x00000001)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass#constructor")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass")
+                    DW_AT_location	(0x00000000)
+      NULL
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
+                DW_AT_signature	(0x00000001)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/arraybuffer/ArrayBufferView")
+                DW_AT_signature	(0x00000003)
+    DW_TAG_member
+                  DW_AT_name	("buffer")
+                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("dataStart")
+                  DW_AT_type	("usize")
+                  DW_AT_data_member_location	(0x00000004)
+    DW_TAG_member
+                  DW_AT_name	("byteLength")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x00000008)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/Bool")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/F32")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/F64")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/I16")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/I32")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/I64")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/I8")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/Isize")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/U16")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/U32")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/U64")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/U8")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/Usize")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/object/Object")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/rt/common/BLOCK")
+                DW_AT_signature	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("mmInfo")
+                  DW_AT_type	("usize")
+                  DW_AT_data_member_location	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/rt/common/OBJECT")
+                DW_AT_signature	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("gcInfo")
+                  DW_AT_type	("u32")
+                  DW_AT_data_member_location	(0x00000004)
+    DW_TAG_member
+                  DW_AT_name	("gcInfo2")
+                  DW_AT_type	("u32")
+                  DW_AT_data_member_location	(0x00000008)
+    DW_TAG_member
+                  DW_AT_name	("rtId")
+                  DW_AT_type	("u32")
+                  DW_AT_data_member_location	(0x0000000c)
+    DW_TAG_member
+                  DW_AT_name	("rtSize")
+                  DW_AT_type	("u32")
+                  DW_AT_data_member_location	(0x00000010)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/rt/itcms/Object")
+                DW_AT_signature	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("nextWithColor")
+                  DW_AT_type	("usize")
+                  DW_AT_data_member_location	(0x00000004)
+    DW_TAG_member
+                  DW_AT_name	("prev")
+                  DW_AT_type	("~lib/rt/itcms/Object")
+                  DW_AT_data_member_location	(0x00000008)
+    DW_TAG_member
+                  DW_AT_name	("rtId")
+                  DW_AT_type	("u32")
+                  DW_AT_data_member_location	(0x0000000c)
+    DW_TAG_member
+                  DW_AT_name	("rtSize")
+                  DW_AT_type	("u32")
+                  DW_AT_data_member_location	(0x00000010)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/rt/tlsf/Block")
+                DW_AT_signature	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("prev")
+                  DW_AT_type	("~lib/rt/tlsf/Block")
+                  DW_AT_data_member_location	(0x00000004)
+    DW_TAG_member
+                  DW_AT_name	("next")
+                  DW_AT_type	("~lib/rt/tlsf/Block")
+                  DW_AT_data_member_location	(0x00000008)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/rt/tlsf/Root")
+                DW_AT_signature	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("flMap")
+                  DW_AT_type	("usize")
+                  DW_AT_data_member_location	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/shared/typeinfo/Typeinfo")
+                DW_AT_signature	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("flags")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/string/String")
+                DW_AT_signature	(0x00000002)
+    NULL
+  DW_TAG_variable
+                DW_AT_name	("tests/DebugSymbol/TestFunctionAsField/v")
+                DW_AT_type	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass")
+  DW_TAG_variable
+                DW_AT_name	("~lib/native/ASC_LOW_MEMORY_LIMIT")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/AL_BITS")
+                DW_AT_type	("u32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/AL_MASK")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/AL_SIZE")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/BLOCK_MAXSIZE")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/BLOCK_OVERHEAD")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/DEBUG")
+                DW_AT_type	("bool")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/OBJECT_MAXSIZE")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/OBJECT_OVERHEAD")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/RTRACE")
+                DW_AT_type	("bool")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/TOTAL_OVERHEAD")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/common/TRACE")
+                DW_AT_type	("bool")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/COLOR_MASK")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/GRANULARITY")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/IDLEFACTOR")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/STATE_IDLE")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/STATE_MARK")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/STATE_SWEEP")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/STEPFACTOR")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/VISIT_SCAN")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/fromSpace")
+                DW_AT_type	("~lib/rt/itcms/Object")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/gray")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/iter")
+                DW_AT_type	("~lib/rt/itcms/Object")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/pinSpace")
+                DW_AT_type	("~lib/rt/itcms/Object")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/state")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/threshold")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/toSpace")
+                DW_AT_type	("~lib/rt/itcms/Object")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/total")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/transparent")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/visitCount")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/itcms/white")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/BLOCK_MINSIZE")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/FL_BITS")
+                DW_AT_type	("u32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/FREE")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/HL_END")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/HL_START")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/LEFTFREE")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/ROOT")
+                DW_AT_type	("~lib/rt/tlsf/Root")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/ROOT_SIZE")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/SB_BITS")
+                DW_AT_type	("u32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/SB_SIZE")
+                DW_AT_type	("u32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/SL_BITS")
+                DW_AT_type	("u32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/SL_END")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/SL_SIZE")
+                DW_AT_type	("u32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/SL_START")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/rt/tlsf/TAGS_MASK")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/error/E_ALLOCATION_TOO_LARGE")
+                DW_AT_type	("~lib/string/String")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/error/E_INDEXOUTOFRANGE")
+                DW_AT_type	("~lib/string/String")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/math/EXP2F_TABLE_BITS")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/math/EXP_TABLE_BITS")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/math/LOG2F_TABLE_BITS")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/math/LOG2_TABLE_BITS")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/math/LOGF_TABLE_BITS")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/math/LOG_TABLE_BITS")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/math/POW_LOG_TABLE_BITS")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/math/SIGN_BIAS")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/number/MAX_DOUBLE_LENGTH")
+                DW_AT_type	("i32")
+  DW_TAG_subprogram
+                DW_AT_name	("tests/DebugSymbol/TestFunctionAsField/start:tests/DebugSymbol/TestFunctionAsField")
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("start:tests/DebugSymbol/TestFunctionAsField")
+    NULL
+
+.debug_str contents:
+0x00000000: "warpo"

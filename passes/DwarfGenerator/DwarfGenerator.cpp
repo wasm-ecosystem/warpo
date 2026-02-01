@@ -1,6 +1,8 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <fmt/base.h>
+
 #include "../helper/BinaryenExt.hpp"
 #include "AbbrevFactory.hpp"
 #include "DebugStringManager.hpp"
@@ -21,9 +23,12 @@ class DIEOffsetCalculator : public llvm::DWARFYAML::Visitor {
 public:
   explicit DIEOffsetCalculator(llvm::DWARFYAML::Data &DI) : llvm::DWARFYAML::Visitor(DI) {}
 
-  uint64_t getOffset(std::string_view const name) const {
+  std::optional<uint64_t> getOffset(std::string_view const name) const {
     std::unordered_map<std::string_view, uint64_t>::const_iterator const it = offsetMap_.find(name);
-    assert(it != offsetMap_.end());
+    // we cannot make sure all types are recorded.
+    // if field is A | null, but A is never used, then A won't be recorded.
+    if (it == offsetMap_.end())
+      return std::nullopt;
     return it->second;
   }
 
@@ -410,9 +415,15 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo,
 
   for (TypeRefFixup const &fixup : typeRefFixups) {
     std::string_view const typeName = fixup.typeName;
-    uint64_t const typeOffset = offsetCalculator.getOffset(typeName);
-    assert(typeOffset != 0U);
-    dwarfData.CompileUnits[0U].Entries[fixup.entryIndex].Values[fixup.valueIndex].Value = typeOffset;
+    std::optional<uint64_t> const typeOffset = offsetCalculator.getOffset(typeName);
+    if (typeOffset.has_value()) {
+      dwarfData.CompileUnits[0U].Entries[fixup.entryIndex].Values[fixup.valueIndex].Value = *typeOffset;
+    } else {
+      // for the types that are not used, we just skip the fixup.
+      // it will introduce some invalid type references.
+      fmt::println("Warning: DWARF type not found for fixup: {}", typeName);
+      dwarfData.CompileUnits[0U].Entries[fixup.entryIndex].Values[fixup.valueIndex].Value = 0xDEADBEEFU;
+    }
   }
 
   dwarfData.DebugStrings = stringManager.getDebugStrings();
