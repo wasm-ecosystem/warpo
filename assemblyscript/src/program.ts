@@ -99,7 +99,6 @@ import { Flow, LocalFlags } from "./flow";
 import { Parser } from "./parser";
 
 import { BuiltinNames, builtinFunctions, builtinVariables_onAccess } from "./builtins";
-import { addBaseClass, addParameter, addSubProgram, createBaseType, createClass } from "./warpo";
 import { isScalarJsonKind, JsonArray, JsonObject, JsonValue, JsonValueKind } from "./json";
 import {
   mangleComputedPropertyName,
@@ -110,6 +109,7 @@ import {
   INDEX_SUFFIX,
 } from "./mangle";
 import { Lookup } from "./lookup";
+import * as mir from "./mir";
 
 // Memory manager constants
 const AL_SIZE = 16;
@@ -2024,7 +2024,7 @@ export class Program extends DiagnosticEmitter {
 
   /** Registers the wrapper class of a non-class type. */
   private registerWrapperClass(type: Type, className: string): void {
-    createBaseType(type.toStringWithoutNullable());
+    mir.createBaseType(type);
     let wrapperClasses = this.wrapperClasses;
     assert(!type.isInternalReference && !wrapperClasses.has(type));
     let element = assert(this.lookup(className));
@@ -4325,12 +4325,11 @@ export class Function extends TypedElement {
     this.type = signature.type;
     let flow = Flow.createDefault(this);
     this.flow = flow;
-    const functionName = decodeURIComponent(this.internalName);
     if (!prototype.is(CommonFlags.Ambient)) {
       if (this.parent.kind == ElementKind.Class) {
-        addSubProgram(functionName, this.parent.internalName);
+        mir.addSubProgram(this, this.parent as Class);
       } else {
-        addSubProgram(functionName, null);
+        mir.addSubProgram(this, null);
       }
 
       let localIndex = 0;
@@ -4349,8 +4348,7 @@ export class Function extends TypedElement {
         scopedLocals.set(CommonNames.this_, local);
         this.localsByIndex[local.index] = local;
         flow.setLocalFlag(local.index, LocalFlags.Initialized);
-
-        addParameter(functionName, "this", thisType.toStringWithoutNullable(), local.index, false);
+        mir.addParameter(this, local);
       }
       let parameterTypes = signature.parameterTypes;
       for (let i = 0, k = parameterTypes.length; i < k; ++i) {
@@ -4369,8 +4367,7 @@ export class Function extends TypedElement {
         scopedLocals.set(parameterName, local);
         this.localsByIndex[local.index] = local;
         flow.setLocalFlag(local.index, LocalFlags.Initialized);
-        const fullTypeName = parameterType.toStringWithoutNullable();
-        addParameter(functionName, parameterName, fullTypeName, local.index, parameterType.isNullableReference);
+        mir.addParameter(this, local);
       }
     }
     registerConcreteElement(program, this);
@@ -5027,7 +5024,7 @@ export class Class extends TypedElement {
       program.managedClasses.set(id, this);
     }
 
-    createClass(this.internalName, this._id);
+    mir.createClass(this);
 
     // apply pre-checked instance-specific contextual type arguments
     let typeParameters = prototype.typeParameterNodes;
@@ -5074,7 +5071,7 @@ export class Class extends TypedElement {
   setBase(base: Class): void {
     assert(!this.base);
     this.base = base;
-    addBaseClass(this.internalName, base.internalName);
+    mir.addBaseClass(this, base);
 
     // Inherit contextual type arguments from base class
     let inheritedTypeArguments = base.contextualTypeArguments;

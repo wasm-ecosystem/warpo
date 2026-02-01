@@ -16,7 +16,7 @@ import {
   PropertyPrototype,
   TypeDefinition,
 } from "./program";
-
+import * as mir from "./mir";
 import {
   TypeRef,
   ExpressionId,
@@ -68,7 +68,6 @@ import { cloneMap } from "./util";
 
 import { BuiltinNames } from "./builtins";
 
-import { addLocal, addScope } from "./warpo";
 import { mangleInternalName } from "./mangle";
 
 /** Control flow flags indicating specific conditions. */
@@ -1434,19 +1433,12 @@ export class Flow {
     if (this.scopedLocals) {
       let scopedLocals = this.scopedLocals as Map<string, Local>;
       let keys = Map_keys(scopedLocals);
-      let scopeId = addScope(this.targetFunction.internalName, startStmt, endStmt);
+      let scopeId = mir.addScope(this.targetFunction, startStmt, endStmt);
       for (let i = 0; i < keys.length; ++i) {
         let key = unchecked(keys[i]);
         let local = scopedLocals.get(key) as Local;
         if (!local.isParameter()) {
-          addLocal(
-            this.targetFunction.internalName,
-            local.name,
-            local.type.toStringWithoutNullable(),
-            local.index,
-            scopeId,
-            local.type.isNullableReference
-          );
+          mir.addLocal(this.targetFunction, local, scopeId);
         }
       }
     }

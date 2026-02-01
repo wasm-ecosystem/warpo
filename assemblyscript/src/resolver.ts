@@ -76,8 +76,7 @@ import { alignUpToPowerOf2, cloneMap, isPowerOf2 } from "./util";
 import { Token, operatorTokenToString } from "./tokenizer";
 
 import { BuiltinNames, builtinTypes, BuiltinTypesContext } from "./builtins";
-
-import { addField, createClass, addTemplateType } from "./warpo";
+import * as mir from "./mir";
 import {
   mangleComputedPropertyName,
   mangleGenericInstanceKey,
@@ -3284,7 +3283,7 @@ export class Resolver extends DiagnosticEmitter {
     let typeArguments = instance.typeArguments;
     if (typeArguments) {
       for (let i = 0; i < typeArguments.length; i++) {
-        addTemplateType(instance.internalName, typeArguments[i].toStringWithoutNullable());
+        mir.addTemplateType(instance, typeArguments[i]);
       }
     }
 
@@ -3410,14 +3409,7 @@ export class Resolver extends DiagnosticEmitter {
                   let mask = byteSize - 1;
                   if (memoryOffset & mask) memoryOffset = (memoryOffset | mask) + 1;
                   boundInstance.memoryOffset = memoryOffset;
-                  const fullTypeName = fieldType.toStringWithoutNullable();
-                  addField(
-                    instance.internalName,
-                    memberName,
-                    fullTypeName,
-                    boundInstance.memoryOffset,
-                    fieldType.isNullableReference
-                  );
+                  mir.addField(instance, memberName, fieldType, boundInstance.memoryOffset);
                   memoryOffset += byteSize;
                 }
                 boundPrototype.instance = boundInstance;

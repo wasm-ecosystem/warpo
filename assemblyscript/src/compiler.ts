@@ -13,7 +13,7 @@ import {
   compileVisitMembers,
   compileRTTI,
 } from "./builtins";
-
+import * as mir from "./mir";
 import { Range, DiagnosticCode, DiagnosticEmitter } from "./diagnostics";
 
 import {
@@ -172,8 +172,9 @@ import {
   v128_zero,
   v128_ones,
 } from "./util";
-import { markDataElementImmutable, addGlobal, addSubProgram, markCallInlined } from "./warpo";
+import { markDataElementImmutable, markCallInlined } from "./warpo";
 import { mangleImportName, STATIC_DELIMITER, INDEX_SUFFIX } from "./mangle";
+import { addGlobal } from "./mir";
 
 /** Features enabled by default. */
 export const defaultFeatures =
@@ -950,7 +951,7 @@ export class Compiler extends DiagnosticEmitter {
     // compile top-level statements within the file's start function
     let startFunction = file.startFunction;
     let startSignature = startFunction.signature;
-    addSubProgram(startFunction.internalName, null);
+    mir.addSubProgram(startFunction, null);
     let previousBody = this.currentBody;
     let startFunctionBody = new Array<ExpressionRef>();
     this.currentBody = startFunctionBody;
@@ -1228,10 +1229,9 @@ export class Compiler extends DiagnosticEmitter {
         initExpr = this.makeZero(type);
       }
     }
+    addGlobal(global, type);
 
     const internalName = global.internalName;
-    const fullTypeName = type.toStringWithoutNullable();
-    addGlobal(internalName, fullTypeName, type.isNullableReference, !global.is(CommonFlags.Const));
     if (initializeInStart) {
       // initialize to mutable zero and set the actual value in start
       if (isDeclaredInline) {
