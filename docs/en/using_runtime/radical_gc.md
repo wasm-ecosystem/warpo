@@ -9,7 +9,7 @@ Radical Runtime is a lightweight garbage collection (GC) runtime with the follow
 
 - Stop-The-World (STW) Mechanism: Pauses execution during GC to ensure consistency.
 - Two-Color Mark & Sweep (TCMS) Algorithm: Classifies objects as active (reachable) or inactive (unreachable) for efficient memory reclamation.
-- Shadow Stack Integration: Dynamically tracks GC roots on the stack via a ["shadow stack"](/using_runtime/garbage_collection.md), eliminating the need for complex stack maps.
+- Shadow Stack Integration: Dynamically tracks GC roots on the stack via a ["shadow stack"](/en/using_runtime/garbage_collection.md), eliminating the need for complex stack maps.
 
 This design ensures determinism and simplicity in the GC process.
 

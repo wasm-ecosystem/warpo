@@ -63,7 +63,7 @@ Supported values:
 - `none`: do not assume any host APIs.
 - `wasi_snapshot_preview1`: use WASI Snapshot Preview 1 host imports.
 
-See also: [WASI Snapshot Preview 1 Host](/using_compiler/hosts/wasi_snapshot_preview1)
+See also: [WASI Snapshot Preview 1 Host](/en/using_compiler/hosts/wasi_snapshot_preview1)
 
 You can set it in the config file:
 

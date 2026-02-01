@@ -12,65 +12,51 @@ function listItems(folder: string): DefaultTheme.SidebarItem[] {
     }));
 }
 
-// https://vitepress.dev/reference/site-config
-export default defineConfig({
-  title: "warpo document",
-  description: "wasm optimizer designed for AssemblyScript and wasm-compiler",
-  base: "/warpo/",
-  head: [
-    ["link", { rel: "icon", href: "/warpo/favicon.ico" }],
-    ["meta", { name: "google-site-verification", content: "762vxla4bLoGKFlH_iYkk7TVUhrwwpMFS2r7idty0_Y" }],
-  ],
-  sitemap: {
-    hostname: "https://wasm-ecosystem.github.io/warpo/",
-  },
-  themeConfig: {
-    // https://vitepress.dev/reference/default-theme-config
+function getThemeConfig(language: "en" | "zh-CN"): DefaultTheme.Config {
+  // https://vitepress.dev/reference/default-theme-config
+  const config: DefaultTheme.Config = {
     search: {
       provider: "local",
     },
-    nav: [
-      { text: "Home", link: "/" },
-      { text: "GitHub", link: "https://github.com/wasm-ecosystem/warpo" },
-    ],
+    nav: [{ text: "GitHub", link: "https://github.com/wasm-ecosystem/warpo" }],
     sidebar: [
       {
         text: "About Documentation",
-        link: "/about_documentation",
+        link: `/${language}/about_documentation`,
       },
       {
         text: "new features",
-        link: "/new_features",
+        link: `/${language}/new_features`,
       },
       {
         text: "Using the Language",
-        link: "/using_language/index",
+        link: `/${language}/using_language/index`,
         items: [
           {
             text: "current status",
-            link: "/using_language/current_status",
+            link: `/${language}/using_language/current_status`,
           },
           {
             text: "details",
-            items: listItems("using_language/details"),
+            items: listItems(`${language}/using_language/details`),
           },
         ],
       },
       {
         text: "Using the Compiler",
-        link: "/using_compiler/quick_start",
+        link: `/${language}/using_compiler/quick_start`,
         items: [
           {
             text: "manage build configurations",
-            link: "/using_compiler/config",
+            link: `/${language}/using_compiler/config`,
           },
           {
             text: "host APIs",
-            items: listItems("using_compiler/hosts"),
+            items: listItems(`${language}/using_compiler/hosts`),
           },
           {
             text: "third-party libraries",
-            link: "/using_compiler/module_resolution",
+            link: `/${language}/using_compiler/module_resolution`,
           },
         ],
       },
@@ -79,15 +65,15 @@ export default defineConfig({
         items: [
           {
             text: "garbage collection",
-            link: "/using_runtime/garbage_collection",
+            link: `/${language}/using_runtime/garbage_collection`,
             items: [
               {
                 text: "shadow stack",
-                link: "/using_runtime/shadow_stack",
+                link: `/${language}/using_runtime/shadow_stack`,
               },
               {
                 text: "radical GC",
-                link: "/using_runtime/radical_gc",
+                link: `/${language}/using_runtime/radical_gc`,
               },
             ],
           },
@@ -95,8 +81,8 @@ export default defineConfig({
       },
       {
         text: "Executing WebAssembly",
-        link: "/executing_webassembly/index",
-        items: listItems("executing_webassembly"),
+        link: `/${language}/executing_webassembly/index`,
+        items: listItems(`${language}/executing_webassembly`),
       },
       {
         text: "Technical Details",
@@ -146,5 +132,35 @@ export default defineConfig({
       { icon: "github", link: "https://github.com/wasm-ecosystem/warpo" },
       { icon: "npm", link: "https://www.npmjs.com/package/warpo" },
     ],
+  };
+  return config;
+}
+
+// https://vitepress.dev/reference/site-config
+export default defineConfig({
+  locales: {
+    en: {
+      label: "English",
+      lang: "en",
+      title: "warpo document",
+      description: "wasm optimizer designed for AssemblyScript and wasm-compiler",
+      themeConfig: getThemeConfig("en"),
+    },
+    "zh-CN": {
+      label: "简体中文",
+      lang: "zh-CN",
+      title: "warpo 文档",
+      description: "面向 AssemblyScript 与 wasm 编译器的优化器/编译器工具链",
+      themeConfig: getThemeConfig("zh-CN"),
+    },
   },
+  base: "/warpo/",
+  head: [
+    ["link", { rel: "icon", href: "/warpo/favicon.ico" }],
+    ["meta", { name: "google-site-verification", content: "762vxla4bLoGKFlH_iYkk7TVUhrwwpMFS2r7idty0_Y" }],
+  ],
+  sitemap: {
+    hostname: "https://wasm-ecosystem.github.io/warpo/",
+  },
+  themeConfig: getThemeConfig("en"),
 });
