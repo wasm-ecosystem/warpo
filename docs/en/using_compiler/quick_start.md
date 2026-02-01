@@ -27,4 +27,4 @@ npx warpo -h # for more cli options
 ## debug build
 
 use `--debug` to generate debug symbol.
-For debugger developers, refer to [detailed debug symbol design](../tech/debug_symbol/index.md)
+For debugger developers, refer to [detailed debug symbol design](/tech/debug_symbol/index.md)

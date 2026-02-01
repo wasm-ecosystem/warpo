@@ -5,7 +5,7 @@
   <img src="/stability/experimental.svg" alt="experimental" />
 </p>
 
-`for...of` statement rely on [iterator](/en/en/using_language/details/iterator).
+`for...of` statement rely on [iterator](/en/using_language/details/iterator).
 
 During compilation, the for...of statement is expanded using an iterator.
 
