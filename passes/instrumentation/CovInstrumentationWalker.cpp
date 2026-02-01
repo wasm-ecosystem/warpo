@@ -1,7 +1,11 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <array>
+
 #include "CovInstrumentationWalker.hpp"
+#include "binaryen-c.h"
+#include "ir/module-utils.h"
 
 namespace warpo::passes::instrumentation {
 void CovInstrumentationWalker::introduceReportFun() noexcept {

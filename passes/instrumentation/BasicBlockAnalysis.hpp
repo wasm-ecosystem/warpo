@@ -3,12 +3,9 @@
 
 #pragma once
 
-#include <algorithm>
-#include <cstdint>
-#include <memory>
 #include <regex>
+#include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 
 namespace warpo::passes::instrumentation {

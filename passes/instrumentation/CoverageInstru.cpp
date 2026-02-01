@@ -2,14 +2,26 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <binaryen-c.h>
+#include <cstdlib>
+#include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <ostream>
+#include <string>
+#include <string_view>
+#include <unordered_map>
 
+#include "BasicBlockAnalysis.hpp"
+#include "BasicBlockWalker.hpp"
+#include "CovInstrumentationWalker.hpp"
 #include "CoverageInstru.hpp"
+#include "MockInstrumentationWalker.hpp"
 #include "nlohmann/json.hpp"
+#include "wasm-io.h"
+#include "wasm.h"
 namespace warpo::passes::instrumentation {
 
-void CoverageInstru::innerAnalysis(BasicBlockAnalysis &basicBlockAnalysis) const noexcept {
+void CoverageInstrumentation::innerAnalysis(BasicBlockAnalysis &basicBlockAnalysis) const noexcept {
   if (config->skipLib) {
     basicBlockAnalysis.addExclude("~lib/.+");
   }
@@ -32,7 +44,7 @@ void CoverageInstru::innerAnalysis(BasicBlockAnalysis &basicBlockAnalysis) const
   }
 }
 
-InstrumentationResponse CoverageInstru::instrument() const noexcept {
+InstrumentationResponse CoverageInstrumentation::instrument() const noexcept {
   if (config->fileName.empty() || config->reportFunction.empty() || config->sourceMap.empty() ||
       config->targetName.empty() || config->expectInfoOutputFilePath.empty()) {
     std::cout << *config << std::endl;

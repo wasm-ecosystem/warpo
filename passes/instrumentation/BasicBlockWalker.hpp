@@ -3,18 +3,17 @@
 
 #pragma once
 
-#include <algorithm>
-#include <cstddef>
-#include <cstdint>
-#include <cstdlib>
-#include <memory>
+#include <set>
+#include <string_view>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "BasicBlockAnalysis.hpp"
 #include "cfg/cfg-traversal.h"
-#include "ir/module-utils.h"
 #include "support/index.h"
 #include "wasm.h"
+
 namespace warpo::passes::instrumentation {
 
 struct InstrumentPosition {

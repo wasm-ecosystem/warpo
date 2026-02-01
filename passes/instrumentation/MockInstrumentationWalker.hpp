@@ -3,16 +3,18 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
-#include <iostream>
+#include <ir/module-utils.h>
+#include <string>
 #include <string_view>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "binaryen-c.h"
-#include "ir/module-utils.h"
 #include "wasm-builder.h"
 #include "wasm-traversal.h"
 #include "wasm.h"

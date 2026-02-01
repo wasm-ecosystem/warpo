@@ -3,18 +3,9 @@
 
 #pragma once
 
-#include <array>
-#include <memory>
-#include <unordered_map>
-#include <vector>
-
 #include "BasicBlockWalker.hpp"
-#include "binaryen-c.h"
-#include "ir/module-utils.h"
-#include "support/index.h"
 #include "wasm-builder.h"
 #include "wasm-traversal.h"
-#include "wasm-type.h"
 #include "wasm.h"
 namespace warpo::passes::instrumentation {
 ///

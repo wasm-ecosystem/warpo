@@ -2,15 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <algorithm>
-#include <cfg/cfg-traversal.h>
+#include <cassert>
+#include <cstdint>
+#include <cstdlib>
 #include <iostream>
+#include <ir/module-utils.h>
 #include <memory>
 #include <set>
 #include <utility>
-#include <wasm.h>
 
 #include "BasicBlockWalker.hpp"
-#include "ir/branch-utils.h"
 
 namespace warpo::passes::instrumentation {
 

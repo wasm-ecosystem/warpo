@@ -1,10 +1,10 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-#include <asmjs/shared-constants.h>
+#include <array>
 #include <binaryen-c.h>
+#include <sstream>
 #include <string_view>
-#include <support/index.h>
 #include <wasm-type.h>
 #include <wasm.h>
 

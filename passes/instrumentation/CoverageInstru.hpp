@@ -3,31 +3,15 @@
 
 #pragma once
 
-#include <algorithm>
-#include <cstddef>
-#include <cstdint>
-#include <cstdio>
-#include <filesystem>
-#include <fstream>
 #include <ios>
-#include <iostream>
-#include <stdexcept>
-#include <string>
-#include <unordered_map>
-#include <utility>
-#include <vector>
+#include <ostream>
+#include <string_view>
 
-#include "BasicBlockAnalysis.hpp"
-#include "BasicBlockWalker.hpp"
-#include "CovInstrumentationWalker.hpp"
 #include "InstrumentResponse.hpp"
-#include "MockInstrumentationWalker.hpp"
-#include "binaryen-c.h"
-#include "support/index.h"
-#include "wasm-io.h"
-#include "wasm.h"
 
 namespace warpo::passes::instrumentation {
+
+class BasicBlockAnalysis;
 ///
 /// @brief Customer input configuration for instrumentation
 ///
@@ -66,22 +50,22 @@ public:
 ///
 /// @brief Main instrumentation class
 ///
-class CoverageInstru final {
+class CoverageInstrumentation final {
 
 public:
   ///
   ///@brief Constructor for coverage instrumentation
   ///
   ///@param cfg configuration from customer
-  explicit CoverageInstru(InstrumentationConfig const *const cfg) noexcept : config(cfg) {}
-  CoverageInstru(const CoverageInstru &src) = delete; // disable copy construct
-  CoverageInstru(CoverageInstru &&src) = delete;      // disable move construct
-  CoverageInstru &operator=(const CoverageInstru &) = delete;
-  CoverageInstru &operator=(CoverageInstru &&) = delete;
+  explicit CoverageInstrumentation(InstrumentationConfig const *const cfg) noexcept : config(cfg) {}
+  CoverageInstrumentation(const CoverageInstrumentation &src) = delete; // disable copy construct
+  CoverageInstrumentation(CoverageInstrumentation &&src) = delete;      // disable move construct
+  CoverageInstrumentation &operator=(const CoverageInstrumentation &) = delete;
+  CoverageInstrumentation &operator=(CoverageInstrumentation &&) = delete;
   ///
-  ///@brief Destructor for CoverageInstru
+  ///@brief Destructor for CoverageInstrumentation
   ///
-  ~CoverageInstru() noexcept = default;
+  ~CoverageInstrumentation() noexcept = default;
 
   ///
   ///@brief Common public API for instrument process
@@ -97,26 +81,3 @@ private:
   void innerAnalysis(BasicBlockAnalysis &basicBlockAnalysis) const noexcept;
 };
 } // namespace warpo::passes::instrumentation
-
-// export wasm API
-#if defined(__EMSCRIPTEN__)
-#include <emscripten/emscripten.h>
-///
-///@brief Common public API for instrument process
-///
-///@param fileName
-///@param targetName
-///@param reportFunction
-///@param sourceMap
-///@param expectInfoOutputFilePath
-///@param debugInfoOutputFilePath
-///@param includes
-///@param excludes
-///@param skipLib
-///@return InstrumentationResponse
-extern "C" EMSCRIPTEN_KEEPALIVE warpo::passes::instrumentation::InstrumentationResponse
-wasm_instrument(char const *const fileName, char const *const targetName, char const *const reportFunction,
-                char const *const sourceMap, char const *const expectInfoOutputFilePath,
-                char const *const debugInfoOutputFilePath, char const *const excludes, bool skipLib,
-                bool collectCoverage) noexcept;
-#endif
