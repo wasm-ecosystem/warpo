@@ -26,7 +26,6 @@ void VariableInfo::createBaseType(std::string_view typeName) {
 
 void VariableInfo::createClass(std::string_view const className, uint32_t const rtid) {
   std::string_view const internedClassName = stringPool_.internString(className);
-  // std::string_view const internedParentName = stringPool_.internString(parentName);
   classRegistry_.emplace(internedClassName, ClassInfo{internedClassName, rtid});
 }
 
