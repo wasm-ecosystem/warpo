@@ -33,7 +33,9 @@ void BasicBlockWalker::visitExpression(wasm::Expression *curr) noexcept {
   const auto debugLocationIterator = currFun->debugLocations.find(curr);
   if (debugLocationIterator != currFun->debugLocations.cend()) {
     const auto &debugLocation = debugLocationIterator->second;
-    currBasicBlock->contents.debugLocations.insert(debugLocation);
+    if (debugLocation) {
+      currBasicBlock->contents.debugLocations.insert(*debugLocation);
+    }
   }
 }
 

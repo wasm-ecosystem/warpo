@@ -23,8 +23,6 @@
 #include "InstrumentResponse.hpp"
 #include "MockInstrumentationWalker.hpp"
 #include "binaryen-c.h"
-#include "json/json.h"
-#include "json/value.h"
 #include "support/index.h"
 #include "wasm-io.h"
 #include "wasm.h"

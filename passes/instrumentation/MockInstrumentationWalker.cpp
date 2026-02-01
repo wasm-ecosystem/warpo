@@ -23,12 +23,10 @@ void MockInstrumentationWalker::visitCall(wasm::Call *const curr) noexcept {
                     }
                     return false;
                   })) {
-    const std::unordered_map<wasm::Expression *, wasm::Function::DebugLocation> &currDebugLocations =
-        getFunction()->debugLocations;
-
+    const auto &currDebugLocations = getFunction()->debugLocations;
     const auto currentDebugLocationIterator = currDebugLocations.find(curr);
-    if (currentDebugLocationIterator != currDebugLocations.cend()) {
-      wasm::Function::DebugLocation const &currDebugLocation = currentDebugLocationIterator->second;
+    if (currentDebugLocationIterator != currDebugLocations.cend() && currentDebugLocationIterator->second) {
+      const wasm::Function::DebugLocation &currDebugLocation = *(currentDebugLocationIterator->second);
       const std::string &fileName = module->debugInfoFileNames[currDebugLocation.fileIndex];
       std::stringstream expectInfo;
       expectInfo << fileName << ":" << currDebugLocation.lineNumber << ":" << currDebugLocation.columnNumber;
@@ -52,7 +50,7 @@ void MockInstrumentationWalker::visitCall(wasm::Call *const curr) noexcept {
                                        wasm::Type::i32),
             moduleBuilder.makeConst(-1)),
         moduleBuilder.makeCallIndirect(tableName, moduleBuilder.makeLocalGet(localIdx, wasm::Type::i32), curr->operands,
-                                       getModule()->getFunction(curr->target)->type),
+                                       getModule()->getFunction(curr->target)->type.getHeapType()),
         curr);
     replaceCurrent(mockReplacement);
   }
@@ -88,14 +86,14 @@ bool MockInstrumentationWalker::mockFunctionDuplicateImportedCheck() const noexc
 }
 
 void MockInstrumentationWalker::addExecuteTestFunction() noexcept {
-  std::vector<BinaryenExpressionRef> operands{};
+  std::vector<BinaryenExpressionRef> const operands{};
   if (module->tables.empty()) {
     auto *table = module->addTable(wasm::Builder::makeTable(wasm::Name::fromInt(0)));
     table->base = "__indirect_function_table";
   }
   BinaryenExpressionRef body =
-      moduleBuilder.makeCallIndirect(module->tables[0]->name, BinaryenLocalGet(module, 0, wasm::Type::i32), operands,
-                                     wasm::Signature(wasm::Type::none, wasm::Type::none));
+      moduleBuilder.makeCallIndirect(module->tables[0]->name, moduleBuilder.makeLocalGet(0, wasm::Type::i32), operands,
+                                     wasm::HeapType(wasm::Signature(wasm::Type::none, wasm::Type::none)));
 
   body->finalize();
   BinaryenAddFunction(module, "executeTestFunction", BinaryenTypeInt32(), BinaryenTypeNone(), {}, 0, body);
