@@ -1,9 +1,13 @@
-#ifndef __ASC_COV_INSTRUMENTATION_WALKER_HPP__
-#define __ASC_COV_INSTRUMENTATION_WALKER_HPP__
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
+#pragma once
+
 #include <array>
 #include <memory>
 #include <unordered_map>
 #include <vector>
+
 #include "BasicBlockWalker.hpp"
 #include "binaryen-c.h"
 #include "ir/module-utils.h"
@@ -29,8 +33,7 @@ public:
   CovInstrumentationWalker(wasm::Module *const _module, char const *const _reportFunName,
                            BasicBlockWalker &_basicBlockWalker) noexcept
       : module(_module), reportFunName(_reportFunName), moduleBuilder(wasm::Builder(*_module)),
-        basicBlockWalker(_basicBlockWalker) {
-  }
+        basicBlockWalker(_basicBlockWalker) {}
   CovInstrumentationWalker(const CovInstrumentationWalker &src) = delete;
   CovInstrumentationWalker(CovInstrumentationWalker &&src) = delete;
   CovInstrumentationWalker &operator=(const CovInstrumentationWalker &) = delete;
@@ -69,5 +72,3 @@ private:
   void introduceReportFun() noexcept;
 };
 } // namespace wasmInstrumentation
-
-#endif

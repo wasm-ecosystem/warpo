@@ -1,11 +1,15 @@
-#ifndef __ASC_COV_BASICBLOCK_WALKER_HPP__
-#define __ASC_COV_BASICBLOCK_WALKER_HPP__
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
+#pragma once
+
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <memory>
 #include <vector>
+
 #include "BasicBlockAnalysis.hpp"
 #include "cfg/cfg-traversal.h"
 #include "ir/module-utils.h"
@@ -28,8 +32,7 @@ public:
   ///
   /// @param src
   BasicBlockInfo(const BasicBlockInfo &src) noexcept
-      : exprs(src.exprs), debugLocations(src.debugLocations), basicBlockIndex(src.basicBlockIndex) {
-  }
+      : exprs(src.exprs), debugLocations(src.debugLocations), basicBlockIndex(src.basicBlockIndex) {}
 
   ///
   /// @brief Move constructor for BasicBlockInfo
@@ -37,21 +40,17 @@ public:
   /// @param src
   BasicBlockInfo(BasicBlockInfo &&src) noexcept
       : exprs(std::move(src.exprs)), debugLocations(std::move(src.debugLocations)),
-        basicBlockIndex(src.basicBlockIndex) {
-  }
+        basicBlockIndex(src.basicBlockIndex) {}
 
   ///
   /// @brief Destructors for BasicBlockInfo
   ///
-  ~BasicBlockInfo() noexcept {
-    basicBlockIndex = static_cast<wasm::Index>(-1);
-  }
+  ~BasicBlockInfo() noexcept { basicBlockIndex = static_cast<wasm::Index>(-1); }
 
   ///
   /// @brief Default constructor for BasicBlockInfo
   ///
-  BasicBlockInfo() noexcept : basicBlockIndex(static_cast<wasm::Index>(-1)) {
-  }
+  BasicBlockInfo() noexcept : basicBlockIndex(static_cast<wasm::Index>(-1)) {}
 
   ///
   /// @brief Copy equal operator function
@@ -82,8 +81,7 @@ public:
 class FunctionAnalysisResult final {
 public:
   /// @brief Default constructor of FunctionAnalysisResult
-  FunctionAnalysisResult() noexcept : functionIndex(static_cast<wasm::Index>(-1)) {
-  }
+  FunctionAnalysisResult() noexcept : functionIndex(static_cast<wasm::Index>(-1)) {}
   std::vector<BasicBlockInfo> basicBlocks;                     ///< basicBlocks in this function
   std::vector<std::pair<wasm::Index, wasm::Index>> branchInfo; ///< function branch info
   wasm::Index functionIndex;                                   ///< function Index
@@ -93,8 +91,8 @@ public:
 ///@brief Basic block walker with basic block information
 ///
 class BasicBlockWalker final
-    : public wasm::WalkerPass<wasm::CFGWalker<
-          BasicBlockWalker, wasm::UnifiedExpressionVisitor<BasicBlockWalker>, BasicBlockInfo>> {
+    : public wasm::WalkerPass<
+          wasm::CFGWalker<BasicBlockWalker, wasm::UnifiedExpressionVisitor<BasicBlockWalker>, BasicBlockInfo>> {
 public:
   ///
   /// @brief Constructor for BasicBlockWalker
@@ -102,8 +100,7 @@ public:
   /// @param _module
   /// @param _reportFunName
   BasicBlockWalker(wasm::Module *const _module, BasicBlockAnalysis &_basicBlockAnalysis) noexcept
-      : module(_module), basicBlockAnalysis(_basicBlockAnalysis) {
-  }
+      : module(_module), basicBlockAnalysis(_basicBlockAnalysis) {}
   BasicBlockWalker(const BasicBlockWalker &src) = delete;
   BasicBlockWalker(BasicBlockWalker &&src) = delete;
   BasicBlockWalker &operator=(const BasicBlockWalker &) = delete;
@@ -120,7 +117,7 @@ public:
   ///@param curr Current expression
   void visitExpression(wasm::Expression *const curr) noexcept;
 
-  static void doEndBlock(BasicBlockWalker* self, wasm::Expression** currp);
+  static void doEndBlock(BasicBlockWalker *self, wasm::Expression **currp);
 
   ///
   ///@brief Inherit from CFGWalker for function visitor
@@ -140,8 +137,7 @@ public:
   ///
   /// @param expr
   ///
-  const std::vector<InstrumentPosition> *
-  getCovInstrumentPosition(wasm::Expression *const expr) const noexcept;
+  const std::vector<InstrumentPosition> *getCovInstrumentPosition(wasm::Expression *const expr) const noexcept;
 
   BasicBlockAnalysis getBasicBlockAnalysis() const noexcept;
 
@@ -150,8 +146,7 @@ public:
   ///
   void basicBlockWalk() noexcept;
 
-  inline const std::unordered_map<std::string_view, FunctionAnalysisResult> &
-  getResults() const noexcept {
+  inline const std::unordered_map<std::string_view, FunctionAnalysisResult> &getResults() const noexcept {
     return results;
   }
 
@@ -164,13 +159,10 @@ private:
   ///
   /// @brief traverse CFG to set the instrumentation position
   ///
-  void setCovInstrumentPosition(wasm::Expression *const expr,
-                                const InstrumentPosition &position) noexcept;
+  void setCovInstrumentPosition(wasm::Expression *const expr, const InstrumentPosition &position) noexcept;
   ///
   /// @brief remove empty block that do not belong to any branch
   ///
   void cleanBlock() noexcept;
 };
 } // namespace wasmInstrumentation
-
-#endif

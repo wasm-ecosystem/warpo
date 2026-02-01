@@ -1,7 +1,11 @@
-#include "CoverageInstru.hpp"
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 #include <binaryen-c.h>
 #include <fstream>
 #include <ostream>
+
+#include "CoverageInstru.hpp"
 namespace wasmInstrumentation {
 
 void CoverageInstru::innerAnalysis(BasicBlockAnalysis &basicBlockAnalysis) const noexcept {
@@ -58,8 +62,7 @@ InstrumentationResponse CoverageInstru::instrument() const noexcept {
 
     BasicBlockWalker basicBlockWalker = BasicBlockWalker(&module, basicBlockAnalysis);
     basicBlockWalker.basicBlockWalk();
-    const std::unordered_map<std::string_view, FunctionAnalysisResult> &results =
-        basicBlockWalker.getResults();
+    const std::unordered_map<std::string_view, FunctionAnalysisResult> &results = basicBlockWalker.getResults();
     Json::Value json;
     Json::Value debugInfoJson;
     Json::Value debugFileJson;
@@ -124,8 +127,7 @@ InstrumentationResponse CoverageInstru::instrument() const noexcept {
   const BinaryenModuleAllocateAndWriteResult result =
       BinaryenModuleAllocateAndWrite(&module, targetSourceMapPath.c_str());
   std::ofstream wasmFileStream(this->config->targetName.data(), std::ios::trunc | std::ios::binary);
-  wasmFileStream.write(static_cast<char *>(result.binary),
-                       static_cast<std::streamsize>(result.binaryBytes));
+  wasmFileStream.write(static_cast<char *>(result.binary), static_cast<std::streamsize>(result.binaryBytes));
   std::ofstream sourceMapFileStream(targetSourceMapPath, std::ios::trunc | std::ios::binary);
   sourceMapFileStream << result.sourceMap << std::flush;
   free(result.binary);
@@ -144,8 +146,7 @@ InstrumentationResponse CoverageInstru::instrument() const noexcept {
     expectInfosJson[std::to_string(key)] = value;
     // LCOV_EXCL_STOP
   }
-  std::ofstream expectInfosJsonWriteStream(config->expectInfoOutputFilePath.data(),
-                                           std::ios::trunc);
+  std::ofstream expectInfosJsonWriteStream(config->expectInfoOutputFilePath.data(), std::ios::trunc);
   Json::StreamWriterBuilder expectInfosJsonBuilder;
   expectInfosJsonBuilder["indentation"] = "";
   std::unique_ptr<Json::StreamWriter> expectInfosJsonWriter(jsonBuilder.newStreamWriter());
@@ -169,9 +170,8 @@ InstrumentationResponse CoverageInstru::instrument() const noexcept {
 
 #if defined(__EMSCRIPTEN__)
 extern "C" EMSCRIPTEN_KEEPALIVE wasmInstrumentation::InstrumentationResponse
-wasm_instrument(char const *const fileName, char const *const targetName,
-                char const *const reportFunction, char const *const sourceMap,
-                char const *const expectInfoOutputFilePath,
+wasm_instrument(char const *const fileName, char const *const targetName, char const *const reportFunction,
+                char const *const sourceMap, char const *const expectInfoOutputFilePath,
                 char const *const debugInfoOutputFilePath, char const *const excludes, bool skipLib,
                 bool collectCoverage) noexcept {
 

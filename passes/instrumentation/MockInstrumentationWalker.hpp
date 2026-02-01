@@ -1,5 +1,8 @@
-#ifndef __ASC_COV_MOCKINSTRUMENTATION_WALKER_HPP__
-#define __ASC_COV_MOCKINSTRUMENTATION_WALKER_HPP__
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
+#pragma once
+
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -150,6 +153,4 @@ private:
 };
 
 } // namespace wasmInstrumentation
-
-#endif
 // LCOV_EXCL_STOP

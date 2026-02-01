@@ -1,5 +1,7 @@
-#ifndef __ASC_COV_BASICBLOCK_ANALYSIS_HPP__
-#define __ASC_COV_BASICBLOCK_ANALYSIS_HPP__
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
+#pragma once
 
 #include <algorithm>
 #include <cstdint>
@@ -19,9 +21,7 @@ public:
   /// @brief Add exclude file to debug info analysis
   ///
   /// @param exclude
-  inline void addExclude(const std::string &&exclude) noexcept {
-    excludes.emplace_back(exclude);
-  }
+  inline void addExclude(const std::string &&exclude) noexcept { excludes.emplace_back(exclude); }
 
   ///
   /// @brief If the debug file should be included into debug info analysis
@@ -35,5 +35,3 @@ private:
   std::vector<std::regex> excludes; ///< functions should not be processed
 };
 } // namespace wasmInstrumentation
-
-#endif

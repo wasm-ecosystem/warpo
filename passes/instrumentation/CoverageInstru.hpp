@@ -1,7 +1,8 @@
-#ifndef __ASC_COV_COVERAGE_INSTRU_HPP__
-#define __ASC_COV_COVERAGE_INSTRU_HPP__
-#include "json/json.h"
-#include "json/value.h"
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
+#pragma once
+
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -15,12 +16,15 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
 #include "BasicBlockAnalysis.hpp"
 #include "BasicBlockWalker.hpp"
 #include "CovInstrumentationWalker.hpp"
 #include "InstrumentResponse.hpp"
 #include "MockInstrumentationWalker.hpp"
 #include "binaryen-c.h"
+#include "json/json.h"
+#include "json/value.h"
 #include "support/index.h"
 #include "wasm-io.h"
 #include "wasm.h"
@@ -51,14 +55,12 @@ public:
   ///@param out target output stream
   ///@param instance
   ///@return processed output stream
-  friend std::ostream &operator<<(std::ostream &out,
-                                  const InstrumentationConfig &instance) noexcept {
+  friend std::ostream &operator<<(std::ostream &out, const InstrumentationConfig &instance) noexcept {
     out << "filename: " << instance.fileName << ", targetName: " << instance.targetName
         << ", sourceMap: " << instance.sourceMap << ", reportFunction:" << instance.reportFunction
-        << ", excludes: " << instance.excludes
-        << ", expectInfoOutputFilePath: " << instance.expectInfoOutputFilePath
-        << ", skipLib: " << std::boolalpha << instance.skipLib
-        << ", collectCoverage: " << std::boolalpha << instance.collectCoverage << std::endl;
+        << ", excludes: " << instance.excludes << ", expectInfoOutputFilePath: " << instance.expectInfoOutputFilePath
+        << ", skipLib: " << std::boolalpha << instance.skipLib << ", collectCoverage: " << std::boolalpha
+        << instance.collectCoverage << std::endl;
     return out;
   }
 };
@@ -73,8 +75,7 @@ public:
   ///@brief Constructor for coverage instrumentation
   ///
   ///@param cfg configuration from customer
-  explicit CoverageInstru(InstrumentationConfig const *const cfg) noexcept : config(cfg) {
-  }
+  explicit CoverageInstru(InstrumentationConfig const *const cfg) noexcept : config(cfg) {}
   CoverageInstru(const CoverageInstru &src) = delete; // disable copy construct
   CoverageInstru(CoverageInstru &&src) = delete;      // disable move construct
   CoverageInstru &operator=(const CoverageInstru &) = delete;
@@ -116,10 +117,8 @@ private:
 ///@param skipLib
 ///@return InstrumentationResponse
 extern "C" EMSCRIPTEN_KEEPALIVE wasmInstrumentation::InstrumentationResponse
-wasm_instrument(char const *const fileName, char const *const targetName,
-                char const *const reportFunction, char const *const sourceMap,
-                char const *const expectInfoOutputFilePath,
+wasm_instrument(char const *const fileName, char const *const targetName, char const *const reportFunction,
+                char const *const sourceMap, char const *const expectInfoOutputFilePath,
                 char const *const debugInfoOutputFilePath, char const *const excludes, bool skipLib,
                 bool collectCoverage) noexcept;
-#endif
 #endif

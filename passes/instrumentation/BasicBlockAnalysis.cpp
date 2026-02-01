@@ -1,9 +1,13 @@
-#include "BasicBlockAnalysis.hpp"
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 #include <algorithm>
 #include <memory>
 #include <regex>
 #include <string>
 #include <utility>
+
+#include "BasicBlockAnalysis.hpp"
 
 namespace wasmInstrumentation {
 

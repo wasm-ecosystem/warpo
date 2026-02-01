@@ -1,5 +1,8 @@
-#ifndef __ASC_INSTRUMENTATION_RESPONSE_HPP__
-#define __ASC_INSTRUMENTATION_RESPONSE_HPP__
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
+#pragma once
+
 #include <cstdint>
 namespace wasmInstrumentation {
 ///
@@ -15,5 +18,3 @@ enum class InstrumentationResponse : uint8_t {
 };
 
 } // namespace wasmInstrumentation
-
-#endif

@@ -1,4 +1,6 @@
-#include "BasicBlockWalker.hpp"
+// Copyright (C) 2025 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 #include <algorithm>
 #include <cfg/cfg-traversal.h>
 #include <iostream>
@@ -6,6 +8,8 @@
 #include <set>
 #include <utility>
 #include <wasm.h>
+
+#include "BasicBlockWalker.hpp"
 #include "ir/branch-utils.h"
 
 namespace wasmInstrumentation {
@@ -34,26 +38,22 @@ void BasicBlockWalker::visitExpression(wasm::Expression *curr) noexcept {
 }
 
 void BasicBlockWalker::doEndBlock(BasicBlockWalker *self, wasm::Expression **currp) {
-  wasm::CFGWalker<BasicBlockWalker, wasm::UnifiedExpressionVisitor<BasicBlockWalker>,
-  BasicBlockInfo>::doEndBlock(self, currp);
+  wasm::CFGWalker<BasicBlockWalker, wasm::UnifiedExpressionVisitor<BasicBlockWalker>, BasicBlockInfo>::doEndBlock(
+      self, currp);
   if (self->currBasicBlock != nullptr) {
     self->currBasicBlock->contents.exprs.push_back(*currp);
   }
 }
 
-static bool
-isBasicBlockContainUnreachable(BasicBlockWalker::BasicBlock &block,
-                               std::set<BasicBlockWalker::BasicBlock *> unreachableBlocks) {
+static bool isBasicBlockContainUnreachable(BasicBlockWalker::BasicBlock &block,
+                                           std::set<BasicBlockWalker::BasicBlock *> unreachableBlocks) {
   return (!block.contents.exprs.empty() &&
           std::any_of(block.contents.exprs.begin(), block.contents.exprs.end(),
-                      [](wasm::Expression *expr) {
-                        return expr->is<wasm::Unreachable>();
-                      })) ||
+                      [](wasm::Expression *expr) { return expr->is<wasm::Unreachable>(); })) ||
          (!block.in.empty() &&
-          std::all_of(block.in.begin(), block.in.end(),
-                      [&unreachableBlocks](BasicBlockWalker::BasicBlock *inBlock) {
-                        return unreachableBlocks.find(inBlock) != unreachableBlocks.end();
-                      }));
+          std::all_of(block.in.begin(), block.in.end(), [&unreachableBlocks](BasicBlockWalker::BasicBlock *inBlock) {
+            return unreachableBlocks.find(inBlock) != unreachableBlocks.end();
+          }));
 };
 
 static void removeDuplicates(std::vector<BasicBlockWalker::BasicBlock *> &list) {
@@ -96,16 +96,15 @@ void BasicBlockWalker::cleanBlock() noexcept {
     }
     block->in.clear();
     block->out.clear();
-    basicBlocks.erase(std::find_if(basicBlocks.begin(), basicBlocks.end(),
-                                   [&block](std::unique_ptr<BasicBlock> const &b) -> bool {
-                                     return b.get() == block;
-                                   }));
+    basicBlocks.erase(
+        std::find_if(basicBlocks.begin(), basicBlocks.end(),
+                     [&block](std::unique_ptr<BasicBlock> const &b) -> bool { return b.get() == block; }));
   }
 }
 
 void BasicBlockWalker::doWalkFunction(wasm::Function *const func) noexcept {
-  wasm::CFGWalker<BasicBlockWalker, wasm::UnifiedExpressionVisitor<BasicBlockWalker>,
-                  BasicBlockInfo>::doWalkFunction(func);
+  wasm::CFGWalker<BasicBlockWalker, wasm::UnifiedExpressionVisitor<BasicBlockWalker>, BasicBlockInfo>::doWalkFunction(
+      func);
   cleanBlock();
   // LCOV_EXCL_START
   if (basicBlocks.size() > UINT32_MAX) {
@@ -167,8 +166,7 @@ void BasicBlockWalker::doWalkFunction(wasm::Function *const func) noexcept {
   this->results[func->name.str] = std::move(analysisResult);
 }
 
-wasm::Index
-BasicBlockWalker::getFunctionIndexByName(const std::string_view &funcName) const noexcept {
+wasm::Index BasicBlockWalker::getFunctionIndexByName(const std::string_view &funcName) const noexcept {
   const auto functionResultIterator = results.find(funcName);
   if (functionResultIterator != results.cend()) {
     return functionResultIterator->second.functionIndex;
@@ -195,8 +193,6 @@ BasicBlockWalker::getCovInstrumentPosition(wasm::Expression *const expr) const n
   return nullptr;
 }
 
-BasicBlockAnalysis BasicBlockWalker::getBasicBlockAnalysis() const noexcept {
-  return basicBlockAnalysis;
-}
+BasicBlockAnalysis BasicBlockWalker::getBasicBlockAnalysis() const noexcept { return basicBlockAnalysis; }
 
 } // namespace wasmInstrumentation
