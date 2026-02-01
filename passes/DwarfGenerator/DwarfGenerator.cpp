@@ -1,8 +1,6 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-#include <iostream>
-
 #include "../helper/BinaryenExt.hpp"
 #include "AbbrevFactory.hpp"
 #include "DebugStringManager.hpp"
@@ -25,8 +23,6 @@ public:
 
   uint64_t getOffset(std::string_view const name) const {
     std::unordered_map<std::string_view, uint64_t>::const_iterator const it = offsetMap_.find(name);
-    if (it == offsetMap_.end())
-      std::cout << "DIEOffsetCalculator::getOffset: DIE name not found: " << name << std::endl;
     assert(it != offsetMap_.end());
     return it->second;
   }
