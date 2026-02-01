@@ -27,7 +27,7 @@
 #include "wasm-io.h"
 #include "wasm.h"
 
-namespace wasmInstrumentation {
+namespace warpo::passes::instrumentation {
 ///
 /// @brief Customer input configuration for instrumentation
 ///
@@ -96,7 +96,7 @@ private:
   ///
   void innerAnalysis(BasicBlockAnalysis &basicBlockAnalysis) const noexcept;
 };
-} // namespace wasmInstrumentation
+} // namespace warpo::passes::instrumentation
 
 // export wasm API
 #if defined(__EMSCRIPTEN__)
@@ -114,7 +114,7 @@ private:
 ///@param excludes
 ///@param skipLib
 ///@return InstrumentationResponse
-extern "C" EMSCRIPTEN_KEEPALIVE wasmInstrumentation::InstrumentationResponse
+extern "C" EMSCRIPTEN_KEEPALIVE warpo::passes::instrumentation::InstrumentationResponse
 wasm_instrument(char const *const fileName, char const *const targetName, char const *const reportFunction,
                 char const *const sourceMap, char const *const expectInfoOutputFilePath,
                 char const *const debugInfoOutputFilePath, char const *const excludes, bool skipLib,

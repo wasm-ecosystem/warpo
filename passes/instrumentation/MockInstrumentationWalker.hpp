@@ -16,7 +16,7 @@
 #include "wasm-builder.h"
 #include "wasm-traversal.h"
 #include "wasm.h"
-namespace wasmInstrumentation {
+namespace warpo::passes::instrumentation {
 ///
 ///@brief Mock instrumentation walker class
 ///
@@ -37,7 +37,7 @@ public:
         const auto &data = elemSegment->data;
         const size_t dataSize = data.size();
         for (std::size_t i = 0; i < dataSize; ++i) {
-          const wasm::RefFunc *funcRef = data[i]->cast<wasm::RefFunc>();
+          const wasm::RefFunc *const funcRef = data[i]->cast<wasm::RefFunc>();
           std::string_view functionName = funcRef->func.str;
           const std::string_view nameSuffix = "@varargs";
           if (functionName.size() >= nameSuffix.size() &&
@@ -71,12 +71,12 @@ public:
   void visitCall(wasm::Call *const curr) noexcept;
 
   static void doPreVisit(MockInstrumentationWalker *self, wasm::Expression **currp) {
-    wasm::Expression *curr = *currp;
+    wasm::Expression *const curr = *currp;
     auto &locs = self->getFunction()->debugLocations;
     auto &expressionStack = self->expressionStack;
     if (locs.find(curr) == locs.end()) {
       // No debug location, see if we should inherit one.
-      if (wasm::Expression *previous = self->getPrevious()) {
+      if (wasm::Expression *const previous = self->getPrevious()) {
         auto it = locs.find(previous);
         if (it != locs.end()) {
           locs[curr] = it->second;
@@ -152,5 +152,5 @@ private:
       "#lessThan", "#lessThanOrEqual", "#closeTo"}; ///< expectation functions list
 };
 
-} // namespace wasmInstrumentation
+} // namespace warpo::passes::instrumentation
 // LCOV_EXCL_STOP

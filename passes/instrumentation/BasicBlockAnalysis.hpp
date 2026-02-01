@@ -11,7 +11,7 @@
 #include <utility>
 #include <vector>
 
-namespace wasmInstrumentation {
+namespace warpo::passes::instrumentation {
 
 /// @brief Class for performing if file should be included.
 ///
@@ -34,4 +34,4 @@ private:
   std::vector<std::regex> includes; ///< functions should be processed
   std::vector<std::regex> excludes; ///< functions should not be processed
 };
-} // namespace wasmInstrumentation
+} // namespace warpo::passes::instrumentation

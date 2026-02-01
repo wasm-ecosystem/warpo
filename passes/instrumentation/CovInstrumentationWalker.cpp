@@ -3,7 +3,7 @@
 
 #include "CovInstrumentationWalker.hpp"
 
-namespace wasmInstrumentation {
+namespace warpo::passes::instrumentation {
 void CovInstrumentationWalker::introduceReportFun() noexcept {
   bool needImport = true;
   wasm::ModuleUtils::iterDefinedFunctions(*module, [this, &needImport](const BinaryenFunctionRef &func) noexcept {
@@ -104,4 +104,4 @@ void CovInstrumentationWalker::covWalk() noexcept {
   });
 }
 
-} // namespace wasmInstrumentation
+} // namespace warpo::passes::instrumentation

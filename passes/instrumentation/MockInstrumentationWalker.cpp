@@ -11,7 +11,7 @@
 #include "MockInstrumentationWalker.hpp"
 // mock test will be tested with wasm-testing-framework project, escape this class
 // LCOV_EXCL_START
-namespace wasmInstrumentation {
+namespace warpo::passes::instrumentation {
 
 void MockInstrumentationWalker::visitCall(wasm::Call *const curr) noexcept {
   /* generate expect infos */
@@ -111,4 +111,4 @@ uint32_t MockInstrumentationWalker::mockWalk() noexcept {
   }
 }
 // LCOV_EXCL_STOP
-} // namespace wasmInstrumentation
+} // namespace warpo::passes::instrumentation

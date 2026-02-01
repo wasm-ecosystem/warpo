@@ -12,7 +12,7 @@
 #include "BasicBlockWalker.hpp"
 #include "ir/branch-utils.h"
 
-namespace wasmInstrumentation {
+namespace warpo::passes::instrumentation {
 
 void BasicBlockWalker::basicBlockWalk() noexcept {
   // Iterate DefinedFunctions, generate coverage infos
@@ -197,4 +197,4 @@ BasicBlockWalker::getCovInstrumentPosition(wasm::Expression *const expr) const n
 
 BasicBlockAnalysis BasicBlockWalker::getBasicBlockAnalysis() const noexcept { return basicBlockAnalysis; }
 
-} // namespace wasmInstrumentation
+} // namespace warpo::passes::instrumentation

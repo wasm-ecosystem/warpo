@@ -4,7 +4,7 @@
 #pragma once
 
 #include <cstdint>
-namespace wasmInstrumentation {
+namespace warpo::passes::instrumentation {
 ///
 /// @brief Status class that returned by instrumentation flow
 ///
@@ -17,4 +17,4 @@ enum class InstrumentationResponse : uint8_t {
   EXPECT_INFO_GENERATION_ERROR = 5U ///< expectation info generation error
 };
 
-} // namespace wasmInstrumentation
+} // namespace warpo::passes::instrumentation

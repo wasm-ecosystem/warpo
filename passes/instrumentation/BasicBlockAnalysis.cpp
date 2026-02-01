@@ -9,7 +9,7 @@
 
 #include "BasicBlockAnalysis.hpp"
 
-namespace wasmInstrumentation {
+namespace warpo::passes::instrumentation {
 
 bool BasicBlockAnalysis::shouldIncludeFile(std::string_view fileName) const noexcept {
   bool shouldInclude = false;
@@ -33,4 +33,4 @@ bool BasicBlockAnalysis::shouldIncludeFile(std::string_view fileName) const noex
   return (shouldInclude && (!shouldExclude));
 }
 
-} // namespace wasmInstrumentation
+} // namespace warpo::passes::instrumentation

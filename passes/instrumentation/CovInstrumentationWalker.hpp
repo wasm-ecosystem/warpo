@@ -16,7 +16,7 @@
 #include "wasm-traversal.h"
 #include "wasm-type.h"
 #include "wasm.h"
-namespace wasmInstrumentation {
+namespace warpo::passes::instrumentation {
 ///
 /// @brief Post walker for instrumentation purpose
 ///
@@ -71,4 +71,4 @@ private:
   ///
   void introduceReportFun() noexcept;
 };
-} // namespace wasmInstrumentation
+} // namespace warpo::passes::instrumentation

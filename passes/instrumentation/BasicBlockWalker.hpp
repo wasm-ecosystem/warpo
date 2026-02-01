@@ -15,7 +15,7 @@
 #include "ir/module-utils.h"
 #include "support/index.h"
 #include "wasm.h"
-namespace wasmInstrumentation {
+namespace warpo::passes::instrumentation {
 
 struct InstrumentPosition {
   wasm::Index basicBlockIndex;
@@ -165,4 +165,4 @@ private:
   ///
   void cleanBlock() noexcept;
 };
-} // namespace wasmInstrumentation
+} // namespace warpo::passes::instrumentation

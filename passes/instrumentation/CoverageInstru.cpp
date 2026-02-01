@@ -7,7 +7,7 @@
 
 #include "CoverageInstru.hpp"
 #include "nlohmann/json.hpp"
-namespace wasmInstrumentation {
+namespace warpo::passes::instrumentation {
 
 void CoverageInstru::innerAnalysis(BasicBlockAnalysis &basicBlockAnalysis) const noexcept {
   if (config->skipLib) {
@@ -175,4 +175,4 @@ InstrumentationResponse CoverageInstru::instrument() const noexcept {
   return InstrumentationResponse::NORMAL;
 }
 
-} // namespace wasmInstrumentation
+} // namespace warpo::passes::instrumentation
