@@ -23,7 +23,7 @@ export function splitCommand(cmdline: string): { cmd: string; argv: string[] } {
     res.push(cmdline.slice(last));
   }
   const cmd = res[0];
-  if (cmd === undefined) throw new Error(`Invalidat Command: ${cmdline}`);
+  if (cmd === undefined) throw new Error(`Invalid Command: ${cmdline}`);
   const argv = res.slice(1);
   return { cmd: cmd, argv: argv };
 }

@@ -1,6 +1,6 @@
 type esc = "&" | "<" | ">" | "'" | '"';
 
-const esca = {
+const escapeChars = {
   "&": "&amp;",
   "<": "&lt;",
   ">": "&gt;",
@@ -9,7 +9,7 @@ const esca = {
 };
 
 const pe = (m: string) => {
-  return esca[m as esc];
+  return escapeChars[m as esc];
 };
 
 export function escape(es: string): string {
