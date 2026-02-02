@@ -27,7 +27,7 @@ void CovInstrumentationWalker::introduceReportFun() noexcept {
     }
   });
   if (needImport) {
-    wasm::Builder builder(*module);
+    wasm::Builder const builder(*module);
     std::array<BinaryenType, 3U> iii_{BinaryenTypeInt32(), BinaryenTypeInt32(), BinaryenTypeInt32()};
     const BinaryenType iii = BinaryenTypeCreate(iii_.data(), iii_.size());
     BinaryenAddFunctionImport(module, reportFunName, "__unittest_framework_env", "traceExpression", iii,
@@ -57,8 +57,8 @@ void CovInstrumentationWalker::visitFunction(wasm::Function *const curr) noexcep
 }
 
 void CovInstrumentationWalker::visitExpression(wasm::Expression *curr) noexcept {
-  BinaryenFunctionRef func = getFunction();
-  const std::vector<InstrumentPosition> *positionIterator = basicBlockWalker.getCovInstrumentPosition(curr);
+  BinaryenFunctionRef const func = getFunction();
+  std::vector<InstrumentPosition> const *const positionIterator = basicBlockWalker.getCovInstrumentPosition(curr);
   if (positionIterator != nullptr) {
     for (const InstrumentPosition &position : *positionIterator) {
       wasm::Block *replacement = moduleBuilder.makeBlock();
@@ -66,8 +66,8 @@ void CovInstrumentationWalker::visitExpression(wasm::Expression *curr) noexcept 
       const std::array<BinaryenExpressionRef, 3U> reportArgs = {moduleBuilder.makeConst(functionIndex),
                                                                 moduleBuilder.makeConst(position.basicBlockIndex),
                                                                 moduleBuilder.makeConst(0U)};
-      wasm::Expression *report = moduleBuilder.makeCall(reportFunName, reportArgs, wasm::Type::none);
-      wasm::Expression **replacePtr = getCurrentPointer();
+      wasm::Expression *const report = moduleBuilder.makeCall(reportFunName, reportArgs, wasm::Type::none);
+      wasm::Expression **const replacePtr = getCurrentPointer();
       if (position.pre) {
         replacement->list.push_back(report);
         replacement->list.push_back(*replacePtr);
@@ -85,12 +85,12 @@ void CovInstrumentationWalker::visitExpression(wasm::Expression *curr) noexcept 
     wasm::Call *const call = curr->cast<wasm::Call>();
     const wasm::Index targetFunctionIndex = basicBlockWalker.getFunctionIndexByName(call->target.str);
     if (targetFunctionIndex != static_cast<wasm::Index>(-1)) {
-      wasm::Block *replacement = moduleBuilder.makeBlock();
-      const std::array<BinaryenExpressionRef, 3U> callOutReportArgs = {
+      wasm::Block *const replacement = moduleBuilder.makeBlock();
+      std::array<BinaryenExpressionRef, 3U> const callOutReportArgs = {
           moduleBuilder.makeConst(targetFunctionIndex), moduleBuilder.makeConst(static_cast<wasm::Index>(-1)),
           moduleBuilder.makeConst(2U)};
-      wasm::Expression *callOut = moduleBuilder.makeCall(reportFunName, callOutReportArgs, wasm::Type::none);
-      wasm::Expression **replacePtr = getCurrentPointer();
+      wasm::Expression *const callOut = moduleBuilder.makeCall(reportFunName, callOutReportArgs, wasm::Type::none);
+      wasm::Expression **const replacePtr = getCurrentPointer();
       replacement->list.push_back(*replacePtr);
       replacement->list.push_back(callOut);
       replacement->finalize(curr->type);
