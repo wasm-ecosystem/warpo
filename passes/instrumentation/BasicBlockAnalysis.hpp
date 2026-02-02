@@ -18,7 +18,7 @@ public:
   /// @brief Add exclude file to debug info analysis
   ///
   /// @param exclude
-  inline void addExclude(const std::string &&exclude) noexcept { excludes.emplace_back(exclude); }
+  inline void addExclude(std::string const &exclude) noexcept { excludes.emplace_back(exclude); }
 
   ///
   /// @brief If the debug file should be included into debug info analysis

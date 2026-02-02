@@ -9,6 +9,7 @@ export interface Option {
 }
 
 const dirname = import.meta.dirname;
+const warpoRoot = join(dirname, "..", "..");
 
 function download_url(version: string): string {
   const arch = os.arch();
@@ -31,8 +32,7 @@ function get_binary(): string | null {
   }
 
   const version =
-    process.env["WARPO_DOWNLOAD_VERSION"] ||
-    JSON.parse(readFileSync(join(dirname, "..", "package.json"), "utf8")).version;
+    process.env["WARPO_DOWNLOAD_VERSION"] || JSON.parse(readFileSync(join(warpoRoot, "package.json"), "utf8")).version;
 
   const url = download_url(version);
   console.log(`downloading warpo from ${url}`);

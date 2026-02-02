@@ -3,9 +3,11 @@
 
 #pragma once
 
+#include <filesystem>
 #include <ios>
 #include <ostream>
-#include <string_view>
+#include <string>
+#include <vector>
 
 #include "InstrumentResponse.hpp"
 
@@ -21,15 +23,15 @@ public:
   /// @brief Default constructor for InstrumentationConfig
   ///
   InstrumentationConfig() noexcept = default;
-  std::string_view fileName;                 ///< input file name
-  std::string_view targetName;               ///< target file name
-  std::string_view reportFunction;           ///< trace report function name
-  std::string_view sourceMap;                ///< input source map file name
-  std::string_view debugInfoOutputFilePath;  ///< debug info output file name
-  std::string_view excludes;                 ///< function exclude filter
-  std::string_view expectInfoOutputFilePath; ///< exception info output file name
-  bool skipLib = true;                       ///< if skip lib functions
-  bool collectCoverage = true;               ///< whether collect coverage information
+  std::string fileName;                 ///< input file name
+  std::string targetName;               ///< target file name
+  std::string reportFunction;           ///< trace report function name
+  std::string sourceMap;                ///< input source map file name
+  std::string debugInfoOutputFilePath;  ///< debug info output file name
+  std::vector<std::string> excludes;    ///< function exclude filter
+  std::string expectInfoOutputFilePath; ///< exception info output file name
+  bool skipLib = true;                  ///< if skip lib functions
+  bool collectCoverage = true;          ///< whether collect coverage information
 
   ///
   ///@brief Print information of InstrumentationConfig to output stream
@@ -39,10 +41,14 @@ public:
   ///@return processed output stream
   friend std::ostream &operator<<(std::ostream &out, const InstrumentationConfig &instance) noexcept {
     out << "filename: " << instance.fileName << ", targetName: " << instance.targetName
-        << ", sourceMap: " << instance.sourceMap << ", reportFunction:" << instance.reportFunction
-        << ", excludes: " << instance.excludes << ", expectInfoOutputFilePath: " << instance.expectInfoOutputFilePath
-        << ", skipLib: " << std::boolalpha << instance.skipLib << ", collectCoverage: " << std::boolalpha
-        << instance.collectCoverage << std::endl;
+        << ", sourceMap: " << instance.sourceMap << ", reportFunction:" << instance.reportFunction << ", excludes: [";
+    for (size_t i = 0; i < instance.excludes.size(); ++i) {
+      if (i > 0)
+        out << ", ";
+      out << instance.excludes[i];
+    }
+    out << "], expectInfoOutputFilePath: " << instance.expectInfoOutputFilePath << ", skipLib: " << std::boolalpha
+        << instance.skipLib << ", collectCoverage: " << std::boolalpha << instance.collectCoverage << std::endl;
     return out;
   }
 };
@@ -80,4 +86,10 @@ private:
   ///
   void innerAnalysis(BasicBlockAnalysis &basicBlockAnalysis) const noexcept;
 };
+
+bool isCoverageInstrumentationEnabled();
+
+InstrumentationResponse runCoverageInstrumentation(std::filesystem::path const &inputWasm,
+                                                   std::filesystem::path const &outputWasm,
+                                                   std::filesystem::path const &sourceMapPath);
 } // namespace warpo::passes::instrumentation

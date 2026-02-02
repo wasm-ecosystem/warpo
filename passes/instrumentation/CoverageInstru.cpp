@@ -17,8 +17,10 @@
 #include "CoverageInstru.hpp"
 #include "MockInstrumentationWalker.hpp"
 #include "nlohmann/json.hpp"
+#include "warpo/support/Opt.hpp"
 #include "wasm-io.h"
 #include "wasm.h"
+
 namespace warpo::passes::instrumentation {
 
 void CoverageInstrumentation::innerAnalysis(BasicBlockAnalysis &basicBlockAnalysis) const noexcept {
@@ -28,19 +30,9 @@ void CoverageInstrumentation::innerAnalysis(BasicBlockAnalysis &basicBlockAnalys
   if (config->excludes.empty()) {
     return;
   }
-
-  try {
-    const nlohmann::json excludesJson = nlohmann::json::parse(std::string(config->excludes), nullptr, false);
-    if (!excludesJson.is_array()) {
-      return;
-    }
-    for (const auto &excludeItem : excludesJson) {
-      if (excludeItem.is_string()) {
-        basicBlockAnalysis.addExclude(excludeItem.get<std::string>());
-      }
-    }
-  } catch (...) {
-    return;
+  for (std::string const &excludeItem : config->excludes) {
+    if (!excludeItem.empty())
+      basicBlockAnalysis.addExclude(excludeItem);
   }
 }
 
@@ -185,6 +177,81 @@ InstrumentationResponse CoverageInstrumentation::instrument() const noexcept {
     // LCOV_EXCL_STOP
   }
   return InstrumentationResponse::NORMAL;
+}
+
+} // namespace warpo::passes::instrumentation
+
+namespace warpo {
+
+static cli::Opt<bool> enableCoverageInstrumentationOption{
+    cli::Category::Transformation,
+    "--instrument",
+    [](argparse::Argument &arg) -> void { arg.help("Enable coverage instrumentation.").flag(); },
+};
+
+static cli::Opt<std::string> instrumentationReportFunctionOption{
+    cli::Category::Transformation,
+    "--instrument-report-function",
+    [](argparse::Argument &arg) -> void { arg.help("Coverage report function name.").nargs(1U); },
+};
+
+static cli::Opt<std::string> instrumentationDebugInfoOutputOption{
+    cli::Category::Transformation,
+    "--instrument-debug-info-output",
+    [](argparse::Argument &arg) -> void { arg.help("Output path for coverage debug info json.").nargs(1U); },
+};
+
+static cli::Opt<std::string> instrumentationExpectInfoOutputOption{
+    cli::Category::Transformation,
+    "--instrument-expect-info-output",
+    [](argparse::Argument &arg) -> void { arg.help("Output path for expectation info json.").nargs(1U); },
+};
+
+static cli::Opt<std::vector<std::string>> instrumentationExcludeOption{
+    cli::Category::Transformation,
+    "--instrument-exclude",
+    [](argparse::Argument &arg) -> void {
+      arg.help("Exclude function regex (repeatable).").nargs(argparse::nargs_pattern::at_least_one).append();
+    },
+};
+
+static cli::Opt<bool> instrumentationIncludeLibOption{
+    cli::Category::Transformation,
+    "--instrument-include-lib",
+    [](argparse::Argument &arg) -> void { arg.help("Include library functions in coverage.").flag(); },
+};
+
+static cli::Opt<bool> instrumentationDisableCoverageOption{
+    cli::Category::Transformation,
+    "--instrument-no-coverage",
+    [](argparse::Argument &arg) -> void { arg.help("Disable coverage collection.").flag(); },
+};
+
+} // namespace warpo
+
+namespace warpo::passes::instrumentation {
+
+bool isCoverageInstrumentationEnabled() { return enableCoverageInstrumentationOption.get(); }
+
+InstrumentationResponse runCoverageInstrumentation(std::filesystem::path const &inputWasm,
+                                                   std::filesystem::path const &outputWasm,
+                                                   std::filesystem::path const &sourceMapPath) {
+  if (!isCoverageInstrumentationEnabled())
+    return InstrumentationResponse::NORMAL;
+
+  InstrumentationConfig config{};
+  config.fileName = inputWasm.string();
+  config.targetName = outputWasm.string();
+  config.sourceMap = sourceMapPath.string();
+  config.reportFunction = instrumentationReportFunctionOption.get();
+  config.debugInfoOutputFilePath = instrumentationDebugInfoOutputOption.get();
+  config.expectInfoOutputFilePath = instrumentationExpectInfoOutputOption.get();
+  config.excludes = instrumentationExcludeOption.get();
+  config.skipLib = !instrumentationIncludeLibOption.get();
+  config.collectCoverage = !instrumentationDisableCoverageOption.get();
+
+  CoverageInstrumentation const instrumentation(&config);
+  return instrumentation.instrument();
 }
 
 } // namespace warpo::passes::instrumentation

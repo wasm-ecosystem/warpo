@@ -26,6 +26,7 @@
 #include "InstrSimplifier.hpp"
 #include "Runner.hpp"
 #include "binaryen-c.h"
+#include "instrumentation/CoverageInstru.hpp"
 #include "parser/wat-parser.h"
 #include "pass.h"
 #include "warpo/common/AsModule.hpp"
@@ -175,6 +176,22 @@ struct OutputFiles {
     };
   }
 };
+
+void runCoverageInstrumentation(OutputFiles const &outputFiles) {
+  using instrumentation::InstrumentationResponse;
+  if (!instrumentation::isCoverageInstrumentationEnabled())
+    return;
+  if (outputFiles.wasm_.empty())
+    throw std::runtime_error("coverage instrumentation requires .wasm output");
+  if (outputFiles.sourceMap_.empty() || !common::isEmitDebugLine())
+    throw std::runtime_error("coverage instrumentation requires debug source map, use --debug");
+
+  InstrumentationResponse const response =
+      instrumentation::runCoverageInstrumentation(outputFiles.wasm_, outputFiles.wasm_, outputFiles.sourceMap_);
+  if (response != InstrumentationResponse::NORMAL)
+    throw std::runtime_error(
+        fmt::format("coverage instrumentation failed with status {}", static_cast<uint32_t>(response)));
+}
 } // namespace
 
 } // namespace warpo::passes
@@ -256,6 +273,8 @@ void passes::runAndEmit(AsModule const &m, std::filesystem::path const &outputPa
   if (!outputFiles.sourceMap_.empty() && common::isEmitDebugLine()) {
     writeBinaryFile(outputFiles.sourceMap_, output.sourceMap);
   }
+
+  runCoverageInstrumentation(outputFiles);
 }
 
 } // namespace warpo
