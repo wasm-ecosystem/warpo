@@ -122,13 +122,13 @@ export class FileCoverageResult {
   functionCoverageRate: Rate = new Rate();
   lineCoverageRate: Rate = new Rate();
   sourceUsedCount: CodeCoverage[] = [];
-  uncoveredlines: Set<number> = new Set();
+  uncoveredLines: Set<number> = new Set();
 }
 
 export class FunctionCoverageResult {
   constructor(public functionName: string) {}
   branchCoverageRate: Rate = new Rate();
-  uncoveredlines: UncoveredLines = new Set();
+  uncoveredLines: UncoveredLines = new Set();
   lineRange: [number, number] = [Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
   /**
    * first means lineIndex;
@@ -137,7 +137,7 @@ export class FunctionCoverageResult {
   sourceUsedCount = new Map<number, number>();
 
   /**
-   * Now assemblyscrpt will compile foo<T>() to different function like foo<f64>() , foo<u32>() etc;
+   * Now assemblyscript will compile foo<T>() to different function like foo<f64>() , foo<u32>() etc;
    * We need merge the generic function to foo() for coverage statistics
    */
   static mergeFromGeneric(nameWithoutGeneric: string, infos: FunctionCoverageResult[]): FunctionCoverageResult {
@@ -148,7 +148,7 @@ export class FunctionCoverageResult {
     ];
     result.branchCoverageRate = Rate.summarize(infos.map((info) => info.branchCoverageRate));
     for (const info of infos) {
-      for (const line of info.uncoveredlines) result.uncoveredlines.add(line);
+      for (const line of info.uncoveredLines) result.uncoveredLines.add(line);
       for (const [lineIndex, count] of info.sourceUsedCount.entries()) {
         const srcLineUsedCount = result.sourceUsedCount.get(lineIndex);
         result.sourceUsedCount.set(lineIndex, srcLineUsedCount === undefined ? count : srcLineUsedCount + count);
@@ -199,14 +199,12 @@ export interface TestOption {
   flags: string;
   imports?: Imports;
 
-  tempFolder: string;
   outputFolder: string;
   mode: OutputMode | OutputMode[];
   warnLimit?: number;
   errorLimit?: number;
 
   isolated: boolean;
-  warpo: boolean;
 }
 
 export type OutputMode = "html" | "json" | "table";

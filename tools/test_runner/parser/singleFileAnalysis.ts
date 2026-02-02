@@ -17,7 +17,7 @@ export class SingleFileCoverageAnalysis {
     // SingleFileCoverageAnalysis contains FileCoverageResult
     if (results.length === 0) return;
     for (const functionCovResult of results) {
-      for (const line of functionCovResult.uncoveredlines) this.result.uncoveredlines.add(line);
+      for (const line of functionCovResult.uncoveredLines) this.result.uncoveredLines.add(line);
       for (const [lineIndex, count] of functionCovResult.sourceUsedCount.entries()) {
         const srcLineUsedCount = this.result.sourceUsedCount[lineIndex - 1];
         if (srcLineUsedCount === undefined) {

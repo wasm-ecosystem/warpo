@@ -5,7 +5,8 @@ import fs from "fs-extra";
 import { exit } from "node:process";
 import { resolve } from "node:path";
 import { Command } from "commander";
-import { validateArgument, start_unit_test } from "./index.js";
+import { validateArgument, start } from "./index.js";
+import { TestOption } from "./interface.js";
 
 const program = new Command();
 program
@@ -30,7 +31,7 @@ program
 program.parse(process.argv);
 const options = program.opts();
 
-const configPath = resolve(".", options.config);
+const configPath = resolve(".", options["config"]);
 if (!fs.pathExistsSync(configPath)) {
   console.error(chalk.redBright("Miss config file") + "\n");
   console.error(program.helpInformation());
@@ -46,9 +47,9 @@ if (includes === undefined) {
 const excludes = config.exclude || [];
 validateArgument(includes, excludes);
 
-const testFiles = options.testFiles ?? null;
-const onlyFailures = options.onlyFailures || false;
-const testNamePattern = options.testNamePattern ?? null;
+const testFiles = options["testFiles"] ?? null;
+const onlyFailures = options["onlyFailures"] || false;
+const testNamePattern = options["testNamePattern"] ?? null;
 
 if (onlyFailures && testNamePattern !== null) {
   console.error(chalk.redBright("Cannot use --onlyFailures and --testNamePattern together") + "\n");
@@ -57,11 +58,11 @@ if (onlyFailures && testNamePattern !== null) {
 
 // if enabled testcase or testNamePattern or onlyFailures, disable collectCoverage by default
 const collectCoverage =
-  (options.collectCoverage === "false" ? false : options.collectCoverage === "true" ? true : null) ??
+  (options["collectCoverage"] === "false" ? false : options["collectCoverage"] === "true" ? true : null) ??
   config.collectCoverage ??
-  (testFiles === null && options.testNamePattern === undefined && !onlyFailures);
+  (testFiles === null && options["testNamePattern"] === undefined && !onlyFailures);
 
-const getBoolean = (optionValue, configValue) => {
+const getBoolean = (optionValue: "true" | "false" | undefined, configValue: boolean | undefined) => {
   if (optionValue !== undefined) {
     if (optionValue == "true") {
       return true;
@@ -78,12 +79,8 @@ const isolatedInConfig = getBoolean(options["isolated"], config.isolated);
 const isolated = isolatedInConfig ?? false;
 
 const entryFiles = config.entryFiles ?? null;
-const warpo = config.warpo ?? false;
 
-/**
- * @type {import("../dist/interface.d.ts").TestOption}
- */
-const testOption = {
+const testOption: TestOption = {
   includes,
   excludes,
   testFiles,
@@ -96,17 +93,15 @@ const testOption = {
   flags: config.flags || "",
   imports: config.imports || undefined,
 
-  tempFolder: options.temp || config.temp || "coverage",
-  outputFolder: options.output || config.output || "coverage",
-  mode: options.mode || config.mode || "table",
-  warnLimit: Number(options.coverageLimit?.at(1)),
-  errorLimit: Number(options.coverageLimit?.at(0)),
+  outputFolder: options["output"] || config.output || "coverage",
+  mode: options["mode"] || config.mode || "table",
+  warnLimit: Number(options["coverageLimit"]?.at(1)),
+  errorLimit: Number(options["coverageLimit"]?.at(0)),
 
   isolated,
-  warpo,
 };
 
-start_unit_test(testOption)
+start(testOption)
   .then((returnCode) => {
     if (returnCode !== 0) {
       console.error(chalk.redBright("Test Failed") + "\n");

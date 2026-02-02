@@ -3,7 +3,7 @@ import { findRoot } from "../utils/pathResolver.js";
 import { compileImpl } from "./compiler.js";
 import { InstrumentResult, TestOption } from "../interface.js";
 
-export type CompileOption = Pick<TestOption, "isolated" | "outputFolder" | "flags" | "warpo" | "collectCoverage">;
+export type CompileOption = Pick<TestOption, "isolated" | "outputFolder" | "flags" | "collectCoverage">;
 
 export async function compile(
   testCodePaths: string[],

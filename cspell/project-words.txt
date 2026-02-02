@@ -43,6 +43,7 @@ E_KEYNOTFOUND
 E_NOTIMPLEMENTED
 E_VALUEOUTOFRANGE
 EBNF
+emptydir
 endforeach
 ENUMVALUE
 Eqref
@@ -170,6 +171,7 @@ Walloc
 Walloca
 warpo
 Wasi
+wasmparser
 wasmtime
 Wcast
 Wconversion

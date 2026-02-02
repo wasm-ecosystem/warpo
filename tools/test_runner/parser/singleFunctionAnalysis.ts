@@ -99,7 +99,7 @@ export class SingleFunctionCoverageAnalysis {
     for (const block of this.notFullyCoveredBasicBlock) {
       const lineInfo = this.covInfo.lineInfo.get(block);
       if (lineInfo !== undefined && lineInfo.size > 0) {
-        this.result.uncoveredlines.add(Math.max(...lineInfo));
+        this.result.uncoveredLines.add(Math.max(...lineInfo));
       }
     }
   }

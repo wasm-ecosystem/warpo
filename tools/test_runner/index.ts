@@ -46,14 +46,13 @@ async function startUniTestImpl(options: TestOption): Promise<number> {
   }
 
   emptydirSync(options.outputFolder);
-  emptydirSync(options.tempFolder);
   const { sourceCodePaths, testCodePaths, entryFiles, filterByName } = analyze(options, failedTestCases);
   console.log(chalk.blueBright("code analysis: ") + chalk.bold.greenBright("OK"));
 
   const instrumentResult = await compile(testCodePaths, entryFiles, options);
   console.log(chalk.blueBright("compile test files: ") + chalk.bold.greenBright("OK"));
 
-  const executedResult = await execWasmBinaries(options.tempFolder, instrumentResult, filterByName, options.imports);
+  const executedResult = await execWasmBinaries(instrumentResult, filterByName, options.imports);
   console.log(chalk.blueBright("execute test files: ") + chalk.bold.greenBright("OK"));
 
   await executedResult.writeFailures(failurePath);
@@ -68,7 +67,7 @@ async function startUniTestImpl(options: TestOption): Promise<number> {
   return executedResult.fail === 0 ? 0 : 1;
 }
 
-export async function start_unit_test(options: TestOption): Promise<number> {
+export async function start(options: TestOption): Promise<number> {
   try {
     return await startUniTestImpl(options);
   } catch (error) {

@@ -1,6 +1,4 @@
-import { WASI } from "node:wasi";
 import { promises } from "node:fs";
-import { ensureDirSync } from "fs-extra";
 import { instantiate, Imports as ASImports } from "@assemblyscript/loader";
 import { ExecutionResultSummary } from "../executionResult.js";
 import { Imports, ImportsArgument, InstrumentResult } from "../interface.js";
@@ -16,19 +14,9 @@ const readFile = promises.readFile;
 
 async function nodeExecutor(
   instrumentResult: InstrumentResult,
-  outFolder: string,
   filterByName: (fullTestName: string) => boolean,
   imports?: Imports
 ): Promise<ExecutionResult> {
-  const wasi = new WASI({
-    args: ["node", instrumentResult.baseName],
-    env: process.env,
-    preopens: {
-      "/": outFolder,
-    },
-    version: "preview1",
-  });
-
   const executionRecorder = new ExecutionRecorder();
   const coverageRecorder = new CoverageRecorder();
   const mockStatusRecorder = new MockStatusRecorder();
@@ -36,7 +24,6 @@ async function nodeExecutor(
   const importsArg = new ImportsArgument(executionRecorder);
   const userDefinedImportsObject = imports === undefined ? {} : imports!(importsArg);
   const importObject: ASImports = {
-    wasi_snapshot_preview1: wasi.wasiImport,
     __unittest_framework_env: {
       ...executionRecorder.getCollectionFuncSet(importsArg),
       ...mockStatusRecorder.getMockFuncSet(),
@@ -108,16 +95,14 @@ async function nodeExecutor(
 }
 
 export async function execWasmBinaries(
-  outFolder: string,
   instrumentResults: InstrumentResult[],
   filterByName: (fullTestName: string) => boolean,
   imports?: Imports
 ): Promise<ExecutionResultSummary> {
   const assertRes = new ExecutionResultSummary();
-  ensureDirSync(outFolder);
   await Promise.all<void>(
     instrumentResults.map(async (instrumentResult): Promise<void> => {
-      const result: ExecutionResult = await nodeExecutor(instrumentResult, outFolder, filterByName, imports);
+      const result: ExecutionResult = await nodeExecutor(instrumentResult, filterByName, imports);
       await assertRes.merge(result, instrumentResult.expectInfo);
     })
   );
