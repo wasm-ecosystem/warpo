@@ -48,7 +48,6 @@ export async function main(options: CliOption): Promise<number> {
   const program = new Command();
   program.name("warpo").description("compiler + tooling");
   program.showHelpAfterError(true);
-  program.exitOverride();
   program.version(getVersion(), "-v, --version", "Print version");
 
   program

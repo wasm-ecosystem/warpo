@@ -51,8 +51,6 @@ function createProgram(): Command {
 
 export async function runFromCliArgs(args: string[]): Promise<number> {
   const program = createProgram();
-  program.exitOverride();
-
   program.parse(args, { from: "user" });
 
   const options = program.opts();

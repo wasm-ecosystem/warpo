@@ -45,7 +45,7 @@ function get_binary(): string | null {
   return join(dirname, "warpo", "warpo_asc");
 }
 
-export async function main(options: Option) {
+export async function main(options: Option): Promise<number> {
   const binary = get_binary();
   const ps = spawn(binary, options.argv, { stdio: "inherit", env: options.env });
   return new Promise<number>((resolve, reject) => {
@@ -55,10 +55,10 @@ export async function main(options: Option) {
     }
     process.on("SIGINT", shutdown);
     process.on("SIGTERM", shutdown);
-    ps.on("close", (code) => {
+    ps.on("close", (code: number | null) => {
       process.removeListener("SIGINT", shutdown);
       process.removeListener("SIGTERM", shutdown);
-      resolve(code);
+      resolve(code ?? 0);
     });
   });
 }
