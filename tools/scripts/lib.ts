@@ -6,6 +6,7 @@ import { join } from "node:path";
 export interface Option {
   env: NodeJS.Dict<string>;
   argv: string[];
+  cwd?: string;
 }
 
 const dirname = import.meta.dirname;
@@ -47,7 +48,11 @@ function get_binary(): string | null {
 
 export async function main(options: Option): Promise<number> {
   const binary = get_binary();
-  const ps = spawn(binary, options.argv, { stdio: "inherit", env: options.env });
+  const ps = spawn(binary, options.argv, {
+    stdio: "inherit",
+    env: options.env,
+    cwd: options.cwd,
+  });
   return new Promise<number>((resolve, reject) => {
     function shutdown() {
       ps.kill("SIGTERM");

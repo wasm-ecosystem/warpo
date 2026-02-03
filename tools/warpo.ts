@@ -14,6 +14,7 @@ import { runFromCliArgs as runUnitTestsFromCliArgs } from "./test_runner/cli.js"
 export interface CliOption {
   env: NodeJS.Dict<string>;
   argv: string[];
+  cwd?: string;
 }
 
 const warpoRoot = join(import.meta.dirname, "..");
@@ -40,7 +41,7 @@ export async function main(options: CliOption): Promise<number> {
     first !== "--version" &&
     first !== "-v"
   ) {
-    return await runCompiler({ argv: args, env: options.env });
+    return await runCompiler({ argv: args, env: options.env, cwd: options.cwd });
   }
 
   let returnCode = 0;
@@ -58,7 +59,7 @@ export async function main(options: CliOption): Promise<number> {
     .action(async () => {
       const index = args.indexOf("build");
       const buildArgs = index === -1 ? [] : args.slice(index + 1);
-      returnCode = await runCompiler({ argv: buildArgs, env: options.env });
+      returnCode = await runCompiler({ argv: buildArgs, env: options.env, cwd: options.cwd });
     });
   program
     .command("test")
