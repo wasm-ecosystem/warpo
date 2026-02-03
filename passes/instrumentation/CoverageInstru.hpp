@@ -9,8 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "InstrumentResponse.hpp"
-
 namespace warpo::passes::instrumentation {
 
 class BasicBlockAnalysis;
@@ -81,8 +79,7 @@ public:
   ///
   ///@brief Common public API for instrument process
   ///
-  ///@return InstrumentationResponse
-  InstrumentationResponse instrument() const noexcept;
+  void instrument() const;
 
 private:
   InstrumentationIOConfig const *const ioConfig;
@@ -96,15 +93,12 @@ private:
 
 bool isCoverageInstrumentationEnabled();
 
-InstrumentationResponse runCoverageOnlyInstrumentation(std::filesystem::path const &inputWasm,
-                                                       std::filesystem::path const &outputWasm,
-                                                       std::filesystem::path const &sourceMapPath);
+void runCoverageOnlyInstrumentation(std::filesystem::path const &inputWasm, std::filesystem::path const &outputWasm,
+                                    std::filesystem::path const &sourceMapPath);
 
-InstrumentationResponse runTestInstrumentation(std::filesystem::path const &inputWasm,
-                                               std::filesystem::path const &outputWasm,
-                                               std::filesystem::path const &sourceMapPath);
+void runTestInstrumentation(std::filesystem::path const &inputWasm, std::filesystem::path const &outputWasm,
+                            std::filesystem::path const &sourceMapPath);
 
-InstrumentationResponse runCoverageInstrumentation(std::filesystem::path const &inputWasm,
-                                                   std::filesystem::path const &outputWasm,
-                                                   std::filesystem::path const &sourceMapPath);
+void runCoverageInstrumentation(std::filesystem::path const &inputWasm, std::filesystem::path const &outputWasm,
+                                std::filesystem::path const &sourceMapPath);
 } // namespace warpo::passes::instrumentation

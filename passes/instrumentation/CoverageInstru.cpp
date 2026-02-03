@@ -2,11 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <binaryen-c.h>
+#include <cassert>
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <ostream>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -37,8 +39,7 @@ static void setupBasicBlockAnalysis(BasicBlockAnalysis &basicBlockAnalysis,
   }
 }
 
-static InstrumentationResponse runCoverageOnlyPart(wasm::Module &module,
-                                                   CoverageInstrumentationConfig const &coverageConfig) noexcept {
+static void runCoverageOnlyPart(wasm::Module &module, CoverageInstrumentationConfig const &coverageConfig) {
   BasicBlockAnalysis basicBlockAnalysis = BasicBlockAnalysis();
   setupBasicBlockAnalysis(basicBlockAnalysis, coverageConfig);
 
@@ -89,81 +90,43 @@ static InstrumentationResponse runCoverageOnlyPart(wasm::Module &module,
   try {
     jsonWriteStream << json.dump();
   } catch (...) {
-    // Hard to control IO error
-    // LCOV_EXCL_START
-    return InstrumentationResponse::DEBUG_INFO_GENERATION_ERROR; // debug info json write failed
-    // LCOV_EXCL_STOP
+    throw std::runtime_error("coverage instrumentation failed: debug info json write failed");
   }
   jsonWriteStream.close();
   if (jsonWriteStream.fail() || jsonWriteStream.bad()) {
-    // Hard to control IO error
-    // LCOV_EXCL_START
-    return InstrumentationResponse::DEBUG_INFO_GENERATION_ERROR; // debug info json write failed
-    // LCOV_EXCL_STOP
+    throw std::runtime_error("coverage instrumentation failed: debug info json stream error");
   }
   CovInstrumentationWalker covWalker(&module, coverageConfig.reportFunction.data(), basicBlockWalker);
   covWalker.covWalk();
-  return InstrumentationResponse::NORMAL;
 }
 
-static InstrumentationResponse runTestOnlyPart(wasm::Module &module,
-                                               std::unordered_map<uint32_t, std::string> &outExpectInfos) noexcept {
+static void runTestOnlyPart(wasm::Module &module, std::unordered_map<uint32_t, std::string> &outExpectInfos) {
   MockInstrumentationWalker mockWalker(&module);
   mockWalker.mockWalk();
   outExpectInfos = mockWalker.getExpectInfos();
-  return InstrumentationResponse::NORMAL;
 }
 
 void CoverageInstrumentation::innerAnalysis(BasicBlockAnalysis &basicBlockAnalysis) const noexcept {
   (void)basicBlockAnalysis;
 }
 
-InstrumentationResponse CoverageInstrumentation::instrument() const noexcept {
-  if (ioConfig == nullptr)
-    return InstrumentationResponse::CONFIG_ERROR;
+void CoverageInstrumentation::instrument() const {
+  assert(ioConfig != nullptr);
+  assert(!ioConfig->fileName.empty());
+  assert(!ioConfig->sourceMap.empty());
+  assert(!ioConfig->targetName.empty());
 
-  if (ioConfig->fileName.empty() || ioConfig->sourceMap.empty() || ioConfig->targetName.empty()) {
-    std::cout << *ioConfig << std::endl;
-    return InstrumentationResponse::CONFIG_ERROR; // config error
-  }
   if (coverageConfig == nullptr && testConfig == nullptr)
-    return InstrumentationResponse::NORMAL;
+    return;
 
   if (coverageConfig != nullptr) {
     if (coverageConfig->reportFunction.empty() || coverageConfig->debugInfoOutputFilePath.empty()) {
-      std::cout << *ioConfig << ", " << *coverageConfig << std::endl;
-      return InstrumentationResponse::CONFIG_ERROR; // config error
+      throw std::runtime_error("instrumentation config error: missing coverage options");
     }
   }
   if (testConfig != nullptr) {
     if (testConfig->expectInfoOutputFilePath.empty()) {
-      std::cout << *ioConfig << ", " << *testConfig << std::endl;
-      return InstrumentationResponse::CONFIG_ERROR; // config error
-    }
-  }
-
-  std::filesystem::path const filePath(ioConfig->fileName);
-  std::filesystem::path const targetFilePath(ioConfig->targetName);
-  std::filesystem::path const sourceMapPath(ioConfig->sourceMap);
-  if ((!std::filesystem::exists(filePath)) || (!std::filesystem::exists(sourceMapPath)) ||
-      (!std::filesystem::exists(targetFilePath.parent_path()))) {
-    std::cout << *ioConfig << std::endl;
-    return InstrumentationResponse::CONFIG_FILEPATH_ERROR; // config file path error
-  }
-
-  if (coverageConfig != nullptr) {
-    std::filesystem::path const debugInfoPath(coverageConfig->debugInfoOutputFilePath);
-    if ((!std::filesystem::exists(debugInfoPath.parent_path()))) {
-      std::cout << *ioConfig << ", " << *coverageConfig << std::endl;
-      return InstrumentationResponse::CONFIG_FILEPATH_ERROR; // config file path error
-    }
-  }
-
-  if (testConfig != nullptr) {
-    std::filesystem::path const expectInfoPath(testConfig->expectInfoOutputFilePath);
-    if ((!std::filesystem::exists(expectInfoPath.parent_path()))) {
-      std::cout << *ioConfig << ", " << *testConfig << std::endl;
-      return InstrumentationResponse::CONFIG_FILEPATH_ERROR; // config file path error
+      throw std::runtime_error("instrumentation config error: missing test options");
     }
   }
 
@@ -171,16 +134,12 @@ InstrumentationResponse CoverageInstrumentation::instrument() const noexcept {
   wasm::ModuleReader reader;
   reader.read(std::string(ioConfig->fileName), module, std::string(ioConfig->sourceMap));
   if (coverageConfig != nullptr) {
-    InstrumentationResponse const coverageResult = runCoverageOnlyPart(module, *coverageConfig);
-    if (coverageResult != InstrumentationResponse::NORMAL)
-      return coverageResult;
+    runCoverageOnlyPart(module, *coverageConfig);
   }
 
   std::unordered_map<uint32_t, std::string> expectInfos{};
   if (testConfig != nullptr) {
-    InstrumentationResponse const testResult = runTestOnlyPart(module, expectInfos);
-    if (testResult != InstrumentationResponse::NORMAL)
-      return testResult;
+    runTestOnlyPart(module, expectInfos);
   }
 
   const std::string targetSourceMapPath = std::string{this->ioConfig->targetName} + ".map";
@@ -194,10 +153,7 @@ InstrumentationResponse CoverageInstrumentation::instrument() const noexcept {
   free(result.binary);
   free(result.sourceMap);
   if (wasmFileStream.fail() || wasmFileStream.bad()) {
-    // Hard to control IO error
-    // LCOV_EXCL_START
-    return InstrumentationResponse::FILE_GENERATION_ERROR; // debug info json write failed
-    // LCOV_EXCL_STOP
+    throw std::runtime_error("instrumentation failed: output wasm write failed");
   }
 
   if (testConfig != nullptr) {
@@ -212,22 +168,13 @@ InstrumentationResponse CoverageInstrumentation::instrument() const noexcept {
     try {
       expectInfosJsonWriteStream << expectInfosJson.dump();
     } catch (...) {
-      // Hard to control IO error
-      // LCOV_EXCL_START
-      return InstrumentationResponse::EXPECT_INFO_GENERATION_ERROR; // expectation info generation
-                                                                    // failed
-      // LCOV_EXCL_STOP
+      throw std::runtime_error("test instrumentation failed: expect info json write failed");
     }
     expectInfosJsonWriteStream.close();
     if (expectInfosJsonWriteStream.fail() || expectInfosJsonWriteStream.bad()) {
-      // Hard to control IO error
-      // LCOV_EXCL_START
-      return InstrumentationResponse::EXPECT_INFO_GENERATION_ERROR; // expectation info generation
-                                                                    // failed
-      // LCOV_EXCL_STOP
+      throw std::runtime_error("test instrumentation failed: expect info json stream error");
     }
   }
-  return InstrumentationResponse::NORMAL;
 }
 
 } // namespace warpo::passes::instrumentation
@@ -284,13 +231,12 @@ namespace warpo::passes::instrumentation {
 
 bool isCoverageInstrumentationEnabled() { return enableCoverageInstrumentationOption.get(); }
 
-InstrumentationResponse runCoverageOnlyInstrumentation(std::filesystem::path const &inputWasm,
-                                                       std::filesystem::path const &outputWasm,
-                                                       std::filesystem::path const &sourceMapPath) {
+void runCoverageOnlyInstrumentation(std::filesystem::path const &inputWasm, std::filesystem::path const &outputWasm,
+                                    std::filesystem::path const &sourceMapPath) {
   if (!isCoverageInstrumentationEnabled())
-    return InstrumentationResponse::NORMAL;
+    return;
   if (instrumentationDisableCoverageOption.get())
-    return InstrumentationResponse::NORMAL;
+    return;
 
   InstrumentationIOConfig ioConfig{};
   ioConfig.fileName = inputWasm.string();
@@ -304,14 +250,13 @@ InstrumentationResponse runCoverageOnlyInstrumentation(std::filesystem::path con
   coverageConfig.skipLib = !instrumentationIncludeLibOption.get();
 
   CoverageInstrumentation const instrumentation(&ioConfig, &coverageConfig, nullptr);
-  return instrumentation.instrument();
+  instrumentation.instrument();
 }
 
-InstrumentationResponse runTestInstrumentation(std::filesystem::path const &inputWasm,
-                                               std::filesystem::path const &outputWasm,
-                                               std::filesystem::path const &sourceMapPath) {
+void runTestInstrumentation(std::filesystem::path const &inputWasm, std::filesystem::path const &outputWasm,
+                            std::filesystem::path const &sourceMapPath) {
   if (!isCoverageInstrumentationEnabled())
-    return InstrumentationResponse::NORMAL;
+    return;
 
   InstrumentationIOConfig ioConfig{};
   ioConfig.fileName = inputWasm.string();
@@ -322,14 +267,13 @@ InstrumentationResponse runTestInstrumentation(std::filesystem::path const &inpu
   testConfig.expectInfoOutputFilePath = instrumentationExpectInfoOutputOption.get();
 
   CoverageInstrumentation const instrumentation(&ioConfig, nullptr, &testConfig);
-  return instrumentation.instrument();
+  instrumentation.instrument();
 }
 
-InstrumentationResponse runCoverageInstrumentation(std::filesystem::path const &inputWasm,
-                                                   std::filesystem::path const &outputWasm,
-                                                   std::filesystem::path const &sourceMapPath) {
+void runCoverageInstrumentation(std::filesystem::path const &inputWasm, std::filesystem::path const &outputWasm,
+                                std::filesystem::path const &sourceMapPath) {
   if (!isCoverageInstrumentationEnabled())
-    return InstrumentationResponse::NORMAL;
+    return;
 
   InstrumentationIOConfig ioConfig{};
   ioConfig.fileName = inputWasm.string();
@@ -351,7 +295,7 @@ InstrumentationResponse runCoverageInstrumentation(std::filesystem::path const &
       testConfig.expectInfoOutputFilePath.empty() ? nullptr : &testConfig;
 
   CoverageInstrumentation const instrumentation(&ioConfig, coverageCfgPtr, testCfgPtr);
-  return instrumentation.instrument();
+  instrumentation.instrument();
 }
 
 } // namespace warpo::passes::instrumentation

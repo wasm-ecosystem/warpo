@@ -178,7 +178,6 @@ struct OutputFiles {
 };
 
 void runCoverageInstrumentation(OutputFiles const &outputFiles) {
-  using instrumentation::InstrumentationResponse;
   if (!instrumentation::isCoverageInstrumentationEnabled())
     return;
   if (outputFiles.wasm_.empty())
@@ -186,11 +185,7 @@ void runCoverageInstrumentation(OutputFiles const &outputFiles) {
   if (outputFiles.sourceMap_.empty() || !common::isEmitDebugLine())
     throw std::runtime_error("coverage instrumentation requires debug source map, use --debug");
 
-  InstrumentationResponse const response =
-      instrumentation::runCoverageInstrumentation(outputFiles.wasm_, outputFiles.wasm_, outputFiles.sourceMap_);
-  if (response != InstrumentationResponse::NORMAL)
-    throw std::runtime_error(
-        fmt::format("coverage instrumentation failed with status {}", static_cast<uint32_t>(response)));
+  instrumentation::runCoverageInstrumentation(outputFiles.wasm_, outputFiles.wasm_, outputFiles.sourceMap_);
 }
 } // namespace
 
