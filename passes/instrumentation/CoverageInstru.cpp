@@ -23,122 +23,171 @@
 
 namespace warpo::passes::instrumentation {
 
-void CoverageInstrumentation::innerAnalysis(BasicBlockAnalysis &basicBlockAnalysis) const noexcept {
-  if (config->skipLib) {
+static void setupBasicBlockAnalysis(BasicBlockAnalysis &basicBlockAnalysis,
+                                    CoverageInstrumentationConfig const &coverageConfig) noexcept {
+  if (coverageConfig.skipLib)
     basicBlockAnalysis.addExclude("~lib/.+");
-  }
-  if (config->excludes.empty()) {
+
+  if (coverageConfig.excludes.empty())
     return;
-  }
-  for (std::string const &excludeItem : config->excludes) {
+
+  for (std::string const &excludeItem : coverageConfig.excludes) {
     if (!excludeItem.empty())
       basicBlockAnalysis.addExclude(excludeItem);
   }
 }
 
+static InstrumentationResponse runCoverageOnlyPart(wasm::Module &module,
+                                                   CoverageInstrumentationConfig const &coverageConfig) noexcept {
+  BasicBlockAnalysis basicBlockAnalysis = BasicBlockAnalysis();
+  setupBasicBlockAnalysis(basicBlockAnalysis, coverageConfig);
+
+  BasicBlockWalker basicBlockWalker = BasicBlockWalker(&module, basicBlockAnalysis);
+  basicBlockWalker.basicBlockWalk();
+  const std::unordered_map<std::string_view, FunctionAnalysisResult> &results = basicBlockWalker.getResults();
+  nlohmann::json json = nlohmann::json::object();
+  nlohmann::json debugInfoJson = nlohmann::json::object();
+  nlohmann::json debugFileJson = nlohmann::json::array();
+  for (auto &[function, result] : results) {
+    nlohmann::json innerJson = nlohmann::json::object();
+    innerJson["index"] = result.functionIndex;
+
+    nlohmann::json branchInfoArray = nlohmann::json::array();
+    for (const auto &branchInfo : result.branchInfo) {
+      branchInfoArray.push_back(nlohmann::json::array({branchInfo.first, branchInfo.second}));
+    }
+    innerJson["branchInfo"] = std::move(branchInfoArray);
+
+    nlohmann::json debugLineJson = nlohmann::json::array();
+    for (const auto &basicBlock : result.basicBlocks) {
+      if (basicBlock.basicBlockIndex == static_cast<wasm::Index>(-1)) {
+        continue;
+      }
+
+      nlohmann::json debugLineItemJsonArray = nlohmann::json::array();
+      for (const auto &debugLine : basicBlock.debugLocations) {
+        debugLineItemJsonArray.push_back(
+            nlohmann::json::array({debugLine.fileIndex, debugLine.lineNumber, debugLine.columnNumber}));
+      }
+
+      const size_t basicBlockIndex = static_cast<size_t>(basicBlock.basicBlockIndex);
+      while (debugLineJson.size() <= basicBlockIndex) {
+        debugLineJson.push_back(nullptr);
+      }
+      debugLineJson[basicBlockIndex] = std::move(debugLineItemJsonArray);
+    }
+    innerJson["lineInfo"] = std::move(debugLineJson);
+    debugInfoJson[std::string(function)] = std::move(innerJson);
+  }
+  for (const std::string &debugInfoFileName : module.debugInfoFileNames) {
+    debugFileJson.push_back(debugInfoFileName);
+  }
+  json["debugInfos"] = std::move(debugInfoJson);
+  json["debugFiles"] = std::move(debugFileJson);
+  std::ofstream jsonWriteStream(coverageConfig.debugInfoOutputFilePath.data(), std::ios::trunc);
+
+  try {
+    jsonWriteStream << json.dump();
+  } catch (...) {
+    // Hard to control IO error
+    // LCOV_EXCL_START
+    return InstrumentationResponse::DEBUG_INFO_GENERATION_ERROR; // debug info json write failed
+    // LCOV_EXCL_STOP
+  }
+  jsonWriteStream.close();
+  if (jsonWriteStream.fail() || jsonWriteStream.bad()) {
+    // Hard to control IO error
+    // LCOV_EXCL_START
+    return InstrumentationResponse::DEBUG_INFO_GENERATION_ERROR; // debug info json write failed
+    // LCOV_EXCL_STOP
+  }
+  CovInstrumentationWalker covWalker(&module, coverageConfig.reportFunction.data(), basicBlockWalker);
+  covWalker.covWalk();
+  return InstrumentationResponse::NORMAL;
+}
+
+static InstrumentationResponse runTestOnlyPart(wasm::Module &module,
+                                               std::unordered_map<uint32_t, std::string> &outExpectInfos) noexcept {
+  MockInstrumentationWalker mockWalker(&module);
+  mockWalker.mockWalk();
+  outExpectInfos = mockWalker.getExpectInfos();
+  return InstrumentationResponse::NORMAL;
+}
+
+void CoverageInstrumentation::innerAnalysis(BasicBlockAnalysis &basicBlockAnalysis) const noexcept {
+  (void)basicBlockAnalysis;
+}
+
 InstrumentationResponse CoverageInstrumentation::instrument() const noexcept {
-  if (config->fileName.empty() || config->reportFunction.empty() || config->sourceMap.empty() ||
-      config->targetName.empty() || config->expectInfoOutputFilePath.empty()) {
-    std::cout << *config << std::endl;
+  if (ioConfig == nullptr)
+    return InstrumentationResponse::CONFIG_ERROR;
+
+  if (ioConfig->fileName.empty() || ioConfig->sourceMap.empty() || ioConfig->targetName.empty()) {
+    std::cout << *ioConfig << std::endl;
     return InstrumentationResponse::CONFIG_ERROR; // config error
   }
-  std::filesystem::path const filePath(config->fileName);
-  std::filesystem::path const targetFilePath(config->targetName);
-  std::filesystem::path const sourceMapPath(config->sourceMap);
+  if (coverageConfig == nullptr && testConfig == nullptr)
+    return InstrumentationResponse::NORMAL;
+
+  if (coverageConfig != nullptr) {
+    if (coverageConfig->reportFunction.empty() || coverageConfig->debugInfoOutputFilePath.empty()) {
+      std::cout << *ioConfig << ", " << *coverageConfig << std::endl;
+      return InstrumentationResponse::CONFIG_ERROR; // config error
+    }
+  }
+  if (testConfig != nullptr) {
+    if (testConfig->expectInfoOutputFilePath.empty()) {
+      std::cout << *ioConfig << ", " << *testConfig << std::endl;
+      return InstrumentationResponse::CONFIG_ERROR; // config error
+    }
+  }
+
+  std::filesystem::path const filePath(ioConfig->fileName);
+  std::filesystem::path const targetFilePath(ioConfig->targetName);
+  std::filesystem::path const sourceMapPath(ioConfig->sourceMap);
   if ((!std::filesystem::exists(filePath)) || (!std::filesystem::exists(sourceMapPath)) ||
       (!std::filesystem::exists(targetFilePath.parent_path()))) {
-    std::cout << *config << std::endl;
+    std::cout << *ioConfig << std::endl;
     return InstrumentationResponse::CONFIG_FILEPATH_ERROR; // config file path error
+  }
+
+  if (coverageConfig != nullptr) {
+    std::filesystem::path const debugInfoPath(coverageConfig->debugInfoOutputFilePath);
+    if ((!std::filesystem::exists(debugInfoPath.parent_path()))) {
+      std::cout << *ioConfig << ", " << *coverageConfig << std::endl;
+      return InstrumentationResponse::CONFIG_FILEPATH_ERROR; // config file path error
+    }
+  }
+
+  if (testConfig != nullptr) {
+    std::filesystem::path const expectInfoPath(testConfig->expectInfoOutputFilePath);
+    if ((!std::filesystem::exists(expectInfoPath.parent_path()))) {
+      std::cout << *ioConfig << ", " << *testConfig << std::endl;
+      return InstrumentationResponse::CONFIG_FILEPATH_ERROR; // config file path error
+    }
   }
 
   wasm::Module module;
   wasm::ModuleReader reader;
-  reader.read(std::string(config->fileName), module, std::string(config->sourceMap));
-  BasicBlockAnalysis basicBlockAnalysis = BasicBlockAnalysis();
-  innerAnalysis(basicBlockAnalysis);
-
-  if (config->collectCoverage) {
-    if (config->debugInfoOutputFilePath.empty()) {
-      std::cout << *config << std::endl;
-      return InstrumentationResponse::CONFIG_ERROR; // config error
-    }
-    std::filesystem::path const debugInfoPath(config->debugInfoOutputFilePath);
-    if ((!std::filesystem::exists(debugInfoPath.parent_path()))) {
-      std::cout << *config << std::endl;
-      return InstrumentationResponse::CONFIG_FILEPATH_ERROR; // config file path error
-    }
-
-    BasicBlockWalker basicBlockWalker = BasicBlockWalker(&module, basicBlockAnalysis);
-    basicBlockWalker.basicBlockWalk();
-    const std::unordered_map<std::string_view, FunctionAnalysisResult> &results = basicBlockWalker.getResults();
-    nlohmann::json json = nlohmann::json::object();
-    nlohmann::json debugInfoJson = nlohmann::json::object();
-    nlohmann::json debugFileJson = nlohmann::json::array();
-    for (auto &[function, result] : results) {
-      nlohmann::json innerJson = nlohmann::json::object();
-      innerJson["index"] = result.functionIndex;
-
-      nlohmann::json branchInfoArray = nlohmann::json::array();
-      for (const auto &branchInfo : result.branchInfo) {
-        branchInfoArray.push_back(nlohmann::json::array({branchInfo.first, branchInfo.second}));
-      }
-      innerJson["branchInfo"] = std::move(branchInfoArray);
-
-      nlohmann::json debugLineJson = nlohmann::json::array();
-      for (const auto &basicBlock : result.basicBlocks) {
-        if (basicBlock.basicBlockIndex == static_cast<wasm::Index>(-1)) {
-          continue;
-        }
-
-        nlohmann::json debugLineItemJsonArray = nlohmann::json::array();
-        for (const auto &debugLine : basicBlock.debugLocations) {
-          debugLineItemJsonArray.push_back(
-              nlohmann::json::array({debugLine.fileIndex, debugLine.lineNumber, debugLine.columnNumber}));
-        }
-
-        const size_t basicBlockIndex = static_cast<size_t>(basicBlock.basicBlockIndex);
-        while (debugLineJson.size() <= basicBlockIndex) {
-          debugLineJson.push_back(nullptr);
-        }
-        debugLineJson[basicBlockIndex] = std::move(debugLineItemJsonArray);
-      }
-      innerJson["lineInfo"] = std::move(debugLineJson);
-      debugInfoJson[std::string(function)] = std::move(innerJson);
-    }
-    for (const std::string &debugInfoFileName : module.debugInfoFileNames) {
-      debugFileJson.push_back(debugInfoFileName);
-    }
-    json["debugInfos"] = std::move(debugInfoJson);
-    json["debugFiles"] = std::move(debugFileJson);
-    std::ofstream jsonWriteStream(config->debugInfoOutputFilePath.data(), std::ios::trunc);
-
-    try {
-      jsonWriteStream << json.dump();
-    } catch (...) {
-      // Hard to control IO error
-      // LCOV_EXCL_START
-      return InstrumentationResponse::DEBUG_INFO_GENERATION_ERROR; // debug info json write failed
-      // LCOV_EXCL_STOP
-    }
-    jsonWriteStream.close();
-    if (jsonWriteStream.fail() || jsonWriteStream.bad()) {
-      // Hard to control IO error
-      // LCOV_EXCL_START
-      return InstrumentationResponse::DEBUG_INFO_GENERATION_ERROR; // debug info json write failed
-      // LCOV_EXCL_STOP
-    }
-    CovInstrumentationWalker covWalker(&module, config->reportFunction.data(), basicBlockWalker);
-    covWalker.covWalk();
+  reader.read(std::string(ioConfig->fileName), module, std::string(ioConfig->sourceMap));
+  if (coverageConfig != nullptr) {
+    InstrumentationResponse const coverageResult = runCoverageOnlyPart(module, *coverageConfig);
+    if (coverageResult != InstrumentationResponse::NORMAL)
+      return coverageResult;
   }
 
-  MockInstrumentationWalker mockWalker(&module);
-  mockWalker.mockWalk();
+  std::unordered_map<uint32_t, std::string> expectInfos{};
+  if (testConfig != nullptr) {
+    InstrumentationResponse const testResult = runTestOnlyPart(module, expectInfos);
+    if (testResult != InstrumentationResponse::NORMAL)
+      return testResult;
+  }
 
-  const std::string targetSourceMapPath = std::string{this->config->targetName} + ".map";
+  const std::string targetSourceMapPath = std::string{this->ioConfig->targetName} + ".map";
   BinaryenSetDebugInfo(true);
   const BinaryenModuleAllocateAndWriteResult result =
       BinaryenModuleAllocateAndWrite(&module, targetSourceMapPath.c_str());
-  std::ofstream wasmFileStream(this->config->targetName.data(), std::ios::trunc | std::ios::binary);
+  std::ofstream wasmFileStream(this->ioConfig->targetName.data(), std::ios::trunc | std::ios::binary);
   wasmFileStream.write(static_cast<char *>(result.binary), static_cast<std::streamsize>(result.binaryBytes));
   std::ofstream sourceMapFileStream(targetSourceMapPath, std::ios::trunc | std::ios::binary);
   sourceMapFileStream << result.sourceMap << std::flush;
@@ -151,30 +200,32 @@ InstrumentationResponse CoverageInstrumentation::instrument() const noexcept {
     // LCOV_EXCL_STOP
   }
 
-  nlohmann::json expectInfosJson = nlohmann::json::object();
-  for (const auto &[key, value] : mockWalker.getExpectInfos()) {
-    // Mock test will verified with wasm-testing-framework project, escape this
-    // LCOV_EXCL_START
-    expectInfosJson[std::to_string(key)] = value;
-    // LCOV_EXCL_STOP
-  }
-  std::ofstream expectInfosJsonWriteStream(config->expectInfoOutputFilePath.data(), std::ios::trunc);
-  try {
-    expectInfosJsonWriteStream << expectInfosJson.dump();
-  } catch (...) {
-    // Hard to control IO error
-    // LCOV_EXCL_START
-    return InstrumentationResponse::EXPECT_INFO_GENERATION_ERROR; // expectation info generation
-                                                                  // failed
-    // LCOV_EXCL_STOP
-  }
-  expectInfosJsonWriteStream.close();
-  if (expectInfosJsonWriteStream.fail() || expectInfosJsonWriteStream.bad()) {
-    // Hard to control IO error
-    // LCOV_EXCL_START
-    return InstrumentationResponse::EXPECT_INFO_GENERATION_ERROR; // expectation info generation
-                                                                  // failed
-    // LCOV_EXCL_STOP
+  if (testConfig != nullptr) {
+    nlohmann::json expectInfosJson = nlohmann::json::object();
+    for (const auto &[key, value] : expectInfos) {
+      // Mock test will verified with wasm-testing-framework project, escape this
+      // LCOV_EXCL_START
+      expectInfosJson[std::to_string(key)] = value;
+      // LCOV_EXCL_STOP
+    }
+    std::ofstream expectInfosJsonWriteStream(testConfig->expectInfoOutputFilePath.data(), std::ios::trunc);
+    try {
+      expectInfosJsonWriteStream << expectInfosJson.dump();
+    } catch (...) {
+      // Hard to control IO error
+      // LCOV_EXCL_START
+      return InstrumentationResponse::EXPECT_INFO_GENERATION_ERROR; // expectation info generation
+                                                                    // failed
+      // LCOV_EXCL_STOP
+    }
+    expectInfosJsonWriteStream.close();
+    if (expectInfosJsonWriteStream.fail() || expectInfosJsonWriteStream.bad()) {
+      // Hard to control IO error
+      // LCOV_EXCL_START
+      return InstrumentationResponse::EXPECT_INFO_GENERATION_ERROR; // expectation info generation
+                                                                    // failed
+      // LCOV_EXCL_STOP
+    }
   }
   return InstrumentationResponse::NORMAL;
 }
@@ -233,24 +284,73 @@ namespace warpo::passes::instrumentation {
 
 bool isCoverageInstrumentationEnabled() { return enableCoverageInstrumentationOption.get(); }
 
+InstrumentationResponse runCoverageOnlyInstrumentation(std::filesystem::path const &inputWasm,
+                                                       std::filesystem::path const &outputWasm,
+                                                       std::filesystem::path const &sourceMapPath) {
+  if (!isCoverageInstrumentationEnabled())
+    return InstrumentationResponse::NORMAL;
+  if (instrumentationDisableCoverageOption.get())
+    return InstrumentationResponse::NORMAL;
+
+  InstrumentationIOConfig ioConfig{};
+  ioConfig.fileName = inputWasm.string();
+  ioConfig.targetName = outputWasm.string();
+  ioConfig.sourceMap = sourceMapPath.string();
+
+  CoverageInstrumentationConfig coverageConfig{};
+  coverageConfig.reportFunction = instrumentationReportFunctionOption.get();
+  coverageConfig.debugInfoOutputFilePath = instrumentationDebugInfoOutputOption.get();
+  coverageConfig.excludes = instrumentationExcludeOption.get();
+  coverageConfig.skipLib = !instrumentationIncludeLibOption.get();
+
+  CoverageInstrumentation const instrumentation(&ioConfig, &coverageConfig, nullptr);
+  return instrumentation.instrument();
+}
+
+InstrumentationResponse runTestInstrumentation(std::filesystem::path const &inputWasm,
+                                               std::filesystem::path const &outputWasm,
+                                               std::filesystem::path const &sourceMapPath) {
+  if (!isCoverageInstrumentationEnabled())
+    return InstrumentationResponse::NORMAL;
+
+  InstrumentationIOConfig ioConfig{};
+  ioConfig.fileName = inputWasm.string();
+  ioConfig.targetName = outputWasm.string();
+  ioConfig.sourceMap = sourceMapPath.string();
+
+  TestInstrumentationConfig testConfig{};
+  testConfig.expectInfoOutputFilePath = instrumentationExpectInfoOutputOption.get();
+
+  CoverageInstrumentation const instrumentation(&ioConfig, nullptr, &testConfig);
+  return instrumentation.instrument();
+}
+
 InstrumentationResponse runCoverageInstrumentation(std::filesystem::path const &inputWasm,
                                                    std::filesystem::path const &outputWasm,
                                                    std::filesystem::path const &sourceMapPath) {
   if (!isCoverageInstrumentationEnabled())
     return InstrumentationResponse::NORMAL;
 
-  InstrumentationConfig config{};
-  config.fileName = inputWasm.string();
-  config.targetName = outputWasm.string();
-  config.sourceMap = sourceMapPath.string();
-  config.reportFunction = instrumentationReportFunctionOption.get();
-  config.debugInfoOutputFilePath = instrumentationDebugInfoOutputOption.get();
-  config.expectInfoOutputFilePath = instrumentationExpectInfoOutputOption.get();
-  config.excludes = instrumentationExcludeOption.get();
-  config.skipLib = !instrumentationIncludeLibOption.get();
-  config.collectCoverage = !instrumentationDisableCoverageOption.get();
+  InstrumentationIOConfig ioConfig{};
+  ioConfig.fileName = inputWasm.string();
+  ioConfig.targetName = outputWasm.string();
+  ioConfig.sourceMap = sourceMapPath.string();
 
-  CoverageInstrumentation const instrumentation(&config);
+  CoverageInstrumentationConfig coverageConfig{};
+  coverageConfig.reportFunction = instrumentationReportFunctionOption.get();
+  coverageConfig.debugInfoOutputFilePath = instrumentationDebugInfoOutputOption.get();
+  coverageConfig.excludes = instrumentationExcludeOption.get();
+  coverageConfig.skipLib = !instrumentationIncludeLibOption.get();
+
+  TestInstrumentationConfig testConfig{};
+  testConfig.expectInfoOutputFilePath = instrumentationExpectInfoOutputOption.get();
+
+  CoverageInstrumentationConfig const *const coverageCfgPtr =
+      instrumentationDisableCoverageOption.get() ? nullptr : &coverageConfig;
+  TestInstrumentationConfig const *const testCfgPtr =
+      testConfig.expectInfoOutputFilePath.empty() ? nullptr : &testConfig;
+
+  CoverageInstrumentation const instrumentation(&ioConfig, coverageCfgPtr, testCfgPtr);
   return instrumentation.instrument();
 }
 

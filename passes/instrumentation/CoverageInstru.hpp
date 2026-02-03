@@ -14,41 +14,43 @@
 namespace warpo::passes::instrumentation {
 
 class BasicBlockAnalysis;
-///
-/// @brief Customer input configuration for instrumentation
-///
-class InstrumentationConfig final {
-public:
-  ///
-  /// @brief Default constructor for InstrumentationConfig
-  ///
-  InstrumentationConfig() noexcept = default;
-  std::string fileName;                 ///< input file name
-  std::string targetName;               ///< target file name
-  std::string reportFunction;           ///< trace report function name
-  std::string sourceMap;                ///< input source map file name
-  std::string debugInfoOutputFilePath;  ///< debug info output file name
-  std::vector<std::string> excludes;    ///< function exclude filter
-  std::string expectInfoOutputFilePath; ///< exception info output file name
-  bool skipLib = true;                  ///< if skip lib functions
-  bool collectCoverage = true;          ///< whether collect coverage information
 
-  ///
-  ///@brief Print information of InstrumentationConfig to output stream
-  ///
-  ///@param out target output stream
-  ///@param instance
-  ///@return processed output stream
-  friend std::ostream &operator<<(std::ostream &out, const InstrumentationConfig &instance) noexcept {
+struct InstrumentationIOConfig final {
+  std::string fileName;   ///< input file name
+  std::string targetName; ///< target file name
+  std::string sourceMap;  ///< input source map file name
+
+  friend std::ostream &operator<<(std::ostream &out, InstrumentationIOConfig const &instance) noexcept {
     out << "filename: " << instance.fileName << ", targetName: " << instance.targetName
-        << ", sourceMap: " << instance.sourceMap << ", reportFunction:" << instance.reportFunction << ", excludes: [";
+        << ", sourceMap: " << instance.sourceMap;
+    return out;
+  }
+};
+
+struct CoverageInstrumentationConfig final {
+  std::string reportFunction;          ///< coverage report function name
+  std::string debugInfoOutputFilePath; ///< debug info output file name
+  std::vector<std::string> excludes;   ///< function exclude filter
+  bool skipLib = true;                 ///< if skip lib functions
+
+  friend std::ostream &operator<<(std::ostream &out, CoverageInstrumentationConfig const &instance) noexcept {
+    out << "reportFunction: " << instance.reportFunction
+        << ", debugInfoOutputFilePath: " << instance.debugInfoOutputFilePath << ", excludes: [";
     for (size_t i = 0; i < instance.excludes.size(); ++i) {
       if (i > 0)
         out << ", ";
       out << instance.excludes[i];
     }
-    out << "], expectInfoOutputFilePath: " << instance.expectInfoOutputFilePath << ", skipLib: " << std::boolalpha
-        << instance.skipLib << ", collectCoverage: " << std::boolalpha << instance.collectCoverage << std::endl;
+    out << "], skipLib: " << std::boolalpha << instance.skipLib;
+    return out;
+  }
+};
+
+struct TestInstrumentationConfig final {
+  std::string expectInfoOutputFilePath; ///< expectation info output file name
+
+  friend std::ostream &operator<<(std::ostream &out, TestInstrumentationConfig const &instance) noexcept {
+    out << "expectInfoOutputFilePath: " << instance.expectInfoOutputFilePath;
     return out;
   }
 };
@@ -63,7 +65,10 @@ public:
   ///@brief Constructor for coverage instrumentation
   ///
   ///@param cfg configuration from customer
-  explicit CoverageInstrumentation(InstrumentationConfig const *const cfg) noexcept : config(cfg) {}
+  explicit CoverageInstrumentation(InstrumentationIOConfig const *const ioCfg,
+                                   CoverageInstrumentationConfig const *const coverageCfg,
+                                   TestInstrumentationConfig const *const testCfg) noexcept
+      : ioConfig(ioCfg), coverageConfig(coverageCfg), testConfig(testCfg) {}
   CoverageInstrumentation(const CoverageInstrumentation &src) = delete; // disable copy construct
   CoverageInstrumentation(CoverageInstrumentation &&src) = delete;      // disable move construct
   CoverageInstrumentation &operator=(const CoverageInstrumentation &) = delete;
@@ -80,7 +85,9 @@ public:
   InstrumentationResponse instrument() const noexcept;
 
 private:
-  InstrumentationConfig const *const config; ///< customer configuration for instrumentation
+  InstrumentationIOConfig const *const ioConfig;
+  CoverageInstrumentationConfig const *const coverageConfig;
+  TestInstrumentationConfig const *const testConfig;
   ///
   ///@brief Do preparation and analysis module
   ///
@@ -88,6 +95,14 @@ private:
 };
 
 bool isCoverageInstrumentationEnabled();
+
+InstrumentationResponse runCoverageOnlyInstrumentation(std::filesystem::path const &inputWasm,
+                                                       std::filesystem::path const &outputWasm,
+                                                       std::filesystem::path const &sourceMapPath);
+
+InstrumentationResponse runTestInstrumentation(std::filesystem::path const &inputWasm,
+                                               std::filesystem::path const &outputWasm,
+                                               std::filesystem::path const &sourceMapPath);
 
 InstrumentationResponse runCoverageInstrumentation(std::filesystem::path const &inputWasm,
                                                    std::filesystem::path const &outputWasm,
