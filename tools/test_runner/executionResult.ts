@@ -1,4 +1,4 @@
-import { promises } from "node:fs";
+import { openAsBlob, promises } from "node:fs";
 import { json2map } from "./utils/index.js";
 import {
   FailedInfoMap,
@@ -9,11 +9,13 @@ import {
   TestCaseName,
   FailedInfo,
   FailedLogMessages,
+  TEST_EXPECT_INFO_SECTION_NAME,
 } from "./interface.js";
 import chalk from "chalk";
 import assert from "node:assert";
+import { getCustomSectionUtf8 } from "./utils/wasmCustomSection.js";
 
-const { readFile, writeFile } = promises;
+const { writeFile } = promises;
 
 export class ExecutionResultSummary {
   fail = 0;
@@ -68,13 +70,19 @@ export class ExecutionResultSummary {
     }
   }
 
-  async merge(result: IExecutionResult, expectInfoFilePath: string) {
+  async merge(result: IExecutionResult, instrumentedWasmPath: string) {
     this.fail += result.fail;
     this.total += result.total;
     if (result.fail > 0) {
       try {
-        const expectContent = await readFile(expectInfoFilePath, { encoding: "utf8" });
-        const expectInfo = JSON.parse(expectContent) as ExpectInfo | null;
+        const jsonText = getCustomSectionUtf8(
+          await (await openAsBlob(instrumentedWasmPath)).arrayBuffer(),
+          TEST_EXPECT_INFO_SECTION_NAME
+        );
+        if (jsonText === null) {
+          throw new Error(`missing wasm custom section '${TEST_EXPECT_INFO_SECTION_NAME}' in ${instrumentedWasmPath}`);
+        }
+        const expectInfo = JSON.parse(jsonText) as ExpectInfo | null;
         this.#processAssertInfo(result.failedInfo, expectInfo);
         this.#processCrashInfo(result.crashInfo);
         this.#processLogMessages(result.failedLogMessages);

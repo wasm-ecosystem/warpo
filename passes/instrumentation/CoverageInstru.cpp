@@ -25,6 +25,15 @@
 
 namespace warpo::passes::instrumentation {
 
+static constexpr std::string_view defaultCoverageDebugInfoSectionName = "warpo.coverage.debug-info";
+static constexpr std::string_view defaultTestExpectInfoSectionName = "warpo.test.expect-info";
+
+static void addCustomSection(wasm::Module &module, std::string const &sectionName, std::string const &payload) {
+  if (sectionName.empty() || payload.empty())
+    return;
+  BinaryenAddCustomSection(&module, sectionName.c_str(), payload.data(), static_cast<wasm::Index>(payload.size()));
+}
+
 static void setupBasicBlockAnalysis(BasicBlockAnalysis &basicBlockAnalysis,
                                     CoverageInstrumentationConfig const &coverageConfig) noexcept {
   if (coverageConfig.skipLib)
@@ -85,17 +94,9 @@ static void runCoverageOnlyPart(wasm::Module &module, CoverageInstrumentationCon
   }
   json["debugInfos"] = std::move(debugInfoJson);
   json["debugFiles"] = std::move(debugFileJson);
-  std::ofstream jsonWriteStream(coverageConfig.debugInfoOutputFilePath.data(), std::ios::trunc);
 
-  try {
-    jsonWriteStream << json.dump();
-  } catch (...) {
-    throw std::runtime_error("coverage instrumentation failed: debug info json write failed");
-  }
-  jsonWriteStream.close();
-  if (jsonWriteStream.fail() || jsonWriteStream.bad()) {
-    throw std::runtime_error("coverage instrumentation failed: debug info json stream error");
-  }
+  addCustomSection(module, std::string(defaultCoverageDebugInfoSectionName), json.dump());
+
   CovInstrumentationWalker covWalker(&module, coverageConfig.reportFunction.data(), basicBlockWalker);
   covWalker.covWalk();
 }
@@ -116,13 +117,8 @@ void CoverageInstrumentation::instrument() const {
     return;
 
   if (coverageConfig != nullptr) {
-    if (coverageConfig->reportFunction.empty() || coverageConfig->debugInfoOutputFilePath.empty()) {
+    if (coverageConfig->reportFunction.empty()) {
       throw std::runtime_error("instrumentation config error: missing coverage options");
-    }
-  }
-  if (testConfig != nullptr) {
-    if (testConfig->expectInfoOutputFilePath.empty()) {
-      throw std::runtime_error("instrumentation config error: missing test options");
     }
   }
 
@@ -138,6 +134,18 @@ void CoverageInstrumentation::instrument() const {
     runTestOnlyPart(module, expectInfos);
   }
 
+  if (testConfig != nullptr) {
+    nlohmann::json expectInfosJson = nlohmann::json::object();
+    for (const auto &[key, value] : expectInfos) {
+      // Mock test will verified with wasm-testing-framework project, escape this
+      // LCOV_EXCL_START
+      expectInfosJson[std::to_string(key)] = value;
+      // LCOV_EXCL_STOP
+    }
+
+    addCustomSection(module, std::string(defaultTestExpectInfoSectionName), expectInfosJson.dump());
+  }
+
   const std::string targetSourceMapPath = std::string{this->ioConfig->targetName} + ".map";
   BinaryenSetDebugInfo(true);
   const BinaryenModuleAllocateAndWriteResult result =
@@ -150,26 +158,6 @@ void CoverageInstrumentation::instrument() const {
   free(result.sourceMap);
   if (wasmFileStream.fail() || wasmFileStream.bad()) {
     throw std::runtime_error("instrumentation failed: output wasm write failed");
-  }
-
-  if (testConfig != nullptr) {
-    nlohmann::json expectInfosJson = nlohmann::json::object();
-    for (const auto &[key, value] : expectInfos) {
-      // Mock test will verified with wasm-testing-framework project, escape this
-      // LCOV_EXCL_START
-      expectInfosJson[std::to_string(key)] = value;
-      // LCOV_EXCL_STOP
-    }
-    std::ofstream expectInfosJsonWriteStream(testConfig->expectInfoOutputFilePath.data(), std::ios::trunc);
-    try {
-      expectInfosJsonWriteStream << expectInfosJson.dump();
-    } catch (...) {
-      throw std::runtime_error("test instrumentation failed: expect info json write failed");
-    }
-    expectInfosJsonWriteStream.close();
-    if (expectInfosJsonWriteStream.fail() || expectInfosJsonWriteStream.bad()) {
-      throw std::runtime_error("test instrumentation failed: expect info json stream error");
-    }
   }
 }
 
@@ -187,18 +175,6 @@ static cli::Opt<std::string> instrumentationReportFunctionOption{
     cli::Category::Transformation,
     "--instrument-report-function",
     [](argparse::Argument &arg) -> void { arg.help("Coverage report function name.").nargs(1U); },
-};
-
-static cli::Opt<std::string> instrumentationDebugInfoOutputOption{
-    cli::Category::Transformation,
-    "--instrument-debug-info-output",
-    [](argparse::Argument &arg) -> void { arg.help("Output path for coverage debug info json.").nargs(1U); },
-};
-
-static cli::Opt<std::string> instrumentationExpectInfoOutputOption{
-    cli::Category::Transformation,
-    "--instrument-expect-info-output",
-    [](argparse::Argument &arg) -> void { arg.help("Output path for expectation info json.").nargs(1U); },
 };
 
 static cli::Opt<std::vector<std::string>> instrumentationExcludeOption{
@@ -241,7 +217,6 @@ void runCoverageOnlyInstrumentation(std::filesystem::path const &inputWasm, std:
 
   CoverageInstrumentationConfig coverageConfig{};
   coverageConfig.reportFunction = instrumentationReportFunctionOption.get();
-  coverageConfig.debugInfoOutputFilePath = instrumentationDebugInfoOutputOption.get();
   coverageConfig.excludes = instrumentationExcludeOption.get();
   coverageConfig.skipLib = !instrumentationIncludeLibOption.get();
 
@@ -260,7 +235,6 @@ void runTestInstrumentation(std::filesystem::path const &inputWasm, std::filesys
   ioConfig.sourceMap = sourceMapPath.string();
 
   TestInstrumentationConfig testConfig{};
-  testConfig.expectInfoOutputFilePath = instrumentationExpectInfoOutputOption.get();
 
   CoverageInstrumentation const instrumentation(&ioConfig, nullptr, &testConfig);
   instrumentation.instrument();
@@ -278,17 +252,14 @@ void runCoverageInstrumentation(std::filesystem::path const &inputWasm, std::fil
 
   CoverageInstrumentationConfig coverageConfig{};
   coverageConfig.reportFunction = instrumentationReportFunctionOption.get();
-  coverageConfig.debugInfoOutputFilePath = instrumentationDebugInfoOutputOption.get();
   coverageConfig.excludes = instrumentationExcludeOption.get();
   coverageConfig.skipLib = !instrumentationIncludeLibOption.get();
 
   TestInstrumentationConfig testConfig{};
-  testConfig.expectInfoOutputFilePath = instrumentationExpectInfoOutputOption.get();
 
   CoverageInstrumentationConfig const *const coverageCfgPtr =
       instrumentationDisableCoverageOption.get() ? nullptr : &coverageConfig;
-  TestInstrumentationConfig const *const testCfgPtr =
-      testConfig.expectInfoOutputFilePath.empty() ? nullptr : &testConfig;
+  TestInstrumentationConfig const *const testCfgPtr = &testConfig;
 
   CoverageInstrumentation const instrumentation(&ioConfig, coverageCfgPtr, testCfgPtr);
   instrumentation.instrument();

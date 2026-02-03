@@ -26,14 +26,12 @@ struct InstrumentationIOConfig final {
 };
 
 struct CoverageInstrumentationConfig final {
-  std::string reportFunction;          ///< coverage report function name
-  std::string debugInfoOutputFilePath; ///< debug info output file name
-  std::vector<std::string> excludes;   ///< function exclude filter
-  bool skipLib = true;                 ///< if skip lib functions
+  std::string reportFunction;        ///< coverage report function name
+  std::vector<std::string> excludes; ///< function exclude filter
+  bool skipLib = true;               ///< if skip lib functions
 
   friend std::ostream &operator<<(std::ostream &out, CoverageInstrumentationConfig const &instance) noexcept {
-    out << "reportFunction: " << instance.reportFunction
-        << ", debugInfoOutputFilePath: " << instance.debugInfoOutputFilePath << ", excludes: [";
+    out << "reportFunction: " << instance.reportFunction << ", excludes: [";
     for (size_t i = 0; i < instance.excludes.size(); ++i) {
       if (i > 0)
         out << ", ";
@@ -45,10 +43,8 @@ struct CoverageInstrumentationConfig final {
 };
 
 struct TestInstrumentationConfig final {
-  std::string expectInfoOutputFilePath; ///< expectation info output file name
-
-  friend std::ostream &operator<<(std::ostream &out, TestInstrumentationConfig const &instance) noexcept {
-    out << "expectInfoOutputFilePath: " << instance.expectInfoOutputFilePath;
+  friend std::ostream &operator<<(std::ostream &out, TestInstrumentationConfig const & /*unused*/) noexcept {
+    out << "TestInstrumentationConfig";
     return out;
   }
 };

@@ -22,16 +22,13 @@ export class InstrumentResult {
   get sourceMap(): string {
     return this.baseName.concat(".wasm.map");
   }
-  get debugInfo(): string {
-    return this.baseName.concat(".debugInfo.json");
-  }
-  get expectInfo(): string {
-    return this.baseName.concat(".expectInfo.json");
-  }
   get traceFile(): string {
     return this.baseName.concat(".trace");
   }
 }
+
+export const COVERAGE_DEBUG_INFO_SECTION_NAME = "warpo.coverage.debug-info";
+export const TEST_EXPECT_INFO_SECTION_NAME = "warpo.test.expect-info";
 
 export type CodeSnippetIndex = number;
 export type FunctionIndex = number;

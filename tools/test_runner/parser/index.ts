@@ -14,7 +14,10 @@ import {
   FunctionCoverageResult,
   LineRange,
   InstrumentResult,
+  COVERAGE_DEBUG_INFO_SECTION_NAME,
 } from "../interface.js";
+import { getCustomSectionUtf8 } from "../utils/wasmCustomSection.js";
+import { openAsBlob } from "node:fs";
 
 export class Parser {
   fileCoverageResults: FileCoverageResult[] = [];
@@ -48,8 +51,15 @@ export class Parser {
     return tempCovTraceMap;
   }
 
-  private async getDebugInfos(debugInfoFile: string) {
-    const debugInfo = (await fs.readJson(debugInfoFile)) as DebugInfo;
+  private async getDebugInfos(instrumentedWasmFile: string) {
+    const jsonText = getCustomSectionUtf8(
+      await (await openAsBlob(instrumentedWasmFile)).arrayBuffer(),
+      COVERAGE_DEBUG_INFO_SECTION_NAME
+    );
+    if (jsonText === null) {
+      throw new Error(`missing wasm custom section '${COVERAGE_DEBUG_INFO_SECTION_NAME}' in ${instrumentedWasmFile}`);
+    }
+    const debugInfo = JSON.parse(jsonText) as DebugInfo;
     const debugInfos = json2map(debugInfo.debugInfos);
     const debugFiles = debugInfo.debugFiles;
     return { debugInfos, debugFiles };
@@ -63,7 +73,7 @@ export class Parser {
   async traceParse(instrumentResult: InstrumentResult) {
     const [tempCovTraceMap, { debugInfos, debugFiles }] = await Promise.all([
       this.getTempCovTraceMap(instrumentResult.traceFile),
-      this.getDebugInfos(instrumentResult.debugInfo),
+      this.getDebugInfos(instrumentResult.wasm),
     ]);
 
     for (const [name, info] of debugInfos) {
@@ -80,7 +90,7 @@ export class Parser {
           .filter((range) => {
             const filename = debugFiles[range[0]];
             if (filename === undefined) {
-              throw new Error(`unknown error: not find fileIndex ${range[0]} in ${instrumentResult.debugInfo}`);
+              throw new Error(`unknown error: not find fileIndex ${range[0]} in ${instrumentResult.wasm}`);
             }
             // if basicBlock is inline function from other files, ignore it
             return isFunctionInsideFile(filename, name);

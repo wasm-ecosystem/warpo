@@ -103,7 +103,7 @@ export async function execWasmBinaries(
   await Promise.all<void>(
     instrumentResults.map(async (instrumentResult): Promise<void> => {
       const result: ExecutionResult = await nodeExecutor(instrumentResult, filterByName, imports);
-      await assertRes.merge(result, instrumentResult.expectInfo);
+      await assertRes.merge(result, instrumentResult.wasm);
     })
   );
   return assertRes;
