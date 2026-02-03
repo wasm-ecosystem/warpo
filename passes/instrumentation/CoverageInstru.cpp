@@ -106,10 +106,6 @@ static void runTestOnlyPart(wasm::Module &module, std::unordered_map<uint32_t, s
   outExpectInfos = mockWalker.getExpectInfos();
 }
 
-void CoverageInstrumentation::innerAnalysis(BasicBlockAnalysis &basicBlockAnalysis) const noexcept {
-  (void)basicBlockAnalysis;
-}
-
 void CoverageInstrumentation::instrument() const {
   assert(ioConfig != nullptr);
   assert(!ioConfig->fileName.empty());
