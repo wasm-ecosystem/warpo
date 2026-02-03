@@ -34,6 +34,11 @@ function get_binary(): string | null {
   const version =
     process.env["WARPO_DOWNLOAD_VERSION"] || JSON.parse(readFileSync(join(warpoRoot, "package.json"), "utf8")).version;
 
+  if (version === "0.0.0") {
+    // for development purpose, use local build
+    return join(warpoRoot, "build", "warpo", "warpo_asc");
+  }
+
   const url = download_url(version);
   console.log(`downloading warpo from ${url}`);
   execSync(`curl -L ${url} | tar xz -C ${dirname}`, { stdio: "inherit" });
@@ -50,10 +55,10 @@ export async function main(options: Option) {
     }
     process.on("SIGINT", shutdown);
     process.on("SIGTERM", shutdown);
-    ps.on("close", (e) => {
+    ps.on("close", (code) => {
       process.removeListener("SIGINT", shutdown);
       process.removeListener("SIGTERM", shutdown);
-      resolve(e);
+      resolve(code);
     });
   });
 }

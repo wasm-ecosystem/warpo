@@ -4,7 +4,7 @@
   "description": "next generation AssemblyScript compiler with optimizations",
   "type": "module",
   "bin": {
-    "warpo": "dist/scripts/warpo.js"
+    "warpo": "dist/warpo.js"
   },
   "scripts": {
     "build:ts": "tsc -p tools/tsconfig.json",
@@ -63,6 +63,7 @@
     "vitepress": "^2.0.0-alpha.15"
   },
   "dependencies": {
+    "commander": "^14.0.3",
     "fs-extra": "^11.3.3",
     "glob": "^13.0.0",
     "wasmparser": "^5.11.1"
