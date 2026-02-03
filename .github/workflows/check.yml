@@ -23,6 +23,7 @@ jobs:
         with:
           CMAKE_ARGS: "-DWARPO_RELEASE=ON"
           OS_ID: "ubuntu-22.04"
+      - run: npm run build:ts
       # enable docs is available
       - run: npm run docs:build
 
@@ -42,6 +43,7 @@ jobs:
       - uses: ./.github/action/build
         with:
           OS_ID: ${{ matrix.os }}
+      - run: npm run build:ts
       # test
       - run: npm run test:as:ut
       - run: npm run test:cpp:ut
@@ -66,4 +68,5 @@ jobs:
         with:
           OS_ID: ubuntu-latest
           UPLOAD_CACHE: false
+      - run: npm run build:ts
       - run: npm run test:bootstrap:${{ matrix.kind }}
