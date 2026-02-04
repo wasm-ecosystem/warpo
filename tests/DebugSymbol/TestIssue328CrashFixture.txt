@@ -1,0 +1,162 @@
+
+.debug_abbrev contents:
+Abbrev table for offset: 0x00000000
+[1] DW_TAG_compile_unit	DW_CHILDREN_yes
+	DW_AT_producer	DW_FORM_strp
+
+[2] DW_TAG_class_type	DW_CHILDREN_yes
+	DW_AT_name	DW_FORM_string
+	DW_AT_signature	DW_FORM_data4
+
+[3] DW_TAG_member	DW_CHILDREN_no
+	DW_AT_name	DW_FORM_string
+	DW_AT_type	DW_FORM_ref4
+	DW_AT_data_member_location	DW_FORM_data4
+
+[4] DW_TAG_base_type	DW_CHILDREN_no
+	DW_AT_name	DW_FORM_string
+
+[5] DW_TAG_template_type_parameter	DW_CHILDREN_no
+	DW_AT_type	DW_FORM_ref4
+
+[6] DW_TAG_variable	DW_CHILDREN_no
+	DW_AT_name	DW_FORM_string
+	DW_AT_type	DW_FORM_ref4
+
+[7] DW_TAG_variable	DW_CHILDREN_no
+	DW_AT_name	DW_FORM_string
+	DW_AT_type	DW_FORM_ref4
+	DW_AT_location	DW_FORM_data4
+
+[8] DW_TAG_formal_parameter	DW_CHILDREN_no
+	DW_AT_name	DW_FORM_string
+	DW_AT_type	DW_FORM_ref4
+	DW_AT_location	DW_FORM_data4
+
+[9] DW_TAG_lexical_block	DW_CHILDREN_yes
+	DW_AT_low_pc	DW_FORM_addr
+	DW_AT_high_pc	DW_FORM_addr
+
+[10] DW_TAG_subprogram	DW_CHILDREN_yes
+	DW_AT_name	DW_FORM_string
+
+
+.debug_info contents:
+0x00000000: Compile Unit: version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04
+DW_TAG_compile_unit
+              DW_AT_producer	("warpo")
+  DW_TAG_base_type
+                DW_AT_name	("bool")
+  DW_TAG_base_type
+                DW_AT_name	("f32")
+  DW_TAG_base_type
+                DW_AT_name	("f64")
+  DW_TAG_base_type
+                DW_AT_name	("i16")
+  DW_TAG_base_type
+                DW_AT_name	("i32")
+  DW_TAG_base_type
+                DW_AT_name	("i64")
+  DW_TAG_base_type
+                DW_AT_name	("i8")
+  DW_TAG_base_type
+                DW_AT_name	("isize")
+  DW_TAG_base_type
+                DW_AT_name	("u16")
+  DW_TAG_base_type
+                DW_AT_name	("u32")
+  DW_TAG_base_type
+                DW_AT_name	("u64")
+  DW_TAG_base_type
+                DW_AT_name	("u8")
+  DW_TAG_base_type
+                DW_AT_name	("usize")
+  DW_TAG_class_type
+                DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
+                DW_AT_signature	(0x00000001)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/arraybuffer/ArrayBufferView")
+                DW_AT_signature	(0x00000003)
+    DW_TAG_member
+                  DW_AT_name	("buffer")
+                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("dataStart")
+                  DW_AT_type	("usize")
+                  DW_AT_data_member_location	(0x00000004)
+    DW_TAG_member
+                  DW_AT_name	("byteLength")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x00000008)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/Bool")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/F32")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/F64")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/I16")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/I32")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/I64")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/I8")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/Isize")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/U16")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/U32")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/U64")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/U8")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/number/Usize")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/object/Object")
+                DW_AT_signature	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/string/String")
+                DW_AT_signature	(0x00000002)
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/DebugSymbol/TestIssue328Crash/start:tests/DebugSymbol/TestIssue328Crash")
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("start:tests/DebugSymbol/TestIssue328Crash")
+    NULL
+
+.debug_str contents:
+0x00000000: "warpo"

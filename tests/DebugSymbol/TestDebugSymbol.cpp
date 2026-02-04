@@ -299,6 +299,7 @@ INSTANTIATE_TEST_SUITE_P(DebugSymbolTests, TestDebugSymbol_P,
                              "TestLocalInWhile",
                              "TestLocalInBlock",
                              "TestLocalInSwitch",
+                             "TestIssue328Crash",
                          }));
 
 int main(int argc, char **argv) {

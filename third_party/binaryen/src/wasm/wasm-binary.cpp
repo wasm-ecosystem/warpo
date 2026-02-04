@@ -1568,6 +1568,12 @@ void WasmBinaryWriter::writeSourceMapLocation(Expression* curr,
   if (iter != debugLocations.end() && iter->second) {
     // There is debug information here, write it out.
     writeDebugLocation(*(iter->second));
+    if (sourceMapLocations.empty()) {
+      // In theory, source map state machine should start with init value of
+      // last lastDebugLocation, but we want to track expression offsets by
+      // sourceMapLocations. So we need to add the first debug location here.
+      sourceMapLocations.push_back({o.size(), &*(iter->second)});
+    }
     expressionOffsets[curr] = &(sourceMapLocations.back().first);
   } else {
     // This expression has no debug location.
