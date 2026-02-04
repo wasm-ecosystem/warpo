@@ -1,0 +1,11 @@
+code analysis: OK
+compilation failed
+ERROR TS2304: Cannot find name 'f'.
+   :
+ 4 │ f = 1;
+   │ ~
+   └─ in incorrect.test.ts(4,3)
+
+
+ERROR: compilation failed
+

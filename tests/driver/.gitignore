@@ -2,3 +2,4 @@
 /module-resolve/tmp
 /asconfig/build/*.wasm
 /asconfig/tmp
+/test_runner/**/tmp/

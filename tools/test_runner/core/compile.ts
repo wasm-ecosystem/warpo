@@ -56,7 +56,7 @@ async function separatedCompile(
   const { outputFolder, flags, collectCoverage } = option;
   const root = findRoot(testCodePaths);
   const compileOneFile = async (testCodePath: string) => {
-    const ret = new InstrumentResult(getNewPath(outputFolder, root, testCodePath).slice(0, -2));
+    const ret = new InstrumentResult(getNewPath(outputFolder, root, testCodePath).slice(0, -3));
     await compileImpl({
       sources: combineWithEntryFiles({ testCodePaths: [testCodePath], entryFiles }),
       output: ret,

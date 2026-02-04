@@ -1,0 +1,19 @@
+code analysis: OK
+compile test files: OK
+execute test files: OK
+
+test case: 1/2 (success/total)
+
+Error Message: 
+  failure on test: 
+    index.test.ts:4:2  value: 2  expect: = 3
+
+code analysis: OK
+compile test files: OK
+execute test files: OK
+
+test case: 0/1 (success/total)
+
+Error Message: 
+  failure on test: 
+    index.test.ts:4:2  value: 2  expect: = 3
