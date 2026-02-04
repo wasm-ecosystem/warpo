@@ -1,4 +1,4 @@
-import { test, expect } from "warpo/test";
+import { test } from "warpo/test";
 
 test("assert on test", () => {
   f = 1;
