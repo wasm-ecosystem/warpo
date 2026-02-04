@@ -1,6 +1,6 @@
 import path from "node:path";
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = import.meta.dirname;
 
 /**
  * @type {import("../../../config.d.ts").Config}
