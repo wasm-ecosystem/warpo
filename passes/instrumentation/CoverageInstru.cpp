@@ -234,7 +234,7 @@ void runTestInstrumentation(std::filesystem::path const &inputWasm, std::filesys
   ioConfig.targetName = outputWasm.string();
   ioConfig.sourceMap = sourceMapPath.string();
 
-  TestInstrumentationConfig testConfig{};
+  TestInstrumentationConfig const testConfig{};
 
   CoverageInstrumentation const instrumentation(&ioConfig, nullptr, &testConfig);
   instrumentation.instrument();
@@ -255,7 +255,7 @@ void runCoverageInstrumentation(std::filesystem::path const &inputWasm, std::fil
   coverageConfig.excludes = instrumentationExcludeOption.get();
   coverageConfig.skipLib = !instrumentationIncludeLibOption.get();
 
-  TestInstrumentationConfig testConfig{};
+  TestInstrumentationConfig const testConfig{};
 
   CoverageInstrumentationConfig const *const coverageCfgPtr =
       instrumentationDisableCoverageOption.get() ? nullptr : &coverageConfig;
