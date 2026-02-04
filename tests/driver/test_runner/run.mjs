@@ -35,6 +35,7 @@ function checkStdoutSnapshot(name, stdout, stderr) {
   }
 
   const expected = readFileSync(snapshotPath, "utf8");
+  stdout = stdout.replace(/\r\n/g, "\n");
   if (expected === stdout) return;
 
   const d =
