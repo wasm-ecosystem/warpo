@@ -19,7 +19,7 @@ describe("setup", () => {
     setup0 = 100;
     setup1 = 200;
   });
-  test("3nd", () => {
+  test("3ed", () => {
     expect(setup0).equal(10);
     expect(setup1).equal(20);
   });

@@ -19,7 +19,7 @@ describe("teardown", () => {
     teardown0 = 100;
     teardown1 = 200;
   });
-  test("3nd", () => {
+  test("3ed", () => {
     expect(teardown0).equal(10);
     expect(teardown1).equal(20);
   });
