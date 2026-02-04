@@ -26,7 +26,7 @@
 #include "InstrSimplifier.hpp"
 #include "Runner.hpp"
 #include "binaryen-c.h"
-#include "instrumentation/CoverageInstru.hpp"
+#include "instrumentation/CoverageInstrumentation.hpp"
 #include "parser/wat-parser.h"
 #include "pass.h"
 #include "warpo/common/AsModule.hpp"

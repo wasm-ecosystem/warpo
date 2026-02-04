@@ -27,6 +27,11 @@ export class InstrumentResult {
   }
 }
 
+// NOTE: These custom section names must stay in sync with the C++ instrumentation:
+//   - defaultCoverageDebugInfoSectionName
+//   - defaultTestExpectInfoSectionName
+// in passes/instrumentation/CoverageInstrumentation.cpp. If they diverge, the test runner
+// will fail at runtime with a missing-section error.
 export const COVERAGE_DEBUG_INFO_SECTION_NAME = "warpo.coverage.debug-info";
 export const TEST_EXPECT_INFO_SECTION_NAME = "warpo.test.expect-info";
 

@@ -16,7 +16,7 @@
 #include "BasicBlockAnalysis.hpp"
 #include "BasicBlockWalker.hpp"
 #include "CovInstrumentationWalker.hpp"
-#include "CoverageInstru.hpp"
+#include "CoverageInstrumentation.hpp"
 #include "MockInstrumentationWalker.hpp"
 #include "nlohmann/json.hpp"
 #include "warpo/support/Opt.hpp"
