@@ -72,40 +72,74 @@ DW_TAG_compile_unit
   DW_TAG_base_type
                 DW_AT_name	("usize")
   DW_TAG_class_type
-                DW_AT_name	("~lib/array/Array<i32>")
+                DW_AT_name	("tests/dwarf/cases/TestTemplateClass/C2<i32>")
                 DW_AT_signature	(0x00000004)
     DW_TAG_member
-                  DW_AT_name	("buffer")
-                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
+                  DW_AT_name	("aaa")
+                  DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("dataStart")
-                  DW_AT_type	("usize")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("byteLength")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000008)
-    DW_TAG_member
-                  DW_AT_name	("length_")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x0000000c)
     DW_TAG_template_type_parameter
                   DW_AT_type	("i32")
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestTemplateClass/C2<i32>#get:aaa")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestTemplateClass/C2<i32>")
+                    DW_AT_location	(0x00000000)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestTemplateClass/C2<i32>#set:aaa")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestTemplateClass/C2<i32>")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_formal_parameter
+                    DW_AT_name	("aaa")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000001)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestTemplateClass/C2<i32>#constructor")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestTemplateClass/C2<i32>")
+                    DW_AT_location	(0x00000000)
+      NULL
     NULL
   DW_TAG_class_type
-                DW_AT_name	("~lib/array/ArrayIterator<i32>")
-                DW_AT_signature	(0x00000006)
+                DW_AT_name	("tests/dwarf/cases/TestTemplateClass/C3<tests/dwarf/cases/TestTemplateClass/C2<i32>>")
+                DW_AT_signature	(0x00000005)
     DW_TAG_member
-                  DW_AT_name	("current")
-                  DW_AT_type	("i32")
+                  DW_AT_name	("bbb")
+                  DW_AT_type	("tests/dwarf/cases/TestTemplateClass/C2<i32>")
                   DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("array")
-                  DW_AT_type	("~lib/array/Array<i32>")
-                  DW_AT_data_member_location	(0x00000004)
     DW_TAG_template_type_parameter
-                  DW_AT_type	("i32")
+                  DW_AT_type	("tests/dwarf/cases/TestTemplateClass/C2<i32>")
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestTemplateClass/C3<tests/dwarf/cases/TestTemplateClass/C2<i32>>#get:bbb")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestTemplateClass/C3<tests/dwarf/cases/TestTemplateClass/C2<i32>>")
+                    DW_AT_location	(0x00000000)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestTemplateClass/C3<tests/dwarf/cases/TestTemplateClass/C2<i32>>#set:bbb")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestTemplateClass/C3<tests/dwarf/cases/TestTemplateClass/C2<i32>>")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_formal_parameter
+                    DW_AT_name	("bbb")
+                    DW_AT_type	("tests/dwarf/cases/TestTemplateClass/C2<i32>")
+                    DW_AT_location	(0x00000001)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestTemplateClass/C3<tests/dwarf/cases/TestTemplateClass/C2<i32>>#constructor")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestTemplateClass/C3<tests/dwarf/cases/TestTemplateClass/C2<i32>>")
+                    DW_AT_location	(0x00000000)
+      NULL
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
@@ -126,28 +160,6 @@ DW_TAG_compile_unit
                   DW_AT_name	("byteLength")
                   DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000008)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/iterator/Iterable<i32>")
-                DW_AT_signature	(0x00000005)
-    DW_TAG_template_type_parameter
-                  DW_AT_type	("i32")
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/iterator/Iterator<i32>")
-                DW_AT_signature	(0x00000007)
-    DW_TAG_template_type_parameter
-                  DW_AT_type	("i32")
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/iterator/IteratorResult<i32>")
-                DW_AT_signature	(0x00000008)
-    DW_TAG_member
-                  DW_AT_name	("value")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_template_type_parameter
-                  DW_AT_type	("i32")
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/number/Bool")
@@ -285,9 +297,6 @@ DW_TAG_compile_unit
                 DW_AT_name	("~lib/string/String")
                 DW_AT_signature	(0x00000002)
     NULL
-  DW_TAG_variable
-                DW_AT_name	("tests/DebugSymbol/TestLocalInForOf/rrr")
-                DW_AT_type	("i32")
   DW_TAG_variable
                 DW_AT_name	("~lib/native/ASC_LOW_MEMORY_LIMIT")
                 DW_AT_type	("i32")
@@ -459,59 +468,25 @@ DW_TAG_compile_unit
   DW_TAG_variable
                 DW_AT_name	("~lib/util/number/MAX_DOUBLE_LENGTH")
                 DW_AT_type	("i32")
-  DW_TAG_variable
-                DW_AT_name	("~lib/util/sort/INSERTION_SORT_THRESHOLD")
-                DW_AT_type	("i32")
-  DW_TAG_variable
-                DW_AT_name	("~lib/util/sort/MIN_RUN_LENGTH")
-                DW_AT_type	("i32")
   DW_TAG_subprogram
-                DW_AT_name	("tests/DebugSymbol/TestLocalInForOf/start:tests/DebugSymbol/TestLocalInForOf")
+                DW_AT_name	("tests/dwarf/cases/TestTemplateClass/start:tests/dwarf/cases/TestTemplateClass")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/DebugSymbol/TestLocalInForOf")
+                DW_AT_name	("start:tests/dwarf/cases/TestTemplateClass")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("tests/DebugSymbol/TestLocalInForOf/foo")
+                DW_AT_name	("tests/dwarf/cases/TestTemplateClass/test")
     DW_TAG_lexical_block
-                  scope start	TestLocalInForOf.ts:3
-                  scope end	TestLocalInForOf.ts:3
+                  scope start	TestTemplateClass.ts:10
+                  scope end	TestTemplateClass.ts:14
       DW_TAG_variable
-                    DW_AT_name	("aaa")
-                    DW_AT_type	("~lib/array/Array<i32>")
+                    DW_AT_name	("c2")
+                    DW_AT_type	("tests/dwarf/cases/TestTemplateClass/C2<i32>")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_variable
+                    DW_AT_name	("c3")
+                    DW_AT_type	("tests/dwarf/cases/TestTemplateClass/C3<tests/dwarf/cases/TestTemplateClass/C2<i32>>")
                     DW_AT_location	(0x00000001)
-      DW_TAG_lexical_block
-                    scope start	TestLocalInForOf.ts:3
-                    scope end	TestLocalInForOf.ts:3
-        DW_TAG_variable
-                      DW_AT_name	("v")
-                      DW_AT_type	("i32")
-                      DW_AT_location	(0x00000005)
-        DW_TAG_lexical_block
-                      scope start	TestLocalInForOf.ts:3
-                      scope end	TestLocalInForOf.ts:3
-          DW_TAG_variable
-                        DW_AT_name	("v")
-                        DW_AT_type	("i32")
-                        DW_AT_location	(0x00000009)
-          DW_TAG_lexical_block
-                        scope start	TestLocalInForOf.ts:3
-                        scope end	TestLocalInForOf.ts:8
-            DW_TAG_variable
-                          DW_AT_name	("v")
-                          DW_AT_type	("i32")
-                          DW_AT_location	(0x0000000d)
-            DW_TAG_lexical_block
-                          scope start	TestLocalInForOf.ts:3
-                          scope end	TestLocalInForOf.ts:8
-              DW_TAG_variable
-                            DW_AT_name	("v")
-                            DW_AT_type	("i32")
-                            DW_AT_location	(0x00000011)
-              NULL
-            NULL
-          NULL
-        NULL
       NULL
     NULL
 

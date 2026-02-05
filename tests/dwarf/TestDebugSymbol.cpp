@@ -239,7 +239,7 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
   Colors::setEnabled(false);
 
   std::string const testCaseName = GetParam();
-  std::filesystem::path const testDir = std::filesystem::path(__FILE__).parent_path();
+  std::filesystem::path const testDir = std::filesystem::path(__FILE__).parent_path() / "cases";
   std::filesystem::path const testFilePath = testDir / (testCaseName + ".ts");
   std::vector<std::string> const entries{testFilePath.string()};
   warpo::frontend::CompilationResult const compileResult{warpo::frontend::compile(nullptr, entries, config)};

@@ -72,39 +72,6 @@ DW_TAG_compile_unit
   DW_TAG_base_type
                 DW_AT_name	("usize")
   DW_TAG_class_type
-                DW_AT_name	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass")
-                DW_AT_signature	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("fnField")
-                  DW_AT_type	("")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass#get:fnField")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass#set:fnField")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("fnField")
-                    DW_AT_type	("")
-                    DW_AT_location	(0x00000001)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass#constructor")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass")
-                    DW_AT_location	(0x00000000)
-      NULL
-    NULL
-  DW_TAG_class_type
                 DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
                 DW_AT_signature	(0x00000001)
     NULL
@@ -261,10 +228,10 @@ DW_TAG_compile_unit
                 DW_AT_signature	(0x00000002)
     NULL
   DW_TAG_variable
-                DW_AT_name	("tests/DebugSymbol/TestFunctionAsField/v")
-                DW_AT_type	("tests/DebugSymbol/TestFunctionAsField/FnFieldClass")
-  DW_TAG_variable
                 DW_AT_name	("~lib/native/ASC_LOW_MEMORY_LIMIT")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/native/ASC_SHRINK_LEVEL")
                 DW_AT_type	("i32")
   DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/AL_BITS")
@@ -432,13 +399,57 @@ DW_TAG_compile_unit
                 DW_AT_name	("~lib/util/math/SIGN_BIAS")
                 DW_AT_type	("i32")
   DW_TAG_variable
+                DW_AT_name	("~lib/util/number/DIGITS")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/number/EXP_POWERS")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/number/FRC_POWERS")
+                DW_AT_type	("usize")
+  DW_TAG_variable
                 DW_AT_name	("~lib/util/number/MAX_DOUBLE_LENGTH")
                 DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/number/POWERS10")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/number/_K")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/number/_exp")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/number/_exp_pow")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/number/_frc_minus")
+                DW_AT_type	("u64")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/number/_frc_plus")
+                DW_AT_type	("u64")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/number/_frc_pow")
+                DW_AT_type	("u64")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/number/dtoa_buf")
+                DW_AT_type	("usize")
   DW_TAG_subprogram
-                DW_AT_name	("tests/DebugSymbol/TestFunctionAsField/start:tests/DebugSymbol/TestFunctionAsField")
+                DW_AT_name	("tests/dwarf/cases/TestBaseTypeToString/start:tests/dwarf/cases/TestBaseTypeToString")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/DebugSymbol/TestFunctionAsField")
+                DW_AT_name	("start:tests/dwarf/cases/TestBaseTypeToString")
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestBaseTypeToString/_start")
+    DW_TAG_lexical_block
+                  scope start	TestBaseTypeToString.ts:2
+                  scope end	TestBaseTypeToString.ts:3
+      DW_TAG_variable
+                    DW_AT_name	("aaa")
+                    DW_AT_type	("f32")
+                    DW_AT_location	(0x00000000)
+      NULL
     NULL
 
 .debug_str contents:

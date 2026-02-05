@@ -72,26 +72,24 @@ DW_TAG_compile_unit
   DW_TAG_base_type
                 DW_AT_name	("usize")
   DW_TAG_class_type
-                DW_AT_name	("tests/DebugSymbol/TestTemplateClass/C2<i32>")
+                DW_AT_name	("tests/dwarf/cases/TestGlobal/C1")
                 DW_AT_signature	(0x00000004)
     DW_TAG_member
                   DW_AT_name	("aaa")
                   DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000000)
-    DW_TAG_template_type_parameter
-                  DW_AT_type	("i32")
     DW_TAG_subprogram
-                  DW_AT_name	("tests/DebugSymbol/TestTemplateClass/C2<i32>#get:aaa")
+                  DW_AT_name	("tests/dwarf/cases/TestGlobal/C1#get:aaa")
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
-                    DW_AT_type	("tests/DebugSymbol/TestTemplateClass/C2<i32>")
+                    DW_AT_type	("tests/dwarf/cases/TestGlobal/C1")
                     DW_AT_location	(0x00000000)
       NULL
     DW_TAG_subprogram
-                  DW_AT_name	("tests/DebugSymbol/TestTemplateClass/C2<i32>#set:aaa")
+                  DW_AT_name	("tests/dwarf/cases/TestGlobal/C1#set:aaa")
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
-                    DW_AT_type	("tests/DebugSymbol/TestTemplateClass/C2<i32>")
+                    DW_AT_type	("tests/dwarf/cases/TestGlobal/C1")
                     DW_AT_location	(0x00000000)
       DW_TAG_formal_parameter
                     DW_AT_name	("aaa")
@@ -99,45 +97,10 @@ DW_TAG_compile_unit
                     DW_AT_location	(0x00000001)
       NULL
     DW_TAG_subprogram
-                  DW_AT_name	("tests/DebugSymbol/TestTemplateClass/C2<i32>#constructor")
+                  DW_AT_name	("tests/dwarf/cases/TestGlobal/C1#constructor")
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
-                    DW_AT_type	("tests/DebugSymbol/TestTemplateClass/C2<i32>")
-                    DW_AT_location	(0x00000000)
-      NULL
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("tests/DebugSymbol/TestTemplateClass/C3<tests/DebugSymbol/TestTemplateClass/C2<i32>>")
-                DW_AT_signature	(0x00000005)
-    DW_TAG_member
-                  DW_AT_name	("bbb")
-                  DW_AT_type	("tests/DebugSymbol/TestTemplateClass/C2<i32>")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_template_type_parameter
-                  DW_AT_type	("tests/DebugSymbol/TestTemplateClass/C2<i32>")
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/DebugSymbol/TestTemplateClass/C3<tests/DebugSymbol/TestTemplateClass/C2<i32>>#get:bbb")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/DebugSymbol/TestTemplateClass/C3<tests/DebugSymbol/TestTemplateClass/C2<i32>>")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/DebugSymbol/TestTemplateClass/C3<tests/DebugSymbol/TestTemplateClass/C2<i32>>#set:bbb")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/DebugSymbol/TestTemplateClass/C3<tests/DebugSymbol/TestTemplateClass/C2<i32>>")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("bbb")
-                    DW_AT_type	("tests/DebugSymbol/TestTemplateClass/C2<i32>")
-                    DW_AT_location	(0x00000001)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/DebugSymbol/TestTemplateClass/C3<tests/DebugSymbol/TestTemplateClass/C2<i32>>#constructor")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/DebugSymbol/TestTemplateClass/C3<tests/DebugSymbol/TestTemplateClass/C2<i32>>")
+                    DW_AT_type	("tests/dwarf/cases/TestGlobal/C1")
                     DW_AT_location	(0x00000000)
       NULL
     NULL
@@ -297,6 +260,12 @@ DW_TAG_compile_unit
                 DW_AT_name	("~lib/string/String")
                 DW_AT_signature	(0x00000002)
     NULL
+  DW_TAG_variable
+                DW_AT_name	("tests/dwarf/cases/TestGlobal/bbb")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("tests/dwarf/cases/TestGlobal/c1")
+                DW_AT_type	("tests/dwarf/cases/TestGlobal/C1")
   DW_TAG_variable
                 DW_AT_name	("~lib/native/ASC_LOW_MEMORY_LIMIT")
                 DW_AT_type	("i32")
@@ -469,25 +438,13 @@ DW_TAG_compile_unit
                 DW_AT_name	("~lib/util/number/MAX_DOUBLE_LENGTH")
                 DW_AT_type	("i32")
   DW_TAG_subprogram
-                DW_AT_name	("tests/DebugSymbol/TestTemplateClass/start:tests/DebugSymbol/TestTemplateClass")
+                DW_AT_name	("tests/dwarf/cases/TestGlobal/start:tests/dwarf/cases/TestGlobal")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/DebugSymbol/TestTemplateClass")
+                DW_AT_name	("start:tests/dwarf/cases/TestGlobal")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("tests/DebugSymbol/TestTemplateClass/test")
-    DW_TAG_lexical_block
-                  scope start	TestTemplateClass.ts:10
-                  scope end	TestTemplateClass.ts:14
-      DW_TAG_variable
-                    DW_AT_name	("c2")
-                    DW_AT_type	("tests/DebugSymbol/TestTemplateClass/C2<i32>")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_variable
-                    DW_AT_name	("c3")
-                    DW_AT_type	("tests/DebugSymbol/TestTemplateClass/C3<tests/DebugSymbol/TestTemplateClass/C2<i32>>")
-                    DW_AT_location	(0x00000001)
-      NULL
+                DW_AT_name	("tests/dwarf/cases/TestGlobal/test")
     NULL
 
 .debug_str contents:

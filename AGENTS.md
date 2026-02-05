@@ -34,7 +34,7 @@ Please follow these instructions after modifying the code.
 
 - When C++ code changed, if needed, add unittest in the same file wrapped with `WARPO_ENABLE_UNIT_TESTS` macro.
 - When add a new isolated module in assemblyscript or warpo_extension, add unit test in `tests/assemblyscript` or `tests/warpo_extension`.
-- When debug / dwarf related thing changed, create a new test cases in `tests/DebugSymbol`.
+- When debug / dwarf related thing changed, create a new test cases in `tests/dwarf/cases`.
 - Those test cases will cost lots of time, please add them only when we don't have the other way to test.
   - When project level feature added, create a new test cases in `tests/driver`.
   - When the optimization pass is quite complex and rely on lots of frontend information, create a new test cases in `tests/snapshot_diff`.

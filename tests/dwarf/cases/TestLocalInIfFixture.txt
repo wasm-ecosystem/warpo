@@ -152,47 +152,50 @@ DW_TAG_compile_unit
                 DW_AT_signature	(0x00000002)
     NULL
   DW_TAG_variable
-                DW_AT_name	("tests/DebugSymbol/TestLocalInFor/aaa")
+                DW_AT_name	("tests/dwarf/cases/TestLocalInIf/g1")
                 DW_AT_type	("i32")
   DW_TAG_subprogram
-                DW_AT_name	("tests/DebugSymbol/TestLocalInFor/start:tests/DebugSymbol/TestLocalInFor")
+                DW_AT_name	("tests/dwarf/cases/TestLocalInIf/start:tests/dwarf/cases/TestLocalInIf")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/DebugSymbol/TestLocalInFor")
+                DW_AT_name	("start:tests/dwarf/cases/TestLocalInIf")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("tests/DebugSymbol/TestLocalInFor/foo")
+                DW_AT_name	("tests/dwarf/cases/TestLocalInIf/foo")
     DW_TAG_lexical_block
-                  scope start	TestLocalInFor.ts:3
-                  scope end	TestLocalInFor.ts:10
+                  scope start	TestLocalInIf.ts:4
+                  scope end	TestLocalInIf.ts:5
       DW_TAG_variable
-                    DW_AT_name	("iii")
+                    DW_AT_name	("af1")
                     DW_AT_type	("i32")
                     DW_AT_location	(0x00000000)
-      DW_TAG_lexical_block
-                    scope start	TestLocalInFor.ts:4
-                    scope end	TestLocalInFor.ts:10
-        DW_TAG_variable
-                      DW_AT_name	("ddd")
-                      DW_AT_type	("i32")
-                      DW_AT_location	(0x00000001)
-        DW_TAG_lexical_block
-                      scope start	TestLocalInFor.ts:6
-                      scope end	TestLocalInFor.ts:7
-          DW_TAG_variable
-                        DW_AT_name	("bbb")
-                        DW_AT_type	("i32")
-                        DW_AT_location	(0x00000002)
-          NULL
-        DW_TAG_lexical_block
-                      scope start	TestLocalInFor.ts:9
-                      scope end	TestLocalInFor.ts:10
-          DW_TAG_variable
-                        DW_AT_name	("ccc")
-                        DW_AT_type	("i32")
-                        DW_AT_location	(0x00000003)
-          NULL
-        NULL
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestLocalInIf/goo")
+    DW_TAG_lexical_block
+                  scope start	TestLocalInIf.ts:12
+                  scope end	TestLocalInIf.ts:13
+      DW_TAG_variable
+                    DW_AT_name	("aaa")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000000)
+      NULL
+    DW_TAG_lexical_block
+                  scope start	TestLocalInIf.ts:15
+                  scope end	TestLocalInIf.ts:16
+      DW_TAG_variable
+                    DW_AT_name	("bbb")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000001)
+      NULL
+    DW_TAG_lexical_block
+                  scope start	TestLocalInIf.ts:18
+                  scope end	TestLocalInIf.ts:19
+      DW_TAG_variable
+                    DW_AT_name	("ccc")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000002)
       NULL
     NULL
 

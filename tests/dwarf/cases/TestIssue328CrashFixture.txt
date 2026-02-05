@@ -152,10 +152,10 @@ DW_TAG_compile_unit
                 DW_AT_signature	(0x00000002)
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("tests/DebugSymbol/TestIssue328Crash/start:tests/DebugSymbol/TestIssue328Crash")
+                DW_AT_name	("tests/dwarf/cases/TestIssue328Crash/start:tests/dwarf/cases/TestIssue328Crash")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/DebugSymbol/TestIssue328Crash")
+                DW_AT_name	("start:tests/dwarf/cases/TestIssue328Crash")
     NULL
 
 .debug_str contents:

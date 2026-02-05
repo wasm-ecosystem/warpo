@@ -152,13 +152,13 @@ DW_TAG_compile_unit
                 DW_AT_signature	(0x00000002)
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("tests/DebugSymbol/TestLocalInBlock/start:tests/DebugSymbol/TestLocalInBlock")
+                DW_AT_name	("tests/dwarf/cases/TestLocalInBlock/start:tests/dwarf/cases/TestLocalInBlock")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/DebugSymbol/TestLocalInBlock")
+                DW_AT_name	("start:tests/dwarf/cases/TestLocalInBlock")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("tests/DebugSymbol/TestLocalInBlock/test")
+                DW_AT_name	("tests/dwarf/cases/TestLocalInBlock/test")
     DW_TAG_lexical_block
                   scope start	TestLocalInBlock.ts:2
                   scope end	TestLocalInBlock.ts:10

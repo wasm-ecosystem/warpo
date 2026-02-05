@@ -34,7 +34,7 @@
     "assemblyscript/std",
     "tests/bootstrap/tmp/**",
     "tests/frontend/compiler/**",
-    "tests/DebugSymbol/*.txt",
+    "tests/dwarf/cases/*.txt",
     "warpo_extension/std/wasi_snapshot_preview1/bindings/wasi_snapshot_preview1.ts"
   ]
 }
