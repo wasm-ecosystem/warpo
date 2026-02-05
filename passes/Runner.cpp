@@ -177,16 +177,6 @@ struct OutputFiles {
   }
 };
 
-void runCoverageInstrumentation(OutputFiles const &outputFiles) {
-  if (!instrumentation::isCoverageInstrumentationEnabled())
-    return;
-  if (outputFiles.wasm_.empty())
-    throw std::runtime_error("coverage instrumentation requires .wasm output");
-  if (outputFiles.sourceMap_.empty() || !common::isEmitDebugLine())
-    throw std::runtime_error("coverage instrumentation requires debug source map, use --debug");
-
-  instrumentation::runCoverageInstrumentation(outputFiles.wasm_, outputFiles.wasm_, outputFiles.sourceMap_);
-}
 } // namespace
 
 } // namespace warpo::passes
@@ -223,6 +213,8 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
     runner.add("propagate-debug-locs");
     runner.run();
   }
+
+  instrumentation::runCoverageInstrumentation(*m.get());
 
   // wasm and source map
   wasm::BufferWithRandomAccess buffer;
@@ -268,8 +260,6 @@ void passes::runAndEmit(AsModule const &m, std::filesystem::path const &outputPa
   if (!outputFiles.sourceMap_.empty() && common::isEmitDebugLine()) {
     writeBinaryFile(outputFiles.sourceMap_, output.sourceMap);
   }
-
-  runCoverageInstrumentation(outputFiles);
 }
 
 } // namespace warpo

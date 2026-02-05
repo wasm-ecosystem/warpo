@@ -4,11 +4,6 @@
 #include <binaryen-c.h>
 #include <cassert>
 #include <cstdlib>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <ostream>
-#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -20,7 +15,6 @@
 #include "MockInstrumentationWalker.hpp"
 #include "nlohmann/json.hpp"
 #include "warpo/support/Opt.hpp"
-#include "wasm-io.h"
 #include "wasm.h"
 
 namespace warpo::passes::instrumentation {
@@ -38,14 +32,6 @@ static void setupBasicBlockAnalysis(BasicBlockAnalysis &basicBlockAnalysis,
                                     CoverageInstrumentationConfig const &coverageConfig) noexcept {
   if (coverageConfig.skipLib)
     basicBlockAnalysis.addExclude("~lib/.+");
-
-  if (coverageConfig.excludes.empty())
-    return;
-
-  for (std::string const &excludeItem : coverageConfig.excludes) {
-    if (!excludeItem.empty())
-      basicBlockAnalysis.addExclude(excludeItem);
-  }
 }
 
 static void runCoverageOnlyPart(wasm::Module &module, CoverageInstrumentationConfig const &coverageConfig) {
@@ -107,58 +93,21 @@ static void runTestOnlyPart(wasm::Module &module, std::unordered_map<uint32_t, s
   outExpectInfos = mockWalker.getExpectInfos();
 }
 
-void CoverageInstrumentation::instrument() const {
-  assert(ioConfig != nullptr);
-  assert(!ioConfig->fileName.empty());
-  assert(!ioConfig->sourceMap.empty());
-  assert(!ioConfig->targetName.empty());
-
-  if (coverageConfig == nullptr && testConfig == nullptr)
-    return;
-
+static void instrumentModule(wasm::Module &module, CoverageInstrumentationConfig const *const coverageConfig) {
   if (coverageConfig != nullptr) {
-    if (coverageConfig->reportFunction.empty()) {
-      throw std::runtime_error("instrumentation config error: missing coverage options");
-    }
-  }
-
-  wasm::Module module;
-  wasm::ModuleReader reader;
-  reader.read(std::string(ioConfig->fileName), module, std::string(ioConfig->sourceMap));
-  if (coverageConfig != nullptr) {
+    assert(!coverageConfig->reportFunction.empty());
     runCoverageOnlyPart(module, *coverageConfig);
   }
 
   std::unordered_map<uint32_t, std::string> expectInfos{};
-  if (testConfig != nullptr) {
-    runTestOnlyPart(module, expectInfos);
+  runTestOnlyPart(module, expectInfos);
+
+  nlohmann::json expectInfosJson = nlohmann::json::object();
+  for (const auto &[key, value] : expectInfos) {
+    expectInfosJson[std::to_string(key)] = value;
   }
 
-  if (testConfig != nullptr) {
-    nlohmann::json expectInfosJson = nlohmann::json::object();
-    for (const auto &[key, value] : expectInfos) {
-      // Mock test will verified with wasm-testing-framework project, escape this
-      // LCOV_EXCL_START
-      expectInfosJson[std::to_string(key)] = value;
-      // LCOV_EXCL_STOP
-    }
-
-    addCustomSection(module, std::string(defaultTestExpectInfoSectionName), expectInfosJson.dump());
-  }
-
-  const std::string targetSourceMapPath = std::string{this->ioConfig->targetName} + ".map";
-  BinaryenSetDebugInfo(true);
-  const BinaryenModuleAllocateAndWriteResult result =
-      BinaryenModuleAllocateAndWrite(&module, targetSourceMapPath.c_str());
-  std::ofstream wasmFileStream(this->ioConfig->targetName.data(), std::ios::trunc | std::ios::binary);
-  wasmFileStream.write(static_cast<char *>(result.binary), static_cast<std::streamsize>(result.binaryBytes));
-  std::ofstream sourceMapFileStream(targetSourceMapPath, std::ios::trunc | std::ios::binary);
-  sourceMapFileStream << result.sourceMap << std::flush;
-  free(result.binary);
-  free(result.sourceMap);
-  if (wasmFileStream.fail() || wasmFileStream.bad()) {
-    throw std::runtime_error("instrumentation failed: output wasm write failed");
-  }
+  addCustomSection(module, std::string(defaultTestExpectInfoSectionName), expectInfosJson.dump());
 }
 
 } // namespace warpo::passes::instrumentation
@@ -177,14 +126,6 @@ static cli::Opt<std::string> instrumentationReportFunctionOption{
     [](argparse::Argument &arg) -> void { arg.help("Coverage report function name.").nargs(1U); },
 };
 
-static cli::Opt<std::vector<std::string>> instrumentationExcludeOption{
-    cli::Category::Transformation,
-    "--instrument-exclude",
-    [](argparse::Argument &arg) -> void {
-      arg.help("Exclude function regex (repeatable).").nargs(argparse::nargs_pattern::at_least_one).append();
-    },
-};
-
 static cli::Opt<bool> instrumentationIncludeLibOption{
     cli::Category::Transformation,
     "--instrument-include-lib",
@@ -197,72 +138,17 @@ static cli::Opt<bool> instrumentationDisableCoverageOption{
     [](argparse::Argument &arg) -> void { arg.help("Disable coverage collection.").flag(); },
 };
 
-} // namespace warpo
-
-namespace warpo::passes::instrumentation {
-
-bool isCoverageInstrumentationEnabled() { return enableCoverageInstrumentationOption.get(); }
-
-void runCoverageOnlyInstrumentation(std::filesystem::path const &inputWasm, std::filesystem::path const &outputWasm,
-                                    std::filesystem::path const &sourceMapPath) {
-  if (!isCoverageInstrumentationEnabled())
+void passes::instrumentation::runCoverageInstrumentation(wasm::Module &m) {
+  if (!enableCoverageInstrumentationOption.get())
     return;
-  if (instrumentationDisableCoverageOption.get())
-    return;
-
-  InstrumentationIOConfig ioConfig{};
-  ioConfig.fileName = inputWasm.string();
-  ioConfig.targetName = outputWasm.string();
-  ioConfig.sourceMap = sourceMapPath.string();
-
   CoverageInstrumentationConfig coverageConfig{};
   coverageConfig.reportFunction = instrumentationReportFunctionOption.get();
-  coverageConfig.excludes = instrumentationExcludeOption.get();
   coverageConfig.skipLib = !instrumentationIncludeLibOption.get();
-
-  CoverageInstrumentation const instrumentation(&ioConfig, &coverageConfig, nullptr);
-  instrumentation.instrument();
-}
-
-void runTestInstrumentation(std::filesystem::path const &inputWasm, std::filesystem::path const &outputWasm,
-                            std::filesystem::path const &sourceMapPath) {
-  if (!isCoverageInstrumentationEnabled())
-    return;
-
-  InstrumentationIOConfig ioConfig{};
-  ioConfig.fileName = inputWasm.string();
-  ioConfig.targetName = outputWasm.string();
-  ioConfig.sourceMap = sourceMapPath.string();
-
-  TestInstrumentationConfig const testConfig{};
-
-  CoverageInstrumentation const instrumentation(&ioConfig, nullptr, &testConfig);
-  instrumentation.instrument();
-}
-
-void runCoverageInstrumentation(std::filesystem::path const &inputWasm, std::filesystem::path const &outputWasm,
-                                std::filesystem::path const &sourceMapPath) {
-  if (!isCoverageInstrumentationEnabled())
-    return;
-
-  InstrumentationIOConfig ioConfig{};
-  ioConfig.fileName = inputWasm.string();
-  ioConfig.targetName = outputWasm.string();
-  ioConfig.sourceMap = sourceMapPath.string();
-
-  CoverageInstrumentationConfig coverageConfig{};
-  coverageConfig.reportFunction = instrumentationReportFunctionOption.get();
-  coverageConfig.excludes = instrumentationExcludeOption.get();
-  coverageConfig.skipLib = !instrumentationIncludeLibOption.get();
-
-  TestInstrumentationConfig const testConfig{};
 
   CoverageInstrumentationConfig const *const coverageCfgPtr =
       instrumentationDisableCoverageOption.get() ? nullptr : &coverageConfig;
-  TestInstrumentationConfig const *const testCfgPtr = &testConfig;
 
-  CoverageInstrumentation const instrumentation(&ioConfig, coverageCfgPtr, testCfgPtr);
-  instrumentation.instrument();
+  instrumentModule(m, coverageCfgPtr);
 }
 
-} // namespace warpo::passes::instrumentation
+} // namespace warpo

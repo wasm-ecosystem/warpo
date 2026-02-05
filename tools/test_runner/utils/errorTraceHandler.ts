@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { parseSourceMapPath } from "./wasmparser.js";
 import { BasicSourceMapConsumer, IndexedSourceMapConsumer, SourceMapConsumer } from "source-map";
 import chalk from "chalk";
+import path from "node:path";
 
 export interface WebAssemblyCallSite {
   functionName: string;
@@ -123,10 +124,14 @@ export async function handleWebAssemblyError(
   Error.prepareStackTrace = originalPrepareStackTrace;
 
   const wasmBuffer = await readFile(wasmPath);
-  const sourceMapPath = parseSourceMapPath(
+  const sourceMapUrl = parseSourceMapPath(
     wasmBuffer.buffer.slice(wasmBuffer.byteOffset, wasmBuffer.byteLength) as ArrayBuffer
   );
-  const sourceMapConsumer: SourceMapHandler | null = await getSourceMapConsumer(sourceMapPath);
+  let sourceMapConsumer: SourceMapHandler | null = null;
+  if (sourceMapUrl != null) {
+    const sourceMapPath = path.join(path.dirname(wasmPath), sourceMapUrl);
+    sourceMapConsumer = await getSourceMapConsumer(sourceMapPath);
+  }
   const stacks = stackTrace
     .map((callSite) => createWebAssemblyCallSite(callSite, { wasmPath, sourceMapConsumer }))
     .filter((callSite) => callSite !== null);
