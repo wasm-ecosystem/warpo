@@ -37,8 +37,7 @@ void CovInstrumentationWalker::visitFunction(wasm::Function *const curr) noexcep
   // function in instruction
   if (functionIndex != static_cast<wasm::Index>(-1)) {
     const std::array<BinaryenExpressionRef, 3U> callInReportArgs = {
-        b.makeConst(functionIndex), b.makeConst(static_cast<wasm::Index>(-1)),
-        b.makeConst(1U)};
+        b.makeConst(functionIndex), b.makeConst(static_cast<wasm::Index>(-1)), b.makeConst(1U)};
     wasm::Call *const callIn = b.makeCall(traceInternalFunctionName, callInReportArgs, wasm::Type::none);
 
     wasm::Block *const newBody = b.makeBlock();
@@ -57,8 +56,7 @@ void CovInstrumentationWalker::visitExpression(wasm::Expression *curr) noexcept 
       wasm::Block *replacement = b.makeBlock();
       const wasm::Index functionIndex = basicBlockWalker.getFunctionIndexByName(func->name.str);
       const std::array<BinaryenExpressionRef, 3U> reportArgs = {b.makeConst(functionIndex),
-                                                                b.makeConst(position.basicBlockIndex),
-                                                                b.makeConst(0U)};
+                                                                b.makeConst(position.basicBlockIndex), b.makeConst(0U)};
       wasm::Expression *const report = b.makeCall(traceInternalFunctionName, reportArgs, wasm::Type::none);
       wasm::Expression **const replacePtr = getCurrentPointer();
       if (position.pre) {
@@ -80,10 +78,8 @@ void CovInstrumentationWalker::visitExpression(wasm::Expression *curr) noexcept 
     if (targetFunctionIndex != static_cast<wasm::Index>(-1)) {
       wasm::Block *const replacement = b.makeBlock();
       std::array<BinaryenExpressionRef, 3U> const callOutReportArgs = {
-          b.makeConst(targetFunctionIndex), b.makeConst(static_cast<wasm::Index>(-1)),
-          b.makeConst(2U)};
-      wasm::Expression *const callOut =
-          b.makeCall(traceInternalFunctionName, callOutReportArgs, wasm::Type::none);
+          b.makeConst(targetFunctionIndex), b.makeConst(static_cast<wasm::Index>(-1)), b.makeConst(2U)};
+      wasm::Expression *const callOut = b.makeCall(traceInternalFunctionName, callOutReportArgs, wasm::Type::none);
       wasm::Expression **const replacePtr = getCurrentPointer();
       replacement->list.push_back(*replacePtr);
       replacement->list.push_back(callOut);
