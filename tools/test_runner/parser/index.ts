@@ -48,7 +48,7 @@ export class Parser {
   }
 
   private async getDebugInfos(instrumentResult: WebAssemblyModule) {
-    const jsonText = instrumentResult.getCustomSectionUtf8(COVERAGE_DEBUG_INFO_SECTION_NAME);
+    const jsonText = await instrumentResult.getCustomSectionUtf8(COVERAGE_DEBUG_INFO_SECTION_NAME);
     if (jsonText === null) {
       throw new Error(`missing wasm custom section '${COVERAGE_DEBUG_INFO_SECTION_NAME}' in ${instrumentResult.wasm}`);
     }

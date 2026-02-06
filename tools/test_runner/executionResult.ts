@@ -75,9 +75,9 @@ export class ExecutionResultSummary {
     this.total += result.total;
     if (result.fail > 0) {
       try {
-        const jsonText = wasmModule.getCustomSectionUtf8(TEST_EXPECT_INFO_SECTION_NAME);
+        const jsonText = await wasmModule.getCustomSectionUtf8(TEST_EXPECT_INFO_SECTION_NAME);
         if (jsonText === null) {
-          throw new Error(`missing wasm custom section '${TEST_EXPECT_INFO_SECTION_NAME}' in ${wasmModule}`);
+          throw new Error(`missing wasm custom section '${TEST_EXPECT_INFO_SECTION_NAME}' in ${wasmModule.wasm}`);
         }
         const expectInfo = JSON.parse(jsonText) as ExpectInfo | null;
         this.#processAssertInfo(result.failedInfo, expectInfo);

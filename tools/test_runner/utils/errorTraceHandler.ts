@@ -123,7 +123,7 @@ export async function handleWebAssemblyError(
   error.stack; // trigger prepareStackTrace
   Error.prepareStackTrace = originalPrepareStackTrace;
 
-  const sourceMapUrl = wasmModule.getCustomSectionUtf8("sourceMappingURL");
+  const sourceMapUrl = await wasmModule.getCustomSectionUtf8("sourceMappingURL");
 
   let sourceMapConsumer: SourceMapHandler | null = null;
   if (sourceMapUrl != null) {

@@ -1,5 +1,4 @@
 import { join, relative } from "node:path";
-import { findRoot } from "../utils/pathResolver.js";
 import { compileImpl } from "./compiler.js";
 import { TestOption } from "../interface.js";
 import { WebAssemblyModule } from "../utils/wasm.js";

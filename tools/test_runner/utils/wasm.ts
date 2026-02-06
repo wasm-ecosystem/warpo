@@ -21,20 +21,21 @@ export class WebAssemblyModule {
   }
 
   private async getModule(): Promise<WebAssembly.Module> {
+    if (this.m) return this.m;
     const bytes = await (await openAsBlob(this.wasm)).arrayBuffer();
     this.m = new WebAssembly.Module(bytes);
     return this.m!;
   }
 
-  getCustomSectionPayload(sectionName: string): Uint8Array | null {
-    const sections = WebAssembly.Module.customSections(this.getModule(), sectionName);
+  async getCustomSectionPayload(sectionName: string): Promise<Uint8Array | null> {
+    const sections = WebAssembly.Module.customSections(await this.getModule(), sectionName);
     if (sections.length === 0) return null;
     if (sections.length > 1) throw new Error(`multiple wasm custom sections found: '${sectionName}'`);
     return new Uint8Array(sections[0]!);
   }
 
-  getCustomSectionUtf8(sectionName: string): string | null {
-    const payload = this.getCustomSectionPayload(sectionName);
+  async getCustomSectionUtf8(sectionName: string): Promise<string | null> {
+    const payload = await this.getCustomSectionPayload(sectionName);
     if (payload === null) return null;
     return new TextDecoder("utf-8").decode(payload);
   }
