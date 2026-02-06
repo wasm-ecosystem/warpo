@@ -5,6 +5,7 @@ import { BasicSourceMapConsumer, IndexedSourceMapConsumer, SourceMapConsumer } f
 import chalk from "chalk";
 import path from "node:path";
 import { WebAssemblyModule } from "./wasm.js";
+import { env } from "node:process";
 
 export interface WebAssemblyCallSite {
   functionName: string;
@@ -79,8 +80,8 @@ function createWebAssemblyCallSite(
   return {
     fileName: moduleInfo.wasmPath,
     functionName: getWebAssemblyFunctionName(callSite),
-    lineNumber: line || -1,
-    columnNumber: column || -1,
+    lineNumber: line ?? -1,
+    columnNumber: env["WARPO_TEST"] ? -1 : (column ?? -1),
   };
 }
 

@@ -18,14 +18,13 @@ async function buildWithWARPO({
     ...sources,
     "-o",
     output.wasm,
+    "--exportTable",
     // avoid name conflict with user-defined start functions
     "--exportStart",
     "__unit_test_start",
     "--debug",
     // instrumentation flags
     "--instrument",
-    "--instrument-report-function",
-    "__unittest_framework_env/traceExpression",
   ];
   if (!collectCoverage) {
     warpoArgv.push("--instrument-no-coverage");
