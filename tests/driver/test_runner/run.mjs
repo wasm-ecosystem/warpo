@@ -56,24 +56,6 @@ describe("test runner", () => {
     expect(code).toBe(2);
   });
 
-  it("isolated-cli", async () => {
-    const { code, stdout, stderr } = await runAsTest({ name: "isolated-cli", args: ["--isolated", "false"] });
-    checkStdoutSnapshot("isolated-cli", stdout, stderr);
-    expect(code).toBe(0);
-  });
-
-  it("isolated-false", async () => {
-    const { code, stdout, stderr } = await runAsTest({ name: "isolated-false" });
-    checkStdoutSnapshot("isolated-false", stdout, stderr);
-    expect(code).toBe(0);
-  });
-
-  it("isolated-true", async () => {
-    const { code, stdout, stderr } = await runAsTest({ name: "isolated-true" });
-    checkStdoutSnapshot("isolated-true", stdout, stderr);
-    expect(code).toBe(0);
-  });
-
   it("on-failure-only", async () => {
     let mergedStdout = "";
     let mergedStderr = "";

@@ -3,17 +3,14 @@ import { findRoot } from "../utils/pathResolver.js";
 import { compileImpl } from "./compiler.js";
 import { InstrumentResult, TestOption } from "../interface.js";
 
-export type CompileOption = Pick<TestOption, "isolated" | "outputFolder" | "flags" | "collectCoverage">;
+export type CompileOption = Pick<TestOption, "outputFolder" | "flags" | "collectCoverage">;
 
 export async function compile(
   testCodePaths: string[],
   entryFiles: string[],
   option: CompileOption
 ): Promise<InstrumentResult[]> {
-  const { isolated } = option;
-  return isolated
-    ? await separatedCompile(testCodePaths, entryFiles, option)
-    : [await unifiedCompile(testCodePaths, entryFiles, option)];
+  return await separatedCompile(testCodePaths, entryFiles, option);
 }
 
 function getNewPath(newFolder: string, oldFolder: string, srcPath: string): string {
@@ -30,22 +27,6 @@ function combineWithEntryFiles({
   // Because AS has recursive import resolution issue.
   // put entryFiles firstly will force ASC compile entry file firstly, which can avoid compilation failed due to test files import ordering
   return entryFiles.concat(testCodePaths);
-}
-
-async function unifiedCompile(
-  testCodePaths: string[],
-  entryFiles: string[],
-  option: CompileOption
-): Promise<InstrumentResult> {
-  const { outputFolder, flags, collectCoverage } = option;
-  const ret = new InstrumentResult(join(outputFolder, "test").replaceAll(/\\/g, "/"));
-  await compileImpl({
-    sources: combineWithEntryFiles({ testCodePaths, entryFiles }),
-    output: ret,
-    userDefinedFlags: flags,
-    collectCoverage,
-  });
-  return ret;
 }
 
 async function separatedCompile(

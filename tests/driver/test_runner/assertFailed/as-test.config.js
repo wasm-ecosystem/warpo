@@ -7,7 +7,6 @@ const __dirname = import.meta.dirname;
  */
 export default {
   include: [__dirname],
-  isolated: true,
   imports(runtime) {
     return {
       env: {

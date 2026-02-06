@@ -41,7 +41,6 @@ function createProgram(): Command {
     .option("--testFiles <testFiles...>", "run only specified test files")
     .option("--testNamePattern <test name pattern>", "run only tests with a name that matches the regex pattern")
     .option("--onlyFailures", "Run tests that failed in the previous")
-    .option("--isolated <boolean>", "Run tests in isolated mode")
     .addHelpText(
       "beforeAll",
       "submit feature requests or issues: https://github.com/wasm-ecosystem/assemblyscript-unittest-framework/issues"
@@ -86,9 +85,6 @@ export async function runFromCliArgs(args: string[]): Promise<number> {
     config.collectCoverage ??
     (testFiles === null && options["testNamePattern"] === undefined && !onlyFailures);
 
-  const isolatedInConfig = getBoolean(options["isolated"], config.isolated);
-  const isolated = isolatedInConfig ?? false;
-
   const entryFiles = config.entryFiles ?? null;
 
   const warnLimitValue = options["coverageLimit"]?.at(1);
@@ -109,8 +105,6 @@ export async function runFromCliArgs(args: string[]): Promise<number> {
 
     outputFolder: options["output"] || config.output || "coverage",
     mode: options["mode"] || config.mode || "table",
-
-    isolated,
   };
 
   if (warnLimitValue !== undefined) {

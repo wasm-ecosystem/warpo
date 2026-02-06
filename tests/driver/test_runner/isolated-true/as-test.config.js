@@ -10,5 +10,4 @@ export default {
   temp: path.join(__dirname, "tmp"),
   output: path.join(__dirname, "tmp"),
   mode: [],
-  isolated: true,
 };
