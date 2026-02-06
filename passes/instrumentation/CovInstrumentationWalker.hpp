@@ -21,10 +21,8 @@ public:
   /// @param _module
   /// @param _reportFunName
   /// @param _basicBlockWalker
-  CovInstrumentationWalker(wasm::Module *const _module, char const *const _reportFunName,
-                           BasicBlockWalker &_basicBlockWalker) noexcept
-      : module(_module), reportFunName(_reportFunName), moduleBuilder(wasm::Builder(*_module)),
-        basicBlockWalker(_basicBlockWalker) {}
+  CovInstrumentationWalker(wasm::Module *const m, BasicBlockWalker &_basicBlockWalker) noexcept
+      : m(m), b(wasm::Builder(*m)), basicBlockWalker(_basicBlockWalker) {}
   CovInstrumentationWalker(const CovInstrumentationWalker &src) = delete;
   CovInstrumentationWalker(CovInstrumentationWalker &&src) = delete;
   CovInstrumentationWalker &operator=(const CovInstrumentationWalker &) = delete;
@@ -52,9 +50,8 @@ public:
   void covWalk() noexcept;
 
 private:
-  wasm::Module *const module;               ///< working wasm module
-  char const *const reportFunName;          ///< trace report function name
-  wasm::Builder moduleBuilder;              ///< module build for create wasm reference
+  wasm::Module *const m;                    ///< working wasm module
+  wasm::Builder b;                          ///< module build for create wasm reference
   const BasicBlockWalker &basicBlockWalker; ///< basic block walker for instrument
   ///
   /// @brief introduce the trace report function, if customer does not config report function, use a

@@ -4,14 +4,12 @@
 #pragma once
 
 #include <binaryen-c.h>
-#include <string>
 #include <wasm.h>
 
 namespace warpo::passes::instrumentation {
 
 struct CoverageInstrumentationConfig final {
-  std::string reportFunction; ///< coverage report function name
-  bool skipLib = true;        ///< if skip lib functions
+  bool skipLib = true; ///< if skip lib functions
 };
 
 void runCoverageInstrumentation(wasm::Module &module);

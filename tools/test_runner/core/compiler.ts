@@ -24,8 +24,6 @@ async function buildWithWARPO({
     "--debug",
     // instrumentation flags
     "--instrument",
-    "--instrument-report-function",
-    "__unittest_framework_env/traceExpression",
   ];
   if (!collectCoverage) {
     warpoArgv.push("--instrument-no-coverage");

@@ -218,4 +218,4 @@ export abstract class UnitTestFramework {
 }
 
 export const OrganizationName = "wasm-ecosystem";
-export const Repository = "https://github.com/wasm-ecosystem/assemblyscript-unittest-framework";
+export const Repository = "https://github.com/wasm-ecosystem/warpo";
