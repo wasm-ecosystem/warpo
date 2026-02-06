@@ -11,5 +11,5 @@ Reason: abort: register setup function failed at ~lib/warpo/test/implement.ts:20
   at ~lib/warpo/test/implement/beforeEachImpl (~lib/warpo/test/implement.ts:20:2)
   at ~lib/warpo/test/index/beforeEach (~lib/warpo/test/index.ts:18:2)
   at start:setup_out_of_block.test (setup_out_of_block.test.ts:3:0)
-  at ~start (tmp/setup_out_of_block.test.instrumented.wasm:1:443)
+  at ~start (tmp/setup_out_of_block.test.instrumented.wasm:1:427)
 
