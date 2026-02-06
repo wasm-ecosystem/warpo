@@ -12,6 +12,7 @@
 #include <wasm.h>
 
 #include "CombineSwitchTargets.hpp"
+#include "warpo/support/Unreachable.hpp"
 
 namespace warpo::passes {
 namespace {
@@ -99,6 +100,7 @@ wasm::Index findChildIndex(wasm::Block const *parent, wasm::Expression const *ch
       return index;
   }
   assert(false && "child not found in parent");
+  WARPO_UNREACHABLE;
 }
 
 void rewriteSwitchTarget(wasm::Switch *expr, TargetInfo const &targetInfo, wasm::Name const &toName) {
