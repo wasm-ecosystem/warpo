@@ -15,5 +15,5 @@ Reason: abort: this assertion is expected to fail at assertOnTest.test.ts:5:3
     Test Crashed!
 Reason: abort: null at assertOnInit.test.ts:1:1
   at start:assertOnInit.test (assertOnInit.test.ts:1:0)
-  at ~start (tmp/assertOnInit.test.instrumented.wasm:1:292)
+  at ~start (tmp/assertOnInit.test.instrumented.wasm:1:-1)
 

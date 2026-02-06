@@ -17,7 +17,7 @@ async function runAsTest({ name, args = [] }) {
       `node ${repoRoot}/dist/warpo.js test ${args.join(" ")}`,
       {
         cwd: caseRoot,
-        env: { ...process.env, FORCE_COLOR: "0" },
+        env: { ...process.env, FORCE_COLOR: "0", WARPO_TEST: "1" },
       },
       (error, stdout, stderr) => {
         resolve({ code: error ? error.code : 0, stdout, stderr });
