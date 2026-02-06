@@ -18,6 +18,7 @@ async function buildWithWARPO({
     ...sources,
     "-o",
     output.wasm,
+    "--exportTable",
     // avoid name conflict with user-defined start functions
     "--exportStart",
     "__unit_test_start",

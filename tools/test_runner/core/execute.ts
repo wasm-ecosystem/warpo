@@ -64,8 +64,9 @@ async function nodeExecutor(
     exceptionHandler
   );
 
-  const execTestFunction = ins.exports["executeTestFunction"] as (a: number) => void;
-  assert(typeof execTestFunction === "function");
+  const execTestFunction = (functionIndex: number) => {
+    ins.exports.table!.get(functionIndex)();
+  };
 
   for (const testCase of executionRecorder.testCases) {
     if (isCrashed) {
