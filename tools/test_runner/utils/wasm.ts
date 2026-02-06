@@ -14,7 +14,7 @@ export class WebAssemblyModule {
     return this.baseName.concat(".instrumented.wasm");
   }
   get sourceMap(): string {
-    return this.baseName.concat(".wasm.map");
+    return this.baseName.concat(".instrumented.wasm.map");
   }
   get traceFile(): string {
     return this.baseName.concat(".trace");

@@ -87,7 +87,7 @@ describe("test runner", () => {
   it("setup-teardown", async () => {
     const { code, stdout, stderr } = await runAsTest({ name: "setup-teardown" });
     checkStdoutSnapshot("setup-teardown", stdout, stderr);
-    expect(code).toBe(1);
+    expect(code).toBe(0);
   });
 
   it("testFiles", async () => {

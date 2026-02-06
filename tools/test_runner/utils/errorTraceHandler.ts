@@ -90,10 +90,7 @@ export interface ExecutionError {
   stacks: WebAssemblyCallSite[];
 }
 
-async function getSourceMapConsumer(sourceMapPath: string | null): Promise<SourceMapHandler | null> {
-  if (sourceMapPath === null) {
-    return null;
-  }
+async function getSourceMapConsumer(sourceMapPath: string): Promise<SourceMapHandler | null> {
   const sourceMapContent: string | null = await (async () => {
     try {
       return await readFile(sourceMapPath, "utf8");
@@ -124,13 +121,7 @@ export async function handleWebAssemblyError(
   error.stack; // trigger prepareStackTrace
   Error.prepareStackTrace = originalPrepareStackTrace;
 
-  const sourceMapUrl = await wasmModule.getCustomSectionUtf8("sourceMappingURL");
-
-  let sourceMapConsumer: SourceMapHandler | null = null;
-  if (sourceMapUrl != null) {
-    const sourceMapPath = path.join(path.dirname(wasmModule.wasm), sourceMapUrl);
-    sourceMapConsumer = await getSourceMapConsumer(sourceMapPath);
-  }
+  let sourceMapConsumer = await getSourceMapConsumer(wasmModule.sourceMap);
   const stacks = stackTrace
     .map((callSite) => createWebAssemblyCallSite(callSite, { wasmPath: wasmModule.wasm, sourceMapConsumer }))
     .filter((callSite) => callSite !== null);

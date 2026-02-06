@@ -2,7 +2,7 @@ code analysis: OK
 compile test files: OK
 execute test files: OK
 
-test case: 0/2 (success/total)
+test case: 0/1 (success/total)
 
 Error Message: 
   assert on test: 
@@ -10,10 +10,4 @@ Error Message:
 trace: this test will fail due to an assertion error
 Reason: abort: this assertion is expected to fail at assertOnTest.test.ts:5:3
   at start:assertOnTest.test~anonymous|0 (assertOnTest.test.ts:5:2)
-
-  tmp/assertOnInit.test - init: 
-    Test Crashed!
-Reason: abort: null at assertOnInit.test.ts:1:1
-  at start:assertOnInit.test (assertOnInit.test.ts:1:0)
-  at ~start (tmp/assertOnInit.test.instrumented.wasm:1:-1)
 

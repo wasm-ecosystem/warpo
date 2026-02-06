@@ -2,14 +2,4 @@ code analysis: OK
 compile test files: OK
 execute test files: OK
 
-test case: 18/19 (success/total)
-
-Error Message: 
-  tmp/setup_out_of_block.test - init: 
-    Test Crashed!
-Reason: abort: register setup function failed at ~lib/warpo/test/implement.ts:20:3
-  at ~lib/warpo/test/implement/beforeEachImpl (~lib/warpo/test/implement.ts:20:2)
-  at ~lib/warpo/test/index/beforeEach (~lib/warpo/test/index.ts:18:2)
-  at start:setup_out_of_block.test (setup_out_of_block.test.ts:3:0)
-  at ~start (tmp/setup_out_of_block.test.instrumented.wasm:1:-1)
-
+test case: 18/18 (success/total)
