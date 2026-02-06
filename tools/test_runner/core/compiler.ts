@@ -1,5 +1,5 @@
 import * as warpo from "../../scripts/lib.js";
-import { InstrumentResult } from "../interface.js";
+import { WebAssemblyModule } from "../utils/wasm.js";
 
 export class CompilationError extends Error {
   constructor(errorMessage: string | undefined) {
@@ -53,7 +53,7 @@ async function buildWithWARPO({
 
 export interface CompilationOption {
   sources: string[];
-  output: InstrumentResult;
+  output: WebAssemblyModule;
   userDefinedFlags: string;
   collectCoverage: boolean;
 }

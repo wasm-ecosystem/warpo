@@ -5,27 +5,6 @@
 
 import { Type } from "wasmparser";
 import { ASUtil } from "@assemblyscript/loader";
-import { relative } from "node:path";
-
-// instrumented file information
-export class InstrumentResult {
-  baseName: string;
-  constructor(baseName: string) {
-    this.baseName = relative(process.cwd(), baseName).replaceAll(/\\/g, "/");
-  }
-  get wasm() {
-    return this.baseName.concat(".instrumented.wasm");
-  }
-  get originalWasm(): string {
-    return this.baseName.concat(".wasm");
-  }
-  get sourceMap(): string {
-    return this.baseName.concat(".wasm.map");
-  }
-  get traceFile(): string {
-    return this.baseName.concat(".trace");
-  }
-}
 
 // NOTE: These custom section names must stay in sync with the C++ instrumentation:
 //   - defaultCoverageDebugInfoSectionName

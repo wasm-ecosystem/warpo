@@ -1,7 +1,7 @@
 import { promises } from "node:fs";
 import { instantiate, Imports as ASImports } from "@assemblyscript/loader";
 import { ExecutionResultSummary } from "../executionResult.js";
-import { Imports, ImportsArgument, InstrumentResult } from "../interface.js";
+import { Imports, ImportsArgument } from "../interface.js";
 import { supplyDefaultFunction } from "../utils/index.js";
 import { parseImportFunctionInfo } from "../utils/wasmparser.js";
 import { ExecutionRecorder, ExecutionResult } from "./executionRecorder.js";
@@ -9,11 +9,12 @@ import { MockStatusRecorder } from "./mockStatusRecorder.js";
 import { CoverageRecorder } from "./covRecorder.js";
 import assert from "node:assert";
 import { ExecutionError, handleWebAssemblyError } from "../utils/errorTraceHandler.js";
+import { WebAssemblyModule } from "../utils/wasm.js";
 
 const readFile = promises.readFile;
 
 async function nodeExecutor(
-  instrumentResult: InstrumentResult,
+  instrumentResult: WebAssemblyModule,
   filterByName: (fullTestName: string) => boolean,
   imports?: Imports
 ): Promise<ExecutionResult> {
@@ -45,7 +46,7 @@ async function nodeExecutor(
   const exceptionHandler = async (error: unknown) => {
     if (error instanceof WebAssembly.RuntimeError) {
       isCrashed = true;
-      const errorMessage: ExecutionError = await handleWebAssemblyError(error, instrumentResult.wasm);
+      const errorMessage: ExecutionError = await handleWebAssemblyError(error, instrumentResult);
       executionRecorder.notifyTestCrash(errorMessage);
       return;
     }
@@ -95,16 +96,12 @@ async function nodeExecutor(
 }
 
 export async function execWasmBinaries(
-  instrumentResults: InstrumentResult[],
+  wasmModule: WebAssemblyModule,
   filterByName: (fullTestName: string) => boolean,
   imports?: Imports
 ): Promise<ExecutionResultSummary> {
   const assertRes = new ExecutionResultSummary();
-  await Promise.all<void>(
-    instrumentResults.map(async (instrumentResult): Promise<void> => {
-      const result: ExecutionResult = await nodeExecutor(instrumentResult, filterByName, imports);
-      await assertRes.merge(result, instrumentResult.wasm);
-    })
-  );
+  const result: ExecutionResult = await nodeExecutor(wasmModule, filterByName, imports);
+  await assertRes.merge(result, wasmModule);
   return assertRes;
 }

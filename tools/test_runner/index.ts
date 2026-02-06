@@ -49,17 +49,17 @@ async function startUniTestImpl(options: TestOption): Promise<number> {
   const { sourceCodePaths, testCodePaths, entryFiles, filterByName } = analyze(options, failedTestCases);
   console.log(chalk.blueBright("code analysis: ") + chalk.bold.greenBright("OK"));
 
-  const instrumentResult = await compile(testCodePaths, entryFiles, options);
+  const wasmModule = await compile(testCodePaths, entryFiles, options);
   console.log(chalk.blueBright("compile test files: ") + chalk.bold.greenBright("OK"));
 
-  const executedResult = await execWasmBinaries(instrumentResult, filterByName, options.imports);
+  const executedResult = await execWasmBinaries(wasmModule, filterByName, options.imports);
   console.log(chalk.blueBright("execute test files: ") + chalk.bold.greenBright("OK"));
 
   await executedResult.writeFailures(failurePath);
   executedResult.print(console.log);
   if (options.collectCoverage) {
     const parser = new Parser();
-    const fileCoverageInfo = await parser.parse(instrumentResult, sourceCodePaths);
+    const fileCoverageInfo = await parser.parse(wasmModule, sourceCodePaths);
     reportConfig.warningLimit = options.warnLimit || reportConfig.warningLimit;
     reportConfig.errorLimit = options.errorLimit || reportConfig.errorLimit;
     generateReport(options.mode, options.outputFolder, fileCoverageInfo);

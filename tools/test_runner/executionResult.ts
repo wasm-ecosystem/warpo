@@ -1,4 +1,4 @@
-import { openAsBlob, promises } from "node:fs";
+import { promises } from "node:fs";
 import { json2map } from "./utils/index.js";
 import {
   FailedInfoMap,
@@ -13,7 +13,7 @@ import {
 } from "./interface.js";
 import chalk from "chalk";
 import assert from "node:assert";
-import { getCustomSectionUtf8 } from "./utils/wasmCustomSection.js";
+import { WebAssemblyModule } from "./utils/wasm.js";
 
 const { writeFile } = promises;
 
@@ -70,17 +70,14 @@ export class ExecutionResultSummary {
     }
   }
 
-  async merge(result: IExecutionResult, instrumentedWasmPath: string) {
+  async merge(result: IExecutionResult, wasmModule: WebAssemblyModule) {
     this.fail += result.fail;
     this.total += result.total;
     if (result.fail > 0) {
       try {
-        const jsonText = getCustomSectionUtf8(
-          await (await openAsBlob(instrumentedWasmPath)).arrayBuffer(),
-          TEST_EXPECT_INFO_SECTION_NAME
-        );
+        const jsonText = wasmModule.getCustomSectionUtf8(TEST_EXPECT_INFO_SECTION_NAME);
         if (jsonText === null) {
-          throw new Error(`missing wasm custom section '${TEST_EXPECT_INFO_SECTION_NAME}' in ${instrumentedWasmPath}`);
+          throw new Error(`missing wasm custom section '${TEST_EXPECT_INFO_SECTION_NAME}' in ${wasmModule}`);
         }
         const expectInfo = JSON.parse(jsonText) as ExpectInfo | null;
         this.#processAssertInfo(result.failedInfo, expectInfo);

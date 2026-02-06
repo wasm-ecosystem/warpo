@@ -1,10 +1,10 @@
 // ref: https://v8.dev/docs/stack-trace-api
 
 import { readFile } from "node:fs/promises";
-import { parseSourceMapPath } from "./wasmparser.js";
 import { BasicSourceMapConsumer, IndexedSourceMapConsumer, SourceMapConsumer } from "source-map";
 import chalk from "chalk";
 import path from "node:path";
+import { WebAssemblyModule } from "./wasm.js";
 
 export interface WebAssemblyCallSite {
   functionName: string;
@@ -111,7 +111,7 @@ async function getSourceMapConsumer(sourceMapPath: string | null): Promise<Sourc
 
 export async function handleWebAssemblyError(
   error: WebAssembly.RuntimeError,
-  wasmPath: string
+  wasmModule: WebAssemblyModule
 ): Promise<ExecutionError> {
   let stackTrace: NodeJS.CallSite[] = [];
   // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -123,17 +123,15 @@ export async function handleWebAssemblyError(
   error.stack; // trigger prepareStackTrace
   Error.prepareStackTrace = originalPrepareStackTrace;
 
-  const wasmBuffer = await readFile(wasmPath);
-  const sourceMapUrl = parseSourceMapPath(
-    wasmBuffer.buffer.slice(wasmBuffer.byteOffset, wasmBuffer.byteLength) as ArrayBuffer
-  );
+  const sourceMapUrl = wasmModule.getCustomSectionUtf8("sourceMappingURL");
+
   let sourceMapConsumer: SourceMapHandler | null = null;
   if (sourceMapUrl != null) {
-    const sourceMapPath = path.join(path.dirname(wasmPath), sourceMapUrl);
+    const sourceMapPath = path.join(path.dirname(wasmModule.wasm), sourceMapUrl);
     sourceMapConsumer = await getSourceMapConsumer(sourceMapPath);
   }
   const stacks = stackTrace
-    .map((callSite) => createWebAssemblyCallSite(callSite, { wasmPath, sourceMapConsumer }))
+    .map((callSite) => createWebAssemblyCallSite(callSite, { wasmPath: wasmModule.wasm, sourceMapConsumer }))
     .filter((callSite) => callSite !== null);
   sourceMapConsumer?.destroy(); // clean up the source map consumer
   return {
