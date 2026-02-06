@@ -45,24 +45,8 @@ public:
     }
   }
 
-  MockInstrumentationWalker(const MockInstrumentationWalker &src) = delete;
-  MockInstrumentationWalker(MockInstrumentationWalker &&src) = delete;
-  MockInstrumentationWalker &operator=(const MockInstrumentationWalker &) = delete;
-  MockInstrumentationWalker &operator=(MockInstrumentationWalker &&) = delete;
-  ///
-  /// @brief Destructor for MockInstrumentationWalker
-  ///
-  ~MockInstrumentationWalker() noexcept = default;
-  ///
-  /// @brief Get expect infos
-  ///
-  /// @return expect infos, if assert fail, return the expect infos with debug info
   const std::unordered_map<uint32_t, std::string> &getExpectInfos() const noexcept { return expectInfos; }
 
-  ///
-  /// @brief Visit call instruction
-  ///
-  /// @param curr Current expression reference
   void visitCall(wasm::Call *const curr) noexcept;
 
   static void doPreVisit(MockInstrumentationWalker *self, wasm::Expression **currp) {
@@ -112,15 +96,7 @@ public:
     return expressionStack[expressionStack.size() - 1];
   }
 
-  ///
-  /// @brief Visit call indirect instruction
-  ///
-  /// @param curr Current expression reference
   void visitCallIndirect(wasm::CallIndirect *const curr) noexcept;
-
-  ///
-  /// @brief Main API for mock instrumentation
-  ///
   void mockWalk() noexcept;
 
 private:

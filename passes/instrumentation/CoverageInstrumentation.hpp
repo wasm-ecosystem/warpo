@@ -8,10 +8,6 @@
 
 namespace warpo::passes::instrumentation {
 
-struct CoverageInstrumentationConfig final {
-  bool skipLib = true; ///< if skip lib functions
-};
-
 void runCoverageInstrumentation(wasm::Module &module);
 
 } // namespace warpo::passes::instrumentation

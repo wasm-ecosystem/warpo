@@ -26,15 +26,9 @@ static void addCustomSection(wasm::Module &module, std::string const &sectionNam
   BinaryenAddCustomSection(&module, sectionName.c_str(), payload.data(), static_cast<wasm::Index>(payload.size()));
 }
 
-static void setupBasicBlockAnalysis(BasicBlockAnalysis &basicBlockAnalysis,
-                                    CoverageInstrumentationConfig const &coverageConfig) noexcept {
-  if (coverageConfig.skipLib)
-    basicBlockAnalysis.addExclude("~lib/.+");
-}
-
-static void runCoverageOnlyPart(wasm::Module &module, CoverageInstrumentationConfig const &coverageConfig) {
+static void runCoverageOnlyPart(wasm::Module &module) {
   BasicBlockAnalysis basicBlockAnalysis = BasicBlockAnalysis();
-  setupBasicBlockAnalysis(basicBlockAnalysis, coverageConfig);
+  basicBlockAnalysis.addExclude("~lib/.+");
 
   BasicBlockWalker basicBlockWalker = BasicBlockWalker(&module, basicBlockAnalysis);
   basicBlockWalker.basicBlockWalk();
@@ -91,21 +85,6 @@ static void runTestOnlyPart(wasm::Module &module, std::unordered_map<uint32_t, s
   outExpectInfos = mockWalker.getExpectInfos();
 }
 
-static void instrumentModule(wasm::Module &m, CoverageInstrumentationConfig const *const coverageConfig) {
-  if (coverageConfig != nullptr)
-    runCoverageOnlyPart(m, *coverageConfig);
-
-  std::unordered_map<uint32_t, std::string> expectInfos{};
-  runTestOnlyPart(m, expectInfos);
-
-  nlohmann::json expectInfosJson = nlohmann::json::object();
-  for (const auto &[key, value] : expectInfos) {
-    expectInfosJson[std::to_string(key)] = value;
-  }
-
-  addCustomSection(m, std::string(defaultTestExpectInfoSectionName), expectInfosJson.dump());
-}
-
 } // namespace warpo::passes::instrumentation
 
 namespace warpo {
@@ -114,12 +93,6 @@ static cli::Opt<bool> enableCoverageInstrumentationOption{
     cli::Category::Transformation,
     "--instrument",
     [](argparse::Argument &arg) -> void { arg.help("Enable coverage instrumentation.").flag(); },
-};
-
-static cli::Opt<bool> instrumentationIncludeLibOption{
-    cli::Category::Transformation,
-    "--instrument-include-lib",
-    [](argparse::Argument &arg) -> void { arg.help("Include library functions in coverage.").flag(); },
 };
 
 static cli::Opt<bool> instrumentationDisableCoverageOption{
@@ -131,13 +104,18 @@ static cli::Opt<bool> instrumentationDisableCoverageOption{
 void passes::instrumentation::runCoverageInstrumentation(wasm::Module &m) {
   if (!enableCoverageInstrumentationOption.get())
     return;
-  CoverageInstrumentationConfig coverageConfig{};
-  coverageConfig.skipLib = !instrumentationIncludeLibOption.get();
 
-  CoverageInstrumentationConfig const *const coverageCfgPtr =
-      instrumentationDisableCoverageOption.get() ? nullptr : &coverageConfig;
+  if (!instrumentationDisableCoverageOption.get())
+    runCoverageOnlyPart(m);
 
-  instrumentModule(m, coverageCfgPtr);
+  std::unordered_map<uint32_t, std::string> expectInfos{};
+  runTestOnlyPart(m, expectInfos);
+
+  nlohmann::json expectInfosJson = nlohmann::json::object();
+  for (const auto &[key, value] : expectInfos) {
+    expectInfosJson[std::to_string(key)] = value;
+  }
+  addCustomSection(m, std::string(defaultTestExpectInfoSectionName), expectInfosJson.dump());
 }
 
 } // namespace warpo
