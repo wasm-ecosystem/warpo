@@ -5,7 +5,7 @@
 import ignore from "ignore";
 import { join, relative, resolve } from "node:path";
 import { getIncludeFiles } from "../utils/pathResolver.js";
-import { TestOption } from "../interface.js";
+import { TestOption } from "../testOption.js";
 import assert from "node:assert";
 
 type AnalyzeOption = Pick<TestOption, "includes" | "excludes" | "testFiles" | "testNamePattern" | "entryFiles">;

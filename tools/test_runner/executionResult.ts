@@ -10,7 +10,7 @@ import {
   FailedInfo,
   FailedLogMessages,
   TEST_EXPECT_INFO_SECTION_NAME,
-} from "./interface.js";
+} from "./utils/interface.js";
 import chalk from "chalk";
 import assert from "node:assert";
 import { WebAssemblyModule } from "./utils/wasm.js";

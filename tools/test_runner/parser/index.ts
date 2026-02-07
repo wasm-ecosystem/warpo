@@ -14,7 +14,7 @@ import {
   FunctionCoverageResult,
   LineRange,
   COVERAGE_DEBUG_INFO_SECTION_NAME,
-} from "../interface.js";
+} from "../utils/interface.js";
 import { WebAssemblyModule } from "../utils/wasm.js";
 
 export class Parser {

@@ -2,7 +2,7 @@ import { ensureDirSync } from "fs-extra";
 import { copyFile, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative } from "node:path";
 import { generateFolderHtml } from "./genFolder.js";
-import { FileCoverageResult } from "../../interface.js";
+import { FileCoverageResult } from "../../utils/interface.js";
 import { generateCodeHtml } from "./genCode.js";
 import { projectRoot } from "../../utils/projectRoot.js";
 

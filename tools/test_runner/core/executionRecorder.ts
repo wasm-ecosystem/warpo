@@ -1,13 +1,12 @@
 import chalk from "chalk";
+import { UnitTestFramework, ImportsArgument } from "../interface.js";
 import {
-  UnitTestFramework,
-  ImportsArgument,
   AssertFailMessage,
   AssertMessage,
   IExecutionResult,
   FailedLogMessages,
   CrashInfo,
-} from "../interface.js";
+} from "../utils/interface.js";
 import { ExecutionError } from "../utils/errorTraceHandler.js";
 
 class LogRecorder {

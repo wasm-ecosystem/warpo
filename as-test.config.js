@@ -1,4 +1,4 @@
-/** @type {import("assemblyscript-unittest-framework/config.d.ts").Config} */
+/** @type {import("./dist/test_runner/interface").Config} */
 export default {
   include: [
     "tests/assemblyscript",
@@ -8,6 +8,5 @@ export default {
   ],
   entryFiles: ["assemblyscript/src/glue/wasm/index.ts", "assemblyscript/src/index-wasm.ts"],
   collectCoverage: false,
-  temp: "build_coverage",
   output: "build_coverage",
 };

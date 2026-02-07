@@ -1,5 +1,6 @@
 import { reportConfig } from "../index.js";
-import { FileCoverageResult, Rate, OrganizationName, Repository } from "../../interface.js";
+import { FileCoverageResult, Rate } from "../../utils/interface.js";
+import { OrganizationName, Repository } from "../../utils/name.js";
 
 function getLevel(rate: Rate): "high" | "medium" | "low" {
   const r = rate.getRate();

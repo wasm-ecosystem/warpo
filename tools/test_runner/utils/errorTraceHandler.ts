@@ -3,7 +3,6 @@
 import { readFile } from "node:fs/promises";
 import { BasicSourceMapConsumer, IndexedSourceMapConsumer, SourceMapConsumer } from "source-map";
 import chalk from "chalk";
-import path from "node:path";
 import { WebAssemblyModule } from "./wasm.js";
 import { env } from "node:process";
 

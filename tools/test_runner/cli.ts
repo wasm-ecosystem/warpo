@@ -1,4 +1,4 @@
-#!/usr/bin/env -S node --experimental-wasi-unstable-preview1 --experimental-wasm-bigint
+#!/usr/bin/env -S node --experimental-wasi-unstable-preview1
 
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
@@ -9,29 +9,14 @@ import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { Command } from "commander";
 import { validateArgument, start } from "./index.js";
-import { TestOption } from "./interface.js";
-
-function getBoolean(optionValue: "true" | "false" | undefined, configValue: boolean | undefined): boolean | undefined {
-  if (optionValue !== undefined) {
-    if (optionValue === "true") {
-      return true;
-    }
-    if (optionValue === "false") {
-      return false;
-    }
-  }
-  if (configValue !== undefined) {
-    return Boolean(configValue);
-  }
-  return undefined;
-}
+import { TestOption } from "./testOption.js";
+import { Repository } from "./utils/name.js";
 
 function createProgram(): Command {
   const program = new Command();
   program
     .option("--config <config file>", "path of config file", "as-test.config.js")
 
-    .option("--temp <path>", "test template file folder")
     .option("--output <path>", "coverage report output folder")
     .option("--mode <output mode>", "coverage report output format")
 
@@ -41,10 +26,7 @@ function createProgram(): Command {
     .option("--testFiles <testFiles...>", "run only specified test files")
     .option("--testNamePattern <test name pattern>", "run only tests with a name that matches the regex pattern")
     .option("--onlyFailures", "Run tests that failed in the previous")
-    .addHelpText(
-      "beforeAll",
-      "submit feature requests or issues: https://github.com/wasm-ecosystem/assemblyscript-unittest-framework/issues"
-    );
+    .addHelpText("beforeAll", `submit feature requests or issues: ${Repository}/issues`);
   return program;
 }
 
@@ -118,9 +100,7 @@ export async function runFromCliArgs(args: string[]): Promise<number> {
     return await start(testOption);
   } catch (e: any) {
     console.error(chalk.redBright("framework crash, error message: ") + chalk.yellowBright(`${e?.stack}`) + "\n");
-    console.error(
-      "please submit an issue at https://github.com/wasm-ecosystem/assemblyscript-unittest-framework/issues"
-    );
+    console.error(`please submit an issue at ${Repository}`);
     return 255;
   }
 }

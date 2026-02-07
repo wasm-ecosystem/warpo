@@ -1,4 +1,5 @@
-import { OutputMode, FileCoverageResult } from "../interface.js";
+import { OutputMode } from "../interface.js";
+import { FileCoverageResult } from "../utils/interface.js";
 import { genHtml } from "./html-generator/index.js";
 import { genJson } from "./json-generator/index.js";
 import { genTable } from "./table-generator/index.js";

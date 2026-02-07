@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import { CodeSnippetIndex, CovInfo, FunctionCoverageResult, UncoveredBasicBlocks } from "../interface.js";
+import { CodeSnippetIndex, CovInfo, FunctionCoverageResult, UncoveredBasicBlocks } from "../utils/interface.js";
 
 type BranchGraph = Map<number, Map<number, boolean>>;
 

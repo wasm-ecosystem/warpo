@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { writeFileSync } from "node:fs";
-import { FileCoverageResult, Rate } from "../../interface.js";
+import { FileCoverageResult, Rate } from "../../utils/interface.js";
 
 type JsonOutput = Record<string, FileInfo>;
 interface FileInfo {

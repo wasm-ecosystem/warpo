@@ -1,4 +1,4 @@
-import { Rate, CodeCoverage, FileCoverageResult, FunctionCoverageResult } from "../interface.js";
+import { Rate, CodeCoverage, FileCoverageResult, FunctionCoverageResult } from "../utils/interface.js";
 
 export class SingleFileCoverageAnalysis {
   result: FileCoverageResult;

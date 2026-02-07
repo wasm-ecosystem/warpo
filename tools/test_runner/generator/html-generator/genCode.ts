@@ -1,5 +1,6 @@
-import { CodeCoverage, FileCoverageResult, UncoveredLines, OrganizationName, Repository } from "../../interface.js";
+import { CodeCoverage, FileCoverageResult, UncoveredLines } from "../../utils/interface.js";
 import { escape } from "../../utils/escape.js";
+import { OrganizationName, Repository } from "../../utils/name.js";
 
 function generateLineCount(totalLines: number): string {
   const str: string[] = [];

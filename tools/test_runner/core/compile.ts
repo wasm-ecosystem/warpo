@@ -1,6 +1,6 @@
 import { join, relative } from "node:path";
 import { compileImpl } from "./compiler.js";
-import { TestOption } from "../interface.js";
+import { TestOption } from "../testOption.js";
 import { WebAssemblyModule } from "../utils/wasm.js";
 
 export type CompileOption = Pick<TestOption, "outputFolder" | "flags" | "collectCoverage">;

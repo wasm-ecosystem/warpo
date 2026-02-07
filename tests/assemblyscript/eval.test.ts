@@ -1,4 +1,4 @@
-import { describe, expect, test } from "assemblyscript-unittest-framework/assembly/index";
+import { describe, expect, test } from "warpo/test";
 
 import {
   BinaryExpression,

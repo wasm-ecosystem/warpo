@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { basename, dirname } from "node:path";
 import { reportConfig } from "../index.js";
-import { FileCoverageResult, Rate } from "../../interface.js";
+import { FileCoverageResult, Rate } from "../../utils/interface.js";
 
 class Table {
   private lineWidth: number[] = [];
