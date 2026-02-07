@@ -100,7 +100,7 @@ export async function runFromCliArgs(args: string[]): Promise<number> {
     return await start(testOption);
   } catch (e: any) {
     console.error(chalk.redBright("framework crash, error message: ") + chalk.yellowBright(`${e?.stack}`) + "\n");
-    console.error(`please submit an issue at ${Repository}`);
+    console.error(`please submit an issue at ${Repository}/issues`);
     return 255;
   }
 }

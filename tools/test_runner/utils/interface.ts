@@ -1,5 +1,3 @@
-import { Imports, OutputMode } from "../interface.js";
-
 // NOTE: These custom section names must stay in sync with the C++ instrumentation:
 //   - defaultCoverageDebugInfoSectionName
 //   - defaultTestExpectInfoSectionName
