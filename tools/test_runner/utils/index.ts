@@ -1,6 +1,5 @@
 import { Imports as ASImports } from "@assemblyscript/loader";
 import { ImportsArgument } from "../interface.js";
-import { TypeKind } from "wasmparser/dist/cjs/WasmParser.js";
 
 export function json2map<V>(json: Record<string, V>): Map<string, V> {
   const res = new Map<string, V>();
@@ -63,8 +62,7 @@ export function supplyDefaultFunction(
   importsArg: ImportsArgument
 ) {
   for (const info of infos) {
-    const module = info.module;
-    const name = info.name;
+    const { module, name, kind } = info;
     const importObjectModule = importObject[module] ?? {};
     importObject[module] = importObjectModule;
     if (importObjectModule[name] !== undefined) {
@@ -77,12 +75,16 @@ export function supplyDefaultFunction(
           `abort: ${exports.__getString(msg)} at ${exports.__getString(file)}:${line}:${col}`
         );
       };
-    } else if (module === "env" && name === "trace") {
+      continue;
+    }
+    if (module === "env" && name === "trace") {
       importObjectModule[name] = (msg: number, n: number, ...args: number[]) => {
         const exports = importsArg.exports!;
         importsArg.framework.log(`trace: ${exports.__getString(msg)}${n > 0 ? " " : ""}${args.slice(0, n).join(", ")}`);
       };
-    } else {
+      continue;
+    }
+    if (kind === "function") {
       importObjectModule[name] = () => {
         // https://tc39.es/ecma262/multipage/abstract-operations.html#sec-tobigint
         // https://tc39.es/ecma262/multipage/abstract-operations.html#sec-tonumber
@@ -91,6 +93,8 @@ export function supplyDefaultFunction(
         // The common solution is to return boolean that can be converted to both number and bigint
         return false;
       };
+      continue;
     }
+    throw new Error(`unsupported import: ${module}.${name} of kind ${kind}`);
   }
 }

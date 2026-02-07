@@ -2,7 +2,12 @@ import { promises } from "node:fs";
 import { instantiate, Imports as ASImports } from "@assemblyscript/loader";
 import { ExecutionResultSummary } from "../executionResult.js";
 import { Imports, ImportsArgument } from "../interface.js";
+<<<<<<< Updated upstream
 import { supplyDefaultFunction } from "../utils/index.js";
+=======
+import { injectDefaultFunction } from "../utils/index.js";
+import { parseImportFunctionInfo } from "../utils/wasmparser.js";
+>>>>>>> Stashed changes
 import { ExecutionRecorder, ExecutionResult } from "./executionRecorder.js";
 import { MockStatusRecorder } from "./mockStatusRecorder.js";
 import { CoverageRecorder } from "./covRecorder.js";
@@ -30,9 +35,17 @@ async function nodeExecutor(
     },
     ...userDefinedImportsObject,
   } as ASImports;
+<<<<<<< Updated upstream
   const wasmImports = await wasmModule.getImports();
   supplyDefaultFunction(wasmImports, importObject, importsArg);
   const ins = await instantiate(await wasmModule.getModule(), importObject);
+=======
+  const binaryBuffer = await readFile(instrumentResult.wasm);
+  const binary = binaryBuffer.buffer.slice(binaryBuffer.byteOffset, binaryBuffer.byteOffset + binaryBuffer.byteLength);
+  const importFuncList = parseImportFunctionInfo(binary as ArrayBuffer);
+  injectDefaultFunction(importFuncList, importObject, importsArg);
+  const ins = await instantiate(binary, importObject);
+>>>>>>> Stashed changes
   importsArg.module = ins.module;
   importsArg.instance = ins.instance;
   importsArg.exports = ins.exports;
