@@ -3,7 +3,6 @@
  */
 // input
 
-import { Type } from "wasmparser";
 import { ASUtil } from "@assemblyscript/loader";
 
 // NOTE: These custom section names must stay in sync with the C++ instrumentation:
@@ -69,13 +68,6 @@ export interface IExecutionResult {
   crashInfo: CrashInfo;
   failedInfo: AssertFailMessage;
   failedLogMessages: FailedLogMessages;
-}
-
-export interface ImportFunctionInfo {
-  module: string;
-  name: string;
-  args: Type[];
-  return: Type | undefined;
 }
 
 // output

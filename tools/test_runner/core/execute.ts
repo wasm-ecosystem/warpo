@@ -3,18 +3,16 @@ import { instantiate, Imports as ASImports } from "@assemblyscript/loader";
 import { ExecutionResultSummary } from "../executionResult.js";
 import { Imports, ImportsArgument } from "../interface.js";
 import { supplyDefaultFunction } from "../utils/index.js";
-import { parseImportFunctionInfo } from "../utils/wasmparser.js";
 import { ExecutionRecorder, ExecutionResult } from "./executionRecorder.js";
 import { MockStatusRecorder } from "./mockStatusRecorder.js";
 import { CoverageRecorder } from "./covRecorder.js";
-import assert from "node:assert";
 import { ExecutionError, handleWebAssemblyError } from "../utils/errorTraceHandler.js";
 import { WebAssemblyModule } from "../utils/wasm.js";
 
 const readFile = promises.readFile;
 
 async function nodeExecutor(
-  instrumentResult: WebAssemblyModule,
+  wasmModule: WebAssemblyModule,
   filterByName: (fullTestName: string) => boolean,
   imports?: Imports
 ): Promise<ExecutionResult> {
@@ -32,11 +30,9 @@ async function nodeExecutor(
     },
     ...userDefinedImportsObject,
   } as ASImports;
-  const binaryBuffer = await readFile(instrumentResult.wasm);
-  const binary = binaryBuffer.buffer.slice(binaryBuffer.byteOffset, binaryBuffer.byteOffset + binaryBuffer.byteLength);
-  const importFuncList = parseImportFunctionInfo(binary as ArrayBuffer);
-  supplyDefaultFunction(importFuncList, importObject, importsArg);
-  const ins = await instantiate(binary, importObject);
+  const wasmImports = await wasmModule.getImports();
+  supplyDefaultFunction(wasmImports, importObject, importsArg);
+  const ins = await instantiate(await wasmModule.getModule(), importObject);
   importsArg.module = ins.module;
   importsArg.instance = ins.instance;
   importsArg.exports = ins.exports;
@@ -46,7 +42,7 @@ async function nodeExecutor(
   const exceptionHandler = async (error: unknown) => {
     if (error instanceof WebAssembly.RuntimeError) {
       isCrashed = true;
-      const errorMessage: ExecutionError = await handleWebAssemblyError(error, instrumentResult);
+      const errorMessage: ExecutionError = await handleWebAssemblyError(error, wasmModule);
       executionRecorder.notifyTestCrash(errorMessage);
       return;
     }
@@ -58,7 +54,7 @@ async function nodeExecutor(
   };
 
   await executionRecorder.runTestFunction(
-    `${instrumentResult.baseName} - init`,
+    `${wasmModule.baseName} - init`,
     () => {
       (ins.exports["__unit_test_start"] as () => void)();
     },
@@ -92,7 +88,7 @@ async function nodeExecutor(
     }
   }
 
-  coverageRecorder.outputTrace(instrumentResult.traceFile);
+  coverageRecorder.outputTrace(wasmModule.traceFile);
   return executionRecorder.result;
 }
 

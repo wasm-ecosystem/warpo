@@ -20,7 +20,7 @@ export class WebAssemblyModule {
     return this.baseName.concat(".trace");
   }
 
-  private async getModule(): Promise<WebAssembly.Module> {
+  async getModule(): Promise<WebAssembly.Module> {
     if (this.m) return this.m;
     const bytes = await (await openAsBlob(this.wasm)).arrayBuffer();
     this.m = new WebAssembly.Module(bytes);
@@ -38,5 +38,9 @@ export class WebAssemblyModule {
     const payload = await this.getCustomSectionPayload(sectionName);
     if (payload === null) return null;
     return new TextDecoder("utf-8").decode(payload);
+  }
+
+  async getImports(): Promise<WebAssembly.ModuleImportDescriptor[]> {
+    return WebAssembly.Module.imports(await this.getModule());
   }
 }

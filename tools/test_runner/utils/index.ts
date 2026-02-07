@@ -1,5 +1,5 @@
 import { Imports as ASImports } from "@assemblyscript/loader";
-import { ImportFunctionInfo, ImportsArgument } from "../interface.js";
+import { ImportsArgument } from "../interface.js";
 import { TypeKind } from "wasmparser/dist/cjs/WasmParser.js";
 
 export function json2map<V>(json: Record<string, V>): Map<string, V> {
@@ -58,7 +58,7 @@ export function checkVarargs(functionName: string): string | undefined {
 }
 
 export function supplyDefaultFunction(
-  infos: ImportFunctionInfo[],
+  infos: WebAssembly.ModuleImportDescriptor[],
   importObject: ASImports,
   importsArg: ImportsArgument
 ) {
@@ -83,9 +83,13 @@ export function supplyDefaultFunction(
         importsArg.framework.log(`trace: ${exports.__getString(msg)}${n > 0 ? " " : ""}${args.slice(0, n).join(", ")}`);
       };
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      importObjectModule[name] = (..._args: unknown[]): unknown => {
-        return info.return?.kind === TypeKind.i64 ? BigInt(0) : 0;
+      importObjectModule[name] = () => {
+        // https://tc39.es/ecma262/multipage/abstract-operations.html#sec-tobigint
+        // https://tc39.es/ecma262/multipage/abstract-operations.html#sec-tonumber
+        // When return js value to wasm, spec requires to convert the value to bigint for i64 and number for others.
+        // Here return a number does not work for bigint because a TypeError will be thrown.
+        // The common solution is to return boolean that can be converted to both number and bigint
+        return false;
       };
     }
   }
