@@ -56,7 +56,7 @@ export function checkVarargs(functionName: string): string | undefined {
   return undefined;
 }
 
-export function supplyDefaultFunction(
+export function injectDefaultFunction(
   infos: WebAssembly.ModuleImportDescriptor[],
   importObject: ASImports,
   importsArg: ImportsArgument
