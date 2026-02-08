@@ -11,7 +11,6 @@
 #include <iostream>
 #include <memory>
 #include <string>
-#include <string_view>
 
 #include "InsertTracePoint.hpp"
 #include "helper/ExprInserter.hpp"

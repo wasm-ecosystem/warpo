@@ -9,24 +9,6 @@
 #include "ir/module-utils.h"
 
 namespace warpo::passes::instrumentation {
-void CovInstrumentationWalker::introduceReportFun() noexcept {
-  bool needImport = true;
-  wasm::ModuleUtils::iterDefinedFunctions(*m, [&needImport](const BinaryenFunctionRef &func) noexcept {
-    if (func->name == traceInternalFunctionName)
-      needImport = false;
-  });
-  wasm::ModuleUtils::iterImportedFunctions(*m, [&needImport](const BinaryenFunctionRef &func) noexcept {
-    if (func->name == traceInternalFunctionName)
-      needImport = false;
-  });
-  if (needImport) {
-    wasm::Builder const builder(*m);
-    std::array<BinaryenType, 3U> iii_{BinaryenTypeInt32(), BinaryenTypeInt32(), BinaryenTypeInt32()};
-    const BinaryenType iii = BinaryenTypeCreate(iii_.data(), iii_.size());
-    BinaryenAddFunctionImport(m, traceInternalFunctionName, unittestFrameworkEnvModuleName, traceFunctionName, iii,
-                              wasm::Type::none);
-  }
-}
 
 void CovInstrumentationWalker::visitFunction(wasm::Function *const curr) noexcept {
   using Parent =
@@ -90,7 +72,13 @@ void CovInstrumentationWalker::visitExpression(wasm::Expression *curr) noexcept 
 }
 
 void CovInstrumentationWalker::covWalk() noexcept {
-  introduceReportFun();
+  if (m->getFunctionOrNull(traceInternalFunctionName) == nullptr) {
+    wasm::Builder const builder(*m);
+    std::array<BinaryenType, 3U> iii_{BinaryenTypeInt32(), BinaryenTypeInt32(), BinaryenTypeInt32()};
+    const BinaryenType iii = BinaryenTypeCreate(iii_.data(), iii_.size());
+    BinaryenAddFunctionImport(m, traceInternalFunctionName, unittestFrameworkEnvModuleName, traceFunctionName, iii,
+                              wasm::Type::none);
+  }
   wasm::ModuleUtils::iterDefinedFunctions(*m, [this](const BinaryenFunctionRef &func) noexcept {
     if (basicBlockWalker.getBasicBlockAnalysis().shouldIncludeFile(func->name.str)) {
       walkFunctionInModule(func, this->m);
@@ -99,3 +87,74 @@ void CovInstrumentationWalker::covWalk() noexcept {
 }
 
 } // namespace warpo::passes::instrumentation
+
+#ifdef WARPO_ENABLE_UNIT_TESTS
+
+#include <gtest/gtest.h>
+
+#include "../Runner.hpp"
+#include "../helper/Matcher.hpp"
+
+namespace warpo::passes::instrumentation::ut {
+
+TEST(CovInstrumentationWalkerTest, InstrumentsFunctionAndCall) {
+  auto m = loadWat(R"(
+    (module
+      (func $callee
+        nop
+      )
+      (func $caller
+        call $callee
+      )
+    )
+  )");
+
+  wasm::Function *const callee = m->getFunction("callee");
+  wasm::Function *const caller = m->getFunction("caller");
+
+  wasm::Function::DebugLocation loc{};
+  loc.fileIndex = 0;
+  loc.lineNumber = 1;
+  loc.columnNumber = 1;
+  callee->debugLocations.emplace(callee->body, loc);
+  caller->debugLocations.emplace(caller->body, loc);
+
+  BasicBlockAnalysis basicBlockAnalysis{};
+  BasicBlockWalker basicBlockWalker(m.get(), basicBlockAnalysis);
+  basicBlockWalker.basicBlockWalk();
+
+  CovInstrumentationWalker covWalker(m.get(), basicBlockWalker);
+  covWalker.covWalk();
+
+  EXPECT_NE(m->getFunctionOrNull(traceInternalFunctionName), nullptr);
+
+  using namespace matcher;
+      auto traceCall = []() {
+      return isCall(call::callee(traceInternalFunctionName),
+              call::operands(allOf({has(3), at(0, isConst()), at(1, isConst()), at(2, isConst())})));
+      };
+      auto callWithBasicBlock = [&]() {
+      return isBlock(block::list(allOf({
+        has(2),
+        at(0, isCall(call::callee("callee"))),
+        at(1, traceCall()),
+      })));
+      };
+      auto innerBlock = [&]() {
+      return isBlock(block::list(allOf({
+        has(2),
+        at(0, callWithBasicBlock()),
+        at(1, traceCall()),
+      })));
+      };
+      auto match = isBlock(block::list(allOf({
+        has(2),
+        at(0, traceCall()),
+        at(1, innerBlock()),
+      })));
+  isMatched(match, caller->body);
+}
+
+} // namespace warpo::passes::instrumentation::ut
+
+#endif
