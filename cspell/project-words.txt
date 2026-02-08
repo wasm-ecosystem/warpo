@@ -163,6 +163,7 @@ Typeinfo
 uget
 ulog
 umul
+UNDEBUG
 unittests
 usize
 utoa
