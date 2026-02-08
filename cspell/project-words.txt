@@ -30,6 +30,7 @@ dend
 Dependee
 dependees
 directize
+DNDEBUG
 donelog
 DW_FORM_strp
 DWARFYAML
@@ -88,6 +89,7 @@ Mathf
 MAXSIZE
 meetee
 memmove
+MINSIZEREL
 MMSP
 Motoren
 msvc
@@ -163,7 +165,6 @@ Typeinfo
 uget
 ulog
 umul
-UNDEBUG
 unittests
 usize
 utoa
