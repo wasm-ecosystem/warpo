@@ -240,6 +240,24 @@ static inline M<wasm::Call> operands(M<wasm::ExpressionList> &&m) {
 }
 } // namespace call
 
+constexpr IsMatcherImpl<wasm::CallIndirect, wasm::Expression> isCallIndirect;
+namespace call_indirect {
+static inline M<wasm::CallIndirect> target(M<wasm::Expression> &&m) {
+  return M<wasm::CallIndirect>(
+      [m = std::move(m)](wasm::CallIndirect const &expr, Context &ctx) -> bool { return m(*expr.target, ctx); });
+}
+static inline M<wasm::CallIndirect> operands(M<wasm::ExpressionList> &&m) {
+  return M<wasm::CallIndirect>(
+      [m = std::move(m)](wasm::CallIndirect const &expr, Context &ctx) -> bool { return m(expr.operands, ctx); });
+}
+static inline M<wasm::CallIndirect> table(wasm::Name name) {
+  return M<wasm::CallIndirect>([name](wasm::CallIndirect const &expr, Context &ctx) -> bool {
+    static_cast<void>(ctx);
+    return name == expr.table;
+  });
+}
+} // namespace call_indirect
+
 constexpr IsMatcherImpl<wasm::MemoryFill, wasm::Expression> isMemoryFill;
 namespace memory_fill {
 static inline M<wasm::MemoryFill> dest(M<wasm::Expression> &&m) {
