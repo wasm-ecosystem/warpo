@@ -129,29 +129,29 @@ TEST(CovInstrumentationWalkerTest, InstrumentsFunctionAndCall) {
   EXPECT_NE(m->getFunctionOrNull(traceInternalFunctionName), nullptr);
 
   using namespace matcher;
-      auto traceCall = []() {
-      return isCall(call::callee(traceInternalFunctionName),
-              call::operands(allOf({has(3), at(0, isConst()), at(1, isConst()), at(2, isConst())})));
-      };
-      auto callWithBasicBlock = [&]() {
-      return isBlock(block::list(allOf({
+  auto traceCall = []() {
+    return isCall(call::callee(traceInternalFunctionName),
+                  call::operands(allOf({has(3), at(0, isConst()), at(1, isConst()), at(2, isConst())})));
+  };
+  auto callWithBasicBlock = [&]() {
+    return isBlock(block::list(allOf({
         has(2),
         at(0, isCall(call::callee("callee"))),
         at(1, traceCall()),
-      })));
-      };
-      auto innerBlock = [&]() {
-      return isBlock(block::list(allOf({
+    })));
+  };
+  auto innerBlock = [&]() {
+    return isBlock(block::list(allOf({
         has(2),
         at(0, callWithBasicBlock()),
         at(1, traceCall()),
-      })));
-      };
-      auto match = isBlock(block::list(allOf({
-        has(2),
-        at(0, traceCall()),
-        at(1, innerBlock()),
-      })));
+    })));
+  };
+  auto match = isBlock(block::list(allOf({
+      has(2),
+      at(0, traceCall()),
+      at(1, innerBlock()),
+  })));
   isMatched(match, caller->body);
 }
 

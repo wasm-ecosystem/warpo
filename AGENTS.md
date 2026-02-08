@@ -26,6 +26,7 @@ Please follow these instructions after modifying the code.
 - Don't write meaningless comments.
 - After changing the C++ code, please use clang-tidy to check code quality. The database file is located in `build` folder.</br>
   Example command is `clang-tidy -p build <file>`.
+- After changing code, please use clang-format to ensure the format for C++ and prettier for ts/js.
 - Prefer to use east const style.
 - Don't touch all files in `third_party` folder.
 - When there is only a simple statement (such as return or break) in the if block, do not add braces.
