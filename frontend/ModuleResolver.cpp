@@ -94,7 +94,7 @@ Dependency ModuleResolver::getDependencyForUserCode(std::string const &nextFileI
 
   const std::string dFilePathWithExt = nextFileInternalPath + ".d" + extension;
   if (isRegularFile(dFilePathWithExt)) {
-    return {.text = readTextFile(dFilePathWithExt), .path = dFilePathWithExt};
+    return {.text = readTextFile(dFilePathWithExt), .path = filePathWithExt};
   }
 
   if (support::isDebug("ModuleResolve"))
