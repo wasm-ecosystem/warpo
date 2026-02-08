@@ -75,30 +75,31 @@ Dependency ModuleResolver::getDependencyForUserCode(std::string const &nextFileI
   if (isRegularFile(nextFileInternalPath) && nextFileInternalPath.ends_with(".json")) {
     if (support::isDebug("ModuleResolve"))
       fmt::println("[module resolve] find user code in json format '{}'", nextFileInternalPath);
-    return {readTextFile(nextFileInternalPath), nextFileInternalPath};
+    return {.text = readTextFile(nextFileInternalPath), .path = nextFileInternalPath};
   }
 
   const std::string filePathWithExt = nextFileInternalPath + extension;
   if (isRegularFile(filePathWithExt)) {
     if (support::isDebug("ModuleResolve"))
       fmt::println("[module resolve] find user code '{}'", filePathWithExt);
-    return {readTextFile(filePathWithExt), filePathWithExt};
+    return {.text = readTextFile(filePathWithExt), .path = filePathWithExt};
   }
 
   const std::filesystem::path indexPathWithExt =
       std::filesystem::path{nextFileInternalPath} / (std::string{"index"} + extension);
-  if (isRegularFile(indexPathWithExt.string())) {
-    return {readTextFile(indexPathWithExt.string()), indexPathWithExt.string()};
+  const std::string indexInternalPath = nextFileInternalPath + "/index" + extension;
+  if (isRegularFile(indexPathWithExt)) {
+    return {.text = readTextFile(indexPathWithExt), .path = indexInternalPath};
   }
 
   const std::string dFilePathWithExt = nextFileInternalPath + ".d" + extension;
   if (isRegularFile(dFilePathWithExt)) {
-    return {readTextFile(dFilePathWithExt), filePathWithExt};
+    return {.text = readTextFile(dFilePathWithExt), .path = dFilePathWithExt};
   }
 
   if (support::isDebug("ModuleResolve"))
     fmt::println("[module resolve] cannot find library '{}'", nextFileInternalPath);
-  return {std::nullopt, nextFileInternalPath + extension};
+  return {.text = std::nullopt, .path = nextFileInternalPath + extension};
 }
 
 Dependency ModuleResolver::getDependencyForNodeModules(std::string const &nextFileInternalPath,
@@ -111,7 +112,7 @@ Dependency ModuleResolver::getDependencyForNodeModules(std::string const &nextFi
     if (!packageRoot) {
       if (support::isDebug("ModuleResolve"))
         fmt::println("[module resolve] cannot find node_modules for package '{}'", packageName);
-      return {std::nullopt, nextFileInternalPath + extension};
+      return {.text = std::nullopt, .path = nextFileInternalPath + extension};
     }
     std::filesystem::path const plainPath = filePath.has_value() ? (*packageRoot / *filePath) : (*packageRoot);
     const std::string filePathWithExt = plainPath.string() + extension;
@@ -119,7 +120,7 @@ Dependency ModuleResolver::getDependencyForNodeModules(std::string const &nextFi
       std::string const internalPath = libraryPrefix + packageName + "/" + *filePath + extension;
       if (support::isDebug("ModuleResolve"))
         fmt::println("[module resolve] resolve '{}' to '{}'", nextFileInternalPath, internalPath);
-      return {readTextFile(filePathWithExt), internalPath};
+      return {.text = readTextFile(filePathWithExt), .path = internalPath};
     }
     const std::filesystem::path indexPathWithExt = plainPath / (std::string{"index"} + extension);
     if (std::filesystem::exists(indexPathWithExt) && std::filesystem::is_regular_file(indexPathWithExt)) {
@@ -127,12 +128,12 @@ Dependency ModuleResolver::getDependencyForNodeModules(std::string const &nextFi
           libraryPrefix + packageName + (filePath.has_value() ? ("/" + *filePath) : "") + "/index" + extension;
       if (support::isDebug("ModuleResolve"))
         fmt::println("[module resolve] resolve '{}' to '{}'", nextFileInternalPath, internalPath);
-      return {readTextFile(indexPathWithExt.string()), internalPath};
+      return {.text = readTextFile(indexPathWithExt), .path = internalPath};
     }
   }
   if (support::isDebug("ModuleResolve"))
     fmt::println("[module resolve] cannot find library '{}'", nextFileInternalPath);
-  return {std::nullopt, nextFileInternalPath + extension};
+  return {.text = std::nullopt, .path = nextFileInternalPath + extension};
 }
 
 } // namespace warpo::frontend
