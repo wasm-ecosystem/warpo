@@ -94,12 +94,6 @@ TEST(MockInstrumentationWalkerTest, CollectsExpectInfo) {
         local.get 1
         call $Function<test>#equal
       )
-      (func $indirectCaller (param i32 i32 i32) (result i32)
-        local.get 0
-        local.get 1
-        local.get 2
-        call_indirect (type $t0)
-      )
     )
   )");
 

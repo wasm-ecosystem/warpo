@@ -29,10 +29,5 @@ private:
   wasm::Module *const m;                    ///< working wasm module
   wasm::Builder b;                          ///< module build for create wasm reference
   const BasicBlockWalker &basicBlockWalker; ///< basic block walker for instrument
-  ///
-  /// @brief introduce the trace report function, if customer does not config report function, use a
-  /// default one
-  ///
-  void introduceReportFun() noexcept;
 };
 } // namespace warpo::passes::instrumentation
