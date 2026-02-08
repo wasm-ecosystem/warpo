@@ -20,7 +20,7 @@ const outputWasm = outputWat.replace(/wat$/g, "wasm");
 describe("driver: module-resolve", () => {
   it("builds and matches snapshot", { concurrency: false }, async () => {
     const code = await warpoMain({
-      argv: ["build", "--project", projectRoot, entry, "-o", outputWat],
+      argv: ["build", entry, "-o", outputWat],
       env,
       cwd: projectRoot,
     });

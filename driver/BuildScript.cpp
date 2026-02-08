@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fmt/base.h>
 #include <memory>
+#include <optional>
 
 #include "BuildScript.hpp"
 #include "LinkedAPI.hpp"
@@ -18,10 +19,10 @@
 
 namespace warpo::driver {
 
-static std::filesystem::path getProjectConfigPath() {
+static std::optional<std::filesystem::path> getProjectConfigPath() {
   std::optional<std::filesystem::path> const projectPath = common::ConfigProvider::instance().projectPath();
   if (!projectPath.has_value())
-    return std::filesystem::current_path() / "create.ts";
+    return std::nullopt;
   if (isDirectory(projectPath.value()))
     return projectPath.value() / "create.ts";
   return projectPath.value();
@@ -57,10 +58,10 @@ BuildScriptRunner::BuildScriptRunner(std::filesystem::path const &buildScriptPat
 }
 
 std::unique_ptr<BuildScriptRunner> BuildScriptRunner::create() {
-  std::filesystem::path const buildScriptPath = getProjectConfigPath();
-  if (!isRegularFile(buildScriptPath))
+  std::optional<std::filesystem::path> const buildScriptPath = getProjectConfigPath();
+  if (!buildScriptPath.has_value() || !isRegularFile(*buildScriptPath))
     return nullptr;
-  return std::unique_ptr<BuildScriptRunner>{new BuildScriptRunner(buildScriptPath)};
+  return std::unique_ptr<BuildScriptRunner>{new BuildScriptRunner(*buildScriptPath)};
 }
 
 std::optional<std::filesystem::path> BuildScriptRunner::getPackageRoot(std::string const &packageName) {

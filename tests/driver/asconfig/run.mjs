@@ -13,8 +13,6 @@ const projectRoot = __dirname;
 
 const isUpdateMode = argv.includes("--update") || argv.includes("-u");
 
-const configPath = path.join(projectRoot, "asconfig.json");
-
 const targetName = isUpdateMode ? "release-update" : "release";
 const target = asconfig.targets[targetName];
 
@@ -26,7 +24,7 @@ mkdirSync(path.dirname(outputWasm), { recursive: true });
 describe("driver: asconfig", () => {
   it("builds and matches snapshot", { concurrency: false }, async () => {
     const code = await warpoMain({
-      argv: ["build", "--config", configPath, "--target", targetName],
+      argv: ["build", "--target", targetName],
       env,
       cwd: projectRoot,
     });

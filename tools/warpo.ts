@@ -3,7 +3,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { argv as processArgv, env as processEnv, exit as processExit } from "node:process";
@@ -59,7 +59,21 @@ export async function main(options: CliOption): Promise<number> {
     .action(async () => {
       const index = args.indexOf("build");
       const buildArgs = index === -1 ? [] : args.slice(index + 1);
-      returnCode = await runCompiler({ argv: buildArgs, env: options.env, cwd: options.cwd });
+      const cwd = options.cwd ?? process.cwd();
+      const handleConfigOption = (args: string[]) => {
+        const configPath = join(cwd, "asconfig.json");
+        const hasConfig = args.includes("--config") || args.includes("-c");
+        return !hasConfig && existsSync(configPath) ? [...args, "--config", configPath] : args;
+      };
+      const handleProjectOption = (args: string[]) => {
+        const hasProject = args.includes("--project") || args.includes("-p");
+        return !hasProject && existsSync(join(cwd, "create.ts")) ? [...args, "--project", cwd] : args;
+      };
+      returnCode = await runCompiler({
+        argv: [handleConfigOption, handleProjectOption].reduce((args, handler) => handler(args), buildArgs),
+        env: options.env,
+        cwd: options.cwd,
+      });
     });
   program
     .command("test")
