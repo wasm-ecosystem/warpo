@@ -89,7 +89,7 @@ Dependency ModuleResolver::getDependencyForUserCode(std::string const &nextFileI
       std::filesystem::path{nextFileInternalPath} / (std::string{"index"} + extension);
   const std::string indexInternalPath = nextFileInternalPath + "/index" + extension;
   if (isRegularFile(indexPathWithExt)) {
-    return {.text = readTextFile(indexPathWithExt), .path = indexInternalPath};
+    return {.text = readTextFile(indexPathWithExt), .path = indexPathWithExt.string()};
   }
 
   const std::string dFilePathWithExt = nextFileInternalPath + ".d" + extension;
