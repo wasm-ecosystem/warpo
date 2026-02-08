@@ -59,18 +59,17 @@ wasm::Expression *findLastInstruction(wasm::Expression *expr) noexcept {
   return expr;
 }
 
-wasm::BinaryLocations::Span
-getRangeOfScope(warpo::ScopeInfo const &scopeInfo,
-                std::unordered_map<wasm::Expression *, size_t *> const &expressionOffsets) noexcept {
+wasm::BinaryLocations::Span getRangeOfScope(warpo::ScopeInfo const &scopeInfo,
+                                            wasm::BinaryLocations const &binaryLocations) noexcept {
   wasm::BinaryLocations::Span span{0, 0};
 
   wasm::Expression *const startExpr = scopeInfo.getScopeStartSubTreeRoot();
   assert(startExpr != nullptr);
   wasm::Expression *const firstExpr = findFirstInstruction(startExpr);
   if (firstExpr != nullptr) {
-    auto const it = expressionOffsets.find(firstExpr);
-    if (it != expressionOffsets.end()) {
-      span.start = static_cast<uint32_t>(*it->second);
+    auto const it = binaryLocations.expressions.find(firstExpr);
+    if (it != binaryLocations.expressions.end()) {
+      span.start = static_cast<uint32_t>(it->second.start);
     }
   }
 
@@ -78,9 +77,9 @@ getRangeOfScope(warpo::ScopeInfo const &scopeInfo,
   assert(endExpr != nullptr);
   wasm::Expression *const lastExpr = findLastInstruction(endExpr);
   if (lastExpr != nullptr) {
-    auto const it = expressionOffsets.find(lastExpr);
-    if (it != expressionOffsets.end()) {
-      span.end = static_cast<uint32_t>(*it->second);
+    auto const it = binaryLocations.expressions.find(lastExpr);
+    if (it != binaryLocations.expressions.end()) {
+      span.end = static_cast<uint32_t>(it->second.end);
     }
   }
 

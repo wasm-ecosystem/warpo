@@ -1472,13 +1472,9 @@ public:
 
   void writeMemoryOrder(MemoryOrder order, bool isRMW = false);
 
-  std::unordered_map<Expression*, size_t*> const&
-  getExpressionOffsets() const noexcept {
-    return expressionOffsets;
-  }
-
-  std::deque<std::pair<size_t, const Function::DebugLocation*>> const&
-  getSourceMapLocations() const noexcept {
+  BinaryLocations const& getBinaryLocations() const { return binaryLocations; }
+  std::vector<std::pair<size_t, const Function::DebugLocation*>> const&
+  getSourceMapLocations() const {
     return sourceMapLocations;
   }
 
@@ -1510,9 +1506,8 @@ private:
   //
   // A null DebugLocation* indicates we have no debug information for that
   // location.
-  std::deque<std::pair<size_t, const Function::DebugLocation*>>
+  std::vector<std::pair<size_t, const Function::DebugLocation*>>
     sourceMapLocations;
-  std::unordered_map<Expression*, size_t*> expressionOffsets;
   size_t sourceMapLocationsSizeAtSectionStart;
   Function::DebugLocation lastDebugLocation;
 

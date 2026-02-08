@@ -5,7 +5,6 @@
 #pragma once
 
 #include <cassert>
-#include <unordered_map>
 #include <wasm-type.h>
 
 #include "wasm.h"
@@ -34,8 +33,7 @@ wasm::Expression *findFirstInstruction(wasm::Expression *expr) noexcept;
 wasm::Expression *findLastInstruction(wasm::Expression *expr) noexcept;
 
 ///@brief Get bytecode range for a scope (first instruction start to last instruction end)
-wasm::BinaryLocations::Span
-getRangeOfScope(warpo::ScopeInfo const &scopeInfo,
-                std::unordered_map<wasm::Expression *, size_t *> const &expressionOffsets) noexcept;
+wasm::BinaryLocations::Span getRangeOfScope(warpo::ScopeInfo const &scopeInfo,
+                                            wasm::BinaryLocations const &binaryLocations) noexcept;
 
 } // namespace warpo::passes

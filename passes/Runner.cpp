@@ -134,10 +134,9 @@ static void optimize(AsModule const &m, Config const &config) {
   ensureValidate(*m.get());
 }
 
-static void addDebugInfoAsCustomSection(AsModule const &m,
-                                        std::unordered_map<wasm::Expression *, size_t *> const &expressionOffsets) {
+static void addDebugInfoAsCustomSection(AsModule const &m, wasm::BinaryLocations const &binaryLocations) {
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
-      DwarfGenerator::generateDebugSections(m.variableInfo_, expressionOffsets);
+      DwarfGenerator::generateDebugSections(m.variableInfo_, binaryLocations);
 
   if (!debugSections.empty()) {
     for (auto I = debugSections.begin(); !(I == debugSections.end()); I++) {
@@ -230,8 +229,8 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
   writer.write();
 
   if (common::isEmitDebugInfo()) {
-    std::unordered_map<wasm::Expression *, size_t *> const &expressionOffsets = writer.getExpressionOffsets();
-    addDebugInfoAsCustomSection(m, expressionOffsets);
+    wasm::BinaryLocations const &binaryLocations = writer.getBinaryLocations();
+    addDebugInfoAsCustomSection(m, binaryLocations);
   }
 
   // wat

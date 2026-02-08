@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <wasm.h>
+
 #include "llvm/ObjectYAML/DWARFYAML.h"
 #include "warpo/common/SubProgramInfo.hpp"
 #include "warpo/common/VariableInfo.hpp"
@@ -18,8 +20,7 @@ struct TypeRefFixup final {
 class DwarfGenerator final {
 public:
   static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
-  generateDebugSections(VariableInfo const &variableInfo,
-                        std::unordered_map<wasm::Expression *, size_t *> const &expressionOffsets);
+  generateDebugSections(VariableInfo const &variableInfo, wasm::BinaryLocations const &binaryLocations);
   static std::string dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const &debugSections);
 
 private:
@@ -31,8 +32,7 @@ private:
   };
 
   static void addSubProgramWithParameters(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
-                                          AbbrevCodes const &abbrevCodes,
-                                          std::unordered_map<wasm::Expression *, size_t *> const &expressionOffsets,
+                                          AbbrevCodes const &abbrevCodes, wasm::BinaryLocations const &binaryLocations,
                                           std::vector<TypeRefFixup> &typeRefFixups);
 };
 
