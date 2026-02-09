@@ -109,3 +109,24 @@ export function addField(clazz: Class, fieldName: string, fieldType: Type, offse
 export function addTemplateType(clazz: Class, templateType: Type): void {
   _WarpoAddTemplateType(decodeURIComponent(classToMIRName(clazz)), decodeURIComponent(typeToMIRName(templateType)));
 }
+
+export function createTupleType(tupleType: Type): void {
+  let tupleInfo = tupleType.tupleInfo;
+  if (!tupleInfo) return;
+  
+  let tupleClass = assert(tupleType.classReference);
+  let className = typeToMIRName(tupleType);
+  _WarpoCreateClass(decodeURIComponent(className), tupleClass.id);
+  
+  // Add each element as a field
+  for (let i = 0; i < tupleInfo.elements.length; i++) {
+    let elementInfo = tupleInfo.elements[i];
+    _WarpoAddField(
+      decodeURIComponent(className),
+      `${i}`,
+      decodeURIComponent(typeToMIRName(elementInfo.type)),
+      elementInfo.offset,
+      elementInfo.type.is(TypeFlags.Nullable)
+    );
+  }
+}

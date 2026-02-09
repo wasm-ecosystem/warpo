@@ -72,6 +72,55 @@ DW_TAG_compile_unit
   DW_TAG_base_type
                 DW_AT_name	("usize")
   DW_TAG_class_type
+                DW_AT_name	("[i32, i64]")
+                DW_AT_signature	(0x00000004)
+    DW_TAG_member
+                  DW_AT_name	("0")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("1")
+                  DW_AT_type	("i64")
+                  DW_AT_data_member_location	(0x00000008)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
+                DW_AT_signature	(0x00000005)
+    DW_TAG_member
+                  DW_AT_name	("member")
+                  DW_AT_type	("[i32, i64]")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestTuple/ClassWithTupleMember#get:member")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
+                    DW_AT_location	(0x00000000)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestTuple/ClassWithTupleMember#set:member")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_formal_parameter
+                    DW_AT_name	("member")
+                    DW_AT_type	("[i32, i64]")
+                    DW_AT_location	(0x00000001)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestTuple/ClassWithTupleMember#constructor")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_lexical_block
+                    scope start	TestTuple.ts:14
+                    scope end	TestTuple.ts:14
+        NULL
+      NULL
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
                 DW_AT_signature	(0x00000001)
     NULL
@@ -412,10 +461,10 @@ DW_TAG_compile_unit
                 DW_AT_name	("tests/dwarf/cases/TestTuple/foo")
     DW_TAG_lexical_block
                   scope start	TestTuple.ts:3
-                  scope end	TestTuple.ts:6
+                  scope end	TestTuple.ts:7
       DW_TAG_variable
                     DW_AT_name	("pair")
-                    DW_AT_type	("")
+                    DW_AT_type	("[i32, i64]")
                     DW_AT_location	(0x00000001)
       DW_TAG_variable
                     DW_AT_name	("aaa")
@@ -425,6 +474,29 @@ DW_TAG_compile_unit
                     DW_AT_name	("bbb")
                     DW_AT_type	("i64")
                     DW_AT_location	(0x00000003)
+      DW_TAG_variable
+                    DW_AT_name	("pair2")
+                    DW_AT_type	("[i32, i64]")
+                    DW_AT_location	(0x00000005)
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestTuple/bar")
+    DW_TAG_lexical_block
+                  scope start	TestTuple.ts:19
+                  scope end	TestTuple.ts:22
+      DW_TAG_variable
+                    DW_AT_name	("obj")
+                    DW_AT_type	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_variable
+                    DW_AT_name	("val1")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000001)
+      DW_TAG_variable
+                    DW_AT_name	("val2")
+                    DW_AT_type	("i64")
+                    DW_AT_location	(0x00000002)
       NULL
     NULL
 
