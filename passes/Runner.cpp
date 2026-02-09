@@ -185,20 +185,6 @@ namespace warpo {
 
 void passes::init() { Colors::setEnabled(false); }
 
-passes::Output passes::runOnWat(std::string const &input, Config const &config) {
-  std::unique_ptr<wasm::Module> m = passes::loadWat(input);
-  return runOnModule(AsModule{m.release()}, config);
-}
-
-passes::Output passes::runOnModule(AsModule const &m) {
-  passes::Config const passesConfig{
-      .optimizeLevel = common::getOptimizationLevel(),
-      .shrinkLevel = common::getShrinkLevel(),
-      .sourceMapURL = "",
-  };
-  return runOnModule(m, passesConfig);
-}
-
 passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
 #ifndef WARPO_RELEASE_BUILD
   ensureValidate(*m.get());
@@ -207,14 +193,13 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
   preOptimize(m, config);
   if (config.optimizeLevel > 0U || config.shrinkLevel > 0U)
     optimize(m, config);
+  instrumentation::runCoverageInstrumentation(*m.get());
 
   if (common::isEmitDebugInfo()) {
     wasm::PassRunner runner(m.get());
     runner.add("propagate-debug-locs");
     runner.run();
   }
-
-  instrumentation::runCoverageInstrumentation(*m.get());
 
   // wasm and source map
   wasm::BufferWithRandomAccess buffer;
