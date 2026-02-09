@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <support/colors.h>
+#include <unordered_map>
 #include <vector>
 #include <warpo/common/AsModule.hpp>
 #include <warpo/support/FileSystem.hpp>
@@ -106,45 +107,49 @@ private:
   std::string pendingSubprogramLine_;
 };
 
-std::vector<std::string> getFileNamesOnly(std::vector<std::string> debugInfoFileNames) {
-  std::vector<std::string> fileNamesOnly;
-  fileNamesOnly.reserve(debugInfoFileNames.size());
-  for (std::string const &fullPath : debugInfoFileNames) {
-    fileNamesOnly.push_back(std::filesystem::path(fullPath).filename().string());
-  }
-  return fileNamesOnly;
-}
-
 class Context {
   warpo::AsModule const &m_;
-  wasm::BinaryLocations locations_;
-
-public:
+  std::unordered_map<uint64_t, wasm::Expression *> addressToExpressionMap_;
   std::vector<std::string> fileNamesOnly_;
 
-  Context(warpo::AsModule const &m, wasm::WasmBinaryWriter const &writer)
-      : m_{m}, locations_{writer.getBinaryLocations()}, fileNamesOnly_{getFileNamesOnly(m.get()->debugInfoFileNames)} {}
-
-  wasm::Function::DebugLocation const *convertAddressToDebugLocation(uint64_t address) const {
-    wasm::Expression *addressExpr = nullptr;
-    for (auto const &[expr, loc] : locations_.expressions) {
-      if (loc.start == address) {
-        addressExpr = expr;
-        break;
-      }
+  static std::vector<std::string> getFileNamesOnly(std::vector<std::string> debugInfoFileNames) {
+    std::vector<std::string> fileNamesOnly;
+    fileNamesOnly.reserve(debugInfoFileNames.size());
+    for (std::string const &fullPath : debugInfoFileNames) {
+      fileNamesOnly.push_back(std::filesystem::path(fullPath).filename().string());
     }
-    wasm::Function::DebugLocation const *debugLoc = nullptr;
+    return fileNamesOnly;
+  }
+  static std::unordered_map<uint64_t, wasm::Expression *>
+  buildAddressToExpressionMap(wasm::BinaryLocations const &locations) {
+    std::unordered_map<uint64_t, wasm::Expression *> map;
+    for (auto const &[expr, loc] : locations.expressions) {
+      map[loc.start] = expr;
+    }
+    return map;
+  }
+
+public:
+  Context(warpo::AsModule const &m, wasm::WasmBinaryWriter const &writer)
+      : m_{m}, addressToExpressionMap_{buildAddressToExpressionMap(writer.getBinaryLocations())},
+        fileNamesOnly_{getFileNamesOnly(m.get()->debugInfoFileNames)} {}
+  wasm::Function::DebugLocation const *convertAddressToDebugLocation(uint64_t address) const {
+    auto const it = addressToExpressionMap_.find(address);
+    if (it == addressToExpressionMap_.end())
+      return nullptr;
+    wasm::Expression *addressExpr = it->second;
     for (std::unique_ptr<wasm::Function> const &func : m_.get()->functions) {
       auto const it = func->debugLocations.find(addressExpr);
       if (it != func->debugLocations.end()) {
-        std::optional<wasm::Function::DebugLocation> loc = it->second;
-        if (loc.has_value()) {
-          debugLoc = &loc.value();
-        }
-        break;
+        std::optional<wasm::Function::DebugLocation> const &loc = it->second;
+        if (loc.has_value())
+          return &loc.value();
       }
     }
-    return debugLoc;
+    return nullptr;
+  }
+  std::string const &getFileName(wasm::Function::DebugLocation const &loc) const {
+    return fileNamesOnly_.at(loc.fileIndex);
   }
 };
 
@@ -208,8 +213,7 @@ std::optional<std::string> tryReplacePcWithFileLine(std::string const &line, Con
   size_t const indentEnd = line.find_first_not_of(' ');
   std::string const indent = (indentEnd != std::string::npos) ? line.substr(0, indentEnd) : "";
   std::string const attrName = (lowPcPos != std::string::npos) ? "scope start" : "scope end";
-  std::string const &fileName = context.fileNamesOnly_.at(debugLoc->fileIndex);
-  return indent + attrName + "\t" + fileName + ":" + std::to_string(debugLoc->lineNumber) + "\n";
+  return indent + attrName + "\t" + context.getFileName(*debugLoc) + ":" + std::to_string(debugLoc->lineNumber) + "\n";
 }
 
 std::string filterLibSubprograms(std::string const &dump, Context const &context) {
@@ -275,8 +279,7 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
   writer.write();
 
   std::string const rawDump = writer.dumpDwarf();
-  std::string const dumpOutput =
-      filterLibSubprograms(rawDump, writer.raw().getSourceMapLocations(), compileResult.m.get()->debugInfoFileNames);
+  std::string const dumpOutput = filterLibSubprograms(rawDump, Context{compileResult.m, writer.raw()});
   std::string const fixtureName = testCaseName + "Fixture.txt";
   std::filesystem::path const expectedDumpPath = testDir / fixtureName;
 

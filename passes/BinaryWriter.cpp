@@ -14,11 +14,20 @@ void BinaryWriter::write() {
     wasm::PassRunner runner{m_.get()};
     runner.add("propagate-debug-locs");
     runner.run();
+
+    for (auto const &[name, subprogram] : m_.variableInfo_.getSubProgramLookupMap()) {
+      wasm::Function *func = m_.get()->getFunctionOrNull(name);
+      if (func == nullptr)
+        continue;
+      if (subprogram.getScopeInfoMap().empty())
+        continue;
+      // FIXME: it is a hack, binaryen will handle expression locations iff expressionLocations not empty.
+      func->expressionLocations.insert_or_assign(func->body, wasm::BinaryLocations::Span{});
+    }
   }
   writer_.write();
   if (hasDwarf_) {
-    std::unordered_map<wasm::Expression *, size_t *> const &expressionOffsets = writer_.getExpressionOffsets();
-    debugSections_ = DwarfGenerator::generateDebugSections(m_.variableInfo_, expressionOffsets);
+    debugSections_ = DwarfGenerator::generateDebugSections(m_.variableInfo_, writer_.getBinaryLocations());
     for (auto const &section : debugSections_) {
       wasm::CustomSection const customSection{
           .name = section.first(),
