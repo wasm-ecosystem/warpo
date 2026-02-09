@@ -16,7 +16,7 @@ void BinaryWriter::write() {
     runner.run();
 
     for (auto const &[name, subprogram] : m_.variableInfo_.getSubProgramLookupMap()) {
-      wasm::Function *func = m_.get()->getFunctionOrNull(name);
+      wasm::Function *const func = m_.get()->getFunctionOrNull(name);
       if (func == nullptr)
         continue;
       if (subprogram.getScopeInfoMap().empty())

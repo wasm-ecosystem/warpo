@@ -79,6 +79,7 @@ wasm::BinaryLocations::Span getRangeOfScope(ScopeInfo const &scopeInfo,
   if (lastExpr != nullptr) {
     auto const it = binaryLocations.expressions.find(lastExpr);
     if (it != binaryLocations.expressions.end()) {
+      // we want both low PC and high PC point to the beginning of the instruction.
       span.end = static_cast<uint32_t>(it->second.start);
     }
   }

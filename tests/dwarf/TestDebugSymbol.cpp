@@ -1,6 +1,5 @@
 #include <cstddef>
 #include <filesystem>
-#include <fmt/format.h>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <optional>
@@ -137,7 +136,7 @@ public:
     auto const it = addressToExpressionMap_.find(address);
     if (it == addressToExpressionMap_.end())
       return nullptr;
-    wasm::Expression *addressExpr = it->second;
+    wasm::Expression *const addressExpr = it->second;
     for (std::unique_ptr<wasm::Function> const &func : m_.get()->functions) {
       auto const it = func->debugLocations.find(addressExpr);
       if (it != func->debugLocations.end()) {
@@ -205,7 +204,7 @@ std::optional<std::string> tryReplacePcWithFileLine(std::string const &line, Con
   // Parse the hex address
   uint64_t const address = std::stoull(addressStr, nullptr, 16);
 
-  wasm::Function::DebugLocation const *debugLoc = context.convertAddressToDebugLocation(address);
+  wasm::Function::DebugLocation const *const debugLoc = context.convertAddressToDebugLocation(address);
   if (debugLoc == nullptr)
     return std::nullopt;
 
