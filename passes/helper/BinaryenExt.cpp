@@ -59,7 +59,7 @@ wasm::Expression *findLastInstruction(wasm::Expression *expr) noexcept {
   return expr;
 }
 
-wasm::BinaryLocations::Span getRangeOfScope(warpo::ScopeInfo const &scopeInfo,
+wasm::BinaryLocations::Span getRangeOfScope(ScopeInfo const &scopeInfo,
                                             wasm::BinaryLocations const &binaryLocations) noexcept {
   wasm::BinaryLocations::Span span{0, 0};
 
@@ -79,7 +79,7 @@ wasm::BinaryLocations::Span getRangeOfScope(warpo::ScopeInfo const &scopeInfo,
   if (lastExpr != nullptr) {
     auto const it = binaryLocations.expressions.find(lastExpr);
     if (it != binaryLocations.expressions.end()) {
-      span.end = static_cast<uint32_t>(it->second.end);
+      span.end = static_cast<uint32_t>(it->second.start);
     }
   }
 

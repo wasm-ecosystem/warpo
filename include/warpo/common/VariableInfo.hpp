@@ -20,6 +20,8 @@ class VariableInfo final {
 public:
   using BaseTypeRegistry = std::set<std::string_view>;
   using ClassRegistry = std::map<std::string_view, ClassInfo>;
+  using SubProgramLookupMap = std::unordered_map<std::string_view, SubProgramInfo &>;
+
   struct GlobalTypeInfo {
     std::string_view typeName;
     bool nullable;
@@ -57,8 +59,9 @@ public:
   void addLocal(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
                 uint32_t const index, uint32_t const scopeId, bool const nullable);
 
+  SubProgramLookupMap const &getSubProgramLookupMap() const noexcept { return subProgramLookupMap_; }
+
 private:
-  using SubProgramLookupMap = std::unordered_map<std::string_view, SubProgramInfo &>;
   BaseTypeRegistry baseTypeRegistry_;
   ClassRegistry classRegistry_;
   GlobalTypes globalTypes_;

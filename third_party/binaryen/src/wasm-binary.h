@@ -1473,10 +1473,6 @@ public:
   void writeMemoryOrder(MemoryOrder order, bool isRMW = false);
 
   BinaryLocations const& getBinaryLocations() const { return binaryLocations; }
-  std::vector<std::pair<size_t, const Function::DebugLocation*>> const&
-  getSourceMapLocations() const {
-    return sourceMapLocations;
-  }
 
 private:
   Module* wasm;

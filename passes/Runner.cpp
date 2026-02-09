@@ -215,6 +215,15 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
 
   instrumentation::runCoverageInstrumentation(*m.get());
 
+  for (auto const &[name, subprogram] : m.variableInfo_.getSubProgramLookupMap()) {
+    for (auto const &[_, scopeInfo] : subprogram.getScopeInfoMap()) {
+      m.get()->getFunction(name)->expressionLocations.insert_or_assign(scopeInfo.getScopeStartSubTreeRoot(),
+                                                                       wasm::BinaryLocations::Span{});
+      m.get()->getFunction(name)->expressionLocations.insert_or_assign(scopeInfo.getScopeEndSubTreeRoot(),
+                                                                       wasm::BinaryLocations::Span{});
+    }
+  }
+
   // wasm and source map
   wasm::BufferWithRandomAccess buffer;
   wasm::PassOptions const options = wasm::PassOptions::getWithoutOptimization();
