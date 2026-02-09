@@ -2,6 +2,7 @@
 #include <filesystem>
 #include <fmt/format.h>
 #include <gtest/gtest.h>
+#include <iostream>
 #include <optional>
 #include <sstream>
 #include <string>
@@ -116,13 +117,37 @@ std::vector<std::string> getFileNamesOnly(std::vector<std::string> debugInfoFile
   return fileNamesOnly;
 }
 
-struct Context {
-  warpo::AsModule const &m;
-  wasm::BinaryLocations locations;
-  std::vector<std::string> fileNamesOnly;
+class Context {
+  warpo::AsModule const &m_;
+  wasm::BinaryLocations locations_;
+
+public:
+  std::vector<std::string> fileNamesOnly_;
 
   Context(warpo::AsModule const &m, wasm::WasmBinaryWriter const &writer)
-      : m{m}, locations{writer.getBinaryLocations()}, fileNamesOnly{getFileNamesOnly(m.get()->debugInfoFileNames)} {}
+      : m_{m}, locations_{writer.getBinaryLocations()}, fileNamesOnly_{getFileNamesOnly(m.get()->debugInfoFileNames)} {}
+
+  wasm::Function::DebugLocation const *convertAddressToDebugLocation(uint64_t address) const {
+    wasm::Expression *addressExpr = nullptr;
+    for (auto const &[expr, loc] : locations_.expressions) {
+      if (loc.start == address) {
+        addressExpr = expr;
+        break;
+      }
+    }
+    wasm::Function::DebugLocation const *debugLoc = nullptr;
+    for (std::unique_ptr<wasm::Function> const &func : m_.get()->functions) {
+      auto const it = func->debugLocations.find(addressExpr);
+      if (it != func->debugLocations.end()) {
+        std::optional<wasm::Function::DebugLocation> loc = it->second;
+        if (loc.has_value()) {
+          debugLoc = &loc.value();
+        }
+        break;
+      }
+    }
+    return debugLoc;
+  }
 };
 
 bool isUnitHeaderLine(std::string const &line) {
@@ -177,33 +202,14 @@ std::optional<std::string> tryReplacePcWithFileLine(std::string const &line, Con
   // Parse the hex address
   uint64_t const address = std::stoull(addressStr, nullptr, 16);
 
-  wasm::Expression *addressExpr = nullptr;
-  for (auto const &[expr, loc] : context.locations.expressions) {
-    if (loc.start == address) {
-      addressExpr = expr;
-      break;
-    }
-  }
-  wasm::Function::DebugLocation const *debugLoc = nullptr;
-  for (std::unique_ptr<wasm::Function> const &func : context.m.get()->functions) {
-    auto const it = func->debugLocations.find(addressExpr);
-    if (it != func->debugLocations.end()) {
-      std::optional<wasm::Function::DebugLocation> loc = it->second;
-      if (loc.has_value()) {
-        debugLoc = &loc.value();
-      }
-      break;
-    }
-  }
-  if (debugLoc == nullptr) {
-    return line + "\n";
-  }
-
+  wasm::Function::DebugLocation const *debugLoc = context.convertAddressToDebugLocation(address);
+  if (debugLoc == nullptr)
+    return std::nullopt;
   // Replace the address with file:line
   size_t const indentEnd = line.find_first_not_of(' ');
   std::string const indent = (indentEnd != std::string::npos) ? line.substr(0, indentEnd) : "";
   std::string const attrName = (lowPcPos != std::string::npos) ? "scope start" : "scope end";
-  std::string const &fileName = context.fileNamesOnly[debugLoc->fileIndex];
+  std::string const &fileName = context.fileNamesOnly_.at(debugLoc->fileIndex);
   return indent + attrName + "\t" + fileName + ":" + std::to_string(debugLoc->lineNumber) + "\n";
 }
 
