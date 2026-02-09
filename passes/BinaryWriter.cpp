@@ -24,7 +24,7 @@ void BinaryWriter::write() {
           .name = section.first(),
           .data = std::vector<char>{section.second->getBufferStart(), section.second->getBufferEnd()},
       };
-      // wasm support to continual write custom sections after the main module body is written, so we can write DWARF
+      // wasm support to append custom sections after writing the main module body, so directly write DWARF
       // sections here.
       writer_.writeCustomSection(customSection);
     }

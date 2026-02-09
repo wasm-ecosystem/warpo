@@ -188,13 +188,12 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
 
   // wasm and source map
   BinaryWriter writer{m};
-  if (common::isEmitDebugLine() && !config.sourceMapURL.empty()) {
+  if (common::isEmitDebugLine() && !config.sourceMapURL.empty())
     writer.enableSourceMap(config.sourceMapURL);
-  }
-  if (common::isEmitDebugName()) {
+  if (common::isEmitDebugName())
     writer.enableNameSection();
+  if (common::isEmitDebugInfo())
     writer.enableDwarf();
-  }
   writer.write();
 
   // wat
