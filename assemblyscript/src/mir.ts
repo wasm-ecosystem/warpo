@@ -121,17 +121,17 @@ export function getTupleMIRName(tupleType: Type): string {
 }
 
 export function createTupleType(tupleType: Type): void {
-  let tupleInfo = tupleType.tupleInfo;
+  const tupleInfo = tupleType.tupleInfo;
   if (!tupleInfo) return;
 
-  let className = typeToMIRName(tupleType);
-  _WarpoCreateClassWithoutRtid(decodeURIComponent(className));
+  const decodedClassName = decodeURIComponent(typeToMIRName(tupleType));
+  _WarpoCreateClassWithoutRtid(decodedClassName);
 
   // Add each element as a field
   for (let i = 0; i < tupleInfo.elements.length; i++) {
-    let elementInfo = tupleInfo.elements[i];
+    const elementInfo = tupleInfo.elements[i];
     _WarpoAddField(
-      decodeURIComponent(className),
+      decodedClassName,
       `${i}`,
       decodeURIComponent(typeToMIRName(elementInfo.type)),
       elementInfo.offset,
