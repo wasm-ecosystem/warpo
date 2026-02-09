@@ -11,10 +11,8 @@
 #include <warpo/common/AsModule.hpp>
 #include <warpo/support/FileSystem.hpp>
 
-#include "llvm/DebugInfo/DWARF/DWARFContext.h"
-#include "llvm/Support/MemoryBuffer.h"
+#include "passes/BinaryWriter.hpp"
 #include "warpo/frontend/Compiler.hpp"
-#include "warpo/passes/DwarfGenerator/DwarfGenerator.hpp"
 #include "warpo/support/Opt.hpp"
 #include "wasm-binary.h"
 #include "wasm.h"
@@ -205,6 +203,7 @@ std::optional<std::string> tryReplacePcWithFileLine(std::string const &line, Con
   wasm::Function::DebugLocation const *debugLoc = context.convertAddressToDebugLocation(address);
   if (debugLoc == nullptr)
     return std::nullopt;
+
   // Replace the address with file:line
   size_t const indentEnd = line.find_first_not_of(' ');
   std::string const indent = (indentEnd != std::string::npos) ? line.substr(0, indentEnd) : "";
@@ -270,38 +269,14 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
   }
 
   // wasm and source map
-  wasm::BufferWithRandomAccess buffer;
-  wasm::PassOptions const options = wasm::PassOptions::getWithoutOptimization();
-
-  wasm::PassRunner runner(compileResult.m.get());
-  runner.add("propagate-debug-locs");
-  runner.run();
-
-  for (auto const &[name, subprogram] : compileResult.m.variableInfo_.getSubProgramLookupMap()) {
-    for (auto const &[_, scopeInfo] : subprogram.getScopeInfoMap()) {
-      wasm::Function *func = compileResult.m.get()->getFunctionOrNull(name);
-      if (func == nullptr) {
-        std::cerr << "Warning: function " << name
-                  << " not found in module, skipping debug location assignment for its scopes.\n";
-        continue;
-      }
-      func->expressionLocations.insert_or_assign(scopeInfo.getScopeStartSubTreeRoot(), wasm::BinaryLocations::Span{});
-      func->expressionLocations.insert_or_assign(scopeInfo.getScopeEndSubTreeRoot(), wasm::BinaryLocations::Span{});
-    }
-  }
-
-  wasm::WasmBinaryWriter writer(compileResult.m.get(), buffer, options);
-  std::stringstream sourceMapStream;
-  writer.setSourceMap(&sourceMapStream, "");
-  writer.setNamesSection(true);
-  writer.setEmitModuleName(true);
+  warpo::passes::BinaryWriter writer{compileResult.m};
+  writer.enableSourceMap("");
+  writer.enableDwarf();
   writer.write();
 
-  llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
-      warpo::passes::DwarfGenerator::generateDebugSections(compileResult.m.variableInfo_, writer.getBinaryLocations());
-
-  std::string const rawDump = warpo::passes::DwarfGenerator::dumpDwarf(debugSections);
-  std::string const dumpOutput = filterLibSubprograms(rawDump, Context{compileResult.m, writer});
+  std::string const rawDump = writer.dumpDwarf();
+  std::string const dumpOutput =
+      filterLibSubprograms(rawDump, writer.raw().getSourceMapLocations(), compileResult.m.get()->debugInfoFileNames);
   std::string const fixtureName = testCaseName + "Fixture.txt";
   std::filesystem::path const expectedDumpPath = testDir / fixtureName;
 

@@ -1,5 +1,2 @@
-/module-resolve/build/*.wasm
-/module-resolve/tmp
-/asconfig/build/*.wasm
-/asconfig/tmp
-/test_runner/**/tmp/
+/**/tmp
+/**/*.wasm
