@@ -394,7 +394,6 @@ void WasmBinaryWriter::writeFunctions() {
   if (options.generateStackIR) {
     moduleStackIR.emplace(*wasm, options);
   }
-  std::cout << "options.generateStackIR = " << options.generateStackIR << "\n";
 
   auto sectionStart = startSection(BinaryConsts::Section::Code);
   o << U32LEB(importInfo->getNumDefinedFunctions());
