@@ -19,7 +19,11 @@ function typeToMIRName(type: Type): string {
   if (type.isReference) {
     let classReference = type.getClass();
     if (classReference) {
-      return classReference.internalName;
+      if(type.isTuple){
+        return type.toString();
+      }else{
+        return classReference.internalName;
+      }
     } else {
       let signatureReference = type.getSignature();
       if (signatureReference) {

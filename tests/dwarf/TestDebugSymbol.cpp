@@ -300,6 +300,7 @@ INSTANTIATE_TEST_SUITE_P(DebugSymbolTests, TestDebugSymbol_P,
                              "TestLocalInBlock",
                              "TestLocalInSwitch",
                              "TestIssue328Crash",
+                             "TestTuple",
                          }));
 
 int main(int argc, char **argv) {
