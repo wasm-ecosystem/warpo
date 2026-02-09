@@ -30,6 +30,7 @@ public:
 
   void createBaseType(std::string_view typeName);
   void createClass(std::string_view className, uint32_t const rtid);
+  void createClass(std::string_view className);
   void addBaseClass(std::string_view const className, std::string const parentName);
 
   void addField(std::string_view const className, std::string fieldName, std::string typeName, uint32_t const offset,

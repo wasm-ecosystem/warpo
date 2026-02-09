@@ -13,15 +13,16 @@ import {
   _WarpoAddTemplateType,
   _WarpoCreateBaseType,
   _WarpoCreateClass,
+  _WarpoCreateClassWithoutRtid,
 } from "./warpo";
 
 function typeToMIRName(type: Type): string {
   if (type.isReference) {
     let classReference = type.getClass();
     if (classReference) {
-      if(type.isTuple){
+      if (type.isTuple) {
         return type.toString();
-      }else{
+      } else {
         return classReference.internalName;
       }
     } else {
@@ -113,11 +114,11 @@ export function addTemplateType(clazz: Class, templateType: Type): void {
 export function createTupleType(tupleType: Type): void {
   let tupleInfo = tupleType.tupleInfo;
   if (!tupleInfo) return;
-  
+
   let tupleClass = assert(tupleType.classReference);
   let className = typeToMIRName(tupleType);
-  _WarpoCreateClass(decodeURIComponent(className), tupleClass.id);
-  
+  _WarpoCreateClassWithoutRtid(decodeURIComponent(className));
+
   // Add each element as a field
   for (let i = 0; i < tupleInfo.elements.length; i++) {
     let elementInfo = tupleInfo.elements[i];

@@ -111,22 +111,28 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo,
 
   abbrevDecls.push_back(rootAbbrev);
 
-  llvm::DWARFYAML::Abbrev classAbbrev =
-      abbrevFactory.create(llvm::dwarf::DW_TAG_class_type, llvm::dwarf::DW_CHILDREN_yes);
+  llvm::DWARFYAML::AttributeAbbrev classNameAttr{};
+  classNameAttr.Attribute = llvm::dwarf::DW_AT_name;
+  classNameAttr.Form = llvm::dwarf::DW_FORM_string;
+  classNameAttr.Value = 0U;
 
-  llvm::DWARFYAML::AttributeAbbrev nameAttr{};
-  nameAttr.Attribute = llvm::dwarf::DW_AT_name;
-  nameAttr.Form = llvm::dwarf::DW_FORM_string;
-  nameAttr.Value = 0U;
-  classAbbrev.Attributes.push_back(nameAttr);
+  llvm::DWARFYAML::Abbrev classAbbrevWithRtid =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_class_type, llvm::dwarf::DW_CHILDREN_yes);
+  classAbbrevWithRtid.Attributes.push_back(classNameAttr);
 
   llvm::DWARFYAML::AttributeAbbrev classSignatureAttr{};
   classSignatureAttr.Attribute = llvm::dwarf::DW_AT_signature;
   classSignatureAttr.Form = llvm::dwarf::DW_FORM_data4;
   classSignatureAttr.Value = 0U;
-  classAbbrev.Attributes.push_back(classSignatureAttr);
+  classAbbrevWithRtid.Attributes.push_back(classSignatureAttr);
 
-  abbrevDecls.push_back(classAbbrev);
+  abbrevDecls.push_back(classAbbrevWithRtid);
+
+  llvm::DWARFYAML::Abbrev classAbbrevWithoutRtid =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_class_type, llvm::dwarf::DW_CHILDREN_yes);
+  classAbbrevWithoutRtid.Attributes.push_back(classNameAttr);
+
+  abbrevDecls.push_back(classAbbrevWithoutRtid);
 
   llvm::DWARFYAML::Abbrev memberAbbrev = abbrevFactory.create(llvm::dwarf::DW_TAG_member, llvm::dwarf::DW_CHILDREN_no);
 
@@ -308,17 +314,21 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo,
                                                 lexicalBlockAbbrev.Code, localVariableAbbrev.Code};
 
   for (auto const &[className, classInfo] : classRegistry) {
+    std::optional<uint32_t> const rtid = classInfo.getRtid();
+
     llvm::DWARFYAML::Entry classEntry;
-    classEntry.AbbrCode = classAbbrev.Code;
+    classEntry.AbbrCode = rtid.has_value() ? classAbbrevWithRtid.Code : classAbbrevWithoutRtid.Code;
 
     llvm::DWARFYAML::FormValue classNameValue;
     classNameValue.Value = 0;
     classNameValue.CStr = llvm::StringRef(className.data(), className.size());
     classEntry.Values.push_back(classNameValue);
 
-    llvm::DWARFYAML::FormValue classSignatureValue;
-    classSignatureValue.Value = classInfo.getRtid();
-    classEntry.Values.push_back(classSignatureValue);
+    if (rtid.has_value()) {
+      llvm::DWARFYAML::FormValue classSignatureValue;
+      classSignatureValue.Value = *rtid;
+      classEntry.Values.push_back(classSignatureValue);
+    }
 
     rootUnit.Entries.push_back(classEntry);
 
