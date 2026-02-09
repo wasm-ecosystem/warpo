@@ -28,9 +28,6 @@ struct Config {
 
 void init();
 
-Output runOnWat(std::string const &input, Config const &config);
-
-Output runOnModule(AsModule const &m);
 Output runOnModule(AsModule const &m, Config const &config);
 
 void runAndEmit(AsModule const &m, std::filesystem::path const &outputPath);
