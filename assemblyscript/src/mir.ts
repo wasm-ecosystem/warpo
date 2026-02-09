@@ -21,7 +21,12 @@ function typeToMIRName(type: Type): string {
     let classReference = type.getClass();
     if (classReference) {
       if (type.isTuple) {
-        return type.toString();
+        let tupleInfo = type.tupleInfo!;
+        let elementNames = new Array<string>(tupleInfo.elementCount);
+        for (let i = 0; i < tupleInfo.elementCount; i++) {
+          elementNames[i] = typeToMIRName(tupleInfo.elements[i].type);
+        }
+        return `[${elementNames.join(", ")}]`;
       } else {
         return classReference.internalName;
       }
@@ -111,11 +116,14 @@ export function addTemplateType(clazz: Class, templateType: Type): void {
   _WarpoAddTemplateType(decodeURIComponent(classToMIRName(clazz)), decodeURIComponent(typeToMIRName(templateType)));
 }
 
+export function getTupleMIRName(tupleType: Type): string {
+  return typeToMIRName(tupleType);
+}
+
 export function createTupleType(tupleType: Type): void {
   let tupleInfo = tupleType.tupleInfo;
   if (!tupleInfo) return;
 
-  let tupleClass = assert(tupleType.classReference);
   let className = typeToMIRName(tupleType);
   _WarpoCreateClassWithoutRtid(decodeURIComponent(className));
 

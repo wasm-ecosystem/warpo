@@ -451,7 +451,7 @@ export class Resolver extends DiagnosticEmitter {
       tupleType.tupleInfo = new SmallTupleTypeInfo(tupleElementInfo, this.program);
 
       // Register tuple type with MIR if not already registered
-      let tupleTypeName = tupleType.toString();
+      let tupleTypeName = mir.getTupleMIRName(tupleType);
       if (!this.registeredTupleTypes.has(tupleTypeName)) {
         this.registeredTupleTypes.add(tupleTypeName);
         mir.createTupleType(tupleType);

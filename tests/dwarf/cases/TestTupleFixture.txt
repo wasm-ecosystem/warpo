@@ -86,6 +86,28 @@ DW_TAG_compile_unit
                   DW_AT_data_member_location	(0x00000008)
     NULL
   DW_TAG_class_type
+                DW_AT_name	("[~lib/array/Array<i32>, i64]")
+    DW_TAG_member
+                  DW_AT_name	("0")
+                  DW_AT_type	("~lib/array/Array<i32>")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("1")
+                  DW_AT_type	("i64")
+                  DW_AT_data_member_location	(0x00000008)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("[~lib/function/Function<(i32)=>i32>, i64]")
+    DW_TAG_member
+                  DW_AT_name	("0")
+                  DW_AT_type	("~lib/function/Function<(i32)=>i32>")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("1")
+                  DW_AT_type	("i64")
+                  DW_AT_data_member_location	(0x00000008)
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
                 DW_AT_signature	(0x00000005)
     DW_TAG_member
@@ -123,6 +145,28 @@ DW_TAG_compile_unit
       NULL
     NULL
   DW_TAG_class_type
+                DW_AT_name	("~lib/array/Array<i32>")
+                DW_AT_signature	(0x00000006)
+    DW_TAG_member
+                  DW_AT_name	("buffer")
+                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("dataStart")
+                  DW_AT_type	("usize")
+                  DW_AT_data_member_location	(0x00000004)
+    DW_TAG_member
+                  DW_AT_name	("byteLength")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x00000008)
+    DW_TAG_member
+                  DW_AT_name	("length_")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x0000000c)
+    DW_TAG_template_type_parameter
+                  DW_AT_type	("i32")
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
                 DW_AT_signature	(0x00000001)
     NULL
@@ -141,6 +185,26 @@ DW_TAG_compile_unit
                   DW_AT_name	("byteLength")
                   DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000008)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/function/Function<(i32)=>i32>")
+                DW_AT_signature	(0x00000008)
+    DW_TAG_member
+                  DW_AT_name	("_index")
+                  DW_AT_type	("u32")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("_env")
+                  DW_AT_type	("usize")
+                  DW_AT_data_member_location	(0x00000004)
+    DW_TAG_template_type_parameter
+                  DW_AT_type	("~lib/function/Function<(i32)=>i32>")
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/iterator/Iterable<i32>")
+                DW_AT_signature	(0x00000007)
+    DW_TAG_template_type_parameter
+                  DW_AT_type	("i32")
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/number/Bool")
@@ -453,6 +517,12 @@ DW_TAG_compile_unit
   DW_TAG_variable
                 DW_AT_name	("~lib/util/number/MAX_DOUBLE_LENGTH")
                 DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/sort/INSERTION_SORT_THRESHOLD")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/sort/MIN_RUN_LENGTH")
+                DW_AT_type	("i32")
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestTuple/start:tests/dwarf/cases/TestTuple")
     NULL
@@ -499,6 +569,62 @@ DW_TAG_compile_unit
                     DW_AT_name	("val2")
                     DW_AT_type	("i64")
                     DW_AT_location	(0x00000002)
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestTuple/baz")
+    DW_TAG_lexical_block
+                  scope start	TestTuple.ts:25
+                  scope end	TestTuple.ts:28
+      DW_TAG_variable
+                    DW_AT_name	("pair")
+                    DW_AT_type	("[~lib/array/Array<i32>, i64]")
+                    DW_AT_location	(0x00000002)
+      DW_TAG_variable
+                    DW_AT_name	("arr")
+                    DW_AT_type	("~lib/array/Array<i32>")
+                    DW_AT_location	(0x00000003)
+      DW_TAG_variable
+                    DW_AT_name	("num")
+                    DW_AT_type	("i64")
+                    DW_AT_location	(0x00000004)
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestTuple/nullableElement")
+    DW_TAG_lexical_block
+                  scope start	TestTuple.ts:32
+                  scope end	TestTuple.ts:33
+      DW_TAG_variable
+                    DW_AT_name	("pair")
+                    DW_AT_type	("[~lib/array/Array<i32>, i64]")
+                    DW_AT_location	(0x00000001)
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestTuple/functionElement")
+    DW_TAG_lexical_block
+                  scope start	TestTuple.ts:37
+                  scope end	TestTuple.ts:39
+      DW_TAG_variable
+                    DW_AT_name	("cb")
+                    DW_AT_type	("~lib/function/Function<(i32)=>i32>")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_variable
+                    DW_AT_name	("pair")
+                    DW_AT_type	("[~lib/function/Function<(i32)=>i32>, i64]")
+                    DW_AT_location	(0x00000002)
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestTuple/functionElement~anonymous|0")
+    DW_TAG_formal_parameter
+                  DW_AT_name	("x")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000000)
+    DW_TAG_lexical_block
+                  scope start	TestTuple.ts:37
+                  scope end	TestTuple.ts:37
       NULL
     NULL
 
