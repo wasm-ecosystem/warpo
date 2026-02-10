@@ -43,6 +43,7 @@ jobs:
       - uses: ./.github/action/build
         with:
           OS_ID: ${{ matrix.os }}
+          CMAKE_ARGS: ${{ matrix.os == 'ubuntu-latest' && '-DWARPO_SANITIZE=ON' || '' }}
       - run: npm run build:ts
       # test
       - run: npm run test:as:ut

@@ -10,6 +10,7 @@
 #include <fmt/base.h>
 #include <vector>
 
+#include "CompilerImpl.hpp"
 #include "LinkedAPI.hpp"
 #include "binaryen/src/binaryen-c.h"
 #include "binaryen/src/literal.h"
@@ -583,8 +584,11 @@ uint64_t BinaryenSIMDTernaryForLink(uint64_t module, uint32_t op, uint64_t a, ui
                           reinterpret_cast<BinaryenExpressionRef>(a), reinterpret_cast<BinaryenExpressionRef>(b),
                           reinterpret_cast<BinaryenExpressionRef>(c)));
 }
-uint64_t BinaryenModuleCreateForLink([[maybe_unused]] vb::WasmModule *ctx) {
-  return reinterpret_cast<uint64_t>(BinaryenModuleCreate());
+uint64_t BinaryenModuleCreateForLink(vb::WasmModule *ctx) {
+  BinaryenModuleRef const module{BinaryenModuleCreate()};
+  FrontendCompiler *const frontEndCompiler{static_cast<FrontendCompiler *>(ctx->getContext())};
+  frontEndCompiler->asModule_.set(BinaryenModule(module));
+  return reinterpret_cast<uint64_t>(module);
 }
 void BinaryenSetLowMemoryUnusedForLink(uint32_t unused, [[maybe_unused]] vb::WasmModule *ctx) {
   BinaryenSetLowMemoryUnused(unused != 0);

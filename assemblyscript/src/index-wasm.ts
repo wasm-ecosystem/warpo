@@ -314,8 +314,3 @@ export function compile(program: Program): Module {
   program.parser.finish();
   return new Compiler(program).compile();
 }
-
-/** Gets the Binaryen module reference of a module. */
-export function getBinaryenModuleRef(module: Module): ModuleRef {
-  return module.ref;
-}

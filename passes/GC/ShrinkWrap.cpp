@@ -153,9 +153,9 @@ struct ShrinkWrapTest : public ::testing::Test {
 
   void applyWasmCallForEachBB() {
     for (size_t i = 0; i < cfg.raw_.size(); i++) {
-      wasm::Call *const beginCall = new wasm::Call{arena};
+      wasm::Call *const beginCall = arena.alloc<wasm::Call>();
       beginCall->target = "b";
-      wasm::Call *const endCall = new wasm::Call{arena};
+      wasm::Call *const endCall = arena.alloc<wasm::Call>();
       endCall->target = "e";
       cfg.addExpr(beginCall, i);
       cfg.addExpr(endCall, i);

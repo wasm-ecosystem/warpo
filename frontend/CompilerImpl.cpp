@@ -257,10 +257,9 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     r.callExportedFunctionWithName<0>("initializeProgram", program);
 
     int32_t const compiled = r.callExportedFunctionWithName<1>("compile", program)[0].i32;
+    static_cast<void>(compiled);
     if (checkDiag(program, config.useColorfulDiagMessage))
       return {.m = {}, .errorMessage = errorMessage_};
-    asModule_.set(BinaryenModule{
-        reinterpret_cast<wasm::Module *>(r.callExportedFunctionWithName<1>("getBinaryenModuleRef", compiled)[0].i64)});
 
     compileStat.release();
     return {.m = std::move(asModule_), .errorMessage = errorMessage_};
