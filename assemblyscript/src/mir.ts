@@ -13,13 +13,23 @@ import {
   _WarpoAddTemplateType,
   _WarpoCreateBaseType,
   _WarpoCreateClass,
+  _WarpoCreateClassWithoutRtid,
 } from "./warpo";
 
 function typeToMIRName(type: Type): string {
   if (type.isReference) {
     let classReference = type.getClass();
     if (classReference) {
-      return classReference.internalName;
+      if (type.isTuple) {
+        let tupleInfo = type.tupleInfo!;
+        let elementNames = new Array<string>(tupleInfo.elementCount);
+        for (let i = 0; i < tupleInfo.elementCount; i++) {
+          elementNames[i] = typeToMIRName(tupleInfo.elements[i].type);
+        }
+        return `[${elementNames.join(",")}]`;
+      } else {
+        return classReference.internalName;
+      }
     } else {
       let signatureReference = type.getSignature();
       if (signatureReference) {
@@ -104,4 +114,28 @@ export function addField(clazz: Class, fieldName: string, fieldType: Type, offse
 
 export function addTemplateType(clazz: Class, templateType: Type): void {
   _WarpoAddTemplateType(decodeURIComponent(classToMIRName(clazz)), decodeURIComponent(typeToMIRName(templateType)));
+}
+
+export function getTupleMIRName(tupleType: Type): string {
+  return typeToMIRName(tupleType);
+}
+
+export function createTupleType(tupleType: Type): void {
+  const tupleInfo = tupleType.tupleInfo;
+  if (!tupleInfo) return;
+
+  const decodedClassName = decodeURIComponent(typeToMIRName(tupleType));
+  _WarpoCreateClassWithoutRtid(decodedClassName);
+
+  // Add each element as a field
+  for (let i = 0; i < tupleInfo.elements.length; i++) {
+    const elementInfo = tupleInfo.elements[i];
+    _WarpoAddField(
+      decodedClassName,
+      `${i}`,
+      decodeURIComponent(typeToMIRName(elementInfo.type)),
+      elementInfo.offset,
+      elementInfo.type.is(TypeFlags.Nullable)
+    );
+  }
 }

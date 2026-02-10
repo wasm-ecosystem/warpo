@@ -133,6 +133,8 @@ class ClassImplementationTracker {
 export class Resolver extends DiagnosticEmitter {
   /** The program this resolver belongs to. */
   program: Program;
+  /** Tracks registered tuple types to avoid duplicate MIR entries. */
+  private registeredTupleTypes: Set<string> = new Set();
 
   /** Target expression of the previously resolved property or element access. */
   currentThisExpression: Expression | null = null;
@@ -447,6 +449,14 @@ export class Resolver extends DiagnosticEmitter {
       tupleType.classReference = smallTupleClass;
 
       tupleType.tupleInfo = new SmallTupleTypeInfo(tupleElementInfo, this.program);
+
+      // Register tuple type with MIR if not already registered
+      let tupleTypeName = mir.getTupleMIRName(tupleType);
+      if (!this.registeredTupleTypes.has(tupleTypeName)) {
+        this.registeredTupleTypes.add(tupleTypeName);
+        mir.createTupleType(tupleType);
+      }
+
       return tupleType;
     }
     if (reportMode == ReportMode.Report) {

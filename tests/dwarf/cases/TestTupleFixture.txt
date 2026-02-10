@@ -75,98 +75,78 @@ DW_TAG_compile_unit
   DW_TAG_base_type
                 DW_AT_name	("usize")
   DW_TAG_class_type
-                DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/C1")
-                DW_AT_signature	(0x00000004)
+                DW_AT_name	("[i32,i64]")
     DW_TAG_member
-                  DW_AT_name	("x")
+                  DW_AT_name	("0")
                   DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000000)
     DW_TAG_member
-                  DW_AT_name	("y")
-                  DW_AT_type	("~lib/array/Array<i32>")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/C1#get:x")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/C1")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/C1#set:x")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/C1")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("x")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000001)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/C1#get:y")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/C1")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/C1#set:y")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/C1")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("y")
-                    DW_AT_type	("~lib/array/Array<i32>")
-                    DW_AT_location	(0x00000001)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/C1#constructor")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/C1")
-                    DW_AT_location	(0x00000000)
-      NULL
+                  DW_AT_name	("1")
+                  DW_AT_type	("i64")
+                  DW_AT_data_member_location	(0x00000008)
     NULL
   DW_TAG_class_type
-                DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>")
-                DW_AT_signature	(0x00000007)
+                DW_AT_name	("[~lib/array/Array<i32>,i64]")
     DW_TAG_member
-                  DW_AT_name	("a")
-                  DW_AT_type	("i32")
+                  DW_AT_name	("0")
+                  DW_AT_type	("~lib/array/Array<i32>")
                   DW_AT_data_member_location	(0x00000000)
-    DW_TAG_template_type_parameter
-                  DW_AT_type	("i32")
+    DW_TAG_member
+                  DW_AT_name	("1")
+                  DW_AT_type	("i64")
+                  DW_AT_data_member_location	(0x00000008)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("[~lib/function/Function<(i32)=>i32>,i64]")
+    DW_TAG_member
+                  DW_AT_name	("0")
+                  DW_AT_type	("~lib/function/Function<(i32)=>i32>")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("1")
+                  DW_AT_type	("i64")
+                  DW_AT_data_member_location	(0x00000008)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
+                DW_AT_signature	(0x00000005)
+    DW_TAG_member
+                  DW_AT_name	("member")
+                  DW_AT_type	("[i32,i64]")
+                  DW_AT_data_member_location	(0x00000000)
     DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>#get:a")
+                  DW_AT_name	("tests/dwarf/cases/TestTuple/ClassWithTupleMember#get:member")
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>")
+                    DW_AT_type	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
                     DW_AT_location	(0x00000000)
       NULL
     DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>#set:a")
+                  DW_AT_name	("tests/dwarf/cases/TestTuple/ClassWithTupleMember#set:member")
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>")
+                    DW_AT_type	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
                     DW_AT_location	(0x00000000)
       DW_TAG_formal_parameter
-                    DW_AT_name	("a")
-                    DW_AT_type	("i32")
+                    DW_AT_name	("member")
+                    DW_AT_type	("[i32,i64]")
                     DW_AT_location	(0x00000001)
       NULL
     DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>#constructor")
+                  DW_AT_name	("tests/dwarf/cases/TestTuple/ClassWithTupleMember#constructor")
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>")
+                    DW_AT_type	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
                     DW_AT_location	(0x00000000)
+      DW_TAG_lexical_block
+                    scope start	TestTuple.ts:13
+                    scope end	TestTuple.ts:13
+        NULL
       NULL
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/array/Array<i32>")
-                DW_AT_signature	(0x00000005)
+                DW_AT_signature	(0x00000006)
     DW_TAG_member
                   DW_AT_name	("buffer")
                   DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
@@ -207,8 +187,22 @@ DW_TAG_compile_unit
                   DW_AT_data_member_location	(0x00000008)
     NULL
   DW_TAG_class_type
+                DW_AT_name	("~lib/function/Function<(i32)=>i32>")
+                DW_AT_signature	(0x00000008)
+    DW_TAG_member
+                  DW_AT_name	("_index")
+                  DW_AT_type	("u32")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("_env")
+                  DW_AT_type	("usize")
+                  DW_AT_data_member_location	(0x00000004)
+    DW_TAG_template_type_parameter
+                  DW_AT_type	("~lib/function/Function<(i32)=>i32>")
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/iterator/Iterable<i32>")
-                DW_AT_signature	(0x00000006)
+                DW_AT_signature	(0x00000007)
     DW_TAG_template_type_parameter
                   DW_AT_type	("i32")
     NULL
@@ -347,6 +341,10 @@ DW_TAG_compile_unit
   DW_TAG_class_type
                 DW_AT_name	("~lib/string/String")
                 DW_AT_signature	(0x00000002)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/tuple/SmallTuple")
+                DW_AT_signature	(0x00000004)
     NULL
   DW_TAG_variable
                 DW_AT_name	("~lib/native/ASC_LOW_MEMORY_LIMIT")
@@ -526,24 +524,107 @@ DW_TAG_compile_unit
                 DW_AT_name	("~lib/util/sort/MIN_RUN_LENGTH")
                 DW_AT_type	("i32")
   DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/start:tests/dwarf/cases/TestClassMemberBasic")
+                DW_AT_name	("tests/dwarf/cases/TestTuple/start:tests/dwarf/cases/TestTuple")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/dwarf/cases/TestClassMemberBasic")
+                DW_AT_name	("start:tests/dwarf/cases/TestTuple")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/test")
+                DW_AT_name	("tests/dwarf/cases/TestTuple/foo")
     DW_TAG_lexical_block
-                  scope start	TestClassMemberBasic.ts:11
-                  scope end	TestClassMemberBasic.ts:16
+                  scope start	TestTuple.ts:2
+                  scope end	TestTuple.ts:6
       DW_TAG_variable
-                    DW_AT_name	("c1")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/C1")
+                    DW_AT_name	("pair")
+                    DW_AT_type	("[i32,i64]")
+                    DW_AT_location	(0x00000001)
+      DW_TAG_variable
+                    DW_AT_name	("aaa")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000002)
+      DW_TAG_variable
+                    DW_AT_name	("bbb")
+                    DW_AT_type	("i64")
+                    DW_AT_location	(0x00000003)
+      DW_TAG_variable
+                    DW_AT_name	("pair2")
+                    DW_AT_type	("[i32,i64]")
+                    DW_AT_location	(0x00000005)
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestTuple/bar")
+    DW_TAG_lexical_block
+                  scope start	TestTuple.ts:18
+                  scope end	TestTuple.ts:21
+      DW_TAG_variable
+                    DW_AT_name	("obj")
+                    DW_AT_type	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
                     DW_AT_location	(0x00000000)
       DW_TAG_variable
-                    DW_AT_name	("ct")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>")
+                    DW_AT_name	("val1")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000001)
+      DW_TAG_variable
+                    DW_AT_name	("val2")
+                    DW_AT_type	("i64")
                     DW_AT_location	(0x00000002)
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestTuple/baz")
+    DW_TAG_lexical_block
+                  scope start	TestTuple.ts:25
+                  scope end	TestTuple.ts:28
+      DW_TAG_variable
+                    DW_AT_name	("pair")
+                    DW_AT_type	("[~lib/array/Array<i32>,i64]")
+                    DW_AT_location	(0x00000002)
+      DW_TAG_variable
+                    DW_AT_name	("arr")
+                    DW_AT_type	("~lib/array/Array<i32>")
+                    DW_AT_location	(0x00000003)
+      DW_TAG_variable
+                    DW_AT_name	("num")
+                    DW_AT_type	("i64")
+                    DW_AT_location	(0x00000004)
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestTuple/nullableElement")
+    DW_TAG_lexical_block
+                  scope start	TestTuple.ts:32
+                  scope end	TestTuple.ts:33
+      DW_TAG_variable
+                    DW_AT_name	("pair")
+                    DW_AT_type	("[~lib/array/Array<i32>,i64]")
+                    DW_AT_location	(0x00000001)
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestTuple/functionElement")
+    DW_TAG_lexical_block
+                  scope start	TestTuple.ts:37
+                  scope end	TestTuple.ts:39
+      DW_TAG_variable
+                    DW_AT_name	("cb")
+                    DW_AT_type	("~lib/function/Function<(i32)=>i32>")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_variable
+                    DW_AT_name	("pair")
+                    DW_AT_type	("[~lib/function/Function<(i32)=>i32>,i64]")
+                    DW_AT_location	(0x00000002)
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestTuple/functionElement~anonymous|0")
+    DW_TAG_formal_parameter
+                  DW_AT_name	("x")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000000)
+    DW_TAG_lexical_block
+                  scope start	TestTuple.ts:37
+                  scope end	TestTuple.ts:37
       NULL
     NULL
 

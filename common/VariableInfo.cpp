@@ -29,6 +29,11 @@ void VariableInfo::createClass(std::string_view const className, uint32_t const 
   classRegistry_.emplace(internedClassName, ClassInfo{internedClassName, rtid});
 }
 
+void VariableInfo::createClass(std::string_view const className) {
+  std::string_view const internedClassName = stringPool_.internString(className);
+  classRegistry_.emplace(internedClassName, ClassInfo{internedClassName});
+}
+
 void VariableInfo::addBaseClass(std::string_view const className, std::string const parentName) {
   std::string_view const internedParentName = stringPool_.internString(parentName);
   ClassRegistry::iterator const classIt = classRegistry_.find(className);
@@ -146,7 +151,7 @@ TEST(TestVariableInfo, TestCreateClass) {
   const ClassInfo &personClass = personIt->second;
 
   EXPECT_EQ(personClass.getName(), "Person");
-  EXPECT_EQ(personClass.getRtid(), 1);
+  EXPECT_EQ(personClass.getRtid(), 1U);
   EXPECT_EQ(personClass.getFields().size(), 3);
 
   // Verify Person fields
@@ -172,7 +177,7 @@ TEST(TestVariableInfo, TestCreateClass) {
   const ClassInfo &employeeClass = employeeIt->second;
 
   EXPECT_EQ(employeeClass.getName(), "Employee");
-  EXPECT_EQ(employeeClass.getRtid(), 2);
+  EXPECT_EQ(employeeClass.getRtid(), 2U);
   EXPECT_EQ(employeeClass.getFields().size(), 6);
 
   // Verify Employee fields

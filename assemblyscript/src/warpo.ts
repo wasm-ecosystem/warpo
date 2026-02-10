@@ -8,6 +8,7 @@ declare function _WarpoMarkCallInlined(expr: ExpressionRef): void;
 
 export declare function _WarpoCreateBaseType(typeName: string): void;
 export declare function _WarpoCreateClass(className: string, rtid: u32): void;
+export declare function _WarpoCreateClassWithoutRtid(className: string): void;
 export declare function _WarpoAddBaseClass(className: string, parentClassName: string | null): void;
 export declare function _WarpoAddTemplateType(className: string, templateTypeName: string): void;
 

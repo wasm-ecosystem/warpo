@@ -26,6 +26,12 @@ void createClass(uint32_t const classNamePtr, uint32_t const rtid, vb::WasmModul
   pCompiler->asModule_.variableInfo_.createClass(className, rtid);
 }
 
+void createClassWithoutRtid(uint32_t const classNamePtr, vb::WasmModule const *const ctx) {
+  std::string const className{WarpRunner::getString(ctx, classNamePtr)};
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.createClass(className);
+}
+
 void addBaseClass(uint32_t const classNamePtr, uint32_t const parentNamePtr, vb::WasmModule const *const ctx) {
   std::string const className = WarpRunner::getString(ctx, classNamePtr);
   std::string parentClassName;
@@ -103,6 +109,7 @@ std::vector<vb::NativeSymbol> createVariableInfoAPI() {
   return std::vector<vb::NativeSymbol>{
       STATIC_LINK("warpo", "_WarpoCreateBaseType", createBaseType),
       STATIC_LINK("warpo", "_WarpoCreateClass", createClass),
+      STATIC_LINK("warpo", "_WarpoCreateClassWithoutRtid", createClassWithoutRtid),
       STATIC_LINK("warpo", "_WarpoAddBaseClass", addBaseClass),
       STATIC_LINK("warpo", "_WarpoAddField", addField),
       STATIC_LINK("warpo", "_WarpoAddTemplateType", addTemplateType),
