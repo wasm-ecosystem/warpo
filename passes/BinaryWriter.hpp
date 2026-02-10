@@ -6,6 +6,7 @@
 #include <llvm/ADT/StringMap.h>
 #include <llvm/Support/MemoryBuffer.h>
 #include <memory>
+#include <pass.h>
 #include <sstream>
 #include <wasm-binary.h>
 
@@ -14,6 +15,7 @@
 namespace warpo::passes {
 
 class BinaryWriter {
+  wasm::PassOptions const options_;
   AsModule const &m_;
   wasm::BufferWithRandomAccess buffer_;
   std::stringstream sourceMapStream_;
@@ -23,7 +25,7 @@ class BinaryWriter {
 
 public:
   explicit BinaryWriter(AsModule const &m)
-      : m_(m), writer_{m.get(), buffer_, wasm::PassOptions::getWithoutOptimization()} {}
+      : options_(wasm::PassOptions::getWithoutOptimization()), m_(m), writer_{m.get(), buffer_, options_} {}
   void enableSourceMap(std::string const &sourceMapURL) { writer_.setSourceMap(&sourceMapStream_, sourceMapURL); }
   void enableNameSection() { writer_.setNamesSection(true); }
   void enableDwarf() { hasDwarf_ = true; }
