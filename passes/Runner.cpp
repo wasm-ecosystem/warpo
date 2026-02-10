@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "AdvancedInlining.hpp"
+#include "BinaryWriter.hpp"
 #include "CombineSwitchTargets.hpp"
 #include "ConditionalReturn.hpp"
 #include "ExtractMostFrequentlyUsedGlobals.hpp"
@@ -33,7 +34,6 @@
 #include "warpo/common/DebugLevel.hpp"
 #include "warpo/common/Features.hpp"
 #include "warpo/common/OptLevel.hpp"
-#include "warpo/passes/DwarfGenerator/DwarfGenerator.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Statistics.hpp"
@@ -134,21 +134,6 @@ static void optimize(AsModule const &m, Config const &config) {
   ensureValidate(*m.get());
 }
 
-static void addDebugInfoAsCustomSection(AsModule const &m,
-                                        std::unordered_map<wasm::Expression *, size_t *> const &expressionOffsets) {
-  llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const debugSections =
-      DwarfGenerator::generateDebugSections(m.variableInfo_, expressionOffsets);
-
-  if (!debugSections.empty()) {
-    for (auto I = debugSections.begin(); !(I == debugSections.end()); I++) {
-      llvm::StringRef const sectionName = I->getKey();
-      llvm::MemoryBuffer const *const buffer = I->getValue().get();
-      BinaryenAddCustomSection(m.get(), sectionName.data(), reinterpret_cast<const char *>(buffer->getBufferStart()),
-                               static_cast<wasm::Index>(buffer->getBufferSize()));
-    }
-  }
-}
-
 namespace {
 struct OutputFiles {
   std::filesystem::path wat_;
@@ -202,22 +187,14 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
   }
 
   // wasm and source map
-  wasm::BufferWithRandomAccess buffer;
-  wasm::PassOptions const options = wasm::PassOptions::getWithoutOptimization();
-
-  wasm::WasmBinaryWriter writer(m.get(), buffer, options);
-  std::stringstream sourceMapStream;
-  if (common::isEmitDebugLine() && !config.sourceMapURL.empty()) {
-    writer.setSourceMap(&sourceMapStream, config.sourceMapURL);
-  }
-  writer.setNamesSection(common::isEmitDebugName());
-  writer.setEmitModuleName(common::isEmitDebugName());
+  BinaryWriter writer{m};
+  if (common::isEmitDebugLine() && !config.sourceMapURL.empty())
+    writer.enableSourceMap(config.sourceMapURL);
+  if (common::isEmitDebugName())
+    writer.enableNameSection();
+  if (common::isEmitDebugInfo())
+    writer.enableDwarf();
   writer.write();
-
-  if (common::isEmitDebugInfo()) {
-    std::unordered_map<wasm::Expression *, size_t *> const &expressionOffsets = writer.getExpressionOffsets();
-    addDebugInfoAsCustomSection(m, expressionOffsets);
-  }
 
   // wat
   std::stringstream ss{};
@@ -225,8 +202,8 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
 
   return {
       .wat = std::move(ss).str(),
-      .wasm = static_cast<std::vector<uint8_t>>(buffer),
-      .sourceMap = std::move(sourceMapStream).str(),
+      .wasm = writer.getBinary(),
+      .sourceMap = writer.getSourceMap(),
   };
 }
 
