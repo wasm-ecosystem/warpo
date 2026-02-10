@@ -26,7 +26,7 @@ function typeToMIRName(type: Type): string {
         for (let i = 0; i < tupleInfo.elementCount; i++) {
           elementNames[i] = typeToMIRName(tupleInfo.elements[i].type);
         }
-        return `[${elementNames.join(", ")}]`;
+        return `[${elementNames.join(",")}]`;
       } else {
         return classReference.internalName;
       }
