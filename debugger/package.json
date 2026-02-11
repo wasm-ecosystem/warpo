@@ -1,0 +1,70 @@
+{
+  "name": "warpo-debugger",
+  "displayName": "Warpo Debugger",
+  "description": "Debug adapter for Warpo WebAssembly projects",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "publisher": "wasm-ecosystem",
+  "license": "Apache-2.0",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Debuggers"
+  ],
+  "activationEvents": [
+    "onDebugResolve:warpo"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "debuggers": [
+      {
+        "type": "warpo",
+        "label": "Warpo Debug",
+        "languages": [
+          "typescript"
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "required": [
+              "program"
+            ],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Path to the wasm file to debug."
+              }
+            }
+          }
+        },
+        "initialConfigurations": [
+          {
+            "type": "warpo",
+            "request": "launch",
+            "name": "Warpo Debug",
+            "program": "${workspaceFolder}/build/output.wasm"
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "build": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "mocha --require tsx --timeout 10000 --exit src/test/**/*.test.ts"
+  },
+  "dependencies": {
+    "@vscode/debugadapter": "^1.65.0",
+    "@vscode/debugprotocol": "^1.65.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^10.0.0",
+    "@types/vscode": "^1.80.0",
+    "@vscode/debugadapter-testsupport": "^1.65.0",
+    "chai": "^4.3.0",
+    "mocha": "^10.2.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.3.0"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "warpo",
+      "request": "launch",
+      "name": "Warpo Debug",
+      "program": "${workspaceFolder}/hello.ts"
+    }
+  ]
+}
