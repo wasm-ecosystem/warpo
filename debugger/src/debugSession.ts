@@ -14,8 +14,7 @@ import {
 import { DebugProtocol } from "@vscode/debugprotocol";
 import * as path from "path";
 
-interface WarpoLaunchRequestArguments
-  extends DebugProtocol.LaunchRequestArguments {
+interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
   program: string;
 }
 
@@ -37,7 +36,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   protected initializeRequest(
     response: DebugProtocol.InitializeResponse,
-    _args: DebugProtocol.InitializeRequestArguments,
+    _args: DebugProtocol.InitializeRequestArguments
   ): void {
     response.body = response.body || {};
     response.body.supportsConfigurationDoneRequest = true;
@@ -50,7 +49,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   protected setBreakPointsRequest(
     response: DebugProtocol.SetBreakpointsResponse,
-    args: DebugProtocol.SetBreakpointsArguments,
+    args: DebugProtocol.SetBreakpointsArguments
   ): void {
     const sourcePath = args.source.path || "";
     const clientLines = args.breakpoints || [];
@@ -63,9 +62,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
         verified: true,
         source: sourcePath,
       };
-      this.log(
-        `Breakpoint set: ${path.basename(sourcePath)}:${bp.line}`,
-      );
+      this.log(`Breakpoint set: ${path.basename(sourcePath)}:${bp.line}`);
       return info;
     });
 
@@ -83,17 +80,14 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   protected configurationDoneRequest(
     response: DebugProtocol.ConfigurationDoneResponse,
-    _args: DebugProtocol.ConfigurationDoneArguments,
+    _args: DebugProtocol.ConfigurationDoneArguments
   ): void {
     super.configurationDoneRequest(response, _args);
 
     this.logAllBreakpoints();
   }
 
-  protected launchRequest(
-    response: DebugProtocol.LaunchResponse,
-    args: WarpoLaunchRequestArguments,
-  ): void {
+  protected launchRequest(response: DebugProtocol.LaunchResponse, args: WarpoLaunchRequestArguments): void {
     this.log(`Launch requested for: ${args.program}`);
     this.sendResponse(response);
   }
@@ -107,7 +101,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   protected disconnectRequest(
     response: DebugProtocol.DisconnectResponse,
-    _args: DebugProtocol.DisconnectArguments,
+    _args: DebugProtocol.DisconnectArguments
   ): void {
     this.log("Debug session ended.");
     this.sendResponse(response);
@@ -117,9 +111,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.log("=== Registered Breakpoints ===");
     for (const [source, bps] of this.breakpoints) {
       for (const bp of bps) {
-        this.log(
-          `  ${path.basename(source)}:${bp.line} (id=${bp.id}, verified=${bp.verified})`,
-        );
+        this.log(`  ${path.basename(source)}:${bp.line} (id=${bp.id}, verified=${bp.verified})`);
       }
     }
     this.log("==============================");
