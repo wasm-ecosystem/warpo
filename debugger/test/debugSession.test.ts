@@ -3,7 +3,7 @@
 
 import { DebugClient } from "@vscode/debugadapter-testsupport";
 import { createServer, Server } from "node:net";
-import { WarpoDebugSession } from "../debugSession";
+import { WarpoDebugSession } from "../src/debugSession";
 import { expect } from "chai";
 
 const PORT = 14711;

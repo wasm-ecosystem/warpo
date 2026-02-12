@@ -1,13 +1,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-import {
-  LoggingDebugSession,
-  InitializedEvent,
-  Thread,
-  Breakpoint,
-  logger,
-} from "@vscode/debugadapter";
+import { LoggingDebugSession, InitializedEvent, Thread, Breakpoint, logger } from "@vscode/debugadapter";
 import { DebugProtocol } from "@vscode/debugprotocol";
 import * as path from "node:path";
 
@@ -33,7 +27,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   protected initializeRequest(
     response: DebugProtocol.InitializeResponse,
-    _args: DebugProtocol.InitializeRequestArguments,
+    _args: DebugProtocol.InitializeRequestArguments
   ): void {
     response.body = response.body || {};
     response.body.supportsConfigurationDoneRequest = true;
@@ -77,7 +71,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   protected configurationDoneRequest(
     response: DebugProtocol.ConfigurationDoneResponse,
-    _args: DebugProtocol.ConfigurationDoneArguments,
+    _args: DebugProtocol.ConfigurationDoneArguments
   ): void {
     super.configurationDoneRequest(response, _args);
 
@@ -98,7 +92,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   protected disconnectRequest(
     response: DebugProtocol.DisconnectResponse,
-    _args: DebugProtocol.DisconnectArguments,
+    _args: DebugProtocol.DisconnectArguments
   ): void {
     this.log("Debug session ended.");
     this.sendResponse(response);

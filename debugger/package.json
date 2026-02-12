@@ -51,8 +51,8 @@
   "scripts": {
     "build": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "lint": "npx eslint src/",
-    "test": "mocha --require tsx --timeout 10000 --exit src/test/**/*.test.ts"
+    "lint": "npx eslint src/ test/",
+    "test": "mocha --require tsx --timeout 10000 --exit test/**/*.test.ts"
   },
   "dependencies": {
     "@vscode/debugadapter": "^1.65.0",

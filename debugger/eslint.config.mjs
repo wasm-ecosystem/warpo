@@ -12,7 +12,7 @@ import unused_imports from "eslint-plugin-unused-imports";
 
 export default tseslint.config(
   {
-    ignores: ["out/**", "**/*.mjs"],
+    ignores: ["out/**", "**/*.mjs", "node_modules/**"],
   },
   eslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
@@ -97,5 +97,5 @@ export default tseslint.config(
     rules: {
       curly: ["error", "all"],
     },
-  },
+  }
 );

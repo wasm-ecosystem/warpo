@@ -3,7 +3,6 @@
     "module": "commonjs",
     "target": "ES2020",
     "outDir": "out",
-    "rootDir": "src",
     "lib": ["ES2020"],
     "sourceMap": true,
     "strict": true,
@@ -15,6 +14,6 @@
       "module": "commonjs"
     }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "test/**/*.ts"],
   "exclude": ["node_modules"]
 }
