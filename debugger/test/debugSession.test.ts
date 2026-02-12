@@ -7,7 +7,7 @@ import * as path from "node:path";
 import { type ChildProcess } from "node:child_process";
 import { launchDapServer } from "../src/launcher";
 
-const DAP_SERVER = path.resolve(__dirname, "..", "..", "dist", "debug_runtime", "dapServer.js");
+const DAP_SERVER = path.resolve(__dirname, "..", "..", "dist", "debug_server", "dapServer.js");
 
 describe("WarpoDebugSession", () => {
   let dc: DebugClient;

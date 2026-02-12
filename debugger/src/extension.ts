@@ -34,7 +34,7 @@ function findDapServer(workspaceFolder: string): string | undefined {
     }
   }
 
-  const candidate = path.join(workspaceFolder, "node_modules", "warpo", "dist", "debug_runtime", "dapServer.js");
+  const candidate = path.join(workspaceFolder, "node_modules", "warpo", "dist", "debug_server", "dapServer.js");
   return fs.existsSync(candidate) ? candidate : undefined;
 }
 
