@@ -26,6 +26,7 @@ cplusplus
 cppcoreguidelines
 ctest
 currp
+debugadapter
 dend
 Dependee
 dependees
