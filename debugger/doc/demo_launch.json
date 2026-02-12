@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Warpo Debugger Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}/debugger", "${workspaceFolder}/debugger/debuggee"],
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/debugger/out/**/*.js"],
+      "resolveSourceMapLocations": ["${workspaceFolder}/debugger/**", "!**/node_modules/**"],
+      "skipFiles": [],
+      "cwd": "${workspaceFolder}/debugger",
+      "preLaunchTask": "npm: build - debugger"
+    }
+  ]
+}
