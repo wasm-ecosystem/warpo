@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {}
 
 class WarpoDebugAdapterFactory implements vscode.DebugAdapterDescriptorFactory {
-  createDebugAdapterDescriptor(_session: vscode.DebugSession): vscode.ProviderResult<vscode.DebugAdapterDescriptor> {
+  createDebugAdapterDescriptor(): vscode.ProviderResult<vscode.DebugAdapterDescriptor> {
     return new vscode.DebugAdapterInlineImplementation(new WarpoDebugSession());
   }
 }

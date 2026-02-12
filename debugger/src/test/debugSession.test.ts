@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { DebugClient } from "@vscode/debugadapter-testsupport";
-import { createServer, Server } from "net";
+import { createServer, Server } from "node:net";
 import { WarpoDebugSession } from "../debugSession";
 import { expect } from "chai";
 
@@ -38,14 +38,14 @@ describe("WarpoDebugSession", () => {
     await dc.initializeRequest();
 
     const response = await dc.setBreakpointsRequest({
-      source: { path: "/tmp/test.ts" },
+      source: { path: "test.ts" },
       breakpoints: [{ line: 5 }, { line: 10 }],
     });
 
     expect(response.body.breakpoints).to.have.lengthOf(2);
-    expect(response.body.breakpoints[0].verified).to.be.true;
+    expect(response.body.breakpoints[0].verified).to.equal(true);
     expect(response.body.breakpoints[0].line).to.equal(5);
-    expect(response.body.breakpoints[1].verified).to.be.true;
+    expect(response.body.breakpoints[1].verified).to.equal(true);
     expect(response.body.breakpoints[1].line).to.equal(10);
   });
 });
