@@ -7,7 +7,7 @@
   "type": "wasm file",
   "wasmFilePath": "some/demo/path.wasm",
   "entryFunctionName": "foo",
-  "args":[1,2,3]
+  "args": [1, 2, 3]
 }
 ```
 
@@ -45,7 +45,7 @@ Not supported
 {
   "type": "js file",
   "command": "some_command",
-  "port":1122 // with default value
+  "port": 1122 // with default value
 }
 ```
 
@@ -54,6 +54,7 @@ Node runtime
 ```shell
 export WARPO_DEBUG_PORT=1122
 ```
+
 Unitest framework need to read this environment variable and run with inspect.
 
 Restriction:
