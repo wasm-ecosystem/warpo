@@ -66,7 +66,7 @@ import {
   mangleInternalPath,
   MethodDeclaration,
   JsonSource,
-  PropertyName,
+  IPropertyName,
   TupleTypeNode,
 } from "./ast";
 import { JsonParser } from "./json";
@@ -1601,7 +1601,7 @@ export class Parser extends DiagnosticEmitter {
 
   private parseMethod(
     tn: Tokenizer,
-    name: PropertyName,
+    name: IPropertyName,
     parent: ClassDeclaration,
     startPos: i32,
     flags: CommonFlags,
@@ -1904,7 +1904,7 @@ export class Parser extends DiagnosticEmitter {
     }
 
     let isGetterOrSetter = isGetter || isSetter;
-    let propertyName: PropertyName;
+    let propertyName: IPropertyName;
     let isComputedProperty = false;
     let bracketStart: i32 = 0; // only used if isComputedProperty
 

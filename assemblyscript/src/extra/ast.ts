@@ -81,7 +81,7 @@ import {
   FunctionLikeWithBodyBase,
   DeclarationBase,
   ComputedPropertyName,
-  PropertyName,
+  IPropertyName,
   TupleTypeNode,
 } from "../ast";
 
@@ -367,7 +367,7 @@ export class ASTBuilder {
     }
   }
 
-  visitPropertyName(node: PropertyName): void {
+  visitPropertyName(node: IPropertyName): void {
     switch (node.kind) {
       case NodeKind.False:
       case NodeKind.Null:

@@ -74,7 +74,7 @@ import {
   DeclarationBase,
   VariableLikeBase,
   ClassBase,
-  PropertyName,
+  IPropertyName,
   ComputedPropertyName,
 } from "./ast";
 
@@ -2408,7 +2408,7 @@ export class Program extends DiagnosticEmitter {
     }
   }
 
-  private definePropertyName(name: PropertyName, classPrototype: ClassPrototype): CompiledNameNode | null {
+  private definePropertyName(name: IPropertyName, classPrototype: ClassPrototype): CompiledNameNode | null {
     if (name.kind == NodeKind.ComputedPropertyName) {
       // don't use resolver, since at this time, ClassPrototype does not finish definition.
       // resolve class will generate incomplete Class Element.

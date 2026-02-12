@@ -535,7 +535,7 @@ export abstract class Node implements INode {
   }
 
   static createMethodDeclaration(
-    name: PropertyName,
+    name: IPropertyName,
     decorators: DecoratorNode[] | null,
     flags: CommonFlags,
     typeParameters: TypeParameterNode[] | null,
@@ -705,13 +705,13 @@ export interface INode {
 }
 
 /** {@link IdentifierExpression} | {@link ComputedPropertyName} */
-export interface PropertyName extends INode {
+export interface IPropertyName extends INode {
   getReadableName(): string;
 }
 
 // name
 
-export class ComputedPropertyName extends Node implements PropertyName {
+export class ComputedPropertyName extends Node implements IPropertyName {
   constructor(
     public expression: Expression,
     range: Range
@@ -1051,7 +1051,7 @@ export class CommentNode extends Node {
 export abstract class Expression extends Node {}
 
 /** Represents an identifier expression. */
-export class IdentifierExpression extends Expression implements PropertyName {
+export class IdentifierExpression extends Expression implements IPropertyName {
   constructor(
     /** Textual name. */
     public text: string,
@@ -2125,7 +2125,7 @@ export class FunctionDeclaration extends DeclarationStatement {
 export class MethodDeclaration extends DeclarationStatement {
   constructor(
     /** Simple name being declared. */
-    public name: PropertyName,
+    public name: IPropertyName,
     /** Array of decorators, if any. */
     decorators: DecoratorNode[] | null,
     /** Common flags indicating specific traits. */
