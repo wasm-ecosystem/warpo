@@ -2,14 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { DebugClient } from "@vscode/debugadapter-testsupport";
-import { expect } from "chai";
+import * as assert from "node:assert/strict";
 import * as path from "node:path";
 import { type ChildProcess } from "node:child_process";
+import { describe, it, beforeEach, afterEach } from "node:test";
 import { launchDapServer } from "../src/launcher";
 
 const DAP_SERVER = path.resolve(__dirname, "..", "..", "dist", "debug_server", "dapServer.js");
 
-describe("WarpoDebugSession", () => {
+void describe("WarpoDebugSession", () => {
   let dc: DebugClient;
   let serverChild: ChildProcess;
 
@@ -25,7 +26,7 @@ describe("WarpoDebugSession", () => {
     serverChild.kill();
   });
 
-  it("should accept breakpoints and return them verified", async () => {
+  void it("should accept breakpoints and return them verified", async () => {
     await dc.initializeRequest();
 
     const response = await dc.setBreakpointsRequest({
@@ -33,10 +34,10 @@ describe("WarpoDebugSession", () => {
       breakpoints: [{ line: 5 }, { line: 10 }],
     });
 
-    expect(response.body.breakpoints).to.have.lengthOf(2);
-    expect(response.body.breakpoints[0].verified).to.equal(true);
-    expect(response.body.breakpoints[0].line).to.equal(5);
-    expect(response.body.breakpoints[1].verified).to.equal(true);
-    expect(response.body.breakpoints[1].line).to.equal(10);
+    assert.equal(response.body.breakpoints.length, 2);
+    assert.equal(response.body.breakpoints[0].verified, true);
+    assert.equal(response.body.breakpoints[0].line, 5);
+    assert.equal(response.body.breakpoints[1].verified, true);
+    assert.equal(response.body.breakpoints[1].line, 10);
   });
 });

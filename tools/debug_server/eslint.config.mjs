@@ -85,6 +85,18 @@ export default tseslint.config(
   {
     rules: {
       "n/no-missing-import": "off",
+      "n/no-unsupported-features/node-builtins": [
+        "error",
+        {
+          version: ">=22.0.0",
+        },
+      ],
+    },
+  },
+  {
+    files: ["debugger/test/**/*.ts"],
+    rules: {
+      "n/no-extraneous-import": "off",
     },
   },
   {

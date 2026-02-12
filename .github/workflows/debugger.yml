@@ -8,6 +8,7 @@ on:
       - main
     paths:
       - "debugger/**"
+      - "tools/debug_server/**"
 
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
@@ -27,6 +28,7 @@ jobs:
           filters: |
             debugger:
               - 'debugger/**'
+              - 'tools/debug_server/**'
 
   check:
     if: >-
@@ -49,6 +51,5 @@ jobs:
       - name: Build debug runtime
         working-directory: .
         run: npm ci && npm run build:ts
-      - run: npm ci
       - run: npm run build
       - run: npm test
