@@ -17,6 +17,16 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "Warpo",
+      "properties": {
+        "warpo.debugRuntime": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the Warpo DAP server script (dapServer.js). When empty, the extension looks for it in node_modules/warpo. Useful for local development."
+        }
+      }
+    },
     "debuggers": [
       {
         "type": "warpo",

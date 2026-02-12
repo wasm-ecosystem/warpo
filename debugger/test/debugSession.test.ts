@@ -2,36 +2,27 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { DebugClient } from "@vscode/debugadapter-testsupport";
-import { createServer, Server } from "node:net";
-import { WarpoDebugSession } from "../src/debugSession";
 import { expect } from "chai";
+import * as path from "node:path";
+import { type ChildProcess } from "node:child_process";
+import { launchDapServer } from "../src/launcher";
 
-const PORT = 14711;
-
-function activeDebugServer(port: number): Server {
-  return createServer((socket) => {
-    const session = new WarpoDebugSession();
-    session.setRunAsServer(true);
-    session.start(socket, socket);
-  }).listen(port);
-}
-
-const server = activeDebugServer(PORT);
+const DAP_SERVER = path.resolve(__dirname, "..", "..", "dist", "debug_runtime", "dapServer.js");
 
 describe("WarpoDebugSession", () => {
   let dc: DebugClient;
+  let serverChild: ChildProcess;
 
   beforeEach(async () => {
+    const { port, child } = await launchDapServer(DAP_SERVER);
+    serverChild = child;
     dc = new DebugClient("", "", "warpo");
-    await dc.start(PORT);
+    await dc.start(port);
   });
 
   afterEach(async () => {
     await dc.stop();
-  });
-
-  after(() => {
-    server.close();
+    serverChild.kill();
   });
 
   it("should accept breakpoints and return them verified", async () => {

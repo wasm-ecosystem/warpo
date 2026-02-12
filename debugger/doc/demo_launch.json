@@ -6,12 +6,25 @@
       "type": "extensionHost",
       "request": "launch",
       "args": ["--extensionDevelopmentPath=${workspaceFolder}/debugger", "${workspaceFolder}/debugger/debuggee"],
+      "autoAttachChildProcesses": true,
       "sourceMaps": true,
       "outFiles": ["${workspaceFolder}/debugger/out/**/*.js"],
-      "resolveSourceMapLocations": ["${workspaceFolder}/debugger/**", "!**/node_modules/**"],
+      "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"],
       "skipFiles": [],
+      "cwd": "${workspaceFolder}/debugger"
+    },
+    {
+      "name": "Debug DAP Server (unit test)",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "test"],
       "cwd": "${workspaceFolder}/debugger",
-      "preLaunchTask": "npm: build - debugger"
+      "autoAttachChildProcesses": true,
+      "sourceMaps": true,
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"],
+      "preLaunchTask": "npm: build:ts"
     }
   ]
 }

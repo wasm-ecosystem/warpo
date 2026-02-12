@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { LoggingDebugSession, InitializedEvent, Thread, Breakpoint, logger } from "@vscode/debugadapter";
-import { DebugProtocol } from "@vscode/debugprotocol";
+import type { DebugProtocol } from "@vscode/debugprotocol";
 import * as path from "node:path";
 
 interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
@@ -74,7 +74,6 @@ export class WarpoDebugSession extends LoggingDebugSession {
     _args: DebugProtocol.ConfigurationDoneArguments
   ): void {
     super.configurationDoneRequest(response, _args);
-
     this.logAllBreakpoints();
   }
 
