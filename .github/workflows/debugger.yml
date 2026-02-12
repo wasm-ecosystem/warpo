@@ -46,6 +46,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - name: Build debug runtime
+        working-directory: .
+        run: npm ci && npm run build:ts
       - run: npm ci
       - run: npm run build
       - run: npm test
