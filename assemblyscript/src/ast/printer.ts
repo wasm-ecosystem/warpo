@@ -6,6 +6,7 @@ import {
   Node,
   NodeKind,
   Source,
+  JsonSource,
   ArrowKind,
   TypeNode,
   NamedTypeNode,
@@ -72,18 +73,30 @@ import {
   TypeDeclaration,
   VariableDeclaration,
   DecoratorNode,
+  CommentNode,
   ParameterNode,
   ParameterKind,
   ExportMember,
   SwitchCase,
   IndexSignatureNode,
+  VoidStatement,
   isTypeOmitted,
   FunctionLikeWithBodyBase,
   DeclarationBase,
   ComputedPropertyName,
   IPropertyName,
   TupleTypeNode,
+  ConstructorExpression,
+  ThisExpression,
+  TrueExpression,
+  FalseExpression,
+  SuperExpression,
+  NullExpression,
+  CompiledExpression,
+  OmittedExpression,
 } from "../ast";
+
+import { BaseVisitor } from "./visitor";
 
 import { operatorTokenToString } from "../tokenizer";
 
@@ -91,301 +104,20 @@ import { CharCode, indent, escapeString } from "../util";
 
 import { CommonFlags } from "../common";
 
-/** An AST builder. */
-export class ASTBuilder {
+/** An AST printer. */
+export class ASTPrinter extends BaseVisitor {
   /** Rebuilds the textual source from the specified AST, as far as possible. */
   static build(node: Node): string {
-    let builder = new ASTBuilder();
-    builder.visitNode(node);
-    return builder.finish();
+    let printer = new ASTPrinter();
+    node.accept(printer);
+    return printer.finish();
   }
 
   private sb: string[] = [];
   private indentLevel: i32 = 0;
 
-  // interface
-  visitNode(node: Node): void {
-    switch (node.kind) {
-      case NodeKind.Source: {
-        this.visitSource(<Source>node);
-        break;
-      }
-
-      // name
-      case NodeKind.ComputedPropertyName: {
-        this.visitComputedPropertyName(<ComputedPropertyName>node);
-        break;
-      }
-
-      // types
-
-      case NodeKind.NamedType: {
-        this.visitNamedTypeNode(<NamedTypeNode>node);
-        break;
-      }
-      case NodeKind.FunctionType: {
-        this.visitFunctionTypeNode(<FunctionTypeNode>node);
-        break;
-      }
-      case NodeKind.TupleType: {
-        this.visitTupleTypeNode(<TupleTypeNode>node);
-        break;
-      }
-
-      case NodeKind.TypeParameter: {
-        this.visitTypeParameter(<TypeParameterNode>node);
-        break;
-      }
-
-      // expressions
-
-      case NodeKind.False:
-      case NodeKind.Null:
-      case NodeKind.Super:
-      case NodeKind.This:
-      case NodeKind.True:
-      case NodeKind.Constructor:
-      case NodeKind.Identifier: {
-        this.visitIdentifierExpression(<IdentifierExpression>node);
-        break;
-      }
-      case NodeKind.Assertion: {
-        this.visitAssertionExpression(<AssertionExpression>node);
-        break;
-      }
-      case NodeKind.Binary: {
-        this.visitBinaryExpression(<BinaryExpression>node);
-        break;
-      }
-      case NodeKind.Call: {
-        this.visitCallExpression(<CallExpression>node);
-        break;
-      }
-      case NodeKind.Class: {
-        this.visitClassExpression(<ClassExpression>node);
-        break;
-      }
-      case NodeKind.Comma: {
-        this.visitCommaExpression(<CommaExpression>node);
-        break;
-      }
-      case NodeKind.ElementAccess: {
-        this.visitElementAccessExpression(<ElementAccessExpression>node);
-        break;
-      }
-      case NodeKind.Function: {
-        this.visitFunctionExpression(<FunctionExpression>node);
-        break;
-      }
-      case NodeKind.InstanceOf: {
-        this.visitInstanceOfExpression(<InstanceOfExpression>node);
-        break;
-      }
-      case NodeKind.Literal: {
-        this.visitLiteralExpression(<LiteralExpression>node);
-        break;
-      }
-      case NodeKind.New: {
-        this.visitNewExpression(<NewExpression>node);
-        break;
-      }
-      case NodeKind.Parenthesized: {
-        this.visitParenthesizedExpression(<ParenthesizedExpression>node);
-        break;
-      }
-      case NodeKind.PropertyAccess: {
-        this.visitPropertyAccessExpression(<PropertyAccessExpression>node);
-        break;
-      }
-      case NodeKind.Ternary: {
-        this.visitTernaryExpression(<TernaryExpression>node);
-        break;
-      }
-      case NodeKind.UnaryPostfix: {
-        this.visitUnaryPostfixExpression(<UnaryPostfixExpression>node);
-        break;
-      }
-      case NodeKind.UnaryPrefix: {
-        this.visitUnaryPrefixExpression(<UnaryPrefixExpression>node);
-        break;
-      }
-
-      // statements
-
-      case NodeKind.Block: {
-        this.visitBlockStatement(<BlockStatement>node);
-        break;
-      }
-      case NodeKind.Break: {
-        this.visitBreakStatement(<BreakStatement>node);
-        break;
-      }
-      case NodeKind.Continue: {
-        this.visitContinueStatement(<ContinueStatement>node);
-        break;
-      }
-      case NodeKind.Do: {
-        this.visitDoStatement(<DoStatement>node);
-        break;
-      }
-      case NodeKind.Empty: {
-        this.visitEmptyStatement(<EmptyStatement>node);
-        break;
-      }
-      case NodeKind.Export: {
-        this.visitExportStatement(<ExportStatement>node);
-        break;
-      }
-      case NodeKind.ExportDefault: {
-        this.visitExportDefaultStatement(<ExportDefaultStatement>node);
-        break;
-      }
-      case NodeKind.ExportImport: {
-        this.visitExportImportStatement(<ExportImportStatement>node);
-        break;
-      }
-      case NodeKind.Expression: {
-        this.visitExpressionStatement(<ExpressionStatement>node);
-        break;
-      }
-      case NodeKind.For: {
-        this.visitForStatement(<ForStatement>node);
-        break;
-      }
-      case NodeKind.ForOf: {
-        this.visitForOfStatement(<ForOfStatement>node);
-        break;
-      }
-      case NodeKind.If: {
-        this.visitIfStatement(<IfStatement>node);
-        break;
-      }
-      case NodeKind.Import: {
-        this.visitImportStatement(<ImportStatement>node);
-        break;
-      }
-      case NodeKind.Return: {
-        this.visitReturnStatement(<ReturnStatement>node);
-        break;
-      }
-      case NodeKind.Switch: {
-        this.visitSwitchStatement(<SwitchStatement>node);
-        break;
-      }
-      case NodeKind.Throw: {
-        this.visitThrowStatement(<ThrowStatement>node);
-        break;
-      }
-      case NodeKind.Try: {
-        this.visitTryStatement(<TryStatement>node);
-        break;
-      }
-      case NodeKind.Variable: {
-        this.visitVariableStatement(<VariableStatement>node);
-        break;
-      }
-      case NodeKind.While: {
-        this.visitWhileStatement(<WhileStatement>node);
-        break;
-      }
-      case NodeKind.Module: {
-        this.visitModuleDeclaration(<ModuleDeclaration>node);
-        break;
-      }
-
-      // declaration statements
-
-      case NodeKind.ClassDeclaration: {
-        this.visitClassDeclaration(<ClassDeclaration>node);
-        break;
-      }
-      case NodeKind.EnumDeclaration: {
-        this.visitEnumDeclaration(<EnumDeclaration>node);
-        break;
-      }
-      case NodeKind.EnumValueDeclaration: {
-        this.visitEnumValueDeclaration(<EnumValueDeclaration>node);
-        break;
-      }
-      case NodeKind.FieldDeclaration: {
-        this.visitFieldDeclaration(<FieldDeclaration>node);
-        break;
-      }
-      case NodeKind.FunctionDeclaration: {
-        this.visitFunctionDeclaration(<FunctionDeclaration>node);
-        break;
-      }
-      case NodeKind.ImportDeclaration: {
-        this.visitImportDeclaration(<ImportDeclaration>node);
-        break;
-      }
-      case NodeKind.InterfaceDeclaration: {
-        this.visitInterfaceDeclaration(<InterfaceDeclaration>node);
-        break;
-      }
-      case NodeKind.MethodDeclaration: {
-        this.visitMethodDeclaration(<MethodDeclaration>node);
-        break;
-      }
-      case NodeKind.NamespaceDeclaration: {
-        this.visitNamespaceDeclaration(<NamespaceDeclaration>node);
-        break;
-      }
-      case NodeKind.TypeDeclaration: {
-        this.visitTypeDeclaration(<TypeDeclaration>node);
-        break;
-      }
-      case NodeKind.VariableDeclaration: {
-        this.visitVariableDeclaration(<VariableDeclaration>node);
-        break;
-      }
-
-      // other
-
-      case NodeKind.Decorator: {
-        this.serializeDecorator(<DecoratorNode>node);
-        break;
-      }
-      case NodeKind.ExportMember: {
-        this.visitExportMember(<ExportMember>node);
-        break;
-      }
-      case NodeKind.Parameter: {
-        this.serializeParameter(<ParameterNode>node);
-        break;
-      }
-      case NodeKind.SwitchCase: {
-        this.visitSwitchCase(<SwitchCase>node);
-        break;
-      }
-      case NodeKind.IndexSignature: {
-        this.visitIndexSignature(<IndexSignatureNode>node);
-        break;
-      }
-      default:
-        assert(false);
-    }
-  }
-
   visitPropertyName(node: IPropertyName): void {
-    switch (node.kind) {
-      case NodeKind.False:
-      case NodeKind.Null:
-      case NodeKind.Super:
-      case NodeKind.This:
-      case NodeKind.True:
-      case NodeKind.Constructor:
-      case NodeKind.Identifier: {
-        this.visitIdentifierExpression(<IdentifierExpression>node);
-        break;
-      }
-      case NodeKind.ComputedPropertyName: {
-        this.visitComputedPropertyName(<ComputedPropertyName>node);
-        break;
-      }
-      default:
-        assert(false);
-    }
+    this.visitNode(node);
   }
 
   // detail node
@@ -397,25 +129,14 @@ export class ASTBuilder {
     }
   }
 
+  visitJsonSource(source: JsonSource): void {
+    this.visitSource(source);
+  }
+
   // types
 
   visitTypeNode(node: TypeNode): void {
-    switch (node.kind) {
-      case NodeKind.NamedType: {
-        this.visitNamedTypeNode(<NamedTypeNode>node);
-        break;
-      }
-      case NodeKind.FunctionType: {
-        this.visitFunctionTypeNode(<FunctionTypeNode>node);
-        break;
-      }
-      case NodeKind.TupleType: {
-        this.visitTupleTypeNode(<TupleTypeNode>node);
-        break;
-      }
-      default:
-        assert(false);
-    }
+    this.visitNode(node);
   }
 
   visitTypeName(node: TypeName): void {
@@ -502,6 +223,20 @@ export class ASTBuilder {
     }
   }
 
+  visitTypeParameterNode(node: TypeParameterNode): void {
+    this.visitTypeParameter(node);
+  }
+
+  visitParameterNode(node: ParameterNode): void {
+    this.serializeParameter(node);
+  }
+
+  visitDecoratorNode(node: DecoratorNode): void {
+    this.serializeDecorator(node);
+  }
+
+  visitCommentNode(node: CommentNode): void {}
+
   // name
   visitComputedPropertyName(node: ComputedPropertyName): void {
     this.sb.push("[");
@@ -514,6 +249,10 @@ export class ASTBuilder {
   visitIdentifierExpression(node: IdentifierExpression): void {
     if (node.isQuoted) this.visitStringLiteral(node.text);
     else this.sb.push(node.text);
+  }
+
+  visitConstructorExpression(node: ConstructorExpression): void {
+    this.visitIdentifierExpression(node);
   }
 
   visitArrayLiteralExpression(node: ArrayLiteralExpression): void {
@@ -565,6 +304,8 @@ export class ASTBuilder {
       sb.push("{}");
     }
   }
+
+  visitOmittedExpression(node: OmittedExpression): void {}
 
   visitAssertionExpression(node: AssertionExpression): void {
     let sb = this.sb;
@@ -640,7 +381,7 @@ export class ASTBuilder {
 
   visitClassExpression(node: ClassExpression): void {
     let declaration = node.declaration;
-    this.visitClassDeclaration(declaration);
+    this.printClassDeclaration(declaration, false);
   }
 
   visitCommaExpression(node: CommaExpression): void {
@@ -741,6 +482,10 @@ export class ASTBuilder {
     this.visitStringLiteral(node.value);
   }
 
+  visitSuperExpression(node: SuperExpression): void {
+    this.visitIdentifierExpression(node);
+  }
+
   visitTemplateLiteralExpression(node: TemplateLiteralExpression): void {
     let sb = this.sb;
     let tag = node.tag;
@@ -759,6 +504,18 @@ export class ASTBuilder {
     sb.push("`");
   }
 
+  visitThisExpression(node: ThisExpression): void {
+    this.visitIdentifierExpression(node);
+  }
+
+  visitTrueExpression(node: TrueExpression): void {
+    this.visitIdentifierExpression(node);
+  }
+
+  visitFalseExpression(node: FalseExpression): void {
+    this.visitIdentifierExpression(node);
+  }
+
   visitRegexpLiteralExpression(node: RegexpLiteralExpression): void {
     let sb = this.sb;
     sb.push("/");
@@ -771,6 +528,10 @@ export class ASTBuilder {
     this.sb.push("new ");
     this.visitTypeName(node.typeName);
     this.visitArguments(node.typeArguments, node.args);
+  }
+
+  visitNullExpression(node: NullExpression): void {
+    this.visitIdentifierExpression(node);
   }
 
   visitParenthesizedExpression(node: ParenthesizedExpression): void {
@@ -818,6 +579,10 @@ export class ASTBuilder {
   visitUnaryPrefixExpression(node: UnaryPrefixExpression): void {
     this.sb.push(operatorTokenToString(node.operator));
     this.visitNode(node.operand);
+  }
+
+  visitCompiledExpression(node: CompiledExpression): void {
+    assert(false);
   }
 
   // statements
@@ -883,7 +648,11 @@ export class ASTBuilder {
     }
   }
 
-  visitClassDeclaration(node: ClassDeclaration, isDefault: bool = false): void {
+  visitClassDeclaration(node: ClassDeclaration): void {
+    this.printClassDeclaration(node, false);
+  }
+
+  private printClassDeclaration(node: ClassDeclaration, isDefault: bool): void {
     let decorators = node.decorators;
     if (decorators) {
       for (let i = 0, k = decorators.length; i < k; ++i) {
@@ -973,7 +742,11 @@ export class ASTBuilder {
     /* nop */
   }
 
-  visitEnumDeclaration(node: EnumDeclaration, isDefault: bool = false): void {
+  visitEnumDeclaration(node: EnumDeclaration): void {
+    this.printEnumDeclaration(node, false);
+  }
+
+  private printEnumDeclaration(node: EnumDeclaration, isDefault: bool): void {
     let sb = this.sb;
     if (isDefault) {
       sb.push("export default ");
@@ -1064,23 +837,23 @@ export class ASTBuilder {
     let declaration = node.declaration;
     switch (declaration.kind) {
       case NodeKind.EnumDeclaration: {
-        this.visitEnumDeclaration(<EnumDeclaration>declaration, true);
+        this.printEnumDeclaration(<EnumDeclaration>declaration, true);
         break;
       }
       case NodeKind.FunctionDeclaration: {
-        this.visitFunctionDeclaration(<FunctionDeclaration>declaration, true);
+        this.printFunctionDeclaration(<FunctionDeclaration>declaration, true);
         break;
       }
       case NodeKind.ClassDeclaration: {
-        this.visitClassDeclaration(<ClassDeclaration>declaration, true);
+        this.printClassDeclaration(<ClassDeclaration>declaration, true);
         break;
       }
       case NodeKind.InterfaceDeclaration: {
-        this.visitInterfaceDeclaration(<InterfaceDeclaration>declaration, true);
+        this.printInterfaceDeclaration(<InterfaceDeclaration>declaration, true);
         break;
       }
       case NodeKind.NamespaceDeclaration: {
-        this.visitNamespaceDeclaration(<NamespaceDeclaration>declaration, true);
+        this.printNamespaceDeclaration(<NamespaceDeclaration>declaration, true);
         break;
       }
       default:
@@ -1152,7 +925,11 @@ export class ASTBuilder {
     this.visitNode(node.body);
   }
 
-  visitFunctionDeclaration(node: FunctionDeclaration, isDefault: bool = false): void {
+  visitFunctionDeclaration(node: FunctionDeclaration): void {
+    this.printFunctionDeclaration(node, false);
+  }
+
+  private printFunctionDeclaration(node: FunctionDeclaration, isDefault: bool): void {
     let sb = this.sb;
     let decorators = node.decorators;
     if (decorators) {
@@ -1310,7 +1087,7 @@ export class ASTBuilder {
     this.visitStringLiteralExpression(node.path);
   }
 
-  visitIndexSignature(node: IndexSignatureNode): void {
+  visitIndexSignatureNode(node: IndexSignatureNode): void {
     let sb = this.sb;
     sb.push("[key: ");
     this.visitTypeNode(node.keyType);
@@ -1318,7 +1095,11 @@ export class ASTBuilder {
     this.visitTypeNode(node.valueType);
   }
 
-  visitInterfaceDeclaration(node: InterfaceDeclaration, isDefault: bool = false): void {
+  visitInterfaceDeclaration(node: InterfaceDeclaration): void {
+    this.printInterfaceDeclaration(node, false);
+  }
+
+  private printInterfaceDeclaration(node: InterfaceDeclaration, isDefault: bool): void {
     let decorators = node.decorators;
     if (decorators) {
       for (let i = 0, k = decorators.length; i < k; ++i) {
@@ -1377,7 +1158,11 @@ export class ASTBuilder {
     this.visitFunctionWithBodyBase(node.toDeclarationBase(), node.toFunctionLikeWithBodyBase());
   }
 
-  visitNamespaceDeclaration(node: NamespaceDeclaration, isDefault: bool = false): void {
+  visitNamespaceDeclaration(node: NamespaceDeclaration): void {
+    this.printNamespaceDeclaration(node, false);
+  }
+
+  private printNamespaceDeclaration(node: NamespaceDeclaration, isDefault: bool): void {
     let decorators = node.decorators;
     if (decorators) {
       for (let i = 0, k = decorators.length; i < k; ++i) {
@@ -1571,6 +1356,11 @@ export class ASTBuilder {
       sb.push(", ");
       this.visitVariableDeclaration(node.declarations[i]);
     }
+  }
+
+  visitVoidStatement(node: VoidStatement): void {
+    this.sb.push("void ");
+    this.visitNode(node.expression);
   }
 
   visitWhileStatement(node: WhileStatement): void {

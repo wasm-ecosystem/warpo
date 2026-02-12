@@ -17,6 +17,7 @@ import { ExpressionRef } from "./module";
 
 import { Type } from "./types";
 import { JsonObject } from "./json";
+import { IVisitor } from "./ast/visitor";
 
 /** Indicates the kind of a node. */
 export const enum NodeKind {
@@ -103,6 +104,13 @@ export const enum NodeKind {
   ComputedPropertyName,
 }
 
+export interface INode {
+  // FIXME: should be inside Node interface
+  range: Range;
+  kind: NodeKind;
+  accept(visitor: IVisitor): void;
+}
+
 /** Base class of all nodes. */
 export abstract class Node implements INode {
   constructor(
@@ -111,6 +119,8 @@ export abstract class Node implements INode {
     /** Source range. */
     public range: Range
   ) {}
+
+  abstract accept(visitor: IVisitor): void;
 
   // types
 
@@ -698,12 +708,6 @@ export abstract class Node implements INode {
 
 // union
 
-export interface INode {
-  // FIXME: should be inside Node interface
-  range: Range;
-  kind: NodeKind;
-}
-
 /** {@link IdentifierExpression} | {@link ComputedPropertyName} */
 export interface IPropertyName extends INode {
   getReadableName(): string;
@@ -720,6 +724,9 @@ export class ComputedPropertyName extends Node implements IPropertyName {
   }
   getReadableName(): string {
     return this.range.toString();
+  }
+  accept(visitor: IVisitor): void {
+    visitor.visitComputedPropertyName(this);
   }
 }
 
@@ -756,6 +763,9 @@ export class TypeName extends Node {
   ) {
     super(NodeKind.TypeName, range);
   }
+  accept(visitor: IVisitor): void {
+    visitor.visitTypeName(this);
+  }
 }
 
 /** Represents a named type. */
@@ -771,6 +781,10 @@ export class NamedTypeNode extends TypeNode {
     range: Range
   ) {
     super(NodeKind.NamedType, isNullable, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitNamedTypeNode(this);
   }
 
   /** Checks if this type node has type arguments. */
@@ -819,6 +833,10 @@ export class FunctionTypeNode extends TypeNode {
     super(NodeKind.FunctionType, isNullable, range);
   }
 
+  accept(visitor: IVisitor): void {
+    visitor.visitFunctionTypeNode(this);
+  }
+
   hasGenericComponent(typeParameterNodes: TypeParameterNode[]): bool {
     let parameterNodes = this.parameters;
     for (let i = 0, k = parameterNodes.length; i < k; ++i) {
@@ -838,6 +856,10 @@ export class TupleTypeNode extends TypeNode {
   ) {
     super(NodeKind.TupleType, false, range);
     assert(elementTypes.length > 0);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitTupleTypeNode(this);
   }
 
   hasGenericComponent(typeParameterNodes: TypeParameterNode[]): bool {
@@ -861,6 +883,10 @@ export class TypeParameterNode extends Node {
     range: Range
   ) {
     super(NodeKind.TypeParameter, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitTypeParameterNode(this);
   }
 }
 
@@ -889,6 +915,10 @@ export class ParameterNode extends Node {
     range: Range
   ) {
     super(NodeKind.Parameter, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitParameterNode(this);
   }
 
   /** Implicit field declaration, if applicable. */
@@ -1019,6 +1049,10 @@ export class DecoratorNode extends Node {
   ) {
     super(NodeKind.Decorator, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitDecoratorNode(this);
+  }
 }
 
 /** Comment kinds. */
@@ -1043,6 +1077,10 @@ export class CommentNode extends Node {
   ) {
     super(NodeKind.Comment, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitCommentNode(this);
+  }
 }
 
 // expressions
@@ -1064,6 +1102,9 @@ export class IdentifierExpression extends Expression implements IPropertyName {
   }
   getReadableName(): string {
     return this.text;
+  }
+  accept(visitor: IVisitor): void {
+    visitor.visitIdentifierExpression(this);
   }
 }
 
@@ -1100,6 +1141,10 @@ export class ArrayLiteralExpression extends LiteralExpression {
   ) {
     super(LiteralKind.Array, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitArrayLiteralExpression(this);
+  }
 }
 
 /** Indicates the kind of an assertion. */
@@ -1128,6 +1173,10 @@ export class AssertionExpression extends Expression {
   ) {
     super(NodeKind.Assertion, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitAssertionExpression(this);
+  }
 }
 
 /** Represents a binary expression. */
@@ -1144,6 +1193,10 @@ export class BinaryExpression extends Expression {
   ) {
     super(NodeKind.Binary, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitBinaryExpression(this);
+  }
 }
 
 /** Represents a call expression. */
@@ -1159,6 +1212,10 @@ export class CallExpression extends Expression {
     range: Range
   ) {
     super(NodeKind.Call, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitCallExpression(this);
   }
 
   /** Gets the type arguments range for reporting. */
@@ -1192,6 +1249,10 @@ export class ClassExpression extends Expression {
   ) {
     super(NodeKind.Class, declaration.range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitClassExpression(this);
+  }
 }
 
 /** Represents a comma expression composed of multiple expressions. */
@@ -1204,6 +1265,10 @@ export class CommaExpression extends Expression {
   ) {
     super(NodeKind.Comma, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitCommaExpression(this);
+  }
 }
 
 /** Represents a `constructor` expression. */
@@ -1214,6 +1279,10 @@ export class ConstructorExpression extends IdentifierExpression {
   ) {
     super("constructor", false, range);
     this.kind = NodeKind.Constructor;
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitConstructorExpression(this);
   }
 }
 
@@ -1229,6 +1298,10 @@ export class ElementAccessExpression extends Expression {
   ) {
     super(NodeKind.ElementAccess, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitElementAccessExpression(this);
+  }
 }
 
 /** Represents a float literal expression. */
@@ -1241,6 +1314,10 @@ export class FloatLiteralExpression extends LiteralExpression {
   ) {
     super(LiteralKind.Float, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitFloatLiteralExpression(this);
+  }
 }
 
 /** Represents a function expression using the 'function' keyword. */
@@ -1250,6 +1327,10 @@ export class FunctionExpression extends Expression {
     public declaration: FunctionDeclaration
   ) {
     super(NodeKind.Function, declaration.range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitFunctionExpression(this);
   }
 }
 
@@ -1265,6 +1346,10 @@ export class InstanceOfExpression extends Expression {
   ) {
     super(NodeKind.InstanceOf, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitInstanceOfExpression(this);
+  }
 }
 
 /** Represents an integer literal expression. */
@@ -1276,6 +1361,10 @@ export class IntegerLiteralExpression extends LiteralExpression {
     range: Range
   ) {
     super(LiteralKind.Integer, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitIntegerLiteralExpression(this);
   }
 }
 
@@ -1292,6 +1381,10 @@ export class NewExpression extends Expression {
     range: Range
   ) {
     super(NodeKind.New, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitNewExpression(this);
   }
 
   /** Gets the type arguments range for reporting. */
@@ -1324,6 +1417,10 @@ export class NullExpression extends IdentifierExpression {
     super("null", false, range);
     this.kind = NodeKind.Null;
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitNullExpression(this);
+  }
 }
 
 /** Represents an object literal expression. */
@@ -1338,6 +1435,10 @@ export class ObjectLiteralExpression extends LiteralExpression {
   ) {
     super(LiteralKind.Object, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitObjectLiteralExpression(this);
+  }
 }
 
 /** Represents an omitted expression, e.g. within an array literal. */
@@ -1347,6 +1448,10 @@ export class OmittedExpression extends Expression {
     range: Range
   ) {
     super(NodeKind.Omitted, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitOmittedExpression(this);
   }
 }
 
@@ -1359,6 +1464,10 @@ export class ParenthesizedExpression extends Expression {
     range: Range
   ) {
     super(NodeKind.Parenthesized, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitParenthesizedExpression(this);
   }
 }
 
@@ -1374,6 +1483,10 @@ export class PropertyAccessExpression extends Expression {
   ) {
     super(NodeKind.PropertyAccess, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitPropertyAccessExpression(this);
+  }
 }
 
 /** Represents a regular expression literal expression. */
@@ -1387,6 +1500,10 @@ export class RegexpLiteralExpression extends LiteralExpression {
     range: Range
   ) {
     super(LiteralKind.RegExp, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitRegexpLiteralExpression(this);
   }
 }
 
@@ -1404,6 +1521,10 @@ export class TernaryExpression extends Expression {
   ) {
     super(NodeKind.Ternary, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitTernaryExpression(this);
+  }
 }
 
 /** Represents a string literal expression. */
@@ -1416,6 +1537,10 @@ export class StringLiteralExpression extends LiteralExpression {
   ) {
     super(LiteralKind.String, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitStringLiteralExpression(this);
+  }
 }
 
 /** Represents a `super` expression. */
@@ -1426,6 +1551,10 @@ export class SuperExpression extends IdentifierExpression {
   ) {
     super("super", false, range);
     this.kind = NodeKind.Super;
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitSuperExpression(this);
   }
 }
 
@@ -1445,6 +1574,10 @@ export class TemplateLiteralExpression extends LiteralExpression {
   ) {
     super(LiteralKind.Template, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitTemplateLiteralExpression(this);
+  }
 }
 
 /** Represents a `this` expression. */
@@ -1455,6 +1588,10 @@ export class ThisExpression extends IdentifierExpression {
   ) {
     super("this", false, range);
     this.kind = NodeKind.This;
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitThisExpression(this);
   }
 }
 
@@ -1467,6 +1604,10 @@ export class TrueExpression extends IdentifierExpression {
     super("true", false, range);
     this.kind = NodeKind.True;
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitTrueExpression(this);
+  }
 }
 
 /** Represents a `false` expression. */
@@ -1477,6 +1618,10 @@ export class FalseExpression extends IdentifierExpression {
   ) {
     super("false", false, range);
     this.kind = NodeKind.False;
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitFalseExpression(this);
   }
 }
 
@@ -1508,6 +1653,10 @@ export class UnaryPostfixExpression extends UnaryExpression {
   ) {
     super(NodeKind.UnaryPostfix, operator, operand, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitUnaryPostfixExpression(this);
+  }
 }
 
 /** Represents a unary prefix expression, e.g. a negation. */
@@ -1522,6 +1671,10 @@ export class UnaryPrefixExpression extends UnaryExpression {
   ) {
     super(NodeKind.UnaryPrefix, operator, operand, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitUnaryPrefixExpression(this);
+  }
 }
 
 /** Represents a special pre-compiled expression. If the expression has side-effects, special care has to be taken. */
@@ -1535,6 +1688,10 @@ export class CompiledExpression extends Expression {
     range: Range
   ) {
     super(NodeKind.Compiled, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitCompiledExpression(this);
   }
 }
 
@@ -1584,6 +1741,10 @@ export class Source extends Node {
     let pos = internalPath.lastIndexOf(PATH_DELIMITER);
     this.simplePath = pos >= 0 ? internalPath.substring(pos + 1) : internalPath;
     this.range.source = this;
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitSource(this);
   }
 
   /** Path used internally. */
@@ -1654,6 +1815,10 @@ export class JsonSource extends Source {
     text: string
   ) {
     super(sourceKind, normalizedPath, text);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitJsonSource(this);
   }
 }
 
@@ -1729,6 +1894,10 @@ export class IndexSignatureNode extends Node {
   ) {
     super(NodeKind.IndexSignature, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitIndexSignatureNode(this);
+  }
 }
 
 export class VariableLikeBase {
@@ -1780,6 +1949,10 @@ export class BlockStatement extends Statement {
   ) {
     super(NodeKind.Block, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitBlockStatement(this);
+  }
 }
 
 /** Represents a `break` statement. */
@@ -1791,6 +1964,10 @@ export class BreakStatement extends Statement {
     range: Range
   ) {
     super(NodeKind.Break, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitBreakStatement(this);
   }
 }
 
@@ -1827,6 +2004,10 @@ export class ClassDeclaration extends DeclarationStatement {
     super(NodeKind.ClassDeclaration, decorators, flags, range);
   }
 
+  accept(visitor: IVisitor): void {
+    visitor.visitClassDeclaration(this);
+  }
+
   /** Index signature, if present. */
   indexSignature: IndexSignatureNode | null = null;
 
@@ -1853,6 +2034,10 @@ export class ContinueStatement extends Statement {
   ) {
     super(NodeKind.Continue, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitContinueStatement(this);
+  }
 }
 
 /** Represents a `do` statement. */
@@ -1867,6 +2052,10 @@ export class DoStatement extends Statement {
   ) {
     super(NodeKind.Do, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitDoStatement(this);
+  }
 }
 
 /** Represents an empty statement, i.e., a semicolon terminating nothing. */
@@ -1876,6 +2065,10 @@ export class EmptyStatement extends Statement {
     range: Range
   ) {
     super(NodeKind.Empty, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitEmptyStatement(this);
   }
 }
 
@@ -1894,6 +2087,10 @@ export class EnumDeclaration extends DeclarationStatement {
     range: Range
   ) {
     super(NodeKind.EnumDeclaration, decorators, flags, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitEnumDeclaration(this);
   }
   get nameRange(): Range {
     return this.name.range;
@@ -1914,6 +2111,10 @@ export class EnumValueDeclaration extends VariableLikeDeclarationStatement {
   ) {
     super(NodeKind.EnumValueDeclaration, name, null, flags, null, initializer, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitEnumValueDeclaration(this);
+  }
 }
 
 /** Represents an `export import` statement of an interface. */
@@ -1928,6 +2129,10 @@ export class ExportImportStatement extends Statement {
   ) {
     super(NodeKind.ExportImport, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitExportImportStatement(this);
+  }
 }
 
 /** Represents a member of an `export` statement. */
@@ -1941,6 +2146,10 @@ export class ExportMember extends Node {
     range: Range
   ) {
     super(NodeKind.ExportMember, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitExportMember(this);
   }
 }
 
@@ -1972,6 +2181,10 @@ export class ExportStatement extends Statement {
     }
   }
 
+  accept(visitor: IVisitor): void {
+    visitor.visitExportStatement(this);
+  }
+
   /** Internal path being referenced, if `path` is set. */
   internalPath: string | null;
 }
@@ -1986,6 +2199,10 @@ export class ExportDefaultStatement extends Statement {
   ) {
     super(NodeKind.ExportDefault, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitExportDefaultStatement(this);
+  }
 }
 
 /** Represents an expression that is used as a statement. */
@@ -1995,6 +2212,10 @@ export class ExpressionStatement extends Statement {
     public expression: Expression
   ) {
     super(NodeKind.Expression, expression.range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitExpressionStatement(this);
   }
 }
 
@@ -2018,6 +2239,10 @@ export class FieldDeclaration extends VariableLikeDeclarationStatement {
   ) {
     super(NodeKind.FieldDeclaration, name, decorators, flags, type, initializer, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitFieldDeclaration(this);
+  }
 }
 
 /** Represents a `for` statement. */
@@ -2036,6 +2261,10 @@ export class ForStatement extends Statement {
   ) {
     super(NodeKind.For, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitForStatement(this);
+  }
 }
 
 /** Represents a `for..of` statement. */
@@ -2051,6 +2280,10 @@ export class ForOfStatement extends Statement {
     range: Range
   ) {
     super(NodeKind.ForOf, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitForOfStatement(this);
   }
 }
 
@@ -2099,6 +2332,10 @@ export class FunctionDeclaration extends DeclarationStatement {
   ) {
     super(NodeKind.FunctionDeclaration, decorators, flags, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitFunctionDeclaration(this);
+  }
   get nameRange(): Range {
     return this.name.range;
   }
@@ -2141,6 +2378,10 @@ export class MethodDeclaration extends DeclarationStatement {
   ) {
     super(NodeKind.MethodDeclaration, decorators, flags, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitMethodDeclaration(this);
+  }
   get nameRange(): Range {
     return this.name.range;
   }
@@ -2171,6 +2412,10 @@ export class IfStatement extends Statement {
   ) {
     super(NodeKind.If, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitIfStatement(this);
+  }
 }
 
 /** Represents an `import` declaration part of an {@link ImportStatement}. */
@@ -2184,6 +2429,10 @@ export class ImportDeclaration extends DeclarationStatement {
     range: Range
   ) {
     super(NodeKind.ImportDeclaration, null, CommonFlags.None, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitImportDeclaration(this);
   }
   get nameRange(): Range {
     return this.name.range;
@@ -2214,6 +2463,10 @@ export class ImportStatement extends Statement {
     this.internalPath = mangleInternalPath(normalizedPath);
   }
 
+  accept(visitor: IVisitor): void {
+    visitor.visitImportStatement(this);
+  }
+
   /** Internal path being referenced. */
   internalPath: string;
 }
@@ -2241,6 +2494,10 @@ export class InterfaceDeclaration extends ClassDeclaration {
     super(name, decorators, flags, typeParameters, extendsType, implementsTypes, members, range);
     this.kind = NodeKind.InterfaceDeclaration;
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitInterfaceDeclaration(this);
+  }
 }
 
 /** Represents a `namespace` declaration. */
@@ -2259,6 +2516,10 @@ export class NamespaceDeclaration extends DeclarationStatement {
   ) {
     super(NodeKind.NamespaceDeclaration, decorators, flags, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitNamespaceDeclaration(this);
+  }
   get nameRange(): Range {
     return this.name.range;
   }
@@ -2274,6 +2535,10 @@ export class ReturnStatement extends Statement {
   ) {
     super(NodeKind.Return, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitReturnStatement(this);
+  }
 }
 
 /** Represents a single `case` within a `switch` statement. */
@@ -2287,6 +2552,10 @@ export class SwitchCase extends Node {
     range: Range
   ) {
     super(NodeKind.SwitchCase, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitSwitchCase(this);
   }
 
   get isDefault(): bool {
@@ -2306,6 +2575,10 @@ export class SwitchStatement extends Statement {
   ) {
     super(NodeKind.Switch, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitSwitchStatement(this);
+  }
 }
 
 /** Represents a `throw` statement. */
@@ -2317,6 +2590,10 @@ export class ThrowStatement extends Statement {
     range: Range
   ) {
     super(NodeKind.Throw, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitThrowStatement(this);
   }
 }
 
@@ -2336,6 +2613,10 @@ export class TryStatement extends Statement {
   ) {
     super(NodeKind.Try, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitTryStatement(this);
+  }
 }
 
 /** Represents a `module` statement. */
@@ -2349,6 +2630,10 @@ export class ModuleDeclaration extends Statement {
     range: Range
   ) {
     super(NodeKind.Module, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitModuleDeclaration(this);
   }
 }
 
@@ -2379,6 +2664,10 @@ export class TypeDeclaration extends DeclarationStatement {
   ) {
     super(NodeKind.TypeDeclaration, decorators, flags, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitTypeDeclaration(this);
+  }
   get nameRange(): Range {
     return this.name.range;
   }
@@ -2405,6 +2694,10 @@ export class VariableDeclaration extends VariableLikeDeclarationStatement {
   ) {
     super(NodeKind.VariableDeclaration, name, decorators, flags, type, initializer, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitVariableDeclaration(this);
+  }
 }
 
 /** Represents a variable statement wrapping {@link VariableDeclaration}s. */
@@ -2419,6 +2712,10 @@ export class VariableStatement extends Statement {
   ) {
     super(NodeKind.Variable, range);
   }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitVariableStatement(this);
+  }
 }
 
 /** Represents a void statement dropping an expression's value. */
@@ -2430,6 +2727,10 @@ export class VoidStatement extends Statement {
     range: Range
   ) {
     super(NodeKind.Void, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitVoidStatement(this);
   }
 }
 
@@ -2444,6 +2745,10 @@ export class WhileStatement extends Statement {
     range: Range
   ) {
     super(NodeKind.While, range);
+  }
+
+  accept(visitor: IVisitor): void {
+    visitor.visitWhileStatement(this);
   }
 }
 
