@@ -2253,12 +2253,12 @@ declare class String implements Iterable<string> {
   charCodeAt(index: i32): i32;
   codePointAt(index: i32): i32;
   concat(other: string): string;
-  endsWith(other: string): bool;
+  endsWith(other: string, position?: i32): bool;
   indexOf(other: string, fromIndex?: i32): i32;
   lastIndexOf(other: string, fromIndex?: i32): i32;
   localeCompare(other: string): i32;
   includes(other: string): bool;
-  startsWith(other: string): bool;
+  startsWith(other: string, position?: i32): bool;
   substr(start: i32, length?: i32): string;
   substring(start: i32, end?: i32): string;
   trim(): string;
