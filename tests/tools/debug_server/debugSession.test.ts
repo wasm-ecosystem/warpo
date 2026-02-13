@@ -3,19 +3,21 @@
 
 import { DebugClient } from "@vscode/debugadapter-testsupport";
 import * as assert from "node:assert/strict";
-import * as path from "node:path";
 import { type ChildProcess } from "node:child_process";
+import * as path from "node:path";
 import { describe, it, beforeEach, afterEach } from "node:test";
-import { launchDapServer } from "../../../debugger/src/launcher";
+import { fileURLToPath } from "node:url";
+import launcher from "../../../debugger/src/launcher";
 
-const DAP_SERVER = path.resolve(__dirname, "..", "..", "..", "dist", "debug_server", "dapServer.js");
+const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
+const DAP_SERVER = path.resolve(DIRNAME, "..", "..", "..", "dist", "debug_server", "dapServer.js");
 
 void describe("WarpoDebugSession", () => {
   let dc: DebugClient;
   let serverChild: ChildProcess;
 
   beforeEach(async () => {
-    const { port, child } = await launchDapServer(DAP_SERVER);
+    const { port, child } = await launcher.launchDapServer(DAP_SERVER);
     serverChild = child;
     dc = new DebugClient("", "", "warpo");
     await dc.start(port);

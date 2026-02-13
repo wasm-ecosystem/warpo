@@ -50,6 +50,14 @@ jobs:
       - name: Build debug server
         working-directory: .
         run: npm ci && npm run build:ts
+
       - name: Test debug server
         working-directory: .
         run: npm run test:debug_server
+
+      - name: Install debugger deps
+        working-directory: debugger
+        run: npm ci
+      - name: Package debugger extension
+        working-directory: debugger
+        run: npm run package

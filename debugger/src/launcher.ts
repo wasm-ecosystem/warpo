@@ -25,3 +25,6 @@ export function launchDapServer(script: string): Promise<DapServerHandle> {
     });
   });
 }
+
+const launcher = { launchDapServer };
+export default launcher;
