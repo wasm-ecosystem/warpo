@@ -58,6 +58,9 @@ jobs:
       - name: Install debugger deps
         working-directory: debugger
         run: npm ci
+      - name: Build debugger extension
+        working-directory: debugger
+        run: npm run build
       - name: Package debugger extension
         working-directory: debugger
         run: npm run package
