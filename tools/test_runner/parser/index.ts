@@ -158,8 +158,7 @@ export class Parser {
 
 function getTotalFunctionCount(functionCovInfoMap: Map<string, CovInfo>, sourceCodePath: string): number {
   const totalFunctionCount = new Set(
-    functionCovInfoMap
-      .keys()
+    Array.from(functionCovInfoMap.keys())
       .map((functionName) => cleanupFunctionVariants(functionName) ?? functionName)
       .filter((functionName) => isFunctionInsideFile(sourceCodePath, functionName))
   ).size;

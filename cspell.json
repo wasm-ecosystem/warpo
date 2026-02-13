@@ -35,6 +35,8 @@
     "tests/bootstrap/tmp/**",
     "tests/frontend/compiler/**",
     "tests/dwarf/cases/*.txt",
-    "warpo_extension/std/wasi_snapshot_preview1/bindings/wasi_snapshot_preview1.ts"
+    "warpo_extension/std/wasi_snapshot_preview1/bindings/wasi_snapshot_preview1.ts",
+    "debugger/node_modules/**",
+    "debugger/out/**"
   ]
 }

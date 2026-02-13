@@ -1,0 +1,66 @@
+name: debugger
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+  push:
+    branches:
+      - main
+    paths:
+      - "debugger/**"
+      - "tools/debug_server/**"
+      - "tests/tools/debug_server/**"
+
+concurrency:
+  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      debugger: ${{ steps.filter.outputs.debugger }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            debugger:
+              - 'debugger/**'
+              - 'tools/debug_server/**'
+              - 'tests/tools/debug_server/**'
+
+  check:
+    if: >-
+      github.event_name == 'push' ||
+      needs.changes.outputs.debugger == 'true' ||
+      contains(github.event.pull_request.labels.*.name, 'debugger')
+    needs: [changes]
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build debug server
+        working-directory: .
+        run: npm ci && npm run build:ts
+
+      - name: Test debug server
+        working-directory: .
+        run: npm run test:debug_server
+
+      - name: Install debugger deps
+        working-directory: debugger
+        run: npm ci
+      - name: Build debugger extension
+        working-directory: debugger
+        run: npm run build
+      - name: Package debugger extension
+        working-directory: debugger
+        run: npm run package

@@ -26,6 +26,8 @@ cplusplus
 cppcoreguidelines
 ctest
 currp
+debugadapter
+debuggee
 dend
 Dependee
 dependees
@@ -141,6 +143,7 @@ signedness
 significand
 significandf
 sincos
+sonarjs
 SSAified
 STATICARRAY
 STREQUAL

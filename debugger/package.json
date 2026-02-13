@@ -1,0 +1,77 @@
+{
+  "name": "warpo-debugger",
+  "displayName": "Warpo Debugger",
+  "description": "Debug adapter for Warpo WebAssembly projects",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "publisher": "wasm-ecosystem",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wasm-ecosystem/warpo"
+  },
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Debuggers"
+  ],
+  "activationEvents": [
+    "onDebugResolve:warpo"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "Warpo",
+      "properties": {
+        "warpo.debugRuntime": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the Warpo DAP server script (dapServer.js). When empty, the extension looks for it in node_modules/warpo. Useful for local development."
+        }
+      }
+    },
+    "debuggers": [
+      {
+        "type": "warpo",
+        "label": "Warpo Debug",
+        "languages": [
+          "typescript"
+        ],
+        "configurationAttributes": {
+          "launch": {
+            "required": [
+              "program"
+            ],
+            "properties": {
+              "program": {
+                "type": "string",
+                "description": "Path to the wasm file to debug."
+              }
+            }
+          }
+        },
+        "initialConfigurations": [
+          {
+            "type": "warpo",
+            "request": "launch",
+            "name": "Warpo Debug",
+            "program": "${workspaceFolder}/build/output.wasm"
+          }
+        ]
+      }
+    ]
+  },
+  "scripts": {
+    "build": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "npx eslint src/ test/",
+    "test": "node --import tsx --test test/**/*.test.ts",
+    "package": "vsce package"
+  },
+  "dependencies": {
+    "@vscode/debugadapter": "^1.65.0",
+    "@vscode/debugprotocol": "^1.65.0"
+  },
+  "devDependencies": {}
+}
