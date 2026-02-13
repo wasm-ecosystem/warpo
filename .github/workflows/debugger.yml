@@ -9,6 +9,7 @@ on:
     paths:
       - "debugger/**"
       - "tools/debug_server/**"
+      - "tests/tools/debug_server/**"
 
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
@@ -29,6 +30,7 @@ jobs:
             debugger:
               - 'debugger/**'
               - 'tools/debug_server/**'
+              - 'tests/tools/debug_server/**'
 
   check:
     if: >-
@@ -45,12 +47,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Build debug runtime
+      - name: Build debug server
         working-directory: .
         run: npm ci && npm run build:ts
-      - name: Build debugger extension
-        working-directory: debugger
-        run: npm run build
-      - name: Test debugger extension
-        working-directory: debugger
-        run: npm test
+      - name: Test debug server
+        working-directory: .
+        run: npm run test:debug_server

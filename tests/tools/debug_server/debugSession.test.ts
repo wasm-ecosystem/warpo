@@ -6,9 +6,9 @@ import * as assert from "node:assert/strict";
 import * as path from "node:path";
 import { type ChildProcess } from "node:child_process";
 import { describe, it, beforeEach, afterEach } from "node:test";
-import { launchDapServer } from "../src/launcher";
+import { launchDapServer } from "../../../debugger/src/launcher";
 
-const DAP_SERVER = path.resolve(__dirname, "..", "..", "dist", "debug_server", "dapServer.js");
+const DAP_SERVER = path.resolve(__dirname, "..", "..", "..", "dist", "debug_server", "dapServer.js");
 
 void describe("WarpoDebugSession", () => {
   let dc: DebugClient;
