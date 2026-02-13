@@ -20,8 +20,8 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-        projectService: true,
-        tsconfigRootDir: path.resolve(import.meta.dirname, ".."),
+        project: ["./tools/tsconfig.json"],
+        tsconfigRootDir: path.resolve(import.meta.dirname, "..", ".."),
       },
     },
   },
@@ -64,8 +64,8 @@ export default tseslint.config(
       "unicorn/consistent-assert": "off",
       eqeqeq: "error",
       "prefer-spread": "error",
-      "dot-notation": "off",
-      "@typescript-eslint/dot-notation": "error",
+      "dot-notation": "error",
+      "@typescript-eslint/dot-notation": "off",
       "import/no-unresolved": "error",
       "@typescript-eslint/no-unused-vars": [
         "error",

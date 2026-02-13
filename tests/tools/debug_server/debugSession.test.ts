@@ -6,27 +6,54 @@ import * as assert from "node:assert/strict";
 import * as path from "node:path";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import { fileURLToPath } from "node:url";
-import launcher, { type DapServerHandle } from "../../../debugger/src/launcher";
+import { launchDapServer, type DapServerHandle } from "./launcher.js";
 
 const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
 const DAP_SERVER = path.resolve(DIRNAME, "..", "..", "..", "dist", "debug_server", "dapServer.js");
+
+const waitForExit = (child: DapServerHandle["child"], timeoutMs: number): Promise<boolean> =>
+  new Promise((resolve) => {
+    if (child.exitCode !== null) {
+      resolve(true);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      child.removeListener("exit", onExit);
+      resolve(false);
+    }, timeoutMs);
+
+    const onExit = () => {
+      clearTimeout(timer);
+      resolve(true);
+    };
+
+    child.once("exit", onExit);
+  });
 
 void describe("WarpoDebugSession", () => {
   let dc: DebugClient;
   let serverChild: DapServerHandle["child"];
 
   beforeEach(async () => {
-    const { port, child } = await launcher.launchDapServer(DAP_SERVER);
+    const { port, child } = await launchDapServer(DAP_SERVER);
     serverChild = child;
     dc = new DebugClient("", "", "warpo");
     await dc.start(port);
   });
 
   afterEach(async () => {
-    // dc.stop() sends disconnect request, then closes the client socket.
-    // The server sees the socket close and calls server.close(), exiting cleanly.
-    await dc.stop();
-    serverChild.kill();
+    try {
+      await dc.stop();
+    } catch {
+      // Ignore shutdown errors from the client.
+    }
+
+    const exited = await waitForExit(serverChild, 1000);
+    if (!exited) {
+      serverChild.kill();
+      await waitForExit(serverChild, 1000);
+    }
   });
 
   void it("should accept breakpoints and return them verified", async () => {

@@ -27,7 +27,7 @@
     "docs:build": "vitepress build docs",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
-    "lint": "npx eslint --config tools/debug_server/eslint.config.mjs tools/debug_server/ debugger/src/ tests/tools/debug_server/",
+    "lint": "npx eslint --config tools/debug_server/eslint.config.mjs tools/debug_server/ tests/tools/debug_server/ && npx eslint --config debugger/eslint.config.mjs debugger/src/",
     "cspell": "cspell ."
   },
   "license": "Apache-2.0",

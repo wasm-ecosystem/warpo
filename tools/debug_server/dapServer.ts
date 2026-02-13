@@ -10,10 +10,16 @@ const server = createServer((socket) => {
   const session = new WarpoDebugSession();
   session.setRunAsServer(true);
   session.start(socket, socket);
-  socket.on("close", () => {
-    session.dispose();
-    server.close();
-  });
+  let closed = false;
+  const closeSession = () => {
+    if (!closed) {
+      closed = true;
+      session.dispose();
+      server.close();
+    }
+  };
+  socket.on("close", closeSession);
+  socket.on("error", closeSession);
 });
 
 server.listen(port, "127.0.0.1", () => {
