@@ -180,7 +180,6 @@ export namespace TypeBuilderErrorReason {
 /** Binaryen feature constants. */
 export const enum FeatureFlags {
   MVP = 0 /* _BinaryenFeatureMVP */,
-  Atomics = 1 /* _BinaryenFeatureAtomics */,
   MutableGlobals = 2 /* _BinaryenFeatureMutableGlobals */,
   TruncSat = 4 /* _BinaryenFeatureNontrappingFPToInt */,
   SIMD = 8 /* _BinaryenFeatureSIMD128 */,
@@ -202,13 +201,6 @@ export const enum FeatureFlags {
   BulkMemoryOpt = 524288 /* _BinaryenFeatureBulkMemoryOpt */,
   CallIndirectOverlong = 1048576 /* _BinaryenFeatureCallIndirectOverlong */,
   All = 4194303 /* _BinaryenFeatureAll */,
-}
-
-/** Binaryen memory order constants. */
-export const enum MemoryOrder {
-  Unordered = 0 /* BinaryenMemoryOrderUnordered */,
-  SeqCst = 1 /* BinaryenMemoryOrderSeqCst */,
-  AcqRel = 2 /* BinaryenMemoryOrderAcqRel */,
 }
 
 /** Binaryen expression id constants. See wasm-delegations.def in Binaryen. */
@@ -237,11 +229,6 @@ export const enum ExpressionId {
   MemoryGrow = 21 /* _BinaryenMemoryGrowId */,
   Nop = 22 /* _BinaryenNopId */,
   Unreachable = 23 /* _BinaryenUnreachableId */,
-  AtomicRMW = 24 /* _BinaryenAtomicRMWId */,
-  AtomicCmpxchg = 25 /* _BinaryenAtomicCmpxchgId */,
-  AtomicWait = 26 /* _BinaryenAtomicWaitId */,
-  AtomicNotify = 27 /* _BinaryenAtomicNotifyId */,
-  AtomicFence = 28 /* _BinaryenAtomicFenceId */,
   SIMDExtract = 29 /* _BinaryenSIMDExtractId */,
   SIMDReplace = 30 /* _BinaryenSIMDReplaceId */,
   SIMDShuffle = 31 /* _BinaryenSIMDShuffleId */,
@@ -1074,22 +1061,6 @@ export const enum BinaryOp {
   GeUSize,
 }
 
-/** Binaryen atomic read-modify-write operation constants. */
-export const enum AtomicRMWOp {
-  /** i32.atomic.rmw.add, i32.atomic.rmw8.add_u, i32.atomic.rmw16.add_u, i64.atomic.rmw.add, i64.atomic.rmw8.add_u, i64.atomic.rmw16.add_u, i64.atomic.rmw32.add_u */
-  Add = 0 /* _BinaryenAtomicRMWAdd */,
-  /** i32.atomic.rmw.sub, i32.atomic.rmw8.sub_u, i32.atomic.rmw16.sub_u, i64.atomic.rmw.sub, i64.atomic.rmw8.sub_u, i64.atomic.rmw16.sub_u, i64.atomic.rmw32.sub_u */
-  Sub = 1 /* _BinaryenAtomicRMWSub */,
-  /** i32.atomic.rmw.and, i32.atomic.rmw8.and_u, i32.atomic.rmw16.and_u, i64.atomic.rmw.and, i64.atomic.rmw8.and_u, i64.atomic.rmw16.and_u, i64.atomic.rmw32.and_u */
-  And = 2 /* _BinaryenAtomicRMWAnd */,
-  /** i32.atomic.rmw.or, i32.atomic.rmw8.or_u, i32.atomic.rmw16.or_u, i64.atomic.rmw.or, i64.atomic.rmw8.or_u, i64.atomic.rmw16.or_u, i64.atomic.rmw32.or_u */
-  Or = 3 /* _BinaryenAtomicRMWOr */,
-  /** i32.atomic.rmw.xor, i32.atomic.rmw8.xor_u, i32.atomic.rmw16.xor_u, i64.atomic.rmw.xor, i64.atomic.rmw8.xor_u, i64.atomic.rmw16.xor_u, i64.atomic.rmw32.xor_u */
-  Xor = 4 /* _BinaryenAtomicRMWXor */,
-  /** i32.atomic.rmw.xchg, i32.atomic.rmw8.xchg_u, i32.atomic.rmw16.xchg_u, i64.atomic.rmw.xchg, i64.atomic.rmw8.xchg_u, i64.atomic.rmw16.xchg_u, i64.atomic.rmw32.xchg_u */
-  Xchg = 5 /* _BinaryenAtomicRMWXchg */,
-}
-
 /** Binaryen SIMD extract operation constants. */
 export const enum SIMDExtractOp {
   /** i8x16.extract_lane_s */
@@ -1602,93 +1573,6 @@ export class Module {
     return binaryen._BinaryenStore(this.ref, bytes, offset, align, ptr, value, type, cStr);
   }
 
-  atomic_load(
-    bytes: Index,
-    ptr: ExpressionRef,
-    type: TypeRef,
-    offset: Index = 0,
-    name: string = CommonNames.DefaultMemory,
-    order: MemoryOrder = MemoryOrder.SeqCst
-  ): ExpressionRef {
-    let cStr = this.allocStringCached(name);
-    return binaryen._BinaryenAtomicLoad(this.ref, bytes, offset, type, ptr, cStr, order as u8);
-  }
-
-  atomic_store(
-    bytes: Index,
-    ptr: ExpressionRef,
-    value: ExpressionRef,
-    type: TypeRef,
-    offset: Index = 0,
-    name: string = CommonNames.DefaultMemory,
-    order: MemoryOrder = MemoryOrder.SeqCst
-  ): ExpressionRef {
-    let cStr = this.allocStringCached(name);
-    return binaryen._BinaryenAtomicStore(this.ref, bytes, offset, ptr, value, type, cStr, order as u8);
-  }
-
-  atomic_rmw(
-    op: AtomicRMWOp,
-    bytes: Index,
-    offset: Index,
-    ptr: ExpressionRef,
-    value: ExpressionRef,
-    type: TypeRef,
-    name: string = CommonNames.DefaultMemory,
-    order: MemoryOrder = MemoryOrder.SeqCst
-  ): ExpressionRef {
-    let cStr = this.allocStringCached(name);
-    return binaryen._BinaryenAtomicRMW(this.ref, op, bytes, offset, ptr, value, type, cStr, order as u8);
-  }
-
-  atomic_cmpxchg(
-    bytes: Index,
-    offset: Index,
-    ptr: ExpressionRef,
-    expected: ExpressionRef,
-    replacement: ExpressionRef,
-    type: TypeRef,
-    name: string = CommonNames.DefaultMemory,
-    order: MemoryOrder = MemoryOrder.SeqCst
-  ): ExpressionRef {
-    let cStr = this.allocStringCached(name);
-    return binaryen._BinaryenAtomicCmpxchg(
-      this.ref,
-      bytes,
-      offset,
-      ptr,
-      expected,
-      replacement,
-      type,
-      cStr,
-      order as u8
-    );
-  }
-
-  atomic_wait(
-    ptr: ExpressionRef,
-    expected: ExpressionRef,
-    timeout: ExpressionRef,
-    expectedType: TypeRef,
-    name: string = CommonNames.DefaultMemory
-  ): ExpressionRef {
-    let cStr = this.allocStringCached(name);
-    return binaryen._BinaryenAtomicWait(this.ref, ptr, expected, timeout, expectedType, cStr);
-  }
-
-  atomic_notify(
-    ptr: ExpressionRef,
-    notifyCount: ExpressionRef,
-    name: string = CommonNames.DefaultMemory
-  ): ExpressionRef {
-    let cStr = this.allocStringCached(name);
-    return binaryen._BinaryenAtomicNotify(this.ref, ptr, notifyCount, cStr);
-  }
-
-  atomic_fence(name: string | null = null): ExpressionRef {
-    return binaryen._BinaryenAtomicFence(this.ref);
-  }
-
   // statements
 
   local_set(index: Index, value: ExpressionRef, isManaged: bool): ExpressionRef {
@@ -2184,16 +2068,11 @@ export class Module {
     binaryen._BinaryenAddTableImport(this.ref, cStr1, cStr2, cStr3);
   }
 
-  addMemoryImport(
-    internalName: string,
-    externalModuleName: string,
-    externalBaseName: string,
-    shared: bool = false
-  ): void {
+  addMemoryImport(internalName: string, externalModuleName: string, externalBaseName: string): void {
     let cStr1 = this.allocStringCached(internalName);
     let cStr2 = this.allocStringCached(externalModuleName);
     let cStr3 = this.allocStringCached(externalBaseName);
-    binaryen._BinaryenAddMemoryImport(this.ref, cStr1, cStr2, cStr3, shared);
+    binaryen._BinaryenAddMemoryImport(this.ref, cStr1, cStr2, cStr3, false);
   }
 
   addGlobalImport(
@@ -2233,8 +2112,7 @@ export class Module {
     segments: MemorySegment[],
     target: Target,
     exportName: string | null = null,
-    name: string = CommonNames.DefaultMemory,
-    shared: bool = false
+    name: string = CommonNames.DefaultMemory
   ): void {
     let cExportName = this.allocStringCached(exportName);
     let cName = this.allocStringCached(name);
@@ -2267,7 +2145,7 @@ export class Module {
       cOffsets,
       cSizes,
       k,
-      shared,
+      false,
       false,
       cName
     );
@@ -3344,11 +3222,10 @@ export const enum SideEffects {
   ReadsTable = 256 /* _BinaryenSideEffectReadsTable */,
   WritesTable = 512 /* _BinaryenSideEffectWritesTable */,
   ImplicitTrap = 1024 /* _BinaryenSideEffectImplicitTrap */,
-  IsAtomic = 2048 /* _BinaryenSideEffectIsAtomic */,
   Throws = 4096 /* _BinaryenSideEffectThrows */,
   DanglingPop = 8192 /* _BinaryenSideEffectDanglingPop */,
   TrapsNeverHappen = 16384 /* _BinaryenSideEffectTrapsNeverHappen */,
-  Any = 32767 /* _BinaryenSideEffectAny */,
+  Any = 30719 /* _BinaryenSideEffectAny */,
 }
 
 export function getSideEffects(expr: ExpressionRef, module: ModuleRef): SideEffects {

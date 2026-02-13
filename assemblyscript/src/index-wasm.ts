@@ -55,11 +55,6 @@ export function setMaximumMemory(options: Options, maximumMemory: u32): void {
   options.maximumMemory = maximumMemory;
 }
 
-/** Sets the `sharedMemory` option. */
-export function setSharedMemory(options: Options, sharedMemory: bool): void {
-  options.sharedMemory = sharedMemory;
-}
-
 /** Sets the `importTable` option. */
 export function setImportTable(options: Options, importTable: bool): void {
   options.importTable = importTable;
@@ -153,8 +148,6 @@ export const FEATURE_NONTRAPPING_F2I = Feature.NontrappingF2I;
 export const FEATURE_BULK_MEMORY = Feature.BulkMemory;
 /** SIMD types and operations. */
 export const FEATURE_SIMD = Feature.Simd;
-/** Threading and atomic operations. */
-export const FEATURE_THREADS = Feature.Threads;
 /** Exception handling operations. */
 export const FEATURE_EXCEPTION_HANDLING = Feature.ExceptionHandling;
 /** Tail call operations. */

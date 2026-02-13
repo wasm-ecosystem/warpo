@@ -6,13 +6,10 @@
   "Low memory limit exceeded by static data: {0} > {1}": 104,
   "Module requires at least '{0}' pages of initial memory.": 105,
   "Module requires at least '{0}' pages of maximum memory.": 106,
-  "Shared memory requires maximum memory to be defined.": 107,
-  "Shared memory requires feature 'threads' to be enabled.": 108,
   "Transform '{0}': {1}": 109,
   "Start function name '{0}' is invalid or conflicts with another export.": 110,
   "Element '{0}' not found.": 111,
   "Exchange of '{0}' values is not supported by all embeddings": 112,
-
   "Conversion from type '{0}' to '{1}' requires an explicit cast.": 200,
   "Conversion from type '{0}' to '{1}' will require an explicit cast when switching between 32/64-bit.": 201,
   "Type '{0}' cannot be changed to type '{1}'.": 202,
@@ -52,7 +49,6 @@
   "Definitive assignment has no effect on local variables.": 239,
   "Ambiguous operator overload '{0}' (conflicting overloads '{1}' and '{2}').": 240,
   "A computed property name must reference a const global variable.": 241,
-
   "Importing the table disables some indirect call optimizations.": 901,
   "Exporting the table disables some indirect call optimizations.": 902,
   "Expression compiles to a dynamic check at runtime.": 903,
@@ -61,7 +57,6 @@
   "Unnecessary definite assignment.": 906,
   "'NaN' does not compare equal to any other value including itself. Use isNaN(x) instead.": 907,
   "Comparison with -0.0 is sign insensitive. Use Object.is(x, -0.0) if the sign matters.": 908,
-
   "Unterminated string literal.": 1002,
   "Identifier expected.": 1003,
   "'{0}' expected.": 1005,
@@ -127,7 +122,6 @@
   "A default export can only be used in a module.": 1319,
   "An expression of type '{0}' cannot be tested for truthiness.": 1345,
   "An identifier or keyword cannot immediately follow a numeric literal.": 1351,
-
   "Duplicate identifier '{0}'.": 2300,
   "Cannot find name '{0}'.": 2304,
   "Module '{0}' has no exported member '{1}'.": 2305,
@@ -205,7 +199,6 @@
   "Type '{0}' has no call signatures.": 2757,
   "Get accessor '{0}' must be at least as accessible as the setter.": 2808,
   "This member cannot have an 'override' modifier because it is not declared in the base class '{0}'.": 4117,
-
   "File '{0}' not found.": 6054,
   "Numeric separators are not allowed here.": 6188,
   "Multiple consecutive numeric separators are not permitted.": 6189,

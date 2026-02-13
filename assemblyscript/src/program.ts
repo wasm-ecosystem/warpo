@@ -74,9 +74,10 @@ import {
   DeclarationBase,
   VariableLikeBase,
   ClassBase,
-  PropertyName,
+  IPropertyName,
   ComputedPropertyName,
 } from "./ast";
+import { IVisitor } from "./ast/visitor";
 
 import { Module, ExpressionRef, FunctionRef, MemorySegment, getFunctionName, TypeRef } from "./module";
 
@@ -1155,11 +1156,6 @@ export class Program extends DiagnosticEmitter {
       CommonNames.ASC_FEATURE_SIMD,
       Type.bool,
       i64_new(options.hasFeature(Feature.Simd) ? 1 : 0, 0)
-    );
-    this.registerConstantInteger(
-      CommonNames.ASC_FEATURE_THREADS,
-      Type.bool,
-      i64_new(options.hasFeature(Feature.Threads) ? 1 : 0, 0)
     );
     this.registerConstantInteger(
       CommonNames.ASC_FEATURE_EXCEPTION_HANDLING,
@@ -2408,7 +2404,7 @@ export class Program extends DiagnosticEmitter {
     }
   }
 
-  private definePropertyName(name: PropertyName, classPrototype: ClassPrototype): CompiledNameNode | null {
+  private definePropertyName(name: IPropertyName, classPrototype: ClassPrototype): CompiledNameNode | null {
     if (name.kind == NodeKind.ComputedPropertyName) {
       // don't use resolver, since at this time, ClassPrototype does not finish definition.
       // resolve class will generate incomplete Class Element.
@@ -4132,6 +4128,7 @@ export class CompiledNameNode extends Node {
   ) {
     super(NodeKind.Compiled, range);
   }
+  accept(_visitor: IVisitor): void {}
   static fromComputedPropertyName(computedPropertyName: ComputedPropertyName, lookupName: string): CompiledNameNode {
     return new CompiledNameNode(CompiledNameKind.ComputedPropertyName, lookupName, computedPropertyName.range);
   }

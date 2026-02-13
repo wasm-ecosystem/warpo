@@ -14,8 +14,6 @@ export const enum Feature {
   BulkMemory = 1 << 3, // see: https://github.com/WebAssembly/bulk-memory-operations
   /** SIMD types and operations. */
   Simd = 1 << 4, // see: https://github.com/WebAssembly/simd
-  /** Threading and atomic operations. */
-  Threads = 1 << 5, // see: https://github.com/WebAssembly/threads
   /** Exception handling operations. */
   ExceptionHandling = 1 << 6, // see: https://github.com/WebAssembly/exception-handling
   /** Tail call operations. */
@@ -49,8 +47,6 @@ export function featureToString(feature: Feature): string {
       return "bulk-memory";
     case Feature.Simd:
       return "simd";
-    case Feature.Threads:
-      return "threads";
     case Feature.ExceptionHandling:
       return "exception-handling";
     case Feature.TailCalls:

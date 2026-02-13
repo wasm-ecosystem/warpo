@@ -204,8 +204,6 @@ export class Options {
   initialMemory: u32 = 0;
   /** Maximum memory size, in pages. */
   maximumMemory: u32 = 0;
-  /** If true, memory is declared as shared. */
-  sharedMemory: bool = false;
   /** If true, imported memory is zero filled. */
   zeroFilledMemory: bool = false;
   /** If true, imports the function table provided by the embedder. */
@@ -440,7 +438,6 @@ export class Compiler extends DiagnosticEmitter {
     if (options.hasFeature(Feature.NontrappingF2I)) featureFlags |= FeatureFlags.TruncSat;
     if (options.hasFeature(Feature.BulkMemory)) featureFlags |= FeatureFlags.BulkMemory;
     if (options.hasFeature(Feature.Simd)) featureFlags |= FeatureFlags.SIMD;
-    if (options.hasFeature(Feature.Threads)) featureFlags |= FeatureFlags.Atomics;
     if (options.hasFeature(Feature.ExceptionHandling)) featureFlags |= FeatureFlags.ExceptionHandling;
     if (options.hasFeature(Feature.TailCalls)) featureFlags |= FeatureFlags.TailCall;
     if (options.hasFeature(Feature.ReferenceTypes)) featureFlags |= FeatureFlags.ReferenceTypes;
@@ -685,7 +682,6 @@ export class Compiler extends DiagnosticEmitter {
 
     let initialPages: u32 = 0;
     let maximumPages = Module.UNLIMITED_MEMORY;
-    let isSharedMemory = false;
 
     if (options.memoryBase /* is specified */ || memorySegments.length) {
       initialPages = u32(i64_low(i64_shr_u(i64_align(memoryOffset, 0x10000), i64_new(16))));
@@ -704,18 +700,6 @@ export class Compiler extends DiagnosticEmitter {
         this.error(DiagnosticCode.Module_requires_at_least_0_pages_of_maximum_memory, null, initialPages.toString());
       } else {
         maximumPages = options.maximumMemory;
-      }
-    }
-
-    if (options.sharedMemory) {
-      isSharedMemory = true;
-      if (!options.maximumMemory) {
-        this.error(DiagnosticCode.Shared_memory_requires_maximum_memory_to_be_defined, null);
-        isSharedMemory = false;
-      }
-      if (!options.hasFeature(Feature.Threads)) {
-        this.error(DiagnosticCode.Shared_memory_requires_feature_threads_to_be_enabled, null);
-        isSharedMemory = false;
       }
     }
 
@@ -740,18 +724,12 @@ export class Compiler extends DiagnosticEmitter {
       memorySegments,
       options.target,
       options.exportMemory ? ExportNames.Memory : null,
-      CommonNames.DefaultMemory,
-      isSharedMemory
+      CommonNames.DefaultMemory
     );
 
     // import memory if requested (default memory is named '0' by Binaryen)
     if (options.importMemory) {
-      module.addMemoryImport(
-        CommonNames.DefaultMemory,
-        ImportNames.DefaultNamespace,
-        ImportNames.Memory,
-        isSharedMemory
-      );
+      module.addMemoryImport(CommonNames.DefaultMemory, ImportNames.DefaultNamespace, ImportNames.Memory);
     }
   }
 
