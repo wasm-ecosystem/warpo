@@ -26,7 +26,6 @@ import {
   FunctionRef,
   ExpressionId,
   GlobalRef,
-  FeatureFlags,
   Index,
   getExpressionId,
   getExpressionType,
@@ -409,11 +408,6 @@ export class Compiler extends DiagnosticEmitter {
   /** Elements, that are module exports, already processed */
   doneModuleExports: Set<Element> = new Set();
 
-  /** Compiles a {@link Program} to a {@link Module} using the specified options. */
-  static compile(program: Program): Module {
-    return new Compiler(program).compile();
-  }
-
   /** Constructs a new compiler for a {@link Program} using the specified options. */
   constructor(program: Program) {
     super(program.diagnostics);
@@ -432,22 +426,6 @@ export class Compiler extends DiagnosticEmitter {
         module.setLowMemoryUnused(false);
       }
     }
-    let featureFlags: FeatureFlags = 0;
-    if (options.hasFeature(Feature.SignExtension)) featureFlags |= FeatureFlags.SignExt;
-    if (options.hasFeature(Feature.MutableGlobals)) featureFlags |= FeatureFlags.MutableGlobals;
-    if (options.hasFeature(Feature.NontrappingF2I)) featureFlags |= FeatureFlags.TruncSat;
-    if (options.hasFeature(Feature.BulkMemory)) featureFlags |= FeatureFlags.BulkMemory;
-    if (options.hasFeature(Feature.Simd)) featureFlags |= FeatureFlags.SIMD;
-    if (options.hasFeature(Feature.ExceptionHandling)) featureFlags |= FeatureFlags.ExceptionHandling;
-    if (options.hasFeature(Feature.TailCalls)) featureFlags |= FeatureFlags.TailCall;
-    if (options.hasFeature(Feature.ReferenceTypes)) featureFlags |= FeatureFlags.ReferenceTypes;
-    if (options.hasFeature(Feature.MultiValue)) featureFlags |= FeatureFlags.MultiValue;
-    if (options.hasFeature(Feature.GC)) featureFlags |= FeatureFlags.GC;
-    if (options.hasFeature(Feature.Memory64)) featureFlags |= FeatureFlags.Memory64;
-    if (options.hasFeature(Feature.RelaxedSimd)) featureFlags |= FeatureFlags.RelaxedSIMD;
-    if (options.hasFeature(Feature.ExtendedConst)) featureFlags |= FeatureFlags.ExtendedConst;
-    module.setFeatures(featureFlags);
-
     // set up the main start function
     let startFunctionInstance = program.makeNativeFunction(
       BuiltinNames.start,
@@ -468,11 +446,6 @@ export class Compiler extends DiagnosticEmitter {
 
     // initialize lookup maps, built-ins, imports, exports, etc.
     this.program.initialize();
-
-    // Binaryen treats all function references as being leaked to the outside world when
-    // the module isn't marked as closed-world (see WebAssembly/binaryen#7135). Therefore,
-    // we should mark the module as closed-world when we're definitely sure it is.
-    module.setClosedWorld(true);
 
     // obtain the main start function
     let startFunctionInstance = this.currentFlow.targetFunction;
@@ -740,14 +713,12 @@ export class Compiler extends DiagnosticEmitter {
     // import and/or export table if requested (default table is named '0' by Binaryen)
     if (options.importTable) {
       module.addTableImport(CommonNames.DefaultTable, ImportNames.DefaultNamespace, ImportNames.Table);
-      module.setClosedWorld(false);
       if (options.pedantic && options.willOptimize) {
         this.pedantic(DiagnosticCode.Importing_the_table_disables_some_indirect_call_optimizations, null);
       }
     }
     if (options.exportTable) {
       module.addTableExport(CommonNames.DefaultTable, ExportNames.Table);
-      module.setClosedWorld(false);
       if (options.pedantic && options.willOptimize) {
         this.pedantic(DiagnosticCode.Exporting_the_table_disables_some_indirect_call_optimizations, null);
       }
@@ -834,7 +805,6 @@ export class Compiler extends DiagnosticEmitter {
             let exportName = prefix + name;
             if (!module.hasExport(exportName)) {
               module.addFunctionExport(functionInstance.internalName, exportName);
-              if (functionInstance.signature.returnType.kind == TypeKind.Func) this.module.setClosedWorld(false);
             }
             return;
           }
@@ -853,7 +823,6 @@ export class Compiler extends DiagnosticEmitter {
           let exportName = prefix + name;
           if (!module.hasExport(exportName)) {
             module.addGlobalExport(element.internalName, exportName);
-            if (global.type.kind == TypeKind.Func) this.module.setClosedWorld(false);
           }
           if (global.type == Type.v128) {
             this.warning(

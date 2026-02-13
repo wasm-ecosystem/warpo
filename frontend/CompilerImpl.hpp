@@ -55,10 +55,11 @@ public:
   FrontendCompiler &operator=(FrontendCompiler &&) = delete;
   ~FrontendCompiler();
 
-  CompilationResult compile(std::vector<std::string> const &entryFilePaths, Config const &config);
+  CompilationResult compile(std::vector<std::string> const &entryFilePaths);
 
   std::set<void *> allocedPtrs_;
   AsModule asModule_;
+  Config const &config_;
 };
 
 } // namespace warpo::frontend

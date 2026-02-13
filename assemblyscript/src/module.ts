@@ -177,32 +177,6 @@ export namespace TypeBuilderErrorReason {
   }
 }
 
-/** Binaryen feature constants. */
-export const enum FeatureFlags {
-  MVP = 0 /* _BinaryenFeatureMVP */,
-  MutableGlobals = 2 /* _BinaryenFeatureMutableGlobals */,
-  TruncSat = 4 /* _BinaryenFeatureNontrappingFPToInt */,
-  SIMD = 8 /* _BinaryenFeatureSIMD128 */,
-  BulkMemory = 16 /* _BinaryenFeatureBulkMemory */,
-  SignExt = 32 /* _BinaryenFeatureSignExt */,
-  ExceptionHandling = 64 /* _BinaryenFeatureExceptionHandling */,
-  TailCall = 128 /* _BinaryenFeatureTailCall */,
-  ReferenceTypes = 256 /* _BinaryenFeatureReferenceTypes */,
-  MultiValue = 512 /* _BinaryenFeatureMultivalue */,
-  GC = 1024 /* _BinaryenFeatureGC */,
-  Memory64 = 2048 /* _BinaryenFeatureMemory64 */,
-  RelaxedSIMD = 4096 /* _BinaryenFeatureRelaxedSIMD */,
-  ExtendedConst = 8192 /* _BinaryenFeatureExtendedConst */,
-  Stringref = 16384 /* _BinaryenFeatureStrings */,
-  MultiMemory = 32768 /* _BinaryenFeatureMultiMemory */,
-  StackSwitching = 65536 /* _BinaryenFeatureStackSwitching */,
-  SharedEverything = 131072 /* _BinaryenFeatureSharedEverything */,
-  FP16 = 262144 /* _BinaryenFeatureFP16 */,
-  BulkMemoryOpt = 524288 /* _BinaryenFeatureBulkMemoryOpt */,
-  CallIndirectOverlong = 1048576 /* _BinaryenFeatureCallIndirectOverlong */,
-  All = 4194303 /* _BinaryenFeatureAll */,
-}
-
 /** Binaryen expression id constants. See wasm-delegations.def in Binaryen. */
 export const enum ExpressionId {
   Invalid = 0 /* _BinaryenInvalidId */,
@@ -2211,42 +2185,6 @@ export class Module {
 
   // meta (global)
 
-  getOptimizeLevel(): i32 {
-    return binaryen._BinaryenGetOptimizeLevel();
-  }
-
-  setOptimizeLevel(level: i32): void {
-    binaryen._BinaryenSetOptimizeLevel(level);
-  }
-
-  getShrinkLevel(): i32 {
-    return binaryen._BinaryenGetShrinkLevel();
-  }
-
-  setShrinkLevel(level: i32): void {
-    binaryen._BinaryenSetShrinkLevel(level);
-  }
-
-  getDebugInfo(): bool {
-    return binaryen._BinaryenGetDebugInfo();
-  }
-
-  setDebugInfo(on: bool): void {
-    binaryen._BinaryenSetDebugInfo(on);
-  }
-
-  getClosedWorld(): bool {
-    return binaryen._BinaryenGetClosedWorld();
-  }
-
-  setClosedWorld(on: bool): void {
-    binaryen._BinaryenSetClosedWorld(on);
-  }
-
-  getLowMemoryUnused(): bool {
-    return binaryen._BinaryenGetLowMemoryUnused();
-  }
-
   setLowMemoryUnused(on: bool): void {
     binaryen._BinaryenSetLowMemoryUnused(on);
   }
@@ -2333,280 +2271,6 @@ export class Module {
 
   // meta (module)
 
-  getFeatures(): FeatureFlags {
-    return binaryen._BinaryenModuleGetFeatures(this.ref);
-  }
-
-  setFeatures(featureFlags: FeatureFlags): void {
-    if (featureFlags & FeatureFlags.BulkMemory) featureFlags |= FeatureFlags.BulkMemoryOpt;
-    binaryen._BinaryenModuleSetFeatures(this.ref, featureFlags);
-  }
-
-  runPasses(passes: string[], func: FunctionRef = 0): void {
-    let numNames = passes.length;
-    let cStrs = new Array<StringRef>(numNames);
-    for (let i = 0; i < numNames; ++i) {
-      cStrs[i] = allocString(passes[i]);
-    }
-    let cArr = allocPtrArray(cStrs);
-    if (func) {
-      binaryen._BinaryenFunctionRunPasses(func, this.ref, cArr, numNames);
-    } else {
-      binaryen._BinaryenModuleRunPasses(this.ref, cArr, numNames);
-    }
-    binaryen._free(cArr);
-    for (let i = numNames - 1; i >= 0; --i) binaryen._free(cStrs[i]);
-  }
-
-  optimize(optimizeLevel: i32, shrinkLevel: i32, debugInfo: bool = false, zeroFilledMemory: bool = false): void {
-    // Implicitly run costly non-LLVM optimizations on -O3 or -Oz
-    if (optimizeLevel >= 3 || shrinkLevel >= 2) optimizeLevel = 4;
-
-    this.setOptimizeLevel(optimizeLevel);
-    this.setShrinkLevel(shrinkLevel);
-    this.setDebugInfo(debugInfo);
-    this.setZeroFilledMemory(zeroFilledMemory);
-    this.setFastMath(true);
-    this.clearPassArguments();
-
-    // OptimizationOptions#parse in src/tools/optimization-options.h
-    const stackIR = optimizeLevel >= 2 || shrinkLevel >= 1;
-    this.setGenerateStackIR(stackIR);
-    this.setOptimizeStackIR(stackIR);
-
-    // Tweak inlining limits based on optimization levels
-    if (optimizeLevel >= 2 && shrinkLevel == 0) {
-      this.setAlwaysInlineMaxSize(12);
-      this.setFlexibleInlineMaxSize(70);
-      this.setOneCallerInlineMaxSize(200);
-      this.setAllowInliningFunctionsWithLoops(optimizeLevel >= 3);
-    } else {
-      this.setAlwaysInlineMaxSize(optimizeLevel <= 1 || shrinkLevel >= 2 ? 2 : 6);
-      this.setFlexibleInlineMaxSize(65);
-      this.setOneCallerInlineMaxSize(80);
-      this.setAllowInliningFunctionsWithLoops(false);
-    }
-
-    // Pass order here differs substantially from Binaryen's defaults
-    // see: Binaryen/src/pass.cpp
-    if (optimizeLevel > 0 || shrinkLevel > 0) {
-      let passes = new Array<string>();
-
-      // --- PassRunner::addDefaultGlobalOptimizationPrePasses ---
-
-      passes.push("duplicate-function-elimination");
-      passes.push("remove-unused-module-elements"); // +
-
-      // --- PassRunner::addDefaultFunctionOptimizationPasses ---
-      if (optimizeLevel >= 2) {
-        passes.push("once-reduction");
-        passes.push("inlining");
-        passes.push("simplify-globals-optimizing");
-      }
-      if (optimizeLevel >= 3 || shrinkLevel >= 1) {
-        passes.push("rse");
-        passes.push("vacuum");
-        passes.push("code-folding");
-        passes.push("ssa-nomerge");
-        passes.push("local-cse");
-        passes.push("remove-unused-brs");
-        passes.push("remove-unused-names");
-        passes.push("merge-blocks");
-        passes.push("precompute-propagate");
-        passes.push("simplify-globals-optimizing");
-        passes.push("gufa-optimizing");
-        passes.push("dae-optimizing");
-      }
-      if (optimizeLevel >= 3) {
-        passes.push("simplify-locals-nostructure");
-        passes.push("flatten");
-        passes.push("vacuum");
-        passes.push("simplify-locals-notee-nostructure");
-        passes.push("vacuum");
-        passes.push("licm");
-        passes.push("merge-locals");
-        passes.push("reorder-locals");
-      }
-      passes.push("optimize-instructions");
-      if (optimizeLevel >= 3 || shrinkLevel >= 1) {
-        passes.push("dce");
-      }
-      passes.push("remove-unused-brs");
-      passes.push("remove-unused-names");
-      if (optimizeLevel >= 3 || shrinkLevel >= 2) {
-        passes.push("inlining");
-        passes.push("precompute-propagate");
-        passes.push("simplify-globals-optimizing");
-      } else {
-        passes.push("precompute");
-      }
-      if (optimizeLevel >= 2 || shrinkLevel >= 1) {
-        passes.push("pick-load-signs");
-      }
-      passes.push("simplify-locals-notee-nostructure");
-      passes.push("vacuum");
-      if (optimizeLevel >= 2 || shrinkLevel >= 1) {
-        passes.push("local-cse");
-      }
-      passes.push("reorder-locals");
-      passes.push("coalesce-locals");
-      passes.push("simplify-locals");
-      passes.push("coalesce-locals");
-      passes.push("reorder-locals");
-      passes.push("vacuum");
-      if (optimizeLevel >= 2 || shrinkLevel >= 1) {
-        passes.push("rse");
-        passes.push("vacuum");
-      }
-      if (optimizeLevel >= 3 || shrinkLevel >= 1) {
-        passes.push("merge-locals");
-        passes.push("vacuum");
-      }
-      if (optimizeLevel >= 2 || shrinkLevel >= 1) {
-        passes.push("simplify-globals-optimizing");
-        passes.push("simplify-globals-optimizing");
-      }
-      passes.push("remove-unused-brs");
-      passes.push("remove-unused-names");
-      passes.push("merge-blocks");
-      if (optimizeLevel >= 3) {
-        passes.push("optimize-instructions");
-      }
-
-      // --- PassRunner::addDefaultGlobalOptimizationPostPasses ---
-
-      if (optimizeLevel >= 2 || shrinkLevel >= 1) {
-        passes.push("simplify-globals-optimizing");
-        passes.push("dae-optimizing");
-      }
-      if (optimizeLevel >= 2 || shrinkLevel >= 2) {
-        passes.push("inlining-optimizing");
-      }
-      if (this.getLowMemoryUnused()) {
-        if (optimizeLevel >= 3 || shrinkLevel >= 1) {
-          passes.push("optimize-added-constants-propagate");
-        } else {
-          passes.push("optimize-added-constants");
-        }
-      }
-      passes.push("duplicate-import-elimination");
-      if (optimizeLevel >= 2 || shrinkLevel >= 2) {
-        passes.push("simplify-globals-optimizing");
-      } else {
-        passes.push("simplify-globals");
-        passes.push("vacuum");
-      }
-      if (optimizeLevel >= 2 && (this.getFeatures() & FeatureFlags.GC) != 0) {
-        passes.push("heap2local");
-        passes.push("merge-locals");
-        passes.push("local-subtyping");
-      }
-      // precompute works best after global optimizations
-      if (optimizeLevel >= 2 || shrinkLevel >= 1) {
-        passes.push("precompute-propagate");
-        passes.push("simplify-globals-optimizing");
-        passes.push("simplify-globals-optimizing");
-      } else {
-        passes.push("precompute");
-      }
-      passes.push("directize"); // replace indirect with direct calls
-      passes.push("dae-optimizing"); // reduce arity
-      passes.push("inlining-optimizing"); // and inline if possible
-      if (optimizeLevel >= 2 || shrinkLevel >= 1) {
-        passes.push("code-folding");
-        passes.push("ssa-nomerge");
-        passes.push("rse");
-        // move code on early return (after CFG cleanup)
-        passes.push("code-pushing");
-        if (optimizeLevel >= 3) {
-          // very expensive, so O3 only
-          passes.push("simplify-globals");
-          passes.push("vacuum");
-
-          passes.push("precompute-propagate");
-
-          // replace indirect with direct calls again and inline
-          passes.push("inlining-optimizing");
-          passes.push("directize");
-          passes.push("dae-optimizing");
-          passes.push("local-cse");
-
-          passes.push("merge-locals");
-          passes.push("coalesce-locals");
-          passes.push("simplify-locals");
-          passes.push("vacuum");
-
-          passes.push("inlining");
-          passes.push("precompute-propagate");
-          passes.push("rse");
-          passes.push("vacuum");
-          passes.push("ssa-nomerge");
-          passes.push("simplify-locals");
-          passes.push("coalesce-locals");
-        }
-        passes.push("optimize-instructions");
-        passes.push("remove-unused-brs");
-        passes.push("remove-unused-names");
-        passes.push("merge-blocks");
-        passes.push("vacuum");
-
-        passes.push("simplify-globals-optimizing");
-        passes.push("reorder-globals");
-        passes.push("remove-unused-brs");
-        passes.push("optimize-instructions");
-      }
-      // clean up
-      passes.push("duplicate-function-elimination");
-      if (shrinkLevel >= 2) {
-        passes.push("merge-similar-functions");
-      }
-      passes.push("memory-packing");
-      passes.push("remove-unused-module-elements");
-
-      this.runPasses(passes);
-    }
-  }
-
-  validate(): bool {
-    return binaryen._BinaryenModuleValidate(this.ref) == 1;
-  }
-
-  interpret(): void {
-    binaryen._BinaryenModuleInterpret(this.ref);
-  }
-
-  toBinary(sourceMapUrl: string | null = null): BinaryModule {
-    assert(binaryen._BinaryenSizeofLiteral() >= binaryen._BinaryenSizeofAllocateAndWriteResult());
-
-    // now safely reuse lit buffer for BinaryenModuleAllocateAndWriteResult
-    let resPtr = this.lit;
-    let urlPtr = allocString(sourceMapUrl);
-
-    binaryen._BinaryenModuleAllocateAndWrite(resPtr, this.ref, urlPtr);
-
-    // read BinaryenModuleAllocateAndWriteResult struct
-    let binaryPtr = binaryen.__i32_load(resPtr + 0) as usize; // non-nullabe
-    let binaryLen = binaryen.__i32_load(resPtr + 4);
-    let srcMapPtr = binaryen.__i32_load(resPtr + 8) as usize; // nullable
-
-    let binary = new BinaryModule(readBuffer(assert(binaryPtr), binaryLen), readString(srcMapPtr));
-
-    if (urlPtr) binaryen._free(urlPtr);
-    if (srcMapPtr) binaryen._free(srcMapPtr);
-    binaryen._free(binaryPtr);
-
-    return binary;
-  }
-
-  toText(watFormat: bool = true): string {
-    let textPtr = watFormat
-      ? binaryen._BinaryenModuleAllocateAndWriteStackIR(this.ref)
-      : binaryen._BinaryenModuleAllocateAndWriteText(this.ref);
-    let text = readString(textPtr);
-    if (textPtr) binaryen._free(textPtr);
-    return text || "";
-  }
-
   private cachedStringsToPointers: Map<string, StringRef> = new Map();
   private cachedPointersToStrings: Map<binaryen.Ref, string | null> = new Map();
 
@@ -2628,24 +2292,6 @@ export class Module {
     let str = readString(ptr);
     cached.set(ptr, str);
     return str;
-  }
-
-  dispose(): void {
-    assert(this.ref);
-    // TODO: for (let ptr of this.cachedStrings.values()) {
-    for (let _values = Map_values(this.cachedStringsToPointers), i = 0, k = _values.length; i < k; ++i) {
-      let ptr = unchecked(_values[i]);
-      binaryen._free(ptr);
-    }
-    this.cachedStringsToPointers.clear();
-    this.cachedPointersToStrings.clear();
-    binaryen._free(this.lit);
-    binaryen._BinaryenModuleDispose(this.ref);
-    this.ref = 0;
-  }
-
-  createRelooper(): Relooper {
-    return Relooper.create(this);
   }
 
   /** Makes a copy of a trivial expression (doesn't contain subexpressions). Returns `0` if non-trivial. */
@@ -2692,20 +2338,6 @@ export class Module {
       case ExpressionId.RefFunc:
       case ExpressionId.RefI31:
         return true;
-      case ExpressionId.Binary: {
-        if (this.getFeatures() & FeatureFlags.ExtendedConst) {
-          switch (getBinaryOp(expr)) {
-            case BinaryOp.AddI32:
-            case BinaryOp.SubI32:
-            case BinaryOp.MulI32:
-            case BinaryOp.AddI64:
-            case BinaryOp.SubI64:
-            case BinaryOp.MulI64:
-              return this.isConstExpression(getBinaryLeft(expr)) && this.isConstExpression(getBinaryRight(expr));
-          }
-        }
-        break;
-      }
     }
     return false;
   }
@@ -2717,10 +2349,6 @@ export class Module {
     let ret = binaryen._BinaryenModuleAddDebugInfoFileName(this.ref, cStr);
     binaryen._free(cStr);
     return ret;
-  }
-
-  getDebugInfoFile(index: Index): string | null {
-    return readString(binaryen._BinaryenModuleGetDebugInfoFileName(this.ref, index));
   }
 
   setDebugLocation(
