@@ -185,9 +185,6 @@ void BinaryenSetMemoryForLink(uint64_t module, uint32_t initial, uint32_t maximu
                     reinterpret_cast<BinaryenIndex *>(segmentSizes), numSegments, shared != 0, memory64 != 0,
                     reinterpret_cast<const char *>(name));
 }
-uint32_t BinaryenModuleGetFeaturesForLink(uint64_t module, [[maybe_unused]] vb::WasmModule *ctx) {
-  return BinaryenModuleGetFeatures(reinterpret_cast<BinaryenModuleRef>(module));
-}
 uint64_t BinaryenIfGetConditionForLink(uint64_t expr, [[maybe_unused]] vb::WasmModule *ctx) {
   return reinterpret_cast<uint64_t>(BinaryenIfGetCondition(reinterpret_cast<BinaryenExpressionRef>(expr)));
 }
@@ -585,19 +582,14 @@ uint64_t BinaryenSIMDTernaryForLink(uint64_t module, uint32_t op, uint64_t a, ui
                           reinterpret_cast<BinaryenExpressionRef>(c)));
 }
 uint64_t BinaryenModuleCreateForLink(vb::WasmModule *ctx) {
-  BinaryenModuleRef const module{BinaryenModuleCreate()};
+  BinaryenModuleRef const m{BinaryenModuleCreate()};
   FrontendCompiler *const frontEndCompiler{static_cast<FrontendCompiler *>(ctx->getContext())};
-  frontEndCompiler->asModule_.set(BinaryenModule(module));
-  return reinterpret_cast<uint64_t>(module);
+  m->features = frontEndCompiler->config_.features.toBinaryenFeatureSet();
+  frontEndCompiler->asModule_.set(BinaryenModule(m));
+  return reinterpret_cast<uint64_t>(m);
 }
 void BinaryenSetLowMemoryUnusedForLink(uint32_t unused, [[maybe_unused]] vb::WasmModule *ctx) {
   BinaryenSetLowMemoryUnused(unused != 0);
-}
-void BinaryenModuleSetFeaturesForLink(uint64_t module, uint32_t features, [[maybe_unused]] vb::WasmModule *ctx) {
-  BinaryenModuleSetFeatures(reinterpret_cast<BinaryenModuleRef>(module), features);
-}
-void BinaryenSetClosedWorldForLink(uint32_t closed, [[maybe_unused]] vb::WasmModule *ctx) {
-  BinaryenSetClosedWorld(closed != 0);
 }
 uint64_t BinaryenGetExportForLink(uint64_t module, uint64_t name, [[maybe_unused]] vb::WasmModule *ctx) {
   return reinterpret_cast<uint64_t>(
@@ -1113,7 +1105,6 @@ std::vector<vb::NativeSymbol> createBinaryenLinkedAPI() {
       STATIC_LINK("binaryen", "_BinaryenLiteralInt32", BinaryenLiteralInt32ForLink),
       STATIC_LINK("binaryen", "_BinaryenLiteralInt64", BinaryenLiteralInt64ForLink),
       STATIC_LINK("binaryen", "_BinaryenSetMemory", BinaryenSetMemoryForLink),
-      STATIC_LINK("binaryen", "_BinaryenModuleGetFeatures", BinaryenModuleGetFeaturesForLink),
       STATIC_LINK("binaryen", "_BinaryenConstGetValueI64High", BinaryenConstGetValueI64HighForLink),
       STATIC_LINK("binaryen", "_BinaryenIfGetCondition", BinaryenIfGetConditionForLink),
       STATIC_LINK("binaryen", "_BinaryenUnaryGetValue", BinaryenUnaryGetValueForLink),
@@ -1192,8 +1183,6 @@ std::vector<vb::NativeSymbol> createBinaryenLinkedAPI() {
       STATIC_LINK("binaryen", "_BinaryenSIMDTernary", BinaryenSIMDTernaryForLink),
       STATIC_LINK("binaryen", "_BinaryenModuleCreate", BinaryenModuleCreateForLink),
       STATIC_LINK("binaryen", "_BinaryenSetLowMemoryUnused", BinaryenSetLowMemoryUnusedForLink),
-      STATIC_LINK("binaryen", "_BinaryenModuleSetFeatures", BinaryenModuleSetFeaturesForLink),
-      STATIC_LINK("binaryen", "_BinaryenSetClosedWorld", BinaryenSetClosedWorldForLink),
       STATIC_LINK("binaryen", "_BinaryenGetExport", BinaryenGetExportForLink),
       STATIC_LINK("binaryen", "_BinaryenAddFunctionExport", BinaryenAddFunctionExportForLink),
       STATIC_LINK("binaryen", "_BinaryenAddGlobalExport", BinaryenAddGlobalExportForLink),

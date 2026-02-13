@@ -25,7 +25,6 @@
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Statistics.hpp"
-#include "wasm.h"
 
 #include "src/WasmModule/WasmModule.hpp"
 #include "src/core/common/ILogger.hpp"
@@ -126,7 +125,8 @@ FrontendCompiler::~FrontendCompiler() {
   }
 }
 
-FrontendCompiler::FrontendCompiler(Config const &config, Pluggable *plugin) : r{this}, moduleResolver_(plugin) {
+FrontendCompiler::FrontendCompiler(Config const &config, Pluggable *plugin)
+    : r{this}, moduleResolver_(plugin), config_{config} {
   if (config.ascWasmPath) [[unlikely]] {
     support::PerfRAII const p{support::PerfItemKind::CompilationHIR_PrepareWASMModule};
     std::string const wasmBytes = readBinaryFile(*config.ascWasmPath);
@@ -147,8 +147,7 @@ FrontendCompiler::FrontendCompiler(Config const &config, Pluggable *plugin) : r{
   }
 }
 
-warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::string> const &entryFilePaths,
-                                                             Config const &config) {
+warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::string> const &entryFilePaths) {
   try {
     support::PerfRAII initStat{support::PerfItemKind::CompilationHIR_Init};
     r.start();
@@ -157,31 +156,31 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     int32_t const option = r.callExportedFunctionWithName<1>("newOptions")[0].i32;
     r.callExportedFunctionWithName<1>("__pin", option);
 
-    r.callExportedFunctionWithName<0>("setRuntime", option, config.runtime);
-    r.callExportedFunctionWithName<0>("setHost", option, config.host);
-    r.callExportedFunctionWithName<0>("setStackSize", option, config.stackSize);
+    r.callExportedFunctionWithName<0>("setRuntime", option, config_.runtime);
+    r.callExportedFunctionWithName<0>("setHost", option, config_.host);
+    r.callExportedFunctionWithName<0>("setStackSize", option, config_.stackSize);
 
     enum class SetFeatureOn : uint32_t { OFF = 0, ON = 1 };
-    uint32_t const asFeatureFlags = config.features.toASFeaturesFlags();
+    uint32_t const asFeatureFlags = config_.features.toASFeaturesFlags();
     r.callExportedFunctionWithName<0>("setFeature", option, ~asFeatureFlags, SetFeatureOn::OFF);
     r.callExportedFunctionWithName<0>("setFeature", option, asFeatureFlags, SetFeatureOn::ON);
 
     r.callExportedFunctionWithName<0>("setExportTable", option,
-                                      config.exportTable ? WasmFFIBool::WASM_TRUE : WasmFFIBool::WASM_FALSE);
+                                      config_.exportTable ? WasmFFIBool::WASM_TRUE : WasmFFIBool::WASM_FALSE);
     r.callExportedFunctionWithName<0>("setExportRuntime", option,
-                                      config.exportRuntime ? WasmFFIBool::WASM_TRUE : WasmFFIBool::WASM_FALSE);
-    if (config.exportStart.has_value())
-      r.callExportedFunctionWithName<0>("setExportStart", option, r.allocString(*config.exportStart));
+                                      config_.exportRuntime ? WasmFFIBool::WASM_TRUE : WasmFFIBool::WASM_FALSE);
+    if (config_.exportStart.has_value())
+      r.callExportedFunctionWithName<0>("setExportStart", option, r.allocString(*config_.exportStart));
     r.callExportedFunctionWithName<0>("setDebugInfo", option, WasmFFIBool::WASM_TRUE);
     r.callExportedFunctionWithName<0>("setSourceMap", option,
-                                      config.emitDebugLine ? WasmFFIBool::WASM_TRUE : WasmFFIBool::WASM_FALSE);
-    if (config.initialMemory.has_value())
-      r.callExportedFunctionWithName<0>("setInitialMemory", option, *config.initialMemory);
+                                      config_.emitDebugLine ? WasmFFIBool::WASM_TRUE : WasmFFIBool::WASM_FALSE);
+    if (config_.initialMemory.has_value())
+      r.callExportedFunctionWithName<0>("setInitialMemory", option, *config_.initialMemory);
 
-    for (auto const &[useName, useValue] : config.uses) {
+    for (auto const &[useName, useValue] : config_.uses) {
       r.callExportedFunctionWithName<0>("addGlobalAlias", option, r.allocString(useName), r.allocString(useValue));
     }
-    if (config.host == HostKind::WasiSnapshotPreview1) {
+    if (config_.host == HostKind::WasiSnapshotPreview1) {
       struct WasiAlias final {
         std::string_view alias;
         std::string_view internalName;
@@ -197,13 +196,13 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
           WasiAlias{"trace", "~lib/wasi_snapshot_preview1/wasi_internal/wasi_trace"},
       };
       for (auto const &alias : wasiAliases) {
-        if (config.uses.contains(std::string{alias.alias}))
+        if (config_.uses.contains(std::string{alias.alias}))
           continue;
         r.callExportedFunctionWithName<0>("addGlobalAlias", option, r.allocString(std::string{alias.alias}),
                                           r.allocString(std::string{alias.internalName}));
       }
     }
-    r.callExportedFunctionWithName<0>("setOptimizeLevelHints", option, config.optimizationLevel, config.shrinkLevel);
+    r.callExportedFunctionWithName<0>("setOptimizeLevelHints", option, config_.optimizationLevel, config_.shrinkLevel);
 
     int32_t const program = r.callExportedFunctionWithName<1>("newProgram", option)[0].i32;
     r.callExportedFunctionWithName<1>("__pin", program);
@@ -217,7 +216,7 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
         continue;
       parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
     }
-    if (config.host == HostKind::WasiSnapshotPreview1) {
+    if (config_.host == HostKind::WasiSnapshotPreview1) {
       static constexpr std::array<std::string_view, 5> wasiStdLibs{
           "wasi_snapshot_preview1/wasi_console", "wasi_snapshot_preview1/wasi_crypto",
           "wasi_snapshot_preview1/wasi_date",    "wasi_snapshot_preview1/wasi_performance",
@@ -232,7 +231,7 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     }
 
     std::string_view const rtIndexSource = warpo::frontend::embed_library_sources.at(
-        config.runtime == RuntimeKind::Incremental ? "rt/index-incremental" : "rt/index-radical");
+        config_.runtime == RuntimeKind::Incremental ? "rt/index-incremental" : "rt/index-radical");
     std::string const rtIndexFilePath = libraryPrefix + std::string{"rt/index"} + extension;
     parseFile(program, rtIndexSource, rtIndexFilePath, IsEntry::NO);
     parseLibStat.release();
@@ -248,7 +247,7 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
       for (auto const &[text, path] : deps)
         parseFile(program, text, path, IsEntry::NO);
     }
-    if (checkDiag(program, config.useColorfulDiagMessage))
+    if (checkDiag(program, config_.useColorfulDiagMessage))
       return {.m = {}, .errorMessage = errorMessage_};
     parseStat.release();
 
@@ -258,7 +257,7 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
 
     int32_t const compiled = r.callExportedFunctionWithName<1>("compile", program)[0].i32;
     static_cast<void>(compiled);
-    if (checkDiag(program, config.useColorfulDiagMessage))
+    if (checkDiag(program, config_.useColorfulDiagMessage))
       return {.m = {}, .errorMessage = errorMessage_};
 
     compileStat.release();

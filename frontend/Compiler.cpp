@@ -90,7 +90,7 @@ frontend::CompilationResult frontend::compile(Pluggable *plugin, std::vector<std
     throw std::runtime_error("No entry files specified for compilation.");
   support::PerfRAII const r(support::PerfItemKind::CompilationHIR);
   FrontendCompiler compiler{config, plugin};
-  return compiler.compile(entryFilePaths, config);
+  return compiler.compile(entryFilePaths);
 }
 
 frontend::CompilationResult frontend::compile(Pluggable *plugin) {
