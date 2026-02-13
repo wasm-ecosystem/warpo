@@ -8,5 +8,5 @@
     "types": ["node"],
     "sourceMap": true
   },
-  "include": ["./**/*.ts", "../tests/tools/debug_server/**/*.ts"]
+  "include": ["./**/*.ts"]
 }
