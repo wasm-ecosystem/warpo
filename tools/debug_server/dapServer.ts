@@ -12,6 +12,7 @@ const server = createServer((socket) => {
   session.start(socket, socket);
   socket.on("close", () => {
     session.dispose();
+    server.close();
   });
 });
 

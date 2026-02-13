@@ -3,18 +3,17 @@
 
 import { DebugClient } from "@vscode/debugadapter-testsupport";
 import * as assert from "node:assert/strict";
-import { type ChildProcess } from "node:child_process";
 import * as path from "node:path";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import { fileURLToPath } from "node:url";
-import launcher from "../../../debugger/src/launcher";
+import launcher, { type DapServerHandle } from "../../../debugger/src/launcher";
 
 const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
 const DAP_SERVER = path.resolve(DIRNAME, "..", "..", "..", "dist", "debug_server", "dapServer.js");
 
 void describe("WarpoDebugSession", () => {
   let dc: DebugClient;
-  let serverChild: ChildProcess;
+  let serverChild: DapServerHandle["child"];
 
   beforeEach(async () => {
     const { port, child } = await launcher.launchDapServer(DAP_SERVER);
@@ -24,6 +23,8 @@ void describe("WarpoDebugSession", () => {
   });
 
   afterEach(async () => {
+    // dc.stop() sends disconnect request, then closes the client socket.
+    // The server sees the socket close and calls server.close(), exiting cleanly.
     await dc.stop();
     serverChild.kill();
   });
