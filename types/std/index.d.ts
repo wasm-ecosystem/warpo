@@ -112,8 +112,6 @@ declare const ASC_FEATURE_NONTRAPPING_F2I: bool;
 declare const ASC_FEATURE_BULK_MEMORY: bool;
 /** Whether the SIMD feature is enabled. */
 declare const ASC_FEATURE_SIMD: bool;
-/** Whether the threads feature is enabled. */
-declare const ASC_FEATURE_THREADS: bool;
 /** Whether the exception handling feature is enabled. */
 declare const ASC_FEATURE_EXCEPTION_HANDLING: bool;
 /** Whether the tail calls feature is enabled. */
@@ -282,44 +280,6 @@ declare function encodeURIComponent(str: string): string;
 declare function decodeURI(str: string): string;
 /** Decodes a Uniform Resource Identifier (URI) component previously created by encodeURIComponent. */
 declare function decodeURIComponent(str: string): string;
-
-/** Atomic operations. */
-declare namespace atomic {
-  /** Atomically loads an integer value from memory and returns it. */
-  export function load<T>(ptr: usize, immOffset?: usize): T;
-  /** Atomically stores an integer value to memory. */
-  export function store<T>(ptr: usize, value: T, immOffset?: usize): void;
-  /** Atomically adds an integer value in memory. */
-  export function add<T>(ptr: usize, value: T, immOffset?: usize): T;
-  /** Atomically subtracts an integer value in memory. */
-  export function sub<T>(ptr: usize, value: T, immOffset?: usize): T;
-  /** Atomically performs a bitwise AND operation on an integer value in memory. */
-  export function and<T>(ptr: usize, value: T, immOffset?: usize): T;
-  /** Atomically performs a bitwise OR operation on an integer value in memory. */
-  export function or<T>(ptr: usize, value: T, immOffset?: usize): T;
-  /** Atomically performs a bitwise XOR operation on an integer value in memory. */
-  export function xor<T>(ptr: usize, value: T, immOffset?: usize): T;
-  /** Atomically exchanges an integer value in memory. */
-  export function xchg<T>(ptr: usize, value: T, immOffset?: usize): T;
-  /** Atomically compares and exchanges an integer value in memory if the condition is met. */
-  export function cmpxchg<T>(ptr: usize, expected: T, replacement: T, immOffset?: usize): T;
-  /** Performs a wait operation on an address in memory suspending this agent if the integer condition is met. */
-  export function wait<T>(ptr: usize, expected: T, timeout?: i64): AtomicWaitResult;
-  /** Performs a notify operation on an address in memory waking up suspended agents. */
-  export function notify(ptr: usize, count?: i32): i32;
-  /** Performs a fence operation, preserving synchronization guarantees of higher level languages. */
-  export function fence(): void;
-}
-
-/** Describes the result of an atomic wait operation. */
-declare enum AtomicWaitResult {
-  /** Woken by another agent. */
-  OK,
-  /** Loaded value did not match the expected value. */
-  NOT_EQUAL,
-  /** Not woken before the timeout expired. */
-  TIMED_OUT,
-}
 
 /** Converts any other numeric value to an 8-bit signed integer. */
 declare function i8(value: any): i8;
@@ -1853,13 +1813,6 @@ declare namespace memory {
   export function data(size: i32, align?: i32): usize;
   /** Gets a pointer to a pre-initialized static chunk of memory. Alignment defaults to the size of `T`. Arguments must be compile-time constants. */
   export function data<T>(values: T[], align?: i32): usize;
-
-  export namespace atomic {
-    /** Performs a wait operation on a 32-bit integer value in memory suspending this agent if the condition is met. */
-    export function wait32(ptr: usize, expected: i32, timeout?: i64): AtomicWaitResult;
-    /** Performs a wait operation on a 64-bit integer value in memory suspending this agent if the condition is met. */
-    export function wait64(ptr: usize, expected: i64, timeout?: i64): AtomicWaitResult;
-  }
 }
 
 /** Heap memory interface. */
@@ -1880,63 +1833,6 @@ declare namespace table {
   export function drop(elementIndex: u32): void;
   /** Copies elements from one region of a table to another region. */
   export function copy(dest: u32, src: u32, n: u32): void;
-}
-
-declare namespace Atomics {
-  export function load<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(array: TypedArray<T>, index: i32): T;
-  export function store<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
-    array: TypedArray<T>,
-    index: i32,
-    value: T
-  ): void;
-  export function add<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
-    array: TypedArray<T>,
-    index: i32,
-    value: T
-  ): T;
-  export function sub<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
-    array: TypedArray<T>,
-    index: i32,
-    value: T
-  ): T;
-  export function and<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
-    array: TypedArray<T>,
-    index: i32,
-    value: T
-  ): T;
-  export function or<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
-    array: TypedArray<T>,
-    index: i32,
-    value: T
-  ): T;
-  export function xor<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
-    array: TypedArray<T>,
-    index: i32,
-    value: T
-  ): T;
-  export function exchange<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
-    array: TypedArray<T>,
-    index: i32,
-    value: T
-  ): T;
-  export function compareExchange<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
-    array: TypedArray<T>,
-    index: i32,
-    expectedValue: T,
-    replacementValue: T
-  ): T;
-  export function wait<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
-    array: TypedArray<T>,
-    value: T,
-    timeout?: i64
-  ): AtomicWaitResult;
-  export function notify<T extends i8 | u8 | i16 | u16 | i32 | u32 | i64 | u64>(
-    array: TypedArray<T>,
-    index: i32,
-    count?: i32
-  ): i32;
-  /** The static Atomics.isLockFree() method is used to determine whether to use locks or atomic operations. It returns true, if the given size is one of the BYTES_PER_ELEMENT */
-  export function isLockFree(size: usize): bool;
 }
 
 /** Class representing a generic, fixed-length raw binary data buffer. */

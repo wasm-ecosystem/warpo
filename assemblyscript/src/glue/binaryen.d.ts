@@ -297,8 +297,6 @@ export declare function _BinaryenLoad(
   ptrExpr: ExpressionRef,
   memoryName: StringRef
 ): ExpressionRef;
-export declare function _BinaryenLoadIsAtomic(expr: ExpressionRef): bool;
-export declare function _BinaryenLoadSetAtomic(expr: ExpressionRef, isAtomic: bool): void;
 export declare function _BinaryenLoadIsSigned(expr: ExpressionRef): bool;
 export declare function _BinaryenLoadSetSigned(expr: ExpressionRef, isSigned: bool): void;
 export declare function _BinaryenLoadGetOffset(expr: ExpressionRef): u32;
@@ -309,16 +307,6 @@ export declare function _BinaryenLoadGetAlign(expr: ExpressionRef): u32;
 export declare function _BinaryenLoadSetAlign(expr: ExpressionRef, align: u32): void;
 export declare function _BinaryenLoadGetPtr(expr: ExpressionRef): ExpressionRef;
 export declare function _BinaryenLoadSetPtr(expr: ExpressionRef, ptrExpr: ExpressionRef): void;
-// ^ with atomic = true
-export declare function _BinaryenAtomicLoad(
-  module: ModuleRef,
-  bytes: Index,
-  offset: Index,
-  type: TypeRef,
-  ptrExpr: ExpressionRef,
-  memoryName: StringRef,
-  order: u8
-): ExpressionRef;
 
 export declare function _BinaryenStore(
   module: ModuleRef,
@@ -330,8 +318,6 @@ export declare function _BinaryenStore(
   type: TypeRef,
   memoryName: StringRef
 ): ExpressionRef;
-export declare function _BinaryenStoreIsAtomic(expr: ExpressionRef): bool;
-export declare function _BinaryenStoreSetAtomic(expr: ExpressionRef, isAtomic: bool): void;
 export declare function _BinaryenStoreGetBytes(expr: ExpressionRef): u32;
 export declare function _BinaryenStoreSetBytes(expr: ExpressionRef, bytes: u32): void;
 export declare function _BinaryenStoreGetOffset(expr: ExpressionRef): u32;
@@ -344,17 +330,6 @@ export declare function _BinaryenStoreGetValue(expr: ExpressionRef): ExpressionR
 export declare function _BinaryenStoreSetValue(expr: ExpressionRef, valueExpr: ExpressionRef): void;
 export declare function _BinaryenStoreGetValueType(expr: ExpressionRef): TypeRef;
 export declare function _BinaryenStoreSetValueType(expr: ExpressionRef, valueType: TypeRef): void;
-// ^ with atomic = true
-export declare function _BinaryenAtomicStore(
-  module: ModuleRef,
-  bytes: Index,
-  offset: Index,
-  ptrExpr: ExpressionRef,
-  valueExpr: ExpressionRef,
-  type: TypeRef,
-  memoryName: StringRef,
-  order: u8
-): ExpressionRef;
 
 export declare function _BinaryenConst(module: ModuleRef, value: LiteralRef): ExpressionRef;
 export declare function _BinaryenConstGetValueI32(expr: ExpressionRef): i32;
@@ -413,82 +388,6 @@ export declare function _BinaryenReturnSetValue(expr: ExpressionRef, valueExpr: 
 export declare function _BinaryenNop(module: ModuleRef): ExpressionRef;
 
 export declare function _BinaryenUnreachable(module: ModuleRef): ExpressionRef;
-
-export declare function _BinaryenAtomicRMW(
-  module: ModuleRef,
-  op: Op,
-  bytes: u32,
-  offset: u32,
-  ptrExpr: ExpressionRef,
-  valueExpr: ExpressionRef,
-  type: TypeRef,
-  memoryName: StringRef,
-  order: u8
-): ExpressionRef;
-export declare function _BinaryenAtomicRMWGetOp(expr: ExpressionRef): Op;
-export declare function _BinaryenAtomicRMWSetOp(expr: ExpressionRef, op: Op): void;
-export declare function _BinaryenAtomicRMWGetBytes(expr: ExpressionRef): u32;
-export declare function _BinaryenAtomicRMWSetBytes(expr: ExpressionRef, bytes: u32): void;
-export declare function _BinaryenAtomicRMWGetOffset(expr: ExpressionRef): u32;
-export declare function _BinaryenAtomicRMWSetOffset(expr: ExpressionRef, offset: u32): void;
-export declare function _BinaryenAtomicRMWGetPtr(expr: ExpressionRef): ExpressionRef;
-export declare function _BinaryenAtomicRMWSetPtr(expr: ExpressionRef, ptrExpr: ExpressionRef): void;
-export declare function _BinaryenAtomicRMWGetValue(expr: ExpressionRef): ExpressionRef;
-export declare function _BinaryenAtomicRMWSetValue(expr: ExpressionRef, valueExpr: ExpressionRef): void;
-
-export declare function _BinaryenAtomicCmpxchg(
-  module: ModuleRef,
-  bytes: u32,
-  offset: u32,
-  ptrExpr: ExpressionRef,
-  expectedExpr: ExpressionRef,
-  replacementExpr: ExpressionRef,
-  type: TypeRef,
-  memoryName: StringRef,
-  order: u8
-): ExpressionRef;
-export declare function _BinaryenAtomicCmpxchgGetBytes(expr: ExpressionRef): u32;
-export declare function _BinaryenAtomicCmpxchgSetBytes(expr: ExpressionRef, bytes: u32): void;
-export declare function _BinaryenAtomicCmpxchgGetOffset(expr: ExpressionRef): u32;
-export declare function _BinaryenAtomicCmpxchgSetOffset(expr: ExpressionRef, offset: u32): void;
-export declare function _BinaryenAtomicCmpxchgGetPtr(expr: ExpressionRef): ExpressionRef;
-export declare function _BinaryenAtomicCmpxchgSetPtr(expr: ExpressionRef, ptrExpr: ExpressionRef): void;
-export declare function _BinaryenAtomicCmpxchgGetExpected(expr: ExpressionRef): ExpressionRef;
-export declare function _BinaryenAtomicCmpxchgSetExpected(expr: ExpressionRef, expectedExpr: ExpressionRef): void;
-export declare function _BinaryenAtomicCmpxchgGetReplacement(expr: ExpressionRef): ExpressionRef;
-export declare function _BinaryenAtomicCmpxchgSetReplacement(expr: ExpressionRef, replacementExpr: ExpressionRef): void;
-
-export declare function _BinaryenAtomicWait(
-  module: ModuleRef,
-  ptrExpr: ExpressionRef,
-  expectedExpr: ExpressionRef,
-  timeoutExpr: ExpressionRef,
-  expectedType: TypeRef,
-  memoryName: StringRef
-): ExpressionRef;
-export declare function _BinaryenAtomicWaitGetPtr(expr: ExpressionRef): ExpressionRef;
-export declare function _BinaryenAtomicWaitSetPtr(expr: ExpressionRef, ptrExpr: ExpressionRef): void;
-export declare function _BinaryenAtomicWaitGetExpected(expr: ExpressionRef): ExpressionRef;
-export declare function _BinaryenAtomicWaitSetExpected(expr: ExpressionRef, expectedExpr: ExpressionRef): void;
-export declare function _BinaryenAtomicWaitGetTimeout(expr: ExpressionRef): ExpressionRef;
-export declare function _BinaryenAtomicWaitSetTimeout(expr: ExpressionRef, timeoutExpr: ExpressionRef): void;
-export declare function _BinaryenAtomicWaitGetExpectedType(expr: ExpressionRef): TypeRef;
-export declare function _BinaryenAtomicWaitSetExpectedType(expr: ExpressionRef, expectedType: TypeRef): void;
-
-export declare function _BinaryenAtomicNotify(
-  module: ModuleRef,
-  ptrExpr: ExpressionRef,
-  notifyCountExpr: ExpressionRef,
-  memoryName: StringRef
-): ExpressionRef;
-export declare function _BinaryenAtomicNotifyGetPtr(expr: ExpressionRef): ExpressionRef;
-export declare function _BinaryenAtomicNotifySetPtr(expr: ExpressionRef, ptrExpr: ExpressionRef): void;
-export declare function _BinaryenAtomicNotifyGetNotifyCount(expr: ExpressionRef): ExpressionRef;
-export declare function _BinaryenAtomicNotifySetNotifyCount(expr: ExpressionRef, notifyCountExpr: ExpressionRef): void;
-
-export declare function _BinaryenAtomicFence(module: ModuleRef): ExpressionRef;
-export declare function _BinaryenAtomicFenceGetOrder(expr: ExpressionRef): u8; // unused
-export declare function _BinaryenAtomicFenceSetOrder(expr: ExpressionRef, order: u8): void; // unused
 
 export declare function _BinaryenSIMDExtract(
   module: ModuleRef,

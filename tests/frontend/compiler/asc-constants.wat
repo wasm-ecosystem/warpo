@@ -15,7 +15,6 @@
  (global $~lib/native/ASC_FEATURE_NONTRAPPING_F2I i32 (i32.const 0))
  (global $~lib/native/ASC_FEATURE_BULK_MEMORY i32 (i32.const 1))
  (global $~lib/native/ASC_FEATURE_SIMD i32 (i32.const 0))
- (global $~lib/native/ASC_FEATURE_THREADS i32 (i32.const 0))
  (global $~lib/native/ASC_FEATURE_EXCEPTION_HANDLING i32 (i32.const 0))
  (global $~lib/native/ASC_FEATURE_TAIL_CALLS i32 (i32.const 0))
  (global $~lib/native/ASC_FEATURE_REFERENCE_TYPES i32 (i32.const 0))
@@ -65,9 +64,6 @@
   )
   (drop
    (i32.const 1)
-  )
-  (drop
-   (i32.const 0)
   )
   (drop
    (i32.const 0)

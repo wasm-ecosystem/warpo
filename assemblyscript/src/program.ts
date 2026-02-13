@@ -1157,11 +1157,6 @@ export class Program extends DiagnosticEmitter {
       i64_new(options.hasFeature(Feature.Simd) ? 1 : 0, 0)
     );
     this.registerConstantInteger(
-      CommonNames.ASC_FEATURE_THREADS,
-      Type.bool,
-      i64_new(options.hasFeature(Feature.Threads) ? 1 : 0, 0)
-    );
-    this.registerConstantInteger(
       CommonNames.ASC_FEATURE_EXCEPTION_HANDLING,
       Type.bool,
       i64_new(options.hasFeature(Feature.ExceptionHandling) ? 1 : 0, 0)
