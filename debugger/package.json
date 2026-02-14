@@ -47,6 +47,36 @@
               "program": {
                 "type": "string",
                 "description": "Path to the wasm file to debug."
+              },
+              "launchType": {
+                "type": "string",
+                "enum": [
+                  "wasm file",
+                  "js file"
+                ],
+                "default": "wasm file",
+                "description": "How to launch the debug target."
+              },
+              "entryFunctionName": {
+                "type": "string",
+                "default": "main",
+                "description": "Name of the exported Wasm function to call."
+              },
+              "args": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                },
+                "default": [],
+                "description": "Arguments to pass to the entry function."
+              },
+              "runtime": {
+                "type": "string",
+                "enum": [
+                  "node"
+                ],
+                "default": "node",
+                "description": "Which runtime to use for launching the Wasm file."
               }
             }
           }
@@ -55,8 +85,11 @@
           {
             "type": "warpo",
             "request": "launch",
-            "name": "Warpo Debug",
-            "program": "${workspaceFolder}/build/output.wasm"
+            "name": "Warpo Debug (wasm file)",
+            "program": "${workspaceFolder}/build/output.wasm",
+            "launchType": "wasm file",
+            "entryFunctionName": "main",
+            "args": []
           }
         ]
       }

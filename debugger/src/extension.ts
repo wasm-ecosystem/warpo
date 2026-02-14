@@ -11,12 +11,18 @@ let serverProcess: ChildProcess | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
   const factory = new WarpoDebugAdapterFactory();
-  context.subscriptions.push(vscode.debug.registerDebugAdapterDescriptorFactory("warpo", factory), {
-    dispose() {
-      serverProcess?.kill();
-      serverProcess = undefined;
-    },
-  });
+  const configProvider = new WarpoDebugConfigurationProvider();
+
+  context.subscriptions.push(
+    vscode.debug.registerDebugConfigurationProvider("warpo", configProvider),
+    vscode.debug.registerDebugAdapterDescriptorFactory("warpo", factory),
+    {
+      dispose() {
+        serverProcess?.kill();
+        serverProcess = undefined;
+      },
+    }
+  );
 }
 
 export function deactivate() {
@@ -36,6 +42,22 @@ function findDapServer(workspaceFolder: string): string | undefined {
 
   const candidate = path.join(workspaceFolder, "node_modules", "warpo", "dist", "debug_server", "dapServer.js");
   return fs.existsSync(candidate) ? candidate : undefined;
+}
+
+class WarpoDebugConfigurationProvider implements vscode.DebugConfigurationProvider {
+  resolveDebugConfiguration(
+    _folder: vscode.WorkspaceFolder | undefined,
+    config: vscode.DebugConfiguration
+  ): vscode.ProviderResult<vscode.DebugConfiguration> {
+    if (!config.program) {
+      return vscode.window.showErrorMessage("No 'program' specified in launch configuration.").then(() => undefined);
+    }
+    config.launchType = config.launchType ?? "wasm file";
+    config.runtime = config.runtime ?? "node";
+    config.entryFunctionName = config.entryFunctionName ?? "main";
+    config.args = config.args ?? [];
+    return config;
+  }
 }
 
 class WarpoDebugAdapterFactory implements vscode.DebugAdapterDescriptorFactory {

@@ -4,9 +4,15 @@
 import { LoggingDebugSession, InitializedEvent, Thread, Breakpoint, logger } from "@vscode/debugadapter";
 import type { DebugProtocol } from "@vscode/debugprotocol";
 import * as path from "node:path";
+import type { Runtime } from "./runtime.js";
+import { NodeRuntime } from "./nodeRuntime.js";
 
 interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
   program: string;
+  launchType?: string;
+  runtime?: string;
+  entryFunctionName?: string;
+  args?: number[];
 }
 
 interface BreakpointInfo {
@@ -20,6 +26,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private static threadId = 1;
   private breakpointId = 0;
   private breakpoints = new Map<string, BreakpointInfo[]>();
+  private runtime: Runtime | undefined;
 
   private log(msg: string): void {
     logger.log(msg);
@@ -77,8 +84,37 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.logAllBreakpoints();
   }
 
-  protected launchRequest(response: DebugProtocol.LaunchResponse, args: WarpoLaunchRequestArguments): void {
+  protected async launchRequest(response: DebugProtocol.LaunchResponse, args: WarpoLaunchRequestArguments): Promise<void> {
     this.log(`Launch requested for: ${args.program}`);
+
+    const launchType = args.launchType ?? "wasm file";
+    if (launchType === "wasm file") {
+      const runtimeName = args.runtime ?? "node";
+      let runtime: Runtime;
+      switch (runtimeName) {
+        case "node":
+          runtime = new NodeRuntime();
+          break;
+        default:
+          this.sendErrorResponse(response, 1, `Unknown runtime "${runtimeName}"`);
+          return;
+      }
+
+      runtime.onModuleLoad = (info) => {
+        this.log(`Wasm module loaded: ${info.url} (scriptId: ${info.scriptId})`);
+      };
+
+      this.runtime?.dispose();
+      this.runtime = runtime;
+      await runtime.launch({
+        wasmFilePath: path.resolve(args.program),
+        entryFunctionName: args.entryFunctionName ?? "main",
+        args: args.args ?? [],
+      });
+
+      this.log(`[${runtime.name}] Runtime launched`);
+    }
+
     this.sendResponse(response);
   }
 
@@ -93,6 +129,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response: DebugProtocol.DisconnectResponse,
     _args: DebugProtocol.DisconnectArguments
   ): void {
+    this.runtime?.dispose();
+    this.runtime = undefined;
     this.log("Debug session ended.");
     this.sendResponse(response);
   }
