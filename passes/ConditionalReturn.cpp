@@ -2,6 +2,41 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+//
+// Purpose:
+// - Many void functions contain repeated early-return checks (guard statements).
+// - This pass rewrites `(if (cond) (return))` to a `br_if` that targets an enclosing block,
+//   keeping control flow as a simple branch instead of a mid-body return.
+//
+// Source (TS) intent:
+//   if (cond) return;
+//   useValue();
+//
+// WAT (before):
+//   (func $f (param $x i32)
+//     local.get $x
+//     if
+//       return
+//     end
+//     i32.const 1
+//     drop
+//   )
+//
+// WAT (after): the `if` becomes a `br_if` to an enclosing block.
+//   (func $f (param $x i32)
+//     (block $CONDITION_RETURN#0
+//       local.get $x
+//       br_if $CONDITION_RETURN#0
+//       i32.const 1
+//       drop
+//     )
+//   )
+//
+// NOTE: The outermost block is the function body block, not a real block opcode.
+//
+
+// TODO: extend this pass to handle functions with non-void return types.
+
 #include <cassert>
 #include <deque>
 #include <fmt/format.h>
