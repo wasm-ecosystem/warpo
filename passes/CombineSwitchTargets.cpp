@@ -1,6 +1,51 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+//
+// Source (TS) intent:
+//   switch (x) {
+//     case 0:
+//       sink(7);
+//       break;
+//     case 1:
+//       sink(7);
+//       break;
+//   }
+//
+// AssemblyScript's GC emits a common `__visit` entrypoint that calls
+// `~lib/rt/__visit_members`, which contains a large `br_table` dispatch to many nested
+// case blocks. Each case typically calls a type-specific `~visit` and then returns,
+// producing identical post-case suffixes across targets. This pass collapses those
+// equivalent continuations so the `br_table` targets converge to an outer case label,
+// reducing redundant blocks in hot GC paths.
+//
+// WAT (before):
+//   (block $break
+//     (block $case1
+//       (block $case0
+//         local.get $x
+//         br_table $case0 $case1 $break
+//       )
+//       i32.const 7
+//       call $sink
+//       br $break
+//     )
+//     i32.const 7
+//     call $sink
+//     br $break
+//   )
+// WAT (after): $case0 and $case1 are merged to $case1.
+//   (block $break
+//     (block $case1
+//       local.get $x
+//       br_table $case1 $case1 $break
+//     )
+//     i32.const 7
+//     call $sink
+//     br $break
+//   )
+//
+
 #include <cstddef>
 #include <ir/utils.h>
 #include <memory>
