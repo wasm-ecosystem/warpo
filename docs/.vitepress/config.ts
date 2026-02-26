@@ -98,11 +98,6 @@ function getThemeConfig(language: "en" | "zh-CN"): DefaultTheme.Config {
             items: listItems("tech/transform"),
           },
           {
-            text: "Optimization Passes",
-            link: "/tech/opt/index",
-            items: listItems("tech/opt"),
-          },
-          {
             text: "Debugging Support",
             link: "/tech/debug_symbol/index",
             items: listItems("tech/debug_symbol"),

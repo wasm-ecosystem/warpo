@@ -2,6 +2,31 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+// Eliminate loads from immutable data ranges.
+//
+// There are lots of never-changed static data, similar to the .text section in ELF.
+// In AS, this type of immutable data mainly includes string literals and function objects.
+//
+// For function objects, if we can identify this kind of data, we can simplify many indirect calls.
+//
+// Example for a function object:
+// ```ts
+// function v(fn: () => void): void {
+//   fn();
+// }
+// v(() => {});
+// ```
+//
+// The arrow function is compiled as a function object stored in static data with function index I.
+// The function v accepts a ptr pointing to that function object. During `fn()`, the function index is
+// loaded from ptr and invoked with `call_indirect`.
+//
+// After eliminating loads from immutable data, subsequent optimizations can infer the function index
+// in `call_indirect` is never changed and simplify it to a direct call.
+//
+// This pass relies on the frontend providing immutable range info via _WarpoMarkDataElementImmutable(begin, size).
+//
+
 #include <bit>
 #include <cassert>
 #include <cstdint>
