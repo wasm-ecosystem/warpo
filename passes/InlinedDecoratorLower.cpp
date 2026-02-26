@@ -1,6 +1,41 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+// Source (TS) intent:
+//   @inline
+//   function f1() { return f2(); }
+//   @inline
+//   function f2() { return f3(); }
+//   @inline
+//   function f3() { return 7; }
+//
+// AssemblyScript exposes inline decorators as callsite hints. This pass groups
+// those hints into dependency-ordered steps so nested chains inline bottom-up.
+// That ensures when f1 is inlined, the f2 body already contains the inlined f3
+// body, preserving the user's intent.
+//
+// This pass runs during lowering before GC passes. By inlining early, temporaries
+// that would otherwise live across calls become intra-function values, which
+// simplifies GC liveness and can reduce shadow stack slots and prologue/epilogue
+// work in `gc::FastLower` / `gc::OptLower`. The normal inlining pass
+// (`AdvancedInlining`) runs later during optimization, uses a cost model, and
+// does not affect GC stack layout decisions.
+//
+// WAT (before):
+//   (func $f1
+//     call $f2)
+//   (func $f2
+//     call $f3)
+//   (func $f3
+//     i32.const 7)
+// WAT (after): $f3 is inlined into $f2, then $f2 into $f1.
+//   (func $f1
+//     i32.const 7)
+//   (func $f2
+//     i32.const 7)
+//   (func $f3
+//     i32.const 7)
+
 #include <fmt/base.h>
 #include <ir/module-utils.h>
 #include <memory>
