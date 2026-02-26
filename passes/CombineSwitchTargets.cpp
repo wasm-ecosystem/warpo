@@ -26,14 +26,23 @@
 //         br_table $case0 $case1 $break
 //       )
 //       i32.const 7
-//       drop
+//       call $sink
 //       br $break
 //     )
 //     i32.const 7
-//     drop
+//     call $sink
 //     br $break
 //   )
 // WAT (after): $case0 and $case1 are merged to $case1.
+//   (block $break
+//     (block $case1
+//       local.get $x
+//       br_table $case1 $case1 $break
+//     )
+//     i32.const 7
+//     call $sink
+//     br $break
+//   )
 //
 
 #include <cstddef>
