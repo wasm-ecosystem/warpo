@@ -118,7 +118,6 @@ class FunctionScope {
       return false;
     } else {
       variableDeclaration.markCaptured();
-      this.markAsClosureFunction();
       return true;
     }
   }
@@ -192,10 +191,17 @@ class FunctionScopeChain {
     for (let i = this.functionScopes_.length - 2; i >= 0; i--) {
       const functionScope = this.functionScopes_[i];
       if (functionScope.markVariableCapturedIfExists(name)) {
+        this.markRangeAsClosureFunction(i);
         return true;
       }
     }
     return false;
+  }
+
+  private markRangeAsClosureFunction(start: i32): void {
+    for (let i = start; i < this.functionScopes_.length; i++) {
+      this.functionScopes_[i].markAsClosureFunction();
+    }
   }
 
   markCurrentFunctionAsClosure(): void {
@@ -292,10 +298,6 @@ export class ClosureScanner extends BaseVisitor {
   }
 
   visitIdentifierExpression(node: IdentifierExpression): void {
-    const isClosureVariable = this.functionScopeChain_.checkAndMarkClosureVariable(node.text);
-    if (isClosureVariable) {
-      // If the a function used a closure variable
-      this.functionScopeChain_.markCurrentFunctionAsClosure();
-    }
+    this.functionScopeChain_.checkAndMarkClosureVariable(node.text);
   }
 }

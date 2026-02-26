@@ -94,33 +94,31 @@ describe("closureScanner", () => {
     }
   });
 
-  // TODO: decide if middle should be a closure function
-  //   test("deep nesting: middle function is not a closure", () => {
-  //     const scanner = makeScanner(`
-  //       export function outer(): i32 {
-  //           let a = 1;
-  //           function middle(): i32 {
-  //               function inner(): i32 {
-  //                   return a;
-  //               }
-  //               return inner();
-  //           }
-  //           return middle();
-  //       }
-  //     `);
-  //     // middle does not capture anything and nothing is captured from middle
-  //     expect(scanner.closureFunctions.size).equal(2);
-  //     for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
-  //       const func = keys[j];
-  //       const name = func.name.text;
-  //       assert(name === "outer" || name === "inner", `Unexpected closure function: ${name}`);
-  //       if (name === "outer") {
-  //         expect(scanner.closureFunctions.get(func).size).equal(1);
-  //       } else {
-  //         expect(scanner.closureFunctions.get(func).size).equal(0);
-  //       }
-  //     }
-  //   });
+  test("deep nesting: middle function is also a closure", () => {
+    const scanner = makeScanner(`
+        export function outer(): i32 {
+            let a = 1;
+            function middle(): i32 {
+                function inner(): i32 {
+                    return a;
+                }
+                return inner();
+            }
+            return middle();
+        }
+      `);
+    // outer provides 'a', middle and inner both transitively depend on it
+    expect(scanner.closureFunctions.size).equal(3);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const name = func.name.text;
+      if (name === "outer") {
+        expect(scanner.closureFunctions.get(func).size).equal(1);
+      } else {
+        expect(scanner.closureFunctions.get(func).size).equal(0);
+      }
+    }
+  });
 
   test("closure inside if block", () => {
     const scanner = makeScanner(`

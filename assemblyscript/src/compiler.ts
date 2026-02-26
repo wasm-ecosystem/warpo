@@ -897,8 +897,8 @@ export class Compiler extends DiagnosticEmitter {
     if (file.is(CommonFlags.Compiled)) return;
     file.set(CommonFlags.Compiled);
 
-    // let closureScanner = new ClosureScanner();
-    // file.source.accept(closureScanner);
+    let closureScanner = new ClosureScanner();
+    file.source.accept(closureScanner);
 
     // compile top-level statements within the file's start function
     let startFunction = file.startFunction;
