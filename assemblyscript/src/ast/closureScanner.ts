@@ -8,23 +8,24 @@ import {
   IdentifierExpression,
   IfStatement,
   Node,
+  ParameterNode,
   SwitchCase,
   VariableDeclaration,
   WhileStatement,
 } from "../ast";
 
 class VariableMark {
-  get node(): VariableDeclaration {
+  get node(): Node {
     return this.node_;
   }
   get isCaptured(): bool {
     return this.isCaptured_;
   }
-  constructor(node: VariableDeclaration) {
+  constructor(node: Node) {
     this.node_ = node;
     this.isCaptured_ = false;
   }
-  private node_: VariableDeclaration;
+  private node_: Node;
   private isCaptured_: bool;
 
   markCaptured(): void {
@@ -39,8 +40,8 @@ class Scope {
     return this.variables_;
   }
 
-  addVariableDeclaration(node: VariableDeclaration): void {
-    this.variables_.set(node.name.text, new VariableMark(node));
+  addVariable(name: string, node: Node): void {
+    this.variables_.set(name, new VariableMark(node));
   }
 
   findVariable(name: string): VariableMark | null {
@@ -55,17 +56,14 @@ class Scope {
 class FunctionScope {
   private node_: FunctionDeclaration;
   private isClosureFunction_: bool;
-  private closureVariables_: Set<VariableDeclaration>;
+  private closureVariables_: Set<Node>;
   get node(): FunctionDeclaration {
     return this.node_;
   }
   get isClosureFunction(): bool {
     return this.isClosureFunction_;
   }
-  get scopeStack(): Scope[] {
-    return this.scopeStack_;
-  }
-  get closureVariables(): Set<VariableDeclaration> {
+  get closureVariables(): Set<Node> {
     return this.closureVariables_;
   }
   constructor(node: FunctionDeclaration) {
@@ -82,6 +80,7 @@ class FunctionScope {
   }
 
   popScope(): void {
+    assert(this.scopeStack_.length > 0, "popScope called on empty scope stack");
     const scope = this.scopeStack_[this.scopeStack_.length - 1];
     for (let keys = scope.variables.keys(), j = 0, k = keys.length; j < k; j++) {
       const variableMark = assert(scope.variables.get(keys[j]));
@@ -93,8 +92,13 @@ class FunctionScope {
   }
 
   addVariableDeclaration(node: VariableDeclaration): void {
-    const currentScope = this.scopeStack_[this.scopeStack_.length - 1];
-    currentScope.addVariableDeclaration(node);
+    assert(this.scopeStack_.length > 0, "addVariableDeclaration should be called within a scope");
+    this.scopeStack_[this.scopeStack_.length - 1].addVariable(node.name.text, node);
+  }
+
+  addParameter(node: ParameterNode): void {
+    assert(this.scopeStack_.length > 0, "addParameter should be called within a scope");
+    this.scopeStack_[0].addVariable(node.name.text, node);
   }
 
   findVariable(name: string): VariableMark | null {
@@ -126,9 +130,9 @@ class FunctionScope {
 
 class FunctionScopeChain {
   private functionScopes_: FunctionScope[];
-  private closureFunctions_: Map<FunctionDeclaration, Set<VariableDeclaration>>;
+  private closureFunctions_: Map<FunctionDeclaration, Set<Node>>;
 
-  constructor(closureFunctions: Map<FunctionDeclaration, Set<VariableDeclaration>>) {
+  constructor(closureFunctions: Map<FunctionDeclaration, Set<Node>>) {
     this.closureFunctions_ = closureFunctions;
     this.functionScopes_ = new Array();
   }
@@ -140,6 +144,7 @@ class FunctionScopeChain {
   leaveFunction(): void {
     assert(this.functionScopes_.length > 0, "leaveFunction should be called within a function");
     const lastFunctionScope = this.functionScopes_[this.functionScopes_.length - 1];
+    lastFunctionScope.popScope(); // collect captures from scope[0] (parameters + root-level vars)
     if (lastFunctionScope.isClosureFunction) {
       this.closureFunctions_.set(lastFunctionScope.node, lastFunctionScope.closureVariables);
     }
@@ -162,6 +167,12 @@ class FunctionScopeChain {
     if (this.functionScopes_.length === 0) return;
     const currentFunctionScope = this.functionScopes_[this.functionScopes_.length - 1];
     currentFunctionScope.addVariableDeclaration(node);
+  }
+
+  addParameterDeclaration(node: ParameterNode): void {
+    if (this.functionScopes_.length === 0) return;
+    const currentFunctionScope = this.functionScopes_[this.functionScopes_.length - 1];
+    currentFunctionScope.addParameter(node);
   }
 
   checkAndMarkClosureVariable(name: string): bool {
@@ -199,16 +210,16 @@ class FunctionScopeChain {
 }
 
 export class ClosureScanner extends BaseVisitor {
-  private closureFunctions_: Map<FunctionDeclaration, Set<VariableDeclaration>>;
+  private closureFunctions_: Map<FunctionDeclaration, Set<Node>>;
   private functionScopeChain_: FunctionScopeChain;
 
-  get closureFunctions(): Map<FunctionDeclaration, Set<VariableDeclaration>> {
+  get closureFunctions(): Map<FunctionDeclaration, Set<Node>> {
     return this.closureFunctions_;
   }
 
   constructor() {
     super();
-    const closureFunctions = new Map<FunctionDeclaration, Set<VariableDeclaration>>();
+    const closureFunctions = new Map<FunctionDeclaration, Set<Node>>();
     this.closureFunctions_ = closureFunctions;
     this.functionScopeChain_ = new FunctionScopeChain(closureFunctions);
   }
@@ -229,6 +240,11 @@ export class ClosureScanner extends BaseVisitor {
   visitVariableDeclaration(node: VariableDeclaration): void {
     this.functionScopeChain_.addVariableDeclaration(node);
     super.visitVariableDeclaration(node);
+  }
+
+  visitParameterNode(node: ParameterNode): void {
+    this.functionScopeChain_.addParameterDeclaration(node);
+    super.visitParameterNode(node);
   }
 
   visitBlockStatement(node: BlockStatement): void {
