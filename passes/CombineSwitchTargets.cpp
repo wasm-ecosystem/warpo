@@ -13,10 +13,10 @@
 //   }
 //
 // AssemblyScript's GC emits a common `__visit` entrypoint that calls
-// `~lib/rt/__visit_members`, which contains a large br_table dispatch to many nested
-// case blocks. Each case typically calls a type-specific ~visit and then returns,
+// `~lib/rt/__visit_members`, which contains a large `br_table` dispatch to many nested
+// case blocks. Each case typically calls a type-specific `~visit` and then returns,
 // producing identical post-case suffixes across targets. This pass collapses those
-// equivalent continuations so the br_table targets converge to an outer case label,
+// equivalent continuations so the `br_table` targets converge to an outer case label,
 // reducing redundant blocks in hot GC paths.
 //
 // WAT (before):
