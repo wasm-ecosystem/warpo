@@ -21,7 +21,17 @@ describe("closureScanner", () => {
     const closureScanner = new ClosureScanner();
     assert(parser.sources.length > 0, "Parser should have at least one source");
     parser.sources[0].accept(closureScanner);
-    expect(closureScanner.closureFunctions.size).equal(1);
-    expect(closureScanner.closureVariables.size).equal(1);
+    expect(closureScanner.closureFunctions.size).equal(2);
+    for (let keys = closureScanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const capturedVars = closureScanner.closureFunctions.get(func);
+      if (func.name.text === "inner") {
+        expect(capturedVars.size).equal(0);
+      } else if (func.name.text === "outer") {
+        expect(capturedVars.size).equal(1);
+      } else {
+        assert(false, `Unexpected function name: ${func.name.text}`);
+      }
+    }
   });
 });
