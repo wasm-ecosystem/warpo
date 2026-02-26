@@ -5,6 +5,21 @@
 // Base on following assumptions:
 //  - linear memory addresses are always valid.
 //    - load opcode itself is no side effect.
+//
+// Loads are treated as side-effect-free under AS assumptions when their pointer
+// expression has no side effects. This pass removes redundant `drop` wrappers on
+// such loads, or rewrites the drop to target the pointer directly when the
+// pointer expression has side effects.
+//
+// WAT (before):
+//   (drop (i32.load offset=0 (i32.const 4)))
+// WAT (after):
+//   (nop)
+//
+// WAT (before):
+//   (drop (i32.load offset=0 (local.tee 0 (i32.const 4))))
+// WAT (after):
+//   (drop (local.tee 0 (i32.const 4)))
 
 #include <ir/effects.h>
 #include <memory>
