@@ -1027,7 +1027,8 @@ export class Program extends DiagnosticEmitter {
         declaration.toDeclarationBase(),
         declaration.toFunctionLikeWithBodyBase(),
         CompiledNameNode.fromIdentifier(declaration.name),
-        declaration.identifierAndSignatureRange
+        declaration.identifierAndSignatureRange,
+        false
       ),
       null,
       signature
@@ -4159,7 +4160,8 @@ export class FunctionPrototype extends DeclaredElement {
       origin.declarationBase,
       origin.functionLikeWithBodyBase,
       origin.identifierNode,
-      origin.identifierAndSignatureRange
+      origin.identifierAndSignatureRange,
+      origin.isClosure
     );
   }
 
@@ -4174,7 +4176,8 @@ export class FunctionPrototype extends DeclaredElement {
     declarationBase: DeclarationBase,
     public readonly functionLikeWithBodyBase: FunctionLikeWithBodyBase,
     public readonly identifierNode: CompiledNameNode,
-    public readonly identifierAndSignatureRange: Range
+    public readonly identifierAndSignatureRange: Range,
+    public readonly isClosure: bool
   ) {
     super(
       ElementKind.FunctionPrototype,
@@ -4575,7 +4578,8 @@ export class PropertyPrototype extends DeclaredElement {
       getterDeclaration.toDeclarationBase(),
       getterDeclaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
-      getterDeclaration.identifierAndSignatureRange
+      getterDeclaration.identifierAndSignatureRange,
+      false
     );
     prototype.setterPrototype = new FunctionPrototype(
       mangleSetterName(name),
@@ -4584,7 +4588,8 @@ export class PropertyPrototype extends DeclaredElement {
       setterDeclaration.toDeclarationBase(),
       setterDeclaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
-      setterDeclaration.identifierAndSignatureRange
+      setterDeclaration.identifierAndSignatureRange,
+      false
     );
     return prototype;
   }

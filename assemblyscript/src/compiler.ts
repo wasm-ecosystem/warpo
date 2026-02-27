@@ -410,6 +410,8 @@ export class Compiler extends DiagnosticEmitter {
   /** Elements, that are module exports, already processed */
   doneModuleExports: Set<Element> = new Set();
 
+  closureScanner: ClosureScanner = new ClosureScanner();
+
   /** Constructs a new compiler for a {@link Program} using the specified options. */
   constructor(program: Program) {
     super(program.diagnostics);
@@ -897,8 +899,8 @@ export class Compiler extends DiagnosticEmitter {
     if (file.is(CommonFlags.Compiled)) return;
     file.set(CommonFlags.Compiled);
 
-    let closureScanner = new ClosureScanner();
-    file.source.accept(closureScanner);
+    this.closureScanner = new ClosureScanner();
+    file.source.accept(this.closureScanner);
 
     // compile top-level statements within the file's start function
     let startFunction = file.startFunction;
@@ -8700,7 +8702,8 @@ export class Compiler extends DiagnosticEmitter {
             declaration.toDeclarationBase(),
             declaration.toFunctionLikeWithBodyBase(),
             CompiledNameNode.fromIdentifier(declaration.name),
-            declaration.identifierAndSignatureRange
+            declaration.identifierAndSignatureRange,
+            false
           ),
           null,
           Signature.create(this.program, [], classInstance.type, classInstance.type),
