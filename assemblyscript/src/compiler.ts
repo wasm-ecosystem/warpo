@@ -175,6 +175,8 @@ import { markDataElementImmutable, markCallInlined } from "./warpo";
 import { mangleImportName, STATIC_DELIMITER, INDEX_SUFFIX } from "./mangle";
 import { addGlobal } from "./mir";
 
+import { ClosureScanner } from "./ast/closureScanner";
+
 /** Features enabled by default. */
 export const defaultFeatures =
   Feature.MutableGlobals | Feature.SignExtension | Feature.NontrappingF2I | Feature.BulkMemory;
@@ -894,6 +896,9 @@ export class Compiler extends DiagnosticEmitter {
   compileFile(file: File): void {
     if (file.is(CommonFlags.Compiled)) return;
     file.set(CommonFlags.Compiled);
+
+    let closureScanner = new ClosureScanner();
+    file.source.accept(closureScanner);
 
     // compile top-level statements within the file's start function
     let startFunction = file.startFunction;
