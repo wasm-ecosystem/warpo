@@ -230,6 +230,14 @@ export class ClosureScanner extends BaseVisitor {
     this.functionScopeChain_ = new FunctionScopeChain(closureFunctions);
   }
 
+  getCapturedVariablesOfFunction(node: FunctionDeclaration): Set<Node> | null {
+    if (this.closureFunctions_.has(node)) {
+      return this.closureFunctions_.get(node);
+    } else {
+      return null;
+    }
+  }
+
   private visitNodeInScope(node: Node | null): void {
     if (!node) return;
     this.functionScopeChain_.enterScope();

@@ -112,6 +112,8 @@ import {
 import { Lookup } from "./lookup";
 import * as mir from "./mir";
 
+import { ClosureScanner } from "./ast/closureScanner";
+
 // Memory manager constants
 const AL_SIZE = 16;
 const AL_MASK = AL_SIZE - 1;
@@ -462,6 +464,8 @@ export class Program extends DiagnosticEmitter {
   uniqueSignatures: Map<string, Signature> = new Map<string, Signature>();
   /** Module imports. */
   moduleImports: Map<string, Map<string, Element>> = new Map();
+
+  closureScanner: ClosureScanner = new ClosureScanner();
 
   // Standard library
 
@@ -1028,7 +1032,7 @@ export class Program extends DiagnosticEmitter {
         declaration.toFunctionLikeWithBodyBase(),
         CompiledNameNode.fromIdentifier(declaration.name),
         declaration.identifierAndSignatureRange,
-        false
+        null
       ),
       null,
       signature
@@ -2453,7 +2457,8 @@ export class Program extends DiagnosticEmitter {
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
       propertyName,
-      declaration.identifierAndSignatureRange
+      declaration.identifierAndSignatureRange,
+      null
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
       this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
@@ -2589,7 +2594,8 @@ export class Program extends DiagnosticEmitter {
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
-      declaration.identifierAndSignatureRange
+      declaration.identifierAndSignatureRange,
+      null
     );
     if (isGetter) {
       property.getterPrototype = element;
@@ -2918,7 +2924,8 @@ export class Program extends DiagnosticEmitter {
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(declaration.name),
-      declaration.identifierAndSignatureRange
+      declaration.identifierAndSignatureRange,
+      this.closureScanner.getCapturedVariablesOfFunction(declaration)
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
       this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
@@ -4161,7 +4168,7 @@ export class FunctionPrototype extends DeclaredElement {
       origin.functionLikeWithBodyBase,
       origin.identifierNode,
       origin.identifierAndSignatureRange,
-      origin.isClosure
+      origin.closureVariables
     );
   }
 
@@ -4177,7 +4184,7 @@ export class FunctionPrototype extends DeclaredElement {
     public readonly functionLikeWithBodyBase: FunctionLikeWithBodyBase,
     public readonly identifierNode: CompiledNameNode,
     public readonly identifierAndSignatureRange: Range,
-    public readonly isClosure: bool
+    public readonly closureVariables: Set<Node> | null
   ) {
     super(
       ElementKind.FunctionPrototype,
@@ -4285,6 +4292,8 @@ export class Function extends TypedElement {
   overrideStub: Function | null = null;
   /** Runtime memory segment, if created. */
   memorySegment: MemorySegment | null = null;
+  /** Function table index, if assigned. -1 if not yet assigned. */
+  functionTableIndex: i32 = -1;
   /** Original function, if a stub. Otherwise `this`. */
   original!: Function;
 
@@ -4292,6 +4301,8 @@ export class Function extends TypedElement {
   nextInlineId: i32 = 0;
   /** Counting id of anonymous inner functions. */
   nextAnonymousId: i32 = 0;
+
+  heapLocalsStorage: Local | null = null;
 
   /** Constructs a new concrete function. */
   constructor(
@@ -4501,6 +4512,10 @@ export class Function extends TypedElement {
       }
     }
   }
+
+  isClosureFunction(): bool {
+    return this.prototype.closureVariables != null;
+  }
 }
 
 /** A property comprised of a getter and a setter function. */
@@ -4579,7 +4594,7 @@ export class PropertyPrototype extends DeclaredElement {
       getterDeclaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
       getterDeclaration.identifierAndSignatureRange,
-      false
+      null
     );
     prototype.setterPrototype = new FunctionPrototype(
       mangleSetterName(name),
@@ -4589,7 +4604,7 @@ export class PropertyPrototype extends DeclaredElement {
       setterDeclaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
       setterDeclaration.identifierAndSignatureRange,
-      false
+      null
     );
     return prototype;
   }
