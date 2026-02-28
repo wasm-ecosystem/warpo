@@ -176,7 +176,7 @@ class TupleTypeBuilder {
 
       let tupleType = new Type(baseType.kind, baseType.flags, baseType.size);
       tupleType.classReference = smallTupleClass;
-      tupleType.tupleInfo = new SmallTupleTypeInfo(this.elements, this.program);
+      tupleType.tupleInfo = new SmallTupleTypeInfo(this.elements);
 
       let tupleTypeName = mir.getTupleMIRName(tupleType);
       if (!this.registeredTupleTypes.has(tupleTypeName)) {

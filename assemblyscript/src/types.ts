@@ -115,14 +115,11 @@ export class TupleElementInfo {
 }
 
 export class SmallTupleTypeInfo {
-  private usizeByteSize: i32 = 0;
   constructor(
     /** Tuple element information, if this is a tuple type. */
     public elements: TupleElementInfo[],
-    program: Program
   ) {
-    this.usizeByteSize = Type.usize32.byteSize;
-    assert(elements.length != 0);
+    assert(elements.length != 0, "empty tuples are not allowed");
   }
 
   get elementCount(): i32 {
@@ -131,7 +128,8 @@ export class SmallTupleTypeInfo {
 
   getElementsAreaByteSize(): i32 {
     let lastElement = this.elements[this.elements.length - 1];
-    return alignUpToPowerOf2(lastElement.offset + lastElement.type.byteSize, this.usizeByteSize);
+    // align to 32 bits to avoid inefficient unaligned loads and stores.
+    return alignUpToPowerOf2(lastElement.offset + lastElement.type.byteSize, Type.usize32.byteSize);
   }
 
   getBitmap(): i64 {
@@ -139,7 +137,7 @@ export class SmallTupleTypeInfo {
     for (let i = 0, k = this.elements.length; i < k; ++i) {
       let element = this.elements[i];
       if (element.type.isReference) {
-        bitmap = i64_or(bitmap, i64_shl(i64_new(1), i64_new(element.offset / this.usizeByteSize)));
+        bitmap = i64_or(bitmap, i64_shl(i64_new(1), i64_new(element.offset / Type.usize32.byteSize)));
       }
     }
     return bitmap;
