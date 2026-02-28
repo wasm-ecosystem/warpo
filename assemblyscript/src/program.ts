@@ -467,6 +467,8 @@ export class Program extends DiagnosticEmitter {
 
   closureScanner: ClosureScanner = new ClosureScanner();
 
+  registeredTupleTypes: Set<string> = new Set();
+
   // Standard library
 
   /** Gets the standard `ArrayBufferView` instance. */
@@ -4310,10 +4312,7 @@ export class Function extends TypedElement {
 
   heapLocalsStorage: Local | null = null;
 
-  heapLocalsTypeBuilder: TupleTypeBuilder = new TupleTypeBuilder(
-    this.program,
-    this.program.resolver.registeredTupleTypes
-  );
+  heapLocalsTypeBuilder: TupleTypeBuilder = new TupleTypeBuilder(this.program, this.program.registeredTupleTypes);
 
   /** Constructs a new concrete function. */
   constructor(

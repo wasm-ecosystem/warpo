@@ -480,7 +480,7 @@ export class Resolver extends DiagnosticEmitter {
   ): Type | null {
     let elementTypeNodes = node.elementTypes;
     let elementCount = elementTypeNodes.length;
-    let builder = new TupleTypeBuilder(this.program, this.registeredTupleTypes);
+    let builder = new TupleTypeBuilder(this.program, this.program.registeredTupleTypes);
 
     for (let i = 0; i < elementCount; ++i) {
       let elementType = this.resolveType(elementTypeNodes[i], flow, ctxElement, ctxTypes, reportMode);
