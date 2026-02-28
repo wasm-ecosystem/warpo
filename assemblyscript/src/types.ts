@@ -117,7 +117,7 @@ export class TupleElementInfo {
 export class SmallTupleTypeInfo {
   constructor(
     /** Tuple element information, if this is a tuple type. */
-    public elements: TupleElementInfo[],
+    public elements: TupleElementInfo[]
   ) {
     assert(elements.length != 0, "empty tuples are not allowed");
   }
