@@ -45,7 +45,7 @@ function generateFileInfos(filesInfo: FileCoverageResult[]): string {
   return filesInfo.map((v) => generateFileInfo(v)).join("\n");
 }
 
-export function generateFolderHtml(relativePathofRoot: string, filesInfo: FileCoverageResult[]): string {
+export function generateFolderHtml(relativePathOfRoot: string, filesInfo: FileCoverageResult[]): string {
   const statementCoverageRate: Rate = new Rate();
   const branchCoverageRate: Rate = new Rate();
   const functionCoverageRate: Rate = new Rate();
@@ -69,12 +69,12 @@ export function generateFolderHtml(relativePathofRoot: string, filesInfo: FileCo
 <head>
   <title>Code coverage report for tests</title>
   <meta charset="utf-8" />
-  <link rel="stylesheet" href="${relativePathofRoot}/resource/prettify.css" />
-  <link rel="stylesheet" href="${relativePathofRoot}/resource/base.css" />
+  <link rel="stylesheet" href="${relativePathOfRoot}/resource/prettify.css" />
+  <link rel="stylesheet" href="${relativePathOfRoot}/resource/base.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style type='text/css'>
     .coverage-summary .sorter {
-        background-image: url(${relativePathofRoot}/resource/sort-arrow-sprite.png);
+        background-image: url(${relativePathOfRoot}/resource/sort-arrow-sprite.png);
     }
   </style>
 </head>
@@ -82,7 +82,7 @@ export function generateFolderHtml(relativePathofRoot: string, filesInfo: FileCo
 <body>
   <div class='wrapper'>
     <div class='pad1'>
-      <h1><a href="${relativePathofRoot}/index.html">All files</a> tests</h1>
+      <h1><a href="${relativePathOfRoot}/index.html">All files</a> tests</h1>
       <div class='clearfix'>
         <div class='fl pad1y space-right2'>
           <span class="strong">${statementCoverageRate.getRate()}% </span>
@@ -149,14 +149,14 @@ export function generateFolderHtml(relativePathofRoot: string, filesInfo: FileCo
   </div>
   
   </div>
-  <script src="${relativePathofRoot}/resource/prettify.js"></script>
+  <script src="${relativePathOfRoot}/resource/prettify.js"></script>
   <script>
     window.onload = function () {
       prettyPrint();
     };
   </script>
-  <script src="${relativePathofRoot}/resource/sorter.js"></script>
-  <script src="${relativePathofRoot}/resource/block-navigation.js"></script>
+  <script src="${relativePathOfRoot}/resource/sorter.js"></script>
+  <script src="${relativePathOfRoot}/resource/block-navigation.js"></script>
 </body>
 
       `;

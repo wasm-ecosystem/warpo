@@ -26,10 +26,10 @@ export function genHtml(target: string, filesInfos: FileCoverageResult[]) {
   const html = generateFolderHtml(".", filesInfos);
   writeFileSync(join(target, "index.html"), html);
   for (const filesInfo of filesInfos) {
-    const htmlpath = join(target, filesInfo.filename + ".html");
-    const relativePath = relative(dirname(htmlpath), target);
+    const htmlPath = join(target, filesInfo.filename + ".html");
+    const relativePath = relative(dirname(htmlPath), target);
     const html = generateCodeHtml(relativePath, filesInfo);
-    ensureDirSync(dirname(htmlpath));
-    writeFileSync(htmlpath, html);
+    ensureDirSync(dirname(htmlPath));
+    writeFileSync(htmlPath, html);
   }
 }
