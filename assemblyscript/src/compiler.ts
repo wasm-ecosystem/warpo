@@ -1585,12 +1585,12 @@ export class Compiler extends DiagnosticEmitter {
 
       this.currentFlow = previousFlow;
 
-      const numCapturedLocals = instance.prototype.closureVariables?.size as i32;
+      const numCapturedLocals = instance.prototype.closureVariables!.size as i32;
 
       const heapLocalsTuple = this.makeNewTuple(
         numCapturedLocals,
         0,
-        Node.createComment(CommentKind.Line, "", new Range(0, 0)) // fixme: it's just a place hodler node.
+        Node.createComment(CommentKind.Line, "", new Range(0, 0)) // fixme: it's just a place holder node.
       );
       const heapLocalsStorage = flow.getTempLocal(Type.i32);
       stmts[0] = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
