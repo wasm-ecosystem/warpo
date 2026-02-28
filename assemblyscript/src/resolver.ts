@@ -131,7 +131,7 @@ class ClassImplementationTracker {
 
 /**
  * Helper class to build tuple types while tracking memory layout and size.
- * 
+ *
  * How to calculate memory layout
  * - Assumption:
  *   - let `i` as element index.
@@ -149,7 +149,7 @@ class TupleTypeBuilder {
 
   constructor(
     private program: Program,
-    private registeredTupleTypes: Set<string>,
+    private registeredTupleTypes: Set<string>
   ) {}
 
   push(type: Type, range: Range, reportMode: ReportMode): bool {
