@@ -34,7 +34,7 @@ In this case, the debugger server will:
 
 1. Launch a subprocess with node inspect
 2. run the given js file and wait for Wasm loaded event.
-3. When a Wasm with warpo comapitable debug symbol loaded, debugger will register this module for debugging
+3. When a Wasm with warpo compatable debug symbol loaded, debugger will register this module for debugging
 
 WARP runtime:
 Not supported
@@ -55,7 +55,7 @@ Node runtime
 export WARPO_DEBUG_PORT=1122
 ```
 
-Unitest framework need to read this environment variable and run with inspect.
+Unittest framework need to read this environment variable and run with inspect.
 
 Restriction:
 Integrator must pass the enviornment variable

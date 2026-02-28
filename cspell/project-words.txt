@@ -28,6 +28,7 @@ ctest
 currp
 debugadapter
 debuggee
+debugprotocol
 dend
 Dependee
 dependees
@@ -157,6 +158,7 @@ succs
 SWEEPFACTOR
 tagopt
 tcms
+testsupport
 thisof
 tlsf
 tmptostack
