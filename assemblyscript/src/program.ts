@@ -93,7 +93,7 @@ import {
   writeI64AsI32,
 } from "./util";
 
-import { Resolver } from "./resolver";
+import { ReportMode, Resolver, TupleTypeBuilder } from "./resolver";
 
 import { Flow, LocalFlags } from "./flow";
 
@@ -4101,7 +4101,9 @@ export class Local extends VariableLikeElement {
     /** Variable-like base of the declaration. */
     variableLikeBase: VariableLikeBase,
     /** Declaration base. */
-    declarationBase: DeclarationBase
+    declarationBase: DeclarationBase,
+
+    public readonly tupleIndex: i32 = -1
   ) {
     super(ElementKind.Local, name, parent, variableLikeBase, declarationBase);
     this.index = index;
@@ -4120,6 +4122,10 @@ export class Local extends VariableLikeElement {
     let numParams = signature.parameterTypes.length;
     if (signature.thisType) numParams++;
     return this.index < numParams;
+  }
+
+  isClosureVariable(): bool {
+    return this.tupleIndex >= 0;
   }
 }
 
@@ -4304,6 +4310,11 @@ export class Function extends TypedElement {
 
   heapLocalsStorage: Local | null = null;
 
+  heapLocalsTypeBuilder: TupleTypeBuilder = new TupleTypeBuilder(
+    this.program,
+    this.program.resolver.registeredTupleTypes
+  );
+
   /** Constructs a new concrete function. */
   constructor(
     /** Name incl. type parameters, i.e. `foo<i32>`. */
@@ -4436,9 +4447,19 @@ export class Function extends TypedElement {
     let localName = name != null ? name : localIndex.toString();
     let variableLikeBase: VariableLikeBase;
     let declarationBase: DeclarationBase;
+    let tupleIndex = -1;
     if (declaration) {
       variableLikeBase = declaration.toVariableLikeBase();
       declarationBase = declaration.toDeclarationBase();
+      const sourceFunction = this.flow.targetFunction;
+      if (sourceFunction.isClosureFunction()) {
+        let closureVariables = sourceFunction.prototype.closureVariables;
+        if (closureVariables != null && closureVariables.has(declaration)) {
+          const heapLocalsTypeBuilder = sourceFunction.heapLocalsTypeBuilder;
+          tupleIndex = heapLocalsTypeBuilder.size;
+          heapLocalsTypeBuilder.push(type, declarationBase.nameRange, ReportMode.Report);
+        }
+      }
     } else {
       variableLikeBase = new VariableLikeBase(
         Node.createIdentifierExpression(localName, Source.native.range),
@@ -4447,7 +4468,7 @@ export class Function extends TypedElement {
       );
       declarationBase = new DeclarationBase(null, CommonFlags.None, Source.native.range, null);
     }
-    let local = new Local(localName, localIndex, type, this, variableLikeBase, declarationBase);
+    let local = new Local(localName, localIndex, type, this, variableLikeBase, declarationBase, tupleIndex);
     if (name) {
       let defaultFlow = this.flow;
       let scopedLocals = defaultFlow.scopedLocals;

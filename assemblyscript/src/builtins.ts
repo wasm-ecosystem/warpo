@@ -666,6 +666,9 @@ export namespace BuiltinNames {
 
   // std/object.ts
   export const Object = "~lib/object/Object";
+
+  export const getClosureEnv = "~lib/closure/getClosureEnv";
+  export const setClosureEnv = "~lib/closure/setClosureEnv";
 }
 
 /** Builtin types context. */

@@ -646,7 +646,25 @@ export class Compiler extends DiagnosticEmitter {
         TypeRef.I32
       );
     }
+    // this.setClosureImport(); fixme: closure support is currently not finished yet.
     return module;
+  }
+
+  setClosureImport(): void {
+    this.module.addFunctionImport(
+      BuiltinNames.getClosureEnv,
+      BuiltinNames.externalFuncName,
+      BuiltinNames.getClosureEnv,
+      TypeRef.None,
+      TypeRef.I32
+    );
+    this.module.addFunctionImport(
+      BuiltinNames.setClosureEnv,
+      BuiltinNames.externalFuncName,
+      BuiltinNames.setClosureEnv,
+      TypeRef.I32,
+      TypeRef.None
+    );
   }
 
   private initDefaultMemory(memoryOffset: i64): void {
@@ -1578,6 +1596,13 @@ export class Compiler extends DiagnosticEmitter {
       let stmts = new Array<ExpressionRef>();
 
       stmts.push(0); // placeholder for the closure heapLocals.
+      stmts.push(0); // placeholder for saving the parent function's context.
+
+      instance.heapLocalsTypeBuilder.push(
+        this.program.smallTupleInstance.type,
+        instance.declarationBase.nameRange,
+        ReportMode.Report
+      );
 
       if (!this.compileFunctionBody(instance, stmts)) {
         stmts.push(module.unreachable());
@@ -1585,15 +1610,27 @@ export class Compiler extends DiagnosticEmitter {
 
       this.currentFlow = previousFlow;
 
-      const numCapturedLocals = instance.prototype.closureVariables!.size as i32;
-
-      const heapLocalsTuple = this.makeNewTuple(
-        numCapturedLocals,
-        0,
-        Node.createComment(CommentKind.Line, "", new Range(0, 0)) // fixme: it's just a place holder node.
+      const heapLocalsTupleType = instance.heapLocalsTypeBuilder.finalize(
+        instance.declarationBase.nameRange,
+        ReportMode.Report
       );
+      const closureDummyNode = Node.createComment(CommentKind.Line, "", new Range(0, 0)); // fixme: it's just a place holder node.
+      const tupleInfo = assert(assert(heapLocalsTupleType).tupleInfo);
+      const heapLocalsTuple = this.makeNewTuple(tupleInfo.elementCount, tupleInfo.getBitmap(), closureDummyNode);
       const heapLocalsStorage = flow.getTempLocal(Type.i32);
       stmts[0] = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
+      const parentEnvElementInfo = tupleInfo.elements[0];
+      const getClosureEnvStmt = module.get_closure_env();
+      const tupleSetter = assert(this.program.smallTupleInstance.getMethod("__set"));
+      stmts[1] = this.makeCallDirect(
+        tupleSetter,
+        [
+          module.local_get(heapLocalsStorage.index, this.program.smallTupleInstance.type.toRef()),
+          parentEnvElementInfo.offset,
+          getClosureEnvStmt,
+        ],
+        closureDummyNode
+      );
       // create the function
       funcRef = module.addFunction(
         instance.internalName,

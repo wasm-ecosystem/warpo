@@ -143,7 +143,7 @@ class ClassImplementationTracker {
  *  - `last_byte[i] = offset[i] + sizeof(type[i])`.
  *  - `offset[i] = alignUpToPowerOf2(last_byte[i - 1], sizeof(type[i]))`.
  */
-class TupleTypeBuilder {
+export class TupleTypeBuilder {
   private elements: TupleElementInfo[] = [];
   private memoryOffset: i32 = 0;
 
@@ -191,6 +191,10 @@ class TupleTypeBuilder {
     }
     return null;
   }
+
+  get size(): i32 {
+    return this.elements.length;
+  }
 }
 
 /** Provides tools to resolve types and expressions. */
@@ -198,7 +202,7 @@ export class Resolver extends DiagnosticEmitter {
   /** The program this resolver belongs to. */
   program: Program;
   /** Tracks registered tuple types to avoid duplicate MIR entries. */
-  private registeredTupleTypes: Set<string> = new Set();
+  registeredTupleTypes: Set<string> = new Set();
 
   /** Target expression of the previously resolved property or element access. */
   currentThisExpression: Expression | null = null;
