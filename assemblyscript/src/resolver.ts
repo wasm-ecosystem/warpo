@@ -129,6 +129,70 @@ class ClassImplementationTracker {
   }
 }
 
+/**
+ * Helper class to build tuple types while tracking memory layout and size.
+ * 
+ * How to calculate memory layout
+ * - Assumption:
+ *   - let `i` as element index.
+ *   - let `type[i]` as type of element `i`.
+ *   - let `sizeof(type[i])` as size of `type[i]`, which must be aligned to power of 2.
+ *   - let `offset[i]` as memory offset of element `i`.
+ * - Formula:
+ *  - `offset[0] = 0`.
+ *  - `last_byte[i] = offset[i] + sizeof(type[i])`.
+ *  - `offset[i] = alignUpToPowerOf2(last_byte[i - 1], sizeof(type[i]))`.
+ */
+class TupleTypeBuilder {
+  private elements: TupleElementInfo[] = [];
+  private memoryOffset: i32 = 0;
+
+  constructor(
+    private program: Program,
+    private registeredTupleTypes: Set<string>,
+  ) {}
+
+  push(type: Type, range: Range, reportMode: ReportMode): bool {
+    if (type.kind == TypeKind.Void) {
+      if (reportMode == ReportMode.Report) this.program.error(DiagnosticCode.Not_implemented_0, range, "tuple type");
+      return false;
+    }
+    if (type.isExternalReference || !type.isMemory) {
+      if (reportMode == ReportMode.Report) this.program.error(DiagnosticCode.Not_implemented_0, range, "tuple type");
+      return false;
+    }
+    const byteSize = type.byteSize;
+    this.memoryOffset = alignUpToPowerOf2(this.memoryOffset, byteSize);
+    this.elements.push(new TupleElementInfo(type, this.memoryOffset));
+    this.memoryOffset += byteSize;
+    return true;
+  }
+
+  finalize(range: Range, reportMode: ReportMode): Type | null {
+    const smallTupleThreshold = 64 * Type.usize32.byteSize;
+    if (this.memoryOffset <= smallTupleThreshold) {
+      let smallTupleClass = this.program.smallTupleInstance;
+      let baseType = smallTupleClass.type;
+
+      let tupleType = new Type(baseType.kind, baseType.flags, baseType.size);
+      tupleType.classReference = smallTupleClass;
+      tupleType.tupleInfo = new SmallTupleTypeInfo(this.elements, this.program);
+
+      let tupleTypeName = mir.getTupleMIRName(tupleType);
+      if (!this.registeredTupleTypes.has(tupleTypeName)) {
+        this.registeredTupleTypes.add(tupleTypeName);
+        mir.createTupleType(tupleType);
+      }
+
+      return tupleType;
+    }
+    if (reportMode == ReportMode.Report) {
+      this.program.error(DiagnosticCode.Not_implemented_0, range, `tuple large than ${smallTupleThreshold} bytes`);
+    }
+    return null;
+  }
+}
+
 /** Provides tools to resolve types and expressions. */
 export class Resolver extends DiagnosticEmitter {
   /** The program this resolver belongs to. */
@@ -412,57 +476,15 @@ export class Resolver extends DiagnosticEmitter {
   ): Type | null {
     let elementTypeNodes = node.elementTypes;
     let elementCount = elementTypeNodes.length;
-    let elementTypes = new Array<Type>(elementCount);
+    let builder = new TupleTypeBuilder(this.program, this.registeredTupleTypes);
 
     for (let i = 0; i < elementCount; ++i) {
       let elementType = this.resolveType(elementTypeNodes[i], flow, ctxElement, ctxTypes, reportMode);
       if (!elementType) return null;
-      if (elementType.kind == TypeKind.Void) {
-        if (reportMode == ReportMode.Report) this.error(DiagnosticCode.Not_implemented_0, node.range, "tuple type");
-        return null;
-      }
-      elementTypes[i] = elementType;
+      if (!builder.push(elementType, node.range, reportMode)) return null;
     }
 
-    const tupleElementInfo = new Array<TupleElementInfo>(elementCount);
-    let memoryOffset = 0;
-    for (let i = 0; i < elementCount; ++i) {
-      let t = unchecked(elementTypes[i]);
-      if (t.isExternalReference || !t.isMemory) {
-        // SmallTuple uses AS runtime GC hooks, so only internal managed references are supported.
-        if (reportMode == ReportMode.Report) this.error(DiagnosticCode.Not_implemented_0, node.range, "tuple type");
-        return null;
-      }
-      const byteSize = t.byteSize;
-      memoryOffset = alignUpToPowerOf2(memoryOffset, byteSize);
-      tupleElementInfo[i] = new TupleElementInfo(t, memoryOffset);
-      memoryOffset += byteSize;
-    }
-
-    // small tuple use u64 for memory layout, so that it can hold max 64 * sizeof<usize> bytes
-    const smallTupleThreshold = 64 * Type.usize32.byteSize;
-    if (memoryOffset <= smallTupleThreshold) {
-      let smallTupleClass = this.program.smallTupleInstance;
-      let baseType = smallTupleClass.type;
-
-      let tupleType = new Type(baseType.kind, baseType.flags, baseType.size);
-      tupleType.classReference = smallTupleClass;
-
-      tupleType.tupleInfo = new SmallTupleTypeInfo(tupleElementInfo, this.program);
-
-      // Register tuple type with MIR if not already registered
-      let tupleTypeName = mir.getTupleMIRName(tupleType);
-      if (!this.registeredTupleTypes.has(tupleTypeName)) {
-        this.registeredTupleTypes.add(tupleTypeName);
-        mir.createTupleType(tupleType);
-      }
-
-      return tupleType;
-    }
-    if (reportMode == ReportMode.Report) {
-      this.error(DiagnosticCode.Not_implemented_0, node.range, `tuple large than ${smallTupleThreshold} bytes`);
-    }
-    return null;
+    return builder.finalize(node.range, reportMode);
   }
 
   /** Resolves a type name to the program element it refers to. */
