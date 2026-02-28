@@ -1366,10 +1366,6 @@ export class Compiler extends DiagnosticEmitter {
   ): bool {
     if (instance.is(CommonFlags.Compiled)) return !instance.is(CommonFlags.Errored);
 
-    if (instance.isClosureFunction()) {
-      return this.compileClosureFunction(instance);
-    }
-
     if (!forceStdAlternative) {
       if (instance.hasDecorator(DecoratorFlags.Builtin)) return true;
       if (instance.hasDecorator(DecoratorFlags.Lazy)) {
