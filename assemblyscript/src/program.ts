@@ -4514,7 +4514,8 @@ export class Function extends TypedElement {
   }
 
   isClosureFunction(): bool {
-    return this.prototype.closureVariables != null;
+    return false; // Fixme, closure is not supported yet
+    // return this.prototype.closureVariables != null;
   }
 }
 

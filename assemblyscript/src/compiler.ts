@@ -1366,6 +1366,10 @@ export class Compiler extends DiagnosticEmitter {
   ): bool {
     if (instance.is(CommonFlags.Compiled)) return !instance.is(CommonFlags.Errored);
 
+    if (instance.isClosureFunction()) {
+      return this.compileClosureFunction(instance);
+    }
+
     if (!forceStdAlternative) {
       if (instance.hasDecorator(DecoratorFlags.Builtin)) return true;
       if (instance.hasDecorator(DecoratorFlags.Lazy)) {
@@ -7263,9 +7267,13 @@ export class Compiler extends DiagnosticEmitter {
       this.currentType = instance.signature.type;
       if (!worked) return module.unreachable();
     }
-
-    let offset = this.ensureRuntimeFunction(instance); // reports
-    let expr = module.i32(i64_low(offset));
+    let expr: ExpressionRef;
+    if (!instance.isClosureFunction()) {
+      let offset = this.ensureRuntimeFunction(instance); // reports
+      expr = module.i32(i64_low(offset));
+    } else {
+      expr = this.ensureRuntimeClosureFunction(instance);
+    }
 
     // add a constant local referring to the function if applicable
     if (!isSemanticallyAnonymous) {
@@ -7523,9 +7531,15 @@ export class Compiler extends DiagnosticEmitter {
           this.currentType = Type.func;
           return module.ref_func(functionInstance.internalName, ensureType(functionInstance.type));
         }
-        let offset = this.ensureRuntimeFunction(functionInstance);
-        this.currentType = functionInstance.signature.type;
-        return module.i32(i64_low(offset));
+        if (!functionInstance.isClosureFunction()) {
+          let offset = this.ensureRuntimeFunction(functionInstance);
+          this.currentType = functionInstance.signature.type;
+          return module.i32(i64_low(offset));
+        } else {
+          const expr = this.ensureRuntimeClosureFunction(functionInstance);
+          this.currentType = functionInstance.signature.type;
+          return expr;
+        }
       }
     }
     this.error(DiagnosticCode.Expression_does_not_compile_to_a_value_at_runtime, expression.range);
@@ -9117,9 +9131,12 @@ export class Compiler extends DiagnosticEmitter {
           this.error(DiagnosticCode.Not_implemented_0, expression.range, "First-class built-ins");
           return module.unreachable();
         }
-
-        let offset = this.ensureRuntimeFunction(functionInstance);
-        return module.i32(i64_low(offset));
+        if (!functionInstance.isClosureFunction()) {
+          let offset = this.ensureRuntimeFunction(functionInstance);
+          return module.i32(i64_low(offset));
+        } else {
+          return this.ensureRuntimeClosureFunction(functionInstance);
+        }
       }
     }
     this.error(DiagnosticCode.Expression_does_not_compile_to_a_value_at_runtime, expression.range);
