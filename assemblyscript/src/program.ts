@@ -4312,7 +4312,7 @@ export class Function extends TypedElement {
 
   heapLocalsStorage: Local | null = null;
 
-  heapLocalsTypeBuilder: TupleTypeBuilder = new TupleTypeBuilder(this.program, this.program.registeredTupleTypes);
+  heapLocalsTypeBuilder: TupleTypeBuilder;
 
   /** Constructs a new concrete function. */
   constructor(
@@ -4335,6 +4335,7 @@ export class Function extends TypedElement {
       prototype.parent,
       prototype.declarationBase
     );
+    this.heapLocalsTypeBuilder = new TupleTypeBuilder(prototype.program, prototype.program.registeredTupleTypes);
     this.prototype = prototype;
     this.typeArguments = typeArguments;
     this.signature = signature;
