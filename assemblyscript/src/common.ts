@@ -240,6 +240,7 @@ export namespace CommonNames {
   export const newBuffer = "__newBuffer";
   export const newArray = "__newArray";
   export const newTuple = "__newTuple";
+  export const newFunction = "__newFunction";
   export const BLOCK = "~lib/rt/common/BLOCK";
   export const OBJECT = "~lib/rt/common/OBJECT";
   // memory & table

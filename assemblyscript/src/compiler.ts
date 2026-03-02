@@ -2067,33 +2067,18 @@ export class Compiler extends DiagnosticEmitter {
     // Resolve the runtime Function class
     let rtInstance = assert(this.resolver.resolveClass(program.functionPrototype, [instance.type]));
 
-    // Dynamically allocate: ptr = __new(size, classId)
-    let alloc = this.makeAllocation(rtInstance);
-
     // Store in a temp local, write fields, and return the pointer
     let flow = this.currentFlow;
-    let tempLocal = flow.getTempLocal(Type.i32);
-    let tempIndex = tempLocal.index;
+    const localForEnv = assert(flow.targetFunction.heapLocalsStorage);
 
-    let exprs = new Array<ExpressionRef>();
-    // store _index field, tee-ing the alloc result into tempLocal
-    exprs.push(
-      module.store(
-        4,
-        module.local_tee(tempIndex, alloc, true),
-        module.i32(index),
-        TypeRef.I32,
-        rtInstance.offsetof("_index")
-      )
+    const expr = this.makeNewFunction(
+      index,
+      localForEnv,
+      rtInstance.id,
+      Node.createComment(CommentKind.Line, "", instance.nameRange)
     );
-    // store _env = 0
-    exprs.push(
-      module.store(4, module.local_get(tempIndex, TypeRef.I32), module.i32(0), TypeRef.I32, rtInstance.offsetof("_env"))
-    );
-    // return the pointer
-    exprs.push(module.local_get(tempIndex, TypeRef.I32));
 
-    return module.flatten(exprs, TypeRef.I32);
+    return expr;
   }
 
   // === Statements ===============================================================================
@@ -8210,6 +8195,18 @@ export class Compiler extends DiagnosticEmitter {
     const expr = this.makeCallDirect(
       program.newTupleInstance,
       [module.usize(elementSlotSize), module.i64(i64_low(bitmap), i64_high(bitmap))],
+      reportNode
+    );
+    return expr;
+  }
+
+  private makeNewFunction(functionIndex: i32, envLocal: Local, rtid: u32, reportNode: Node): ExpressionRef {
+    const program = this.program;
+    const module = this.module;
+
+    const expr = this.makeCallDirect(
+      program.newFunctionInstance,
+      [module.usize(functionIndex), module.local_get(envLocal.index, TypeRef.I32), module.i32(rtid)],
       reportNode
     );
     return expr;

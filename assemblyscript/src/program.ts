@@ -827,6 +827,14 @@ export class Program extends DiagnosticEmitter {
   }
   private _newTupleInstance: Function | null = null;
 
+  private _newFunctionInstance: Function | null = null;
+  /** Gets the runtime `__newFunction` instance. */
+  get newFunctionInstance(): Function {
+    let cached = this._newFunctionInstance;
+    if (!cached) this._newFunctionInstance = cached = this.requireFunction(CommonNames.newFunction);
+    return cached;
+  }
+
   /** Gets the runtime's internal `BLOCK` instance. */
   get BLOCKInstance(): Class {
     let cached = this._BLOCKInstance;

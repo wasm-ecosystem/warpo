@@ -64,6 +64,15 @@ export function __newTuple(elementSize: usize, bitmap: u64): usize {
 }
 
 // @ts-ignore: decorator
+@unsafe
+export function __newFunction(functionIdnex: usize, env: usize, rtid: u32): usize {
+  const ptr = __new(8, rtid);
+  store<usize>(ptr, functionIdnex);
+  store<usize>(ptr + 4, env);
+  return ptr;
+}
+
+// @ts-ignore: decorator
 @global @unsafe
 function __tostack(ptr: usize): usize {
   // eslint-disable-line
