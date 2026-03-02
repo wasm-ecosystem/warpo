@@ -93,7 +93,7 @@ import {
   writeI64AsI32,
 } from "./util";
 
-import { Resolver } from "./resolver";
+import { ReportMode, Resolver, TupleTypeBuilder } from "./resolver";
 
 import { Flow, LocalFlags } from "./flow";
 
@@ -111,6 +111,8 @@ import {
 } from "./mangle";
 import { Lookup } from "./lookup";
 import * as mir from "./mir";
+
+import { ClosureScanner } from "./ast/closureScanner";
 
 // Memory manager constants
 const AL_SIZE = 16;
@@ -462,6 +464,10 @@ export class Program extends DiagnosticEmitter {
   uniqueSignatures: Map<string, Signature> = new Map<string, Signature>();
   /** Module imports. */
   moduleImports: Map<string, Map<string, Element>> = new Map();
+
+  closureScanner: ClosureScanner = new ClosureScanner();
+
+  registeredTupleTypes: Set<string> = new Set();
 
   // Standard library
 
@@ -821,6 +827,14 @@ export class Program extends DiagnosticEmitter {
   }
   private _newTupleInstance: Function | null = null;
 
+  private _newFunctionInstance: Function | null = null;
+  /** Gets the runtime `__newFunction` instance. */
+  get newFunctionInstance(): Function {
+    let cached = this._newFunctionInstance;
+    if (!cached) this._newFunctionInstance = cached = this.requireFunction(CommonNames.newFunction);
+    return cached;
+  }
+
   /** Gets the runtime's internal `BLOCK` instance. */
   get BLOCKInstance(): Class {
     let cached = this._BLOCKInstance;
@@ -1027,7 +1041,8 @@ export class Program extends DiagnosticEmitter {
         declaration.toDeclarationBase(),
         declaration.toFunctionLikeWithBodyBase(),
         CompiledNameNode.fromIdentifier(declaration.name),
-        declaration.identifierAndSignatureRange
+        declaration.identifierAndSignatureRange,
+        null
       ),
       null,
       signature
@@ -2452,7 +2467,8 @@ export class Program extends DiagnosticEmitter {
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
       propertyName,
-      declaration.identifierAndSignatureRange
+      declaration.identifierAndSignatureRange,
+      null
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
       this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
@@ -2588,7 +2604,8 @@ export class Program extends DiagnosticEmitter {
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
-      declaration.identifierAndSignatureRange
+      declaration.identifierAndSignatureRange,
+      null
     );
     if (isGetter) {
       property.getterPrototype = element;
@@ -2917,7 +2934,8 @@ export class Program extends DiagnosticEmitter {
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(declaration.name),
-      declaration.identifierAndSignatureRange
+      declaration.identifierAndSignatureRange,
+      this.closureScanner.getCapturedVariablesOfFunction(declaration)
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
       this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
@@ -4093,7 +4111,9 @@ export class Local extends VariableLikeElement {
     /** Variable-like base of the declaration. */
     variableLikeBase: VariableLikeBase,
     /** Declaration base. */
-    declarationBase: DeclarationBase
+    declarationBase: DeclarationBase,
+
+    public readonly tupleIndex: i32 = -1
   ) {
     super(ElementKind.Local, name, parent, variableLikeBase, declarationBase);
     this.index = index;
@@ -4112,6 +4132,10 @@ export class Local extends VariableLikeElement {
     let numParams = signature.parameterTypes.length;
     if (signature.thisType) numParams++;
     return this.index < numParams;
+  }
+
+  isClosureVariable(): bool {
+    return this.tupleIndex >= 0;
   }
 }
 
@@ -4159,7 +4183,8 @@ export class FunctionPrototype extends DeclaredElement {
       origin.declarationBase,
       origin.functionLikeWithBodyBase,
       origin.identifierNode,
-      origin.identifierAndSignatureRange
+      origin.identifierAndSignatureRange,
+      origin.closureVariables
     );
   }
 
@@ -4174,7 +4199,8 @@ export class FunctionPrototype extends DeclaredElement {
     declarationBase: DeclarationBase,
     public readonly functionLikeWithBodyBase: FunctionLikeWithBodyBase,
     public readonly identifierNode: CompiledNameNode,
-    public readonly identifierAndSignatureRange: Range
+    public readonly identifierAndSignatureRange: Range,
+    public readonly closureVariables: Set<Node> | null
   ) {
     super(
       ElementKind.FunctionPrototype,
@@ -4282,6 +4308,8 @@ export class Function extends TypedElement {
   overrideStub: Function | null = null;
   /** Runtime memory segment, if created. */
   memorySegment: MemorySegment | null = null;
+  /** Function table index, if assigned. -1 if not yet assigned. */
+  functionTableIndex: i32 = -1;
   /** Original function, if a stub. Otherwise `this`. */
   original!: Function;
 
@@ -4289,6 +4317,10 @@ export class Function extends TypedElement {
   nextInlineId: i32 = 0;
   /** Counting id of anonymous inner functions. */
   nextAnonymousId: i32 = 0;
+
+  heapLocalsStorage: Local | null = null;
+
+  heapLocalsTypeBuilder: TupleTypeBuilder;
 
   /** Constructs a new concrete function. */
   constructor(
@@ -4311,6 +4343,7 @@ export class Function extends TypedElement {
       prototype.parent,
       prototype.declarationBase
     );
+    this.heapLocalsTypeBuilder = new TupleTypeBuilder(prototype.program, prototype.program.registeredTupleTypes);
     this.prototype = prototype;
     this.typeArguments = typeArguments;
     this.signature = signature;
@@ -4422,9 +4455,19 @@ export class Function extends TypedElement {
     let localName = name != null ? name : localIndex.toString();
     let variableLikeBase: VariableLikeBase;
     let declarationBase: DeclarationBase;
+    let tupleIndex = -1;
     if (declaration) {
       variableLikeBase = declaration.toVariableLikeBase();
       declarationBase = declaration.toDeclarationBase();
+      const sourceFunction = this.flow.targetFunction;
+      if (sourceFunction.isClosureFunction()) {
+        let closureVariables = sourceFunction.prototype.closureVariables;
+        if (closureVariables != null && closureVariables.has(declaration)) {
+          const heapLocalsTypeBuilder = sourceFunction.heapLocalsTypeBuilder;
+          tupleIndex = heapLocalsTypeBuilder.size;
+          heapLocalsTypeBuilder.push(type, declarationBase.nameRange, ReportMode.Report);
+        }
+      }
     } else {
       variableLikeBase = new VariableLikeBase(
         Node.createIdentifierExpression(localName, Source.native.range),
@@ -4433,7 +4476,7 @@ export class Function extends TypedElement {
       );
       declarationBase = new DeclarationBase(null, CommonFlags.None, Source.native.range, null);
     }
-    let local = new Local(localName, localIndex, type, this, variableLikeBase, declarationBase);
+    let local = new Local(localName, localIndex, type, this, variableLikeBase, declarationBase, tupleIndex);
     if (name) {
       let defaultFlow = this.flow;
       let scopedLocals = defaultFlow.scopedLocals;
@@ -4497,6 +4540,11 @@ export class Function extends TypedElement {
         module.setLocalName(ref, i, localName);
       }
     }
+  }
+
+  isClosureFunction(): bool {
+    return false; // Fixme, closure is not supported yet
+    // return this.prototype.closureVariables != null;
   }
 }
 
@@ -4575,7 +4623,8 @@ export class PropertyPrototype extends DeclaredElement {
       getterDeclaration.toDeclarationBase(),
       getterDeclaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
-      getterDeclaration.identifierAndSignatureRange
+      getterDeclaration.identifierAndSignatureRange,
+      null
     );
     prototype.setterPrototype = new FunctionPrototype(
       mangleSetterName(name),
@@ -4584,7 +4633,8 @@ export class PropertyPrototype extends DeclaredElement {
       setterDeclaration.toDeclarationBase(),
       setterDeclaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
-      setterDeclaration.identifierAndSignatureRange
+      setterDeclaration.identifierAndSignatureRange,
+      null
     );
     return prototype;
   }

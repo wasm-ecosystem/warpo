@@ -153,6 +153,7 @@ import {
   ParameterKind,
   DeclarationBase,
   VariableLikeBase,
+  CommentKind,
 } from "./ast";
 import { Type, TypeKind, TypeFlags, Signature, typesToRefs, SmallTupleTypeInfo } from "./types";
 import {
@@ -645,7 +646,25 @@ export class Compiler extends DiagnosticEmitter {
         TypeRef.I32
       );
     }
+    // this.setClosureImport(); fixme: closure support is currently not finished yet.
     return module;
+  }
+
+  setClosureImport(): void {
+    this.module.addFunctionImport(
+      BuiltinNames.getClosureEnv,
+      BuiltinNames.externalFuncName,
+      BuiltinNames.getClosureEnv,
+      TypeRef.None,
+      TypeRef.I32
+    );
+    this.module.addFunctionImport(
+      BuiltinNames.setClosureEnv,
+      BuiltinNames.externalFuncName,
+      BuiltinNames.setClosureEnv,
+      TypeRef.I32,
+      TypeRef.None
+    );
   }
 
   private initDefaultMemory(memoryOffset: i64): void {
@@ -896,8 +915,8 @@ export class Compiler extends DiagnosticEmitter {
   compileFile(file: File): void {
     if (file.is(CommonFlags.Compiled)) return;
     file.set(CommonFlags.Compiled);
-
-    let closureScanner = new ClosureScanner();
+    const closureScanner = new ClosureScanner();
+    this.program.closureScanner = closureScanner;
     file.source.accept(closureScanner);
 
     // compile top-level statements within the file's start function
@@ -1365,6 +1384,10 @@ export class Compiler extends DiagnosticEmitter {
   ): bool {
     if (instance.is(CommonFlags.Compiled)) return !instance.is(CommonFlags.Errored);
 
+    if (instance.isClosureFunction()) {
+      return this.compileClosureFunction(instance);
+    }
+
     if (!forceStdAlternative) {
       if (instance.hasDecorator(DecoratorFlags.Builtin)) return true;
       if (instance.hasDecorator(DecoratorFlags.Lazy)) {
@@ -1505,6 +1528,117 @@ export class Compiler extends DiagnosticEmitter {
         }
         this.warning(DiagnosticCode.Exchange_of_0_values_is_not_supported_by_all_embeddings, range, "v128");
       }
+    }
+
+    instance.finalize(module, funcRef);
+    this.currentType = previousType;
+    pendingElements.delete(instance);
+    return true;
+  }
+
+  /** Compiles a resolved function. */
+  compileClosureFunction(
+    /** Function to compile. */
+    instance: Function
+  ): bool {
+    // ensure the function has no duplicate parameters
+    let parameters = instance.prototype.functionTypeNode.parameters;
+    let numParameters = parameters.length;
+    if (numParameters >= 2) {
+      let visited = new Set<string>();
+      visited.add(parameters[0].name.text);
+      for (let i = 1; i < numParameters; i++) {
+        let paramIdentifier = parameters[i].name;
+        let paramName = paramIdentifier.text;
+        if (!visited.has(paramName)) {
+          visited.add(paramName);
+        } else {
+          this.error(DiagnosticCode.Duplicate_identifier_0, paramIdentifier.range, paramName);
+        }
+      }
+    }
+
+    instance.set(CommonFlags.Compiled);
+    let pendingElements = this.pendingElements;
+    pendingElements.add(instance);
+
+    let previousType = this.currentType;
+    let module = this.module;
+    let signature = instance.signature;
+    let bodyNode = instance.prototype.bodyNode;
+    this.checkSignatureSupported(instance.signature, instance.prototype.functionLikeWithBodyBase.signature);
+
+    let funcRef: FunctionRef = 0;
+
+    // concrete function
+    if (bodyNode) {
+      // must not be ambient
+      if (instance.is(CommonFlags.Ambient)) {
+        this.error(DiagnosticCode.An_implementation_cannot_be_declared_in_ambient_contexts, instance.nameRange);
+      }
+
+      // cannot have an annotated external name or code
+      if (instance.hasAnyDecorator(DecoratorFlags.External | DecoratorFlags.ExternalJs)) {
+        let decoratorNodes = instance.decoratorNodes;
+        let decorator: DecoratorNode | null;
+        if ((decorator = findDecorator(DecoratorKind.External, decoratorNodes))) {
+          this.error(DiagnosticCode.Decorator_0_is_not_valid_here, decorator.range, "external");
+        }
+        if ((decorator = findDecorator(DecoratorKind.ExternalJs, decoratorNodes))) {
+          this.error(DiagnosticCode.Decorator_0_is_not_valid_here, decorator.range, "external.js");
+        }
+      }
+
+      // compile body in this function's context
+      let previousFlow = this.currentFlow;
+      let flow = instance.flow;
+      this.currentFlow = flow;
+      let stmts = new Array<ExpressionRef>();
+
+      stmts.push(0); // placeholder for the closure heapLocals.
+      stmts.push(0); // placeholder for saving the parent function's context.
+
+      instance.heapLocalsTypeBuilder.push(
+        this.program.smallTupleInstance.type,
+        instance.declarationBase.nameRange,
+        ReportMode.Report
+      );
+
+      if (!this.compileFunctionBody(instance, stmts)) {
+        stmts.push(module.unreachable());
+      }
+
+      this.currentFlow = previousFlow;
+
+      const heapLocalsTupleType = instance.heapLocalsTypeBuilder.finalize(
+        instance.declarationBase.nameRange,
+        ReportMode.Report
+      );
+      const closureDummyNode = Node.createComment(CommentKind.Line, "", new Range(0, 0)); // fixme: it's just a place holder node.
+      const tupleInfo = assert(assert(heapLocalsTupleType).tupleInfo);
+      const heapLocalsTuple = this.makeNewTuple(tupleInfo.elementCount, tupleInfo.getBitmap(), closureDummyNode);
+      const heapLocalsStorage = flow.getTempLocal(Type.i32);
+      stmts[0] = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
+      const parentEnvElementInfo = tupleInfo.elements[0];
+      const getClosureEnvStmt = module.get_closure_env();
+      const tupleSetter = assert(this.program.smallTupleInstance.getMethod("__set"));
+      stmts[1] = this.makeCallDirect(
+        tupleSetter,
+        [
+          module.local_get(heapLocalsStorage.index, this.program.smallTupleInstance.type.toRef()),
+          parentEnvElementInfo.offset,
+          getClosureEnvStmt,
+        ],
+        closureDummyNode
+      );
+      // create the function
+      funcRef = module.addFunction(
+        instance.internalName,
+        signature.paramRefs,
+        signature.resultRefs,
+        typesToRefs(instance.getNonParameterLocalTypes()),
+        module.flatten(stmts, instance.signature.returnType.toRef())
+      );
     }
 
     instance.finalize(module, funcRef);
@@ -1912,6 +2046,39 @@ export class Compiler extends DiagnosticEmitter {
       );
     }
     return i64_add(memorySegment.offset, i64_new(program.totalOverhead));
+  }
+
+  /** Ensures that a runtime counterpart of the specified closure function exists and returns its address expression. */
+  ensureRuntimeClosureFunction(instance: Function): ExpressionRef {
+    assert(instance.is(CommonFlags.Compiled) && !instance.is(CommonFlags.Stub));
+    let program = this.program;
+    let module = this.module;
+
+    // Add to the function table (only once)
+    if (instance.functionTableIndex < 0) {
+      let functionTable = this.functionTable;
+      let tableBase = this.options.tableBase;
+      if (!tableBase) tableBase = 1; // leave first elem blank
+      instance.functionTableIndex = tableBase + functionTable.length;
+      functionTable.push(instance);
+    }
+    let index = instance.functionTableIndex;
+
+    // Resolve the runtime Function class
+    let rtInstance = assert(this.resolver.resolveClass(program.functionPrototype, [instance.type]));
+
+    // Store in a temp local, write fields, and return the pointer
+    let flow = this.currentFlow;
+    const localForEnv = assert(flow.targetFunction.heapLocalsStorage);
+
+    const expr = this.makeNewFunction(
+      index,
+      localForEnv,
+      rtInstance.id,
+      Node.createComment(CommentKind.Line, "", instance.nameRange)
+    );
+
+    return expr;
   }
 
   // === Statements ===============================================================================
@@ -7007,7 +7174,8 @@ export class Compiler extends DiagnosticEmitter {
       declaration.toDeclarationBase(),
       declaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(declaration.name),
-      declaration.identifierAndSignatureRange
+      declaration.identifierAndSignatureRange,
+      this.program.closureScanner.getCapturedVariablesOfFunction(declaration)
     );
     let instance: Function | null;
     let contextualTypeArguments = cloneMap(flow.contextualTypeArguments);
@@ -7121,9 +7289,13 @@ export class Compiler extends DiagnosticEmitter {
       this.currentType = instance.signature.type;
       if (!worked) return module.unreachable();
     }
-
-    let offset = this.ensureRuntimeFunction(instance); // reports
-    let expr = module.i32(i64_low(offset));
+    let expr: ExpressionRef;
+    if (!instance.isClosureFunction()) {
+      let offset = this.ensureRuntimeFunction(instance); // reports
+      expr = module.i32(i64_low(offset));
+    } else {
+      expr = this.ensureRuntimeClosureFunction(instance);
+    }
 
     // add a constant local referring to the function if applicable
     if (!isSemanticallyAnonymous) {
@@ -7381,9 +7553,15 @@ export class Compiler extends DiagnosticEmitter {
           this.currentType = Type.func;
           return module.ref_func(functionInstance.internalName, ensureType(functionInstance.type));
         }
-        let offset = this.ensureRuntimeFunction(functionInstance);
-        this.currentType = functionInstance.signature.type;
-        return module.i32(i64_low(offset));
+        if (!functionInstance.isClosureFunction()) {
+          let offset = this.ensureRuntimeFunction(functionInstance);
+          this.currentType = functionInstance.signature.type;
+          return module.i32(i64_low(offset));
+        } else {
+          const expr = this.ensureRuntimeClosureFunction(functionInstance);
+          this.currentType = functionInstance.signature.type;
+          return expr;
+        }
       }
     }
     this.error(DiagnosticCode.Expression_does_not_compile_to_a_value_at_runtime, expression.range);
@@ -8017,6 +8195,18 @@ export class Compiler extends DiagnosticEmitter {
     const expr = this.makeCallDirect(
       program.newTupleInstance,
       [module.usize(elementSlotSize), module.i64(i64_low(bitmap), i64_high(bitmap))],
+      reportNode
+    );
+    return expr;
+  }
+
+  private makeNewFunction(functionIndex: i32, envLocal: Local, rtid: u32, reportNode: Node): ExpressionRef {
+    const program = this.program;
+    const module = this.module;
+
+    const expr = this.makeCallDirect(
+      program.newFunctionInstance,
+      [module.usize(functionIndex), module.local_get(envLocal.index, TypeRef.I32), module.i32(rtid)],
       reportNode
     );
     return expr;
@@ -8700,7 +8890,8 @@ export class Compiler extends DiagnosticEmitter {
             declaration.toDeclarationBase(),
             declaration.toFunctionLikeWithBodyBase(),
             CompiledNameNode.fromIdentifier(declaration.name),
-            declaration.identifierAndSignatureRange
+            declaration.identifierAndSignatureRange,
+            null
           ),
           null,
           Signature.create(this.program, [], classInstance.type, classInstance.type),
@@ -8974,9 +9165,12 @@ export class Compiler extends DiagnosticEmitter {
           this.error(DiagnosticCode.Not_implemented_0, expression.range, "First-class built-ins");
           return module.unreachable();
         }
-
-        let offset = this.ensureRuntimeFunction(functionInstance);
-        return module.i32(i64_low(offset));
+        if (!functionInstance.isClosureFunction()) {
+          let offset = this.ensureRuntimeFunction(functionInstance);
+          return module.i32(i64_low(offset));
+        } else {
+          return this.ensureRuntimeClosureFunction(functionInstance);
+        }
       }
     }
     this.error(DiagnosticCode.Expression_does_not_compile_to_a_value_at_runtime, expression.range);
