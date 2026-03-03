@@ -2168,19 +2168,22 @@
      (drop
       (i32.const 0)
      )
+     (drop
+      (i32.eq
+       (i32.rem_u
+        (i32.const 200)
+        (i32.const 100)
+       )
+       (i32.const 0)
+      )
+     )
      (global.set $~lib/rt/itcms/threshold
       (i32.add
-       (i32.wrap_i64
-        (i64.div_u
-         (i64.mul
-          (i64.extend_i32_u
-           (global.get $~lib/rt/itcms/total)
-          )
-          (i64.extend_i32_u
-           (i32.const 200)
-          )
-         )
-         (i64.const 100)
+       (i32.mul
+        (global.get $~lib/rt/itcms/total)
+        (i32.div_u
+         (i32.const 200)
+         (i32.const 100)
         )
        )
        (i32.const 1024)
