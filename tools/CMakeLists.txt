@@ -1,3 +1,4 @@
 add_subdirectory(asc)
+add_subdirectory(binaryen_enums EXCLUDE_FROM_ALL)
 add_subdirectory(compiler)
 add_subdirectory(trace_visualizer)
