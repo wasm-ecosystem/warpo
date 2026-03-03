@@ -7,6 +7,7 @@
     "warpo": "dist/warpo.js"
   },
   "scripts": {
+    "update": "cmake -S . -B build && cmake --build build --parallel --target warpo_binaryen_enums_gen && ./build/bin/warpo_binaryen_enums_gen",
     "build:ts": "tsc -p tools/tsconfig.json",
     "build:cpp": "cmake -S . -B build && cmake --build build --parallel",
     "build": "npm run build:ts && npm run build:cpp",
