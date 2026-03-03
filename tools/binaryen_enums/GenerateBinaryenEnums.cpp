@@ -16,29 +16,18 @@
 namespace warpo {
 namespace {
 
-using OpFn = int32_t (*)();
-using U32Fn = uint32_t (*)();
+using Fn = uint32_t (*)();
 
 void *resolveSymbol(char const *name) { return dlsym(RTLD_DEFAULT, name); }
 
-int64_t callBinaryenFunction(std::string const &functionName) {
-  void *symbol = resolveSymbol(functionName.c_str());
+uint32_t callBinaryenFunction(std::string const &functionName) {
+  void *const symbol = resolveSymbol(functionName.c_str());
   if (symbol == nullptr) {
     std::cerr << "Failed to resolve symbol: " << functionName << "\n";
     std::exit(1);
   }
-
-  bool const returnIsU32 = functionName.starts_with("ExpressionRunnerFlags") ||
-                           functionName.starts_with("BinaryenExternal") ||
-                           (functionName.starts_with("Binaryen") && functionName.ends_with("Id"));
-
-  if (returnIsU32) {
-    auto fn = reinterpret_cast<U32Fn>(symbol);
-    return static_cast<int64_t>(fn());
-  }
-
-  auto fn = reinterpret_cast<OpFn>(symbol);
-  return static_cast<int64_t>(fn());
+  auto fn = std::bit_cast<Fn>(symbol);
+  return fn();
 }
 
 std::string updateEnumValues(std::string const &input) {
@@ -54,7 +43,7 @@ std::string updateEnumValues(std::string const &input) {
     std::string const comment = match[2].str();
     std::string const function_name = comment.size() > 0 && comment[0] == '_' ? comment.substr(1) : comment;
 
-    int64_t const value = callBinaryenFunction(function_name);
+    uint32_t const value = callBinaryenFunction(function_name);
     output.append("= ");
     output.append(std::to_string(value));
     output.append(" /* ");
