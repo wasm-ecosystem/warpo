@@ -108,7 +108,7 @@ function replaceExtension(filePath: string, newExt: string): string {
 }
 
 async function buildRelease(executable: string, outputWatPath: string): Promise<void> {
-  const args = ["--config", "asconfig.json", "--target", "release", "-o", outputWatPath];
+  const args = ["--config", "asconfig.json", "--target", "minimal", "-o", outputWatPath];
   await runCommand(executable, args);
 }
 

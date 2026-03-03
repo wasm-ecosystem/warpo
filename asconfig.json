@@ -22,11 +22,11 @@
       "optimizeLevel": 3,
       "shrinkLevel": 2
     },
-    "fast": {
+    "minimal": {
       "debug": false,
       "sourceMap": false,
-      "optimizeLevel": 0,
-      "shrinkLevel": 0
-    }
+      "shrinkLevel": 2
+    },
+    "fast": {}
   }
 }
