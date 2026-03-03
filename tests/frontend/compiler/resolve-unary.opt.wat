@@ -8,14 +8,13 @@
  (type $6 (func (param i32 i32 i64)))
  (type $7 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 35616))
+ (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
@@ -196,7 +195,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$114
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$113
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -220,7 +219,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$114
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$113
      end
      local.get $0
      i32.load offset=8
@@ -1039,7 +1038,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$119 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$118 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1055,7 +1054,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$119
+         br $__inlined_func$~lib/rt/itcms/step$118
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1094,7 +1093,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$119
+           br $__inlined_func$~lib/rt/itcms/step$118
           end
           local.get $2
           i32.load offset=4
@@ -1114,7 +1113,7 @@
         i32.and
         i32.eq
         if
-         global.get $~lib/memory/__stack_pointer
+         i32.const 35616
          local.set $2
          loop $while-continue|0
           local.get $2
@@ -1186,7 +1185,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$119
+        br $__inlined_func$~lib/rt/itcms/step$118
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1285,7 +1284,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$119
+        br $__inlined_func$~lib/rt/itcms/step$118
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -2068,39 +2067,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 2848
-  i32.lt_s
-  if
-   unreachable
-  end
   i32.const 0
   i32.const 4
   call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   local.set $0
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
   global.set $resolve-unary/foo
   i32.const 2464
   i32.const 2464
@@ -2178,39 +2147,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 2848
-  i32.lt_s
-  if
-   unreachable
-  end
   i32.const 0
   i32.const 5
   call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   local.set $0
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
   global.set $resolve-unary/bar
   i32.const 2592
   i32.const 2592

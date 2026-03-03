@@ -1,31 +1,32 @@
 (module
- (type $0 (func (param i32 i32 i32) (result i32)))
- (type $1 (func (param i32)))
- (type $2 (func (param i32 i32) (result i32)))
- (type $3 (func (param i32 i32 i32 i32)))
- (type $4 (func))
+ (type $0 (func (param i32 i32) (result i32)))
+ (type $1 (func (param i32 i32 i32) (result i32)))
+ (type $2 (func (param i32 i32 i32 i32)))
+ (type $3 (func))
+ (type $4 (func (param i32)))
  (type $5 (func (param i32 i32)))
  (type $6 (func (param i32 i32 i32)))
  (type $7 (func (param i32 i32) (result i64)))
  (type $8 (func (param i32 i32 i64)))
  (type $9 (func (result i32)))
- (type $10 (func (param i32 i32 i32) (result f32)))
- (type $11 (func (param i32 i32) (result f64)))
- (type $12 (func (param i32 f32 i32)))
- (type $13 (func (param i32 f64 i32)))
- (type $14 (func (param i32 i64 i32 i32)))
+ (type $10 (func (param i32 i32 i32 i32) (result i32)))
+ (type $11 (func (param i32 i32 i32) (result f32)))
+ (type $12 (func (param i32 i32) (result f64)))
+ (type $13 (func (param i32 f32 i32)))
+ (type $14 (func (param i32 f64 i32)))
+ (type $15 (func (param i32 i64 i32 i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33520))
+ (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33520))
  (memory $0 1)
  (data $0 (i32.const 12) ",")
  (data $0.1 (i32.const 24) "\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h")
@@ -138,7 +139,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$136
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$138
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -162,7 +163,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$136
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$138
    end
    local.get $0
    i32.load offset=8
@@ -1606,21 +1607,16 @@
   local.get $2
   i32.store8
  )
- (func $~lib/dataview/DataView#constructor (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
-  (local $3 i32)
-  i32.const 12
-  i32.const 6
-  call $~lib/rt/itcms/__new
-  local.set $3
-  local.get $0
+ (func $~lib/dataview/DataView#constructor (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
+  local.get $1
   i32.const 20
   i32.sub
   i32.load offset=16
-  local.get $1
   local.get $2
+  local.get $3
   i32.add
   i32.lt_u
-  local.get $2
+  local.get $3
   i32.const 1073741820
   i32.gt_u
   i32.or
@@ -1632,18 +1628,18 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $3
-  local.get $0
-  call $~lib/arraybuffer/ArrayBufferView#set:buffer
-  local.get $3
   local.get $0
   local.get $1
+  call $~lib/arraybuffer/ArrayBufferView#set:buffer
+  local.get $0
+  local.get $1
+  local.get $2
   i32.add
   i32.store offset=4
+  local.get $0
   local.get $3
-  local.get $2
   i32.store offset=8
-  local.get $3
+  local.get $0
  )
  (func $~lib/dataview/DataView#getFloat32 (param $0 i32) (param $1 i32) (param $2 i32) (result f32)
   local.get $1
@@ -2138,8 +2134,19 @@
  (func $~start
   (local $0 i32)
   (local $1 i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 752
+  i32.lt_s
+  if
+   unreachable
+  end
   memory.size
   i32.const 16
   i32.shl
@@ -2172,8 +2179,6 @@
   i32.store
   i32.const 432
   global.set $~lib/rt/itcms/fromSpace
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   i32.const 12
   i32.const 4
   call $~lib/rt/itcms/__new
@@ -2181,19 +2186,6 @@
   global.get $~lib/memory/__stack_pointer
   local.get $1
   i32.store align=1
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  local.get $1
-  i32.eqz
-  if
-   i32.const 12
-   i32.const 3
-   call $~lib/rt/itcms/__new
-   local.set $1
-   global.get $~lib/memory/__stack_pointer
-   local.get $1
-   i32.store align=1
-  end
   local.get $1
   i32.const 8
   i32.const 1
@@ -2207,16 +2199,8 @@
   i32.const 8
   i32.store offset=8
   global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
   local.get $1
-  i32.store offset=4 align=1
+  i32.store align=1
   local.get $1
   i32.const 0
   i32.const 246
@@ -2249,12 +2233,11 @@
   i32.const 7
   i32.const 95
   call $~lib/typedarray/Uint8Array#__set
-  global.get $~lib/memory/__stack_pointer
+  i32.const 12
+  i32.const 6
+  call $~lib/rt/itcms/__new
   local.get $1
   i32.load
-  local.tee $0
-  i32.store align=1
-  local.get $0
   local.get $1
   i32.load offset=4
   local.get $1
@@ -3775,12 +3758,12 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
+  i32.const 12
+  i32.const 6
+  call $~lib/rt/itcms/__new
   local.get $1
   i32.load
   local.tee $0
-  i32.store align=1
-  local.get $0
   i32.const 0
   local.get $0
   i32.const 20
@@ -3848,25 +3831,9 @@
   i32.add
   global.set $~lib/rt/itcms/threshold
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  local.get $0
-  memory.fill
-  global.get $~lib/memory/__stack_pointer
-  i32.const 752
-  i32.lt_s
-  if
-   unreachable
-  end
  )
  (func $byn$mgfn-shared$~lib/dataview/DataView#setInt16 (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32)
   local.get $0

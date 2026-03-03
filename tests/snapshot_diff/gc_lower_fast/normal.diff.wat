@@ -5,12 +5,20 @@
   (local i32)
 ;; ====================
   block ;;i32
-;; =========add========
       i32.const 4
+;; =========add========
     call $~lib/rt/__decrease_sp
       block ;;i32
 ;; ====================
-              i32.const 0
+                  i32.const 4
+;; =========add========
+                  i32.const 4
+;; ====================
+                call $~lib/rt/itcms/__new
+;; =========add========
+                i32.const 0
+;; ====================
+              call $~lib/rt/__tmptostack
             call $tests/snapshot_diff/common_lib/normal/Normal#constructor
 ;; =========add========
             i32.const 0

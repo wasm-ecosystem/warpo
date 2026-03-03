@@ -64,6 +64,37 @@
    (local.get $normal)
   )
  )
+ (func $issues/1225/X#set:x (param $this i32) (param $x i32)
+  (i32.store offset=8
+   (local.get $this)
+   (local.get $x)
+  )
+ )
+ (func $issues/1225/X#constructor (param $this i32) (param $x i32) (result i32)
+  (call $issues/1225/X#set:x
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $x)
+  )
+  (call $issues/1225/X#set:viaThis
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $issues/1225/X#get:x
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+  )
+  (call $issues/1225/X#set:normal
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $x)
+  )
+  (local.get $this)
+ )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
    (local.get $this)
@@ -2923,54 +2954,6 @@
    (local.get $ptr)
   )
  )
- (func $issues/1225/X#set:x (param $this i32) (param $x i32)
-  (i32.store offset=8
-   (local.get $this)
-   (local.get $x)
-  )
- )
- (func $issues/1225/X#constructor (param $this i32) (param $x i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 12)
-        (i32.const 4)
-       )
-      )
-     )
-    )
-   )
-   (call $issues/1225/X#set:x
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (local.get $x)
-   )
-  )
-  (call $issues/1225/X#set:viaThis
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (call $issues/1225/X#get:x
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-   )
-  )
-  (call $issues/1225/X#set:normal
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (local.get $x)
-  )
-  (local.get $this)
- )
  (func $issues/1225/X#get:normal (param $this i32) (result i32)
   (i32.load
    (local.get $this)
@@ -3098,7 +3081,12 @@
   )
   (global.set $issues/1225/x
    (call $issues/1225/X#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 12)
+      (i32.const 4)
+     )
+    )
     (i32.const 4)
    )
   )

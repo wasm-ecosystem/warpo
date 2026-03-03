@@ -4,9 +4,9 @@
  (type $2 (func))
  (type $3 (func (param i32)))
  (type $4 (func (param i32 i32)))
- (type $5 (func (result i32)))
- (type $6 (func (param i32 i32 i32 i32)))
- (type $7 (func (param i32 i32 i64)))
+ (type $5 (func (param i32 i32 i32 i32)))
+ (type $6 (func (param i32 i32 i64)))
+ (type $7 (func (result i32)))
  (type $8 (func (param i32 i32 i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33644))
@@ -220,7 +220,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$104
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$107
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -244,7 +244,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$104
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$107
    end
    local.get $0
    i32.load offset=8
@@ -1747,7 +1747,7 @@
    local.get $0
    i32.load
    local.tee $4
-   block $__inlined_func$~lib/rt/itcms/__renew$109 (result i32)
+   block $__inlined_func$~lib/rt/itcms/__renew$112 (result i32)
     i32.const 1073741820
     local.get $3
     i32.const 1
@@ -1787,7 +1787,7 @@
      local.get $3
      i32.store offset=16
      local.get $4
-     br $__inlined_func$~lib/rt/itcms/__renew$109
+     br $__inlined_func$~lib/rt/itcms/__renew$112
     end
     local.get $3
     local.get $1
@@ -1898,42 +1898,6 @@
   i32.add
   local.get $2
   i32.store
- )
- (func $std/array-literal/Ref#constructor (result i32)
-  (local $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 876
-  i32.lt_s
-  if
-   unreachable
-  end
-  i32.const 0
-  i32.const 8
-  call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   local.set $0
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/array/Array<std/array-literal/Ref>#__set (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
@@ -2357,15 +2321,21 @@
   i32.store align=1
   local.get $0
   i32.const 0
-  call $std/array-literal/Ref#constructor
+  i32.const 0
+  i32.const 8
+  call $~lib/rt/itcms/__new
   call $~lib/array/Array<std/array-literal/Ref>#__set
   local.get $0
   i32.const 1
-  call $std/array-literal/Ref#constructor
+  i32.const 0
+  i32.const 8
+  call $~lib/rt/itcms/__new
   call $~lib/array/Array<std/array-literal/Ref>#__set
   local.get $0
   i32.const 2
-  call $std/array-literal/Ref#constructor
+  i32.const 0
+  i32.const 8
+  call $~lib/rt/itcms/__new
   call $~lib/array/Array<std/array-literal/Ref>#__set
   local.get $0
   global.set $std/array-literal/dynamicArrayRef
@@ -2441,7 +2411,9 @@
   i32.store align=1
   local.get $0
   i32.const 0
-  call $std/array-literal/Ref#constructor
+  i32.const 0
+  i32.const 8
+  call $~lib/rt/itcms/__new
   call $~lib/array/Array<std/array-literal/Ref>#__set
   i32.const 33644
   global.set $~lib/memory/__stack_pointer

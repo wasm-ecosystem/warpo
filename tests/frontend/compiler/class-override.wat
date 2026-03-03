@@ -46,6 +46,57 @@
  (export "fn" (func $class-override/fn))
  (export "memory" (memory $0))
  (start $~start)
+ (func $~lib/object/Object#constructor (param $this i32) (result i32)
+  (local.get $this)
+ )
+ (func $class-override/A#constructor (param $this i32) (result i32)
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $~lib/object/Object#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.get $this)
+ )
+ (func $class-override/B#constructor (param $this i32) (result i32)
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $class-override/A#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.get $this)
+ )
+ (func $class-override/C#constructor (param $this i32) (result i32)
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $class-override/B#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.get $this)
+ )
+ (func $class-override/D#constructor (param $this i32) (result i32)
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $class-override/C#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.get $this)
+ )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
    (local.get $this)
@@ -2905,132 +2956,6 @@
    (local.get $ptr)
   )
  )
- (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
- (func $class-override/A#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $~lib/object/Object#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
- (func $class-override/B#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 7)
-      )
-     )
-    )
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $class-override/A#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
- (func $class-override/C#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 6)
-      )
-     )
-    )
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $class-override/B#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
- (func $class-override/D#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 5)
-      )
-     )
-    )
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $class-override/C#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
  (func $class-override/A#f (param $this i32) (param $a i32) (result i32)
   (return
    (i32.add
@@ -3079,7 +3004,12 @@
   )
   (global.set $class-override/x
    (call $class-override/D#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 5)
+     )
+    )
    )
   )
   (if

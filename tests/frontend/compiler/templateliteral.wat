@@ -6788,28 +6788,11 @@
   )
  )
  (func $templateliteral/Ref#constructor (param $this i32) (param $value i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 5)
-       )
-      )
-     )
-    )
+  (call $templateliteral/Ref#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $templateliteral/Ref#set:value
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (local.get $value)
-   )
+   (local.get $value)
   )
   (local.get $this)
  )
@@ -6855,7 +6838,12 @@
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $templateliteral/Ref#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 4)
+       (i32.const 5)
+      )
+     )
      (i32.const 1)
     )
    )
@@ -6863,7 +6851,12 @@
   (local.set $b
    (call $~lib/rt/__localtostack
     (call $templateliteral/Ref#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 4)
+       (i32.const 5)
+      )
+     )
      (i32.const 2)
     )
    )
@@ -6997,7 +6990,12 @@
   (local.set $c
    (call $~lib/rt/__localtostack
     (call $templateliteral/Ref#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 4)
+       (i32.const 5)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -7106,21 +7104,6 @@
  )
  (func $templateliteral/RecursiveObject#constructor (param $this i32) (param $key i32) (param $val i32) (result i32)
   (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 6)
-       )
-      )
-     )
-    )
-   )
    (call $templateliteral/RecursiveObject#set:key
     (call $~lib/rt/__tmptostack
      (local.get $this)
@@ -7231,7 +7214,12 @@
   (local.set $c
    (call $~lib/rt/__localtostack
     (call $templateliteral/RecursiveObject#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 8)
+       (i32.const 6)
+      )
+     )
      (i32.const 4736)
      (i32.const 0)
     )
@@ -7240,7 +7228,12 @@
   (local.set $b
    (call $~lib/rt/__localtostack
     (call $templateliteral/RecursiveObject#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 8)
+       (i32.const 6)
+      )
+     )
      (i32.const 64)
      (call $~lib/rt/__tmptostack
       (local.get $c)
@@ -7251,7 +7244,12 @@
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $templateliteral/RecursiveObject#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 8)
+       (i32.const 6)
+      )
+     )
      (i32.const 32)
      (call $~lib/rt/__tmptostack
       (local.get $b)

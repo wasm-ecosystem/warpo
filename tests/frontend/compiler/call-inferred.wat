@@ -1,8 +1,8 @@
 (module
  (type $0 (func (param i32) (result i32)))
  (type $1 (func (param i32 i32)))
- (type $2 (func (param i32)))
- (type $3 (func (param i32 i32) (result i32)))
+ (type $2 (func (param i32 i32) (result i32)))
+ (type $3 (func (param i32)))
  (type $4 (func))
  (type $5 (func (param f32) (result f32)))
  (type $6 (func (param i32 i32 i32)))
@@ -84,6 +84,21 @@
   (call $call-inferred/bar<f32>
    (local.get $a)
   )
+ )
+ (func $call-inferred/Foo<i32>#set:value (param $this i32) (param $value i32)
+  (i32.store
+   (local.get $this)
+   (local.get $value)
+  )
+ )
+ (func $call-inferred/Foo<i32>#constructor (param $this i32) (param $value i32) (result i32)
+  (call $call-inferred/Foo<i32>#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $value)
+  )
+  (local.get $this)
  )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
@@ -2944,38 +2959,6 @@
    (local.get $ptr)
   )
  )
- (func $call-inferred/Foo<i32>#set:value (param $this i32) (param $value i32)
-  (i32.store
-   (local.get $this)
-   (local.get $value)
-  )
- )
- (func $call-inferred/Foo<i32>#constructor (param $this i32) (param $value i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 4)
-       )
-      )
-     )
-    )
-   )
-   (call $call-inferred/Foo<i32>#set:value
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (local.get $value)
-   )
-  )
-  (local.get $this)
- )
  (func $call-inferred/Foo<i32>#get:value (param $this i32) (result i32)
   (i32.load
    (local.get $this)
@@ -2984,45 +2967,20 @@
  (func $call-inferred/Foo.create<i32> (param $value i32) (result i32)
   (return
    (call $call-inferred/Foo<i32>#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 4)
+     )
+    )
     (local.get $value)
    )
   )
  )
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
   (local.get $this)
  )
  (func $call-inferred/Bar#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 5)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3040,21 +2998,6 @@
   )
  )
  (func $call-inferred/Baz<i32>#constructor (param $this i32) (param $value i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 6)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $call-inferred/Foo<i32>#constructor
@@ -3182,7 +3125,12 @@
      (call $call-inferred/Foo<i32>#get:value
       (call $~lib/rt/__tmptostack
        (call $call-inferred/Foo<i32>#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 4)
+         )
+        )
         (i32.const 42)
        )
       )
@@ -3229,7 +3177,12 @@
      (call $call-inferred/Bar#doSomething<i32>
       (call $~lib/rt/__tmptostack
        (call $call-inferred/Bar#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 0)
+          (i32.const 5)
+         )
+        )
        )
       )
       (i32.const 42)
@@ -3253,7 +3206,12 @@
      (call $call-inferred/Foo<i32>#get:value
       (call $~lib/rt/__tmptostack
        (call $call-inferred/Baz<i32>#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 42)
        )
       )

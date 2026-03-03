@@ -3434,21 +3434,7 @@
  )
  (func $~lib/arraybuffer/ArrayBufferView#constructor (param $this i32) (param $length i32) (param $alignLog2 i32) (result i32)
   (local $buffer i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 3)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (i32.gt_u
     (local.get $length)
@@ -3503,21 +3489,7 @@
   (local.get $this)
  )
  (func $~lib/typedarray/Uint8Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 8)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -3662,21 +3634,7 @@
   )
  )
  (func $~lib/typedarray/Int32Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 15)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -3741,21 +3699,7 @@
  )
  (func $~lib/dataview/DataView#constructor (param $this i32) (param $buffer i32) (param $byteOffset i32) (param $byteLength i32) (result i32)
   (local $dataStart i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 26)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (i32.or
     (i32.gt_u
@@ -4003,7 +3947,12 @@
    (local.set $buffer
     (call $~lib/rt/__localtostack
      (call $~lib/arraybuffer/ArrayBuffer#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 1)
+       )
+      )
       (i32.const 8)
      )
     )
@@ -4430,7 +4379,12 @@
    (local.set $arr8
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Uint8Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 8)
+       )
+      )
       (i32.const 1)
      )
     )
@@ -4483,7 +4437,12 @@
      (call $~lib/arraybuffer/ArrayBuffer.isView<~lib/typedarray/Int32Array>
       (call $~lib/rt/__tmptostack
        (call $~lib/typedarray/Int32Array#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 12)
+          (i32.const 15)
+         )
+        )
         (i32.const 1)
        )
       )
@@ -4504,7 +4463,12 @@
      (call $~lib/arraybuffer/ArrayBuffer.isView<~lib/dataview/DataView>
       (call $~lib/rt/__tmptostack
        (call $~lib/dataview/DataView#constructor@varargs
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 12)
+          (i32.const 26)
+         )
+        )
         (call $~lib/rt/__tmptostack
          (call $~lib/arraybuffer/ArrayBufferView#get:buffer
           (call $~lib/rt/__tmptostack

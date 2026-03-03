@@ -1218,7 +1218,7 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$68
+   block $__inlined_func$~lib/rt/itcms/interrupt$72
     i32.const 2048
     local.set $0
     loop $do-loop|0
@@ -1239,7 +1239,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$68
+      br $__inlined_func$~lib/rt/itcms/interrupt$72
      end
      local.get $0
      i32.const 0

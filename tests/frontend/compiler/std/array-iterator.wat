@@ -3101,29 +3101,12 @@
   )
  )
  (func $~lib/array/ArrayIterator<i32>#constructor (param $this i32) (param $array i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 6)
-       )
-      )
-     )
-    )
+  (call $~lib/array/ArrayIterator<i32>#set:array
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $~lib/array/ArrayIterator<i32>#set:array
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (call $~lib/rt/__tmptostack
-     (local.get $array)
-    )
+   (call $~lib/rt/__tmptostack
+    (local.get $array)
    )
   )
   (local.get $this)
@@ -3131,7 +3114,12 @@
  (func $"~lib/array/Array<i32>#[~lib/symbol/Symbol.iterator]" (param $this i32) (result i32)
   (return
    (call $~lib/array/ArrayIterator<i32>#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 6)
+     )
+    )
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
@@ -3202,35 +3190,23 @@
   )
  )
  (func $~lib/iterator/IteratorResult<i32>#constructor (param $this i32) (param $value i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 8)
-       )
-      )
-     )
-    )
+  (call $~lib/iterator/IteratorResult<i32>#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $~lib/iterator/IteratorResult<i32>#set:value
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (local.get $value)
-   )
+   (local.get $value)
   )
   (local.get $this)
  )
  (func $~lib/iterator/IteratorResult.fromValue<i32> (param $value i32) (result i32)
   (return
    (call $~lib/iterator/IteratorResult<i32>#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 8)
+     )
+    )
     (local.get $value)
    )
   )

@@ -49,6 +49,113 @@
    (local.get $this)
   )
  )
+ (func $call-super/A#set:a (param $this i32) (param $a i32)
+  (i32.store
+   (local.get $this)
+   (local.get $a)
+  )
+ )
+ (func $call-super/A#constructor (param $this i32) (result i32)
+  (call $call-super/A#set:a
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.const 1)
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $call-super/A#get:a
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 6)
+     (i32.const 5)
+    )
+    (unreachable)
+   )
+  )
+  (local.get $this)
+ )
+ (func $call-super/B#get:b (param $this i32) (result i32)
+  (i32.load offset=4
+   (local.get $this)
+  )
+ )
+ (func $call-super/B#set:b (param $this i32) (param $b i32)
+  (i32.store offset=4
+   (local.get $this)
+   (local.get $b)
+  )
+ )
+ (func $call-super/B#constructor (param $this i32) (result i32)
+  (call $call-super/B#set:b
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.const 2)
+  )
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $call-super/A#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $call-super/A#get:a
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 15)
+     (i32.const 5)
+    )
+    (unreachable)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $call-super/B#get:b
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 32)
+     (i32.const 16)
+     (i32.const 5)
+    )
+    (unreachable)
+   )
+  )
+  (local.get $this)
+ )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
    (local.get $this)
@@ -2908,153 +3015,17 @@
    (local.get $ptr)
   )
  )
- (func $call-super/A#set:a (param $this i32) (param $a i32)
-  (i32.store
-   (local.get $this)
-   (local.get $a)
-  )
- )
- (func $call-super/A#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 5)
-       )
-      )
-     )
-    )
-   )
-   (call $call-super/A#set:a
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (i32.const 1)
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/A#get:a
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-     (i32.const 1)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 6)
-     (i32.const 5)
-    )
-    (unreachable)
-   )
-  )
-  (local.get $this)
- )
- (func $call-super/B#get:b (param $this i32) (result i32)
-  (i32.load offset=4
-   (local.get $this)
-  )
- )
- (func $call-super/B#set:b (param $this i32) (param $b i32)
-  (i32.store offset=4
-   (local.get $this)
-   (local.get $b)
-  )
- )
- (func $call-super/B#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 4)
-       )
-      )
-     )
-    )
-   )
-   (call $call-super/B#set:b
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (i32.const 2)
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $call-super/A#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/A#get:a
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-     (i32.const 1)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 15)
-     (i32.const 5)
-    )
-    (unreachable)
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (call $call-super/B#get:b
-      (call $~lib/rt/__tmptostack
-       (local.get $this)
-      )
-     )
-     (i32.const 2)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 32)
-     (i32.const 16)
-     (i32.const 5)
-    )
-    (unreachable)
-   )
-  )
-  (local.get $this)
- )
  (func $call-super/test1
   (local $b i32)
   (local.set $b
    (call $~lib/rt/__localtostack
     (call $call-super/B#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 8)
+       (i32.const 4)
+      )
+     )
     )
    )
   )
@@ -3102,21 +3073,6 @@
   )
  )
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
   (local.get $this)
  )
  (func $call-super/C#set:a (param $this i32) (param $a i32)
@@ -3126,21 +3082,6 @@
   )
  )
  (func $call-super/C#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 7)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3175,28 +3116,11 @@
   )
  )
  (func $call-super/D#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 6)
-       )
-      )
-     )
-    )
+  (call $call-super/D#set:b
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $call-super/D#set:b
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (i32.const 2)
-   )
+   (i32.const 2)
   )
   (local.set $this
    (call $~lib/rt/__localtostack
@@ -3256,7 +3180,12 @@
   (local.set $d
    (call $~lib/rt/__localtostack
     (call $call-super/D#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 8)
+       (i32.const 6)
+      )
+     )
     )
    )
   )
@@ -3315,28 +3244,11 @@
   )
  )
  (func $call-super/E#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 9)
-       )
-      )
-     )
-    )
+  (call $call-super/E#set:a
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $call-super/E#set:a
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (i32.const 1)
-   )
+   (i32.const 1)
   )
   (if
    (i32.eqz
@@ -3368,21 +3280,6 @@
   )
  )
  (func $call-super/F#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 8)
-       (i32.const 8)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $call-super/E#constructor
@@ -3410,7 +3307,12 @@
   (local.set $f
    (call $~lib/rt/__localtostack
     (call $call-super/F#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 8)
+       (i32.const 8)
+      )
+     )
     )
    )
   )
@@ -3464,21 +3366,6 @@
   )
  )
  (func $call-super/G#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 11)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3503,21 +3390,6 @@
   )
  )
  (func $call-super/H#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 8)
-       (i32.const 10)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $call-super/G#constructor
@@ -3550,7 +3422,12 @@
   (local.set $h
    (call $~lib/rt/__localtostack
     (call $call-super/H#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 8)
+       (i32.const 10)
+      )
+     )
     )
    )
   )
@@ -3604,28 +3481,11 @@
   )
  )
  (func $call-super/I#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 13)
-       )
-      )
-     )
-    )
+  (call $call-super/I#set:a
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $call-super/I#set:a
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (i32.const 1)
-   )
+   (i32.const 1)
   )
   (local.get $this)
  )
@@ -3636,21 +3496,6 @@
   )
  )
  (func $call-super/J#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 8)
-       (i32.const 12)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $call-super/I#constructor
@@ -3683,7 +3528,12 @@
   (local.set $h
    (call $~lib/rt/__localtostack
     (call $call-super/J#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 8)
+       (i32.const 12)
+      )
+     )
     )
    )
   )

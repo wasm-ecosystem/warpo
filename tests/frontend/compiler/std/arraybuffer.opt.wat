@@ -1648,18 +1648,6 @@
  )
  (func $~lib/arraybuffer/ArrayBufferView#constructor (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
-  call $~lib/rt/__decrease_sp
-  local.get $0
-  i32.eqz
-  if
-   i32.const 12
-   i32.const 3
-   call $~lib/rt/itcms/__new
-   local.set $0
-   global.get $~lib/memory/__stack_pointer
-   local.get $0
-   i32.store align=1
-  end
   i32.const 1073741820
   local.get $1
   i32.shr_u
@@ -1690,10 +1678,6 @@
   local.get $0
   local.get $1
   i32.store offset=8
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $0
  )
  (func $~lib/rt/__visit_members (param $0 i32)
@@ -1724,7 +1708,19 @@
   (local $0 i32)
   (local $1 i32)
   (local $2 i32)
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 8
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i64.const 0
+  i64.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 800
+  i32.lt_s
+  if
+   unreachable
+  end
   memory.size
   i32.const 16
   i32.shl
@@ -1757,6 +1753,13 @@
   i32.store
   i32.const 432
   global.set $~lib/rt/itcms/fromSpace
+  i32.const 0
+  i32.const 1
+  call $~lib/rt/itcms/__new
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
   i32.const 8
   i32.const 1
   call $~lib/rt/itcms/__new
@@ -1935,7 +1938,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  call $~lib/rt/__decrease_sp
   i32.const 12
   i32.const 8
   call $~lib/rt/itcms/__new
@@ -1948,13 +1950,21 @@
   call $~lib/arraybuffer/ArrayBufferView#constructor
   local.set $2
   global.get $~lib/memory/__stack_pointer
+  local.get $2
+  i32.store offset=4 align=1
+  global.get $~lib/memory/__stack_pointer
   i32.const 4
-  i32.add
+  i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  local.get $2
+  i32.const 0
   i32.store align=1
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 800
+  i32.lt_s
+  if
+   unreachable
+  end
   i32.const 8
   i32.const 1
   call $~lib/rt/itcms/__new
@@ -1987,7 +1997,6 @@
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  call $~lib/rt/__decrease_sp
   i32.const 12
   i32.const 15
   call $~lib/rt/itcms/__new
@@ -1999,30 +2008,19 @@
   i32.const 2
   call $~lib/arraybuffer/ArrayBufferView#constructor
   drop
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.load
-  local.tee $0
-  i32.store align=1
-  local.get $0
-  i32.const 20
-  i32.sub
-  i32.load offset=16
-  local.set $2
   i32.const 12
   i32.const 26
   call $~lib/rt/itcms/__new
-  local.set $1
+  local.set $0
   local.get $2
-  local.get $0
+  i32.load
+  local.tee $1
   i32.const 20
   i32.sub
   i32.load offset=16
-  i32.gt_u
+  local.tee $2
+  local.get $2
+  i32.lt_u
   local.get $2
   i32.const 1073741820
   i32.gt_u
@@ -2035,16 +2033,16 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $1
   local.get $0
+  local.get $1
   i32.store
-  local.get $1
   local.get $0
+  local.get $1
   call $~lib/rt/itcms/__link
-  local.get $1
   local.get $0
-  i32.store offset=4
   local.get $1
+  i32.store offset=4
+  local.get $0
   local.get $2
   i32.store offset=8
   i32.const 33568
@@ -2083,23 +2081,8 @@
   i32.add
   global.set $~lib/rt/itcms/threshold
   global.get $~lib/memory/__stack_pointer
-  i32.const 4
+  i32.const 8
   i32.add
   global.set $~lib/memory/__stack_pointer
- )
- (func $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 800
-  i32.lt_s
-  if
-   unreachable
-  end
  )
 )

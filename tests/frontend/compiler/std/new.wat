@@ -7,10 +7,10 @@
  (type $5 (func (param i32 i32 i32)))
  (type $6 (func (param i32 i32 i32 i32)))
  (type $7 (func (param i32 f32)))
- (type $8 (func (param i32 i32 i32) (result i32)))
- (type $9 (func (param i32 i32 i64) (result i32)))
- (type $10 (func (result i32)))
- (type $11 (func (param i32 f32) (result i32)))
+ (type $8 (func (param i32 f32) (result i32)))
+ (type $9 (func (param i32 i32 i32) (result i32)))
+ (type $10 (func (param i32 i32 i64) (result i32)))
+ (type $11 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -63,6 +63,42 @@
    (local.get $this)
    (local.get $anotherField)
   )
+ )
+ (func $std/new/AClass#constructor (param $this i32) (param $value f32) (result i32)
+  (block
+   (call $std/new/AClass#set:aField
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (i32.const 1)
+   )
+   (call $std/new/AClass#set:anotherField
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (f32.const 2)
+   )
+  )
+  (call $std/new/AClass#set:aField
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.add
+    (call $std/new/AClass#get:aField
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.const 1)
+   )
+  )
+  (call $std/new/AClass#set:anotherField
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $value)
+  )
+  (local.get $this)
  )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
@@ -2923,57 +2959,6 @@
    (local.get $ptr)
   )
  )
- (func $std/new/AClass#constructor (param $this i32) (param $value f32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 4)
-       )
-      )
-     )
-    )
-   )
-   (call $std/new/AClass#set:aField
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (i32.const 1)
-   )
-   (call $std/new/AClass#set:anotherField
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (f32.const 2)
-   )
-  )
-  (call $std/new/AClass#set:aField
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (i32.add
-    (call $std/new/AClass#get:aField
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-    (i32.const 1)
-   )
-  )
-  (call $std/new/AClass#set:anotherField
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (local.get $value)
-  )
-  (local.get $this)
- )
  (func $start:std/new
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
@@ -3004,7 +2989,12 @@
   )
   (global.set $std/new/aClass
    (call $std/new/AClass#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (f32.const 3)
    )
   )

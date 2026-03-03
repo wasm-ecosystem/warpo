@@ -7479,39 +7479,9 @@
   )
  )
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
   (local.get $this)
  )
  (func $resolve-binary/Foo#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -7589,21 +7559,6 @@
   )
  )
  (func $resolve-binary/Bar#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 5)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -7626,21 +7581,6 @@
   )
  )
  (func $resolve-binary/Baz#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 6)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -8683,7 +8623,12 @@
   )
   (global.set $resolve-binary/foo
    (call $resolve-binary/Foo#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 4)
+     )
+    )
    )
   )
   (if
@@ -9048,12 +8993,22 @@
   )
   (global.set $resolve-binary/bar
    (call $resolve-binary/Bar#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 5)
+     )
+    )
    )
   )
   (global.set $resolve-binary/bar2
    (call $resolve-binary/Bar#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 5)
+     )
+    )
    )
   )
   (if
@@ -9108,7 +9063,12 @@
   )
   (global.set $resolve-binary/baz
    (call $resolve-binary/Baz#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 6)
+     )
+    )
    )
   )
   (if

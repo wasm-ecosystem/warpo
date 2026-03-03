@@ -6,16 +6,14 @@
  (type $4 (func (param i32 i32 i32 i32)))
  (type $5 (func (param i32 i32 i32)))
  (type $6 (func (param i32 i32 i64)))
- (type $7 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33300))
+ (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
@@ -1122,7 +1120,7 @@
         i32.and
         i32.eq
         if
-         global.get $~lib/memory/__stack_pointer
+         i32.const 33300
          local.set $2
          loop $while-continue|0
           local.get $2
@@ -1577,37 +1575,6 @@
   memory.fill
   local.get $1
  )
- (func $constructor/CtorFieldInitWithoutConstructor#constructor (result i32)
-  (local $0 i32)
-  call $~lib/rt/__decrease_sp
-  i32.const 8
-  i32.const 14
-  call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   local.set $0
-  end
-  local.get $0
-  i32.const 10
-  i32.store
-  local.get $0
-  local.get $0
-  i32.load
-  i32.store offset=4
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
- )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $constructor/CtorFieldInitOrder
@@ -1685,75 +1652,26 @@
   i32.store
   local.get $0
   global.set $constructor/emptyCtorWithFieldAccess
-  call $~lib/rt/__decrease_sp
   i32.const 0
   i32.const 8
   call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   local.set $0
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
   global.set $constructor/none
-  call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 9
   call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   local.set $0
-  end
-  local.get $0
+  local.tee $0
   i32.const 1
   i32.store
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $0
   global.set $constructor/justFieldInit
-  call $~lib/rt/__decrease_sp
   i32.const 4
   i32.const 10
   call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   local.set $0
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
   global.set $constructor/justFieldNoInit
+  i32.const 0
+  i32.const 11
+  call $~lib/rt/itcms/__new
+  drop
   i32.const 0
   i32.const 12
   call $~lib/rt/itcms/__new
@@ -1762,7 +1680,17 @@
   i32.const 13
   call $~lib/rt/itcms/__new
   global.set $constructor/ctorConditionallyReturnsThis
-  call $constructor/CtorFieldInitWithoutConstructor#constructor
+  i32.const 8
+  i32.const 14
+  call $~lib/rt/itcms/__new
+  local.tee $0
+  i32.const 10
+  i32.store
+  local.get $0
+  local.get $0
+  i32.load
+  i32.store offset=4
+  local.get $0
   i32.load
   i32.const 10
   i32.ne
@@ -1774,7 +1702,17 @@
    call $~lib/builtins/abort
    unreachable
   end
-  call $constructor/CtorFieldInitWithoutConstructor#constructor
+  i32.const 8
+  i32.const 14
+  call $~lib/rt/itcms/__new
+  local.tee $0
+  i32.const 10
+  i32.store
+  local.get $0
+  local.get $0
+  i32.load
+  i32.store offset=4
+  local.get $0
   i32.load offset=4
   i32.const 10
   i32.ne
@@ -1874,21 +1812,6 @@
    i32.const 113
    i32.const 1
    call $~lib/builtins/abort
-   unreachable
-  end
- )
- (func $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 532
-  i32.lt_s
-  if
    unreachable
   end
  )

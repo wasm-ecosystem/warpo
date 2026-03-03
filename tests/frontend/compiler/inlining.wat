@@ -394,6 +394,64 @@
    (local.get $b)
   )
  )
+ (func $inlining/Baz#set:a (param $this i32) (param $a i32)
+  (i32.store
+   (local.get $this)
+   (local.get $a)
+  )
+ )
+ (func $inlining/Baz#constructor (param $this i32) (param $c i32) (result i32)
+  (call $inlining/Baz#set:a
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.const 1)
+  )
+  (call $inlining/Baz#set:b
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $c)
+  )
+  (local.get $this)
+ )
+ (func $inlining/Bar#set:e (param $this i32) (param $e i32)
+  (i32.store offset=12
+   (local.get $this)
+   (local.get $e)
+  )
+ )
+ (func $inlining/Bar#set:d (param $this i32) (param $d i32)
+  (i32.store offset=8
+   (local.get $this)
+   (local.get $d)
+  )
+ )
+ (func $inlining/Bar#constructor (param $this i32) (param $f i32) (result i32)
+  (call $inlining/Bar#set:d
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.const 3)
+  )
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $inlining/Baz#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (i32.const 2)
+    )
+   )
+  )
+  (call $inlining/Bar#set:e
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $f)
+  )
+  (local.get $this)
+ )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
    (local.get $this)
@@ -3253,98 +3311,6 @@
    (local.get $ptr)
   )
  )
- (func $inlining/Baz#set:a (param $this i32) (param $a i32)
-  (i32.store
-   (local.get $this)
-   (local.get $a)
-  )
- )
- (func $inlining/Baz#constructor (param $this i32) (param $c i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 7)
-       )
-      )
-     )
-    )
-   )
-   (call $inlining/Baz#set:a
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (i32.const 1)
-   )
-  )
-  (call $inlining/Baz#set:b
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (local.get $c)
-  )
-  (local.get $this)
- )
- (func $inlining/Bar#set:e (param $this i32) (param $e i32)
-  (i32.store offset=12
-   (local.get $this)
-   (local.get $e)
-  )
- )
- (func $inlining/Bar#set:d (param $this i32) (param $d i32)
-  (i32.store offset=8
-   (local.get $this)
-   (local.get $d)
-  )
- )
- (func $inlining/Bar#constructor (param $this i32) (param $f i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 16)
-        (i32.const 6)
-       )
-      )
-     )
-    )
-   )
-   (call $inlining/Bar#set:d
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (i32.const 3)
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $inlining/Baz#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-     (i32.const 2)
-    )
-   )
-  )
-  (call $inlining/Bar#set:e
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (local.get $f)
-  )
-  (local.get $this)
- )
  (func $inlining/Baz#get:a (param $this i32) (result i32)
   (i32.load
    (local.get $this)
@@ -3370,7 +3336,12 @@
   (local.set $bar
    (call $~lib/rt/__localtostack
     (call $inlining/Bar#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 16)
+       (i32.const 6)
+      )
+     )
      (i32.const 4)
     )
    )

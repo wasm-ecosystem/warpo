@@ -90,6 +90,21 @@
    (local.get $doors)
   )
  )
+ (func $exports/Car#constructor (param $this i32) (param $doors i32) (result i32)
+  (call $exports/Car#set:doors
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $doors)
+  )
+  (call $exports/Car#set:doors
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $doors)
+  )
+  (local.get $this)
+ )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
    (local.get $this)
@@ -2949,38 +2964,6 @@
    (local.get $ptr)
   )
  )
- (func $exports/Car#constructor (param $this i32) (param $doors i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 4)
-       )
-      )
-     )
-    )
-   )
-   (call $exports/Car#set:doors
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (local.get $doors)
-   )
-  )
-  (call $exports/Car#set:doors
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (local.get $doors)
-  )
-  (local.get $this)
- )
  (func $exports/Car#get:doors (param $this i32) (result i32)
   (i32.load
    (local.get $this)
@@ -3077,7 +3060,12 @@
   )
   (global.set $reexport/car
    (call $exports/Car#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 4)
+     )
+    )
     (i32.const 2)
    )
   )
@@ -3147,7 +3135,12 @@
   )
   (global.set $rereexport/car
    (call $exports/Car#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 4)
+     )
+    )
     (i32.const 2)
    )
   )
@@ -3214,7 +3207,12 @@
   )
   (global.set $rereexport/exportsNamespaceCar
    (call $exports/Car#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 4)
+     )
+    )
     (i32.const 2)
    )
   )

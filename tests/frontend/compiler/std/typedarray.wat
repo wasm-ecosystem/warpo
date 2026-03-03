@@ -3407,21 +3407,7 @@
  )
  (func $~lib/arraybuffer/ArrayBufferView#constructor (param $this i32) (param $length i32) (param $alignLog2 i32) (result i32)
   (local $buffer i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 3)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (i32.gt_u
     (local.get $length)
@@ -3476,21 +3462,7 @@
   (local.get $this)
  )
  (func $~lib/typedarray/Int8Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -3545,21 +3517,7 @@
   )
  )
  (func $~lib/typedarray/Uint8Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 6)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -3583,21 +3541,7 @@
   )
  )
  (func $~lib/typedarray/Uint8ClampedArray#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 8)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -3621,21 +3565,7 @@
   )
  )
  (func $~lib/typedarray/Int16Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 9)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -3662,21 +3592,7 @@
   )
  )
  (func $~lib/typedarray/Uint16Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 11)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -3703,21 +3619,7 @@
   )
  )
  (func $~lib/typedarray/Int32Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 13)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -3744,21 +3646,7 @@
   )
  )
  (func $~lib/typedarray/Uint32Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 15)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -3785,21 +3673,7 @@
   )
  )
  (func $~lib/typedarray/Int64Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 17)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -3826,21 +3700,7 @@
   )
  )
  (func $~lib/typedarray/Uint64Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 19)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -3867,21 +3727,7 @@
   )
  )
  (func $~lib/typedarray/Float32Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 21)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -3908,21 +3754,7 @@
   )
  )
  (func $~lib/typedarray/Float64Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 23)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -3963,7 +3795,12 @@
   (local.set $i8a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (local.get $len)
     )
    )
@@ -4037,7 +3874,12 @@
   (local.set $u8a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (local.get $len)
     )
    )
@@ -4111,7 +3953,12 @@
   (local.set $c8a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (local.get $len)
     )
    )
@@ -4185,7 +4032,12 @@
   (local.set $i16a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (local.get $len)
     )
    )
@@ -4259,7 +4111,12 @@
   (local.set $u16a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (local.get $len)
     )
    )
@@ -4333,7 +4190,12 @@
   (local.set $i32a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (local.get $len)
     )
    )
@@ -4407,7 +4269,12 @@
   (local.set $u32a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (local.get $len)
     )
    )
@@ -4481,7 +4348,12 @@
   (local.set $i64a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (local.get $len)
     )
    )
@@ -4555,7 +4427,12 @@
   (local.set $u64a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (local.get $len)
     )
    )
@@ -4629,7 +4506,12 @@
   (local.set $f32a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (local.get $len)
     )
    )
@@ -4703,7 +4585,12 @@
   (local.set $f64a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (local.get $len)
     )
    )
@@ -7980,7 +7867,12 @@
   (local.set $slice
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (local.get $len)
     )
    )
@@ -8394,7 +8286,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -8578,7 +8475,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -8731,7 +8633,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -8922,7 +8829,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -9112,7 +9024,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -9265,7 +9182,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -9453,7 +9375,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -9641,7 +9568,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -9829,7 +9761,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -10017,7 +9954,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -10167,7 +10109,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -10277,7 +10224,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -10425,7 +10377,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -10573,7 +10530,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -10727,7 +10689,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -10881,7 +10848,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -11035,7 +11007,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -11189,7 +11166,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -11343,7 +11325,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -11497,7 +11484,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -11651,7 +11643,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -11805,7 +11802,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -11990,7 +11992,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -12139,7 +12146,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -12289,7 +12301,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -12439,7 +12456,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -12588,7 +12610,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -12738,7 +12765,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -12885,7 +12917,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -13032,7 +13069,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -13179,7 +13221,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -13326,7 +13373,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -13473,7 +13525,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -13668,7 +13725,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -13946,7 +14008,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -14191,7 +14258,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -14475,7 +14547,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -14759,7 +14836,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -15004,7 +15086,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -15288,7 +15375,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -15572,7 +15664,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -15856,7 +15953,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -16140,7 +16242,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -16385,7 +16492,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -16738,7 +16850,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (i32.const 6)
     )
    )
@@ -17076,7 +17193,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 6)
     )
    )
@@ -17414,7 +17536,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (i32.const 6)
     )
    )
@@ -17751,7 +17878,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 6)
     )
    )
@@ -18089,7 +18221,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (i32.const 6)
     )
    )
@@ -18424,7 +18561,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (i32.const 6)
     )
    )
@@ -18759,7 +18901,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (i32.const 6)
     )
    )
@@ -19094,7 +19241,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 6)
     )
    )
@@ -19429,7 +19581,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (i32.const 6)
     )
    )
@@ -19764,7 +19921,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (i32.const 6)
     )
    )
@@ -20099,7 +20261,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (i32.const 6)
     )
    )
@@ -20369,7 +20536,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -20557,7 +20729,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -20745,7 +20922,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -20931,7 +21113,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -21119,7 +21306,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -21301,7 +21493,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -21483,7 +21680,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -21665,7 +21867,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -21847,7 +22054,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -22029,7 +22241,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -22211,7 +22428,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -22397,7 +22619,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -22589,7 +22816,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -22781,7 +23013,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -22971,7 +23208,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -23163,7 +23405,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -23349,7 +23596,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -23535,7 +23787,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -23721,7 +23978,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -23907,7 +24169,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -24093,7 +24360,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -24279,7 +24551,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -24466,7 +24743,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -24655,7 +24937,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -24844,7 +25131,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -25031,7 +25323,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -25220,7 +25517,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -25403,7 +25705,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -25586,7 +25893,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -25769,7 +26081,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -25952,7 +26269,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -26135,7 +26457,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -26318,7 +26645,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -26514,7 +26846,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -26708,7 +27045,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -26902,7 +27244,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -27094,7 +27441,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -27288,7 +27640,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -27476,7 +27833,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -27664,7 +28026,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -27852,7 +28219,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -28040,7 +28412,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -28610,7 +28987,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -29189,7 +29571,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -29420,7 +29807,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -29652,7 +30044,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -29887,7 +30284,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -30120,7 +30522,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -30352,7 +30759,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -30581,7 +30993,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -30801,7 +31218,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -31023,7 +31445,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -31251,7 +31678,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -31479,7 +31911,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -31707,7 +32144,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -32083,7 +32525,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (local.get $length)
     )
    )
@@ -32091,7 +32538,12 @@
   (local.set $arrayWithOffset
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (local.get $length)
     )
    )
@@ -32526,7 +32978,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (local.get $length)
     )
    )
@@ -32534,7 +32991,12 @@
   (local.set $arrayWithOffset
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (local.get $length)
     )
    )
@@ -32972,7 +33434,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (local.get $length)
     )
    )
@@ -32980,7 +33447,12 @@
   (local.set $arrayWithOffset
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (local.get $length)
     )
    )
@@ -33599,7 +34071,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (local.get $length)
     )
    )
@@ -33607,7 +34084,12 @@
   (local.set $arrayWithOffset
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (local.get $length)
     )
    )
@@ -34042,7 +34524,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (local.get $length)
     )
    )
@@ -34050,7 +34537,12 @@
   (local.set $arrayWithOffset
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (local.get $length)
     )
    )
@@ -34418,7 +34910,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (local.get $length)
     )
    )
@@ -34426,7 +34923,12 @@
   (local.set $arrayWithOffset
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (local.get $length)
     )
    )
@@ -34855,7 +35357,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (local.get $length)
     )
    )
@@ -34863,7 +35370,12 @@
   (local.set $arrayWithOffset
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (local.get $length)
     )
    )
@@ -35398,7 +35910,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (local.get $length)
     )
    )
@@ -35406,7 +35923,12 @@
   (local.set $arrayWithOffset
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (local.get $length)
     )
    )
@@ -35841,7 +36363,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (local.get $length)
     )
    )
@@ -35849,7 +36376,12 @@
   (local.set $arrayWithOffset
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (local.get $length)
     )
    )
@@ -36390,7 +36922,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (local.get $length)
     )
    )
@@ -36398,7 +36935,12 @@
   (local.set $arrayWithOffset
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (local.get $length)
     )
    )
@@ -36763,7 +37305,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (local.get $length)
     )
    )
@@ -36771,7 +37318,12 @@
   (local.set $arrayWithOffset
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (local.get $length)
     )
    )
@@ -37282,7 +37834,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (local.get $length)
     )
    )
@@ -38277,7 +38834,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (local.get $length)
     )
    )
@@ -39273,7 +39835,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (local.get $length)
     )
    )
@@ -40267,7 +40834,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (local.get $length)
     )
    )
@@ -41262,7 +41834,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (local.get $length)
     )
    )
@@ -42252,7 +42829,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (local.get $length)
     )
    )
@@ -43239,7 +43821,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (local.get $length)
     )
    )
@@ -44226,7 +44813,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (local.get $length)
     )
    )
@@ -45215,7 +45807,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (local.get $length)
     )
    )
@@ -46204,7 +46801,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (local.get $length)
     )
    )
@@ -47193,7 +47795,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (local.get $length)
     )
    )
@@ -49870,7 +50477,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (i32.const 5)
     )
    )
@@ -50435,7 +51047,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 5)
     )
    )
@@ -50562,7 +51179,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (i32.const 5)
     )
    )
@@ -51103,7 +51725,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 5)
     )
    )
@@ -51525,7 +52152,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (i32.const 5)
     )
    )
@@ -51984,7 +52616,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (i32.const 5)
     )
    )
@@ -52397,7 +53034,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (i32.const 5)
     )
    )
@@ -53416,7 +54058,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 5)
     )
    )
@@ -54041,7 +54688,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (i32.const 5)
     )
    )
@@ -56127,7 +56779,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (i32.const 5)
     )
    )
@@ -56461,7 +57118,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (i32.const 5)
     )
    )
@@ -57106,7 +57768,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (local.get $length)
     )
    )
@@ -57265,7 +57932,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (local.get $length)
     )
    )
@@ -57607,7 +58279,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (local.get $length)
     )
    )
@@ -57954,7 +58631,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (local.get $length)
     )
    )
@@ -58305,7 +58987,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (local.get $length)
     )
    )
@@ -58662,7 +59349,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (local.get $length)
     )
    )
@@ -59021,7 +59713,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (local.get $length)
     )
    )
@@ -59385,7 +60082,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (local.get $length)
     )
    )
@@ -59756,7 +60458,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (local.get $length)
     )
    )
@@ -60132,7 +60839,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (local.get $length)
     )
    )
@@ -60513,7 +61225,12 @@
   (local.set $array
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (local.get $length)
     )
    )
@@ -61820,7 +62537,12 @@
   (local.set $setSource4
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -61849,7 +62571,12 @@
   (local.set $setSource5
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 4)
     )
    )
@@ -61885,7 +62612,12 @@
   (local.set $setSource6
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -61914,7 +62646,12 @@
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (i32.const 10)
     )
    )
@@ -63158,7 +63895,12 @@
   (local.set $setSource4
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -63187,7 +63929,12 @@
   (local.set $setSource5
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 4)
     )
    )
@@ -63223,7 +63970,12 @@
   (local.set $setSource6
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -63252,7 +64004,12 @@
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 10)
     )
    )
@@ -64655,7 +65412,12 @@
   (local.set $setSource4
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -64684,7 +65446,12 @@
   (local.set $setSource5
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 4)
     )
    )
@@ -64720,7 +65487,12 @@
   (local.set $setSource6
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -64749,7 +65521,12 @@
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (i32.const 10)
     )
    )
@@ -66046,7 +66823,12 @@
   (local.set $setSource4
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -66075,7 +66857,12 @@
   (local.set $setSource5
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 4)
     )
    )
@@ -66111,7 +66898,12 @@
   (local.set $setSource6
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -66140,7 +66932,12 @@
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 10)
     )
    )
@@ -67437,7 +68234,12 @@
   (local.set $setSource4
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -67466,7 +68268,12 @@
   (local.set $setSource5
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 4)
     )
    )
@@ -67502,7 +68309,12 @@
   (local.set $setSource6
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -67531,7 +68343,12 @@
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (i32.const 10)
     )
    )
@@ -68809,7 +69626,12 @@
   (local.set $setSource4
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -68838,7 +69660,12 @@
   (local.set $setSource5
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 4)
     )
    )
@@ -68874,7 +69701,12 @@
   (local.set $setSource6
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -68903,7 +69735,12 @@
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (i32.const 10)
     )
    )
@@ -70200,7 +71037,12 @@
   (local.set $setSource4
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -70229,7 +71071,12 @@
   (local.set $setSource5
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 4)
     )
    )
@@ -70265,7 +71112,12 @@
   (local.set $setSource6
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -70294,7 +71146,12 @@
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (i32.const 10)
     )
    )
@@ -71597,7 +72454,12 @@
   (local.set $setSource4
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -71626,7 +72488,12 @@
   (local.set $setSource5
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 4)
     )
    )
@@ -71662,7 +72529,12 @@
   (local.set $setSource6
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -71691,7 +72563,12 @@
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 10)
     )
    )
@@ -72994,7 +73871,12 @@
   (local.set $setSource4
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -73023,7 +73905,12 @@
   (local.set $setSource5
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 4)
     )
    )
@@ -73059,7 +73946,12 @@
   (local.set $setSource6
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -73088,7 +73980,12 @@
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (i32.const 10)
     )
    )
@@ -74195,7 +75092,12 @@
   (local.set $setSource4
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -74224,7 +75126,12 @@
   (local.set $setSource5
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 4)
     )
    )
@@ -74260,7 +75167,12 @@
   (local.set $setSource6
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -74289,7 +75201,12 @@
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (i32.const 10)
     )
    )
@@ -75422,7 +76339,12 @@
   (local.set $setSource4
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -75451,7 +76373,12 @@
   (local.set $setSource5
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 4)
     )
    )
@@ -75487,7 +76414,12 @@
   (local.set $setSource6
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -75516,7 +76448,12 @@
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (i32.const 10)
     )
    )
@@ -77551,7 +78488,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 4)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -79166,7 +80108,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 6)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -79425,7 +80372,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8ClampedArray#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 8)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -81025,7 +81977,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 9)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -82640,7 +83597,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint16Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 11)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -84228,7 +85190,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 13)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -85819,7 +86786,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 15)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -87413,7 +88385,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Int64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 17)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -89004,7 +89981,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 19)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -90641,7 +91623,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float32Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 21)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -90843,7 +91830,12 @@
   (local.set $source
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Float64Array#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 12)
+       (i32.const 23)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -91039,29 +92031,12 @@
   )
  )
  (func $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Uint8Array,u8>#constructor" (param $this i32) (param $array i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 89)
-       )
-      )
-     )
-    )
+  (call $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Uint8Array,u8>#set:array"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Uint8Array,u8>#set:array"
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (call $~lib/rt/__tmptostack
-     (local.get $array)
-    )
+   (call $~lib/rt/__tmptostack
+    (local.get $array)
    )
   )
   (local.get $this)
@@ -91069,7 +92044,12 @@
  (func $"~lib/typedarray/Uint8Array#[~lib/symbol/Symbol.iterator]" (param $this i32) (result i32)
   (return
    (call $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Uint8Array,u8>#constructor"
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 89)
+     )
+    )
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
@@ -91104,35 +92084,23 @@
   )
  )
  (func $~lib/iterator/IteratorResult<u8>#constructor (param $this i32) (param $value i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 1)
-        (i32.const 91)
-       )
-      )
-     )
-    )
+  (call $~lib/iterator/IteratorResult<u8>#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $~lib/iterator/IteratorResult<u8>#set:value
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (local.get $value)
-   )
+   (local.get $value)
   )
   (local.get $this)
  )
  (func $~lib/iterator/IteratorResult.fromValue<u8> (param $value i32) (result i32)
   (return
    (call $~lib/iterator/IteratorResult<u8>#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 1)
+      (i32.const 91)
+     )
+    )
     (local.get $value)
    )
   )
@@ -91218,29 +92186,12 @@
   )
  )
  (func $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Int16Array,i16>#constructor" (param $this i32) (param $array i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 92)
-       )
-      )
-     )
-    )
+  (call $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Int16Array,i16>#set:array"
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Int16Array,i16>#set:array"
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (call $~lib/rt/__tmptostack
-     (local.get $array)
-    )
+   (call $~lib/rt/__tmptostack
+    (local.get $array)
    )
   )
   (local.get $this)
@@ -91248,7 +92199,12 @@
  (func $"~lib/typedarray/Int16Array#[~lib/symbol/Symbol.iterator]" (param $this i32) (result i32)
   (return
    (call $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Int16Array,i16>#constructor"
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 92)
+     )
+    )
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
@@ -91283,35 +92239,23 @@
   )
  )
  (func $~lib/iterator/IteratorResult<i16>#constructor (param $this i32) (param $value i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 2)
-        (i32.const 94)
-       )
-      )
-     )
-    )
+  (call $~lib/iterator/IteratorResult<i16>#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $~lib/iterator/IteratorResult<i16>#set:value
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (local.get $value)
-   )
+   (local.get $value)
   )
   (local.get $this)
  )
  (func $~lib/iterator/IteratorResult.fromValue<i16> (param $value i32) (result i32)
   (return
    (call $~lib/iterator/IteratorResult<i16>#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 2)
+      (i32.const 94)
+     )
+    )
     (local.get $value)
    )
   )
@@ -91634,7 +92578,12 @@
    (local.set $arr
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Int32Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 13)
+       )
+      )
       (i32.const 3)
      )
     )
@@ -91899,7 +92848,12 @@
    (local.set $af64
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Float64Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 23)
+       )
+      )
       (i32.const 8)
      )
     )
@@ -92128,7 +93082,12 @@
    (local.set $clampedArr
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Uint8ClampedArray#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 8)
+       )
+      )
       (i32.const 3)
      )
     )
@@ -92225,7 +93184,12 @@
    (local.set $arr8
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Int8Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 4)
+       )
+      )
       (i32.const 5)
      )
     )
@@ -92601,7 +93565,12 @@
    (local.set $arr32
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Int32Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 13)
+       )
+      )
       (i32.const 5)
      )
     )
@@ -92983,7 +93952,12 @@
    (local.set $multisubarr
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Int8Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 4)
+       )
+      )
       (i32.const 6)
      )
     )
@@ -93323,7 +94297,12 @@
    (local.set $cwAr
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Int32Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 13)
+       )
+      )
       (i32.const 5)
      )
     )
@@ -93986,7 +94965,12 @@
    (local.set $arr|39
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Int32Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 13)
+       )
+      )
       (i32.const 5)
      )
     )
@@ -94559,7 +95543,12 @@
    (local.set $arrNaN64
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Float64Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 23)
+       )
+      )
       (i32.const 1)
      )
     )
@@ -94620,7 +95609,12 @@
    (local.set $arrNaN32
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Float32Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 21)
+       )
+      )
       (i32.const 1)
      )
     )
@@ -94694,7 +95688,12 @@
    (local.set $buffer
     (call $~lib/rt/__localtostack
      (call $~lib/arraybuffer/ArrayBuffer#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 1)
+       )
+      )
       (i32.const 0)
      )
     )
@@ -94739,7 +95738,12 @@
    (local.set $buffer
     (call $~lib/rt/__localtostack
      (call $~lib/arraybuffer/ArrayBuffer#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 1)
+       )
+      )
       (i32.const 2)
      )
     )
@@ -94808,7 +95812,12 @@
    (local.set $targetClampedArray
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Uint8ClampedArray#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 8)
+       )
+      )
       (i32.const 10)
      )
     )
@@ -94816,7 +95825,12 @@
    (local.set $a
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Float32Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 21)
+       )
+      )
       (i32.const 3)
      )
     )
@@ -94845,7 +95859,12 @@
    (local.set $b
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Int64Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 17)
+       )
+      )
       (i32.const 4)
      )
     )
@@ -94881,7 +95900,12 @@
    (local.set $c
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Int32Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 13)
+       )
+      )
       (i32.const 2)
      )
     )
@@ -94943,7 +95967,12 @@
    (local.set $d
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Uint32Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 15)
+       )
+      )
       (i32.const 4)
      )
     )
@@ -94979,7 +96008,12 @@
    (local.set $e
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Int16Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 9)
+       )
+      )
       (i32.const 4)
      )
     )
@@ -95059,7 +96093,12 @@
    (local.set $a|64
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Uint8Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 6)
+       )
+      )
       (i32.const 3)
      )
     )
@@ -95172,7 +96211,12 @@
    (local.set $a|70
     (call $~lib/rt/__localtostack
      (call $~lib/typedarray/Int16Array#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 12)
+        (i32.const 9)
+       )
+      )
       (i32.const 2)
      )
     )

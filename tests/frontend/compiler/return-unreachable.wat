@@ -3043,21 +3043,7 @@
   (local $3 i32)
   (local $bufferSize i32)
   (local $buffer i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 16)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (i32.gt_u
     (local.get $length)
@@ -3134,7 +3120,12 @@
   (local.set $str
    (call $~lib/rt/__localtostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 16)
+       (i32.const 4)
+      )
+     )
      (i32.const 100)
     )
    )

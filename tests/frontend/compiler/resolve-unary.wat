@@ -4038,39 +4038,9 @@
   )
  )
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
   (local.get $this)
  )
  (func $resolve-unary/Foo#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -4133,21 +4103,6 @@
   )
  )
  (func $resolve-unary/Bar#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 5)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -4464,7 +4419,12 @@
   )
   (global.set $resolve-unary/foo
    (call $resolve-unary/Foo#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 4)
+     )
+    )
    )
   )
   (if
@@ -4705,7 +4665,12 @@
   )
   (global.set $resolve-unary/bar
    (call $resolve-unary/Bar#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 5)
+     )
+    )
    )
   )
   (if

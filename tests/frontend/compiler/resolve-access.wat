@@ -4280,39 +4280,9 @@
   )
  )
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
   (local.get $this)
  )
  (func $resolve-access/Container#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 8)
-       (i32.const 8)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -4340,7 +4310,12 @@
   (local.set $container
    (call $~lib/rt/__localtostack
     (call $resolve-access/Container#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 8)
+       (i32.const 8)
+      )
+     )
     )
    )
   )
@@ -4543,7 +4518,12 @@
   (local.set $container
    (call $~lib/rt/__localtostack
     (call $resolve-access/Container#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 8)
+       (i32.const 8)
+      )
+     )
     )
    )
   )

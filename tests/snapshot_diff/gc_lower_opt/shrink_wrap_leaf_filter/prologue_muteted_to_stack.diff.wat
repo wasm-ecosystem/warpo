@@ -29,7 +29,9 @@
 ;; ====================
         call $tests/snapshot_diff/gc_lower_opt/shrink_wrap_leaf_filter/prologue_muteted_to_stack/foo
           block ;;i32
-                i32.const 0
+                  i32.const 4
+                  i32.const 4
+                call $~lib/rt/itcms/__new
               call $tests/snapshot_diff/common_lib/normal/Normal#constructor
 ;; ======remove=======
 ;;          local.set $2
@@ -50,7 +52,9 @@
 ;; ====================
           end
         local.set $0
-            i32.const 0
+              i32.const 4
+              i32.const 4
+            call $~lib/rt/itcms/__new
           call $tests/snapshot_diff/common_lib/normal/Normal#constructor
         drop
         block ;;unreachable

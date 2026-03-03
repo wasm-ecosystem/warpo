@@ -116,6 +116,35 @@
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
  (start $~start)
+ (func $std/operator-overloading/Tester#set:x (param $this i32) (param $x i32)
+  (i32.store
+   (local.get $this)
+   (local.get $x)
+  )
+ )
+ (func $std/operator-overloading/Tester#set:y (param $this i32) (param $y i32)
+  (i32.store offset=4
+   (local.get $this)
+   (local.get $y)
+  )
+ )
+ (func $std/operator-overloading/Tester#constructor (param $this i32) (param $x i32) (param $y i32) (result i32)
+  (block
+   (call $std/operator-overloading/Tester#set:x
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (local.get $x)
+   )
+   (call $std/operator-overloading/Tester#set:y
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+    (local.get $y)
+   )
+  )
+  (local.get $this)
+ )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
    (local.get $this)
@@ -2975,50 +3004,6 @@
    (local.get $ptr)
   )
  )
- (func $std/operator-overloading/Tester#set:x (param $this i32) (param $x i32)
-  (i32.store
-   (local.get $this)
-   (local.get $x)
-  )
- )
- (func $std/operator-overloading/Tester#set:y (param $this i32) (param $y i32)
-  (i32.store offset=4
-   (local.get $this)
-   (local.get $y)
-  )
- )
- (func $std/operator-overloading/Tester#constructor (param $this i32) (param $x i32) (param $y i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 4)
-       )
-      )
-     )
-    )
-   )
-   (call $std/operator-overloading/Tester#set:x
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (local.get $x)
-   )
-   (call $std/operator-overloading/Tester#set:y
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (local.get $y)
-   )
-  )
-  (local.get $this)
- )
  (func $std/operator-overloading/Tester#get:x (param $this i32) (result i32)
   (i32.load
    (local.get $this)
@@ -3032,7 +3017,12 @@
  (func $std/operator-overloading/Tester.add (param $a i32) (param $b i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.add
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -3063,7 +3053,12 @@
  (func $std/operator-overloading/Tester.sub (param $a i32) (param $b i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.sub
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -3094,7 +3089,12 @@
  (func $std/operator-overloading/Tester.mul (param $a i32) (param $b i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.mul
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -3125,7 +3125,12 @@
  (func $std/operator-overloading/Tester.div (param $a i32) (param $b i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.div_s
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -3156,7 +3161,12 @@
  (func $std/operator-overloading/Tester.mod (param $a i32) (param $b i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.rem_s
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -3523,7 +3533,12 @@
  (func $std/operator-overloading/Tester.pow (param $a i32) (param $b i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (call $~lib/math/ipow32
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -3554,7 +3569,12 @@
  (func $std/operator-overloading/Tester.and (param $a i32) (param $b i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.and
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -3585,7 +3605,12 @@
  (func $std/operator-overloading/Tester.or (param $a i32) (param $b i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.or
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -3616,7 +3641,12 @@
  (func $std/operator-overloading/Tester.xor (param $a i32) (param $b i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.xor
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -3857,7 +3887,12 @@
  (func $std/operator-overloading/Tester.shr (param $value i32) (param $shift i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.shr_s
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -3880,7 +3915,12 @@
  (func $std/operator-overloading/Tester.shu (param $value i32) (param $shift i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.shr_u
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -3903,7 +3943,12 @@
  (func $std/operator-overloading/Tester.shl (param $value i32) (param $shift i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.shl
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -3926,7 +3971,12 @@
  (func $std/operator-overloading/Tester.pos (param $value i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (call $std/operator-overloading/Tester#get:x
      (call $~lib/rt/__tmptostack
       (local.get $value)
@@ -3943,7 +3993,12 @@
  (func $std/operator-overloading/Tester.neg (param $value i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.sub
      (i32.const 0)
      (call $std/operator-overloading/Tester#get:x
@@ -3966,7 +4021,12 @@
  (func $std/operator-overloading/Tester.not (param $value i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.xor
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -4076,7 +4136,12 @@
  (func $std/operator-overloading/Tester#postInc (param $this i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.add
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -4099,7 +4164,12 @@
  (func $std/operator-overloading/Tester#postDec (param $this i32) (result i32)
   (return
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.sub
      (call $std/operator-overloading/Tester#get:x
       (call $~lib/rt/__tmptostack
@@ -4133,21 +4203,6 @@
  )
  (func $std/operator-overloading/TesterInlineStatic#constructor (param $this i32) (param $x i32) (param $y i32) (result i32)
   (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 5)
-       )
-      )
-     )
-    )
-   )
    (call $std/operator-overloading/TesterInlineStatic#set:x
     (call $~lib/rt/__tmptostack
      (local.get $this)
@@ -4176,7 +4231,12 @@
  (func $std/operator-overloading/TesterInlineStatic.postInc (param $a i32) (result i32)
   (return
    (call $std/operator-overloading/TesterInlineStatic#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 5)
+     )
+    )
     (i32.add
      (call $std/operator-overloading/TesterInlineStatic#get:x
       (call $~lib/rt/__tmptostack
@@ -4199,7 +4259,12 @@
  (func $std/operator-overloading/TesterInlineStatic.add (param $a i32) (param $b i32) (result i32)
   (return
    (call $std/operator-overloading/TesterInlineStatic#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 5)
+     )
+    )
     (i32.add
      (call $std/operator-overloading/TesterInlineStatic#get:x
       (call $~lib/rt/__tmptostack
@@ -4241,21 +4306,6 @@
  )
  (func $std/operator-overloading/TesterInlineInstance#constructor (param $this i32) (param $x i32) (param $y i32) (result i32)
   (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 6)
-       )
-      )
-     )
-    )
-   )
    (call $std/operator-overloading/TesterInlineInstance#set:x
     (call $~lib/rt/__tmptostack
      (local.get $this)
@@ -4284,7 +4334,12 @@
  (func $std/operator-overloading/TesterInlineInstance#postInc (param $this i32) (result i32)
   (return
    (call $std/operator-overloading/TesterInlineInstance#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 6)
+     )
+    )
     (i32.add
      (call $std/operator-overloading/TesterInlineInstance#get:x
       (call $~lib/rt/__tmptostack
@@ -4307,7 +4362,12 @@
  (func $std/operator-overloading/TesterInlineInstance#add (param $this i32) (param $b i32) (result i32)
   (return
    (call $std/operator-overloading/TesterInlineInstance#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 6)
+     )
+    )
     (i32.add
      (call $std/operator-overloading/TesterInlineInstance#get:x
       (call $~lib/rt/__tmptostack
@@ -4349,21 +4409,6 @@
  )
  (func $std/operator-overloading/TesterElementAccess#constructor (param $this i32) (param $x i32) (param $y i32) (result i32)
   (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 8)
-        (i32.const 7)
-       )
-      )
-     )
-    )
-   )
    (call $std/operator-overloading/TesterElementAccess#set:x
     (call $~lib/rt/__tmptostack
      (local.get $this)
@@ -4723,14 +4768,24 @@
   )
   (global.set $std/operator-overloading/a1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 1)
     (i32.const 2)
    )
   )
   (global.set $std/operator-overloading/a2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 2)
     (i32.const 3)
    )
@@ -4783,14 +4838,24 @@
   )
   (global.set $std/operator-overloading/s1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 2)
     (i32.const 3)
    )
   )
   (global.set $std/operator-overloading/s2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 2)
     (i32.const -3)
    )
@@ -4843,14 +4908,24 @@
   )
   (global.set $std/operator-overloading/m1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 2)
     (i32.const 5)
    )
   )
   (global.set $std/operator-overloading/m2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 3)
     (i32.const 2)
    )
@@ -4903,14 +4978,24 @@
   )
   (global.set $std/operator-overloading/d1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 6)
     (i32.const 50)
    )
   )
   (global.set $std/operator-overloading/d2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 3)
     (i32.const 10)
    )
@@ -4963,14 +5048,24 @@
   )
   (global.set $std/operator-overloading/f1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 10)
     (i32.const 10)
    )
   )
   (global.set $std/operator-overloading/f2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 6)
     (i32.const 10)
    )
@@ -5023,14 +5118,24 @@
   )
   (global.set $std/operator-overloading/p1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 2)
     (i32.const 3)
    )
   )
   (global.set $std/operator-overloading/p2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 4)
     (i32.const 5)
    )
@@ -5083,14 +5188,24 @@
   )
   (global.set $std/operator-overloading/n1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 255)
     (i32.const 15)
    )
   )
   (global.set $std/operator-overloading/n2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 15)
     (i32.const 255)
    )
@@ -5143,14 +5258,24 @@
   )
   (global.set $std/operator-overloading/o1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 3855)
     (i32.const 255)
    )
   )
   (global.set $std/operator-overloading/o2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 61680)
     (i32.const 0)
    )
@@ -5203,14 +5328,24 @@
   )
   (global.set $std/operator-overloading/x1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 255)
     (i32.const 255)
    )
   )
   (global.set $std/operator-overloading/x2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 65280)
     (i32.const 0)
    )
@@ -5263,14 +5398,24 @@
   )
   (global.set $std/operator-overloading/eq1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 1)
     (i32.const -2)
    )
   )
   (global.set $std/operator-overloading/eq2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 1)
     (i32.const -2)
    )
@@ -5304,14 +5449,24 @@
   )
   (global.set $std/operator-overloading/eq3
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 1)
     (i32.const 0)
    )
   )
   (global.set $std/operator-overloading/eq4
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 0)
     (i32.const 1)
    )
@@ -5399,14 +5554,24 @@
   )
   (global.set $std/operator-overloading/gt1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 2)
     (global.get $~lib/builtins/i32.MAX_VALUE)
    )
   )
   (global.set $std/operator-overloading/gt2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 1)
     (i32.const 0)
    )
@@ -5440,14 +5605,24 @@
   )
   (global.set $std/operator-overloading/gte1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 2)
     (i32.const 2)
    )
   )
   (global.set $std/operator-overloading/gte2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 2)
     (i32.const 2)
    )
@@ -5481,14 +5656,24 @@
   )
   (global.set $std/operator-overloading/le1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 5)
     (i32.const -1)
    )
   )
   (global.set $std/operator-overloading/le2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 6)
     (i32.const 6)
    )
@@ -5522,14 +5707,24 @@
   )
   (global.set $std/operator-overloading/leq1
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 4)
     (i32.const 3)
    )
   )
   (global.set $std/operator-overloading/leq2
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 4)
     (i32.const 3)
    )
@@ -5563,7 +5758,12 @@
   )
   (global.set $std/operator-overloading/shr
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 8)
     (i32.const 16)
    )
@@ -5614,7 +5814,12 @@
   )
   (global.set $std/operator-overloading/shu
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const -8)
     (i32.const -16)
    )
@@ -5665,7 +5870,12 @@
   )
   (global.set $std/operator-overloading/shl
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 1)
     (i32.const 2)
    )
@@ -5716,7 +5926,12 @@
   )
   (global.set $std/operator-overloading/pos
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 1)
     (i32.const -2)
    )
@@ -5774,7 +5989,12 @@
   )
   (global.set $std/operator-overloading/neg
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const -1)
     (i32.const -2)
    )
@@ -5838,7 +6058,12 @@
   )
   (global.set $std/operator-overloading/not
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 255)
     (i32.const 16)
    )
@@ -5902,7 +6127,12 @@
   )
   (global.set $std/operator-overloading/excl
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 0)
     (i32.const 0)
    )
@@ -5970,7 +6200,12 @@
   )
   (global.set $std/operator-overloading/incdec
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 0)
     (i32.const 1)
    )
@@ -6063,7 +6298,12 @@
   )
   (global.set $std/operator-overloading/incdec
    (call $std/operator-overloading/Tester#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 4)
+     )
+    )
     (i32.const 0)
     (i32.const 1)
    )
@@ -6246,7 +6486,12 @@
   )
   (global.set $std/operator-overloading/ais1
    (call $std/operator-overloading/TesterInlineStatic#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 5)
+     )
+    )
     (i32.const 1)
     (i32.const 2)
    )
@@ -6260,7 +6505,12 @@
   )
   (global.set $std/operator-overloading/ais2
    (call $std/operator-overloading/TesterInlineStatic#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 5)
+     )
+    )
     (i32.const 2)
     (i32.const 3)
    )
@@ -6313,7 +6563,12 @@
   )
   (global.set $std/operator-overloading/aii1
    (call $std/operator-overloading/TesterInlineInstance#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 6)
+     )
+    )
     (i32.const 1)
     (i32.const 2)
    )
@@ -6327,7 +6582,12 @@
   )
   (global.set $std/operator-overloading/aii2
    (call $std/operator-overloading/TesterInlineInstance#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 6)
+     )
+    )
     (i32.const 2)
     (i32.const 3)
    )
@@ -6380,7 +6640,12 @@
   )
   (global.set $std/operator-overloading/tea
    (call $std/operator-overloading/TesterElementAccess#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 8)
+      (i32.const 7)
+     )
+    )
     (i32.const 1)
     (i32.const 2)
    )

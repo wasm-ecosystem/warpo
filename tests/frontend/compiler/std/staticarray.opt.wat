@@ -3599,74 +3599,45 @@
   i32.const 6
   i32.const 0
   call $~lib/rt/__newBuffer
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 5
-  call $~lib/rt/itcms/__new
   local.set $1
   global.get $~lib/memory/__stack_pointer
   local.get $1
   i32.store align=1
   local.get $1
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   local.set $1
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  local.get $1
-  i32.store
-  local.get $0
-  local.get $1
-  i32.const 1
-  call $~lib/rt/itcms/__link
-  i32.const 4
-  call $~lib/rt/__decrease_sp
   i32.const 0
   i32.const 5
   call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store align=1
-  local.get $1
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   local.set $1
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  i32.const 4
-  i32.add
-  local.get $1
+  local.tee $0
   i32.store
-  local.get $0
   local.get $1
+  local.get $0
   i32.const 1
   call $~lib/rt/itcms/__link
+  local.get $1
+  i32.const 4
+  i32.add
+  i32.const 0
+  i32.const 5
+  call $~lib/rt/itcms/__new
+  local.tee $0
+  i32.store
+  local.get $1
   local.get $0
+  i32.const 1
+  call $~lib/rt/itcms/__link
+  local.get $1
   global.set $std/staticarray/arr4
   i32.const 0
   global.set $std/staticarray/arr3
   i32.const 0
   global.set $std/staticarray/arr4
+  i32.const 0
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
   i32.const 12
   i32.const 4
   call $~lib/rt/itcms/__new

@@ -5,19 +5,32 @@
   (local i32)
   block ;;none
 ;; ======remove=======
-;;    i32.const 16
+;;    i32.const 24
 ;; =========add========
       i32.const 4
 ;; ====================
     call $~lib/rt/__decrease_sp
     block ;;none
         block ;;i32
-              i32.const 0
+              block ;;i32
+                    i32.const 4
+                    i32.const 4
+                  call $~lib/rt/itcms/__new
+                local.set $2
+                  global.get $~lib/memory/__stack_pointer
+                  local.get $2
+                i32.store $0 align=1
+                local.get $2
+              end
             call $tests/snapshot_diff/common_lib/normal/Normal#constructor
           local.set $2
             global.get $~lib/memory/__stack_pointer
             local.get $2
+;; ======remove=======
+;;        i32.store $0 offset=4 align=1
+;; =========add========
           i32.store $0 align=1
+;; ====================
           local.get $2
         end
       local.set $0
@@ -25,7 +38,7 @@
             global.get $~lib/memory/__stack_pointer
             local.get $0
 ;; ======remove=======
-;;        i32.store $0 offset=4 align=1
+;;        i32.store $0 offset=8 align=1
 ;; =========add========
           i32.store $0 align=1
 ;; ====================
@@ -33,13 +46,26 @@
         end
       call $tests/snapshot_diff/gc_lower_opt/reuse_stack/reuse_stack_for_difference_ssa/foo
         block ;;i32
-              i32.const 0
+              block ;;i32
+                    i32.const 4
+                    i32.const 4
+                  call $~lib/rt/itcms/__new
+                local.set $2
+                  global.get $~lib/memory/__stack_pointer
+                  local.get $2
+;; ======remove=======
+;;              i32.store $0 offset=12 align=1
+;; =========add========
+                i32.store $0 align=1
+;; ====================
+                local.get $2
+              end
             call $tests/snapshot_diff/common_lib/normal/Normal#constructor
           local.set $2
             global.get $~lib/memory/__stack_pointer
             local.get $2
 ;; ======remove=======
-;;        i32.store $0 offset=8 align=1
+;;        i32.store $0 offset=16 align=1
 ;; =========add========
           i32.store $0 align=1
 ;; ====================
@@ -50,7 +76,7 @@
             global.get $~lib/memory/__stack_pointer
             local.get $1
 ;; ======remove=======
-;;        i32.store $0 offset=12 align=1
+;;        i32.store $0 offset=20 align=1
 ;; =========add========
           i32.store $0 align=1
 ;; ====================
@@ -59,7 +85,7 @@
       call $tests/snapshot_diff/gc_lower_opt/reuse_stack/reuse_stack_for_difference_ssa/foo
     end
 ;; ======remove=======
-;;    i32.const 16
+;;    i32.const 24
 ;; =========add========
       i32.const 4
 ;; ====================

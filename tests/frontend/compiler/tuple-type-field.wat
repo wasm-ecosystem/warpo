@@ -3090,21 +3090,7 @@
  )
  (func $tuple-type-field/A#constructor (param $this i32) (param $p0 i32) (param $p1 i32) (result i32)
   (local $3 i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (call $tuple-type-field/A#set:field
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -3453,7 +3439,12 @@
   )
   (global.set $tuple-type-field/a
    (call $tuple-type-field/A#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 4)
+     )
+    )
     (i32.const 10)
     (i32.const 432)
    )

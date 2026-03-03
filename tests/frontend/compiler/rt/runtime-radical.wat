@@ -11,6 +11,8 @@
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
+ (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
+ (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/tcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/tcms/threshold (mut i32) (i32.const 16384))
  (global $~lib/rt/tcms/white (mut i32) (i32.const 0))
@@ -19,21 +21,19 @@
  (global $~lib/rt/tcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
- (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/__rtti_base i32 (i32.const 528))
  (global $~lib/memory/__data_end i32 (i32.const 560))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33328))
  (global $~lib/memory/__heap_base i32 (i32.const 33328))
  (memory $0 1)
- (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
- (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $2 (i32.const 144) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $3 (i32.const 176) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $4 (i32.const 208) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $5 (i32.const 236) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $6 (i32.const 300) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
- (data $7 (i32.const 348) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00")
+ (data $0 (i32.const 12) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
+ (data $1 (i32.const 60) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00")
+ (data $2 (i32.const 108) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
+ (data $3 (i32.const 172) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $4 (i32.const 240) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $5 (i32.const 272) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $6 (i32.const 304) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $7 (i32.const 332) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $8 (i32.const 396) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00*\00\00\00O\00b\00j\00e\00c\00t\00 \00a\00l\00r\00e\00a\00d\00y\00 \00p\00i\00n\00n\00e\00d\00\00\00")
  (data $9 (i32.const 460) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00O\00b\00j\00e\00c\00t\00 \00i\00s\00 \00n\00o\00t\00 \00p\00i\00n\00n\00e\00d\00\00\00\00\00")
  (data $10 (i32.const 528) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\02\t\00\00 \00\00\00")
@@ -46,6 +46,9 @@
  (export "__rtti_base" (global $~lib/rt/__rtti_base))
  (export "memory" (memory $0))
  (start $~start)
+ (func $~lib/object/Object#constructor (param $this i32) (result i32)
+  (local.get $this)
+ )
  (func $~lib/rt/tcms/Object#get:nextWithColor (param $this i32) (result i32)
   (i32.load offset=4
    (local.get $this)
@@ -145,7 +148,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 96)
+       (i32.const 192)
        (i32.const 100)
        (i32.const 18)
       )
@@ -170,7 +173,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 96)
+     (i32.const 192)
      (i32.const 104)
      (i32.const 16)
     )
@@ -514,7 +517,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 352)
      (i32.const 245)
      (i32.const 14)
     )
@@ -543,7 +546,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 352)
      (i32.const 247)
      (i32.const 14)
     )
@@ -639,7 +642,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 352)
      (i32.const 261)
      (i32.const 14)
     )
@@ -777,7 +780,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 352)
      (i32.const 178)
      (i32.const 14)
     )
@@ -802,7 +805,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 352)
      (i32.const 180)
      (i32.const 14)
     )
@@ -888,7 +891,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 256)
+       (i32.const 352)
        (i32.const 198)
        (i32.const 16)
       )
@@ -951,7 +954,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 352)
      (i32.const 210)
      (i32.const 14)
     )
@@ -977,7 +980,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 352)
      (i32.const 211)
      (i32.const 14)
     )
@@ -1080,7 +1083,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 352)
      (i32.const 228)
      (i32.const 14)
     )
@@ -1171,7 +1174,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 352)
      (i32.const 357)
      (i32.const 14)
     )
@@ -1232,7 +1235,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 256)
+       (i32.const 352)
        (i32.const 365)
        (i32.const 16)
       )
@@ -1282,7 +1285,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 256)
+       (i32.const 352)
        (i32.const 378)
        (i32.const 5)
       )
@@ -1574,7 +1577,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 352)
      (i32.const 532)
      (i32.const 3)
     )
@@ -1704,7 +1707,7 @@
        (then
         (call $~lib/builtins/abort
          (i32.const 0)
-         (i32.const 96)
+         (i32.const 192)
          (i32.const 249)
          (i32.const 16)
         )
@@ -1838,8 +1841,8 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 32)
-     (i32.const 256)
+     (i32.const 128)
+     (i32.const 352)
      (i32.const 435)
      (i32.const 29)
     )
@@ -1975,7 +1978,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 352)
      (i32.const 309)
      (i32.const 14)
     )
@@ -2053,7 +2056,7 @@
        (then
         (call $~lib/builtins/abort
          (i32.const 0)
-         (i32.const 256)
+         (i32.const 352)
          (i32.const 322)
          (i32.const 18)
         )
@@ -2230,7 +2233,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 352)
      (i32.const 336)
      (i32.const 14)
     )
@@ -2361,7 +2364,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 256)
+       (i32.const 352)
        (i32.const 472)
        (i32.const 16)
       )
@@ -2391,7 +2394,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 352)
      (i32.const 474)
      (i32.const 14)
     )
@@ -2452,8 +2455,8 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 32)
-     (i32.const 96)
+     (i32.const 128)
+     (i32.const 192)
      (i32.const 136)
      (i32.const 31)
     )
@@ -2516,24 +2519,6 @@
    (local.get $ptr)
   )
  )
- (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/tcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
  (func $~lib/rt/tcms/__link (param $parentPtr i32) (param $childPtr i32) (param $expectMultiple i32)
   (nop)
  )
@@ -2571,21 +2556,7 @@
   (local $3 i32)
   (local $bufferSize i32)
   (local $buffer i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/tcms/__new
-       (i32.const 16)
-       (i32.const 5)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (i32.gt_u
     (local.get $length)
@@ -2596,8 +2567,8 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 320)
-     (i32.const 368)
+     (i32.const 32)
+     (i32.const 80)
      (i32.const 81)
      (i32.const 62)
     )
@@ -2779,21 +2750,6 @@
   )
  )
  (func $rt/runtime-radical/RadicalObject#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/tcms/__new
-       (i32.const 44)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -2809,7 +2765,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/tcms/__new
+       (i32.const 16)
+       (i32.const 5)
+      )
+     )
      (i32.const 100)
     )
    )
@@ -2820,7 +2781,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/tcms/__new
+       (i32.const 16)
+       (i32.const 5)
+      )
+     )
      (i32.const 100)
     )
    )
@@ -2831,7 +2797,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/tcms/__new
+       (i32.const 16)
+       (i32.const 5)
+      )
+     )
      (i32.const 100)
     )
    )
@@ -2842,7 +2813,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/tcms/__new
+       (i32.const 16)
+       (i32.const 5)
+      )
+     )
      (i32.const 100)
     )
    )
@@ -2853,7 +2829,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/tcms/__new
+       (i32.const 16)
+       (i32.const 5)
+      )
+     )
      (i32.const 100)
     )
    )
@@ -2864,7 +2845,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/tcms/__new
+       (i32.const 16)
+       (i32.const 5)
+      )
+     )
      (i32.const 100)
     )
    )
@@ -2875,7 +2861,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/tcms/__new
+       (i32.const 16)
+       (i32.const 5)
+      )
+     )
      (i32.const 100)
     )
    )
@@ -2886,7 +2877,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/tcms/__new
+       (i32.const 16)
+       (i32.const 5)
+      )
+     )
      (i32.const 100)
     )
    )
@@ -2897,7 +2893,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/tcms/__new
+       (i32.const 16)
+       (i32.const 5)
+      )
+     )
      (i32.const 100)
     )
    )
@@ -2908,7 +2909,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/tcms/__new
+       (i32.const 16)
+       (i32.const 5)
+      )
+     )
      (i32.const 100)
     )
    )
@@ -2919,7 +2925,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/tcms/__new
+       (i32.const 16)
+       (i32.const 5)
+      )
+     )
      (i32.const 100)
     )
    )
@@ -2930,17 +2941,17 @@
   (local $i i32)
   (global.set $~lib/rt/tcms/toSpace
    (call $~lib/rt/tcms/initLazy
-    (i32.const 144)
+    (i32.const 240)
    )
   )
   (global.set $~lib/rt/tcms/pinSpace
    (call $~lib/rt/tcms/initLazy
-    (i32.const 176)
+    (i32.const 272)
    )
   )
   (global.set $~lib/rt/tcms/fromSpace
    (call $~lib/rt/tcms/initLazy
-    (i32.const 208)
+    (i32.const 304)
    )
   )
   (block
@@ -2956,7 +2967,12 @@
      (then
       (drop
        (call $rt/runtime-radical/RadicalObject#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/tcms/__new
+          (i32.const 44)
+          (i32.const 4)
+         )
+        )
        )
       )
       (local.set $i
@@ -2992,7 +3008,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 416)
-       (i32.const 96)
+       (i32.const 192)
        (i32.const 189)
        (i32.const 7)
       )
@@ -3039,7 +3055,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 480)
-     (i32.const 96)
+     (i32.const 192)
      (i32.const 203)
      (i32.const 5)
     )

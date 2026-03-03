@@ -3931,21 +3931,7 @@
   )
  )
  (func $switch/FooClass#constructor (param $this i32) (param $value i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (call $switch/FooClass#set:value
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -4096,21 +4082,7 @@
   )
  )
  (func $switch/BarClass#constructor (param $this i32) (param $value i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 5)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (call $switch/BarClass#set:value
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -4146,7 +4118,12 @@
          )
          (call $~lib/rt/__tmptostack
           (call $switch/BarClass#constructor
-           (i32.const 0)
+           (call $~lib/rt/__tmptostack
+            (call $~lib/rt/itcms/__new
+             (i32.const 4)
+             (i32.const 5)
+            )
+           )
            (i32.const 1)
           )
          )
@@ -4159,7 +4136,12 @@
          )
          (call $~lib/rt/__tmptostack
           (call $switch/BarClass#constructor
-           (i32.const 0)
+           (call $~lib/rt/__tmptostack
+            (call $~lib/rt/itcms/__new
+             (i32.const 4)
+             (i32.const 5)
+            )
+           )
            (i32.const 2)
           )
          )
@@ -5696,7 +5678,12 @@
      (call $switch/doSwitchClassMember
       (call $~lib/rt/__tmptostack
        (call $switch/FooClass#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 4)
+         )
+        )
         (i32.const 1)
        )
       )
@@ -5720,7 +5707,12 @@
      (call $switch/doSwitchClassMember
       (call $~lib/rt/__tmptostack
        (call $switch/FooClass#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 4)
+         )
+        )
         (i32.const 2)
        )
       )
@@ -5744,7 +5736,12 @@
      (call $switch/doSwitchClassMember
       (call $~lib/rt/__tmptostack
        (call $switch/FooClass#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 4)
+         )
+        )
         (i32.const 3)
        )
       )
@@ -5764,13 +5761,23 @@
   )
   (global.set $switch/foo1
    (call $switch/FooClass#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 4)
+     )
+    )
     (i32.const 1)
    )
   )
   (global.set $switch/foo2
    (call $switch/FooClass#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 4)
+     )
+    )
     (i32.const 2)
    )
   )
@@ -5822,7 +5829,12 @@
      (call $switch/doSwitchClassInstance
       (call $~lib/rt/__tmptostack
        (call $switch/FooClass#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 4)
+         )
+        )
         (i32.const 1)
        )
       )
@@ -5865,7 +5877,12 @@
      (call $switch/doSwitchClassInstanceWithOverload
       (call $~lib/rt/__tmptostack
        (call $switch/BarClass#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 5)
+         )
+        )
         (i32.const 1)
        )
       )
@@ -5889,7 +5906,12 @@
      (call $switch/doSwitchClassInstanceWithOverload
       (call $~lib/rt/__tmptostack
        (call $switch/BarClass#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 5)
+         )
+        )
         (i32.const 2)
        )
       )
@@ -5913,7 +5935,12 @@
      (call $switch/doSwitchClassInstanceWithOverload
       (call $~lib/rt/__tmptostack
        (call $switch/BarClass#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 5)
+         )
+        )
         (i32.const 3)
        )
       )

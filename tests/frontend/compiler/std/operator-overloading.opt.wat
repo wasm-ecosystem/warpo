@@ -1,12 +1,13 @@
 (module
- (type $0 (func (param i32 i32) (result i32)))
- (type $1 (func))
- (type $2 (func (param i32) (result i32)))
- (type $3 (func (param i32 i32 i32)))
- (type $4 (func (param i32)))
- (type $5 (func (param i32 i32)))
- (type $6 (func (param i32 i32 i32 i32)))
- (type $7 (func (param i32 i32 i64)))
+ (type $0 (func))
+ (type $1 (func (param i32) (result i32)))
+ (type $2 (func (param i32 i32 i32)))
+ (type $3 (func (param i32)))
+ (type $4 (func (param i32 i32)))
+ (type $5 (func (param i32 i32) (result i32)))
+ (type $6 (func (param i32 i32 i32) (result i32)))
+ (type $7 (func (param i32 i32 i32 i32)))
+ (type $8 (func (param i32 i32 i64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33364))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -106,6 +107,15 @@
  (data $11 (i32.const 560) "\08\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00 \00\00\00 \00\00\00 ")
  (export "memory" (memory $0))
  (start $~start)
+ (func $std/operator-overloading/Tester#constructor (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
+  local.get $0
+  local.get $1
+  i32.store
+  local.get $0
+  local.get $2
+  i32.store offset=4
+  local.get $0
+ )
  (func $~lib/rt/itcms/visitRoots
   (local $0 i32)
   (local $1 i32)
@@ -566,7 +576,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$244
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$238
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -590,7 +600,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$244
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$238
      end
      local.get $0
      i32.load offset=8
@@ -1320,12 +1330,12 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$68
+   block $__inlined_func$~lib/rt/itcms/interrupt$70
     i32.const 2048
     local.set $1
     loop $do-loop|0
      local.get $1
-     block $__inlined_func$~lib/rt/itcms/step$249 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$243 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1341,7 +1351,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$249
+         br $__inlined_func$~lib/rt/itcms/step$243
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1380,7 +1390,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$249
+           br $__inlined_func$~lib/rt/itcms/step$243
           end
           local.get $1
           i32.load offset=4
@@ -1472,7 +1482,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$249
+        br $__inlined_func$~lib/rt/itcms/step$243
        end
        global.get $~lib/rt/itcms/iter
        local.tee $1
@@ -1571,7 +1581,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$249
+        br $__inlined_func$~lib/rt/itcms/step$243
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1599,7 +1609,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$68
+      br $__inlined_func$~lib/rt/itcms/interrupt$70
      end
      local.get $1
      i32.const 0
@@ -1784,18 +1794,6 @@
   i64.const 0
   i64.store align=1
   local.get $0
- )
- (func $std/operator-overloading/Tester#constructor (param $0 i32) (param $1 i32) (result i32)
-  (local $2 i32)
-  i32.const 4
-  call $~lib/rt/itcms/__new
-  local.tee $2
-  local.get $0
-  i32.store
-  local.get $2
-  local.get $1
-  i32.store offset=4
-  local.get $2
  )
  (func $~lib/math/ipow32 (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -1982,30 +1980,6 @@
   end
   local.get $2
  )
- (func $std/operator-overloading/TesterInlineStatic#constructor (param $0 i32) (param $1 i32) (result i32)
-  (local $2 i32)
-  i32.const 5
-  call $~lib/rt/itcms/__new
-  local.tee $2
-  local.get $0
-  i32.store
-  local.get $2
-  local.get $1
-  i32.store offset=4
-  local.get $2
- )
- (func $std/operator-overloading/TesterInlineInstance#constructor (param $0 i32) (param $1 i32) (result i32)
-  (local $2 i32)
-  i32.const 6
-  call $~lib/rt/itcms/__new
-  local.tee $2
-  local.get $0
-  i32.store
-  local.get $2
-  local.get $1
-  i32.store offset=4
-  local.get $2
- )
  (func $~lib/string/String.__eq (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
@@ -2040,7 +2014,7 @@
    i32.const 0
    return
   end
-  block $__inlined_func$~lib/util/string/compareImpl$167 (result i32)
+  block $__inlined_func$~lib/util/string/compareImpl$161 (result i32)
    i32.const 512
    local.set $1
    local.get $0
@@ -2098,7 +2072,7 @@
       local.get $3
       local.get $4
       i32.sub
-      br $__inlined_func$~lib/util/string/compareImpl$167
+      br $__inlined_func$~lib/util/string/compareImpl$161
      end
      local.get $2
      i32.const 2
@@ -2206,10 +2180,14 @@
   i32.store
   i32.const 320
   global.set $~lib/rt/itcms/fromSpace
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 1
   i32.const 2
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/a1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 2
   i32.const 3
   call $std/operator-overloading/Tester#constructor
@@ -2221,10 +2199,14 @@
   global.get $std/operator-overloading/a2
   i32.store align=1
   global.get $std/operator-overloading/a1
-  local.tee $0
-  i32.load
+  local.set $0
   global.get $std/operator-overloading/a2
-  local.tee $1
+  local.set $1
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
+  i32.load
+  local.get $1
   i32.load
   i32.add
   local.get $0
@@ -2255,10 +2237,14 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 2
   i32.const 3
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/s1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 2
   i32.const -3
   call $std/operator-overloading/Tester#constructor
@@ -2270,10 +2256,14 @@
   global.get $std/operator-overloading/s2
   i32.store align=1
   global.get $std/operator-overloading/s1
-  local.tee $0
-  i32.load
+  local.set $0
   global.get $std/operator-overloading/s2
-  local.tee $1
+  local.set $1
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
+  i32.load
+  local.get $1
   i32.load
   i32.sub
   local.get $0
@@ -2302,10 +2292,14 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 2
   i32.const 5
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/m1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 3
   i32.const 2
   call $std/operator-overloading/Tester#constructor
@@ -2317,10 +2311,14 @@
   global.get $std/operator-overloading/m2
   i32.store align=1
   global.get $std/operator-overloading/m1
-  local.tee $0
-  i32.load
+  local.set $0
   global.get $std/operator-overloading/m2
-  local.tee $1
+  local.set $1
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
+  i32.load
+  local.get $1
   i32.load
   i32.mul
   local.get $0
@@ -2351,10 +2349,14 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 6
   i32.const 50
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/d1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 3
   i32.const 10
   call $std/operator-overloading/Tester#constructor
@@ -2366,10 +2368,14 @@
   global.get $std/operator-overloading/d2
   i32.store align=1
   global.get $std/operator-overloading/d1
-  local.tee $0
-  i32.load
+  local.set $0
   global.get $std/operator-overloading/d2
-  local.tee $1
+  local.set $1
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
+  i32.load
+  local.get $1
   i32.load
   i32.div_s
   local.get $0
@@ -2400,10 +2406,14 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 10
   i32.const 10
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/f1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 6
   i32.const 10
   call $std/operator-overloading/Tester#constructor
@@ -2415,10 +2425,14 @@
   global.get $std/operator-overloading/f2
   i32.store align=1
   global.get $std/operator-overloading/f1
-  local.tee $0
-  i32.load
+  local.set $0
   global.get $std/operator-overloading/f2
-  local.tee $1
+  local.set $1
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
+  i32.load
+  local.get $1
   i32.load
   i32.rem_s
   local.get $0
@@ -2446,10 +2460,14 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 2
   i32.const 3
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/p1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 4
   i32.const 5
   call $std/operator-overloading/Tester#constructor
@@ -2461,10 +2479,14 @@
   global.get $std/operator-overloading/p2
   i32.store align=1
   global.get $std/operator-overloading/p1
-  local.tee $0
-  i32.load
+  local.set $0
   global.get $std/operator-overloading/p2
-  local.tee $1
+  local.set $1
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
+  i32.load
+  local.get $1
   i32.load
   call $~lib/math/ipow32
   local.get $0
@@ -2495,10 +2517,14 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 255
   i32.const 15
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/n1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 15
   i32.const 255
   call $std/operator-overloading/Tester#constructor
@@ -2510,10 +2536,14 @@
   global.get $std/operator-overloading/n2
   i32.store align=1
   global.get $std/operator-overloading/n1
-  local.tee $0
-  i32.load
+  local.set $0
   global.get $std/operator-overloading/n2
-  local.tee $1
+  local.set $1
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
+  i32.load
+  local.get $1
   i32.load
   i32.and
   local.get $0
@@ -2544,10 +2574,14 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 3855
   i32.const 255
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/o1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 61680
   i32.const 0
   call $std/operator-overloading/Tester#constructor
@@ -2559,10 +2593,14 @@
   global.get $std/operator-overloading/o2
   i32.store align=1
   global.get $std/operator-overloading/o1
-  local.tee $0
-  i32.load
+  local.set $0
   global.get $std/operator-overloading/o2
-  local.tee $1
+  local.set $1
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
+  i32.load
+  local.get $1
   i32.load
   i32.or
   local.get $0
@@ -2593,10 +2631,14 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 255
   i32.const 255
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/x1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 65280
   i32.const 0
   call $std/operator-overloading/Tester#constructor
@@ -2608,10 +2650,14 @@
   global.get $std/operator-overloading/x2
   i32.store align=1
   global.get $std/operator-overloading/x1
-  local.tee $0
-  i32.load
+  local.set $0
   global.get $std/operator-overloading/x2
-  local.tee $1
+  local.set $1
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
+  i32.load
+  local.get $1
   i32.load
   i32.xor
   local.get $0
@@ -2642,10 +2688,14 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 1
   i32.const -2
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/eq1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 1
   i32.const -2
   call $std/operator-overloading/Tester#constructor
@@ -2678,10 +2728,14 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 1
   i32.const 0
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/eq3
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 0
   i32.const 1
   call $std/operator-overloading/Tester#constructor
@@ -2766,10 +2820,14 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 2
   i32.const 2147483647
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/gt1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 1
   i32.const 0
   call $std/operator-overloading/Tester#constructor
@@ -2802,10 +2860,14 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 2
   i32.const 2
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/gte1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 2
   i32.const 2
   call $std/operator-overloading/Tester#constructor
@@ -2838,10 +2900,14 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 5
   i32.const -1
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/le1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 6
   i32.const 6
   call $std/operator-overloading/Tester#constructor
@@ -2875,9 +2941,13 @@
    unreachable
   end
   i32.const 4
+  call $~lib/rt/itcms/__new
+  i32.const 4
   i32.const 3
   call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/leq1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 4
   i32.const 3
   call $std/operator-overloading/Tester#constructor
@@ -2910,6 +2980,8 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 8
   i32.const 16
   call $std/operator-overloading/Tester#constructor
@@ -2918,7 +2990,10 @@
   global.get $std/operator-overloading/shr
   i32.store align=1
   global.get $std/operator-overloading/shr
-  local.tee $0
+  local.set $0
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
   i32.load
   i32.const 3
   i32.shr_s
@@ -2949,6 +3024,8 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const -8
   i32.const -16
   call $std/operator-overloading/Tester#constructor
@@ -2957,7 +3034,10 @@
   global.get $std/operator-overloading/shu
   i32.store align=1
   global.get $std/operator-overloading/shu
-  local.tee $0
+  local.set $0
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
   i32.load
   i32.const 3
   i32.shr_u
@@ -2988,6 +3068,8 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 1
   i32.const 2
   call $std/operator-overloading/Tester#constructor
@@ -2996,7 +3078,10 @@
   global.get $std/operator-overloading/shl
   i32.store align=1
   global.get $std/operator-overloading/shl
-  local.tee $0
+  local.set $0
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
   i32.load
   i32.const 3
   i32.shl
@@ -3027,6 +3112,8 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 1
   i32.const -2
   call $std/operator-overloading/Tester#constructor
@@ -3035,7 +3122,10 @@
   global.get $std/operator-overloading/pos
   i32.store align=1
   global.get $std/operator-overloading/pos
-  local.tee $0
+  local.set $0
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
   i32.load
   local.get $0
   i32.load offset=4
@@ -3064,6 +3154,8 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const -1
   i32.const -2
   call $std/operator-overloading/Tester#constructor
@@ -3071,9 +3163,12 @@
   global.get $~lib/memory/__stack_pointer
   global.get $std/operator-overloading/neg
   i32.store align=1
-  i32.const 0
   global.get $std/operator-overloading/neg
-  local.tee $0
+  local.set $0
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  i32.const 0
+  local.get $0
   i32.load
   i32.sub
   i32.const 0
@@ -3109,6 +3204,8 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 255
   i32.const 16
   call $std/operator-overloading/Tester#constructor
@@ -3117,7 +3214,10 @@
   global.get $std/operator-overloading/not
   i32.store align=1
   global.get $std/operator-overloading/not
-  local.tee $0
+  local.set $0
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.get $0
   i32.load
   i32.const -1
   i32.xor
@@ -3154,6 +3254,8 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 0
   i32.const 0
   call $std/operator-overloading/Tester#constructor
@@ -3199,6 +3301,8 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 0
   i32.const 1
   call $std/operator-overloading/Tester#constructor
@@ -3273,6 +3377,8 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 4
+  call $~lib/rt/itcms/__new
   i32.const 0
   i32.const 1
   call $std/operator-overloading/Tester#constructor
@@ -3284,6 +3390,8 @@
   global.get $std/operator-overloading/incdec
   local.tee $0
   i32.store align=1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   local.get $0
   i32.load
   i32.const 1
@@ -3343,6 +3451,8 @@
   global.get $std/operator-overloading/incdec
   local.tee $0
   i32.store align=1
+  i32.const 4
+  call $~lib/rt/itcms/__new
   local.get $0
   i32.load
   i32.const 1
@@ -3395,12 +3505,17 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 5
+  call $~lib/rt/itcms/__new
   i32.const 1
   i32.const 2
-  call $std/operator-overloading/TesterInlineStatic#constructor
+  call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/ais1
   global.get $std/operator-overloading/ais1
-  local.tee $0
+  local.set $0
+  i32.const 5
+  call $~lib/rt/itcms/__new
+  local.get $0
   i32.load
   i32.const 1
   i32.add
@@ -3408,17 +3523,23 @@
   i32.load offset=4
   i32.const 1
   i32.add
-  call $std/operator-overloading/TesterInlineStatic#constructor
+  call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/ais1
+  i32.const 5
+  call $~lib/rt/itcms/__new
   i32.const 2
   i32.const 3
-  call $std/operator-overloading/TesterInlineStatic#constructor
+  call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/ais2
   global.get $std/operator-overloading/ais1
-  local.tee $0
-  i32.load
+  local.set $0
   global.get $std/operator-overloading/ais2
-  local.tee $1
+  local.set $1
+  i32.const 5
+  call $~lib/rt/itcms/__new
+  local.get $0
+  i32.load
+  local.get $1
   i32.load
   i32.add
   local.get $0
@@ -3426,7 +3547,7 @@
   local.get $1
   i32.load offset=4
   i32.add
-  call $std/operator-overloading/TesterInlineStatic#constructor
+  call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/ais
   global.get $std/operator-overloading/ais
   i32.load
@@ -3449,12 +3570,17 @@
    call $~lib/builtins/abort
    unreachable
   end
+  i32.const 6
+  call $~lib/rt/itcms/__new
   i32.const 1
   i32.const 2
-  call $std/operator-overloading/TesterInlineInstance#constructor
+  call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/aii1
   global.get $std/operator-overloading/aii1
-  local.tee $0
+  local.set $0
+  i32.const 6
+  call $~lib/rt/itcms/__new
+  local.get $0
   i32.load
   i32.const 1
   i32.add
@@ -3462,17 +3588,23 @@
   i32.load offset=4
   i32.const 1
   i32.add
-  call $std/operator-overloading/TesterInlineInstance#constructor
+  call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/aii1
+  i32.const 6
+  call $~lib/rt/itcms/__new
   i32.const 2
   i32.const 3
-  call $std/operator-overloading/TesterInlineInstance#constructor
+  call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/aii2
   global.get $std/operator-overloading/aii1
-  local.tee $0
-  i32.load
+  local.set $0
   global.get $std/operator-overloading/aii2
-  local.tee $1
+  local.set $1
+  i32.const 6
+  call $~lib/rt/itcms/__new
+  local.get $0
+  i32.load
+  local.get $1
   i32.load
   i32.add
   local.get $0
@@ -3480,7 +3612,7 @@
   local.get $1
   i32.load offset=4
   i32.add
-  call $std/operator-overloading/TesterInlineInstance#constructor
+  call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/aii
   global.get $std/operator-overloading/aii
   i32.load
@@ -3505,13 +3637,9 @@
   end
   i32.const 7
   call $~lib/rt/itcms/__new
-  local.tee $0
   i32.const 1
-  i32.store
-  local.get $0
   i32.const 2
-  i32.store offset=4
-  local.get $0
+  call $std/operator-overloading/Tester#constructor
   global.set $std/operator-overloading/tea
   global.get $std/operator-overloading/tea
   i32.const 512

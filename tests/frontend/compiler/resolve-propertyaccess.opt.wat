@@ -8,17 +8,17 @@
  (type $6 (func (param i32 i32 i64)))
  (type $7 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 35448))
+ (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 35448))
  (memory $0 1)
  (data $0 (i32.const 12) "|")
  (data $0.1 (i32.const 24) "\02\00\00\00d\00\00\00t\00o\00S\00t\00r\00i\00n\00g\00(\00)\00 \00r\00a\00d\00i\00x\00 \00a\00r\00g\00u\00m\00e\00n\00t\00 \00m\00u\00s\00t\00 \00b\00e\00 \00b\00e\00t\00w\00e\00e\00n\00 \002\00 \00a\00n\00d\00 \003\006")
@@ -170,7 +170,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$95
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$97
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -194,7 +194,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$95
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$97
      end
      local.get $0
      i32.load offset=8
@@ -1013,7 +1013,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$100 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$102 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1029,7 +1029,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$100
+         br $__inlined_func$~lib/rt/itcms/step$102
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1068,7 +1068,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$100
+           br $__inlined_func$~lib/rt/itcms/step$102
           end
           local.get $2
           i32.load offset=4
@@ -1160,7 +1160,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$100
+        br $__inlined_func$~lib/rt/itcms/step$102
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1259,7 +1259,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$100
+        br $__inlined_func$~lib/rt/itcms/step$102
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -2038,41 +2038,12 @@
   if
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 2680
-  i32.lt_s
-  if
-   unreachable
-  end
   i32.const 4
   i32.const 4
   call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   local.set $0
-  end
-  local.get $0
+  local.tee $0
   i32.const 6
   i32.store
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1

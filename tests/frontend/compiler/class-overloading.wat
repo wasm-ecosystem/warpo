@@ -61,6 +61,33 @@
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
  (export "_start" (func $~start))
+ (func $~lib/object/Object#constructor (param $this i32) (result i32)
+  (local.get $this)
+ )
+ (func $class-overloading/A#constructor (param $this i32) (result i32)
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $~lib/object/Object#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.get $this)
+ )
+ (func $class-overloading/B#constructor (param $this i32) (result i32)
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $class-overloading/A#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.get $this)
+ )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
    (local.get $this)
@@ -2920,78 +2947,6 @@
    (local.get $ptr)
   )
  )
- (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
- (func $class-overloading/A#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $~lib/object/Object#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
- (func $class-overloading/B#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 5)
-      )
-     )
-    )
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $class-overloading/A#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
  (func $class-overloading/A#a<i32> (param $this i32) (param $a i32)
   (global.set $class-overloading/which
    (i32.const 464)
@@ -3265,21 +3220,6 @@
   )
  )
  (func $class-overloading/C#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 6)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $class-overloading/B#constructor
@@ -3345,21 +3285,6 @@
   )
  )
  (func $class-overloading/D#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 7)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $class-overloading/B#constructor
@@ -3372,21 +3297,6 @@
   (local.get $this)
  )
  (func $class-overloading/E#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 8)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $class-overloading/D#constructor
@@ -3399,21 +3309,6 @@
   (local.get $this)
  )
  (func $class-overloading/F#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 9)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $class-overloading/E#constructor
@@ -3426,21 +3321,6 @@
   (local.get $this)
  )
  (func $class-overloading/CA#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 11)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3456,21 +3336,6 @@
   (unreachable)
  )
  (func $class-overloading/CC#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 13)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3483,21 +3348,6 @@
   (local.get $this)
  )
  (func $class-overloading/A2#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 14)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3510,21 +3360,6 @@
   (local.get $this)
  )
  (func $class-overloading/B2#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 15)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $class-overloading/A2#constructor
@@ -3575,7 +3410,12 @@
   )
   (global.set $class-overloading/a
    (call $class-overloading/B#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 5)
+     )
+    )
    )
   )
   (call $class-overloading/A#a<i32>@override
@@ -3690,7 +3530,12 @@
   )
   (global.set $class-overloading/c
    (call $class-overloading/C#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 6)
+     )
+    )
    )
   )
   (global.set $class-overloading/which
@@ -3805,7 +3650,12 @@
   )
   (global.set $class-overloading/a
    (call $class-overloading/D#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 7)
+     )
+    )
    )
   )
   (global.set $class-overloading/which
@@ -3920,7 +3770,12 @@
   )
   (global.set $class-overloading/a
    (call $class-overloading/E#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 8)
+     )
+    )
    )
   )
   (global.set $class-overloading/which
@@ -4035,7 +3890,12 @@
   )
   (global.set $class-overloading/a
    (call $class-overloading/F#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 9)
+     )
+    )
    )
   )
   (global.set $class-overloading/which
@@ -4153,7 +4013,12 @@
   )
   (global.set $class-overloading/ia
    (call $class-overloading/CA#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 11)
+     )
+    )
    )
   )
   (global.set $class-overloading/which
@@ -4185,7 +4050,12 @@
   )
   (global.set $class-overloading/ic
    (call $class-overloading/CC#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 13)
+     )
+    )
    )
   )
   (global.set $class-overloading/which
@@ -4217,7 +4087,12 @@
   )
   (global.set $class-overloading/b2
    (call $class-overloading/B2#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 15)
+     )
+    )
    )
   )
   (if
@@ -4294,21 +4169,6 @@
   )
  )
  (func $class-overloading/A1#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 17)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -4321,21 +4181,6 @@
   (local.get $this)
  )
  (func $class-overloading/B1#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 16)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $class-overloading/A1#constructor
@@ -4370,7 +4215,12 @@
    (call $class-overloading/A1#bar
     (call $~lib/rt/__tmptostack
      (call $class-overloading/B1#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 16)
+       )
+      )
      )
     )
    )

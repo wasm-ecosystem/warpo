@@ -3611,21 +3611,7 @@
   (local $4 i32)
   (local $i i32)
   (local $k i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 9)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (call $call-rest/Foo#set:values
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -4145,7 +4131,12 @@
      (call $call-rest/Foo#sum
       (call $~lib/rt/__tmptostack
        (call $call-rest/Foo#constructor@varargs
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 9)
+         )
+        )
         (i32.const 1)
         (i32.const 0)
         (block (result i32)
@@ -4176,7 +4167,12 @@
      (call $call-rest/Foo#sum
       (call $~lib/rt/__tmptostack
        (call $call-rest/Foo#constructor@varargs
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 9)
+         )
+        )
         (i32.const 1)
         (i32.const 2)
         (block (result i32)
@@ -4207,7 +4203,12 @@
      (call $call-rest/Foo#sum
       (call $~lib/rt/__tmptostack
        (call $call-rest/Foo#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 9)
+         )
+        )
         (i32.const 1)
         (i32.const 2)
         (call $~lib/rt/__tmptostack
@@ -4240,7 +4241,12 @@
      (call $call-rest/Foo#sum
       (call $~lib/rt/__tmptostack
        (call $call-rest/Foo#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 9)
+         )
+        )
         (i32.const 1)
         (i32.const 2)
         (call $~lib/rt/__tmptostack
