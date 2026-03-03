@@ -3,12 +3,22 @@
  *
  * node --import=tsx tests/bootstrap/self_bench.ts
  *
+ * The origin built warpo_asc binary must be in build_release_dev/warpo/warpo_asc.
+ * The current built warpo_asc binary must be in build_release/warpo/warpo_asc.
  *
- * Before running, make sure to build original and new warpo_asc binaries
- * in build_release/warpo/warpo_asc_old and build_release/warpo/warpo_asc respectively.
  * ```bash
- * ./build_release/warpo/warpo_asc_old
+ * git checkout main
+ * cmake -S . -B build_release -DWARPO_RELEASE=ON
+ * cmake --build build_release --target warpo_asc --parallel
+ * cp ./build_release/warpo/warpo_asc ./build_release/warpo/warpo_asc_old
  * ```
+ *
+ * This script will:
+ * 1) Build the current project with the old binary (target: release) and write a .wat output.
+ * 2) Build the current project with the new binary (target: release) and write a .wat output.
+ * 3) Use the new binary with --asc-wasm pointing at the old/new outputs and benchmark (target: fast).
+ *
+ * So that the warpo_asc binary must be built from the current project.
  */
 
 import { spawn } from "child_process";
@@ -23,6 +33,9 @@ const repoRoot = path.resolve(__dirname, "..", "..");
 const outputDir = path.join(repoRoot, "tests", "bootstrap", "tmp", "self_bench");
 
 const WARMUP = 2;
+
+const oldBinary = path.join(repoRoot, "build_release_main", "warpo", "warpo_asc");
+const newBinary = path.join(repoRoot, "build_release", "warpo", "warpo_asc");
 
 function median(values: number[]): number {
   if (!values.length) return NaN;
@@ -66,9 +79,7 @@ function parseCompilationTime(output: string): number {
   return toMs(value, unit);
 }
 
-function runCommand(executable: string, outputPath: string): Promise<string> {
-  const args = ["--config", "asconfig.json", "--target", "fast", "--stats", "-o", outputPath];
-
+function runCommand(executable: string, args: string[]): Promise<string> {
   return new Promise((resolve, reject) => {
     const child = spawn(executable, args, { cwd: repoRoot });
     let stdout = "";
@@ -91,8 +102,29 @@ function runCommand(executable: string, outputPath: string): Promise<string> {
   });
 }
 
-async function runOnce(executable: string, outputPath: string): Promise<number> {
-  const output = await runCommand(executable, outputPath);
+function replaceExtension(filePath: string, newExt: string): string {
+  const parsed = path.parse(filePath);
+  return path.join(parsed.dir, `${parsed.name}${newExt}`);
+}
+
+async function buildRelease(executable: string, outputWatPath: string): Promise<void> {
+  const args = ["--config", "asconfig.json", "--target", "release", "-o", outputWatPath];
+  await runCommand(executable, args);
+}
+
+async function runOnce(executable: string, ascWasmPath: string, outputPath: string): Promise<number> {
+  const args = [
+    "--config",
+    "asconfig.json",
+    "--target",
+    "fast",
+    "--stats",
+    "--asc-wasm",
+    ascWasmPath,
+    "-o",
+    outputPath,
+  ];
+  const output = await runCommand(executable, args);
   const timeMs = parseCompilationTime(output);
   return timeMs;
 }
@@ -103,31 +135,36 @@ function formatMs(value: number): string {
 }
 
 (async () => {
-  const oldBinary = path.join(repoRoot, "build_release", "warpo", "warpo_asc_old");
-  const newBinary = path.join(repoRoot, "build_release", "warpo", "warpo_asc");
-
   fs.mkdirSync(outputDir, { recursive: true });
 
-  const outputOld = path.join(outputDir, "assemblyscript.warpo-test.old.wasm");
-  const outputNew = path.join(outputDir, "assemblyscript.warpo-test.new.wasm");
+  const outputOldWat = path.join(outputDir, "assemblyscript.warpo-test.old.wat");
+  const outputNewWat = path.join(outputDir, "assemblyscript.warpo-test.new.wat");
+  const outputOldWasm = replaceExtension(outputOldWat, ".wasm");
+  const outputNewWasm = replaceExtension(outputNewWat, ".wasm");
+
+  await buildRelease(oldBinary, outputOldWat);
+  await buildRelease(newBinary, outputNewWat);
+
+  const outputBenchOld = path.join(outputDir, "assemblyscript.warpo-test.recompile.old.wasm");
+  const outputBenchNew = path.join(outputDir, "assemblyscript.warpo-test.recompile.new.wasm");
 
   const samplesOld: number[] = [];
   const samplesNew: number[] = [];
 
   for (let i = 0; i < WARMUP; ++i) {
-    await runOnce(oldBinary, outputOld);
-    await runOnce(newBinary, outputNew);
+    await runOnce(newBinary, outputOldWasm, outputBenchOld);
+    await runOnce(newBinary, outputNewWasm, outputBenchNew);
   }
 
   let round = 0;
   while (true) {
     ++round;
     if (round % 2 === 0) {
-      samplesOld.push(await runOnce(oldBinary, outputOld));
-      samplesNew.push(await runOnce(newBinary, outputNew));
+      samplesOld.push(await runOnce(newBinary, outputOldWasm, outputBenchOld));
+      samplesNew.push(await runOnce(newBinary, outputNewWasm, outputBenchNew));
     } else {
-      samplesNew.push(await runOnce(newBinary, outputNew));
-      samplesOld.push(await runOnce(oldBinary, outputOld));
+      samplesNew.push(await runOnce(newBinary, outputNewWasm, outputBenchNew));
+      samplesOld.push(await runOnce(newBinary, outputOldWasm, outputBenchOld));
     }
     const p50Old = median(samplesOld);
     const p50New = median(samplesNew);
