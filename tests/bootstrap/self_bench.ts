@@ -1,7 +1,7 @@
 /**
  * Bench old and new warpo_asc binaries
  *
- * node --import=ts tests/bootstrap/self_bench.ts
+ * node --import=tsx tests/bootstrap/self_bench.ts
  *
  *
  * Before running, make sure to build original and new warpo_asc binaries
@@ -67,18 +67,7 @@ function parseCompilationTime(output: string): number {
 }
 
 function runCommand(executable: string, outputPath: string): Promise<string> {
-  const args = [
-    "assemblyscript/src/glue/wasm/index.ts",
-    "assemblyscript/src/index-wasm.ts",
-    "--stats",
-    "--initialMemory",
-    "768",
-    "--exportStart",
-    "_initialize",
-    "--exportRuntime",
-    "-o",
-    outputPath,
-  ];
+  const args = ["--config", "asconfig.json", "--target", "fast", "--stats", "-o", outputPath];
 
   return new Promise((resolve, reject) => {
     const child = spawn(executable, args, { cwd: repoRoot });
@@ -161,4 +150,3 @@ function formatMs(value: number): string {
   console.error(err && err.message ? err.message : err);
   process.exit(1);
 });
-1;
