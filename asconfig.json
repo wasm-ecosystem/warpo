@@ -21,6 +21,12 @@
     "release": {
       "optimizeLevel": 3,
       "shrinkLevel": 2
-    }
+    },
+    "minimal": {
+      "debug": false,
+      "sourceMap": false,
+      "shrinkLevel": 2
+    },
+    "fast": {}
   }
 }
