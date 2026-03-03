@@ -58,6 +58,21 @@
    (local.get $a)
   )
  )
+ (func $~lib/object/Object#constructor (param $this i32) (result i32)
+  (local.get $this)
+ )
+ (func $"optional-typeparameters/TestConcrete<i32,i32>#constructor" (param $this i32) (result i32)
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $~lib/object/Object#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.get $this)
+ )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
    (local.get $this)
@@ -2917,51 +2932,6 @@
    (local.get $ptr)
   )
  )
- (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
- (func $"optional-typeparameters/TestConcrete<i32,i32>#constructor" (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $~lib/object/Object#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
  (func $"optional-typeparameters/TestConcrete<i32,i32>#test<i32>" (param $this i32) (param $a i32) (param $b i32) (result i32)
   (return
    (i32.add
@@ -2971,21 +2941,6 @@
   )
  )
  (func $"optional-typeparameters/TestDerived<f64,f64>#constructor" (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 5)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3006,21 +2961,6 @@
   )
  )
  (func $optional-typeparameters/TestMethodDerived<~lib/string/String>#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 6)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3041,21 +2981,6 @@
   )
  )
  (func $optional-typeparameters/TestMethodDerived2<f64>#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 9)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3114,7 +3039,12 @@
   )
   (global.set $optional-typeparameters/tConcrete
    (call $"optional-typeparameters/TestConcrete<i32,i32>#constructor"
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 4)
+     )
+    )
    )
   )
   (drop
@@ -3128,7 +3058,12 @@
   )
   (global.set $optional-typeparameters/tDerived
    (call $"optional-typeparameters/TestDerived<f64,f64>#constructor"
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 5)
+     )
+    )
    )
   )
   (drop
@@ -3142,7 +3077,12 @@
   )
   (global.set $optional-typeparameters/tMethodDerived
    (call $optional-typeparameters/TestMethodDerived<~lib/string/String>#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 6)
+     )
+    )
    )
   )
   (call $optional-typeparameters/TestMethodDerived<~lib/string/String>#test<~lib/array/Array<~lib/string/String>>
@@ -3152,7 +3092,12 @@
   )
   (global.set $optional-typeparameters/tMethodDerived2
    (call $optional-typeparameters/TestMethodDerived2<f64>#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 9)
+     )
+    )
    )
   )
   (call $optional-typeparameters/TestMethodDerived2<f64>#foo

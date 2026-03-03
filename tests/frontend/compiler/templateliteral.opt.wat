@@ -1,6 +1,6 @@
 (module
- (type $0 (func (param i32 i32) (result i32)))
- (type $1 (func (param i32) (result i32)))
+ (type $0 (func (param i32) (result i32)))
+ (type $1 (func (param i32 i32) (result i32)))
  (type $2 (func (param i32 i32 i32)))
  (type $3 (func (param i32)))
  (type $4 (func))
@@ -8,6 +8,7 @@
  (type $6 (func (param i32 i32 i32 i32)))
  (type $7 (func (param i32 i32 i64)))
  (type $8 (func (param f64) (result i32)))
+ (type $9 (func (param i32 i32 i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 37648))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -3131,26 +3132,22 @@
   global.set $~lib/memory/__stack_pointer
   local.get $0
  )
- (func $templateliteral/RecursiveObject#constructor (param $0 i32) (param $1 i32) (result i32)
-  (local $2 i32)
-  i32.const 8
-  i32.const 6
-  call $~lib/rt/itcms/__new
-  local.tee $2
+ (func $templateliteral/RecursiveObject#constructor (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   local.get $0
+  local.get $1
   i32.store
-  local.get $2
   local.get $0
+  local.get $1
   i32.const 0
   call $~lib/rt/itcms/__link
+  local.get $0
   local.get $2
-  local.get $1
   i32.store offset=4
+  local.get $0
   local.get $2
-  local.get $1
   i32.const 0
   call $~lib/rt/itcms/__link
-  local.get $2
+  local.get $0
  )
  (func $templateliteral/RecursiveObject#toString (param $0 i32) (result i32)
   (local $1 i32)
@@ -3795,6 +3792,9 @@
    global.set $~lib/memory/__stack_pointer
    i32.const 4
    call $~lib/rt/__decrease_sp
+   i32.const 8
+   i32.const 6
+   call $~lib/rt/itcms/__new
    i32.const 4736
    i32.const 0
    call $templateliteral/RecursiveObject#constructor
@@ -3802,6 +3802,9 @@
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store align=1
+   i32.const 8
+   i32.const 6
+   call $~lib/rt/itcms/__new
    i32.const 64
    local.get $0
    call $templateliteral/RecursiveObject#constructor
@@ -3809,6 +3812,9 @@
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store align=1
+   i32.const 8
+   i32.const 6
+   call $~lib/rt/itcms/__new
    i32.const 32
    local.get $0
    call $templateliteral/RecursiveObject#constructor

@@ -1704,15 +1704,14 @@ export class Compiler extends DiagnosticEmitter {
 
       if (flow.isAny(FlowFlags.AccessesThis | FlowFlags.ConditionallyAccessesThis) || !flow.is(FlowFlags.Terminates)) {
         // Allocate `this` if not a super call, and initialize fields
-        let allocStmts = new Array<ExpressionRef>();
-        allocStmts.push(this.makeConditionalAllocation(classInstance, thisLocal.index));
-        this.makeFieldInitializationInConstructor(classInstance, allocStmts);
+        let bodyStartStmts = new Array<ExpressionRef>();
+        this.makeFieldInitializationInConstructor(classInstance, bodyStartStmts);
 
         // Insert right before the body
         for (let i = stmts.length - 1; i >= bodyStartIndex; --i) {
           stmts[i + 1] = stmts[i];
         }
-        stmts[bodyStartIndex] = module.flatten(allocStmts, TypeRef.None);
+        stmts[bodyStartIndex] = module.flatten(bodyStartStmts, TypeRef.None);
 
         // Just prepended allocation is dropped when returning non-'this'
         if (flow.is(FlowFlags.MayReturnNonThis)) {
@@ -8920,13 +8919,11 @@ export class Compiler extends DiagnosticEmitter {
       let stmts = new Array<ExpressionRef>();
 
       // {
-      //   this = <COND_ALLOC>
       //   IF_DERIVED: this = super(this, ...args)
       //   this.a = X
       //   this.b = Y
       //   return this
       // }
-      stmts.push(this.makeConditionalAllocation(classInstance, 0));
       if (baseClass) {
         let parameterTypes = signature.parameterTypes;
         let numParameters = parameterTypes.length;
@@ -9043,7 +9040,7 @@ export class Compiler extends DiagnosticEmitter {
       ctorInstance,
       argumentExpressions,
       reportNode,
-      this.makeZero(Type.usize32),
+      this.makeAllocation(classInstance),
       constraints
     );
     if (getExpressionType(expr) != TypeRef.None) {
@@ -10270,21 +10267,6 @@ export class Compiler extends DiagnosticEmitter {
         TypeRef.I32
       );
     }
-  }
-
-  /** Makes a conditional allocation where `this` might not have been initialized yet. */
-  makeConditionalAllocation(classInstance: Class, thisIndex: i32): ExpressionRef {
-    let module = this.module;
-    let classType = classInstance.type;
-    let classTypeRef = classType.toRef();
-    assert(classTypeRef == TypeRef.I32);
-    return module.if(
-      module.unary(
-        classTypeRef == TypeRef.I64 ? UnaryOp.EqzI64 : UnaryOp.EqzI32,
-        module.local_get(thisIndex, classTypeRef)
-      ),
-      module.local_set(thisIndex, this.makeAllocation(classInstance), classInstance.type.isManaged)
-    );
   }
 
   /** Makes the initializers for a class's fields within the constructor. */

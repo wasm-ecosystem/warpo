@@ -1659,6 +1659,19 @@
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 540
+  i32.lt_s
+  if
+   unreachable
+  end
   memory.size
   i32.const 16
   i32.shl
@@ -1691,19 +1704,6 @@
   i32.store
   i32.const 320
   global.set $~lib/rt/itcms/fromSpace
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 540
-  i32.lt_s
-  if
-   unreachable
-  end
   i32.const 4
   i32.const 4
   call $~lib/rt/itcms/__new
@@ -1736,10 +1736,6 @@
   local.get $2
   local.get $0
   call $~lib/rt/itcms/__link
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $2
   global.set $tuple-type-field/a
   global.get $tuple-type-field/a
@@ -1787,7 +1783,7 @@
    i32.ne
    br_if $__inlined_func$~lib/string/String.__eq$95
    drop
-   block $__inlined_func$~lib/util/string/compareImpl$79 (result i32)
+   block $__inlined_func$~lib/util/string/compareImpl$77 (result i32)
     i32.const 432
     local.set $3
     local.get $1
@@ -1843,7 +1839,7 @@
        local.get $2
        local.get $4
        i32.sub
-       br $__inlined_func$~lib/util/string/compareImpl$79
+       br $__inlined_func$~lib/util/string/compareImpl$77
       end
       local.get $1
       i32.const 2
@@ -1869,5 +1865,9 @@
    call $~lib/builtins/abort
    unreachable
   end
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
  )
 )

@@ -12,10 +12,10 @@
  (type $10 (func (param i64 i64) (result i64)))
  (type $11 (func (param i32) (result i64)))
  (type $12 (func (param i32 i32 i32) (result i64)))
- (type $13 (func (param i32 i32 i64) (result i32)))
- (type $14 (func (result i32)))
- (type $15 (func (param i32 i64)))
- (type $16 (func (param i32 i64) (result i32)))
+ (type $13 (func (param i32 i64)))
+ (type $14 (func (param i32 i64) (result i32)))
+ (type $15 (func (param i32 i32 i64) (result i32)))
+ (type $16 (func (result i32)))
  (type $17 (func (param i32 i64) (result i64)))
  (type $18 (func (param i32 i32 i32 i64) (result i64)))
  (type $19 (func (param i32 i64 i32)))
@@ -588,6 +588,55 @@
    (local.get $this)
    (local.get $day)
   )
+ )
+ (func $~lib/date/Date#set:epochMillis (param $this i32) (param $epochMillis i64)
+  (i64.store offset=16
+   (local.get $this)
+   (local.get $epochMillis)
+  )
+ )
+ (func $~lib/date/Date#constructor (param $this i32) (param $epochMillis i64) (result i32)
+  (call $~lib/date/Date#set:epochMillis
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $epochMillis)
+  )
+  (if
+   (call $~lib/date/invalidDate
+    (local.get $epochMillis)
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 32)
+     (i32.const 80)
+     (i32.const 127)
+     (i32.const 35)
+    )
+    (unreachable)
+   )
+  )
+  (call $~lib/date/Date#set:year
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/date/dateFromEpoch
+    (local.get $epochMillis)
+   )
+  )
+  (call $~lib/date/Date#set:month
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (global.get $~lib/date/_month)
+  )
+  (call $~lib/date/Date#set:day
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (global.get $~lib/date/_day)
+  )
+  (local.get $this)
  )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
@@ -3447,72 +3496,6 @@
   (return
    (local.get $ptr)
   )
- )
- (func $~lib/date/Date#set:epochMillis (param $this i32) (param $epochMillis i64)
-  (i64.store offset=16
-   (local.get $this)
-   (local.get $epochMillis)
-  )
- )
- (func $~lib/date/Date#constructor (param $this i32) (param $epochMillis i64) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 24)
-        (i32.const 4)
-       )
-      )
-     )
-    )
-   )
-   (call $~lib/date/Date#set:epochMillis
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (local.get $epochMillis)
-   )
-  )
-  (if
-   (call $~lib/date/invalidDate
-    (local.get $epochMillis)
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 32)
-     (i32.const 80)
-     (i32.const 127)
-     (i32.const 35)
-    )
-    (unreachable)
-   )
-  )
-  (call $~lib/date/Date#set:year
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (call $~lib/date/dateFromEpoch
-    (local.get $epochMillis)
-   )
-  )
-  (call $~lib/date/Date#set:month
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (global.get $~lib/date/_month)
-  )
-  (call $~lib/date/Date#set:day
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (global.get $~lib/date/_day)
-  )
-  (local.get $this)
  )
  (func $~lib/date/Date#get:epochMillis (param $this i32) (result i64)
   (i64.load offset=16
@@ -9523,7 +9506,12 @@
   )
   (return
    (call $~lib/date/Date#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 24)
+      (i32.const 4)
+     )
+    )
     (i64.sub
      (call $~lib/date/epochMillis
       (local.get $year)
@@ -9773,7 +9761,12 @@
    (local.set $date
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (local.get $creationTime)
      )
     )
@@ -9839,7 +9832,12 @@
    (local.set $date|2
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 5918283958183706)
      )
     )
@@ -9996,7 +9994,12 @@
    (local.set $date|3
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 123814991274)
      )
     )
@@ -10153,7 +10156,12 @@
    (local.set $date|4
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 399464523963984)
      )
     )
@@ -10388,7 +10396,12 @@
    (local.set $date|5
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 372027318331986)
      )
     )
@@ -10527,7 +10540,12 @@
    (local.set $date|6
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 372027318331986)
      )
     )
@@ -10666,7 +10684,12 @@
    (local.set $date|7
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 372027318331986)
      )
     )
@@ -10805,7 +10828,12 @@
    (local.set $date|8
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 123814991274)
      )
     )
@@ -11134,7 +11162,12 @@
    (local.set $date|8
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 1362106799999)
      )
     )
@@ -11328,7 +11361,12 @@
    (local.set $date|8
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 123814991274)
      )
     )
@@ -11363,7 +11401,12 @@
    (local.set $date|8
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 123814991274)
      )
     )
@@ -11403,7 +11446,12 @@
       (call $~lib/date/Date#getUTCDay
        (call $~lib/rt/__tmptostack
         (call $~lib/date/Date#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 24)
+           (i32.const 4)
+          )
+         )
          (i64.const 1467763200000)
         )
        )
@@ -11427,7 +11475,12 @@
       (call $~lib/date/Date#getUTCDay
        (call $~lib/rt/__tmptostack
         (call $~lib/date/Date#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 24)
+           (i32.const 4)
+          )
+         )
          (i64.sub
           (i64.const 1467763200000)
           (i64.const 1)
@@ -11454,7 +11507,12 @@
       (call $~lib/date/Date#getUTCDay
        (call $~lib/rt/__tmptostack
         (call $~lib/date/Date#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 24)
+           (i32.const 4)
+          )
+         )
          (i64.sub
           (i64.add
            (i64.const 1467763200000)
@@ -11484,7 +11542,12 @@
       (call $~lib/date/Date#getUTCDay
        (call $~lib/rt/__tmptostack
         (call $~lib/date/Date#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 24)
+           (i32.const 4)
+          )
+         )
          (i64.add
           (i64.const 1467763200000)
           (i64.const 86400000)
@@ -11511,7 +11574,12 @@
       (call $~lib/date/Date#getUTCDay
        (call $~lib/rt/__tmptostack
         (call $~lib/date/Date#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 24)
+           (i32.const 4)
+          )
+         )
          (i64.const 1468022400000)
         )
        )
@@ -11535,7 +11603,12 @@
       (call $~lib/date/Date#getUTCDay
        (call $~lib/rt/__tmptostack
         (call $~lib/date/Date#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 24)
+           (i32.const 4)
+          )
+         )
          (i64.sub
           (i64.const 1468022400000)
           (i64.const 1)
@@ -11562,7 +11635,12 @@
       (call $~lib/date/Date#getUTCDay
        (call $~lib/rt/__tmptostack
         (call $~lib/date/Date#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 24)
+           (i32.const 4)
+          )
+         )
          (i64.sub
           (i64.add
            (i64.const 1468022400000)
@@ -11592,7 +11670,12 @@
       (call $~lib/date/Date#getUTCDay
        (call $~lib/rt/__tmptostack
         (call $~lib/date/Date#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 24)
+           (i32.const 4)
+          )
+         )
          (i64.add
           (i64.const 1468022400000)
           (i64.const 86400000)
@@ -11618,7 +11701,12 @@
    (local.set $date|9
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 7899943856218720)
      )
     )
@@ -11910,7 +11998,12 @@
    (local.set $date|10
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 7941202527925698)
      )
     )
@@ -12022,7 +12115,12 @@
    (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const -62167219200000)
      )
     )
@@ -12053,7 +12151,12 @@
    (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.sub
        (i64.const -62167219200000)
        (i64.const 1)
@@ -12087,7 +12190,12 @@
    (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const -62127219200000)
      )
     )
@@ -12118,7 +12226,12 @@
    (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 1231231231020)
      )
     )
@@ -12149,7 +12262,12 @@
    (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 1231231231456)
      )
     )
@@ -12180,7 +12298,12 @@
    (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 322331231231020)
      )
     )
@@ -12211,7 +12334,12 @@
    (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 253402300799999)
      )
     )
@@ -12242,7 +12370,12 @@
    (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 253402300800000)
      )
     )
@@ -12273,7 +12406,12 @@
    (local.set $date|11
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const -62847038769226)
      )
     )
@@ -12306,7 +12444,12 @@
    (local.set $date|12
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const -61536067200000)
      )
     )
@@ -12337,7 +12480,12 @@
    (local.set $date|12
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 1580601600000)
      )
     )
@@ -12368,7 +12516,12 @@
    (local.set $date|12
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const -62183116800000)
      )
     )
@@ -12401,7 +12554,12 @@
    (local.set $date|13
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const -61536067200000)
      )
     )
@@ -12432,7 +12590,12 @@
    (local.set $date|13
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 253402300799999)
      )
     )
@@ -12465,7 +12628,12 @@
    (local.set $date|14
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const -61536067200000)
      )
     )
@@ -12496,7 +12664,12 @@
    (local.set $date|14
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 1580741613467)
      )
     )
@@ -12527,7 +12700,12 @@
    (local.set $date|14
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const -62183116800000)
      )
     )
@@ -13150,7 +13328,12 @@
    (local.set $minDate
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const -8640000000000000)
      )
     )
@@ -13158,7 +13341,12 @@
    (local.set $maxDate
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.const 8640000000000000)
      )
     )
@@ -13380,7 +13568,12 @@
    (local.set $maxDateDec
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.sub
        (i64.const 8640000000000000)
        (i64.const 1)
@@ -13391,7 +13584,12 @@
    (local.set $minDateInc
     (call $~lib/rt/__localtostack
      (call $~lib/date/Date#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 24)
+        (i32.const 4)
+       )
+      )
       (i64.add
        (i64.const -8640000000000000)
        (i64.const 1)

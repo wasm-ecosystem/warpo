@@ -3119,39 +3119,9 @@
   )
  )
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
   (local.get $this)
  )
  (func $std/staticarray/Ref#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 5)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -9074,14 +9044,24 @@
      (local.get $2)
      (i32.const 0)
      (call $std/staticarray/Ref#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 5)
+       )
+      )
      )
     )
     (call $~lib/staticarray/StaticArray<std/staticarray/Ref>#__uset
      (local.get $2)
      (i32.const 1)
      (call $std/staticarray/Ref#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 5)
+       )
+      )
      )
     )
     (local.get $2)
@@ -9097,7 +9077,12 @@
    (local.set $source
     (call $~lib/rt/__localtostack
      (call $~lib/staticarray/StaticArray<i32>#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 4)
+       )
+      )
       (i32.const 3)
      )
     )

@@ -910,7 +910,7 @@
    end
   end
  )
- (func $exports/Car#constructor (result i32)
+ (func $~lib/rt/itcms/__new (result i32)
   (local $0 i32)
   (local $1 i32)
   (local $2 i32)
@@ -919,7 +919,7 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$68
+   block $__inlined_func$~lib/rt/itcms/interrupt$70
     i32.const 2048
     local.set $0
     loop $do-loop|0
@@ -1198,7 +1198,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$68
+      br $__inlined_func$~lib/rt/itcms/interrupt$70
      end
      local.get $0
      i32.const 0
@@ -1383,12 +1383,6 @@
   i32.const 0
   i32.store align=1
   local.get $0
-  i32.const 2
-  i32.store
-  local.get $0
-  i32.const 2
-  i32.store
-  local.get $0
  )
  (func $export-default/theDefault
   nop
@@ -1413,6 +1407,7 @@
   unreachable
  )
  (func $~start
+  (local $0 i32)
   memory.size
   i32.const 16
   i32.shl
@@ -1445,7 +1440,14 @@
   i32.store
   i32.const 368
   global.set $~lib/rt/itcms/fromSpace
-  call $exports/Car#constructor
+  call $~lib/rt/itcms/__new
+  local.tee $0
+  i32.const 2
+  i32.store
+  local.get $0
+  i32.const 2
+  i32.store
+  local.get $0
   global.set $reexport/car
   global.get $reexport/car
   i32.load
@@ -1459,7 +1461,14 @@
    call $~lib/builtins/abort
    unreachable
   end
-  call $exports/Car#constructor
+  call $~lib/rt/itcms/__new
+  local.tee $0
+  i32.const 2
+  i32.store
+  local.get $0
+  i32.const 2
+  i32.store
+  local.get $0
   global.set $rereexport/car
   global.get $rereexport/car
   i32.load
@@ -1473,7 +1482,14 @@
    call $~lib/builtins/abort
    unreachable
   end
-  call $exports/Car#constructor
+  call $~lib/rt/itcms/__new
+  local.tee $0
+  i32.const 2
+  i32.store
+  local.get $0
+  i32.const 2
+  i32.store
+  local.get $0
   global.set $rereexport/exportsNamespaceCar
   global.get $rereexport/exportsNamespaceCar
   i32.load

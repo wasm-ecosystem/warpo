@@ -1,23 +1,23 @@
 (module
  (type $0 (func))
- (type $1 (func (param i32) (result i32)))
- (type $2 (func (param i32)))
- (type $3 (func (param i32 i32)))
+ (type $1 (func (param i32)))
+ (type $2 (func (param i32 i32)))
+ (type $3 (func (param i32) (result i32)))
  (type $4 (func (param i32 i32 i32 i32)))
  (type $5 (func (param i32 i32 i32)))
  (type $6 (func (param i32 i32 i64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33316))
+ (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33316))
  (memory $0 1)
  (data $0 (i32.const 12) "<")
  (data $0.1 (i32.const 24) "\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e")
@@ -134,7 +134,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$79
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$82
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -158,7 +158,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$79
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$82
      end
      local.get $0
      i32.load offset=8
@@ -888,12 +888,12 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$68
+   block $__inlined_func$~lib/rt/itcms/interrupt$69
     i32.const 2048
     local.set $1
     loop $do-loop|0
      local.get $1
-     block $__inlined_func$~lib/rt/itcms/step$84 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$87 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -909,7 +909,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$84
+         br $__inlined_func$~lib/rt/itcms/step$87
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -948,7 +948,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$84
+           br $__inlined_func$~lib/rt/itcms/step$87
           end
           local.get $1
           i32.load offset=4
@@ -1040,7 +1040,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$84
+        br $__inlined_func$~lib/rt/itcms/step$87
        end
        global.get $~lib/rt/itcms/iter
        local.tee $1
@@ -1139,7 +1139,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$84
+        br $__inlined_func$~lib/rt/itcms/step$87
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1167,7 +1167,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$68
+      br $__inlined_func$~lib/rt/itcms/interrupt$69
      end
      local.get $1
      i32.const 0
@@ -1354,52 +1354,6 @@
   memory.fill
   local.get $0
  )
- (func $operator-overload-non-ambiguity/Base#constructor (param $0 i32) (result i32)
-  call $~lib/rt/__decrease_sp
-  local.get $0
-  i32.eqz
-  if
-   i32.const 5
-   call $~lib/rt/itcms/__new
-   local.set $0
-   global.get $~lib/memory/__stack_pointer
-   local.get $0
-   i32.store align=1
-  end
-  local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   local.set $0
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
- )
- (func $operator-overload-non-ambiguity/T1#constructor
-  (local $0 i32)
-  call $~lib/rt/__decrease_sp
-  i32.const 7
-  call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   drop
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
- )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $operator-overload-non-ambiguity/T1
@@ -1421,7 +1375,19 @@
  )
  (func $~start
   (local $0 i32)
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 548
+  i32.lt_s
+  if
+   unreachable
+  end
   memory.size
   i32.const 16
   i32.shl
@@ -1454,57 +1420,24 @@
   i32.store
   i32.const 320
   global.set $~lib/rt/itcms/fromSpace
-  call $~lib/rt/__decrease_sp
   i32.const 4
   call $~lib/rt/itcms/__new
   local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  local.get $0
-  call $operator-overload-non-ambiguity/Base#constructor
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  call $~lib/rt/__decrease_sp
   i32.const 6
   call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  call $operator-overload-non-ambiguity/Base#constructor
+  drop
+  i32.const 7
+  call $~lib/rt/itcms/__new
+  drop
+  i32.const 7
+  call $~lib/rt/itcms/__new
   drop
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
-  call $operator-overload-non-ambiguity/T1#constructor
-  call $operator-overload-non-ambiguity/T1#constructor
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
- )
- (func $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 548
-  i32.lt_s
-  if
-   unreachable
-  end
  )
 )

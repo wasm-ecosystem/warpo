@@ -138,7 +138,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$116
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$113
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -162,7 +162,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$116
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$113
    end
    local.get $0
    i32.load offset=8
@@ -997,7 +997,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$121 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$118 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1013,7 +1013,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$121
+         br $__inlined_func$~lib/rt/itcms/step$118
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1052,7 +1052,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$121
+           br $__inlined_func$~lib/rt/itcms/step$118
           end
           local.get $2
           i32.load offset=4
@@ -1144,7 +1144,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$121
+        br $__inlined_func$~lib/rt/itcms/step$118
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1243,7 +1243,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$121
+        br $__inlined_func$~lib/rt/itcms/step$118
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1625,7 +1625,7 @@
   global.set $~lib/memory/__stack_pointer
   local.get $1
  )
- (func $~lib/array/ArrayIterator<i32>#constructor (param $0 i32) (result i32)
+ (func $"~lib/array/Array<i32>#[~lib/symbol/Symbol.iterator]" (param $0 i32) (result i32)
   (local $1 i32)
   i32.const 8
   i32.const 6
@@ -1694,7 +1694,7 @@
   local.get $0
   i32.store offset=4 align=1
   local.get $0
-  call $~lib/array/ArrayIterator<i32>#constructor
+  call $"~lib/array/Array<i32>#[~lib/symbol/Symbol.iterator]"
   local.set $4
   global.get $~lib/memory/__stack_pointer
   local.get $4
@@ -1766,7 +1766,7 @@
    local.get $0
    i32.load
    local.tee $3
-   block $__inlined_func$~lib/rt/itcms/__renew$125 (result i32)
+   block $__inlined_func$~lib/rt/itcms/__renew$123 (result i32)
     i32.const 1073741820
     local.get $2
     i32.const 1
@@ -1806,7 +1806,7 @@
      local.get $1
      i32.store offset=16
      local.get $3
-     br $__inlined_func$~lib/rt/itcms/__renew$125
+     br $__inlined_func$~lib/rt/itcms/__renew$123
     end
     local.get $1
     local.get $2
@@ -1899,7 +1899,7 @@
   local.get $1
   i32.store offset=4 align=1
   local.get $1
-  call $~lib/array/ArrayIterator<i32>#constructor
+  call $"~lib/array/Array<i32>#[~lib/symbol/Symbol.iterator]"
   local.set $2
   global.get $~lib/memory/__stack_pointer
   local.get $2
@@ -2034,7 +2034,7 @@
   local.get $0
   i32.store align=1
   local.get $0
-  call $~lib/array/ArrayIterator<i32>#constructor
+  call $"~lib/array/Array<i32>#[~lib/symbol/Symbol.iterator]"
   local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $0

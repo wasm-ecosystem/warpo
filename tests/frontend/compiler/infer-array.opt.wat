@@ -7,7 +7,6 @@
  (type $5 (func (param i32 i32 i32 i32)))
  (type $6 (func (param i32 i32 i64)))
  (type $7 (func (param i32 i32 i32 i32) (result i32)))
- (type $8 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33992))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -1606,8 +1605,19 @@
  )
  (func $~lib/rt/__newArray (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
   (local $4 i32)
+  global.get $~lib/memory/__stack_pointer
   i32.const 4
-  call $~lib/rt/__decrease_sp
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 1224
+  i32.lt_s
+  if
+   unreachable
+  end
   local.get $0
   local.get $1
   i32.shl
@@ -1686,31 +1696,6 @@
   i32.shl
   i32.add
   i32.load
- )
- (func $infer-array/Ref#constructor (result i32)
-  (local $0 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 12
-  call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 0
-   call $~lib/rt/itcms/__new
-   local.set $0
-  end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
  )
  (func $~lib/array/Array<infer-array/Ref|null>#__set (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
@@ -2023,8 +2008,20 @@
    local.get $0
    i32.load offset=4
    drop
+   global.get $~lib/memory/__stack_pointer
    i32.const 12
-   call $~lib/rt/__decrease_sp
+   i32.sub
+   global.set $~lib/memory/__stack_pointer
+   global.get $~lib/memory/__stack_pointer
+   i32.const 0
+   i32.const 12
+   memory.fill
+   global.get $~lib/memory/__stack_pointer
+   i32.const 1224
+   i32.lt_s
+   if
+    unreachable
+   end
    local.get $0
    i32.load offset=12
    i32.const 1
@@ -2035,12 +2032,16 @@
    local.get $0
    i32.load offset=4
    drop
-   call $infer-array/Ref#constructor
+   i32.const 0
+   i32.const 12
+   call $~lib/rt/itcms/__new
    local.set $1
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store offset=8 align=1
-   call $infer-array/Ref#constructor
+   i32.const 0
+   i32.const 12
+   call $~lib/rt/itcms/__new
    local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $2
@@ -2066,12 +2067,16 @@
    i32.const 0
    call $~lib/array/Array<u32>#__get
    drop
-   call $infer-array/Ref#constructor
+   i32.const 0
+   i32.const 12
+   call $~lib/rt/itcms/__new
    local.set $1
    global.get $~lib/memory/__stack_pointer
    local.get $1
    i32.store offset=8 align=1
-   call $infer-array/Ref#constructor
+   i32.const 0
+   i32.const 12
+   call $~lib/rt/itcms/__new
    local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $2
@@ -2097,7 +2102,9 @@
    i32.const 1
    call $~lib/array/Array<u32>#__get
    drop
-   call $infer-array/Ref#constructor
+   i32.const 0
+   i32.const 12
+   call $~lib/rt/itcms/__new
    local.set $1
    global.get $~lib/memory/__stack_pointer
    local.get $1
@@ -2226,21 +2233,5 @@
   i32.const 42
   call $~lib/builtins/abort
   unreachable
- )
- (func $~lib/rt/__decrease_sp (param $0 i32)
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  local.get $0
-  memory.fill
-  global.get $~lib/memory/__stack_pointer
-  i32.const 1224
-  i32.lt_s
-  if
-   unreachable
-  end
  )
 )

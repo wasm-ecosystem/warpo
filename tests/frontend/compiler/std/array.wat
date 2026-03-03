@@ -3387,21 +3387,7 @@
   (local $3 i32)
   (local $bufferSize i32)
   (local $buffer i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 16)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (i32.gt_u
     (local.get $length)
@@ -3496,28 +3482,11 @@
   )
  )
  (func $std/array/Ref#constructor (param $this i32) (param $v i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 6)
-       )
-      )
-     )
-    )
+  (call $std/array/Ref#set:v
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $std/array/Ref#set:v
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (local.get $v)
-   )
+   (local.get $v)
   )
   (local.get $this)
  )
@@ -3562,21 +3531,7 @@
  )
  (func $~lib/arraybuffer/ArrayBufferView#constructor (param $this i32) (param $length i32) (param $alignLog2 i32) (result i32)
   (local $buffer i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 3)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (i32.gt_u
     (local.get $length)
@@ -3631,21 +3586,7 @@
   (local.get $this)
  )
  (func $~lib/typedarray/Uint8Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 7)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -11548,39 +11489,9 @@
   )
  )
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
   (local.get $this)
  )
  (func $std/array/Dim#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 8)
-       (i32.const 31)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -17620,7 +17531,12 @@
   (local.set $arr
    (call $~lib/rt/__localtostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 16)
+       (i32.const 4)
+      )
+     )
      (local.get $size)
     )
    )
@@ -17668,7 +17584,12 @@
   (local.set $arr
    (call $~lib/rt/__localtostack
     (call $~lib/array/Array<i32>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 16)
+       (i32.const 4)
+      )
+     )
      (local.get $size)
     )
    )
@@ -19764,21 +19685,7 @@
   (local $3 i32)
   (local $bufferSize i32)
   (local $buffer i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 16)
-       (i32.const 39)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (i32.gt_u
     (local.get $length)
@@ -19936,7 +19843,12 @@
   (local.set $arr
    (call $~lib/rt/__localtostack
     (call $~lib/array/Array<~lib/array/Array<i32>>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 16)
+       (i32.const 39)
+      )
+     )
      (local.get $size)
     )
    )
@@ -19954,7 +19866,12 @@
      (local.set $inner
       (call $~lib/rt/__localtostack
        (call $~lib/array/Array<i32>#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 16)
+          (i32.const 4)
+         )
+        )
         (i32.const 1)
        )
       )
@@ -21638,21 +21555,7 @@
   (local $3 i32)
   (local $bufferSize i32)
   (local $buffer i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 16)
-       (i32.const 43)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (i32.gt_u
     (local.get $length)
@@ -21731,28 +21634,11 @@
   )
  )
  (func $std/array/Proxy<i32>#constructor (param $this i32) (param $x i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 42)
-       )
-      )
-     )
-    )
+  (call $std/array/Proxy<i32>#set:x
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $std/array/Proxy<i32>#set:x
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (local.get $x)
-   )
+   (local.get $x)
   )
   (local.get $this)
  )
@@ -21841,7 +21727,12 @@
   (local.set $arr
    (call $~lib/rt/__localtostack
     (call $~lib/array/Array<std/array/Proxy<i32>>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 16)
+       (i32.const 43)
+      )
+     )
      (local.get $size)
     )
    )
@@ -21863,7 +21754,12 @@
       (local.get $i)
       (call $~lib/rt/__tmptostack
        (call $std/array/Proxy<i32>#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 42)
+         )
+        )
         (i32.sub
          (i32.sub
           (local.get $size)
@@ -25644,21 +25540,7 @@
   (local $3 i32)
   (local $bufferSize i32)
   (local $buffer i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 16)
-       (i32.const 24)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (i32.gt_u
     (local.get $length)
@@ -25995,7 +25877,12 @@
   (local.set $arr
    (call $~lib/rt/__localtostack
     (call $~lib/array/Array<~lib/string/String>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 16)
+       (i32.const 24)
+      )
+     )
      (local.get $size)
     )
    )
@@ -37302,7 +37189,12 @@
   )
   (global.set $std/array/arr
    (call $~lib/array/Array<i32>#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 16)
+      (i32.const 4)
+     )
+    )
     (i32.const 0)
    )
   )
@@ -37331,7 +37223,12 @@
       (call $~lib/array/Array.isArray<std/array/Ref>
        (call $~lib/rt/__tmptostack
         (call $std/array/Ref#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 4)
+           (i32.const 6)
+          )
+         )
          (i32.const 0)
         )
        )
@@ -37354,7 +37251,12 @@
       (call $~lib/array/Array.isArray<~lib/typedarray/Uint8Array>
        (call $~lib/rt/__tmptostack
         (call $~lib/typedarray/Uint8Array#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 12)
+           (i32.const 7)
+          )
+         )
          (i32.const 1)
         )
        )
@@ -38697,7 +38599,12 @@
        (local.get $26)
        (i32.const 0)
        (call $std/array/Ref#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 0)
        )
       )
@@ -38705,7 +38612,12 @@
        (local.get $26)
        (i32.const 1)
        (call $std/array/Ref#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 0)
        )
       )
@@ -38845,7 +38757,12 @@
    (local.set $other
     (call $~lib/rt/__localtostack
      (call $~lib/array/Array<i32>#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 16)
+        (i32.const 4)
+       )
+      )
       (i32.const 0)
      )
     )
@@ -43386,7 +43303,12 @@
        (local.get $146)
        (i32.const 0)
        (call $std/array/Ref#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 1)
        )
       )
@@ -43394,7 +43316,12 @@
        (local.get $146)
        (i32.const 1)
        (call $std/array/Ref#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 2)
        )
       )
@@ -43402,7 +43329,12 @@
        (local.get $146)
        (i32.const 2)
        (call $std/array/Ref#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 3)
        )
       )
@@ -43410,7 +43342,12 @@
        (local.get $146)
        (i32.const 3)
        (call $std/array/Ref#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 4)
        )
       )
@@ -43418,7 +43355,12 @@
        (local.get $146)
        (i32.const 4)
        (call $std/array/Ref#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 5)
        )
       )
@@ -43626,7 +43568,12 @@
        (local.get $147)
        (i32.const 0)
        (call $std/array/Ref#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 1)
        )
       )
@@ -43634,7 +43581,12 @@
        (local.get $147)
        (i32.const 2)
        (call $std/array/Ref#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 2)
        )
       )
@@ -46021,7 +45973,12 @@
       (local.set $163
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46047,7 +46004,12 @@
       (local.set $164
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46073,7 +46035,12 @@
       (local.set $165
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46099,7 +46066,12 @@
       (local.set $166
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46125,7 +46097,12 @@
       (local.set $167
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46151,7 +46128,12 @@
       (local.set $168
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46177,7 +46159,12 @@
       (local.set $169
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46203,7 +46190,12 @@
       (local.set $170
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46229,7 +46221,12 @@
       (local.set $171
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46255,7 +46252,12 @@
       (local.set $172
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46281,7 +46283,12 @@
       (local.set $173
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46307,7 +46314,12 @@
       (local.set $174
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46348,7 +46360,12 @@
       (local.set $176
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46374,7 +46391,12 @@
       (local.set $177
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46400,7 +46422,12 @@
       (local.set $178
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46426,7 +46453,12 @@
       (local.set $179
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46452,7 +46484,12 @@
       (local.set $180
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46478,7 +46515,12 @@
       (local.set $181
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46504,7 +46546,12 @@
       (local.set $182
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46530,7 +46577,12 @@
       (local.set $183
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46556,7 +46608,12 @@
       (local.set $184
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46582,7 +46639,12 @@
       (local.set $185
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46608,7 +46670,12 @@
       (local.set $186
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -46634,7 +46701,12 @@
       (local.set $187
        (call $~lib/rt/__localtostack
         (call $std/array/Dim#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 31)
+          )
+         )
         )
        )
       )
@@ -47550,7 +47622,12 @@
        (local.get $235)
        (i32.const 0)
        (call $std/array/Ref#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 0)
        )
       )
@@ -47558,7 +47635,12 @@
        (local.get $235)
        (i32.const 2)
        (call $std/array/Ref#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 0)
        )
       )
@@ -47607,7 +47689,12 @@
        (local.get $237)
        (i32.const 0)
        (call $std/array/Ref#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 0)
        )
       )
@@ -47615,7 +47702,12 @@
        (local.get $237)
        (i32.const 1)
        (call $std/array/Ref#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 6)
+         )
+        )
         (i32.const 0)
        )
       )

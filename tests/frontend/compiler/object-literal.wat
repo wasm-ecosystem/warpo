@@ -487,6 +487,21 @@
    (i32.const 0)
   )
  )
+ (func $~lib/object/Object#constructor (param $this i32) (result i32)
+  (local.get $this)
+ )
+ (func $object-literal/Managed#constructor (param $this i32) (result i32)
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $~lib/object/Object#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (local.get $this)
+ )
  (func $~lib/rt/itcms/visitRoots (param $cookie i32)
   (local $pn i32)
   (local $iter i32)
@@ -3035,51 +3050,6 @@
    (local.get $ptr)
   )
  )
- (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
- (func $object-literal/Managed#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 8)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $~lib/object/Object#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
  (func $object-literal/Managed#get:bar (param $this i32) (result i32)
   (i32.load
    (local.get $this)
@@ -3569,18 +3539,6 @@
   )
  )
  (func $object-literal/Unmanaged#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/tlsf/__alloc
-      (i32.const 8)
-     )
-    )
-   )
-  )
   (call $object-literal/Unmanaged#set:bar
    (local.get $this)
    (i32.const 0)
@@ -3647,21 +3605,6 @@
   )
  )
  (func $object-literal/OmittedTypes#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 65)
-       (i32.const 5)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -4070,21 +4013,6 @@
   )
  )
  (func $object-literal/MixedOmitted#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 16)
-       (i32.const 6)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -4207,21 +4135,6 @@
   )
  )
  (func $object-literal/OmittedFoo#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 40)
-       (i32.const 7)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -4637,7 +4550,12 @@
      (local.set $0
       (call $~lib/rt/__localtostack
        (call $object-literal/Managed#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 8)
+          (i32.const 4)
+         )
+        )
        )
       )
      )
@@ -4661,7 +4579,9 @@
    (block (result i32)
     (local.set $1
      (call $object-literal/Unmanaged#constructor
-      (i32.const 0)
+      (call $~lib/rt/tlsf/__alloc
+       (i32.const 8)
+      )
      )
     )
     (call $object-literal/Unmanaged#set:bar
@@ -4687,7 +4607,12 @@
      (local.set $2
       (call $~lib/rt/__localtostack
        (call $object-literal/OmittedTypes#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 65)
+          (i32.const 5)
+         )
+        )
        )
       )
      )
@@ -4757,7 +4682,12 @@
      (local.set $3
       (call $~lib/rt/__localtostack
        (call $object-literal/MixedOmitted#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 16)
+          (i32.const 6)
+         )
+        )
        )
       )
      )
@@ -4787,7 +4717,12 @@
      (local.set $4
       (call $~lib/rt/__localtostack
        (call $object-literal/OmittedFoo#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 40)
+          (i32.const 7)
+         )
+        )
        )
       )
      )

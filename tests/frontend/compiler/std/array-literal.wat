@@ -3579,39 +3579,9 @@
   )
  )
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
   (local.get $this)
  )
  (func $std/array-literal/Ref#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 8)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3718,21 +3688,7 @@
   )
  )
  (func $std/array-literal/RefWithCtor#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 11)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.get $this)
  )
  (func $~lib/array/Array<std/array-literal/RefWithCtor>#get:length_ (param $this i32) (result i32)
@@ -4417,21 +4373,36 @@
      (local.get $5)
      (i32.const 0)
      (call $std/array-literal/Ref#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 8)
+       )
+      )
      )
     )
     (call $~lib/array/Array<std/array-literal/Ref>#__set
      (local.get $5)
      (i32.const 1)
      (call $std/array-literal/Ref#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 8)
+       )
+      )
      )
     )
     (call $~lib/array/Array<std/array-literal/Ref>#__set
      (local.get $5)
      (i32.const 2)
      (call $std/array-literal/Ref#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 8)
+       )
+      )
      )
     )
     (local.get $5)
@@ -4474,21 +4445,36 @@
      (local.get $6)
      (i32.const 0)
      (call $std/array-literal/RefWithCtor#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 11)
+       )
+      )
      )
     )
     (call $~lib/array/Array<std/array-literal/RefWithCtor>#__set
      (local.get $6)
      (i32.const 1)
      (call $std/array-literal/RefWithCtor#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 11)
+       )
+      )
      )
     )
     (call $~lib/array/Array<std/array-literal/RefWithCtor>#__set
      (local.get $6)
      (i32.const 2)
      (call $std/array-literal/RefWithCtor#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 11)
+       )
+      )
      )
     )
     (local.get $6)
@@ -4547,7 +4533,12 @@
       (local.get $7)
       (i32.const 0)
       (call $std/array-literal/Ref#constructor
-       (i32.const 0)
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 8)
+        )
+       )
       )
      )
      (local.get $7)

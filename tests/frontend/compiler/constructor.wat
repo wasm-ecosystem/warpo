@@ -56,6 +56,10 @@
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
  (start $~start)
+ (func $constructor/EmptyCtor#constructor (param $this i32) (result i32)
+  (nop)
+  (local.get $this)
+ )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
    (local.get $this)
@@ -2915,24 +2919,6 @@
    (local.get $ptr)
   )
  )
- (func $constructor/EmptyCtor#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
  (func $constructor/EmptyCtorWithFieldInit#set:a (param $this i32) (param $a i32)
   (i32.store
    (local.get $this)
@@ -2940,47 +2926,16 @@
   )
  )
  (func $constructor/EmptyCtorWithFieldInit#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 5)
-       )
-      )
-     )
-    )
+  (call $constructor/EmptyCtorWithFieldInit#set:a
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $constructor/EmptyCtorWithFieldInit#set:a
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (i32.const 1)
-   )
+   (i32.const 1)
   )
   (local.get $this)
  )
  (func $constructor/EmptyCtorWithFieldNoInit#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 6)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.get $this)
  )
  (func $constructor/EmptyCtorWithFieldAccess#set:a (param $this i32) (param $a i32)
@@ -2990,21 +2945,7 @@
   )
  )
  (func $constructor/EmptyCtorWithFieldAccess#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 7)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (call $constructor/EmptyCtorWithFieldAccess#set:a
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -3014,39 +2955,9 @@
   (local.get $this)
  )
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
   (local.get $this)
  )
  (func $constructor/None#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 8)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3065,21 +2976,6 @@
   )
  )
  (func $constructor/JustFieldInit#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 9)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3098,21 +2994,6 @@
   (local.get $this)
  )
  (func $constructor/JustFieldNoInit#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 10)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3130,21 +3011,7 @@
   )
  )
  (func $constructor/CtorConditionallyReturns#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 12)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (global.get $constructor/b)
    (then
@@ -3156,21 +3023,7 @@
   (local.get $this)
  )
  (func $constructor/CtorConditionallyReturnsThis#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 13)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (global.get $constructor/b)
    (then
@@ -3199,21 +3052,6 @@
   )
  )
  (func $constructor/CtorFieldInitWithoutConstructor#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 8)
-       (i32.const 14)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3281,21 +3119,6 @@
  )
  (func $constructor/CtorFieldInitOrder#constructor (param $this i32) (param $a i32) (param $b i32) (result i32)
   (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 12)
-        (i32.const 15)
-       )
-      )
-     )
-    )
-   )
    (call $constructor/CtorFieldInitOrder#set:a
     (call $~lib/rt/__tmptostack
      (local.get $this)
@@ -3455,52 +3278,102 @@
   )
   (global.set $constructor/emptyCtor
    (call $constructor/EmptyCtor#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 4)
+     )
+    )
    )
   )
   (global.set $constructor/emptyCtorWithFieldInit
    (call $constructor/EmptyCtorWithFieldInit#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 5)
+     )
+    )
    )
   )
   (global.set $constructor/emptyCtorWithFieldNoInit
    (call $constructor/EmptyCtorWithFieldNoInit#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 6)
+     )
+    )
    )
   )
   (global.set $constructor/emptyCtorWithFieldAccess
    (call $constructor/EmptyCtorWithFieldAccess#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 7)
+     )
+    )
    )
   )
   (global.set $constructor/none
    (call $constructor/None#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 8)
+     )
+    )
    )
   )
   (global.set $constructor/justFieldInit
    (call $constructor/JustFieldInit#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 9)
+     )
+    )
    )
   )
   (global.set $constructor/justFieldNoInit
    (call $constructor/JustFieldNoInit#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 10)
+     )
+    )
    )
   )
   (global.set $constructor/ctorReturns
    (call $constructor/CtorReturns#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 11)
+     )
+    )
    )
   )
   (global.set $constructor/ctorConditionallyReturns
    (call $constructor/CtorConditionallyReturns#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 12)
+     )
+    )
    )
   )
   (global.set $constructor/ctorConditionallyReturnsThis
    (call $constructor/CtorConditionallyReturnsThis#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 0)
+      (i32.const 13)
+     )
+    )
    )
   )
   (if
@@ -3509,7 +3382,12 @@
      (call $constructor/CtorFieldInitWithoutConstructor#get:a
       (call $~lib/rt/__tmptostack
        (call $constructor/CtorFieldInitWithoutConstructor#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 8)
+          (i32.const 14)
+         )
+        )
        )
       )
      )
@@ -3532,7 +3410,12 @@
      (call $constructor/CtorFieldInitWithoutConstructor#get:b
       (call $~lib/rt/__tmptostack
        (call $constructor/CtorFieldInitWithoutConstructor#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 8)
+          (i32.const 14)
+         )
+        )
        )
       )
      )
@@ -3551,7 +3434,12 @@
   )
   (global.set $constructor/ctorFieldInitOrder
    (call $constructor/CtorFieldInitOrder#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 12)
+      (i32.const 15)
+     )
+    )
     (i32.const 1)
     (i32.const 2)
    )

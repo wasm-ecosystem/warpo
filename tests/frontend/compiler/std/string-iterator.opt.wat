@@ -10,27 +10,27 @@
  (type $8 (func (param i32 i32 i32 i32 i32 i32 i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33616))
- (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
+ (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
+ (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
+ (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
+ (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
+ (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
+ (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c")
  (data $0.1 (i32.const 24) "\02\00\00\00\06\00\00\00a\00b\00c")
  (data $1 (i32.const 44) "<")
- (data $1.1 (i32.const 56) "\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e")
- (data $2 (i32.const 108) "<")
- (data $2.1 (i32.const 120) "\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s")
- (data $5 (i32.const 236) "<")
- (data $5.1 (i32.const 248) "\02\00\00\00$\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e")
- (data $6 (i32.const 300) ",")
- (data $6.1 (i32.const 312) "\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s")
+ (data $1.1 (i32.const 56) "\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s")
+ (data $3 (i32.const 140) "<")
+ (data $3.1 (i32.const 152) "\02\00\00\00$\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e")
+ (data $4 (i32.const 204) ",")
+ (data $4.1 (i32.const 216) "\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s")
+ (data $5 (i32.const 252) "<")
+ (data $5.1 (i32.const 264) "\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e")
  (data $8 (i32.const 380) "<")
  (data $8.1 (i32.const 392) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $9 (i32.const 444) "\1c")
@@ -60,47 +60,6 @@
  (export "string_iterator_4byte_utf16_char" (func $std/string-iterator/string_iterator_4byte_utf16_char))
  (export "memory" (memory $0))
  (start $~start)
- (func $~lib/rt/itcms/visitRoots
-  (local $0 i32)
-  (local $1 i32)
-  global.get $~lib/rt/itcms/pinSpace
-  local.tee $1
-  i32.load offset=4
-  i32.const -4
-  i32.and
-  local.set $0
-  loop $while-continue|0
-   local.get $0
-   local.get $1
-   i32.ne
-   if
-    local.get $0
-    i32.load offset=4
-    i32.const 3
-    i32.and
-    i32.const 3
-    i32.ne
-    if
-     i32.const 0
-     i32.const 128
-     i32.const 159
-     i32.const 16
-     call $~lib/builtins/abort
-     unreachable
-    end
-    local.get $0
-    i32.const 20
-    i32.add
-    call $~lib/rt/__visit_members
-    local.get $0
-    i32.load offset=4
-    i32.const -4
-    i32.and
-    local.set $0
-    br $while-continue|0
-   end
-  end
- )
  (func $~lib/rt/itcms/Object#linkTo (param $0 i32) (param $1 i32) (param $2 i32)
   (local $3 i32)
   local.get $1
@@ -140,7 +99,7 @@
     local.get $1
    else
     i32.const 0
-    i32.const 128
+    i32.const 64
     i32.const 147
     i32.const 30
     call $~lib/builtins/abort
@@ -148,7 +107,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$103
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$98
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -166,13 +125,13 @@
     i32.eqz
     if
      i32.const 0
-     i32.const 128
+     i32.const 64
      i32.const 127
      i32.const 18
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$103
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$98
    end
    local.get $0
    i32.load offset=8
@@ -180,7 +139,7 @@
    i32.eqz
    if
     i32.const 0
-    i32.const 128
+    i32.const 64
     i32.const 131
     i32.const 16
     call $~lib/builtins/abort
@@ -213,8 +172,8 @@
    i32.load
    i32.gt_u
    if
-    i32.const 256
-    i32.const 320
+    i32.const 160
+    i32.const 224
     i32.const 22
     i32.const 28
     call $~lib/builtins/abort
@@ -236,6 +195,99 @@
    i32.const 2
   end
   call $~lib/rt/itcms/Object#linkTo
+ )
+ (func $~lib/rt/itcms/__link (param $0 i32) (param $1 i32)
+  local.get $1
+  if
+   local.get $0
+   i32.eqz
+   if
+    i32.const 0
+    i32.const 64
+    i32.const 296
+    i32.const 14
+    call $~lib/builtins/abort
+    unreachable
+   end
+   global.get $~lib/rt/itcms/white
+   local.get $1
+   i32.const 20
+   i32.sub
+   local.tee $1
+   i32.load offset=4
+   i32.const 3
+   i32.and
+   i32.eq
+   if
+    local.get $0
+    i32.const 20
+    i32.sub
+    i32.load offset=4
+    i32.const 3
+    i32.and
+    local.tee $0
+    global.get $~lib/rt/itcms/white
+    i32.eqz
+    i32.eq
+    if
+     local.get $1
+     call $~lib/rt/itcms/Object#makeGray
+    else
+     global.get $~lib/rt/itcms/state
+     i32.const 1
+     i32.eq
+     local.get $0
+     i32.const 3
+     i32.eq
+     i32.and
+     if
+      local.get $1
+      call $~lib/rt/itcms/Object#makeGray
+     end
+    end
+   end
+  end
+ )
+ (func $~lib/rt/itcms/visitRoots
+  (local $0 i32)
+  (local $1 i32)
+  global.get $~lib/rt/itcms/pinSpace
+  local.tee $1
+  i32.load offset=4
+  i32.const -4
+  i32.and
+  local.set $0
+  loop $while-continue|0
+   local.get $0
+   local.get $1
+   i32.ne
+   if
+    local.get $0
+    i32.load offset=4
+    i32.const 3
+    i32.and
+    i32.const 3
+    i32.ne
+    if
+     i32.const 0
+     i32.const 64
+     i32.const 159
+     i32.const 16
+     call $~lib/builtins/abort
+     unreachable
+    end
+    local.get $0
+    i32.const 20
+    i32.add
+    call $~lib/rt/__visit_members
+    local.get $0
+    i32.load offset=4
+    i32.const -4
+    i32.and
+    local.set $0
+    br $while-continue|0
+   end
+  end
  )
  (func $~lib/rt/itcms/__visit (param $0 i32)
   local.get $0
@@ -991,8 +1043,8 @@
   i32.const 1073741804
   i32.ge_u
   if
+   i32.const 272
    i32.const 64
-   i32.const 128
    i32.const 262
    i32.const 31
    call $~lib/builtins/abort
@@ -1002,12 +1054,12 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$69
+   block $__inlined_func$~lib/rt/itcms/interrupt$71
     i32.const 2048
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$108 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$103 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1023,7 +1075,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$108
+         br $__inlined_func$~lib/rt/itcms/step$103
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1062,7 +1114,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$108
+           br $__inlined_func$~lib/rt/itcms/step$103
           end
           local.get $2
           i32.load offset=4
@@ -1154,7 +1206,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$108
+        br $__inlined_func$~lib/rt/itcms/step$103
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1175,7 +1227,7 @@
         i32.ne
         if
          i32.const 0
-         i32.const 128
+         i32.const 64
          i32.const 229
          i32.const 20
          call $~lib/builtins/abort
@@ -1253,7 +1305,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$108
+        br $__inlined_func$~lib/rt/itcms/step$103
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1281,7 +1333,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$69
+      br $__inlined_func$~lib/rt/itcms/interrupt$71
      end
      local.get $2
      i32.const 0
@@ -1314,7 +1366,7 @@
   i32.const 1073741820
   i32.gt_u
   if
-   i32.const 64
+   i32.const 272
    i32.const 400
    i32.const 435
    i32.const 29
@@ -1537,58 +1589,6 @@
   memory.fill
   local.get $1
  )
- (func $~lib/rt/itcms/__link (param $0 i32) (param $1 i32)
-  local.get $1
-  if
-   local.get $0
-   i32.eqz
-   if
-    i32.const 0
-    i32.const 128
-    i32.const 296
-    i32.const 14
-    call $~lib/builtins/abort
-    unreachable
-   end
-   global.get $~lib/rt/itcms/white
-   local.get $1
-   i32.const 20
-   i32.sub
-   local.tee $1
-   i32.load offset=4
-   i32.const 3
-   i32.and
-   i32.eq
-   if
-    local.get $0
-    i32.const 20
-    i32.sub
-    i32.load offset=4
-    i32.const 3
-    i32.and
-    local.tee $0
-    global.get $~lib/rt/itcms/white
-    i32.eqz
-    i32.eq
-    if
-     local.get $1
-     call $~lib/rt/itcms/Object#makeGray
-    else
-     global.get $~lib/rt/itcms/state
-     i32.const 1
-     i32.eq
-     local.get $0
-     i32.const 3
-     i32.eq
-     i32.and
-     if
-      local.get $1
-      call $~lib/rt/itcms/Object#makeGray
-     end
-    end
-   end
-  end
- )
  (func $~lib/string/StringIterator#next (param $0 i32) (result i32)
   (local $1 i32)
   (local $2 i32)
@@ -1748,7 +1748,7 @@
    i32.const 0
    return
   end
-  block $__inlined_func$~lib/util/string/compareImpl$85 (result i32)
+  block $__inlined_func$~lib/util/string/compareImpl$83 (result i32)
    local.get $0
    local.tee $2
    i32.const 7
@@ -1808,7 +1808,7 @@
       local.get $3
       local.get $4
       i32.sub
-      br $__inlined_func$~lib/util/string/compareImpl$85
+      br $__inlined_func$~lib/util/string/compareImpl$83
      end
      local.get $2
      i32.const 2
@@ -1995,6 +1995,14 @@
   unreachable
  )
  (func $~start
+  i32.const 116
+  i32.const 112
+  i32.store
+  i32.const 120
+  i32.const 112
+  i32.store
+  i32.const 112
+  global.set $~lib/rt/itcms/toSpace
   memory.size
   i32.const 16
   i32.shl
@@ -2003,22 +2011,14 @@
   i32.const 1
   i32.shr_u
   global.set $~lib/rt/itcms/threshold
-  i32.const 180
-  i32.const 176
+  i32.const 324
+  i32.const 320
   i32.store
-  i32.const 184
-  i32.const 176
+  i32.const 328
+  i32.const 320
   i32.store
-  i32.const 176
+  i32.const 320
   global.set $~lib/rt/itcms/pinSpace
-  i32.const 212
-  i32.const 208
-  i32.store
-  i32.const 216
-  i32.const 208
-  i32.store
-  i32.const 208
-  global.set $~lib/rt/itcms/toSpace
   i32.const 356
   i32.const 352
   i32.store

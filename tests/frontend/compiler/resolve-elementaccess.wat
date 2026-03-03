@@ -3079,21 +3079,7 @@
  )
  (func $~lib/arraybuffer/ArrayBufferView#constructor (param $this i32) (param $length i32) (param $alignLog2 i32) (result i32)
   (local $buffer i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 3)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (i32.gt_u
     (local.get $length)
@@ -3148,21 +3134,7 @@
   (local.get $this)
  )
  (func $~lib/typedarray/Float32Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -5471,21 +5443,7 @@
   )
  )
  (func $~lib/typedarray/Uint8Array#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 7)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/arraybuffer/ArrayBufferView#constructor
@@ -5500,21 +5458,6 @@
   (local.get $this)
  )
  (func $resolve-elementaccess/Buffer#constructor (param $this i32) (param $length i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 6)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/typedarray/Uint8Array#constructor
@@ -6118,7 +6061,12 @@
   )
   (global.set $resolve-elementaccess/arr
    (call $~lib/typedarray/Float32Array#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 12)
+      (i32.const 4)
+     )
+    )
     (i32.const 2)
    )
   )
@@ -6279,7 +6227,12 @@
   )
   (global.set $resolve-elementaccess/buf
    (call $resolve-elementaccess/Buffer#constructor
-    (i32.const 0)
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 12)
+      (i32.const 6)
+     )
+    )
     (i32.const 2)
    )
   )

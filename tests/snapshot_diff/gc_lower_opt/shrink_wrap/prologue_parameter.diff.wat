@@ -4,7 +4,7 @@
   (local i32)
 ;; ======remove=======
 ;;block ;;i32
-;;    i32.const 4
+;;    i32.const 8
 ;;  call $~lib/rt/__decrease_sp
 ;; =========add========
   (local i32)
@@ -20,7 +20,7 @@
         i32.const 0
 ;; ======remove=======
 ;;          local.set $1
-;;            i32.const 4
+;;            i32.const 8
 ;;          call $~lib/rt/__increase_sp
 ;;            local.get $1
 ;; ====================
@@ -30,15 +30,36 @@
 ;;      end
 ;; ====================
       block ;;i32
-;; =========add========
             block ;;i32
-                i32.const 4
-              call $~lib/rt/__decrease_sp
-;; ====================
-              i32.const 0
 ;; =========add========
-            end
+                  block ;;i32
+                      i32.const 8
+                    call $~lib/rt/__decrease_sp
 ;; ====================
+                    i32.const 4
+;; =========add========
+                  end
+;; ====================
+                  i32.const 4
+                call $~lib/rt/itcms/__new
+;; ======remove=======
+;;                local.set $2
+;; =========add========
+              local.set $3
+;; ====================
+                global.get $~lib/memory/__stack_pointer
+;; ======remove=======
+;;                  local.get $2
+;; =========add========
+                local.get $3
+;; ====================
+              i32.store $0 align=1
+;; ======remove=======
+;;                local.get $2
+;; =========add========
+              local.get $3
+;; ====================
+            end
           call $tests/snapshot_diff/common_lib/normal/Normal#constructor
 ;; ======remove=======
 ;;          local.set $2
@@ -51,7 +72,7 @@
 ;; =========add========
           local.get $3
 ;; ====================
-        i32.store $0 align=1
+        i32.store $0 offset=4 align=1
 ;; ======remove=======
 ;;          local.get $2
 ;; =========add========
@@ -70,7 +91,7 @@
 ;; =========add========
         local.set $2
 ;; ====================
-          i32.const 4
+          i32.const 8
         call $~lib/rt/__increase_sp
 ;; ======remove=======
 ;;          local.get $1
@@ -83,7 +104,7 @@
 ;; ======remove=======
 ;;    end
 ;;  local.tee $1
-;;    i32.const 4
+;;    i32.const 8
 ;;  call $~lib/rt/__increase_sp
 ;;  local.get $1
 ;;end

@@ -53,6 +53,33 @@
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
  (start $~start)
+ (func $~lib/object/Object#constructor (param $this i32) (result i32)
+  (local.get $this)
+ )
+ (func $field-initialization/Value_Init#set:a (param $this i32) (param $a i32)
+  (i32.store
+   (local.get $this)
+   (local.get $a)
+  )
+ )
+ (func $field-initialization/Value_Init#constructor (param $this i32) (result i32)
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $~lib/object/Object#constructor
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+  )
+  (call $field-initialization/Value_Init#set:a
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (i32.const 1)
+  )
+  (local.get $this)
+ )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
    (local.get $this)
@@ -2912,84 +2939,12 @@
    (local.get $ptr)
   )
  )
- (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
-  (local.get $this)
- )
- (func $field-initialization/Value_Init#set:a (param $this i32) (param $a i32)
-  (i32.store
-   (local.get $this)
-   (local.get $a)
-  )
- )
- (func $field-initialization/Value_Init#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $~lib/object/Object#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
-   )
-  )
-  (call $field-initialization/Value_Init#set:a
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-   (i32.const 1)
-  )
-  (local.get $this)
- )
  (func $field-initialization/Value_Init#get:a (param $this i32) (result i32)
   (i32.load
    (local.get $this)
   )
  )
  (func $field-initialization/Value#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 5)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3151,21 +3106,6 @@
   )
  )
  (func $field-initialization/Ref_Init#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 6)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3181,7 +3121,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/arraybuffer/ArrayBuffer#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 0)
+       (i32.const 1)
+      )
+     )
      (i32.const 0)
     )
    )
@@ -3205,21 +3150,6 @@
   )
  )
  (func $field-initialization/Nullable_Init#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 7)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3235,7 +3165,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/arraybuffer/ArrayBuffer#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 0)
+       (i32.const 1)
+      )
+     )
      (i32.const 0)
     )
    )
@@ -3248,21 +3183,6 @@
   )
  )
  (func $field-initialization/Nullable#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 8)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3280,21 +3200,7 @@
   )
  )
  (func $field-initialization/Value_Ctor#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 9)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.get $this)
  )
  (func $field-initialization/Value_Ctor#get:a (param $this i32) (result i32)
@@ -3309,28 +3215,11 @@
   )
  )
  (func $field-initialization/Value_Init_Ctor#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 10)
-       )
-      )
-     )
-    )
+  (call $field-initialization/Value_Init_Ctor#set:a
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $field-initialization/Value_Init_Ctor#set:a
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (i32.const 1)
-   )
+   (i32.const 1)
   )
   (local.get $this)
  )
@@ -3346,21 +3235,7 @@
   )
  )
  (func $field-initialization/Value_Ctor_Init#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 11)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (call $field-initialization/Value_Ctor_Init#set:a
    (call $~lib/rt/__tmptostack
     (local.get $this)
@@ -3386,31 +3261,19 @@
   )
  )
  (func $field-initialization/Ref_Init_Ctor#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 12)
-       )
+  (call $field-initialization/Ref_Init_Ctor#set:a
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/arraybuffer/ArrayBuffer#constructor
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 0)
+       (i32.const 1)
       )
      )
-    )
-   )
-   (call $field-initialization/Ref_Init_Ctor#set:a
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (call $~lib/rt/__tmptostack
-     (call $~lib/arraybuffer/ArrayBuffer#constructor
-      (i32.const 0)
-      (i32.const 0)
-     )
+     (i32.const 0)
     )
    )
   )
@@ -3433,28 +3296,19 @@
   )
  )
  (func $field-initialization/Ref_Ctor_Init#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 13)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (call $field-initialization/Ref_Ctor_Init#set:a
    (call $~lib/rt/__tmptostack
     (local.get $this)
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/arraybuffer/ArrayBuffer#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 0)
+       (i32.const 1)
+      )
+     )
      (i32.const 0)
     )
    )
@@ -3478,29 +3332,12 @@
   )
  )
  (func $field-initialization/Ref_Ctor_Param#constructor (param $this i32) (param $a i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 14)
-       )
-      )
-     )
-    )
+  (call $field-initialization/Ref_Ctor_Param#set:a
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
    )
-   (call $field-initialization/Ref_Ctor_Param#set:a
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (call $~lib/rt/__tmptostack
-     (local.get $a)
-    )
+   (call $~lib/rt/__tmptostack
+    (local.get $a)
    )
   )
   (local.get $this)
@@ -3511,21 +3348,7 @@
   )
  )
  (func $field-initialization/Nullable_Ctor#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 15)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (local.get $this)
  )
  (func $field-initialization/Nullable_Ctor#get:a (param $this i32) (result i32)
@@ -3545,31 +3368,19 @@
   )
  )
  (func $field-initialization/Nullable_Init_Ctor#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 16)
-       )
+  (call $field-initialization/Nullable_Init_Ctor#set:a
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/arraybuffer/ArrayBuffer#constructor
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 0)
+       (i32.const 1)
       )
      )
-    )
-   )
-   (call $field-initialization/Nullable_Init_Ctor#set:a
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (call $~lib/rt/__tmptostack
-     (call $~lib/arraybuffer/ArrayBuffer#constructor
-      (i32.const 0)
-      (i32.const 0)
-     )
+     (i32.const 0)
     )
    )
   )
@@ -3592,28 +3403,19 @@
   )
  )
  (func $field-initialization/Nullable_Ctor_Init#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 17)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (call $field-initialization/Nullable_Ctor_Init#set:a
    (call $~lib/rt/__tmptostack
     (local.get $this)
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/arraybuffer/ArrayBuffer#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 0)
+       (i32.const 1)
+      )
+     )
      (i32.const 0)
     )
    )
@@ -3637,21 +3439,6 @@
   )
  )
  (func $field-initialization/Inherit_Base#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 19)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3667,7 +3454,12 @@
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/arraybuffer/ArrayBuffer#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 0)
+       (i32.const 1)
+      )
+     )
      (i32.const 0)
     )
    )
@@ -3675,21 +3467,6 @@
   (local.get $this)
  )
  (func $field-initialization/Inherit#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 18)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $field-initialization/Inherit_Base#constructor
@@ -3707,21 +3484,6 @@
   )
  )
  (func $field-initialization/Inherit_Ctor#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 20)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $field-initialization/Inherit_Base#constructor
@@ -3734,21 +3496,6 @@
   (local.get $this)
  )
  (func $field-initialization/SomeObject#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 8)
-       (i32.const 21)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -4048,21 +3795,6 @@
   )
  )
  (func $field-initialization/SomeOtherObject#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 12)
-       (i32.const 22)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $field-initialization/SomeObject#constructor
@@ -4091,21 +3823,7 @@
   )
  )
  (func $field-initialization/Flow_Balanced#constructor (param $this i32) (param $cond i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 23)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (local.get $cond)
    (then
@@ -4115,7 +3833,12 @@
      )
      (call $~lib/rt/__tmptostack
       (call $~lib/arraybuffer/ArrayBuffer#constructor
-       (i32.const 0)
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 1)
+        )
+       )
        (i32.const 0)
       )
      )
@@ -4128,7 +3851,12 @@
      )
      (call $~lib/rt/__tmptostack
       (call $~lib/arraybuffer/ArrayBuffer#constructor
-       (i32.const 0)
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/itcms/__new
+         (i32.const 0)
+         (i32.const 1)
+        )
+       )
        (i32.const 0)
       )
      )
@@ -4154,31 +3882,19 @@
   )
  )
  (func $field-initialization/Ref_Init_InlineCtor#constructor (param $this i32) (result i32)
-  (block
-   (if
-    (i32.eqz
-     (local.get $this)
-    )
-    (then
-     (local.set $this
-      (call $~lib/rt/__localtostack
-       (call $~lib/rt/itcms/__new
-        (i32.const 4)
-        (i32.const 24)
-       )
+  (call $field-initialization/Ref_Init_InlineCtor#set:a
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (call $~lib/rt/__tmptostack
+    (call $~lib/arraybuffer/ArrayBuffer#constructor
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 0)
+       (i32.const 1)
       )
      )
-    )
-   )
-   (call $field-initialization/Ref_Init_InlineCtor#set:a
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-    (call $~lib/rt/__tmptostack
-     (call $~lib/arraybuffer/ArrayBuffer#constructor
-      (i32.const 0)
-      (i32.const 0)
-     )
+     (i32.const 0)
     )
    )
   )
@@ -4201,28 +3917,19 @@
   )
  )
  (func $field-initialization/Ref_InlineCtor_Init#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 25)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (call $field-initialization/Ref_InlineCtor_Init#set:a
    (call $~lib/rt/__tmptostack
     (local.get $this)
    )
    (call $~lib/rt/__tmptostack
     (call $~lib/arraybuffer/ArrayBuffer#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 0)
+       (i32.const 1)
+      )
+     )
      (i32.const 0)
     )
    )
@@ -4298,7 +4005,12 @@
    (local.set $o
     (call $~lib/rt/__localtostack
      (call $field-initialization/Value_Init#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 4)
+       )
+      )
      )
     )
    )
@@ -4328,7 +4040,12 @@
    (local.set $o|1
     (call $~lib/rt/__localtostack
      (call $field-initialization/Value#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 5)
+       )
+      )
      )
     )
    )
@@ -4358,7 +4075,12 @@
    (local.set $o|2
     (call $~lib/rt/__localtostack
      (call $field-initialization/Ref_Init#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 6)
+       )
+      )
      )
     )
    )
@@ -4388,7 +4110,12 @@
    (local.set $o|3
     (call $~lib/rt/__localtostack
      (call $field-initialization/Nullable_Init#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 7)
+       )
+      )
      )
     )
    )
@@ -4418,7 +4145,12 @@
    (local.set $o|4
     (call $~lib/rt/__localtostack
      (call $field-initialization/Nullable#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 8)
+       )
+      )
      )
     )
    )
@@ -4448,7 +4180,12 @@
    (local.set $o|5
     (call $~lib/rt/__localtostack
      (call $field-initialization/Value_Ctor#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 9)
+       )
+      )
      )
     )
    )
@@ -4478,7 +4215,12 @@
    (local.set $o|6
     (call $~lib/rt/__localtostack
      (call $field-initialization/Value_Init_Ctor#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 10)
+       )
+      )
      )
     )
    )
@@ -4508,7 +4250,12 @@
    (local.set $o|7
     (call $~lib/rt/__localtostack
      (call $field-initialization/Value_Ctor_Init#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 11)
+       )
+      )
      )
     )
    )
@@ -4538,7 +4285,12 @@
    (local.set $o|8
     (call $~lib/rt/__localtostack
      (call $field-initialization/Ref_Init_Ctor#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 12)
+       )
+      )
      )
     )
    )
@@ -4568,7 +4320,12 @@
    (local.set $o|9
     (call $~lib/rt/__localtostack
      (call $field-initialization/Ref_Ctor_Init#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 13)
+       )
+      )
      )
     )
    )
@@ -4598,7 +4355,12 @@
    (local.set $a
     (call $~lib/rt/__localtostack
      (call $~lib/arraybuffer/ArrayBuffer#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 0)
+        (i32.const 1)
+       )
+      )
       (i32.const 0)
      )
     )
@@ -4606,7 +4368,12 @@
    (local.set $o|11
     (call $~lib/rt/__localtostack
      (call $field-initialization/Ref_Ctor_Param#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 14)
+       )
+      )
       (call $~lib/rt/__tmptostack
        (local.get $a)
       )
@@ -4639,7 +4406,12 @@
    (local.set $o|12
     (call $~lib/rt/__localtostack
      (call $field-initialization/Nullable_Ctor#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 15)
+       )
+      )
      )
     )
    )
@@ -4669,7 +4441,12 @@
    (local.set $o|13
     (call $~lib/rt/__localtostack
      (call $field-initialization/Nullable_Init_Ctor#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 16)
+       )
+      )
      )
     )
    )
@@ -4699,7 +4476,12 @@
    (local.set $o|14
     (call $~lib/rt/__localtostack
      (call $field-initialization/Nullable_Ctor_Init#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 17)
+       )
+      )
      )
     )
    )
@@ -4729,7 +4511,12 @@
    (local.set $o|15
     (call $~lib/rt/__localtostack
      (call $field-initialization/Inherit#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 18)
+       )
+      )
      )
     )
    )
@@ -4759,7 +4546,12 @@
    (local.set $o|16
     (call $~lib/rt/__localtostack
      (call $field-initialization/Inherit_Ctor#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 20)
+       )
+      )
      )
     )
    )
@@ -4792,7 +4584,12 @@
       (local.set $17
        (call $~lib/rt/__localtostack
         (call $field-initialization/SomeObject#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 21)
+          )
+         )
         )
        )
       )
@@ -4858,7 +4655,12 @@
       (local.set $19
        (call $~lib/rt/__localtostack
         (call $field-initialization/SomeObject#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 21)
+          )
+         )
         )
        )
       )
@@ -4926,7 +4728,12 @@
       (local.set $21
        (call $~lib/rt/__localtostack
         (call $field-initialization/SomeObject#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 21)
+          )
+         )
         )
        )
       )
@@ -4994,7 +4801,12 @@
       (local.set $23
        (call $~lib/rt/__localtostack
         (call $field-initialization/SomeObject#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 8)
+           (i32.const 21)
+          )
+         )
         )
        )
       )
@@ -5066,7 +4878,12 @@
       (local.set $25
        (call $~lib/rt/__localtostack
         (call $field-initialization/SomeOtherObject#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 12)
+           (i32.const 22)
+          )
+         )
         )
        )
       )
@@ -5161,7 +4978,12 @@
       (local.set $27
        (call $~lib/rt/__localtostack
         (call $field-initialization/SomeOtherObject#constructor
-         (i32.const 0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/rt/itcms/__new
+           (i32.const 12)
+           (i32.const 22)
+          )
+         )
         )
        )
       )
@@ -5259,7 +5081,12 @@
    (local.set $o|29
     (call $~lib/rt/__localtostack
      (call $field-initialization/Flow_Balanced#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 23)
+       )
+      )
       (i32.const 1)
      )
     )
@@ -5290,7 +5117,12 @@
    (local.set $o|30
     (call $~lib/rt/__localtostack
      (call $field-initialization/Ref_Init_InlineCtor#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 24)
+       )
+      )
      )
     )
    )
@@ -5320,7 +5152,12 @@
    (local.set $o|31
     (call $~lib/rt/__localtostack
      (call $field-initialization/Ref_InlineCtor_Init#constructor
-      (i32.const 0)
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/itcms/__new
+        (i32.const 4)
+        (i32.const 25)
+       )
+      )
      )
     )
    )

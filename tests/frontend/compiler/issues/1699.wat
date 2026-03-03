@@ -3044,21 +3044,7 @@
   (local $3 i32)
   (local $bufferSize i32)
   (local $buffer i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 16)
-       (i32.const 5)
-      )
-     )
-    )
-   )
-  )
+  (nop)
   (if
    (i32.gt_u
     (local.get $length)
@@ -3131,21 +3117,6 @@
   (local.get $this)
  )
  (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 0)
-       (i32.const 0)
-      )
-     )
-    )
-   )
-  )
   (local.get $this)
  )
  (func $issues/1699/MultiAssignmentTest#set:test (param $this i32) (param $test i32)
@@ -3155,21 +3126,6 @@
   )
  )
  (func $issues/1699/MultiAssignmentTest#constructor (param $this i32) (result i32)
-  (if
-   (i32.eqz
-    (local.get $this)
-   )
-   (then
-    (local.set $this
-     (call $~lib/rt/__localtostack
-      (call $~lib/rt/itcms/__new
-       (i32.const 4)
-       (i32.const 4)
-      )
-     )
-    )
-   )
-  )
   (local.set $this
    (call $~lib/rt/__localtostack
     (call $~lib/object/Object#constructor
@@ -3568,7 +3524,12 @@
   (local.set $testinstances
    (call $~lib/rt/__localtostack
     (call $~lib/array/Array<issues/1699/MultiAssignmentTest>#constructor
-     (i32.const 0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/itcms/__new
+       (i32.const 16)
+       (i32.const 5)
+      )
+     )
      (i32.const 3)
     )
    )
@@ -3593,7 +3554,12 @@
       )
       (call $~lib/rt/__tmptostack
        (call $issues/1699/MultiAssignmentTest#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 4)
+         )
+        )
        )
       )
      )
@@ -3623,7 +3589,12 @@
      (local.set $testinstance
       (call $~lib/rt/__localtostack
        (call $issues/1699/MultiAssignmentTest#constructor
-        (i32.const 0)
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 4)
+         )
+        )
        )
       )
      )
