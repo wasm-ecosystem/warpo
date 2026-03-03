@@ -4,7 +4,7 @@
 
 import { CommonFlags } from "./common";
 import { LIBRARY_PREFIX, PATH_DELIMITER } from "./mangle";
-import { Tokenizer, Token, CommentHandler, IdentifierHandling, isIllegalVariableIdentifier } from "./tokenizer";
+import { Tokenizer, Token, IdentifierHandling, isIllegalVariableIdentifier } from "./tokenizer";
 
 import { Range, DiagnosticCode, DiagnosticEmitter, DiagnosticMessage } from "./diagnostics";
 
@@ -87,8 +87,6 @@ export class Parser extends DiagnosticEmitter {
   seenlog: Set<string> = new Set();
   /** Source file names already completely processed. */
   donelog: Set<string> = new Set();
-  /** Optional handler to intercept comments while tokenizing. */
-  onComment: CommentHandler | null = null;
   /** Current file being parsed. */
   currentSource: Source | null = null;
   /** Map of dependees being depended upon by a source, by path. */
@@ -175,7 +173,6 @@ export class Parser extends DiagnosticEmitter {
 
     // tokenize and parse
     let tn = new Tokenizer(source, this.diagnostics);
-    tn.onComment = this.onComment;
     let statements = source.statements;
     while (!tn.skip(Token.EndOfFile)) {
       let statement = this.parseTopLevelStatement(tn, null);

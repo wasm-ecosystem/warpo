@@ -483,9 +483,6 @@ export function operatorTokenToString(token: Token): string {
   }
 }
 
-/** Handler for intercepting comments while tokenizing. */
-export type CommentHandler = (kind: CommentKind, text: string, range: Range) => void;
-
 /** Whether a token begins on a new line, if known. */
 enum OnNewLine {
   No,
@@ -507,8 +504,6 @@ export class Tokenizer extends DiagnosticEmitter {
   nextToken: Token = -1;
   nextTokenPos: i32 = 0;
   nextTokenOnNewLine: OnNewLine = OnNewLine.Unknown;
-
-  onComment: CommentHandler | null = null;
 
   /** Constructs a new tokenizer. */
   constructor(source: Source, diagnostics: DiagnosticMessage[] | null = null) {
@@ -722,9 +717,7 @@ export class Tokenizer extends DiagnosticEmitter {
                   break;
                 }
               }
-              if (this.onComment) {
-                this.onComment(commentKind, text.substring(commentStartPos, pos), this.range(commentStartPos, pos));
-              }
+              // commentHandler
               break;
             }
             if (chr == CharCode.Asterisk) {
@@ -740,12 +733,8 @@ export class Tokenizer extends DiagnosticEmitter {
               }
               if (!closed) {
                 this.error(DiagnosticCode._0_expected, this.range(pos), "*/");
-              } else if (this.onComment) {
-                this.onComment(
-                  CommentKind.Block,
-                  text.substring(commentStartPos, pos),
-                  this.range(commentStartPos, pos)
-                );
+              } else {
+                // commentHandler
               }
               break;
             }
