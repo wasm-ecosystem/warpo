@@ -26,7 +26,7 @@ import { Options } from "./compiler";
 
 import { Range, DiagnosticCode, DiagnosticMessage, DiagnosticEmitter } from "./diagnostics";
 
-import { Type, TypeKind, Signature, TypeFlags } from "./types";
+import { Type, TypeKind, Signature, TypeFlags, TupleElementInfo } from "./types";
 
 import { Token } from "./tokenizer";
 
@@ -4146,6 +4146,14 @@ export class Local extends VariableLikeElement {
   getBelongingFunction(): Function {
     assert(this.parent.kind == ElementKind.Function);
     return <Function>this.parent;
+  }
+
+  getTupleElementInfo(): TupleElementInfo {
+    const tupleIndex = this.tupleIndex;
+    assert(tupleIndex >= 0);
+    const func = this.getBelongingFunction();
+    const elementInfo = func.heapLocalsTypeBuilder.getTupleElementInfo(tupleIndex);
+    return elementInfo;
   }
 }
 

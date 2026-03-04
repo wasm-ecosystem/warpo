@@ -6133,13 +6133,38 @@ export class Compiler extends DiagnosticEmitter {
       else flow.unsetLocalFlag(localIndex, LocalFlags.Wrapped);
     }
     if (tee) {
-      // local = value
       this.currentType = type;
-      return module.local_tee(localIndex, valueExpr, type.isManaged);
     } else {
-      // void(local = value)
       this.currentType = Type.void;
-      return module.local_set(localIndex, valueExpr, type.isManaged);
+    }
+    if (!local.isClosureVariable()) {
+      if (tee) {
+        return module.local_tee(localIndex, valueExpr, type.isManaged);
+      } else {
+        return module.local_set(localIndex, valueExpr, type.isManaged);
+      }
+    } else {
+      const envTupleExpr = this.makeGetHeapLocalTuple(local);
+      const elementInfo = local.getTupleElementInfo();
+      const tupleClass = this.program.smallTupleInstance;
+      const setter = tupleClass.getMethod("__set", [elementInfo.type])!;
+      const setExpr = this.makeCallDirect(
+        setter,
+        [envTupleExpr, module.usize(elementInfo.offset), valueExpr],
+        local.identifierNode
+      );
+
+      if (tee) {
+        const getter = tupleClass.getMethod("__get", [elementInfo.type])!;
+        const loadExpr = this.makeCallDirect(
+          getter,
+          [envTupleExpr, module.usize(elementInfo.offset)],
+          local.identifierNode
+        );
+        return module.flatten([setExpr, loadExpr]);
+      } else {
+        return setExpr;
+      }
     }
   }
 
@@ -7582,14 +7607,15 @@ export class Compiler extends DiagnosticEmitter {
       const expr = module.local_get(local.index, local.type.toRef());
       return expr;
     } else {
-      const nestedLevel = this.getClosureVariableNestedLevel(local);
-      const envTuple = module.get_closure_env_by_level(nestedLevel);
-      const localFunction = local.getBelongingFunction();
-      const tupleIndex = local.tupleIndex;
-      const elementInfo = localFunction.heapLocalsTypeBuilder.getTupleElementInfo(tupleIndex);
+      const envTupleExpr = this.makeGetHeapLocalTuple(local);
+      const elementInfo = local.getTupleElementInfo();
       const tupleClass = this.program.smallTupleInstance;
       const getter = tupleClass.getMethod("__get", [elementInfo.type])!;
-      const loadExpr = this.makeCallDirect(getter, [envTuple, module.usize(elementInfo.offset)], local.identifierNode);
+      const loadExpr = this.makeCallDirect(
+        getter,
+        [envTupleExpr, module.usize(elementInfo.offset)],
+        local.identifierNode
+      );
       return loadExpr;
     }
   }
@@ -7598,6 +7624,12 @@ export class Compiler extends DiagnosticEmitter {
     const localDeclaredFunction = local.getBelongingFunction();
     const currentFunction = this.currentFlow.targetFunction;
     return currentFunction.prototype.nestedLevel - localDeclaredFunction.prototype.nestedLevel;
+  }
+
+  private makeGetHeapLocalTuple(local: Local): ExpressionRef {
+    const nestedLevel = this.getClosureVariableNestedLevel(local);
+    const envTupleExpr = this.module.get_closure_env_by_level(nestedLevel);
+    return envTupleExpr;
   }
 
   private compileIdentifierExpressionBuiltin(
