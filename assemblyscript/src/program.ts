@@ -1042,7 +1042,8 @@ export class Program extends DiagnosticEmitter {
         declaration.toFunctionLikeWithBodyBase(),
         CompiledNameNode.fromIdentifier(declaration.name),
         declaration.identifierAndSignatureRange,
-        null
+        null,
+        0
       ),
       null,
       signature
@@ -2468,7 +2469,8 @@ export class Program extends DiagnosticEmitter {
       declaration.toFunctionLikeWithBodyBase(),
       propertyName,
       declaration.identifierAndSignatureRange,
-      null
+      null,
+      0
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
       this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
@@ -2605,7 +2607,8 @@ export class Program extends DiagnosticEmitter {
       declaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
       declaration.identifierAndSignatureRange,
-      null
+      null,
+      0
     );
     if (isGetter) {
       property.getterPrototype = element;
@@ -2927,6 +2930,7 @@ export class Program extends DiagnosticEmitter {
     if (declaration.range.source.isLibrary) {
       validDecorators |= DecoratorFlags.Builtin;
     }
+    let closureInfo = this.closureScanner.getClosureFunctionInfo(declaration);
     let element = new FunctionPrototype(
       name,
       parent,
@@ -2935,7 +2939,8 @@ export class Program extends DiagnosticEmitter {
       declaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(declaration.name),
       declaration.identifierAndSignatureRange,
-      this.closureScanner.getCapturedVariablesOfFunction(declaration)
+      closureInfo ? closureInfo.closureVariables : null,
+      closureInfo ? closureInfo.nestedLevel : 0
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
       this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
@@ -4184,7 +4189,8 @@ export class FunctionPrototype extends DeclaredElement {
       origin.functionLikeWithBodyBase,
       origin.identifierNode,
       origin.identifierAndSignatureRange,
-      origin.closureVariables
+      origin.closureVariables,
+      origin.nestedLevel
     );
   }
 
@@ -4200,7 +4206,8 @@ export class FunctionPrototype extends DeclaredElement {
     public readonly functionLikeWithBodyBase: FunctionLikeWithBodyBase,
     public readonly identifierNode: CompiledNameNode,
     public readonly identifierAndSignatureRange: Range,
-    public readonly closureVariables: Set<Node> | null
+    public readonly closureVariables: Set<Node> | null,
+    public readonly nestedLevel: i32
   ) {
     super(
       ElementKind.FunctionPrototype,
@@ -4624,7 +4631,8 @@ export class PropertyPrototype extends DeclaredElement {
       getterDeclaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
       getterDeclaration.identifierAndSignatureRange,
-      null
+      null,
+      0
     );
     prototype.setterPrototype = new FunctionPrototype(
       mangleSetterName(name),
@@ -4634,7 +4642,8 @@ export class PropertyPrototype extends DeclaredElement {
       setterDeclaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
       setterDeclaration.identifierAndSignatureRange,
-      null
+      null,
+      0
     );
     return prototype;
   }
