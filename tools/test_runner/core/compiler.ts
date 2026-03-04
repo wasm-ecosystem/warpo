@@ -41,7 +41,7 @@ async function buildWithWARPO({
       .split(" ");
     warpoArgv = warpoArgv.concat(argv);
   }
-  const returnCode = await warpo.main({
+  const returnCode = await warpo.build({
     argv: warpoArgv,
     env: process.env,
   });

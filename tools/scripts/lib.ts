@@ -7,6 +7,7 @@ export interface Option {
   env: NodeJS.Dict<string>;
   argv: string[];
   cwd?: string;
+  onStdout?: (chunk: string) => void;
 }
 
 const dirname = import.meta.dirname;
@@ -46,13 +47,18 @@ function get_binary(): string | null {
   return join(dirname, "warpo", "warpo_asc");
 }
 
-export async function main(options: Option): Promise<number> {
+export async function build(options: Option): Promise<number> {
   const binary = get_binary();
   const ps = spawn(binary, options.argv, {
-    stdio: "inherit",
+    stdio: options.onStdout === undefined ? "inherit" : ["inherit", "pipe", "inherit"],
     env: options.env,
     cwd: options.cwd,
   });
+  if (options.onStdout !== undefined) {
+    ps.stdout.on("data", (chunk: Buffer) => {
+      options.onStdout(chunk.toString("utf8"));
+    });
+  }
   return new Promise<number>((resolve, reject) => {
     function shutdown() {
       ps.kill("SIGTERM");

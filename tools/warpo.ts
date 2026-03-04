@@ -8,13 +8,14 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { argv as processArgv, env as processEnv, exit as processExit } from "node:process";
 import { Command } from "commander";
-import { main as runCompiler } from "./scripts/lib.js";
+import { build as runCompiler } from "./scripts/lib.js";
 import { runFromCliArgs as runUnitTestsFromCliArgs } from "./test_runner/cli.js";
 
 export interface CliOption {
   env: NodeJS.Dict<string>;
   argv: string[];
   cwd?: string;
+  onStdout?: (chunk: string) => void;
 }
 
 const warpoRoot = join(import.meta.dirname, "..");
@@ -73,6 +74,7 @@ export async function main(options: CliOption): Promise<number> {
         argv: [handleConfigOption, handleProjectOption].reduce((args, handler) => handler(args), buildArgs),
         env: options.env,
         cwd: options.cwd,
+        onStdout: options.onStdout,
       });
     });
   program
