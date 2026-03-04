@@ -4142,6 +4142,11 @@ export class Local extends VariableLikeElement {
   isClosureVariable(): bool {
     return this.tupleIndex >= 0;
   }
+
+  getBelongingFunction(): Function {
+    assert(this.parent.kind == ElementKind.Function);
+    return <Function>this.parent;
+  }
 }
 
 export enum CompiledNameKind {

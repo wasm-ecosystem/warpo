@@ -669,6 +669,7 @@ export namespace BuiltinNames {
 
   export const getClosureEnv = "~lib/closure/getClosureEnv";
   export const setClosureEnv = "~lib/closure/setClosureEnv";
+  export const getUpperLevelClosureEnv = "~lib/closure/getUpperLevelClosureEnv";
 }
 
 /** Builtin types context. */

@@ -665,6 +665,13 @@ export class Compiler extends DiagnosticEmitter {
       TypeRef.I32,
       TypeRef.None
     );
+    this.module.addFunctionImport(
+      BuiltinNames.getUpperLevelClosureEnv,
+      BuiltinNames.externalFuncName,
+      BuiltinNames.getUpperLevelClosureEnv,
+      TypeRef.I32,
+      TypeRef.I32
+    );
   }
 
   private initDefaultMemory(memoryOffset: i64): void {
@@ -7475,7 +7482,7 @@ export class Compiler extends DiagnosticEmitter {
           this.error(DiagnosticCode.Not_implemented_0, expression.range, "Closures");
           return module.unreachable();
         }
-        let expr = module.local_get(localIndex, localType.toRef());
+        let expr = this.makeLocalGet(local);
         if (isNonNull && localType.isNullableExternalReference && this.options.hasFeature(Feature.GC)) {
           // If the local's type is nullable, but its value is known to be non-null, propagate
           // non-nullability info to Binaryen. Only applicable if GC is enabled, since without
@@ -7567,6 +7574,30 @@ export class Compiler extends DiagnosticEmitter {
     }
     this.error(DiagnosticCode.Expression_does_not_compile_to_a_value_at_runtime, expression.range);
     return module.unreachable();
+  }
+
+  private makeLocalGet(local: Local): ExpressionRef {
+    const module = this.module;
+    if (!local.isClosureVariable()) {
+      const expr = module.local_get(local.index, local.type.toRef());
+      return expr;
+    } else {
+      const nestedLevel = this.getClosureVariableNestedLevel(local);
+      const envTuple = module.get_upper_level_closure_env(nestedLevel);
+      const localFunction = local.getBelongingFunction();
+      const tupleIndex = local.tupleIndex;
+      const elementInfo = localFunction.heapLocalsTypeBuilder.getTupleElementInfo(tupleIndex);
+      const tupleClass = this.program.smallTupleInstance;
+      const getter = tupleClass.getMethod("__get", [elementInfo.type])!;
+      const loadExpr = this.makeCallDirect(getter, [envTuple, module.usize(elementInfo.offset)], local.identifierNode);
+      return loadExpr;
+    }
+  }
+
+  private getClosureVariableNestedLevel(local: Local): i32 {
+    const localDeclaredFunction = local.getBelongingFunction();
+    const currentFunction = this.currentFlow.targetFunction;
+    return currentFunction.prototype.nestedLevel - localDeclaredFunction.prototype.nestedLevel;
   }
 
   private compileIdentifierExpressionBuiltin(
