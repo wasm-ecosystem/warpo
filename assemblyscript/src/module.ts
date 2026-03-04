@@ -469,11 +469,11 @@ export class Module {
     return this.call(BuiltinNames.setClosureEnv, [value], TypeRef.None);
   }
 
-  get_upper_level_closure_env(level: i32): ExpressionRef {
-    assert(level > 0);
+  get_closure_env_by_level(level: i32): ExpressionRef {
+    assert(level >= 0);
     let type = binaryen._BinaryenExpressionGetType(level);
     assert(type == TypeRef.I32 || type == TypeRef.Unreachable);
-    return this.call(BuiltinNames.getUpperLevelClosureEnv, [this.i32(level)], TypeRef.I32);
+    return this.call(BuiltinNames.getClosureEnvByLevel, [this.i32(level)], TypeRef.I32);
   }
 
   local_tee(index: i32, value: ExpressionRef, isManaged: bool, type: TypeRef = -1): ExpressionRef {

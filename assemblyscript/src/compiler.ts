@@ -666,9 +666,9 @@ export class Compiler extends DiagnosticEmitter {
       TypeRef.None
     );
     this.module.addFunctionImport(
-      BuiltinNames.getUpperLevelClosureEnv,
+      BuiltinNames.getClosureEnvByLevel,
       BuiltinNames.externalFuncName,
-      BuiltinNames.getUpperLevelClosureEnv,
+      BuiltinNames.getClosureEnvByLevel,
       TypeRef.I32,
       TypeRef.I32
     );
@@ -7583,7 +7583,7 @@ export class Compiler extends DiagnosticEmitter {
       return expr;
     } else {
       const nestedLevel = this.getClosureVariableNestedLevel(local);
-      const envTuple = module.get_upper_level_closure_env(nestedLevel);
+      const envTuple = module.get_closure_env_by_level(nestedLevel);
       const localFunction = local.getBelongingFunction();
       const tupleIndex = local.tupleIndex;
       const elementInfo = localFunction.heapLocalsTypeBuilder.getTupleElementInfo(tupleIndex);
