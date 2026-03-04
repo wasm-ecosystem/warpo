@@ -20,15 +20,20 @@ class BinaryWriter {
   wasm::BufferWithRandomAccess buffer_;
   std::stringstream sourceMapStream_;
   wasm::WasmBinaryWriter writer_;
-  bool hasDwarf_ = false;
+  bool emitDwarf_ = false;
   llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> debugSections_;
 
 public:
   explicit BinaryWriter(AsModule const &m)
       : options_(wasm::PassOptions::getWithoutOptimization()), m_(m), writer_{m.get(), buffer_, options_} {}
-  void enableSourceMap(std::string const &sourceMapURL) { writer_.setSourceMap(&sourceMapStream_, sourceMapURL); }
-  void enableNameSection() { writer_.setNamesSection(true); }
-  void enableDwarf() { hasDwarf_ = true; }
+  void setSourceMapEnabled(bool enabled, std::string const &sourceMapURL) {
+    if (enabled)
+      writer_.setSourceMap(&sourceMapStream_, sourceMapURL);
+    else
+      writer_.setSourceMap(nullptr, "");
+  }
+  void setNameSectionEnabled(bool enabled) { writer_.setNamesSection(enabled); }
+  void setDwarfEnabled(bool enabled) { emitDwarf_ = enabled; }
 
   void write();
 

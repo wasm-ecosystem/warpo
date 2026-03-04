@@ -273,8 +273,9 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
 
   // wasm and source map
   warpo::passes::BinaryWriter writer{compileResult.m};
-  writer.enableSourceMap("");
-  writer.enableDwarf();
+  writer.setSourceMapEnabled(true, "");
+  writer.setNameSectionEnabled(false);
+  writer.setDwarfEnabled(true);
   writer.write();
 
   std::string const rawDump = writer.dumpDwarf();

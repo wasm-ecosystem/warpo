@@ -10,7 +10,7 @@
 namespace warpo::passes {
 
 void BinaryWriter::write() {
-  if (hasDwarf_) {
+  if (emitDwarf_) {
     wasm::PassRunner runner{m_.get()};
     runner.add("propagate-debug-locs");
     runner.run();
@@ -26,7 +26,7 @@ void BinaryWriter::write() {
     }
   }
   writer_.write();
-  if (hasDwarf_) {
+  if (emitDwarf_) {
     debugSections_ = DwarfGenerator::generateDebugSections(m_.variableInfo_, writer_.getBinaryLocations());
     for (auto const &section : debugSections_) {
       wasm::CustomSection const customSection{
