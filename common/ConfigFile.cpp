@@ -180,9 +180,24 @@ static FileConfigJson parseFileConfigJson(std::string const &configContent) {
   }
 }
 
+[[noreturn]] static void throwMissingTarget(FileConfigJson const &fileConfigJson, std::string const &target) {
+  std::string targetList;
+  for (auto const &[targetName, _] : fileConfigJson.targets) {
+    if (!targetList.empty())
+      targetList.append(", ");
+    targetList.append(targetName);
+  }
+  if (targetList.empty())
+    throw std::runtime_error{fmt::format("Target '{}' not found in asconfig.json. No targets are defined.", target)};
+  throw std::runtime_error{
+      fmt::format("Target '{}' not found in asconfig.json. Available targets: {}.", target, targetList)};
+}
+
 static std::optional<MergedFileConfig> createFileConfigImpl(std::string const configContent,
                                                             std::optional<std::string> const &target) {
   FileConfigJson const fileConfigJson = parseFileConfigJson(configContent);
+  if (target.has_value() && !fileConfigJson.targets.contains(target.value()))
+    throwMissingTarget(fileConfigJson, target.value());
   return MergedFileConfig{
       .entries = fileConfigJson.entries,
       .options = target.has_value()
@@ -465,6 +480,11 @@ TEST(TestConfigFile, TestGetFileConfigImpl) {
     EXPECT_EQ(result->options.debug, false);        // Overridden by release target
     EXPECT_EQ(result->options.optimizeLevel, 3);    // Overridden by release target
     EXPECT_EQ(result->options.shrinkLevel, 2);      // From release target}
+  }
+
+  // Test with config file and missing target
+  {
+    EXPECT_THROW((void)createFileConfigImpl(configContent, "fast"), std::runtime_error);
   }
 }
 } // namespace warpo::common::ut

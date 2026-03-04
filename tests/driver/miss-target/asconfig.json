@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../asconfig.schema.json",
+  "entries": ["assembly/index.ts"],
+  "targets": {
+    "debug": {
+      "outFile": "tmp/compilation-failed-debug.wasm",
+      "debug": true
+    },
+    "release": {
+      "outFile": "tmp/compilation-failed-release.wasm",
+      "optimizeLevel": 3
+    }
+  }
+}
