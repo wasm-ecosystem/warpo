@@ -50,7 +50,7 @@ function get_binary(): string | null {
 export async function build(options: Option): Promise<number> {
   const binary = get_binary();
   const ps = spawn(binary, options.argv, {
-    stdio: options.onStdout === undefined ? ["inherit", "pipe", "inherit"] : "inherit",
+    stdio: options.onStdout === undefined ? "inherit" : ["inherit", "pipe", "inherit"],
     env: options.env,
     cwd: options.cwd,
   });
