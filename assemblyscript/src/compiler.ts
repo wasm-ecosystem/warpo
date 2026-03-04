@@ -7164,6 +7164,7 @@ export class Compiler extends DiagnosticEmitter {
     let sourceFunction = flow.targetFunction;
     let isNamed = declaration.name.text.length > 0;
     let isSemanticallyAnonymous = !isNamed || contextualType != Type.void;
+    let closureInfo = this.program.closureScanner.getClosureFunctionInfo(declaration);
     let prototype = new FunctionPrototype(
       isSemanticallyAnonymous
         ? `${isNamed ? declaration.name.text : "anonymous"}|${sourceFunction.nextAnonymousId++}`
@@ -7174,7 +7175,8 @@ export class Compiler extends DiagnosticEmitter {
       declaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(declaration.name),
       declaration.identifierAndSignatureRange,
-      this.program.closureScanner.getCapturedVariablesOfFunction(declaration)
+      closureInfo ? closureInfo.closureVariables : null,
+      closureInfo ? closureInfo.nestedLevel : 0
     );
     let instance: Function | null;
     let contextualTypeArguments = cloneMap(flow.contextualTypeArguments);
@@ -8890,7 +8892,8 @@ export class Compiler extends DiagnosticEmitter {
             declaration.toFunctionLikeWithBodyBase(),
             CompiledNameNode.fromIdentifier(declaration.name),
             declaration.identifierAndSignatureRange,
-            null
+            null,
+            0
           ),
           null,
           Signature.create(this.program, [], classInstance.type, classInstance.type),

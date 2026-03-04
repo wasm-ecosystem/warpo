@@ -127,11 +127,16 @@ class FunctionScope {
   }
 }
 
+export class ClosureFunctionInfo {
+  closureVariables: Set<Node> = new Set();
+  nestedLevel: i32 = 0;
+}
+
 class FunctionScopeChain {
   private functionScopes_: FunctionScope[];
-  private closureFunctions_: Map<FunctionDeclaration, Set<Node>>;
+  private closureFunctions_: Map<FunctionDeclaration, ClosureFunctionInfo>;
 
-  constructor(closureFunctions: Map<FunctionDeclaration, Set<Node>>) {
+  constructor(closureFunctions: Map<FunctionDeclaration, ClosureFunctionInfo>) {
     this.closureFunctions_ = closureFunctions;
     this.functionScopes_ = new Array();
   }
@@ -145,7 +150,10 @@ class FunctionScopeChain {
     const lastFunctionScope = this.functionScopes_[this.functionScopes_.length - 1];
     lastFunctionScope.popScope(); // collect captures from scope[0] (parameters + root-level vars)
     if (lastFunctionScope.isClosureFunction) {
-      this.closureFunctions_.set(lastFunctionScope.node, lastFunctionScope.closureVariables);
+      const info = new ClosureFunctionInfo();
+      info.closureVariables = lastFunctionScope.closureVariables;
+      info.nestedLevel = this.functionScopes_.length - 1;
+      this.closureFunctions_.set(lastFunctionScope.node, info);
     }
     this.functionScopes_.pop();
   }
@@ -216,26 +224,31 @@ class FunctionScopeChain {
 }
 
 export class ClosureScanner extends BaseVisitor {
-  private closureFunctions_: Map<FunctionDeclaration, Set<Node>>;
+  private closureFunctions_: Map<FunctionDeclaration, ClosureFunctionInfo>;
   private functionScopeChain_: FunctionScopeChain;
 
-  get closureFunctions(): Map<FunctionDeclaration, Set<Node>> {
+  get closureFunctions(): Map<FunctionDeclaration, ClosureFunctionInfo> {
     return this.closureFunctions_;
   }
 
   constructor() {
     super();
-    const closureFunctions = new Map<FunctionDeclaration, Set<Node>>();
+    const closureFunctions = new Map<FunctionDeclaration, ClosureFunctionInfo>();
     this.closureFunctions_ = closureFunctions;
     this.functionScopeChain_ = new FunctionScopeChain(closureFunctions);
   }
 
-  getCapturedVariablesOfFunction(node: FunctionDeclaration): Set<Node> | null {
+  getClosureFunctionInfo(node: FunctionDeclaration): ClosureFunctionInfo | null {
     if (this.closureFunctions_.has(node)) {
       return this.closureFunctions_.get(node);
     } else {
       return null;
     }
+  }
+
+  getCapturedVariablesOfFunction(node: FunctionDeclaration): Set<Node> | null {
+    const info = this.getClosureFunctionInfo(node);
+    return info ? info.closureVariables : null;
   }
 
   private visitNodeInScope(node: Node | null): void {
