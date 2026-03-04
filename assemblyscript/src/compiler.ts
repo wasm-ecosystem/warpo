@@ -665,6 +665,13 @@ export class Compiler extends DiagnosticEmitter {
       TypeRef.I32,
       TypeRef.None
     );
+    this.module.addFunctionImport(
+      BuiltinNames.getClosureEnvByLevel,
+      BuiltinNames.externalFuncName,
+      BuiltinNames.getClosureEnvByLevel,
+      TypeRef.I32,
+      TypeRef.I32
+    );
   }
 
   private initDefaultMemory(memoryOffset: i64): void {
@@ -6126,13 +6133,38 @@ export class Compiler extends DiagnosticEmitter {
       else flow.unsetLocalFlag(localIndex, LocalFlags.Wrapped);
     }
     if (tee) {
-      // local = value
       this.currentType = type;
-      return module.local_tee(localIndex, valueExpr, type.isManaged);
     } else {
-      // void(local = value)
       this.currentType = Type.void;
-      return module.local_set(localIndex, valueExpr, type.isManaged);
+    }
+    if (!local.isClosureVariable()) {
+      if (tee) {
+        return module.local_tee(localIndex, valueExpr, type.isManaged);
+      } else {
+        return module.local_set(localIndex, valueExpr, type.isManaged);
+      }
+    } else {
+      const envTupleExpr = this.makeGetHeapLocalTuple(local);
+      const elementInfo = local.getTupleElementInfo();
+      const tupleClass = this.program.smallTupleInstance;
+      const setter = tupleClass.getMethod("__set", [elementInfo.type])!;
+      const setExpr = this.makeCallDirect(
+        setter,
+        [envTupleExpr, module.usize(elementInfo.offset), valueExpr],
+        local.identifierNode
+      );
+
+      if (tee) {
+        const getter = tupleClass.getMethod("__get", [elementInfo.type])!;
+        const loadExpr = this.makeCallDirect(
+          getter,
+          [envTupleExpr, module.usize(elementInfo.offset)],
+          local.identifierNode
+        );
+        return module.flatten([setExpr, loadExpr]);
+      } else {
+        return setExpr;
+      }
     }
   }
 
@@ -7475,7 +7507,7 @@ export class Compiler extends DiagnosticEmitter {
           this.error(DiagnosticCode.Not_implemented_0, expression.range, "Closures");
           return module.unreachable();
         }
-        let expr = module.local_get(localIndex, localType.toRef());
+        let expr = this.makeLocalGet(local);
         if (isNonNull && localType.isNullableExternalReference && this.options.hasFeature(Feature.GC)) {
           // If the local's type is nullable, but its value is known to be non-null, propagate
           // non-nullability info to Binaryen. Only applicable if GC is enabled, since without
@@ -7567,6 +7599,37 @@ export class Compiler extends DiagnosticEmitter {
     }
     this.error(DiagnosticCode.Expression_does_not_compile_to_a_value_at_runtime, expression.range);
     return module.unreachable();
+  }
+
+  private makeLocalGet(local: Local): ExpressionRef {
+    const module = this.module;
+    if (!local.isClosureVariable()) {
+      const expr = module.local_get(local.index, local.type.toRef());
+      return expr;
+    } else {
+      const envTupleExpr = this.makeGetHeapLocalTuple(local);
+      const elementInfo = local.getTupleElementInfo();
+      const tupleClass = this.program.smallTupleInstance;
+      const getter = tupleClass.getMethod("__get", [elementInfo.type])!;
+      const loadExpr = this.makeCallDirect(
+        getter,
+        [envTupleExpr, module.usize(elementInfo.offset)],
+        local.identifierNode
+      );
+      return loadExpr;
+    }
+  }
+
+  private getClosureVariableNestedLevel(local: Local): i32 {
+    const localDeclaredFunction = local.getBelongingFunction();
+    const currentFunction = this.currentFlow.targetFunction;
+    return currentFunction.prototype.nestedLevel - localDeclaredFunction.prototype.nestedLevel;
+  }
+
+  private makeGetHeapLocalTuple(local: Local): ExpressionRef {
+    const nestedLevel = this.getClosureVariableNestedLevel(local);
+    const envTupleExpr = this.module.get_closure_env_by_level(nestedLevel);
+    return envTupleExpr;
   }
 
   private compileIdentifierExpressionBuiltin(

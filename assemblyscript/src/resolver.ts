@@ -195,6 +195,10 @@ export class TupleTypeBuilder {
   get size(): i32 {
     return this.elements.length;
   }
+
+  getTupleElementInfo(index: i32): TupleElementInfo {
+    return this.elements[index];
+  }
 }
 
 /** Provides tools to resolve types and expressions. */
