@@ -1090,19 +1090,25 @@ export class Resolver extends DiagnosticEmitter {
       }
     }
     let name = node.text;
-    let element: Element | null;
-    if ((element = ctxFlow.lookup(name))) {
+    let element: Element | null = null;
+    let cursorFlow: Flow = ctxFlow;
+    while (true) {
+      if ((element = cursorFlow.lookupLocal(name))) {
+        break;
+      }
+      const outerFlow = cursorFlow.outer;
+      if (outerFlow == null) {
+        element = cursorFlow.targetFunction.lookup(name);
+        break;
+      } else {
+        cursorFlow = outerFlow;
+      }
+    }
+
+    if (element) {
       this.currentThisExpression = null;
       this.currentElementExpression = null;
       return element;
-    }
-    let outerFlow = ctxFlow.outer;
-    if (outerFlow) {
-      if ((element = outerFlow.lookup(name))) {
-        this.currentThisExpression = null;
-        this.currentElementExpression = null;
-        return element;
-      }
     }
     if ((element = ctxElement.lookup(name))) {
       this.currentThisExpression = null;
