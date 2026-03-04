@@ -1091,7 +1091,7 @@ export class Resolver extends DiagnosticEmitter {
     }
     let name = node.text;
     let element: Element | null = null;
-    let cursorFlow: Flow = ctxFlow;
+    let cursorFlow = ctxFlow;
     while (true) {
       if ((element = cursorFlow.lookupLocal(name))) {
         break;
