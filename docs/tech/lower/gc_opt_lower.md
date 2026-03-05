@@ -1,32 +1,5 @@
 [[toc]]
 
-## GC Conventions
-
-caller site should ensure the lifetime of GC typed arguments during `call` and `call_indirect`.
-
-## Fast Lower
-
-Fast lowering passes focus on speed.
-
-- For each locals it will be statically assigned to shadow stack slot according to local index.
-- For temporary value in operand stack, which can only happened for `call` or `call_indirect`, it will be assigned according to stack-based counter.
-
-::: warning
-
-It is possible to have nested call. We should make sure the slot of first argument is different with the second and the third.
-
-```wasm
-(call $foo
-  (call $tostack (local.get $arg0))
-  (call $bar
-    (call $tostack (local.get $arg1))
-    (call $tostack (local.get $arg2))
-  )
-)
-```
-
-:::
-
 ## Opt Lower
 
 Optimized lowering passes will analysis the object liveness and dom tree, which cost more time then fast lower but produce better output.
