@@ -518,12 +518,8 @@
   global.set $builtins/I
   f64.const 1.24e-322
   global.set $builtins/F
-  memory.size
-  drop
   i32.const 1
   memory.grow
-  drop
-  memory.size
   drop
   i32.const 1
   memory.grow

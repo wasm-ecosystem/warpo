@@ -334,9 +334,8 @@ export declare function _BinaryenStoreSetValueType(expr: ExpressionRef, valueTyp
 export declare function _BinaryenConst(module: ModuleRef, value: LiteralRef): ExpressionRef;
 export declare function _BinaryenConstGetValueI32(expr: ExpressionRef): i32;
 export declare function _BinaryenConstSetValueI32(expr: ExpressionRef, value: i32): void;
-export declare function _BinaryenConstGetValueI64Low(expr: ExpressionRef): i32;
+export declare function _BinaryenConstGetValueI64(expr: ExpressionRef): i64;
 export declare function _BinaryenConstSetValueI64Low(expr: ExpressionRef, value: i32): void;
-export declare function _BinaryenConstGetValueI64High(expr: ExpressionRef): i32;
 export declare function _BinaryenConstSetValueI64High(expr: ExpressionRef, value: i32): void;
 export declare function _BinaryenConstGetValueF32(expr: ExpressionRef): f32;
 export declare function _BinaryenConstSetValueF32(expr: ExpressionRef, value: f32): void;

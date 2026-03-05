@@ -30,8 +30,7 @@ import {
   getExpressionId,
   getExpressionType,
   getConstValueI32,
-  getConstValueI64Low,
-  getConstValueI64High,
+  getConstValueI64,
   getConstValueF32,
   getConstValueF64,
   getConstValueV128,
@@ -1175,7 +1174,7 @@ export class Compiler extends DiagnosticEmitter {
             }
             case <u32>TypeRef.I64: {
               global.constantValueKind = ConstantValueKind.Integer;
-              global.constantIntegerValue = i64_new(getConstValueI64Low(initExpr), getConstValueI64High(initExpr));
+              global.constantIntegerValue = getConstValueI64(initExpr);
               break;
             }
             case <u32>TypeRef.F32: {
@@ -1945,7 +1944,7 @@ export class Compiler extends DiagnosticEmitter {
           let value = values[i];
           assert(getExpressionType(value) == elementTypeRef);
           assert(getExpressionId(value) == ExpressionId.Const);
-          writeI64(i64_new(getConstValueI64Low(value), getConstValueI64High(value)), buf, pos);
+          writeI64(getConstValueI64(value), buf, pos);
           pos += 8;
         }
         break;
@@ -3166,10 +3165,7 @@ export class Compiler extends DiagnosticEmitter {
               }
               case <u32>TypeRef.I64: {
                 local = new Local(name, -1, type, flow.targetFunction, variableLikeBase, declarationBase);
-                local.setConstantIntegerValue(
-                  i64_new(getConstValueI64Low(initExpr), getConstValueI64High(initExpr)),
-                  type
-                );
+                local.setConstantIntegerValue(getConstValueI64(initExpr), type);
                 break;
               }
               case <u32>TypeRef.F32: {
@@ -5220,8 +5216,8 @@ export class Compiler extends DiagnosticEmitter {
           // Precompute power if LHS and RHS constants
           // TODO: move this optimization to AIR
           if (getExpressionId(leftExpr) == ExpressionId.Const && getExpressionId(rightExpr) == ExpressionId.Const) {
-            let leftValue = i64_new(getConstValueI64Low(leftExpr), getConstValueI64High(leftExpr));
-            let rightValue = i64_new(getConstValueI64Low(rightExpr), getConstValueI64High(rightExpr));
+            let leftValue = getConstValueI64(leftExpr);
+            let rightValue = getConstValueI64(rightExpr);
             let result = i64_pow(leftValue, rightValue);
             this.currentType = type;
             return module.i64(i64_low(result), i64_high(result));

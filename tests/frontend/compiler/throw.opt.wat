@@ -1128,8 +1128,6 @@
   i32.store
   i32.const 560
   global.set $~lib/rt/itcms/fromSpace
-  memory.size
-  drop
   global.get $~lib/rt/itcms/state
   i32.const 0
   i32.gt_s

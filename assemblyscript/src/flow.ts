@@ -34,7 +34,7 @@ import {
   getBinaryRight,
   getUnaryOp,
   getExpressionType,
-  getConstValueI64Low,
+  getConstValueI64,
   getConstValueF32,
   getConstValueF64,
   getLoadBytes,
@@ -1300,7 +1300,7 @@ export class Flow {
             break;
           }
           case <u32>TypeRef.I64: {
-            value = getConstValueI64Low(expr);
+            value = i64_low(getConstValueI64(expr));
             break;
           } // discards upper bits
           case <u32>TypeRef.F32: {

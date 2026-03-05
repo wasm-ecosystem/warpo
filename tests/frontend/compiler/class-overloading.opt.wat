@@ -1253,12 +1253,11 @@
   local.tee $1
   i32.eqz
   if
-   memory.size
-   local.tee $1
    i32.const 4
    local.get $2
    i32.load offset=1568
-   local.get $1
+   memory.size
+   local.tee $1
    i32.const 16
    i32.shl
    i32.const 4
@@ -1271,7 +1270,9 @@
    i32.and
    i32.const 16
    i32.shr_u
-   local.tee $3
+   local.set $3
+   local.get $1
+   local.get $3
    local.get $1
    local.get $3
    i32.gt_s
@@ -1618,33 +1619,6 @@
   end
   i32.const 464
   global.set $class-overloading/which
- )
- (func $class-overloading/IA#foo@override (param $0 i32)
-  block $default
-   block $case1
-    local.get $0
-    i32.const 8
-    i32.sub
-    i32.load
-    local.tee $0
-    i32.const 11
-    i32.ne
-    if
-     local.get $0
-     i32.const 13
-     i32.eq
-     br_if $case1
-     br $default
-    end
-    i32.const 656
-    global.set $class-overloading/which
-    return
-   end
-   i32.const 688
-   global.set $class-overloading/which
-   return
-  end
-  unreachable
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
@@ -2050,8 +2024,29 @@
    global.set $class-overloading/ia
    i32.const 32
    global.set $class-overloading/which
-   global.get $class-overloading/ia
-   call $class-overloading/IA#foo@override
+   block $__inlined_func$class-overloading/IA#foo@override$28
+    block $case1
+     global.get $class-overloading/ia
+     i32.const 8
+     i32.sub
+     i32.load
+     local.tee $0
+     i32.const 11
+     i32.ne
+     if
+      local.get $0
+      i32.const 13
+      i32.eq
+      br_if $case1
+      unreachable
+     end
+     i32.const 656
+     global.set $class-overloading/which
+     br $__inlined_func$class-overloading/IA#foo@override$28
+    end
+    i32.const 688
+    global.set $class-overloading/which
+   end
    global.get $class-overloading/which
    i32.const 656
    call $~lib/string/String.__eq
@@ -2069,8 +2064,29 @@
    global.set $class-overloading/ic
    i32.const 32
    global.set $class-overloading/which
-   global.get $class-overloading/ic
-   call $class-overloading/IA#foo@override
+   block $__inlined_func$class-overloading/IA#foo@override$29
+    block $case10
+     global.get $class-overloading/ic
+     i32.const 8
+     i32.sub
+     i32.load
+     local.tee $0
+     i32.const 11
+     i32.ne
+     if
+      local.get $0
+      i32.const 13
+      i32.eq
+      br_if $case10
+      unreachable
+     end
+     i32.const 656
+     global.set $class-overloading/which
+     br $__inlined_func$class-overloading/IA#foo@override$29
+    end
+    i32.const 688
+    global.set $class-overloading/which
+   end
    global.get $class-overloading/which
    i32.const 688
    call $~lib/string/String.__eq

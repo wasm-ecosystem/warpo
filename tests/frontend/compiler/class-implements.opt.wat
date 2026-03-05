@@ -1355,8 +1355,6 @@
   local.tee $2
   i32.eqz
   if
-   memory.size
-   local.tee $4
    local.get $3
    local.tee $2
    i32.const 256
@@ -1383,7 +1381,8 @@
    i32.const 4
    local.get $5
    i32.load offset=1568
-   local.get $4
+   memory.size
+   local.tee $4
    i32.const 16
    i32.shl
    i32.const 4
@@ -1397,7 +1396,9 @@
    i32.and
    i32.const 16
    i32.shr_u
-   local.tee $2
+   local.set $2
+   local.get $4
+   local.get $2
    local.get $2
    local.get $4
    i32.lt_s
@@ -1634,33 +1635,29 @@
  )
  (func $class-implements/I4#set:i@override (param $0 i32) (param $1 i32)
   (local $2 i32)
-  block $default
-   block $case1
-    local.get $0
-    i32.const 8
-    i32.sub
-    i32.load
-    local.tee $2
-    i32.const 25
-    i32.ne
-    if
-     local.get $2
-     i32.const 26
-     i32.eq
-     br_if $case1
-     br $default
-    end
-    local.get $0
-    local.get $1
-    i32.store
-    return
+  block $case1
+   local.get $0
+   i32.const 8
+   i32.sub
+   i32.load
+   local.tee $2
+   i32.const 25
+   i32.ne
+   if
+    local.get $2
+    i32.const 26
+    i32.eq
+    br_if $case1
+    unreachable
    end
    local.get $0
    local.get $1
    i32.store
    return
   end
-  unreachable
+  local.get $0
+  local.get $1
+  i32.store
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
@@ -1807,44 +1804,40 @@
   call $~lib/rt/itcms/__new
   global.set $class-implements/h
   block $__inlined_func$class-implements/I#foo@override$95 (result i32)
-   block $default
-    block $case3
-     block $case2
-      block $case1
-       block $case0
-        block $tablify|0
-         global.get $class-implements/h
-         i32.const 8
-         i32.sub
-         i32.load
-         local.tee $0
-         i32.const 4
-         i32.sub
-         br_table $case1 $tablify|0 $case2 $tablify|0 $tablify|0 $tablify|0 $tablify|0 $case0 $tablify|0
-        end
-        local.get $0
+   block $case3
+    block $case2
+     block $case1
+      block $case0
+       block $tablify|0
+        global.get $class-implements/h
         i32.const 8
-        i32.eq
-        local.get $0
-        i32.const 10
-        i32.eq
-        i32.or
-        br_if $case3
-        br $default
+        i32.sub
+        i32.load
+        local.tee $0
+        i32.const 4
+        i32.sub
+        br_table $case1 $tablify|0 $case2 $tablify|0 $tablify|0 $tablify|0 $tablify|0 $case0 $tablify|0
        end
-       i32.const 4
-       br $__inlined_func$class-implements/I#foo@override$95
+       local.get $0
+       i32.const 8
+       i32.eq
+       local.get $0
+       i32.const 10
+       i32.eq
+       i32.or
+       br_if $case3
+       unreachable
       end
-      i32.const 1
+      i32.const 4
       br $__inlined_func$class-implements/I#foo@override$95
      end
-     i32.const 2
+     i32.const 1
      br $__inlined_func$class-implements/I#foo@override$95
     end
-    i32.const 3
+    i32.const 2
     br $__inlined_func$class-implements/I#foo@override$95
    end
-   unreachable
+   i32.const 3
   end
   i32.const 4
   i32.ne
@@ -1857,43 +1850,39 @@
    unreachable
   end
   block $__inlined_func$class-implements/J#foo@override$96 (result i32)
-   block $default0
-    block $case21
-     block $case12
-      i32.const 0
-      i32.const 12
-      call $~lib/rt/itcms/__new
+   block $case20
+    block $case11
+     i32.const 0
+     i32.const 12
+     call $~lib/rt/itcms/__new
+     i32.const 8
+     i32.sub
+     i32.load
+     local.tee $0
+     i32.const 11
+     i32.ne
+     if
+      local.get $0
       i32.const 8
-      i32.sub
-      i32.load
-      local.tee $0
-      i32.const 11
-      i32.ne
-      if
-       local.get $0
-       i32.const 8
-       i32.eq
-       local.get $0
-       i32.const 10
-       i32.eq
-       i32.or
-       br_if $case12
-       local.get $0
-       i32.const 12
-       i32.eq
-       br_if $case21
-       br $default0
-      end
-      i32.const 4
-      br $__inlined_func$class-implements/J#foo@override$96
+      i32.eq
+      local.get $0
+      i32.const 10
+      i32.eq
+      i32.or
+      br_if $case11
+      local.get $0
+      i32.const 12
+      i32.eq
+      br_if $case20
+      unreachable
      end
-     i32.const 3
+     i32.const 4
      br $__inlined_func$class-implements/J#foo@override$96
     end
-    i32.const 1
+    i32.const 3
     br $__inlined_func$class-implements/J#foo@override$96
    end
-   unreachable
+   i32.const 1
   end
   i32.const 1
   i32.ne
@@ -2375,30 +2364,26 @@
   end
  )
  (func $byn$mgfn-shared$class-implements/I3#get:i@override (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
-  block $default
-   block $case1
+  block $case1
+   local.get $2
+   local.get $0
+   i32.const 8
+   i32.sub
+   i32.load
+   local.tee $2
+   i32.ne
+   if
+    local.get $1
     local.get $2
-    local.get $0
-    i32.const 8
-    i32.sub
-    i32.load
-    local.tee $2
-    i32.ne
-    if
-     local.get $1
-     local.get $2
-     i32.eq
-     br_if $case1
-     br $default
-    end
-    local.get $0
-    i32.load
-    return
+    i32.eq
+    br_if $case1
+    unreachable
    end
    local.get $0
    i32.load
    return
   end
-  unreachable
+  local.get $0
+  i32.load
  )
 )

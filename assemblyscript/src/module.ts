@@ -1382,12 +1382,8 @@ export function getConstValueI32(expr: ExpressionRef): i32 {
   return binaryen._BinaryenConstGetValueI32(expr);
 }
 
-export function getConstValueI64Low(expr: ExpressionRef): i32 {
-  return binaryen._BinaryenConstGetValueI64Low(expr);
-}
-
-export function getConstValueI64High(expr: ExpressionRef): i32 {
-  return binaryen._BinaryenConstGetValueI64High(expr);
+export function getConstValueI64(expr: ExpressionRef): i64 {
+  return binaryen._BinaryenConstGetValueI64(expr);
 }
 
 export function getConstValueInteger(expr: ExpressionRef): i64 {
@@ -1417,7 +1413,7 @@ export function isConstZero(expr: ExpressionRef): bool {
   if (getExpressionId(expr) != ExpressionId.Const) return false;
   let type = getExpressionType(expr);
   if (type == TypeRef.I32) return getConstValueI32(expr) == 0;
-  if (type == TypeRef.I64) return (getConstValueI64Low(expr) | getConstValueI64High(expr)) == 0;
+  if (type == TypeRef.I64) return getConstValueI64(expr) == 0;
   if (type == TypeRef.F32) return getConstValueF32(expr) == 0;
   if (type == TypeRef.F64) return getConstValueF64(expr) == 0;
   return false;
@@ -1427,7 +1423,7 @@ export function isConstNonZero(expr: ExpressionRef): bool {
   if (getExpressionId(expr) != ExpressionId.Const) return false;
   let type = getExpressionType(expr);
   if (type == TypeRef.I32) return getConstValueI32(expr) != 0;
-  if (type == TypeRef.I64) return (getConstValueI64Low(expr) | getConstValueI64High(expr)) != 0;
+  if (type == TypeRef.I64) return getConstValueI64(expr) != 0;
   if (type == TypeRef.F32) return getConstValueF32(expr) != 0;
   if (type == TypeRef.F64) return getConstValueF64(expr) != 0;
   return false;

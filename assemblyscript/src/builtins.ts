@@ -57,8 +57,7 @@ import {
   ExpressionId,
   getExpressionId,
   getExpressionType,
-  getConstValueI64High,
-  getConstValueI64Low,
+  getConstValueI64,
   getConstValueI32,
   getConstValueF32,
   getConstValueF64,
@@ -3041,7 +3040,7 @@ function builtin_assert(ctx: BuiltinFunctionContext): ExpressionRef {
         break;
       }
       case <u32>TypeRef.I64: {
-        if (getConstValueI64Low(evaled) | getConstValueI64High(evaled)) {
+        if (getConstValueI64(evaled) != 0) {
           return arg0;
         }
         break;
@@ -3616,8 +3615,9 @@ function builtin_i64x2(ctx: BuiltinFunctionContext): ExpressionRef {
     let precomp = module.runExpression(expr, ExpressionRunnerFlags.PreserveSideeffects);
     if (precomp) {
       let off = i << 3;
-      writeI32(getConstValueI64Low(precomp), bytes, off + 0);
-      writeI32(getConstValueI64High(precomp), bytes, off + 4);
+      let value = getConstValueI64(precomp);
+      writeI32(i64_low(value), bytes, off + 0);
+      writeI32(i64_high(value), bytes, off + 4);
     } else {
       vars[i] = expr;
       numVars++;

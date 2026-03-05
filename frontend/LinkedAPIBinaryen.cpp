@@ -150,11 +150,8 @@ int32_t BinaryenUnaryGetOpForLink(uint64_t expr, [[maybe_unused]] vb::WasmModule
 uint64_t BinaryenExpressionGetTypeForLink(uint64_t expr, [[maybe_unused]] vb::WasmModule *ctx) {
   return static_cast<uint64_t>(BinaryenExpressionGetType(reinterpret_cast<BinaryenExpressionRef>(expr)));
 }
-int32_t BinaryenConstGetValueI64LowForLink(uint64_t expr, [[maybe_unused]] vb::WasmModule *ctx) {
-  return BinaryenConstGetValueI64Low(reinterpret_cast<BinaryenExpressionRef>(expr));
-}
-int32_t BinaryenConstGetValueI64HighForLink(uint64_t expr, [[maybe_unused]] vb::WasmModule *ctx) {
-  return BinaryenConstGetValueI64High(reinterpret_cast<BinaryenExpressionRef>(expr));
+uint64_t BinaryenConstGetValueI64ForLink(uint64_t expr, [[maybe_unused]] vb::WasmModule *ctx) {
+  return static_cast<uint64_t>(BinaryenConstGetValueI64(reinterpret_cast<BinaryenExpressionRef>(expr)));
 }
 float BinaryenConstGetValueF32ForLink(uint64_t expr, [[maybe_unused]] vb::WasmModule *ctx) {
   return BinaryenConstGetValueF32(reinterpret_cast<BinaryenExpressionRef>(expr));
@@ -1080,7 +1077,7 @@ std::vector<vb::NativeSymbol> createBinaryenLinkedAPI() {
       STATIC_LINK("binaryen", "_BinaryenBinaryGetRight", BinaryenBinaryGetRightForLink),
       STATIC_LINK("binaryen", "_BinaryenUnaryGetOp", BinaryenUnaryGetOpForLink),
       STATIC_LINK("binaryen", "_BinaryenExpressionGetType", BinaryenExpressionGetTypeForLink),
-      STATIC_LINK("binaryen", "_BinaryenConstGetValueI64Low", BinaryenConstGetValueI64LowForLink),
+      STATIC_LINK("binaryen", "_BinaryenConstGetValueI64", BinaryenConstGetValueI64ForLink),
       STATIC_LINK("binaryen", "_BinaryenConstGetValueF32", BinaryenConstGetValueF32ForLink),
       STATIC_LINK("binaryen", "_BinaryenConstGetValueF64", BinaryenConstGetValueF64ForLink),
       STATIC_LINK("binaryen", "_BinaryenLoadIsSigned", BinaryenLoadIsSignedForLink),
@@ -1105,7 +1102,6 @@ std::vector<vb::NativeSymbol> createBinaryenLinkedAPI() {
       STATIC_LINK("binaryen", "_BinaryenLiteralInt32", BinaryenLiteralInt32ForLink),
       STATIC_LINK("binaryen", "_BinaryenLiteralInt64", BinaryenLiteralInt64ForLink),
       STATIC_LINK("binaryen", "_BinaryenSetMemory", BinaryenSetMemoryForLink),
-      STATIC_LINK("binaryen", "_BinaryenConstGetValueI64High", BinaryenConstGetValueI64HighForLink),
       STATIC_LINK("binaryen", "_BinaryenIfGetCondition", BinaryenIfGetConditionForLink),
       STATIC_LINK("binaryen", "_BinaryenUnaryGetValue", BinaryenUnaryGetValueForLink),
       STATIC_LINK("binaryen", "_BinaryenCallGetNumOperands", BinaryenCallGetNumOperandsForLink),

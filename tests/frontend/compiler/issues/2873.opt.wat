@@ -2411,8 +2411,6 @@
   local.tee $1
   i32.eqz
   if
-   memory.size
-   local.tee $3
    local.get $2
    local.tee $1
    i32.const 256
@@ -2439,7 +2437,8 @@
    i32.const 4
    local.get $4
    i32.load offset=1568
-   local.get $3
+   memory.size
+   local.tee $3
    i32.const 16
    i32.shl
    i32.const 4
@@ -2453,7 +2452,9 @@
    i32.and
    i32.const 16
    i32.shr_u
-   local.tee $1
+   local.set $1
+   local.get $3
+   local.get $1
    local.get $1
    local.get $3
    i32.lt_s
