@@ -175,8 +175,6 @@ import { markDataElementImmutable, markCallInlined } from "./warpo";
 import { mangleImportName, STATIC_DELIMITER, INDEX_SUFFIX } from "./mangle";
 import { addGlobal } from "./mir";
 
-import { ClosureScanner } from "./ast/closureScanner";
-
 /** Features enabled by default. */
 export const defaultFeatures =
   Feature.MutableGlobals | Feature.SignExtension | Feature.NontrappingF2I | Feature.BulkMemory;
@@ -409,6 +407,8 @@ export class Compiler extends DiagnosticEmitter {
   pendingElements: Set<Element> = new Set();
   /** Elements, that are module exports, already processed */
   doneModuleExports: Set<Element> = new Set();
+
+  closureBuiltinAdded: boolean = false;
 
   /** Constructs a new compiler for a {@link Program} using the specified options. */
   constructor(program: Program) {
@@ -645,32 +645,34 @@ export class Compiler extends DiagnosticEmitter {
         TypeRef.I32
       );
     }
-    // this.setClosureImport(); fixme: closure support is currently not finished yet.
     return module;
   }
 
   setClosureImport(): void {
-    this.module.addFunctionImport(
-      BuiltinNames.getClosureEnv,
-      BuiltinNames.externalFuncName,
-      BuiltinNames.getClosureEnv,
-      TypeRef.None,
-      TypeRef.I32
-    );
-    this.module.addFunctionImport(
-      BuiltinNames.setClosureEnv,
-      BuiltinNames.externalFuncName,
-      BuiltinNames.setClosureEnv,
-      TypeRef.I32,
-      TypeRef.None
-    );
-    this.module.addFunctionImport(
-      BuiltinNames.getClosureEnvByLevel,
-      BuiltinNames.externalFuncName,
-      BuiltinNames.getClosureEnvByLevel,
-      TypeRef.I32,
-      TypeRef.I32
-    );
+    if (!this.closureBuiltinAdded) {
+      this.closureBuiltinAdded = true;
+      this.module.addFunctionImport(
+        BuiltinNames.getClosureEnv,
+        BuiltinNames.externalFuncName,
+        BuiltinNames.getClosureEnv,
+        TypeRef.None,
+        TypeRef.I32
+      );
+      this.module.addFunctionImport(
+        BuiltinNames.setClosureEnv,
+        BuiltinNames.externalFuncName,
+        BuiltinNames.setClosureEnv,
+        TypeRef.I32,
+        TypeRef.None
+      );
+      this.module.addFunctionImport(
+        BuiltinNames.getClosureEnvByLevel,
+        BuiltinNames.externalFuncName,
+        BuiltinNames.getClosureEnvByLevel,
+        TypeRef.I32,
+        TypeRef.I32
+      );
+    }
   }
 
   private initDefaultMemory(memoryOffset: i64): void {
@@ -921,9 +923,6 @@ export class Compiler extends DiagnosticEmitter {
   compileFile(file: File): void {
     if (file.is(CommonFlags.Compiled)) return;
     file.set(CommonFlags.Compiled);
-    const closureScanner = new ClosureScanner();
-    this.program.closureScanner = closureScanner;
-    file.source.accept(closureScanner);
 
     // compile top-level statements within the file's start function
     let startFunction = file.startFunction;
@@ -1547,6 +1546,7 @@ export class Compiler extends DiagnosticEmitter {
     /** Function to compile. */
     instance: Function
   ): bool {
+    this.setClosureImport();
     // ensure the function has no duplicate parameters
     let parameters = instance.prototype.functionTypeNode.parameters;
     let numParameters = parameters.length;
@@ -1600,10 +1600,8 @@ export class Compiler extends DiagnosticEmitter {
       let flow = instance.flow;
       this.currentFlow = flow;
       let stmts = new Array<ExpressionRef>();
-
-      stmts.push(0); // placeholder for the closure heapLocals.
-      stmts.push(0); // placeholder for saving the parent function's context.
-
+      const heapLocalsStorage = flow.getTempLocal(Type.i32);
+      instance.heapLocalsStorage = heapLocalsStorage;
       instance.heapLocalsTypeBuilder.push(
         this.program.smallTupleInstance.type,
         instance.declarationBase.nameRange,
@@ -1623,21 +1621,23 @@ export class Compiler extends DiagnosticEmitter {
       const closureDummyNode = Node.createComment(CommentKind.Line, "", new Range(0, 0)); // fixme: it's just a place holder node.
       const tupleInfo = assert(assert(heapLocalsTupleType).tupleInfo);
       const heapLocalsTuple = this.makeNewTuple(tupleInfo.elementCount, tupleInfo.getBitmap(), closureDummyNode);
-      const heapLocalsStorage = flow.getTempLocal(Type.i32);
-      mir.addHeapVariableStorageLocalIndex(instance, heapLocalsStorage.index);
-      stmts[0] = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
+
+      const heapLocalsStmt = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
       const parentEnvElementInfo = tupleInfo.elements[0];
       const getClosureEnvStmt = module.get_closure_env();
-      const tupleSetter = assert(this.program.smallTupleInstance.getMethod("__set"));
-      stmts[1] = this.makeCallDirect(
+      const tupleSetter = assert(this.program.smallTupleInstance.getMethod("__set", [parentEnvElementInfo.type]));
+      const saveParentEnvStmt = this.makeCallDirect(
         tupleSetter,
         [
           module.local_get(heapLocalsStorage.index, this.program.smallTupleInstance.type.toRef()),
-          parentEnvElementInfo.offset,
+          module.usize(parentEnvElementInfo.offset),
           getClosureEnvStmt,
         ],
         closureDummyNode
       );
+      // insert closure setup at the beginning
+      stmts.unshift(saveParentEnvStmt);
+      stmts.unshift(heapLocalsStmt);
       // create the function
       funcRef = module.addFunction(
         instance.internalName,
@@ -7484,7 +7484,8 @@ export class Compiler extends DiagnosticEmitter {
           return this.compileInlineConstant(local, contextualType, constraints);
         }
         let localIndex = local.index;
-        if (!flow.isLocalFlag(localIndex, LocalFlags.Initialized)) {
+        // fixme need to check init of closure variable also
+        if (!local.isClosureVariable() && !flow.isLocalFlag(localIndex, LocalFlags.Initialized)) {
           this.error(DiagnosticCode.Variable_0_is_used_before_being_assigned, expression.range, local.name);
         }
         assert(localIndex >= 0);
@@ -7499,11 +7500,6 @@ export class Compiler extends DiagnosticEmitter {
           this.currentType = localType;
         }
 
-        if (!local.declaredByFlow(flow)) {
-          // TODO: closures
-          this.error(DiagnosticCode.Not_implemented_0, expression.range, "Closures");
-          return module.unreachable();
-        }
         let expr = this.makeLocalGet(local);
         if (isNonNull && localType.isNullableExternalReference && this.options.hasFeature(Feature.GC)) {
           // If the local's type is nullable, but its value is known to be non-null, propagate
