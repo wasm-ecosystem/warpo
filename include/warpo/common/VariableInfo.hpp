@@ -62,6 +62,8 @@ public:
 
   SubProgramLookupMap const &getSubProgramLookupMap() const noexcept { return subProgramLookupMap_; }
 
+  void addHeapVariableStorageLocalIndex(std::string_view const subProgramName, uint32_t const index);
+
 private:
   BaseTypeRegistry baseTypeRegistry_;
   ClassRegistry classRegistry_;
