@@ -2742,7 +2742,7 @@ export class Compiler extends DiagnosticEmitter {
     );
     const variableType = this.currentType;
     // body flow is new created, there are definitely no duplicate identifier.
-    const variableLocal = bodyFlow.addScopedLocal(variable.name.text, variableType);
+    const variableLocal = bodyFlow.addScopedLocal(variable.name.text, variableType, variable);
     if (variable.is(CommonFlags.Const)) bodyFlow.setLocalFlag(variableLocal.index, LocalFlags.Constant);
     bodyStmts.push(this.makeLocalAssignment(variableLocal, variableExpr, variableType, false));
     if (body.kind == NodeKind.Block) {
@@ -3222,7 +3222,7 @@ export class Compiler extends DiagnosticEmitter {
             }
             local = existingLocal;
           } else {
-            local = flow.addScopedLocal(name, type);
+            local = flow.addScopedLocal(name, type, declaration);
           }
           if (isConst) flow.setLocalFlag(local.index, LocalFlags.Constant);
         } else {
@@ -7345,7 +7345,7 @@ export class Compiler extends DiagnosticEmitter {
         }
       } else {
         let ftype = instance.type;
-        let local = flow.addScopedLocal(instance.name, ftype);
+        let local = flow.addScopedLocal(instance.name, ftype, null);
         flow.setLocalFlag(local.index, LocalFlags.Constant | LocalFlags.Initialized);
         expr = module.local_tee(local.index, expr, ftype.isManaged);
       }
