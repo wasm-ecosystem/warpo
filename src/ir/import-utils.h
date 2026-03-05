@@ -17,9 +17,10 @@
 #ifndef wasm_ir_import_h
 #define wasm_ir_import_h
 
-#include "ir/import-name.h"
+#include "ir/import-names.h"
 #include "ir/runtime-table.h"
 #include "literal.h"
+#include "wasm-type.h"
 #include "wasm.h"
 
 namespace wasm {
@@ -129,14 +130,19 @@ class ImportResolver {
 public:
   virtual ~ImportResolver() = default;
 
-  // Returns null if the `name` wasn't found. The returned Literals* lives as
-  // long as the ImportResolver instance.
-  virtual Literals* getGlobalOrNull(ImportNames name, Type type) const = 0;
+  // Returns null if the imported global does not exist. The returned Literals*
+  // lives as long as the ImportResolver instance. Takes name, type, and mut as
+  // parameters because these are parts of the global's externtype that the
+  // environment is allowed to reflect on when providing imports.
+  virtual Literals*
+  getGlobalOrNull(ImportNames name, Type type, bool mut) const = 0;
 
-  // Returns null if the `name` wasn't found. The returned RuntimeTable* lives
-  // as long as the ImportResolver instance.
+  // Returns null if the imported table does not exist. The returned
+  // RuntimeTable* lives as long as the ImportResolver instance.
   virtual RuntimeTable* getTableOrNull(ImportNames name,
                                        const Table& type) const = 0;
+
+  virtual Tag* getTagOrNull(ImportNames name, const Signature& type) const = 0;
 };
 
 // Looks up imports from the given `linkedInstances`.
@@ -147,7 +153,8 @@ public:
     std::map<Name, std::shared_ptr<ModuleRunnerType>> linkedInstances)
     : linkedInstances(std::move(linkedInstances)) {}
 
-  Literals* getGlobalOrNull(ImportNames name, Type type) const override {
+  Literals*
+  getGlobalOrNull(ImportNames name, Type type, bool mut) const override {
     auto it = linkedInstances.find(name.module);
     if (it == linkedInstances.end()) {
       return nullptr;
@@ -166,6 +173,16 @@ public:
 
     ModuleRunnerType* instance = it->second.get();
     return instance->getExportedTableOrNull(name.name);
+  }
+
+  Tag* getTagOrNull(ImportNames name, const Signature& type) const override {
+    auto it = linkedInstances.find(name.module);
+    if (it == linkedInstances.end()) {
+      return nullptr;
+    }
+
+    ModuleRunnerType* instance = it->second.get();
+    return instance->getExportedTagOrNull(name.name);
   }
 
 private:

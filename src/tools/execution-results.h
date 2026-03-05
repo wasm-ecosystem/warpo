@@ -18,12 +18,88 @@
 // Shared execution result checking code
 //
 
+#include <deque>
+#include <memory>
+
+#include "ir/import-utils.h"
 #include "shell-interface.h"
+#include "support/utilities.h"
+#include "wasm-type.h"
 #include "wasm.h"
 
 namespace wasm {
 
+namespace {
+
 using Loggings = std::vector<Literal>;
+
+Tag& getWasmTag() {
+  static Tag tag = []() {
+    Tag tag;
+    tag.module = "fuzzing-support";
+    tag.base = "wasmtag";
+    tag.name = "imported-wasm-tag";
+    tag.type = Signature(Type::i32, Type::none);
+
+    return tag;
+  }();
+  return tag;
+}
+
+Tag& getJsTag() {
+  static Tag tag = []() {
+    Tag tag;
+    tag.module = "fuzzing-support";
+    tag.base = "jstag";
+    tag.name = "imported-js-tag";
+    tag.type = Signature(Type(HeapType::ext, Nullable), Type::none);
+    return tag;
+  }();
+  return tag;
+}
+
+void printValue(Literal value) {
+  // Unwrap an externalized GC value to get the actual value, but not strings,
+  // which are normally a subtype of ext.
+  if (Type::isSubType(value.type, Type(HeapType::ext, Nullable)) &&
+      !value.type.isString()) {
+    value = value.internalize();
+  }
+
+  // An anyref literal is a string.
+  if (value.type.isRef() &&
+      value.type.getHeapType().isMaybeShared(HeapType::any)) {
+    value = value.externalize();
+  }
+
+  // Don't print most reference values, as e.g. funcref(N) contains an index,
+  // which is not guaranteed to remain identical after optimizations. Do not
+  // print the type in detail (as even that may change due to closed-world
+  // optimizations); just print a simple type like JS does, 'object' or
+  // 'function', but also print null for a null (so a null function does not
+  // get printed as object, as in JS we have typeof null == 'object').
+  //
+  // The only references we print in full are strings and i31s, which have
+  // simple and stable internal structures that optimizations will not alter.
+  auto type = value.type;
+  if (type.isRef()) {
+    if (type.isString() || type.getHeapType().isMaybeShared(HeapType::i31)) {
+      std::cout << value;
+    } else if (value.isNull()) {
+      std::cout << "null";
+    } else if (type.isFunction()) {
+      std::cout << "function";
+    } else {
+      std::cout << "object";
+    }
+    return;
+  }
+
+  // Non-references can be printed in full.
+  std::cout << value;
+}
+
+} // namespace
 
 // Logs every relevant import call parameter.
 struct LoggingExternalInterface : public ShellExternalInterface {
@@ -43,10 +119,10 @@ private:
   Module& wasm;
 
   // The imported fuzzing tag for wasm.
-  Tag wasmTag;
+  const Tag& wasmTag;
 
   // The imported tag for js exceptions.
-  Tag jsTag;
+  const Tag& jsTag;
 
   // The ModuleRunner and this ExternalInterface end up needing links both ways,
   // so we cannot init this in the constructor.
@@ -57,34 +133,14 @@ public:
     Loggings& loggings,
     Module& wasm,
     std::map<Name, std::shared_ptr<ModuleRunner>> linkedInstances_ = {})
-    : ShellExternalInterface(linkedInstances_), loggings(loggings), wasm(wasm) {
+    : ShellExternalInterface(linkedInstances_), loggings(loggings), wasm(wasm),
+      wasmTag(getWasmTag()), jsTag(getJsTag()) {
     for (auto& exp : wasm.exports) {
       if (exp->kind == ExternalKind::Table && exp->name == "table") {
         exportedTable = *exp->getInternalName();
         break;
       }
     }
-
-    // Set up tags. (Setting these values is useful for debugging - making the
-    // Tag objects valid - and also appears in fuzz-exec logging.)
-    wasmTag.module = "fuzzing-support";
-    wasmTag.base = "wasmtag";
-    wasmTag.name = "imported-wasm-tag";
-    wasmTag.type = Signature(Type::i32, Type::none);
-
-    jsTag.module = "fuzzing-support";
-    jsTag.base = "jstag";
-    jsTag.name = "imported-js-tag";
-    jsTag.type = Signature(Type(HeapType::ext, Nullable), Type::none);
-  }
-
-  Tag* getImportedTag(Tag* tag) override {
-    for (auto* imported : {&wasmTag, &jsTag}) {
-      if (imported->module == tag->module && imported->base == tag->base) {
-        return imported;
-      }
-    }
-    Fatal() << "missing host tag " << tag->module << '.' << tag->base;
   }
 
   Literal getImportedFunction(Function* import) override {
@@ -118,7 +174,8 @@ public:
               std::cout << ' ' << high;
               loggings.push_back(high);
             } else {
-              std::cout << ' ' << argument;
+              std::cout << ' ';
+              printValue(argument);
               loggings.push_back(argument);
             }
           }
@@ -217,13 +274,8 @@ public:
   }
 
   void throwJSException() {
-    // JS exceptions contain an externref. Use the same type of value as a JS
-    // exception would have, which is a reference to an object, and which will
-    // print out "object" in the logging from JS. A trivial struct is enough for
-    // us to log the same thing here.
-    auto empty = HeapType(Struct{});
-    auto inner = Literal(std::make_shared<GCData>(empty, Literals{}), empty);
-    Literals arguments = {inner.externalize()};
+    // JS exceptions contain an externref.
+    Literals arguments = {Literal::makeExtern(0, Unshared)};
     auto payload = std::make_shared<ExnData>(&jsTag, arguments);
     throwException(WasmException{Literal(payload)});
   }
@@ -299,6 +351,52 @@ public:
   void setModuleRunner(ModuleRunner* instance_) { instance = instance_; }
 };
 
+class FuzzerImportResolver
+  : public LinkedInstancesImportResolver<ModuleRunner> {
+  using LinkedInstancesImportResolver::LinkedInstancesImportResolver;
+
+  // We can synthesize imported externref globals. Use a deque for stable
+  // addresses.
+  mutable std::deque<Literals> synthesizedGlobals;
+
+  Tag* getTagOrNull(ImportNames name, const Signature& type) const override {
+    if (name.module == "fuzzing-support") {
+      if (name.name == "wasmtag") {
+        return &wasmTag;
+      }
+      if (name.name == "jstag") {
+        return &jsTag;
+      }
+    }
+
+    return LinkedInstancesImportResolver::getTagOrNull(name, type);
+  }
+
+  virtual Literals*
+  getGlobalOrNull(ImportNames name, Type type, bool mut) const override {
+    // First look for globals available from linked instances.
+    if (auto* global =
+          LinkedInstancesImportResolver<ModuleRunner>::getGlobalOrNull(
+            name, type, mut)) {
+      return global;
+    }
+    // This is not a known global, but the fuzzer supports synthesizing
+    // immutable externref global imports.
+    // TODO: Figure out how to share this logic with TranslateToFuzzReader.
+    // TODO: Support other types.
+    if (mut || !type.isRef() || type.getHeapType() != HeapType::ext) {
+      return nullptr;
+    }
+    // TODO: Generate a distinct payload for each global.
+    synthesizedGlobals.emplace_back(Literals{Literal::makeExtern(0, Unshared)});
+    return &synthesizedGlobals.back();
+  }
+
+private:
+  Tag& wasmTag = getWasmTag();
+  Tag& jsTag = getJsTag();
+};
+
 // gets execution results from a wasm module. this is useful for fuzzing
 //
 // we can only get results when there are no imports. we then call each method
@@ -319,12 +417,19 @@ struct ExecutionResults {
     try {
       // Instantiate the first module.
       LoggingExternalInterface interface(loggings, wasm);
-      auto instance = std::make_shared<ModuleRunner>(wasm, &interface);
+
+      // `linkedInstances` is empty at this point and the below constructors
+      // make copies.
+      std::map<Name, std::shared_ptr<ModuleRunner>> linkedInstances;
+      auto instance = std::make_shared<ModuleRunner>(
+        wasm,
+        &interface,
+        linkedInstances,
+        std::make_shared<FuzzerImportResolver>(linkedInstances));
       instantiate(*instance, interface);
 
       // Instantiate the second, if there is one (we instantiate both before
       // running anything, so that we match the behavior of fuzz_shell.js).
-      std::map<Name, std::shared_ptr<ModuleRunner>> linkedInstances;
       std::unique_ptr<LoggingExternalInterface> secondInterface;
       std::shared_ptr<ModuleRunner> secondInstance;
       if (second) {
@@ -379,51 +484,11 @@ struct ExecutionResults {
           std::cout << "[fuzz-exec] note result: " << exp->name << " => ";
           for (auto value : *values) {
             printValue(value);
+            std::cout << '\n';
           }
         }
       }
     }
-  }
-
-  void printValue(Literal value) {
-    // Unwrap an externalized GC value to get the actual value, but not strings,
-    // which are normally a subtype of ext.
-    if (Type::isSubType(value.type, Type(HeapType::ext, Nullable)) &&
-        !value.type.isString()) {
-      value = value.internalize();
-    }
-
-    // An anyref literal is a string.
-    if (value.type.isRef() &&
-        value.type.getHeapType().isMaybeShared(HeapType::any)) {
-      value = value.externalize();
-    }
-
-    // Don't print most reference values, as e.g. funcref(N) contains an index,
-    // which is not guaranteed to remain identical after optimizations. Do not
-    // print the type in detail (as even that may change due to closed-world
-    // optimizations); just print a simple type like JS does, 'object' or
-    // 'function', but also print null for a null (so a null function does not
-    // get printed as object, as in JS we have typeof null == 'object').
-    //
-    // The only references we print in full are strings and i31s, which have
-    // simple and stable internal structures that optimizations will not alter.
-    auto type = value.type;
-    if (type.isRef()) {
-      if (type.isString() || type.getHeapType().isMaybeShared(HeapType::i31)) {
-        std::cout << value << '\n';
-      } else if (value.isNull()) {
-        std::cout << "null\n";
-      } else if (type.isFunction()) {
-        std::cout << "function\n";
-      } else {
-        std::cout << "object\n";
-      }
-      return;
-    }
-
-    // Non-references can be printed in full.
-    std::cout << value << '\n';
   }
 
   // get current results and check them against previous ones

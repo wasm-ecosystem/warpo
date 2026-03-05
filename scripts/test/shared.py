@@ -22,6 +22,7 @@ import shutil
 import stat
 import subprocess
 import sys
+from contextlib import contextmanager
 from pathlib import Path
 
 # The C++ standard whose features are required to build Binaryen.
@@ -207,7 +208,6 @@ WASM_METADCE = [os.path.join(options.binaryen_bin, 'wasm-metadce')]
 WASM_EMSCRIPTEN_FINALIZE = [os.path.join(options.binaryen_bin,
                                          'wasm-emscripten-finalize')]
 BINARYEN_JS = os.path.join(options.binaryen_bin, 'binaryen_js.js')
-BINARYEN_WASM = os.path.join(options.binaryen_bin, 'binaryen_wasm.js')
 
 
 def wrap_with_valgrind(cmd):
@@ -404,7 +404,6 @@ SPEC_TESTSUITE_PROPOSALS_TO_SKIP = [
 SPEC_TESTSUITE_TESTS_TO_SKIP = [
     'array_new_elem.wast',  # Failure to parse element segment item abbreviation
     'binary.wast',   # Missing data count section validation
-    'call_indirect64.wast',  # Failure to parse element segment abbreviation
     'comments.wast',  # Issue with carriage returns being treated as newlines
     'const.wast',    # Hex float constant not recognized as out of range
     'conversions.wast',  # Promoted NaN should be canonical
@@ -422,8 +421,7 @@ SPEC_TESTSUITE_TESTS_TO_SKIP = [
     'linking.wast',  # Missing function type validation on instantiation
     'proposals/threads/memory.wast',  # Missing memory type validation on instantiation
     'annotations.wast',  # String annotations IDs should be allowed
-    'id.wast',       # Empty IDs should be disallowed
-    'instance.wast',  # Requires correct handling of tag imports from different instances of the same module
+    'instance.wast',  # Requires support for table default elements
     'table64.wast',   # Requires validations for table size
     'tag.wast',      # Non-empty tag results allowed by stack switching
     'local_init.wast',  # Requires local validation to respect unnamed blocks
@@ -441,7 +439,7 @@ SPEC_TESTSUITE_TESTS_TO_SKIP = [
     'i31.wast',       # Requires support for table default elements
     'ref_cast.wast',  # Requires host references to not be externalized i31refs
     'ref_test.wast',  # Requires host references to not be externalized i31refs
-    'struct.wast',    # Duplicate field names not properly rejected
+    'struct.wast',    # Fails to roundtrip unnamed types e.g. `(ref 0)`
     'type-rec.wast',  # Missing function type validation on instantiation
     'type-subtyping.wast',  # ShellExternalInterface::callTable does not handle subtyping
     'memory64.wast',        # Requires validations on the max memory size
@@ -515,12 +513,12 @@ def binary_format_check(wast, verify_final_result=True, wasm_as_args=['-g'],
     return disassembled_file
 
 
-# run a check with BINARYEN_PASS_DEBUG set, to do full validation
-def with_pass_debug(check):
+@contextmanager
+def with_pass_debug():
     old_pass_debug = os.environ.get('BINARYEN_PASS_DEBUG')
+    os.environ['BINARYEN_PASS_DEBUG'] = '1'
     try:
-        os.environ['BINARYEN_PASS_DEBUG'] = '1'
-        check()
+        yield
     finally:
         if old_pass_debug is not None:
             os.environ['BINARYEN_PASS_DEBUG'] = old_pass_debug

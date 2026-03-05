@@ -24,7 +24,9 @@
 #include "ir/utils.h"
 #include "wasm-ir-builder.h"
 
+#ifndef IR_BUILDER_DEBUG
 #define IR_BUILDER_DEBUG 0
+#endif
 
 #if IR_BUILDER_DEBUG
 #define DBG(statement) statement
@@ -76,15 +78,22 @@ MaybeResult<IRBuilder::HoistedVal> IRBuilder::hoistLastValue() {
     return HoistedVal{Index(index), nullptr};
   }
   auto*& expr = stack[index];
-  auto type = expr->type;
-  if (type == Type::unreachable) {
+  if (expr->type == Type::unreachable) {
     // Make sure the top of the stack also has an unreachable expression.
     if (stack.back()->type != Type::unreachable) {
       pushSynthetic(builder.makeUnreachable());
     }
     return HoistedVal{Index(index), nullptr};
   }
-  // Hoist with a scratch local.
+  // Hoist with a scratch local. Normally the scratch local is the same type as
+  // the hoisted expression, but we may need to adjust it given the enabled
+  // features. Otherwise, if the expression has a tuple type with a more refined
+  // element than would be written to a binary, then that refined element type
+  // would end up in a multivalue block return. But that could cause us to fail
+  // text roundtripping if the block type would conflict after binary writing
+  // with another function type in the module. Avoid this problem by
+  // generalizing the scratch local type eagerly.
+  auto type = expr->type.asWrittenGivenFeatures(wasm.features);
   auto scratchIdx = addScratchLocal(type);
   CHECK_ERR(scratchIdx);
   expr = builder.makeLocalSet(*scratchIdx, expr);
@@ -526,6 +535,21 @@ public:
                               std::optional<HeapType> ht = std::nullopt) {
     std::vector<Child> children;
     ConstraintCollector{builder, children}.visitStructCmpxchg(curr, ht);
+    return popConstrainedChildren(children);
+  }
+
+  Result<> visitStructWait(StructWait* curr,
+                           std::optional<HeapType> structType = std::nullopt) {
+    std::vector<Child> children;
+    ConstraintCollector{builder, children}.visitStructWait(curr, structType);
+    return popConstrainedChildren(children);
+  }
+
+  Result<>
+  visitStructNotify(StructNotify* curr,
+                    std::optional<HeapType> structType = std::nullopt) {
+    std::vector<Child> children;
+    ConstraintCollector{builder, children}.visitStructNotify(curr, structType);
     return popConstrainedChildren(children);
   }
 
@@ -2230,6 +2254,48 @@ IRBuilder::makeStructCmpxchg(HeapType type, Index field, MemoryOrder order) {
   return Ok{};
 }
 
+Result<> IRBuilder::makeStructWait(HeapType type, Index index) {
+  if (!type.isStruct()) {
+    return Err{"expected struct type annotation on struct.wait"};
+  }
+  // This is likely checked in the caller by the `fieldidx` parser.
+  if (index >= type.getStruct().fields.size()) {
+    return Err{"struct.wait field index out of bounds"};
+  }
+
+  if (type.getStruct().fields.at(index).packedType !=
+      Field::PackedType::WaitQueue) {
+    return Err{"struct.wait field index must contain a `waitqueue`"};
+  }
+
+  StructWait curr(wasm.allocator);
+  CHECK_ERR(ChildPopper{*this}.visitStructWait(&curr, type));
+  CHECK_ERR(validateTypeAnnotation(type, curr.ref));
+  push(builder.makeStructWait(index, curr.ref, curr.expected, curr.timeout));
+  return Ok{};
+}
+
+Result<> IRBuilder::makeStructNotify(HeapType type, Index index) {
+  if (!type.isStruct()) {
+    return Err{"expected struct type annotation on struct.notify"};
+  }
+  // This is likely checked in the caller by the `fieldidx` parser.
+  if (index >= type.getStruct().fields.size()) {
+    return Err{"struct.notify field index out of bounds"};
+  }
+
+  if (type.getStruct().fields.at(index).packedType !=
+      Field::PackedType::WaitQueue) {
+    return Err{"struct.notify field index must contain a `waitqueue`"};
+  }
+
+  StructNotify curr(wasm.allocator);
+  CHECK_ERR(ChildPopper{*this}.visitStructNotify(&curr, type));
+  CHECK_ERR(validateTypeAnnotation(type, curr.ref));
+  push(builder.makeStructNotify(index, curr.ref, curr.count));
+  return Ok{};
+}
+
 Result<> IRBuilder::makeArrayNew(HeapType type) {
   if (!type.isArray()) {
     return Err{"expected array type annotation on array.new"};
@@ -2657,9 +2723,23 @@ void IRBuilder::applyAnnotations(Expression* expr,
   }
 
   if (annotation.inline_) {
-    // Only possible inside functions.
     assert(func);
     func->codeAnnotations[expr].inline_ = annotation.inline_;
+  }
+
+  if (annotation.removableIfUnused) {
+    assert(func);
+    func->codeAnnotations[expr].removableIfUnused = true;
+  }
+
+  if (annotation.jsCalled) {
+    assert(func);
+    func->codeAnnotations[expr].jsCalled = true;
+  }
+
+  if (annotation.idempotent) {
+    assert(func);
+    func->codeAnnotations[expr].idempotent = true;
   }
 }
 

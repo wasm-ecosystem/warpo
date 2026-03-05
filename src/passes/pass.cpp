@@ -105,6 +105,7 @@ void PassRegistry::registerPasses() {
                "removes arguments to calls in an lto-like manner, and "
                "optimizes where we removed",
                createDAEOptimizingPass);
+  registerPass("dae2", "Experimental reimplementation of DAE", createDAE2Pass);
   registerPass("abstract-type-refining",
                "refine and merge abstract (never-created) types",
                createAbstractTypeRefiningPass);
@@ -408,6 +409,9 @@ void PassRegistry::registerPasses() {
   registerPass("remove-non-js-ops",
                "removes operations incompatible with js",
                createRemoveNonJSOpsPass);
+  registerPass("remove-relaxed-simd",
+               "replaces relaxed SIMD instructions with unreachable",
+               createRemoveRelaxedSIMDPass);
   registerPass("remove-imports",
                "removes imports and replaces them with nops",
                createRemoveImportsPass);
@@ -548,6 +552,9 @@ void PassRegistry::registerPasses() {
   registerPass("strip-target-features",
                "strip the wasm target features section",
                createStripTargetFeaturesPass);
+  registerPass("strip-toolchain-annotations",
+               "strip all toolchain-specific code annotations",
+               createStripToolchainAnnotationsPass);
   registerPass("translate-to-new-eh",
                "deprecated; same as translate-to-exnref",
                createTranslateToExnrefPass);

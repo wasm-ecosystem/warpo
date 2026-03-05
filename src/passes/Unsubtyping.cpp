@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-#define UNSUBTYPING_DEBUG 0
-
 #include <cstddef>
 #include <iterator>
 #include <memory>
-
-#if !UNSUBTYPING_DEBUG
-#include <unordered_map>
-#include <unordered_set>
-#endif
 
 #include "ir/effects.h"
 #include "ir/localize.h"
 #include "ir/module-utils.h"
 #include "ir/names.h"
+#include "ir/struct-utils.h"
 #include "ir/subtype-exprs.h"
 #include "ir/type-updating.h"
 #include "ir/utils.h"
@@ -38,8 +32,15 @@
 #include "wasm-type.h"
 #include "wasm.h"
 
+#ifndef UNSUBTYPING_DEBUG
+#define UNSUBTYPING_DEBUG 0
+#endif
+
 #if UNSUBTYPING_DEBUG
 #include "support/insert_ordered.h"
+#else
+#include <unordered_map>
+#include <unordered_set>
 #endif
 
 #if UNSUBTYPING_DEBUG
@@ -170,6 +171,9 @@ struct TypeTree {
     // The index of the described and descriptor types, if they are necessary.
     std::optional<Index> described;
     std::optional<Index> descriptor;
+    // Whether this type might flow out to JS from a JS-called function or via
+    // extern.convert_any.
+    bool exposedToJS = false;
 
     Node(HeapType type, Index index) : type(type), parent(index) {}
   };
@@ -245,6 +249,19 @@ struct TypeTree {
       return nodes[*descIndex].type;
     }
     return std::nullopt;
+  }
+
+  void setExposedToJS(HeapType type) {
+    auto index = getIndex(type);
+    nodes[index].exposedToJS = true;
+  }
+
+  bool isExposedToJS(HeapType type) const {
+    auto index = maybeGetIndex(type);
+    if (!index) {
+      return false;
+    }
+    return nodes[*index].exposedToJS;
   }
 
   struct SupertypeIterator {
@@ -403,6 +420,9 @@ struct TypeTree {
       for (auto child : node.children) {
         std::cerr << " " << ModuleHeapType(wasm, nodes[child].type);
       }
+      if (node.exposedToJS) {
+        std::cerr << ", exposed to JS";
+      }
       std::cerr << '\n';
     }
   }
@@ -425,7 +445,108 @@ private:
   }
 };
 
-struct Unsubtyping : Pass {
+// There are two contexts where we have to note subtypings and casts: in the
+// initial parallel analysis of the module and in the follow-on fixed point
+// analysis over the type tree. Most of the logic is the same in both cases, but
+// the final update of data structures is different. This CRTP utility
+// deduplicates the shared logic.
+template<typename Self> struct Noter {
+  Self& self() { return *static_cast<Self*>(this); }
+
+  void noteSubtype(HeapType sub, HeapType super) {
+    // Bottom types are uninteresting, but other basic heap types can be
+    // interesting because of their interactions with casts.
+    if (sub == super || sub.isBottom()) {
+      return;
+    }
+    DBG(std::cerr << "noting " << ModuleHeapType(*wasm, sub)
+                  << " <: " << ModuleHeapType(*wasm, super) << '\n');
+    self().doNoteSubtype(sub, super);
+  }
+
+  void noteSubtype(Type sub, Type super) {
+    if (sub.isTuple()) {
+      assert(super.isTuple() && sub.size() == super.size());
+      for (size_t i = 0, size = sub.size(); i < size; ++i) {
+        noteSubtype(sub[i], super[i]);
+      }
+      return;
+    }
+    if (!sub.isRef() || !super.isRef()) {
+      return;
+    }
+    noteSubtype(sub.getHeapType(), super.getHeapType());
+  }
+
+  void noteSubtype(Type sub, Expression* super) {
+    noteSubtype(sub, super->type);
+  }
+
+  void noteSubtype(Expression* sub, Type super) {
+    noteSubtype(sub->type, super);
+  }
+
+  void noteSubtype(Expression* sub, Expression* super) {
+    noteSubtype(sub->type, super->type);
+  }
+
+  void noteDescriptor(HeapType described, HeapType descriptor) {
+    DBG(std::cerr << "noting " << ModuleHeapType(*wasm, described) << " -> "
+                  << ModuleHeapType(*wasm, descriptor) << '\n');
+    self().doNoteDescriptor(described, descriptor);
+  }
+
+  void noteDescribed(HeapType type) {
+    auto desc = type.getDescriptorType();
+    assert(desc);
+    noteDescriptor(type, *desc);
+  }
+
+  void noteDescriptor(HeapType type) {
+    auto desc = type.getDescribedType();
+    assert(desc);
+    noteDescriptor(*desc, type);
+  }
+
+  void noteCast(HeapType src, Type dstType) {
+    auto dst = dstType.getHeapType();
+    // Casts to self and casts that must fail because they have incompatible
+    // types are uninteresting.
+    if (dst == src) {
+      return;
+    }
+    if (HeapType::isSubType(dst, src)) {
+      if (dstType.isExact()) {
+        // This cast only tests that the exact destination type is a subtype
+        // of the source type and does not impose additional requirements on
+        // subtypes of the destination type like a normal cast does.
+        noteSubtype(dst, src);
+        return;
+      }
+      self().doNoteCast(src, dst);
+      return;
+    }
+    if (HeapType::isSubType(src, dst)) {
+      // This is an upcast that will always succeed, but only if we ensure
+      // src <: dst.
+      noteSubtype(src, dst);
+    }
+  }
+
+  void noteCast(Expression* src, Type dst) {
+    if (src->type.isRef() && dst.isRef()) {
+      noteCast(src->type.getHeapType(), dst);
+    }
+  }
+
+  void noteCast(Expression* src, Expression* dst) {
+    if (src->type.isRef() && dst->type.isRef()) {
+      noteCast(src->type.getHeapType(), dst->type);
+    }
+  }
+};
+
+struct Unsubtyping : Pass, Noter<Unsubtyping> {
   // The kind of work to process.
   enum class Kind { Subtype, Descriptor };
   // (sub, super) pairs that we have discovered but not yet processed.
@@ -453,6 +574,7 @@ struct Unsubtyping : Pass {
     // Initialize the subtype relation based on what is immediately required to
     // keep the code and public types valid.
     analyzePublicTypes(*wasm);
+    analyzeJSCalledFunctions(*wasm);
     analyzeModule(*wasm);
 
     // Find further subtypings and iterate to a fixed point.
@@ -482,35 +604,23 @@ struct Unsubtyping : Pass {
     ReFinalize().run(getPassRunner(), wasm);
   }
 
-  void noteSubtype(HeapType sub, HeapType super) {
-    // Bottom types are uninteresting, but other basic heap types can be
-    // interesting because of their interactions with casts.
-    if (sub == super || sub.isBottom()) {
-      return;
-    }
-    DBG(std::cerr << "noting " << ModuleHeapType(*wasm, sub)
-                  << " <: " << ModuleHeapType(*wasm, super) << '\n');
+  void doNoteSubtype(HeapType sub, HeapType super) {
     work.push_back({Kind::Subtype, sub, super});
   }
 
-  void noteSubtype(Type sub, Type super) {
-    if (sub.isTuple()) {
-      assert(super.isTuple() && sub.size() == super.size());
-      for (size_t i = 0, size = sub.size(); i < size; ++i) {
-        noteSubtype(sub[i], super[i]);
-      }
-      return;
-    }
-    if (!sub.isRef() || !super.isRef()) {
-      return;
-    }
-    noteSubtype(sub.getHeapType(), super.getHeapType());
+  void doNoteCast(HeapType src, HeapType dst) { casts[src].push_back(dst); }
+
+  void doNoteDescriptor(HeapType described, HeapType descriptor) {
+    work.push_back({Kind::Descriptor, described, descriptor});
   }
 
-  void noteDescriptor(HeapType described, HeapType descriptor) {
-    DBG(std::cerr << "noting " << ModuleHeapType(*wasm, described) << " -> "
-                  << ModuleHeapType(*wasm, descriptor) << '\n');
-    work.push_back({Kind::Descriptor, described, descriptor});
+  void noteExposedToJS(HeapType type) {
+    types.setExposedToJS(type);
+    // Keep any descriptor that may configure a prototype.
+    if (auto desc = type.getDescriptorType();
+        desc && StructUtils::hasPossibleJSPrototypeField(*desc)) {
+      noteDescriptor(type, *desc);
+    }
   }
 
   void analyzePublicTypes(Module& wasm) {
@@ -525,6 +635,30 @@ struct Unsubtyping : Pass {
     }
   }
 
+  void analyzeJSCalledFunctions(Module& wasm) {
+    if (!wasm.features.hasCustomDescriptors()) {
+      return;
+    }
+    Type anyref(HeapType::any, Nullable);
+    for (auto func : Intrinsics(wasm).getJSCalledFunctions()) {
+      // Parameter types flow into Wasm and are implicitly cast from any.
+      for (auto type : wasm.getFunction(func)->getParams()) {
+        if (Type::isSubType(type, anyref)) {
+          noteCast(HeapType::any, type);
+        }
+      }
+      for (auto type : wasm.getFunction(func)->getResults()) {
+        // Result types flow into JS and are implicitly converted from any to
+        // extern. They may also expose configured prototypes that we must keep.
+        if (Type::isSubType(type, anyref)) {
+          auto heapType = type.getHeapType();
+          noteSubtype(heapType, HeapType::any);
+          noteExposedToJS(heapType);
+        }
+      }
+    }
+  }
+
   void analyzeModule(Module& wasm) {
     struct Info {
       // (source, target) pairs for casts.
@@ -535,10 +669,14 @@ struct Unsubtyping : Pass {
 
       // Observed (described, descriptor) requirements.
       Set<std::pair<HeapType, HeapType>> descriptors;
+
+      // Observed externalized types.
+      Set<HeapType> exposedToJS;
     };
 
     struct Collector
-      : ControlFlowWalker<Collector, SubtypingDiscoverer<Collector>> {
+      : ControlFlowWalker<Collector, SubtypingDiscoverer<Collector>>,
+        Noter<Collector> {
       using Super =
         ControlFlowWalker<Collector, SubtypingDiscoverer<Collector>>;
 
@@ -548,35 +686,10 @@ struct Unsubtyping : Pass {
       Collector(Info& info, bool trapsNeverHappen)
         : info(info), trapsNeverHappen(trapsNeverHappen) {}
 
-      void noteSubtype(Type sub, Type super) {
-        if (sub.isTuple()) {
-          assert(super.isTuple() && sub.size() == super.size());
-          for (size_t i = 0, size = sub.size(); i < size; ++i) {
-            noteSubtype(sub[i], super[i]);
-          }
-          return;
-        }
-        if (!sub.isRef() || !super.isRef()) {
-          return;
-        }
-        noteSubtype(sub.getHeapType(), super.getHeapType());
-      }
-      void noteSubtype(HeapType sub, HeapType super) {
-        assert(HeapType::isSubType(sub, super));
-        if (sub == super || sub.isBottom()) {
-          return;
-        }
+      void doNoteSubtype(HeapType sub, HeapType super) {
         info.subtypings.insert({sub, super});
       }
-      void noteSubtype(Type sub, Expression* super) {
-        noteSubtype(sub, super->type);
-      }
-      void noteSubtype(Expression* sub, Type super) {
-        noteSubtype(sub->type, super);
-      }
-      void noteSubtype(Expression* sub, Expression* super) {
-        noteSubtype(sub->type, super->type);
-      }
+
       void noteNonFlowSubtype(Expression* sub, Type super) {
         // This expression's type must be a subtype of |super|, but the value
         // does not flow anywhere - this is a static constraint. As the value
@@ -603,52 +716,15 @@ struct Unsubtyping : Pass {
         // Otherwise, we must take this into account.
         noteSubtype(sub, super);
       }
-      void noteCast(HeapType src, Type dstType) {
-        auto dst = dstType.getHeapType();
-        // Casts to self and casts that must fail because they have incompatible
-        // types are uninteresting.
-        if (dst == src) {
-          return;
-        }
-        if (HeapType::isSubType(dst, src)) {
-          if (dstType.isExact()) {
-            // This cast only tests that the exact destination type is a subtype
-            // of the source type and does not impose additional requirements on
-            // subtypes of the destination type like a normal cast does.
-            info.subtypings.insert({dst, src});
-            return;
-          }
-          info.casts.insert({src, dst});
-          return;
-        }
-        if (HeapType::isSubType(src, dst)) {
-          // This is an upcast that will always succeed, but only if we ensure
-          // src <: dst.
-          info.subtypings.insert({src, dst});
-        }
-      }
-      void noteCast(Expression* src, Type dst) {
-        if (src->type.isRef() && dst.isRef()) {
-          noteCast(src->type.getHeapType(), dst);
-        }
-      }
-      void noteCast(Expression* src, Expression* dst) {
-        if (src->type.isRef() && dst->type.isRef()) {
-          noteCast(src->type.getHeapType(), dst->type);
-        }
+
+      void doNoteCast(HeapType src, HeapType dst) {
+        info.casts.insert({src, dst});
       }
 
-      // Visitors for finding required descriptors.
-      void noteDescribed(HeapType type) {
-        auto desc = type.getDescriptorType();
-        assert(desc);
-        info.descriptors.insert({type, *desc});
+      void doNoteDescriptor(HeapType described, HeapType descriptor) {
+        info.descriptors.insert({described, descriptor});
       }
-      void noteDescriptor(HeapType type) {
-        auto desc = type.getDescribedType();
-        assert(desc);
-        info.descriptors.insert({*desc, type});
-      }
+
       void visitRefGetDesc(RefGetDesc* curr) {
         Super::visitRefGetDesc(curr);
         if (!curr->ref->type.isStruct()) {
@@ -691,6 +767,14 @@ struct Unsubtyping : Pass {
         // expression is removed.
         noteDescribed(curr->type.getHeapType());
       }
+      void visitRefAs(RefAs* curr) {
+        Super::visitRefAs(curr);
+        // extern.convert_any makes its operand type visible to JS, which may
+        // require us to keep descriptors that configure prototypes.
+        if (curr->op == ExternConvertAny && curr->value->type.isRef()) {
+          info.exposedToJS.insert(curr->value->type.getHeapType());
+        }
+      }
     };
 
     bool trapsNeverHappen = getPassOptions().trapsNeverHappen;
@@ -710,6 +794,8 @@ struct Unsubtyping : Pass {
                                       info.subtypings.end());
       collectedInfo.descriptors.insert(info.descriptors.begin(),
                                        info.descriptors.end());
+      collectedInfo.exposedToJS.insert(info.exposedToJS.begin(),
+                                       info.exposedToJS.end());
     }
 
     // Collect constraints from module-level code as well.
@@ -724,9 +810,20 @@ struct Unsubtyping : Pass {
     }
 
     // Prepare the collected information for the upcoming processing loop.
+    for (auto type : collectedInfo.exposedToJS) {
+      noteExposedToJS(type);
+    }
     for (auto& [sub, super] : collectedInfo.subtypings) {
       noteSubtype(sub, super);
     }
+    // Combine casts we have already noted into the newly gathered casts.
+    for (auto& [src, dsts] : casts) {
+      for (auto dst : dsts) {
+        collectedInfo.casts.insert({src, dst});
+      }
+      dsts.clear();
+    }
+    // Record the deduplicated cast info.
     for (auto [src, dst] : collectedInfo.casts) {
       casts[src].push_back(dst);
     }
@@ -763,6 +860,11 @@ struct Unsubtyping : Pass {
     }
 
     types.setSupertype(sub, super);
+
+    // If the supertype is exposed to JS, the subtype potentially is as well.
+    if (types.isExposedToJS(super)) {
+      noteExposedToJS(sub);
+    }
 
     // Complete the descriptor squares to the left and right of the new
     // subtyping edge if those squares can possibly exist based on the original
@@ -892,11 +994,7 @@ struct Unsubtyping : Pass {
     // Add all the edges. Don't worry about duplicating existing edges because
     // checking whether they're necessary now would be about as expensive as
     // discarding them later.
-    // TODO: We will be able to assume this once we update the descriptor
-    // validation rules.
-    if (HeapType::isSubType(*sub, *super)) {
-      noteSubtype(*sub, *super);
-    }
+    noteSubtype(*sub, *super);
     noteSubtype(*subDesc, *superDesc);
     noteDescriptor(*super, *superDesc);
     noteDescriptor(*sub, *subDesc);

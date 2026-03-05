@@ -149,6 +149,7 @@ struct NullTypeParserCtx {
 
   StorageT makeI8() { return Ok{}; }
   StorageT makeI16() { return Ok{}; }
+  StorageT makeWaitQueue() { return Ok{}; }
   StorageT makeStorageType(TypeT) { return Ok{}; }
 
   FieldT makeFieldType(StorageT, Mutability) { return Ok{}; }
@@ -308,10 +309,11 @@ template<typename Ctx> struct TypeParserCtx {
 
   StorageT makeI8() { return Field(Field::i8, Immutable); }
   StorageT makeI16() { return Field(Field::i16, Immutable); }
+  StorageT makeWaitQueue() { return Field(Field::WaitQueue, Immutable); }
   StorageT makeStorageType(TypeT type) { return Field(type, Immutable); }
 
   FieldT makeFieldType(FieldT field, Mutability mutability) {
-    if (field.packedType == Field::not_packed) {
+    if (field.packedType == Field::NotPacked) {
       return Field(field.type, mutability);
     }
     return Field(field.packedType, mutability);
@@ -802,6 +804,18 @@ struct NullInstrParserCtx {
     return Ok{};
   }
   template<typename HeapTypeT>
+  Result<>
+  makeStructWait(Index, const std::vector<Annotation>&, HeapTypeT, FieldIdxT) {
+    return Ok{};
+  }
+  template<typename HeapTypeT>
+  Result<> makeStructNotify(Index,
+                            const std::vector<Annotation>&,
+                            HeapTypeT,
+                            FieldIdxT) {
+    return Ok{};
+  }
+  template<typename HeapTypeT>
   Result<> makeArrayNew(Index, const std::vector<Annotation>&, HeapTypeT) {
     return Ok{};
   }
@@ -1034,7 +1048,7 @@ struct ParseDeclsCtx : NullTypeParserCtx, NullInstrParserCtx {
 
   void addFuncType(SignatureT) {}
   void addContType(ContinuationT) {}
-  void addStructType(StructT) {}
+  Result<> addStructType(StructT) { return Ok{}; }
   void addArrayType(ArrayT) {}
   void setOpen() {}
   void setShared() {}
@@ -1197,14 +1211,23 @@ struct ParseTypeDefsCtx : TypeParserCtx<ParseTypeDefsCtx> {
   void addFuncType(SignatureT& type) { builder[index] = type; }
   void addContType(ContinuationT& type) { builder[index] = type; }
 
-  void addStructType(StructT& type) {
+  Result<> addStructType(StructT& type) {
     auto& [fieldNames, str] = type;
+    std::unordered_set<Name> usedFieldNames;
     builder[index] = str;
     for (Index i = 0; i < fieldNames.size(); ++i) {
-      if (auto name = fieldNames[i]; name.is()) {
-        names[index].fieldNames[i] = name;
+      const auto& name = fieldNames[i];
+      if (!name.is()) {
+        continue;
       }
+
+      if (auto [_, inserted] = usedFieldNames.insert(name); !inserted) {
+        return in.err("duplicate field name");
+      }
+
+      names[index].fieldNames[i] = name;
     }
+    return Ok{};
   }
 
   void addArrayType(ArrayT& type) { builder[index] = type; }
@@ -1315,6 +1338,12 @@ struct AnnotationParserCtx {
         branchHint = &a;
       } else if (a.kind == Annotations::InlineHint) {
         inlineHint = &a;
+      } else if (a.kind == Annotations::RemovableIfUnusedHint) {
+        ret.removableIfUnused = true;
+      } else if (a.kind == Annotations::JSCalledHint) {
+        ret.jsCalled = true;
+      } else if (a.kind == Annotations::IdempotentHint) {
+        ret.idempotent = true;
       }
     }
 
@@ -1474,10 +1503,8 @@ struct ParseModuleTypesCtx : TypeParserCtx<ParseModuleTypesCtx>,
         Builder::addVar(f.get(), l.name, l.type);
       }
     }
-    // Function-level annotations are stored using the nullptr key, as they are
-    // not tied to a particular instruction.
     if (!annotations.empty()) {
-      f->codeAnnotations[nullptr] = parseAnnotations(annotations);
+      f->funcAnnotations = parseAnnotations(annotations);
     }
     return Ok{};
   }
@@ -2704,6 +2731,20 @@ struct ParseDefsCtx : TypeParserCtx<ParseDefsCtx>, AnnotationParserCtx {
                              Index field,
                              MemoryOrder order) {
     return withLoc(pos, irBuilder.makeStructCmpxchg(type, field, order));
+  }
+
+  Result<> makeStructWait(Index pos,
+                          const std::vector<Annotation>& annotations,
+                          HeapType type,
+                          Index field) {
+    return withLoc(pos, irBuilder.makeStructWait(type, field));
+  }
+
+  Result<> makeStructNotify(Index pos,
+                            const std::vector<Annotation>& annotations,
+                            HeapType type,
+                            Index field) {
+    return withLoc(pos, irBuilder.makeStructNotify(type, field));
   }
 
   Result<> makeArrayNew(Index pos,
