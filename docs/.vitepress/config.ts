@@ -150,6 +150,7 @@ export default defineConfig({
     },
   },
   base: "/warpo/",
+  title: "warpo document",
   head: [
     ["link", { rel: "icon", href: "/warpo/favicon.ico" }],
     ["meta", { name: "google-site-verification", content: "762vxla4bLoGKFlH_iYkk7TVUhrwwpMFS2r7idty0_Y" }],
