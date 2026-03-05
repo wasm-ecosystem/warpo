@@ -93,9 +93,9 @@ copyFunctionWithoutAdd(Function* func,
             (*symbolNameIndexMap)[*(iter.second->symbolNameIndex)];
         }
       }
-      updateSymbol(ret->prologLocation, *symbolNameIndexMap);
-      updateSymbol(ret->epilogLocation, *symbolNameIndexMap);
     }
+    updateSymbol(ret->prologLocation, *symbolNameIndexMap);
+    updateSymbol(ret->epilogLocation, *symbolNameIndexMap);
   }
   ret->module = func->module;
   ret->base = func->base;
@@ -427,6 +427,8 @@ struct CodeScanner : PostWalker<CodeScanner> {
   }
   void visitStructGet(StructGet* curr) { info.note(curr->ref->type); }
   void visitStructSet(StructSet* curr) { info.note(curr->ref->type); }
+  void visitStructWait(StructWait* curr) { info.note(curr->ref->type); }
+  void visitStructNotify(StructNotify* curr) { info.note(curr->ref->type); }
   void visitArrayGet(ArrayGet* curr) { info.note(curr->ref->type); }
   void visitArraySet(ArraySet* curr) { info.note(curr->ref->type); }
   void visitContBind(ContBind* curr) {

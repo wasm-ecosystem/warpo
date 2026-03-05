@@ -16,10 +16,7 @@
 
 import sys
 
-if sys.version_info < (3, 10):  # noqa: UP036
-    print("python 3.10 required")
-    sys.exit(1)
-
+assert sys.version_info >= (3, 10), 'requires Python 3.10'
 
 instructions = [
     ("unreachable",    "makeUnreachable()"),
@@ -209,6 +206,8 @@ instructions = [
     ("i64.extend32_s",      "makeUnary(UnaryOp::ExtendS32Int64)"),
     # atomic instructions
     ("memory.atomic.notify",    "makeAtomicNotify()"),
+    ("struct.wait",             "makeStructWait()"),
+    ("struct.notify",           "makeStructNotify()"),
     ("memory.atomic.wait32",    "makeAtomicWait(Type::i32)"),
     ("memory.atomic.wait64",    "makeAtomicWait(Type::i64)"),
     ("atomic.fence",            "makeAtomicFence()"),

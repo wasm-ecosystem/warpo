@@ -109,8 +109,69 @@ public:
   //
   // where the segment $seg is of size N.
   std::vector<Name> getConfigureAllFunctions(Call* call);
-  // As above, but looks through the module to find the configureAll.
-  std::vector<Name> getConfigureAllFunctions();
+
+  // Returns the names of all functions that are JS-called. That includes ones
+  // in configureAll (which we look through the module for), and also those
+  // annotated with @binaryen.js.called.
+  std::vector<Name> getJSCalledFunctions();
+
+  // Get the code annotations for an expression in a function.
+  static CodeAnnotation getAnnotations(Expression* curr, Function* func) {
+    auto& annotations = func->codeAnnotations;
+    auto iter = annotations.find(curr);
+    if (iter != annotations.end()) {
+      return iter->second;
+    }
+    return {};
+  }
+
+  // Get the code annotations for a function itself.
+  static CodeAnnotation getAnnotations(Function* func) {
+    return func->funcAnnotations;
+  }
+
+  void setAnnotations(Function* func,
+                      Expression* curr,
+                      const CodeAnnotation& value) {
+    func->codeAnnotations[curr] = value;
+  }
+
+  void setAnnotations(Function* func, const CodeAnnotation& value) {
+    func->funcAnnotations = value;
+  }
+
+  // Given a call in a function, return all the annotations for it. The call may
+  // be annotated itself (which takes precedence), or the function it calls be
+  // annotated.
+  CodeAnnotation getCallAnnotations(Call* call, Function* func) {
+    // Combine annotations from the call itself and from the called function.
+    auto ret = getAnnotations(call, func);
+
+    // Check on the called function, if it exists (it may not if the IR is still
+    // being built up).
+    if (auto* target = module.getFunctionOrNull(call->target)) {
+      auto funcAnnotations = getAnnotations(target);
+
+      // Merge them, giving precedence for the call annotation.
+      if (!ret.branchLikely) {
+        ret.branchLikely = funcAnnotations.branchLikely;
+      }
+      if (!ret.inline_) {
+        ret.inline_ = funcAnnotations.inline_;
+      }
+      if (!ret.removableIfUnused) {
+        ret.removableIfUnused = funcAnnotations.removableIfUnused;
+      }
+      if (!ret.jsCalled) {
+        ret.jsCalled = funcAnnotations.jsCalled;
+      }
+      if (!ret.idempotent) {
+        ret.idempotent = funcAnnotations.idempotent;
+      }
+    }
+
+    return ret;
+  }
 };
 
 } // namespace wasm

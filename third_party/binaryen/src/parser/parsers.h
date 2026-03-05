@@ -717,6 +717,10 @@ template<typename Ctx> Result<typename Ctx::FieldT> storagetype(Ctx& ctx) {
   if (ctx.in.takeKeyword("i16"sv)) {
     return ctx.makeI16();
   }
+  if (ctx.in.takeKeyword("waitqueue"sv)) {
+    return ctx.makeWaitQueue();
+  }
+
   auto type = valtype(ctx);
   CHECK_ERR(type);
   return ctx.makeStorageType(*type);
@@ -2479,6 +2483,28 @@ Result<> makeStructCmpxchg(Ctx& ctx,
 }
 
 template<typename Ctx>
+Result<> makeStructWait(Ctx& ctx,
+                        Index pos,
+                        const std::vector<Annotation>& annotations) {
+  auto type = typeidx(ctx);
+  CHECK_ERR(type);
+  auto field = fieldidx(ctx, *type);
+  CHECK_ERR(field);
+  return ctx.makeStructWait(pos, annotations, *type, *field);
+}
+
+template<typename Ctx>
+Result<> makeStructNotify(Ctx& ctx,
+                          Index pos,
+                          const std::vector<Annotation>& annotations) {
+  auto type = typeidx(ctx);
+  CHECK_ERR(type);
+  auto field = fieldidx(ctx, *type);
+  CHECK_ERR(field);
+  return ctx.makeStructNotify(pos, annotations, *type, *field);
+}
+
+template<typename Ctx>
 Result<> makeArrayNew(Ctx& ctx,
                       Index pos,
                       const std::vector<Annotation>& annotations,
@@ -3161,7 +3187,7 @@ template<typename Ctx> Result<> comptype(Ctx& ctx) {
   }
   if (auto type = structtype(ctx)) {
     CHECK_ERR(type);
-    ctx.addStructType(*type);
+    CHECK_ERR(ctx.addStructType(*type));
     return Ok{};
   }
   if (auto type = arraytype(ctx)) {

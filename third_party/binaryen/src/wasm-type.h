@@ -17,6 +17,7 @@
 #ifndef wasm_wasm_type_h
 #define wasm_wasm_type_h
 
+#include <algorithm>
 #include <functional>
 #include <optional>
 #include <ostream>
@@ -591,6 +592,23 @@ public:
 };
 
 Type Type::asWrittenGivenFeatures(FeatureSet feats) const {
+  if (isTuple()) {
+    // Check whether we would change anything before doing the work of
+    // constructing a new tuple type.
+    const auto& tuple = getTuple();
+    bool hasChange = std::any_of(tuple.begin(), tuple.end(), [&](Type t) {
+      return t.asWrittenGivenFeatures(feats) != t;
+    });
+    if (!hasChange) {
+      return *this;
+    }
+    std::vector<Type> elems;
+    elems.reserve(size());
+    for (Index i = 0; i < size(); ++i) {
+      elems.push_back(tuple[i].asWrittenGivenFeatures(feats));
+    }
+    return Type(elems);
+  }
   if (!isRef()) {
     return *this;
   }
@@ -680,22 +698,23 @@ struct Continuation {
 struct Field {
   Type type;
   enum PackedType {
-    not_packed,
+    NotPacked,
     i8,
     i16,
+    WaitQueue,
   } packedType; // applicable iff type=i32
   Mutability mutable_;
 
   // Arbitrary defaults for convenience.
   constexpr Field()
-    : type(Type::i32), packedType(not_packed), mutable_(Mutable) {}
+    : type(Type::i32), packedType(NotPacked), mutable_(Mutable) {}
   constexpr Field(Type type, Mutability mutable_)
-    : type(type), packedType(not_packed), mutable_(mutable_) {}
+    : type(type), packedType(NotPacked), mutable_(mutable_) {}
   constexpr Field(PackedType packedType, Mutability mutable_)
     : type(Type::i32), packedType(packedType), mutable_(mutable_) {}
 
   constexpr bool isPacked() const {
-    if (packedType != not_packed) {
+    if (packedType != NotPacked) {
       assert(type == Type::i32 && "unexpected type");
       return true;
     }
@@ -768,7 +787,7 @@ struct TypeBuilder {
   void grow(size_t n);
 
   // The number of HeapType slots in the TypeBuilder.
-  size_t size();
+  size_t size() const;
 
   // Sets the heap type at index `i`. May only be called before `build`.
   void setHeapType(size_t i, Signature signature);
@@ -850,7 +869,7 @@ struct TypeBuilder {
 
   // Gets the temporary HeapType at index `i`. This HeapType should only be used
   // to construct temporary Types using the methods below.
-  HeapType getTempHeapType(size_t i);
+  HeapType getTempHeapType(size_t i) const;
 
   // Gets a temporary type or heap type for use in initializing the
   // TypeBuilder's HeapTypes. For Ref types, the HeapType may be a temporary
@@ -886,6 +905,12 @@ struct TypeBuilder {
     ForwardChildReference,
     // A continuation reference that does not refer to a function type.
     InvalidFuncType,
+    // A shared type with shared-everything disabled.
+    InvalidSharedType,
+    // WaitQueue was used with shared-everything disabled.
+    InvalidWaitQueue,
+    // A string type with strings disabled.
+    InvalidStringType,
     // A non-shared field of a shared heap type.
     InvalidUnsharedField,
     // A describes clause on a non-struct type.
@@ -987,7 +1012,7 @@ struct TypeBuilder {
 
   Entry operator[](size_t i) { return Entry{*this, i}; }
 
-  void dump();
+  void dump() const;
 };
 
 // An iterable providing access to a heap type's descriptor chain, starting from
