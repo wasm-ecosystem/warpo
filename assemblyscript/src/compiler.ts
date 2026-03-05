@@ -1625,6 +1625,7 @@ export class Compiler extends DiagnosticEmitter {
       const tupleInfo = assert(assert(heapLocalsTupleType).tupleInfo);
       const heapLocalsTuple = this.makeNewTuple(tupleInfo.elementCount, tupleInfo.getBitmap(), closureDummyNode);
       const heapLocalsStorage = flow.getTempLocal(Type.i32);
+      mir.addHeapVariableStorageLocalIndex(instance, heapLocalsStorage.index);
       stmts[0] = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
       const parentEnvElementInfo = tupleInfo.elements[0];
       const getClosureEnvStmt = module.get_closure_env();

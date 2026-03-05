@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 #pragma once
 
-#include <cstdint>
+#include <cassert>
 #include <map>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -45,12 +46,18 @@ public:
 
   uint32_t addScope(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr);
 
+  inline std::optional<uint32_t> getHeapVariableStorageLocalIndex() const noexcept {
+    return heapVariableStorageLocalIndex_;
+  }
+  inline void setHeapVariableStorageLocalIndex(uint32_t index) noexcept { heapVariableStorageLocalIndex_ = index; }
+
 private:
   std::string_view name_;
   std::vector<ParameterInfo> parameters_;
   LocalsMap locals_;
   ScopeInfoMap scopeInfoMap_;
   ScopeId nextScopeId_ = 0;
+  std::optional<uint32_t> heapVariableStorageLocalIndex_{std::nullopt};
 };
 
 } // namespace warpo

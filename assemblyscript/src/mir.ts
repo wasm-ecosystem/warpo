@@ -14,6 +14,7 @@ import {
   _WarpoCreateBaseType,
   _WarpoCreateClass,
   _WarpoCreateClassWithoutRtid,
+  _WarpoAddHeapVariableStorageLocalIndex,
 } from "./warpo";
 
 function typeToMIRName(type: Type): string {
@@ -92,6 +93,10 @@ export function addSubProgram(subprogram: Function, belongClass: Class | null): 
     belongClassName = decodeURIComponent(typeToMIRName(belongClass.type));
   }
   _WarpoAddSubProgram(decodeURIComponent(subprogram.internalName), belongClassName);
+}
+
+export function addHeapVariableStorageLocalIndex(subprogram: Function, index: u32): void {
+  _WarpoAddHeapVariableStorageLocalIndex(decodeURIComponent(subprogram.internalName), index);
 }
 
 export function createClass(clazz: Class): void {
