@@ -1620,7 +1620,7 @@ export class Compiler extends DiagnosticEmitter {
       );
       const closureDummyNode = Node.createComment(CommentKind.Line, "", new Range(0, 0)); // fixme: it's just a place holder node.
       const tupleInfo = assert(assert(heapLocalsTupleType).tupleInfo);
-      const heapLocalsTuple = this.makeNewTuple(tupleInfo.elementCount, tupleInfo.getBitmap(), closureDummyNode);
+      const heapLocalsTuple = this.makeNewTuple(tupleInfo.getElementsAreaByteSize(), tupleInfo.getBitmap(), closureDummyNode);
 
       const heapLocalsStmt = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
       const parentEnvElementInfo = tupleInfo.elements[0];
