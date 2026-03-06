@@ -39,24 +39,30 @@
 	- `ctest -R "MergeDataSectionDecisionTest" --output-on-failure`: passed (6/6)
 	- `clang-format -i passes/MergeDataSection.hpp passes/MergeDataSection.cpp`: passed
 	- `clang-tidy -p build passes/MergeDataSection.cpp`: passed (no user-file warnings)
+- [x] Task-004: Wire the pass into the optimization pipeline
+- Updated `passes/Runner.cpp` to include `MergeDataSection.hpp` and add `createMergeDataSectionPass()` in the late optimization stage after default optimization passes.
+- Pass execution is gated by existing pipeline control (`runOnModule` calls `optimize(...)` only when `config.optimizeLevel > 0U || config.shrinkLevel > 0U`).
+- Placement is before binary emission (`BinaryWriter::write()`), satisfying late-pass ordering requirements.
+- Verification:
+	- `clang-format -i passes/Runner.cpp`: passed
+	- `npm run build`: passed
 
 ## Current Iteration
 
-- Iteration: 2
-- Working on: Task-004
+- Iteration: 3
+- Working on: Task-005
 - Started: 2026-03-06T00:00:00Z
 
 ## Last Completed
 
-- Task-003: Implement `MergeDataSection` Pass Using the Algorithm
+- Task-004: Wire the pass into the optimization pipeline
 - Duration: ~1 iteration
-- Tests: ✅ focused C++ tests (`ctest -R "MergeDataSectionDecisionTest"`)
+- Tests: ✅ not required by PRD for Task-004
 - Build: ✅ `npm run build`
 - Key decisions:
-	- kept Task-003 isolated to pass implementation and factory header only (no Runner wiring yet)
-	- reused Task-001 decision API explicitly for each consecutive segment pair
-	- implemented merged payload assembly as `copy(A)` then `copy(B)` to preserve overwrite semantics
-	- added local binary-size estimator for cross-gap merge cost comparison inputs
+	- kept Task-004 minimal by touching only `passes/Runner.cpp`
+	- wired pass in final optimization phase (after existing optimization passes)
+	- relied on existing optimize/shrink gate in `runOnModule(...)` to satisfy conditional execution requirement
 
 ## Blockers
 
@@ -69,5 +75,4 @@
 - PRD updated: assume Bulk Memory feature is not enabled
 - PRD updated: cross-gap merge is in scope with wasm-byte-size benefit gate
 - PRD updated: Task-001 is now standalone merge-decision algorithm + separate unittest; pass code moved to later tasks
-- Task-003 completed without pass pipeline wiring (deferred to Task-004)
-- Next: wire `createMergeDataSectionPass()` into optimization pipeline per PRD Task-004
+- Task-004 completed: pass is now wired in optimization pipeline with required gating and ordering

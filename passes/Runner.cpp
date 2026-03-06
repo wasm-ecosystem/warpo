@@ -25,6 +25,7 @@
 #include "InlinedDecoratorLower.hpp"
 #include "InsertTracePoint.hpp"
 #include "InstrSimplifier.hpp"
+#include "MergeDataSection.hpp"
 #include "Runner.hpp"
 #include "binaryen-c.h"
 #include "instrumentation/CoverageInstrumentation.hpp"
@@ -129,6 +130,7 @@ static void optimize(AsModule const &m, Config const &config) {
     std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
     passRunner->setDebug(false);
     passRunner->addDefaultOptimizationPasses();
+    passRunner->add(std::unique_ptr<wasm::Pass>{createMergeDataSectionPass()});
     passRunner->run();
   }
   ensureValidate(*m.get());
