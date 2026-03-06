@@ -357,4 +357,18 @@ describe("closureScanner", () => {
     `);
     expect(scanner.closureFunctions.size).equal(0);
   });
+
+  test("no closure: type alias name should not be treated as variable reference", () => {
+    const scanner = makeScanner(`
+      export function outer(): void {
+          let alias: i32 = 1;
+          function inner(): void {
+              type alias = f64;
+              let alias: alias = 1;
+          }
+          inner();
+      }
+    `);
+    expect(scanner.closureFunctions.size).equal(0);
+  });
 });

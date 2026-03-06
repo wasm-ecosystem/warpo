@@ -1222,6 +1222,11 @@ export class Program extends DiagnosticEmitter {
     let queuedImplements = new Array<ClassPrototype>();
 
     // initialize relevant declaration-like statements of the entire program
+    // Run closure scanner on all sources before processing declarations
+    for (let i = 0, k = this.sources.length; i < k; ++i) {
+      this.sources[i].accept(this.closureScanner);
+    }
+
     for (let i = 0, k = this.sources.length; i < k; ++i) {
       let source = this.sources[i];
       let file = createFile(this, source);
@@ -4563,8 +4568,7 @@ export class Function extends TypedElement {
   }
 
   isClosureFunction(): bool {
-    return false; // Fixme, closure is not supported yet
-    // return this.prototype.closureVariables != null;
+    return this.prototype.closureVariables != null;
   }
 }
 

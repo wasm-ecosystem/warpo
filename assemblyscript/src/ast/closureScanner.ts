@@ -10,6 +10,7 @@ import {
   Node,
   ParameterNode,
   SwitchCase,
+  TypeDeclaration,
   VariableDeclaration,
   WhileStatement,
 } from "../ast";
@@ -316,6 +317,12 @@ export class ClosureScanner extends BaseVisitor {
     this.functionScopeChain_.enterScope();
     super.visitSwitchCase(node);
     this.functionScopeChain_.leaveScope();
+  }
+
+  visitTypeDeclaration(node: TypeDeclaration): void {
+    this.visitNodes(node.decorators);
+    this.visitNodes(node.typeParameters);
+    this.visitNode(node.type);
   }
 
   visitIdentifierExpression(node: IdentifierExpression): void {

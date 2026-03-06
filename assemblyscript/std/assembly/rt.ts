@@ -48,9 +48,7 @@ export function __newArray(length: i32, alignLog2: usize, id: u32, data: usize =
 }
 
 /**
- * {@link elementSize} is the number of elements in the tuple
- * - 32 bit data will be counted 1
- * - 64 bit data will be counted 2
+ * {@link elementSize} is the byte size of all elements in the tuple
  * {@link elementSize} must be <= 64
  */
 // @ts-ignore: decorator
