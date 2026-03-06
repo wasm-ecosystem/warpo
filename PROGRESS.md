@@ -25,23 +25,38 @@
 	- `npm run test`: passed
 	- `clang-format -i passes/MergeDataSectionDecision.cpp`: passed
 	- `clang-tidy -p build passes/MergeDataSectionDecision.cpp`: passed (warnings only)
+- [x] Task-003: Implement `MergeDataSection` Pass Using the Algorithm
+- Added public factory API in new header `passes/MergeDataSection.hpp`:
+	- `wasm::Pass *createMergeDataSectionPass()`
+- Implemented module pass in `passes/MergeDataSection.cpp` that:
+	- scans `module->dataSegments` in order and evaluates each consecutive pair via `decideMergeDataSection(...)`
+	- applies eligibility checks: non-passive segments, const integer offsets, same memory, second offset `>=` first offset
+	- merges with correct semantics: overlap keeps later-byte overwrite, cross-gap inserts zero bytes, merged range `[a0, max(a1, b1))`
+	- erases merged-right segments and calls `module->updateDataSegmentsMap()` after mutation
+- Added explicit wasm-size estimation helpers for cross-gap decision inputs (`estimatedKeepSize`/`estimatedMergeSize`) for active data segments.
+- Verification:
+	- `npm run build`: passed
+	- `ctest -R "MergeDataSectionDecisionTest" --output-on-failure`: passed (6/6)
+	- `clang-format -i passes/MergeDataSection.hpp passes/MergeDataSection.cpp`: passed
+	- `clang-tidy -p build passes/MergeDataSection.cpp`: passed (no user-file warnings)
 
 ## Current Iteration
 
 - Iteration: 2
-- Working on: Task-003
+- Working on: Task-004
 - Started: 2026-03-06T00:00:00Z
 
 ## Last Completed
 
-- Task-002: Unit Test the Decision Algorithm (Standalone)
+- Task-003: Implement `MergeDataSection` Pass Using the Algorithm
 - Duration: ~1 iteration
-- Tests: ✅ `npm run test`
+- Tests: ✅ focused C++ tests (`ctest -R "MergeDataSectionDecisionTest"`)
 - Build: ✅ `npm run build`
 - Key decisions:
-	- kept Task-002 tests focused on standalone decision API only
-	- asserted both decision bool and reason enum for all matrix entries
-	- asserted cross-gap and non-positive-path `benefit` values explicitly
+	- kept Task-003 isolated to pass implementation and factory header only (no Runner wiring yet)
+	- reused Task-001 decision API explicitly for each consecutive segment pair
+	- implemented merged payload assembly as `copy(A)` then `copy(B)` to preserve overwrite semantics
+	- added local binary-size estimator for cross-gap merge cost comparison inputs
 
 ## Blockers
 
@@ -54,4 +69,5 @@
 - PRD updated: assume Bulk Memory feature is not enabled
 - PRD updated: cross-gap merge is in scope with wasm-byte-size benefit gate
 - PRD updated: Task-001 is now standalone merge-decision algorithm + separate unittest; pass code moved to later tasks
-- Next: implement `MergeDataSection` pass using Task-001 API (Task-003)
+- Task-003 completed without pass pipeline wiring (deferred to Task-004)
+- Next: wire `createMergeDataSectionPass()` into optimization pipeline per PRD Task-004
