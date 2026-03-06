@@ -10,24 +10,38 @@
 - Verification:
 	- `npm run build`: passed
 	- `clang-format -i passes/MergeDataSectionDecision.hpp passes/MergeDataSectionDecision.cpp`: passed
-	- `clang-tidy -p build passes/MergeDataSectionDecision.cpp`: failed due compile database flag parsing (`-Wno-unused-command-line-argument` treated as a file)
+	- `clang-tidy -p build passes/MergeDataSectionDecision.cpp`: passed (warnings only)
+- [x] Task-002: Unit Test the Decision Algorithm (Standalone)
+- Added dedicated standalone unit tests in `passes/MergeDataSectionDecision.cpp` (no pass pipeline usage) covering:
+	- overlap always merge
+	- adjacent always merge
+	- cross-gap positive benefit => merge
+	- cross-gap zero/negative benefit => no merge
+	- invalid ordering (`b0 < a0`) => no merge
+	- overflow/invalid size handling
+- Tests assert `shouldMerge`, `reason`, and `benefit` where relevant.
+- Verification:
+	- `npm run build`: passed
+	- `npm run test`: passed
+	- `clang-format -i passes/MergeDataSectionDecision.cpp`: passed
+	- `clang-tidy -p build passes/MergeDataSectionDecision.cpp`: passed (warnings only)
 
 ## Current Iteration
 
-- Iteration: 1
-- Working on: Task-002
+- Iteration: 2
+- Working on: Task-003
 - Started: 2026-03-06T00:00:00Z
 
 ## Last Completed
 
-- Task-001: Design and Implement Merge-Decision Algorithm (Standalone)
+- Task-002: Unit Test the Decision Algorithm (Standalone)
 - Duration: ~1 iteration
-- Tests: not run (Task-002 is dedicated test task)
+- Tests: ✅ `npm run test`
 - Build: ✅ `npm run build`
 - Key decisions:
-	- kept algorithm layer pass-independent (no `wasm::Pass`/runner types)
-	- used explicit reason enum + string conversion helper
-	- used overflow-safe arithmetic for range endpoints and benefit subtraction
+	- kept Task-002 tests focused on standalone decision API only
+	- asserted both decision bool and reason enum for all matrix entries
+	- asserted cross-gap and non-positive-path `benefit` values explicitly
 
 ## Blockers
 
@@ -40,4 +54,4 @@
 - PRD updated: assume Bulk Memory feature is not enabled
 - PRD updated: cross-gap merge is in scope with wasm-byte-size benefit gate
 - PRD updated: Task-001 is now standalone merge-decision algorithm + separate unittest; pass code moved to later tasks
-- Next: add standalone unit tests for decision API (Task-002)
+- Next: implement `MergeDataSection` pass using Task-001 API (Task-003)
