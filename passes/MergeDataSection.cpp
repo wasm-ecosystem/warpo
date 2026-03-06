@@ -214,3 +214,141 @@ public:
 wasm::Pass *createMergeDataSectionPass() { return new MergeDataSection(); }
 
 } // namespace warpo::passes
+
+#ifdef WARPO_ENABLE_UNIT_TESTS
+
+#include <gtest/gtest.h>
+
+#include "Runner.hpp"
+#include "wasm-builder.h"
+
+namespace warpo::passes::ut {
+namespace {
+
+void runMergeDataSection(wasm::Module *const module) {
+  std::unique_ptr<wasm::Pass> const pass{createMergeDataSectionPass()};
+  pass->run(module);
+}
+
+std::uint64_t getConstOffset(wasm::DataSegment const &segment) {
+  wasm::Const const *const offset = segment.offset != nullptr ? segment.offset->dynCast<wasm::Const>() : nullptr;
+  EXPECT_NE(offset, nullptr);
+  if (offset == nullptr)
+    return 0U;
+  return offset->value.getUnsigned();
+}
+
+std::string payload(wasm::DataSegment const &segment) { return {segment.data.begin(), segment.data.end()}; }
+
+} // namespace
+
+TEST(MergeDataSectionPassTest, AdjacentMerge) {
+  auto m = loadWat(R"(
+    (module
+      (memory $m0 1)
+      (data (i32.const 0) "AB")
+      (data (i32.const 2) "CD")
+    )
+  )");
+
+  runMergeDataSection(m.get());
+
+  ASSERT_EQ(m->dataSegments.size(), 1U);
+  EXPECT_EQ(getConstOffset(*m->dataSegments[0]), 0U);
+  EXPECT_EQ(payload(*m->dataSegments[0]), "ABCD");
+}
+
+TEST(MergeDataSectionPassTest, OverlapMergeOverwritesLaterBytes) {
+  auto m = loadWat(R"(
+    (module
+      (memory $m0 1)
+      (data (i32.const 0) "ABCD")
+      (data (i32.const 2) "XY")
+    )
+  )");
+
+  runMergeDataSection(m.get());
+
+  ASSERT_EQ(m->dataSegments.size(), 1U);
+  EXPECT_EQ(getConstOffset(*m->dataSegments[0]), 0U);
+  EXPECT_EQ(payload(*m->dataSegments[0]), "ABXY");
+}
+
+TEST(MergeDataSectionPassTest, CrossGapPositiveBenefitMergesAndFillsZeros) {
+  auto m = loadWat(R"(
+    (module
+      (memory $m0 1)
+      (data (i32.const 0) "AB")
+      (data (i32.const 3) "Z")
+    )
+  )");
+
+  runMergeDataSection(m.get());
+
+  ASSERT_EQ(m->dataSegments.size(), 1U);
+  EXPECT_EQ(getConstOffset(*m->dataSegments[0]), 0U);
+  std::string const expected{"AB\0Z", 4U};
+  EXPECT_EQ(payload(*m->dataSegments[0]), expected);
+}
+
+TEST(MergeDataSectionPassTest, CrossGapNonPositiveBenefitDoesNotMerge) {
+  auto m = loadWat(R"(
+    (module
+      (memory $m0 1)
+      (data (i32.const 0) "AB")
+      (data (i32.const 40) "Z")
+    )
+  )");
+
+  runMergeDataSection(m.get());
+
+  ASSERT_EQ(m->dataSegments.size(), 2U);
+  EXPECT_EQ(getConstOffset(*m->dataSegments[0]), 0U);
+  EXPECT_EQ(payload(*m->dataSegments[0]), "AB");
+  EXPECT_EQ(getConstOffset(*m->dataSegments[1]), 40U);
+  EXPECT_EQ(payload(*m->dataSegments[1]), "Z");
+}
+
+TEST(MergeDataSectionPassTest, DoesNotMergeDifferentMemory) {
+  auto m = loadWat(R"(
+    (module
+      (memory $m0 1)
+      (data (i32.const 0) "A")
+      (data (i32.const 1) "B")
+    )
+  )");
+  m->dataSegments[1]->memory = wasm::Name("other-memory");
+
+  runMergeDataSection(m.get());
+
+  ASSERT_EQ(m->dataSegments.size(), 2U);
+  EXPECT_EQ(m->dataSegments[0]->memory, wasm::Name("m0"));
+  EXPECT_EQ(m->dataSegments[1]->memory, wasm::Name("other-memory"));
+  EXPECT_EQ(payload(*m->dataSegments[0]), "A");
+  EXPECT_EQ(payload(*m->dataSegments[1]), "B");
+}
+
+TEST(MergeDataSectionPassTest, DoesNotMergeNonConstOffsets) {
+  auto m = loadWat(R"(
+    (module
+      (memory $m0 1)
+      (global $g i32 (i32.const 0))
+      (data (i32.const 0) "A")
+      (data (i32.const 1) "B")
+    )
+  )");
+  wasm::Builder builder{*m};
+  m->dataSegments[0]->offset = builder.makeGlobalGet("g", wasm::Type::i32);
+
+  runMergeDataSection(m.get());
+
+  ASSERT_EQ(m->dataSegments.size(), 2U);
+  EXPECT_FALSE(m->dataSegments[0]->offset->is<wasm::Const>());
+  EXPECT_EQ(getConstOffset(*m->dataSegments[1]), 1U);
+  EXPECT_EQ(payload(*m->dataSegments[0]), "A");
+  EXPECT_EQ(payload(*m->dataSegments[1]), "B");
+}
+
+} // namespace warpo::passes::ut
+
+#endif // WARPO_ENABLE_UNIT_TESTS

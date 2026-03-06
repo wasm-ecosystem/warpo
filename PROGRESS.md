@@ -46,27 +46,42 @@
 - Verification:
 	- `clang-format -i passes/Runner.cpp`: passed
 	- `npm run build`: passed
+- [x] Task-005: Add pass-level tests and quality checks
+- Added pass-integration gtests in `passes/MergeDataSection.cpp` (guarded by `WARPO_ENABLE_UNIT_TESTS`) for:
+	- adjacent merge
+	- overlap overwrite semantics
+	- cross-gap positive benefit merge with zero fill
+	- cross-gap non-positive benefit no-merge
+	- no-merge guards for different memory and non-const offsets
+- Kept decision-only assertions in `MergeDataSectionDecisionTest`; Task-005 tests assert module mutation outcomes.
+- Verification:
+	- `clang-format -i passes/MergeDataSection.cpp`: passed
+	- `clang-tidy -p build passes/MergeDataSection.cpp`: passed (warnings only, no user-file diagnostics)
+	- `ctest --test-dir build -R MergeDataSectionPassTest --output-on-failure`: passed (6/6)
+	- `npm run build`: passed
+	- `npm run test`: failed on existing snapshot mismatch at `tests/frontend/compiler/function-expression.ts` (`mismatched opt wat output`)
 
 ## Current Iteration
 
 - Iteration: 3
-- Working on: Task-005
+- Iteration: 4
+- Working on: Task-005 complete
 - Started: 2026-03-06T00:00:00Z
 
 ## Last Completed
 
-- Task-004: Wire the pass into the optimization pipeline
+- Task-005: Add pass-level tests and quality checks
 - Duration: ~1 iteration
-- Tests: ✅ not required by PRD for Task-004
+- Tests: ⚠️ targeted pass gtests pass; full `npm run test` has existing frontend snapshot mismatch
 - Build: ✅ `npm run build`
 - Key decisions:
-	- kept Task-004 minimal by touching only `passes/Runner.cpp`
-	- wired pass in final optimization phase (after existing optimization passes)
-	- relied on existing optimize/shrink gate in `runOnModule(...)` to satisfy conditional execution requirement
+	- used pass-level tests that mutate Binaryen module objects directly for invalid-by-spec guard cases (different memory/non-const offset), while keeping valid WAT for merge-behavior cases
+	- verified all Task-005 acceptance scenarios in `MergeDataSectionPassTest`
 
 ## Blockers
 
-- None
+- Full `npm run test` currently fails with existing frontend snapshot mismatch:
+	- `tests/frontend/compiler/function-expression.ts`: `mismatched opt wat output`
 
 ## Notes
 
