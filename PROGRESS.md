@@ -60,28 +60,34 @@
 	- `ctest --test-dir build -R MergeDataSectionPassTest --output-on-failure`: passed (6/6)
 	- `npm run build`: passed
 	- `npm run test`: failed on existing snapshot mismatch at `tests/frontend/compiler/function-expression.ts` (`mismatched opt wat output`)
+- [x] Task-006: Refresh affected snapshots and final verification
+- Ran snapshot refresh for wasm-output-affecting changes:
+	- `npm run test:update`: passed
+- Reviewed changed snapshots to ensure updates are attributable to `MergeDataSection`:
+	- diffs show expected `(data ...)` segment merges/offset relayouts (adjacent/overlap/cross-gap zero-fill effects), with no unrelated source changes
+	- updates remain limited to snapshot artifacts (`*.opt.wat` and driver snapshot output)
+- Final verification:
+	- `npm run test`: passed (full suite)
 
 ## Current Iteration
 
-- Iteration: 3
-- Iteration: 4
-- Working on: Task-005 complete
+- Iteration: 6
+- Working on: None
 - Started: 2026-03-06T00:00:00Z
 
 ## Last Completed
 
-- Task-005: Add pass-level tests and quality checks
+- Task-006: Refresh affected snapshots and final verification
 - Duration: ~1 iteration
-- Tests: ⚠️ targeted pass gtests pass; full `npm run test` has existing frontend snapshot mismatch
-- Build: ✅ `npm run build`
+- Tests: ✅ `npm run test:update` and full `npm run test` passed
+- Build: ✅ previously verified in Task-005 (`npm run build`)
 - Key decisions:
-	- used pass-level tests that mutate Binaryen module objects directly for invalid-by-spec guard cases (different memory/non-const offset), while keeping valid WAT for merge-behavior cases
-	- verified all Task-005 acceptance scenarios in `MergeDataSectionPassTest`
+	- kept snapshot updates minimal by validating diffs are data-section layout changes caused by `MergeDataSection`
+	- retained only expected snapshot artifact updates and progress-log updates for this task
 
 ## Blockers
 
-- Full `npm run test` currently fails with existing frontend snapshot mismatch:
-	- `tests/frontend/compiler/function-expression.ts`: `mismatched opt wat output`
+- None
 
 ## Notes
 
@@ -91,3 +97,4 @@
 - PRD updated: cross-gap merge is in scope with wasm-byte-size benefit gate
 - PRD updated: Task-001 is now standalone merge-decision algorithm + separate unittest; pass code moved to later tasks
 - Task-004 completed: pass is now wired in optimization pipeline with required gating and ordering
+- Added Task-006 to refresh snapshots and rerun full test suite for final green state
