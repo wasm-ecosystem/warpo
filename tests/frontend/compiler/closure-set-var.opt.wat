@@ -1,13 +1,12 @@
 (module
- (type $0 (func (result i32)))
- (type $1 (func))
- (type $2 (func (param i32)))
- (type $3 (func (param i32 i32)))
- (type $4 (func (param i32 i32) (result i32)))
- (type $5 (func (param i32 i32 i32 i32)))
- (type $6 (func (param i32 i32 i32)))
- (type $7 (func (param i32 i32 i64)))
- (type $8 (func (param i32) (result i32)))
+ (type $0 (func))
+ (type $1 (func (param i32)))
+ (type $2 (func (param i32 i32)))
+ (type $3 (func (param i32 i32) (result i32)))
+ (type $4 (func (param i32 i32 i32 i32)))
+ (type $5 (func (param i32 i32 i32)))
+ (type $6 (func (param i32 i32 i64)))
+ (type $7 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -19,6 +18,7 @@
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33276))
  (global $~lib/rt/closure/env (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "<")
@@ -32,11 +32,11 @@
  (data $7 (i32.const 348) "<")
  (data $7.1 (i32.const 360) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $8 (i32.const 412) "<")
- (data $8.1 (i32.const 424) "\02\00\00\00,\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00c\00r\00o\00s\00s\00-\00l\00e\00v\00e\00l\00.\00t\00s")
+ (data $8.1 (i32.const 424) "\02\00\00\00$\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00s\00e\00t\00-\00v\00a\00r\00.\00t\00s")
  (data $9 (i32.const 480) "\06\00\00\00 \00\00\00 \00\00\00 ")
- (table $0 3 3 funcref)
- (elem $0 (i32.const 1) $closure-cross-level/outer~middle~inner $closure-cross-level/outer~middle)
- (export "outer" (func $closure-cross-level/outer))
+ (table $0 2 2 funcref)
+ (elem $0 (i32.const 1) $closure-set-var/outer~inc)
+ (export "outer" (func $closure-set-var/outer))
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -127,7 +127,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$80
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$83
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -151,7 +151,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$80
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$83
    end
    local.get $0
    i32.load offset=8
@@ -986,7 +986,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$85 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$88 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1002,7 +1002,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$85
+         br $__inlined_func$~lib/rt/itcms/step$88
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1041,7 +1041,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$85
+           br $__inlined_func$~lib/rt/itcms/step$88
           end
           local.get $2
           i32.load offset=4
@@ -1061,7 +1061,7 @@
         i32.and
         i32.eq
         if
-         i32.const 33276
+         global.get $~lib/memory/__stack_pointer
          local.set $2
          loop $while-continue|0
           local.get $2
@@ -1133,7 +1133,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$85
+        br $__inlined_func$~lib/rt/itcms/step$88
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1232,7 +1232,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$85
+        br $__inlined_func$~lib/rt/itcms/step$88
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1568,7 +1568,7 @@
    end
   end
  )
- (func $closure-cross-level/outer~middle~inner (result i32)
+ (func $closure-set-var/outer~inc
   (local $0 i32)
   i32.const 12
   i32.const 4
@@ -1583,62 +1583,31 @@
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
   local.get $0
   i32.load
-  i32.load
   i32.const 4
   i32.add
-  i32.load
-  local.get $0
-  i32.load
-  i32.const 4
-  i32.add
-  i32.load
-  i32.add
- )
- (func $closure-cross-level/outer~middle (result i32)
-  (local $0 i32)
-  (local $1 i32)
-  i32.const 16
-  i32.const 4
-  call $~lib/rt/itcms/__new
   local.tee $0
-  i32.const 8
-  i32.add
-  i64.const 1
-  i64.store
   local.get $0
-  global.get $~lib/rt/closure/env
-  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
-  local.get $0
-  i32.const 4
-  i32.add
-  local.get $0
-  i32.load
-  i32.const 4
-  i32.add
   i32.load
   i32.const 1
   i32.add
   i32.store
-  i32.const 8
-  i32.const 5
-  call $~lib/rt/itcms/__new
-  local.tee $1
-  i32.const 1
-  i32.store
-  local.get $1
-  i32.const 4
-  i32.add
-  local.get $0
-  i32.store
-  local.get $1
-  i32.load offset=4
-  global.set $~lib/rt/closure/env
-  local.get $1
-  i32.load
-  call_indirect (type $0)
  )
- (func $closure-cross-level/outer (param $0 i32) (result i32)
+ (func $closure-set-var/outer (param $0 i32) (result i32)
   (local $1 i32)
+  (local $2 i32)
+  global.get $~lib/memory/__stack_pointer
+  i32.const 8
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i64.const 0
+  i64.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 508
+  i32.lt_s
+  if
+   unreachable
+  end
   i32.const 16
   i32.const 4
   call $~lib/rt/itcms/__new
@@ -1647,38 +1616,59 @@
   i32.add
   i64.const 1
   i64.store
+  global.get $~lib/memory/__stack_pointer
+  local.get $1
+  i32.store align=1
   local.get $1
   global.get $~lib/rt/closure/env
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
   local.get $1
   i32.const 4
   i32.add
+  local.tee $2
   local.get $0
   i32.store
   i32.const 8
   i32.const 5
   call $~lib/rt/itcms/__new
   local.tee $0
-  i32.const 2
+  i32.const 1
   i32.store
   local.get $0
   i32.const 4
   i32.add
   local.get $1
   i32.store
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store offset=4 align=1
   local.get $0
   i32.load offset=4
   global.set $~lib/rt/closure/env
   local.get $0
   i32.load
   call_indirect (type $0)
+  local.get $0
+  i32.load offset=4
+  global.set $~lib/rt/closure/env
+  local.get $0
+  i32.load
+  call_indirect (type $0)
+  local.get $2
+  i32.load
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 8
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i64)
   block $invalid
-   block $~lib/function/Function<%28%29=>i32>
+   block $~lib/function/Function<%28%29=>void>
     block $~lib/tuple/SmallTuple
      block $~lib/arraybuffer/ArrayBufferView
       block $~lib/string/String
@@ -1686,7 +1676,7 @@
        i32.const 8
        i32.sub
        i32.load
-       br_table $~lib/string/String $~lib/string/String $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/tuple/SmallTuple $~lib/function/Function<%28%29=>i32> $invalid
+       br_table $~lib/string/String $~lib/string/String $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/tuple/SmallTuple $~lib/function/Function<%28%29=>void> $invalid
       end
       return
      end
@@ -1787,14 +1777,14 @@
   global.set $~lib/rt/itcms/fromSpace
   i32.const 0
   global.set $~lib/rt/closure/env
-  i32.const 2
-  call $closure-cross-level/outer
   i32.const 5
+  call $closure-set-var/outer
+  i32.const 7
   i32.ne
   if
    i32.const 0
    i32.const 432
-   i32.const 13
+   i32.const 11
    i32.const 1
    call $~lib/builtins/abort
    unreachable

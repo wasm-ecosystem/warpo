@@ -6,3 +6,5 @@ export function outer(a: i32, b: i32): i32 {
   }
   return inner();
 }
+
+assert(outer(3, 4) == 7);

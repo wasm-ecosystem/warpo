@@ -5,3 +5,5 @@ export function outer(x: i32): i32 {
   }
   return inner();
 }
+
+assert(outer(5) == 6);

@@ -63,6 +63,7 @@ fsanitize
 ftype
 funcref
 gcinfo
+geti
 gmock
 googletest
 grisu

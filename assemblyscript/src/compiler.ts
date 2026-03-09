@@ -1617,6 +1617,7 @@ export class Compiler extends DiagnosticEmitter {
       this.currentFlow = flow;
       let stmts = new Array<ExpressionRef>();
       const heapLocalsStorage = flow.getTempLocal(Type.i32);
+      mir.addHeapVariableStorageLocalIndex(instance, heapLocalsStorage.index);
       instance.heapLocalsStorage = heapLocalsStorage;
       instance.heapLocalsTypeBuilder.push(
         this.program.smallTupleInstance.type,
@@ -5715,10 +5716,6 @@ export class Compiler extends DiagnosticEmitter {
           if (!this.compileGlobalLazy(<Global>target, expression)) {
             return this.module.unreachable();
           }
-        } else if (!(<Local>target).declaredByFlow(flow)) {
-          // TODO: closures
-          this.error(DiagnosticCode.Not_implemented_0, expression.range, "Closures");
-          return this.module.unreachable();
         }
         if (this.pendingElements.has(target)) {
           this.error(DiagnosticCode.Variable_0_used_before_its_declaration, expression.range, target.internalName);

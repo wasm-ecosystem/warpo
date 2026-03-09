@@ -80,12 +80,14 @@ static void lowering(AsModule const &m, Config const &config) {
   {
     support::PerfRAII const r{support::PerfItemKind::Lowering};
     std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
-    passRunner->add(std::make_unique<ClosureLower>(&m.variableInfo_));
     passRunner->add(std::unique_ptr<wasm::Pass>{createInlinedDecoratorLower(m.forceInlineHints_)});
-    if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0)
+    if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0) {
+      passRunner->add(std::make_unique<closure::OptLower>(&m.variableInfo_));
       passRunner->add(std::unique_ptr<wasm::Pass>{new gc::OptLower(&m.variableInfo_)});
-    else
+    } else {
+      passRunner->add(std::make_unique<closure::FastLower>(&m.variableInfo_));
       passRunner->add(std::unique_ptr<wasm::Pass>{new gc::FastLower()});
+    }
     passRunner->run();
   }
 #ifndef WARPO_RELEASE_BUILD

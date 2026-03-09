@@ -2,12 +2,12 @@
  (type $0 (func (param i32) (result i32)))
  (type $1 (func (param i32 i32)))
  (type $2 (func (param i32)))
- (type $3 (func (param i32 i32 i32)))
- (type $4 (func (result i32)))
+ (type $3 (func))
+ (type $4 (func (param i32 i32 i32)))
  (type $5 (func (param i32 i32) (result i32)))
- (type $6 (func))
- (type $7 (func (param i32 i32 i32 i32)))
- (type $8 (func (param i32 i32 i32) (result i32)))
+ (type $6 (func (param i32 i32 i32 i32)))
+ (type $7 (func (param i32 i32 i32) (result i32)))
+ (type $8 (func (result i32)))
  (type $9 (func (param i32 i32 i64) (result i32)))
  (type $10 (func (param i32 i64) (result i32)))
  (import "as-builtin-fn" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
@@ -43,11 +43,11 @@
  (data $5 (i32.const 268) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $8 (i32.const 412) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00t\00w\00o\00-\00f\00u\00n\00c\00s\00.\00t\00s\00\00\00\00\00")
+ (data $8 (i32.const 412) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00$\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00s\00e\00t\00-\00v\00a\00r\00.\00t\00s\00\00\00\00\00\00\00\00\00")
  (data $9 (i32.const 480) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (table $0 3 3 funcref)
- (elem $0 (i32.const 1) $closure-two-funcs/outer~add1 $closure-two-funcs/outer~add2)
- (export "outer" (func $closure-two-funcs/outer))
+ (table $0 2 2 funcref)
+ (elem $0 (i32.const 1) $closure-set-var/outer~inc)
+ (export "outer" (func $closure-set-var/outer))
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/tuple/SmallTuple#__set<i32> (param $this i32) (param $offset i32) (param $value i32)
@@ -3093,7 +3093,7 @@
    (i32.const 0)
   )
  )
- (func $closure-two-funcs/outer~add1 (result i32)
+ (func $closure-set-var/outer~inc
   (local $0 i32)
   (local.set $0
    (call $~lib/rt/__localtostack
@@ -3112,7 +3112,13 @@
     (call $~lib/rt/closure/getClosureEnv)
    )
   )
-  (return
+  (call $~lib/tuple/SmallTuple#__set<i32>
+   (call $~lib/rt/__tmptostack
+    (call $~lib/rt/closure/getClosureEnvByLevel
+     (i32.const 1)
+    )
+   )
+   (i32.const 4)
    (i32.add
     (call $~lib/tuple/SmallTuple#__get<i32>
      (call $~lib/rt/__tmptostack
@@ -3149,44 +3155,10 @@
    (local.get $ptr)
   )
  )
- (func $closure-two-funcs/outer~add2 (result i32)
-  (local $0 i32)
-  (local.set $0
-   (call $~lib/rt/__localtostack
-    (call $~lib/rt/__newTuple
-     (i32.const 4)
-     (i64.const 1)
-    )
-   )
-  )
-  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
-   (call $~lib/rt/__tmptostack
-    (local.get $0)
-   )
-   (i32.const 0)
-   (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnv)
-   )
-  )
-  (return
-   (i32.add
-    (call $~lib/tuple/SmallTuple#__get<i32>
-     (call $~lib/rt/__tmptostack
-      (call $~lib/rt/closure/getClosureEnvByLevel
-       (i32.const 1)
-      )
-     )
-     (i32.const 4)
-    )
-    (i32.const 2)
-   )
-  )
- )
- (func $closure-two-funcs/outer (param $x i32) (result i32)
+ (func $closure-set-var/outer (param $x i32) (result i32)
   (local $1 i32)
   (local $val i32)
-  (local $add1 i32)
-  (local $add2 i32)
+  (local $inc i32)
   (local.set $1
    (call $~lib/rt/__localtostack
     (call $~lib/rt/__newTuple
@@ -3214,7 +3186,7 @@
    (local.get $x)
   )
   (drop
-   (local.tee $add1
+   (local.tee $inc
     (call $~lib/rt/__localtostack
      (call $~lib/rt/__newFunction
       (i32.const 1)
@@ -3224,53 +3196,48 @@
     )
    )
   )
-  (drop
-   (local.tee $add2
-    (call $~lib/rt/__localtostack
-     (call $~lib/rt/__newFunction
-      (i32.const 2)
-      (local.get $1)
-      (i32.const 5)
+  (call_indirect (type $3)
+   (block (result i32)
+    (call $~lib/rt/closure/setClosureEnv
+     (i32.load offset=4
+      (local.get $inc)
      )
+    )
+    (global.set $~argumentsLength
+     (i32.const 0)
+    )
+    (i32.load
+     (local.get $inc)
+    )
+   )
+  )
+  (call_indirect (type $3)
+   (block (result i32)
+    (call $~lib/rt/closure/setClosureEnv
+     (i32.load offset=4
+      (local.get $inc)
+     )
+    )
+    (global.set $~argumentsLength
+     (i32.const 0)
+    )
+    (i32.load
+     (local.get $inc)
     )
    )
   )
   (return
-   (i32.add
-    (call_indirect (type $4)
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.load offset=4
-        (local.get $add1)
-       )
-      )
-      (global.set $~argumentsLength
-       (i32.const 0)
-      )
-      (i32.load
-       (local.get $add1)
-      )
+   (call $~lib/tuple/SmallTuple#__get<i32>
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/closure/getClosureEnvByLevel
+      (i32.const 0)
      )
     )
-    (call_indirect (type $4)
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.load offset=4
-        (local.get $add2)
-       )
-      )
-      (global.set $~argumentsLength
-       (i32.const 0)
-      )
-      (i32.load
-       (local.get $add2)
-      )
-     )
-    )
+    (i32.const 4)
    )
   )
  )
- (func $start:closure-two-funcs
+ (func $start:closure-set-var
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -3305,18 +3272,18 @@
       (call $~lib/rt/closure/setClosureEnv
        (i32.const 0)
       )
-      (call $closure-two-funcs/outer
-       (i32.const 10)
+      (call $closure-set-var/outer
+       (i32.const 5)
       )
      )
-     (i32.const 23)
+     (i32.const 7)
     )
    )
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 12)
+     (i32.const 11)
      (i32.const 1)
     )
     (unreachable)
@@ -3444,14 +3411,14 @@
    (local.get $1)
   )
  )
- (func $~lib/function/Function<%28%29=>i32>#get:_env (param $this i32) (result i32)
+ (func $~lib/function/Function<%28%29=>void>#get:_env (param $this i32) (result i32)
   (i32.load offset=4
    (local.get $this)
   )
  )
- (func $~lib/function/Function<%28%29=>i32>#__visit (param $this i32) (param $cookie i32)
+ (func $~lib/function/Function<%28%29=>void>#__visit (param $this i32) (param $cookie i32)
   (call $~lib/rt/itcms/__visit
-   (call $~lib/function/Function<%28%29=>i32>#get:_env
+   (call $~lib/function/Function<%28%29=>void>#get:_env
     (call $~lib/rt/__tmptostack
      (local.get $this)
     )
@@ -3459,25 +3426,25 @@
    (local.get $cookie)
   )
  )
- (func $~lib/function/Function<%28%29=>i32>~visit (param $0 i32) (param $1 i32)
+ (func $~lib/function/Function<%28%29=>void>~visit (param $0 i32) (param $1 i32)
   (call $~lib/object/Object~visit
    (local.get $0)
    (local.get $1)
   )
-  (call $~lib/function/Function<%28%29=>i32>#__visit
+  (call $~lib/function/Function<%28%29=>void>#__visit
    (local.get $0)
    (local.get $1)
   )
  )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $~lib/function/Function<%28%29=>i32>
+   (block $~lib/function/Function<%28%29=>void>
     (block $~lib/tuple/SmallTuple
      (block $~lib/arraybuffer/ArrayBufferView
       (block $~lib/string/String
        (block $~lib/arraybuffer/ArrayBuffer
         (block $~lib/object/Object
-         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/tuple/SmallTuple $~lib/function/Function<%28%29=>i32> $invalid
+         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/tuple/SmallTuple $~lib/function/Function<%28%29=>void> $invalid
           (i32.load
            (i32.sub
             (local.get $0)
@@ -3509,7 +3476,7 @@
     )
    )
    (block
-    (call $~lib/function/Function<%28%29=>i32>~visit
+    (call $~lib/function/Function<%28%29=>void>~visit
      (local.get $0)
      (local.get $1)
     )
@@ -3519,6 +3486,6 @@
   (unreachable)
  )
  (func $~start
-  (call $start:closure-two-funcs)
+  (call $start:closure-set-var)
  )
 )
