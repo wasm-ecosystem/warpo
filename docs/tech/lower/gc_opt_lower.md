@@ -1,5 +1,9 @@
 [[toc]]
 
+Quick references:
+
+- Shadow stack: [/en/using_runtime/shadow_stack](/en/using_runtime/shadow_stack)
+
 # Opt Lowering
 
 `gc::OptLower` (`passes/GC/OptLower.cpp`) is a more complex GC lowering pipeline. It builds an SSA model for GC objects, runs liveness analysis on the CFG, assigns shadow-stack slots based on live ranges, and can also do shrink wrap. Shrink wrap tries to move the prologue/epilogue close to the region where the shadow stack is really needed.
@@ -68,6 +72,19 @@ Scan the function for temporary-root markers that simply forward an immutable gl
 
 Immutable global: the marker is removed, so there is no shadow-stack prologue/store around it.
 
+Before (immutable global routed through marker):
+
+```wasm
+(func $.../_start
+  call $~lib/rt/__tmptostack
+    global.get $.../a ;; immutable
+  global.get $.../a
+  call $.../bar
+)
+```
+
+After (marker removed):
+
 ```wasm
 (func $.../_start
   global.get $.../a
@@ -77,6 +94,18 @@ Immutable global: the marker is removed, so there is no shadow-stack prologue/st
 ```
 
 Mutable global: the store is preserved, and the function opens/closes the shadow stack.
+
+Before (mutable global must be rooted across call):
+
+```wasm
+(func $.../_start
+  call $~lib/rt/__tmptostack
+    global.get $.../a ;; mutable
+  call $.../bar
+)
+```
+
+After (marker lowered to prologue/store/epilogue):
 
 ```wasm
 (func $.../_start
@@ -100,7 +129,7 @@ Mutable global: the store is preserved, and the function opens/closes the shadow
 
 #### Rationale
 
-“May this call trigger GC?” is a key condition for many optimizations. If a call and everything it can reach will never trigger `__new/__collect`, then keeping shadow-stack roots around it is less important.
+“May this call trigger GC?” is a key condition for many optimizations. If a call and everything it can reach will never trigger `__new/__collect`, then keeping shadow-stack roots around it is useless.
 
 #### Method
 
@@ -126,21 +155,6 @@ Do a reverse reachability marking on the call graph:
 - Mark all functions that can reach those entrypoints (transitively) as **non-leaf**.
 - The remaining functions are treated as **leaf** (cannot trigger GC through any call chain).
 
-#### Example
-
-When a call site is known to be able to reach a GC trigger (e.g. an explicit collect), the lowering must keep required roots alive across that call:
-
-```wasm
-... ;; allocate/build an object
-global.get $~lib/memory/__stack_pointer
-local.get $obj
-i32.store $0 align=1   ;; root materialized
-call $~lib/rt/itcms/__collect
-... ;; object is still used after the call
-```
-
-In contrast, if all relevant calls on a path are leaf (cannot reach `__new/__collect`), later filtering may remove rooting and even remove the prologue/epilogue entirely.
-
 ## `ObjLivenessAnalyzer`
 
 #### Rationale
@@ -162,6 +176,16 @@ Build an SSA-like model for “GC-object values that may need rooting”, then c
 #### Example
 
 Liveness decides whether a root must be materialized at a potential GC point. A typical pattern is:
+
+Before (potentially unsafe around GC point):
+
+```wasm
+... ;; produce object value in $obj
+call $~lib/rt/itcms/__collect
+... ;; $obj is used afterwards
+```
+
+After (root inserted because $obj is live across call):
 
 ```wasm
 ... ;; produce object value
@@ -196,10 +220,26 @@ Note: in `OptLower`, this step must happen before `LeafFunctionFilter`, because 
 
 When a temporary SSA is just forwarding an existing live value, merging SSA can reduce frame size and remove redundant stores.
 
-In this snapshot, the frame size is reduced and a redundant store is eliminated:
+Before (temporary forwarding SSA keeps extra slot pressure):
 
 ```wasm
-;; frame size reduced: 12 -> 8
+;; frame size: 12
+i32.const 12
+call $~lib/rt/__decrease_sp
+
+global.get $~lib/memory/__stack_pointer
+local.get $x
+i32.store $0 offset=4 align=1
+
+global.get $~lib/memory/__stack_pointer
+local.get $x ;; forwarded temp uses another slot
+i32.store $0 offset=8 align=1
+```
+
+After (forwarding SSA merged; redundant store dropped):
+
+```wasm
+;; frame size: 8
 i32.const 8
 call $~lib/rt/__decrease_sp
 
@@ -230,6 +270,25 @@ Note: caller-managed parameters are handled specially by later stages (they shou
 #### Example
 
 If an object is live only around leaf calls (no reachable GC trigger), leaf filtering can remove the shadow-stack management entirely:
+
+Before (conservative rooting around call):
+
+```wasm
+(func $.../_start (result i32)
+  ...
+  i32.const 4
+  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  local.get $obj
+  i32.store $0 align=1
+  call $.../constructor ;; leaf-only path
+  i32.const 4
+  call $~lib/rt/__increase_sp
+  return
+)
+```
+
+After (shadow-stack ops removed):
 
 ```wasm
 (func $.../_start (result i32)
@@ -273,8 +332,30 @@ There are two strategies:
 
 Slot reuse shows up as a much smaller frame size and many stores targeting the same slot (offset 0):
 
+Before (distinct slots, larger frame):
+
 ```wasm
-;; frame size reduced: 24 -> 4
+;; frame size: 24
+i32.const 24
+call $~lib/rt/__decrease_sp
+
+global.get $~lib/memory/__stack_pointer
+local.get $a
+i32.store $0 offset=0 align=1
+
+global.get $~lib/memory/__stack_pointer
+local.get $b
+i32.store $0 offset=8 align=1
+
+global.get $~lib/memory/__stack_pointer
+local.get $c
+i32.store $0 offset=16 align=1
+```
+
+After (slot reuse, compact frame):
+
+```wasm
+;; frame size: 4
 i32.const 4
 call $~lib/rt/__decrease_sp
 
@@ -317,6 +398,25 @@ The output is an `InsertPositionHint { prologueExpr, epilogueExpr }` for each fu
 
 Shrink wrapping can move the prologue into the region that actually needs roots. In this snapshot, `__decrease_sp` is inserted only on the path that allocates/roots, while an early return path avoids touching the shadow stack:
 
+Before (prologue at entry, even early-return path pays cost):
+
+```wasm
+(func $.../_start (param i32) (result i32)
+  i32.const 8
+  call $~lib/rt/__decrease_sp
+  ...
+  if
+    ...
+    i32.const 8
+    call $~lib/rt/__increase_sp
+    return
+  end
+  ...
+)
+```
+
+After (prologue only on path that needs roots):
+
 ```wasm
 (func $.../_start (param i32) (result i32)
   ...
@@ -351,6 +451,17 @@ Compute the required frame size from the assigned stack positions, then ensure s
 
 On early returns, the inserter ensures the epilogue runs before returning:
 
+Before (missing epilogue on return path):
+
+```wasm
+... ;; rooted region
+local.set $ret
+local.get $ret
+return
+```
+
+After (epilogue guaranteed before return):
+
 ```wasm
 ... ;; rooted region
 local.set $ret
@@ -377,6 +488,15 @@ Lower rooting markers into concrete memory stores and remove markers that were p
 #### Example
 
 After replacement, a marker typically becomes a store to `__stack_pointer` plus the original value flow (excerpt):
+
+Before (marker form):
+
+```wasm
+call $~lib/rt/__tmptostack
+  local.get $obj
+```
+
+After (concrete store + value flow):
 
 ```wasm
 global.get $~lib/memory/__stack_pointer
