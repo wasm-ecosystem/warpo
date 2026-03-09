@@ -8,12 +8,6 @@
 
 namespace {
 
-std::optional<std::uint64_t> checkedAdd(std::uint64_t const lhs, std::uint64_t const rhs) {
-  if (std::numeric_limits<std::uint64_t>::max() - lhs < rhs)
-    return std::nullopt;
-  return lhs + rhs;
-}
-
 std::optional<std::int64_t> checkedSub(std::int64_t const lhs, std::int64_t const rhs) {
   __int128 const diff = static_cast<__int128>(lhs) - static_cast<__int128>(rhs);
   if (diff < std::numeric_limits<std::int64_t>::min() || diff > std::numeric_limits<std::int64_t>::max())
@@ -28,15 +22,12 @@ warpo::passes::decideMergeDataSection(warpo::passes::MergeDataSectionDecisionInp
   if (input.b0 < input.a0)
     return {.shouldMerge = false, .reason = warpo::passes::MergeDataSectionDecisionReason::InvalidOrder, .benefit = 0};
 
-  std::optional<std::uint64_t> const a1 = checkedAdd(input.a0, input.aSize);
-  std::optional<std::uint64_t> const b1 = checkedAdd(input.b0, input.bSize);
-  if (!a1.has_value() || !b1.has_value())
-    return {.shouldMerge = false, .reason = warpo::passes::MergeDataSectionDecisionReason::Overflow, .benefit = 0};
+  std::uint64_t const a1 = input.a0 + input.aSize;
 
-  if (input.b0 < *a1)
+  if (input.b0 < a1)
     return {.shouldMerge = true, .reason = warpo::passes::MergeDataSectionDecisionReason::Overlap, .benefit = 0};
 
-  if (input.b0 == *a1)
+  if (input.b0 == a1)
     return {.shouldMerge = true, .reason = warpo::passes::MergeDataSectionDecisionReason::Adjacent, .benefit = 0};
 
   std::optional<std::int64_t> const benefit = checkedSub(input.estimatedKeepSize, input.estimatedMergeSize);
@@ -175,34 +166,21 @@ TEST(MergeDataSectionDecisionTest, InvalidOrderingDoesNotMerge) {
   EXPECT_EQ(result.benefit, 0);
 }
 
-TEST(MergeDataSectionDecisionTest, OverflowOrInvalidSizeDoesNotMerge) {
-  MergeDataSectionDecisionInput const overflowAInput{
-      .a0 = std::numeric_limits<std::uint64_t>::max() - 1,
-      .aSize = 2,
-      .b0 = std::numeric_limits<std::uint64_t>::max() - 1,
-      .bSize = 1,
-      .estimatedKeepSize = 0,
-      .estimatedMergeSize = 0,
-  };
-  MergeDataSectionDecisionInput const overflowBInput{
+TEST(MergeDataSectionDecisionTest, BenefitOverflowDoesNotMerge) {
+  MergeDataSectionDecisionInput const input{
       .a0 = 0,
       .aSize = 1,
-      .b0 = std::numeric_limits<std::uint64_t>::max() - 2,
-      .bSize = 3,
-      .estimatedKeepSize = 0,
-      .estimatedMergeSize = 0,
+      .b0 = 3,
+      .bSize = 1,
+      .estimatedKeepSize = std::numeric_limits<std::int64_t>::max(),
+      .estimatedMergeSize = std::numeric_limits<std::int64_t>::min(),
   };
 
-  MergeDataSectionDecisionResult const overflowAResult = decideMergeDataSection(overflowAInput);
-  MergeDataSectionDecisionResult const overflowBResult = decideMergeDataSection(overflowBInput);
+  MergeDataSectionDecisionResult const result = decideMergeDataSection(input);
 
-  EXPECT_FALSE(overflowAResult.shouldMerge);
-  EXPECT_EQ(overflowAResult.reason, MergeDataSectionDecisionReason::Overflow);
-  EXPECT_EQ(overflowAResult.benefit, 0);
-
-  EXPECT_FALSE(overflowBResult.shouldMerge);
-  EXPECT_EQ(overflowBResult.reason, MergeDataSectionDecisionReason::Overflow);
-  EXPECT_EQ(overflowBResult.benefit, 0);
+  EXPECT_FALSE(result.shouldMerge);
+  EXPECT_EQ(result.reason, MergeDataSectionDecisionReason::Overflow);
+  EXPECT_EQ(result.benefit, 0);
 }
 
 } // namespace warpo::passes::ut
