@@ -1,8 +1,13 @@
+// Copyright (C) 2026 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 #include <array>
 #include <atomic>
+#include <cassert>
 #include <string>
 
 #include "Closure.hpp"
+#include "ir/effects.h"
 #include "warpo/support/Opt.hpp"
 #include "wasm-builder.h"
 #include "wasm-traversal.h"
@@ -50,6 +55,14 @@ public:
 
   void visitCall(wasm::Call *const curr) {
     if (curr->target == setClosureEnvName) {
+      auto *const load = curr->operands[0]->dynCast<wasm::Load>();
+      assert(load && "first operand of setClosureEnv must be i32.load");
+      constexpr uint32_t kForbiddenEffects =
+          wasm::EffectAnalyzer::SideEffects::WritesLocal | wasm::EffectAnalyzer::SideEffects::Calls |
+          wasm::EffectAnalyzer::SideEffects::Branches | wasm::EffectAnalyzer::SideEffects::WritesMemory |
+          wasm::EffectAnalyzer::SideEffects::WritesGlobal;
+      assert(!(wasm::EffectAnalyzer(getPassOptions(), *getModule(), load->ptr).getSideEffects() & kForbiddenEffects) &&
+             "address of i32.load must not write locals/globals/memory, call, or branch");
       wasm::Builder b{*getModule()};
       replaceCurrent(b.makeNop());
     }

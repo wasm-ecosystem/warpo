@@ -650,7 +650,7 @@ export class Compiler extends DiagnosticEmitter {
     return module;
   }
 
-  ensureGetClosureEnv(): ExpressionRef {
+  getClosureEnv(): ExpressionRef {
     if (!this.getClosureEnvImported) {
       this.getClosureEnvImported = true;
       this.module.addFunctionImport(
@@ -664,7 +664,7 @@ export class Compiler extends DiagnosticEmitter {
     return this.module.get_closure_env();
   }
 
-  ensureSetClosureEnv(value: ExpressionRef): ExpressionRef {
+  setClosureEnv(value: ExpressionRef): ExpressionRef {
     if (!this.setClosureEnvImported) {
       this.setClosureEnvImported = true;
       this.module.addFunctionImport(
@@ -678,7 +678,7 @@ export class Compiler extends DiagnosticEmitter {
     return this.module.set_closure_env(value);
   }
 
-  ensureGetClosureEnvByLevel(level: i32): ExpressionRef {
+  getClosureEnvByLevel(level: i32): ExpressionRef {
     if (!this.getClosureEnvByLevelImported) {
       this.getClosureEnvByLevelImported = true;
       this.module.addFunctionImport(
@@ -1644,7 +1644,7 @@ export class Compiler extends DiagnosticEmitter {
 
       const heapLocalsStmt = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
       const parentEnvElementInfo = tupleInfo.elements[0];
-      const getClosureEnvStmt = this.ensureGetClosureEnv();
+      const getClosureEnvStmt = this.getClosureEnv();
       const tupleSetter = assert(this.program.smallTupleInstance.getMethod("__set", [parentEnvElementInfo.type]));
       const saveParentEnvStmt = this.makeCallDirect(
         tupleSetter,
@@ -6992,7 +6992,7 @@ export class Compiler extends DiagnosticEmitter {
     if (shouldInlined) markCallInlined(expr);
     this.currentType = returnType;
     if (instance.isClosureFunction()) {
-      const closureEnvExpr = this.ensureSetClosureEnv(module.i32(0));
+      const closureEnvExpr = this.setClosureEnv(module.i32(0));
       return module.flatten([closureEnvExpr, expr], returnType.toRef());
     } else {
       return expr;
@@ -7090,9 +7090,11 @@ export class Compiler extends DiagnosticEmitter {
       functionAddrExprForIndex = module.local_get(tempFunctionAddrLocal.index, TypeRef.I32);
     }
 
-    const loadEnvExpr = module.load(4, false, functionAddrExprForEnv, TypeRef.I32, 4); // ._env
-    const setEnvExpr = this.ensureSetClosureEnv(loadEnvExpr);
-    callPrepareStmts.push(setEnvExpr);
+    callPrepareStmts.push(
+      this.setClosureEnv(
+        module.load(4, false, functionAddrExprForEnv, TypeRef.I32, 4) // ._env
+      )
+    );
 
     // We might be calling a varargs stub here, even if all operands have been
     // provided, so we must set `argumentsLength` in any case. Inject setting it
@@ -7651,7 +7653,7 @@ export class Compiler extends DiagnosticEmitter {
 
   private makeGetHeapLocalTuple(local: Local): ExpressionRef {
     const nestedLevel = this.getClosureVariableNestedLevel(local);
-    const envTupleExpr = this.ensureGetClosureEnvByLevel(nestedLevel);
+    const envTupleExpr = this.getClosureEnvByLevel(nestedLevel);
     return envTupleExpr;
   }
 
