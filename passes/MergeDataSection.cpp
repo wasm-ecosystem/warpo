@@ -10,11 +10,71 @@
 #include <vector>
 
 #include "MergeDataSection.hpp"
-#include "MergeDataSectionDecision.hpp"
 #include "pass.h"
 #include "wasm.h"
 
 namespace warpo::passes {
+
+enum class MergeDataSectionDecisionReason {
+  InvalidOrder,
+  Overlap,
+  Adjacent,
+  CrossGapBenefitPositive,
+  CrossGapBenefitNonPositive,
+};
+
+struct MergeDataSectionDecisionInput {
+  std::uint64_t a0;
+  std::uint64_t aSize;
+  std::uint64_t b0;
+  std::uint64_t bSize;
+  std::int64_t estimatedKeepSize;
+  std::int64_t estimatedMergeSize;
+};
+
+struct MergeDataSectionDecisionResult {
+  bool shouldMerge;
+  MergeDataSectionDecisionReason reason;
+  std::int64_t benefit;
+};
+
+MergeDataSectionDecisionResult decideMergeDataSection(MergeDataSectionDecisionInput const &input) {
+  if (input.b0 < input.a0)
+    return {.shouldMerge = false, .reason = MergeDataSectionDecisionReason::InvalidOrder, .benefit = 0};
+
+  std::uint64_t const a1 = input.a0 + input.aSize;
+
+  if (input.b0 < a1)
+    return {.shouldMerge = true, .reason = MergeDataSectionDecisionReason::Overlap, .benefit = 0};
+
+  if (input.b0 == a1)
+    return {.shouldMerge = true, .reason = MergeDataSectionDecisionReason::Adjacent, .benefit = 0};
+
+  std::int64_t const benefit = input.estimatedKeepSize - input.estimatedMergeSize;
+
+  if (benefit > 0)
+    return {.shouldMerge = true, .reason = MergeDataSectionDecisionReason::CrossGapBenefitPositive, .benefit = benefit};
+
+  return {
+      .shouldMerge = false, .reason = MergeDataSectionDecisionReason::CrossGapBenefitNonPositive, .benefit = benefit};
+}
+
+char const *toString(MergeDataSectionDecisionReason const reason) {
+  switch (reason) {
+  case MergeDataSectionDecisionReason::InvalidOrder:
+    return "invalid-order";
+  case MergeDataSectionDecisionReason::Overlap:
+    return "overlap";
+  case MergeDataSectionDecisionReason::Adjacent:
+    return "adjacent";
+  case MergeDataSectionDecisionReason::CrossGapBenefitPositive:
+    return "cross-gap-benefit-positive";
+  case MergeDataSectionDecisionReason::CrossGapBenefitNonPositive:
+    return "cross-gap-benefit-non-positive";
+  }
+  return "unknown";
+}
+
 namespace {
 
 std::optional<std::uint64_t> checkedAdd(std::uint64_t const lhs, std::uint64_t const rhs) {
@@ -241,6 +301,104 @@ std::uint64_t getConstOffset(wasm::DataSegment const &segment) {
 std::string payload(wasm::DataSegment const &segment) { return {segment.data.begin(), segment.data.end()}; }
 
 } // namespace
+
+TEST(MergeDataSectionDecisionTest, OverlapAlwaysMerge) {
+  MergeDataSectionDecisionInput const input{
+      .a0 = 100,
+      .aSize = 10,
+      .b0 = 105,
+      .bSize = 7,
+      .estimatedKeepSize = 0,
+      .estimatedMergeSize = 0,
+  };
+
+  MergeDataSectionDecisionResult const result = decideMergeDataSection(input);
+
+  EXPECT_TRUE(result.shouldMerge);
+  EXPECT_EQ(result.reason, MergeDataSectionDecisionReason::Overlap);
+  EXPECT_EQ(result.benefit, 0);
+}
+
+TEST(MergeDataSectionDecisionTest, AdjacentAlwaysMerge) {
+  MergeDataSectionDecisionInput const input{
+      .a0 = 42,
+      .aSize = 8,
+      .b0 = 50,
+      .bSize = 3,
+      .estimatedKeepSize = 0,
+      .estimatedMergeSize = 0,
+  };
+
+  MergeDataSectionDecisionResult const result = decideMergeDataSection(input);
+
+  EXPECT_TRUE(result.shouldMerge);
+  EXPECT_EQ(result.reason, MergeDataSectionDecisionReason::Adjacent);
+  EXPECT_EQ(result.benefit, 0);
+}
+
+TEST(MergeDataSectionDecisionTest, CrossGapPositiveBenefitMerges) {
+  MergeDataSectionDecisionInput const input{
+      .a0 = 0,
+      .aSize = 4,
+      .b0 = 9,
+      .bSize = 4,
+      .estimatedKeepSize = 40,
+      .estimatedMergeSize = 30,
+  };
+
+  MergeDataSectionDecisionResult const result = decideMergeDataSection(input);
+
+  EXPECT_TRUE(result.shouldMerge);
+  EXPECT_EQ(result.reason, MergeDataSectionDecisionReason::CrossGapBenefitPositive);
+  EXPECT_EQ(result.benefit, 10);
+}
+
+TEST(MergeDataSectionDecisionTest, CrossGapZeroOrNegativeBenefitDoesNotMerge) {
+  MergeDataSectionDecisionInput const zeroBenefitInput{
+      .a0 = 0,
+      .aSize = 4,
+      .b0 = 10,
+      .bSize = 4,
+      .estimatedKeepSize = 25,
+      .estimatedMergeSize = 25,
+  };
+  MergeDataSectionDecisionInput const negativeBenefitInput{
+      .a0 = 0,
+      .aSize = 4,
+      .b0 = 10,
+      .bSize = 4,
+      .estimatedKeepSize = 20,
+      .estimatedMergeSize = 25,
+  };
+
+  MergeDataSectionDecisionResult const zeroBenefitResult = decideMergeDataSection(zeroBenefitInput);
+  MergeDataSectionDecisionResult const negativeBenefitResult = decideMergeDataSection(negativeBenefitInput);
+
+  EXPECT_FALSE(zeroBenefitResult.shouldMerge);
+  EXPECT_EQ(zeroBenefitResult.reason, MergeDataSectionDecisionReason::CrossGapBenefitNonPositive);
+  EXPECT_EQ(zeroBenefitResult.benefit, 0);
+
+  EXPECT_FALSE(negativeBenefitResult.shouldMerge);
+  EXPECT_EQ(negativeBenefitResult.reason, MergeDataSectionDecisionReason::CrossGapBenefitNonPositive);
+  EXPECT_EQ(negativeBenefitResult.benefit, -5);
+}
+
+TEST(MergeDataSectionDecisionTest, InvalidOrderingDoesNotMerge) {
+  MergeDataSectionDecisionInput const input{
+      .a0 = 100,
+      .aSize = 5,
+      .b0 = 99,
+      .bSize = 7,
+      .estimatedKeepSize = 0,
+      .estimatedMergeSize = 0,
+  };
+
+  MergeDataSectionDecisionResult const result = decideMergeDataSection(input);
+
+  EXPECT_FALSE(result.shouldMerge);
+  EXPECT_EQ(result.reason, MergeDataSectionDecisionReason::InvalidOrder);
+  EXPECT_EQ(result.benefit, 0);
+}
 
 TEST(MergeDataSectionPassTest, AdjacentMerge) {
   auto m = loadWat(R"(
