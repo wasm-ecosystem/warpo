@@ -113,8 +113,9 @@ TEST(ClosureLower, SetOnlyRemovesCallsAndFunctions) {
       (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (param i32) (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32 i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32 i32) (result i32)))
+      (memory 1)
       (func $caller
-        (call $~lib/rt/closure/setClosureEnv (i32.const 1) (i32.const 2))
+        (call $~lib/rt/closure/setClosureEnv (i32.load (i32.const 0)) (i32.const 2))
       )
     )
   )");
