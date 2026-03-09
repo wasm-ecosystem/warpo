@@ -76,19 +76,6 @@ char const *toString(MergeDataSectionDecisionReason const reason) {
 }
 
 namespace {
-
-std::optional<std::uint64_t> checkedAdd(std::uint64_t const lhs, std::uint64_t const rhs) {
-  if (std::numeric_limits<std::uint64_t>::max() - lhs < rhs)
-    return std::nullopt;
-  return lhs + rhs;
-}
-
-std::optional<std::uint64_t> checkedSub(std::uint64_t const lhs, std::uint64_t const rhs) {
-  if (lhs < rhs)
-    return std::nullopt;
-  return lhs - rhs;
-}
-
 std::optional<std::int64_t> toInt64(std::uint64_t const value) {
   if (value > static_cast<std::uint64_t>(std::numeric_limits<std::int64_t>::max()))
     return std::nullopt;
@@ -130,11 +117,7 @@ std::optional<std::uint64_t> estimateActiveSegmentBinarySize(wasm::Module const 
   size += 1U;
 
   size += ulebSize(payloadSize);
-  std::optional<std::uint64_t> const total = checkedAdd(size, payloadSize);
-  if (!total.has_value())
-    return std::nullopt;
-
-  return *total;
+  return size + payloadSize;
 }
 
 std::optional<std::int64_t> estimateKeepBinarySize(wasm::Module const &module, wasm::DataSegment const &a,
@@ -147,11 +130,7 @@ std::optional<std::int64_t> estimateKeepBinarySize(wasm::Module const &module, w
   if (!aSize.has_value() || !bSize.has_value())
     return std::nullopt;
 
-  std::optional<std::uint64_t> const total = checkedAdd(*aSize, *bSize);
-  if (!total.has_value())
-    return std::nullopt;
-
-  return toInt64(*total);
+  return toInt64(*aSize + *bSize);
 }
 
 std::optional<std::int64_t> estimateMergedBinarySize(wasm::Module const &module, wasm::DataSegment const &a,
@@ -178,9 +157,7 @@ std::optional<SegmentInfo> getSegmentInfo(wasm::DataSegment const &segment) {
 
   std::uint64_t const start = offset->value.getUnsigned();
   std::uint64_t const dataSize = static_cast<std::uint64_t>(segment.data.size());
-  std::optional<std::uint64_t> const end = checkedAdd(start, dataSize);
-  if (!end.has_value())
-    return std::nullopt;
+  std::uint64_t const end = start + dataSize;
 
   if (start > static_cast<std::uint64_t>(std::numeric_limits<std::int64_t>::max()))
     return std::nullopt;
@@ -188,7 +165,7 @@ std::optional<SegmentInfo> getSegmentInfo(wasm::DataSegment const &segment) {
   return SegmentInfo{
       .offset = static_cast<std::int64_t>(start),
       .size = dataSize,
-      .end = *end,
+      .end = end,
   };
 }
 
@@ -204,20 +181,15 @@ bool tryMergePair(wasm::Module &module, std::unique_ptr<wasm::DataSegment> &firs
   if (b->offset < a->offset)
     return false;
 
-  std::optional<std::uint64_t> const offsetDiff =
-      checkedSub(static_cast<std::uint64_t>(b->offset), static_cast<std::uint64_t>(a->offset));
-  if (!offsetDiff.has_value())
-    return false;
+  std::uint64_t const offsetDiff = static_cast<std::uint64_t>(b->offset) - static_cast<std::uint64_t>(a->offset);
 
   std::uint64_t const mergedEnd = std::max(a->end, b->end);
-  std::optional<std::uint64_t> const mergedSize = checkedSub(mergedEnd, static_cast<std::uint64_t>(a->offset));
-  if (!mergedSize.has_value())
-    return false;
+  std::uint64_t const mergedSize = mergedEnd - static_cast<std::uint64_t>(a->offset);
 
   std::optional<std::int64_t> const estimatedKeepSize =
       estimateKeepBinarySize(module, *first, a->offset, second, b->offset);
   std::optional<std::int64_t> const estimatedMergeSize =
-      estimateMergedBinarySize(module, *first, a->offset, *mergedSize);
+      estimateMergedBinarySize(module, *first, a->offset, mergedSize);
   if (!estimatedKeepSize.has_value() || !estimatedMergeSize.has_value())
     return false;
 
@@ -232,10 +204,10 @@ bool tryMergePair(wasm::Module &module, std::unique_ptr<wasm::DataSegment> &firs
   if (!decision.shouldMerge)
     return false;
 
-  std::vector<char> mergedData(*mergedSize, 0);
+  std::vector<char> mergedData(mergedSize, 0);
   std::copy(first->data.begin(), first->data.end(), mergedData.begin());
 
-  auto secondBegin = mergedData.begin() + static_cast<std::ptrdiff_t>(*offsetDiff);
+  auto secondBegin = mergedData.begin() + static_cast<std::ptrdiff_t>(offsetDiff);
   std::copy(second.data.begin(), second.data.end(), secondBegin);
 
   first->data = std::move(mergedData);
