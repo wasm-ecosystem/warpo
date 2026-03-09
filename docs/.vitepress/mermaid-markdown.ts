@@ -1,4 +1,4 @@
-// Copyright (C) 2025 wasm-ecosystem
+// Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
 import type MarkdownIt from "markdown-it";

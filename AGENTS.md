@@ -8,7 +8,7 @@ Please follow these instructions after modifying the code.
 
 - When create new **source code** file (exclude `./tests`), add following license header at the beginning of files.
   ```
-  // Copyright (C) 2025 wasm-ecosystem
+  // Copyright (C) <year> wasm-ecosystem
   // SPDX-License-Identifier: Apache-2.0
   ```
 
