@@ -1,21 +1,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-#include <limits>
-#include <optional>
-
 #include "MergeDataSectionDecision.hpp"
-
-namespace {
-
-std::optional<std::int64_t> checkedSub(std::int64_t const lhs, std::int64_t const rhs) {
-  __int128 const diff = static_cast<__int128>(lhs) - static_cast<__int128>(rhs);
-  if (diff < std::numeric_limits<std::int64_t>::min() || diff > std::numeric_limits<std::int64_t>::max())
-    return std::nullopt;
-  return static_cast<std::int64_t>(diff);
-}
-
-} // namespace
 
 warpo::passes::MergeDataSectionDecisionResult
 warpo::passes::decideMergeDataSection(warpo::passes::MergeDataSectionDecisionInput const &input) {
@@ -30,26 +16,22 @@ warpo::passes::decideMergeDataSection(warpo::passes::MergeDataSectionDecisionInp
   if (input.b0 == a1)
     return {.shouldMerge = true, .reason = warpo::passes::MergeDataSectionDecisionReason::Adjacent, .benefit = 0};
 
-  std::optional<std::int64_t> const benefit = checkedSub(input.estimatedKeepSize, input.estimatedMergeSize);
-  if (!benefit.has_value())
-    return {.shouldMerge = false, .reason = warpo::passes::MergeDataSectionDecisionReason::Overflow, .benefit = 0};
+  std::int64_t const benefit = input.estimatedKeepSize - input.estimatedMergeSize;
 
-  if (*benefit > 0)
+  if (benefit > 0)
     return {.shouldMerge = true,
             .reason = warpo::passes::MergeDataSectionDecisionReason::CrossGapBenefitPositive,
-            .benefit = *benefit};
+            .benefit = benefit};
 
   return {.shouldMerge = false,
           .reason = warpo::passes::MergeDataSectionDecisionReason::CrossGapBenefitNonPositive,
-          .benefit = *benefit};
+          .benefit = benefit};
 }
 
 char const *warpo::passes::toString(warpo::passes::MergeDataSectionDecisionReason const reason) {
   switch (reason) {
   case warpo::passes::MergeDataSectionDecisionReason::InvalidOrder:
     return "invalid-order";
-  case warpo::passes::MergeDataSectionDecisionReason::Overflow:
-    return "overflow";
   case warpo::passes::MergeDataSectionDecisionReason::Overlap:
     return "overlap";
   case warpo::passes::MergeDataSectionDecisionReason::Adjacent:
@@ -163,23 +145,6 @@ TEST(MergeDataSectionDecisionTest, InvalidOrderingDoesNotMerge) {
 
   EXPECT_FALSE(result.shouldMerge);
   EXPECT_EQ(result.reason, MergeDataSectionDecisionReason::InvalidOrder);
-  EXPECT_EQ(result.benefit, 0);
-}
-
-TEST(MergeDataSectionDecisionTest, BenefitOverflowDoesNotMerge) {
-  MergeDataSectionDecisionInput const input{
-      .a0 = 0,
-      .aSize = 1,
-      .b0 = 3,
-      .bSize = 1,
-      .estimatedKeepSize = std::numeric_limits<std::int64_t>::max(),
-      .estimatedMergeSize = std::numeric_limits<std::int64_t>::min(),
-  };
-
-  MergeDataSectionDecisionResult const result = decideMergeDataSection(input);
-
-  EXPECT_FALSE(result.shouldMerge);
-  EXPECT_EQ(result.reason, MergeDataSectionDecisionReason::Overflow);
   EXPECT_EQ(result.benefit, 0);
 }
 

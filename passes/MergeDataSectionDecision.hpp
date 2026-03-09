@@ -9,7 +9,6 @@ namespace warpo::passes {
 
 enum class MergeDataSectionDecisionReason {
   InvalidOrder,
-  Overflow,
   Overlap,
   Adjacent,
   CrossGapBenefitPositive,
