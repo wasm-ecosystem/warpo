@@ -4,20 +4,22 @@
 
 - [x] Task-001: Add Mermaid Docs Runtime Foundation
 - [x] Task-002: Implement Markdown Fence Transform For Mermaid
+- [x] Task-003: Wire VitePress Config And Validate Existing Mermaid Docs
 
 ## Current Iteration
 
-- Iteration: 3
-- Working on: Task-003 (not started)
+- Iteration: 4
+- Working on: Task-004 (not started)
 - Started: 2026-03-09
 
 ## Last Completed
 
-- Task-002: Implement Markdown Fence Transform For Mermaid
-- Added `docs/.vitepress/mermaid-markdown.ts` with markdown-it fence override.
-- Scope: transforms only `mermaid` fences to `<MermaidRenderer ... />`, keeps default rendering for all other fences.
-- Safety: Mermaid payload is URI-encoded before embedding in component attribute expression.
-- Verification: `npm run docs:build`, `npm run build`, `npm run test` passed.
+- Task-003: Wire VitePress Config And Validate Existing Mermaid Docs
+- Wired `overrideMermaidFence` through VitePress `markdown.config` hook in `docs/.vitepress/config.ts`.
+- Verified docs build and dev startup (`npm run docs:build`, `npm run docs:dev`).
+- Verified page delivery for `/warpo/tech/lower/gc.html` from dev server.
+- Repo checks passed: `npm run build`, `npm run test`.
+- Note: PRD path `docs/tech/lower/gc_opt_lower.md` was not found in repository and no existing `mermaid` fences exist in current docs markdown.
 
 ## Blockers
 
