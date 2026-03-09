@@ -1,8 +1,9 @@
 (module
  (type $0 (func))
- (type $1 (func (param i32) (result i32)))
- (type $2 (func (param i32 i32)))
- (type $3 (func (param i32)))
+ (type $1 (func (param i32)))
+ (type $2 (func (param i32) (result i32)))
+ (type $3 (func (param i32 i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $~argumentsLength (mut i32) (i32.const 0))
@@ -28,11 +29,16 @@
    (local.get $cond)
    (then
     (call_indirect (type $0)
-     (i32.load
-      (block (result i32)
-       (global.set $~argumentsLength
-        (i32.const 0)
+     (block (result i32)
+      (call $~lib/rt/closure/setClosureEnv
+       (i32.load offset=4
+        (local.get $fn)
        )
+      )
+      (global.set $~argumentsLength
+       (i32.const 0)
+      )
+      (i32.load
        (local.get $fn)
       )
      )
@@ -41,11 +47,16 @@
    )
   )
   (call_indirect (type $0)
-   (i32.load
-    (block (result i32)
-     (global.set $~argumentsLength
-      (i32.const 0)
+   (block (result i32)
+    (call $~lib/rt/closure/setClosureEnv
+     (i32.load offset=4
+      (local.get $fn)
      )
+    )
+    (global.set $~argumentsLength
+     (i32.const 0)
+    )
+    (i32.load
      (local.get $fn)
     )
    )

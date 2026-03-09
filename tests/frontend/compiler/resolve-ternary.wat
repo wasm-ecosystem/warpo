@@ -1,8 +1,8 @@
 (module
  (type $0 (func (param i32) (result i32)))
  (type $1 (func (param i32 i32)))
- (type $2 (func (param i32 i32) (result i32)))
- (type $3 (func (param i32)))
+ (type $2 (func (param i32)))
+ (type $3 (func (param i32 i32) (result i32)))
  (type $4 (func (param i32 i32 i32)))
  (type $5 (func))
  (type $6 (func (param i32 i32 i32 i32)))
@@ -22,6 +22,7 @@
  (type $20 (func (param i32 f64 i32) (result i32)))
  (type $21 (func (param f64) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $resolve-ternary/b (mut i32) (i32.const 1))
@@ -5724,6 +5725,9 @@
   )
  )
  (func $start:resolve-ternary
+  (local $0 i32)
+  (local $1 i32)
+  (local $2 i32)
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -5816,11 +5820,8 @@
     (i32.eq
      (call_indirect (type $0)
       (i32.const 1)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 1)
-        )
+      (block (result i32)
+       (local.set $0
         (if (result i32)
          (global.get $resolve-ternary/b)
          (then
@@ -5830,6 +5831,17 @@
           (global.get $resolve-ternary/f2)
          )
         )
+       )
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (local.get $0)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 1)
+       )
+       (i32.load
+        (local.get $0)
        )
       )
      )
@@ -5851,11 +5863,8 @@
     (i32.eq
      (call_indirect (type $0)
       (i32.const 1)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 1)
-        )
+      (block (result i32)
+       (local.set $1
         (if (result i32)
          (global.get $resolve-ternary/b)
          (then
@@ -5865,6 +5874,17 @@
           (i32.const 3568)
          )
         )
+       )
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (local.get $1)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 1)
+       )
+       (i32.load
+        (local.get $1)
        )
       )
      )
@@ -5886,11 +5906,8 @@
     (i32.eq
      (call_indirect (type $0)
       (i32.const 1)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 1)
-        )
+      (block (result i32)
+       (local.set $2
         (if (result i32)
          (global.get $resolve-ternary/b)
          (then
@@ -5900,6 +5917,17 @@
           (i32.const 3568)
          )
         )
+       )
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (local.get $2)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 1)
+       )
+       (i32.load
+        (local.get $2)
        )
       )
      )

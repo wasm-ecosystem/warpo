@@ -6993,7 +6993,7 @@ export class Compiler extends DiagnosticEmitter {
     this.currentType = returnType;
     if (instance.isClosureFunction()) {
       const closureEnvExpr = this.ensureSetClosureEnv(module.i32(0));
-      return module.flatten([closureEnvExpr, expr]);
+      return module.flatten([closureEnvExpr, expr], returnType.toRef());
     } else {
       return expr;
     }
@@ -7076,44 +7076,47 @@ export class Compiler extends DiagnosticEmitter {
       }
     }
 
+    let callPrepareStmts: ExpressionRef[] = new Array();
+
+    let functionAddrExprForEnv = module.tryCopyTrivialExpression(functionArg);
+    let functionAddrExprForIndex: ExpressionRef;
+    if (functionAddrExprForEnv) {
+      functionAddrExprForIndex = functionArg;
+    } else {
+      const tempFunctionAddrLocal = this.currentFlow.getTempLocal(Type.i32);
+      const setExpr = module.local_set(tempFunctionAddrLocal.index, functionArg, false);
+      callPrepareStmts.push(setExpr);
+      functionAddrExprForEnv = module.local_get(tempFunctionAddrLocal.index, TypeRef.I32);
+      functionAddrExprForIndex = module.local_get(tempFunctionAddrLocal.index, TypeRef.I32);
+    }
+
+    const loadEnvExpr = module.load(4, false, functionAddrExprForEnv, TypeRef.I32, 4); // ._env
+    const setEnvExpr = this.ensureSetClosureEnv(loadEnvExpr);
+    callPrepareStmts.push(setEnvExpr);
+
     // We might be calling a varargs stub here, even if all operands have been
     // provided, so we must set `argumentsLength` in any case. Inject setting it
     // into the index argument, which becomes executed last after any operands.
     let argumentsLength = this.ensureArgumentsLength();
     let sizeTypeRef = TypeRef.I32;
-    if (getSideEffects(functionArg, module.ref) & SideEffects.WritesGlobal) {
-      let flow = this.currentFlow;
-      let temp = flow.getTempLocal(Type.usize32);
-      let tempIndex = temp.index;
-      functionArg = module.block(
-        null,
-        [
-          module.local_set(tempIndex, functionArg, true), // Function
-          module.global_set(argumentsLength, module.i32(numArguments)),
-          module.local_get(tempIndex, sizeTypeRef),
-        ],
-        sizeTypeRef
-      );
-    } else {
-      // simplify
-      functionArg = module.block(
-        null,
-        [module.global_set(argumentsLength, module.i32(numArguments)), functionArg],
-        sizeTypeRef
-      );
-    }
+
+    callPrepareStmts.push(module.global_set(argumentsLength, module.i32(numArguments)));
+    callPrepareStmts.push(module.load(4, false, functionAddrExprForIndex, TypeRef.I32)); // ._index
+
+    const indexExprWithVarArgs = module.block(null, callPrepareStmts, sizeTypeRef);
+
     if (operands) this.operandsTostack(signature, operands);
-    const loadEnvExpr = module.load(4, false, functionArg, TypeRef.I32, 4); // ._env
-    const setEnvExpr = this.ensureSetClosureEnv(loadEnvExpr);
+
     let expr = module.call_indirect(
       null, // TODO: handle multiple tables
-      module.load(4, false, functionArg, TypeRef.I32), // ._index
+      indexExprWithVarArgs,
       operands,
       signature.paramRefs,
       signature.resultRefs
     );
     this.currentType = returnType;
-    return module.flatten([setEnvExpr, expr]);
+
+    return expr;
   }
 
   private compileCommaExpression(

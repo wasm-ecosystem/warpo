@@ -10,9 +10,9 @@
 #include "wasm.h"
 namespace warpo::passes {
 
-static constexpr const char *const kGetClosureEnv = "~lib/closure/getClosureEnv";
-static constexpr const char *const kSetClosureEnv = "~lib/closure/setClosureEnv";
-static constexpr const char *const kGetClosureEnvByLevel = "~lib/closure/getClosureEnvByLevel";
+static constexpr const char *const kGetClosureEnv = "~lib/rt/closure/getClosureEnv";
+static constexpr const char *const kSetClosureEnv = "~lib/rt/closure/setClosureEnv";
+static constexpr const char *const kGetClosureEnvByLevel = "~lib/rt/closure/getClosureEnvByLevel";
 
 static std::array<const char *const, 3> kClosureImportBases = {
     kGetClosureEnv,
@@ -76,11 +76,71 @@ void ClosureLower::run(wasm::Module *m) {
     wasm::PassRunner runner{getPassRunner()};
     runner.add(std::make_unique<SetClosureEnvRemover>(kSetClosureEnv));
     runner.run();
+    // Always remove the 3 import functions
+    for (auto const &name : kClosureImportBases)
+      m->removeFunction(name);
   }
-
-  // Always remove the 3 import functions
-  for (auto const &name : kClosureImportBases)
-    m->removeFunction(name);
 }
 
 } // namespace warpo::passes
+
+#ifdef WARPO_ENABLE_UNIT_TESTS
+
+#include <gtest/gtest.h>
+
+#include "Runner.hpp"
+#include "pass.h"
+
+namespace warpo::passes::ut {
+namespace {
+
+TEST(ClosureLower, SetOnlyRemovesCallsAndFunctions) {
+  auto m = loadWat(R"(
+    (module
+      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (param i32) (result i32)))
+      (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32 i32)))
+      (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32 i32) (result i32)))
+      (func $caller
+        (call $~lib/rt/closure/setClosureEnv (i32.const 1) (i32.const 2))
+      )
+    )
+  )");
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{new ClosureLower(nullptr)});
+  runner.run();
+
+  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnv"), nullptr);
+  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/setClosureEnv"), nullptr);
+  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnvByLevel"), nullptr);
+
+  wasm::Function *const caller = m->getFunctionOrNull("caller");
+  ASSERT_NE(caller, nullptr);
+  EXPECT_TRUE(caller->body->is<wasm::Nop>());
+}
+
+TEST(ClosureLower, NoClosureCallsKeepsFunctions) {
+  auto m = loadWat(R"(
+    (module
+      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (param i32) (result i32)))
+      (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32 i32)))
+      (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32 i32) (result i32)))
+      (func $caller
+        nop
+      )
+    )
+  )");
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{new ClosureLower(nullptr)});
+  runner.run();
+
+  EXPECT_NE(m->getFunctionOrNull("~lib/rt/closure/getClosureEnv"), nullptr);
+  EXPECT_NE(m->getFunctionOrNull("~lib/rt/closure/setClosureEnv"), nullptr);
+  EXPECT_NE(m->getFunctionOrNull("~lib/rt/closure/getClosureEnvByLevel"), nullptr);
+}
+
+} // namespace
+} // namespace warpo::passes::ut
+
+#endif
