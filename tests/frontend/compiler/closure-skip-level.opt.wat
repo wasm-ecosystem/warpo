@@ -1,16 +1,17 @@
 (module
  (type $0 (func (result i32)))
- (type $1 (func))
- (type $2 (func (param i32)))
+ (type $1 (func (param i32)))
+ (type $2 (func))
  (type $3 (func (param i32 i32)))
  (type $4 (func (param i32) (result i32)))
  (type $5 (func (param i32 i32) (result i32)))
  (type $6 (func (param i32 i32 i32 i32)))
  (type $7 (func (param i32 i32 i32)))
  (type $8 (func (param i32 i32 i64)))
- (import "as-builtin-fn" "~lib/closure/getClosureEnv" (func $~lib/closure/getClosureEnv (result i32)))
- (import "as-builtin-fn" "~lib/closure/getClosureEnvByLevel" (func $~lib/closure/getClosureEnvByLevel (param i32) (result i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
@@ -1578,10 +1579,10 @@
   i64.const 1
   i64.store
   local.get $0
-  call $~lib/closure/getClosureEnv
+  call $~lib/rt/closure/getClosureEnv
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
   i32.const 2
-  call $~lib/closure/getClosureEnvByLevel
+  call $~lib/rt/closure/getClosureEnvByLevel
   i32.const 4
   i32.add
   i32.load
@@ -1594,26 +1595,29 @@
   i32.const 12
   i32.const 4
   call $~lib/rt/itcms/__new
-  local.tee $0
+  local.tee $1
   i32.const 4
   i32.add
   i64.const 1
   i64.store
-  local.get $0
-  call $~lib/closure/getClosureEnv
+  local.get $1
+  call $~lib/rt/closure/getClosureEnv
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
   i32.const 8
   i32.const 5
   call $~lib/rt/itcms/__new
-  local.tee $1
+  local.tee $0
   i32.const 1
   i32.store
-  local.get $1
+  local.get $0
   i32.const 4
   i32.add
-  local.get $0
-  i32.store
   local.get $1
+  i32.store
+  local.get $0
+  i32.load offset=4
+  call $~lib/rt/closure/setClosureEnv
+  local.get $0
   i32.load
   call_indirect (type $0)
   i32.const 100
@@ -1630,10 +1634,10 @@
   i64.const 1
   i64.store
   local.get $1
-  call $~lib/closure/getClosureEnv
+  call $~lib/rt/closure/getClosureEnv
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
   i32.const 0
-  call $~lib/closure/getClosureEnvByLevel
+  call $~lib/rt/closure/getClosureEnvByLevel
   i32.const 4
   i32.add
   local.get $0
@@ -1649,6 +1653,9 @@
   i32.add
   local.get $1
   i32.store
+  local.get $0
+  i32.load offset=4
+  call $~lib/rt/closure/setClosureEnv
   local.get $0
   i32.load
   call_indirect (type $0)

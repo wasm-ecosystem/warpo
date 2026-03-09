@@ -408,7 +408,9 @@ export class Compiler extends DiagnosticEmitter {
   /** Elements, that are module exports, already processed */
   doneModuleExports: Set<Element> = new Set();
 
-  closureBuiltinAdded: boolean = false;
+  private getClosureEnvImported: boolean = false;
+  private setClosureEnvImported: boolean = false;
+  private getClosureEnvByLevelImported: boolean = false;
 
   /** Constructs a new compiler for a {@link Program} using the specified options. */
   constructor(program: Program) {
@@ -648,9 +650,9 @@ export class Compiler extends DiagnosticEmitter {
     return module;
   }
 
-  setClosureImport(): void {
-    if (!this.closureBuiltinAdded) {
-      this.closureBuiltinAdded = true;
+  getClosureEnv(): ExpressionRef {
+    if (!this.getClosureEnvImported) {
+      this.getClosureEnvImported = true;
       this.module.addFunctionImport(
         BuiltinNames.getClosureEnv,
         BuiltinNames.externalFuncName,
@@ -658,6 +660,13 @@ export class Compiler extends DiagnosticEmitter {
         TypeRef.None,
         TypeRef.I32
       );
+    }
+    return this.module.get_closure_env();
+  }
+
+  setClosureEnv(value: ExpressionRef): ExpressionRef {
+    if (!this.setClosureEnvImported) {
+      this.setClosureEnvImported = true;
       this.module.addFunctionImport(
         BuiltinNames.setClosureEnv,
         BuiltinNames.externalFuncName,
@@ -665,6 +674,13 @@ export class Compiler extends DiagnosticEmitter {
         TypeRef.I32,
         TypeRef.None
       );
+    }
+    return this.module.set_closure_env(value);
+  }
+
+  getClosureEnvByLevel(level: i32): ExpressionRef {
+    if (!this.getClosureEnvByLevelImported) {
+      this.getClosureEnvByLevelImported = true;
       this.module.addFunctionImport(
         BuiltinNames.getClosureEnvByLevel,
         BuiltinNames.externalFuncName,
@@ -673,6 +689,7 @@ export class Compiler extends DiagnosticEmitter {
         TypeRef.I32
       );
     }
+    return this.module.get_closure_env_by_level(level);
   }
 
   private initDefaultMemory(memoryOffset: i64): void {
@@ -1546,7 +1563,6 @@ export class Compiler extends DiagnosticEmitter {
     /** Function to compile. */
     instance: Function
   ): bool {
-    this.setClosureImport();
     // ensure the function has no duplicate parameters
     let parameters = instance.prototype.functionTypeNode.parameters;
     let numParameters = parameters.length;
@@ -1628,7 +1644,7 @@ export class Compiler extends DiagnosticEmitter {
 
       const heapLocalsStmt = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
       const parentEnvElementInfo = tupleInfo.elements[0];
-      const getClosureEnvStmt = module.get_closure_env();
+      const getClosureEnvStmt = this.getClosureEnv();
       const tupleSetter = assert(this.program.smallTupleInstance.getMethod("__set", [parentEnvElementInfo.type]));
       const saveParentEnvStmt = this.makeCallDirect(
         tupleSetter,
@@ -6975,7 +6991,12 @@ export class Compiler extends DiagnosticEmitter {
     let expr = module.call(instance.internalName, operands, returnType.toRef());
     if (shouldInlined) markCallInlined(expr);
     this.currentType = returnType;
-    return expr;
+    if (instance.isClosureFunction()) {
+      const closureEnvExpr = this.setClosureEnv(module.i32(0));
+      return module.flatten([closureEnvExpr, expr], returnType.toRef());
+    } else {
+      return expr;
+    }
   }
 
   /** Compiles an indirect call to a first-class function. */
@@ -7055,41 +7076,48 @@ export class Compiler extends DiagnosticEmitter {
       }
     }
 
+    let callPrepareStmts: ExpressionRef[] = new Array();
+
+    let functionAddrExprForEnv = module.tryCopyTrivialExpression(functionArg);
+    let functionAddrExprForIndex: ExpressionRef;
+    if (functionAddrExprForEnv) {
+      functionAddrExprForIndex = functionArg;
+    } else {
+      const tempFunctionAddrLocal = this.currentFlow.getTempLocal(Type.i32);
+      const setExpr = module.local_set(tempFunctionAddrLocal.index, functionArg, false);
+      callPrepareStmts.push(setExpr);
+      functionAddrExprForEnv = module.local_get(tempFunctionAddrLocal.index, TypeRef.I32);
+      functionAddrExprForIndex = module.local_get(tempFunctionAddrLocal.index, TypeRef.I32);
+    }
+
+    callPrepareStmts.push(
+      this.setClosureEnv(
+        module.load(4, false, functionAddrExprForEnv, TypeRef.I32, 4) // ._env
+      )
+    );
+
     // We might be calling a varargs stub here, even if all operands have been
     // provided, so we must set `argumentsLength` in any case. Inject setting it
     // into the index argument, which becomes executed last after any operands.
     let argumentsLength = this.ensureArgumentsLength();
     let sizeTypeRef = TypeRef.I32;
-    if (getSideEffects(functionArg, module.ref) & SideEffects.WritesGlobal) {
-      let flow = this.currentFlow;
-      let temp = flow.getTempLocal(Type.usize32);
-      let tempIndex = temp.index;
-      functionArg = module.block(
-        null,
-        [
-          module.local_set(tempIndex, functionArg, true), // Function
-          module.global_set(argumentsLength, module.i32(numArguments)),
-          module.local_get(tempIndex, sizeTypeRef),
-        ],
-        sizeTypeRef
-      );
-    } else {
-      // simplify
-      functionArg = module.block(
-        null,
-        [module.global_set(argumentsLength, module.i32(numArguments)), functionArg],
-        sizeTypeRef
-      );
-    }
+
+    callPrepareStmts.push(module.global_set(argumentsLength, module.i32(numArguments)));
+    callPrepareStmts.push(module.load(4, false, functionAddrExprForIndex, TypeRef.I32)); // ._index
+
+    const indexExprWithVarArgs = module.block(null, callPrepareStmts, sizeTypeRef);
+
     if (operands) this.operandsTostack(signature, operands);
+
     let expr = module.call_indirect(
       null, // TODO: handle multiple tables
-      module.load(4, false, functionArg, TypeRef.I32), // ._index
+      indexExprWithVarArgs,
       operands,
       signature.paramRefs,
       signature.resultRefs
     );
     this.currentType = returnType;
+
     return expr;
   }
 
@@ -7625,7 +7653,7 @@ export class Compiler extends DiagnosticEmitter {
 
   private makeGetHeapLocalTuple(local: Local): ExpressionRef {
     const nestedLevel = this.getClosureVariableNestedLevel(local);
-    const envTupleExpr = this.module.get_closure_env_by_level(nestedLevel);
+    const envTupleExpr = this.getClosureEnvByLevel(nestedLevel);
     return envTupleExpr;
   }
 

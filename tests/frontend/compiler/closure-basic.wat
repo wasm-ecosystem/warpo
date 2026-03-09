@@ -10,10 +10,10 @@
  (type $8 (func (param i32 i32 i32) (result i32)))
  (type $9 (func (param i32 i32 i64) (result i32)))
  (type $10 (func (param i32 i64) (result i32)))
- (import "as-builtin-fn" "~lib/closure/getClosureEnv" (func $~lib/closure/getClosureEnv (result i32)))
- (import "as-builtin-fn" "~lib/closure/setClosureEnv" (func $~lib/closure/setClosureEnv (param i32)))
- (import "as-builtin-fn" "~lib/closure/getClosureEnvByLevel" (func $~lib/closure/getClosureEnvByLevel (param i32) (result i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
@@ -3108,14 +3108,14 @@
    )
    (i32.const 0)
    (call $~lib/rt/__tmptostack
-    (call $~lib/closure/getClosureEnv)
+    (call $~lib/rt/closure/getClosureEnv)
    )
   )
   (return
    (i32.add
     (call $~lib/tuple/SmallTuple#__get<i32>
      (call $~lib/rt/__tmptostack
-      (call $~lib/closure/getClosureEnvByLevel
+      (call $~lib/rt/closure/getClosureEnvByLevel
        (i32.const 1)
       )
      )
@@ -3166,12 +3166,12 @@
    )
    (i32.const 0)
    (call $~lib/rt/__tmptostack
-    (call $~lib/closure/getClosureEnv)
+    (call $~lib/rt/closure/getClosureEnv)
    )
   )
   (call $~lib/tuple/SmallTuple#__set<i32>
    (call $~lib/rt/__tmptostack
-    (call $~lib/closure/getClosureEnvByLevel
+    (call $~lib/rt/closure/getClosureEnvByLevel
      (i32.const 0)
     )
    )
@@ -3191,11 +3191,16 @@
   )
   (return
    (call_indirect (type $5)
-    (i32.load
-     (block (result i32)
-      (global.set $~argumentsLength
-       (i32.const 0)
+    (block (result i32)
+     (call $~lib/rt/closure/setClosureEnv
+      (i32.load offset=4
+       (local.get $inner)
       )
+     )
+     (global.set $~argumentsLength
+      (i32.const 0)
+     )
+     (i32.load
       (local.get $inner)
      )
     )

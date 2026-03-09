@@ -10,6 +10,7 @@
  (type $8 (func (param i32 i32 i32) (result i32)))
  (type $9 (func (param i32 i32 i64) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -2933,6 +2934,7 @@
  )
  (func $getter-call/test (result i32)
   (local $c i32)
+  (local $1 i32)
   (local.set $c
    (call $~lib/rt/__localtostack
     (call $getter-call/C#constructor
@@ -2947,16 +2949,24 @@
   )
   (return
    (call_indirect (type $4)
-    (i32.load
-     (block (result i32)
-      (global.set $~argumentsLength
-       (i32.const 0)
-      )
+    (block (result i32)
+     (local.set $1
       (call $getter-call/C#get:x
        (call $~lib/rt/__tmptostack
         (local.get $c)
        )
       )
+     )
+     (call $~lib/rt/closure/setClosureEnv
+      (i32.load offset=4
+       (local.get $1)
+      )
+     )
+     (global.set $~argumentsLength
+      (i32.const 0)
+     )
+     (i32.load
+      (local.get $1)
      )
     )
    )

@@ -9,6 +9,7 @@
  (type $7 (func (param i32 i32 i32 i32)))
  (type $8 (func (param i32 i32 i64) (result i32)))
  (type $9 (func (result i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -2981,21 +2982,31 @@
  )
  (func $start:function-call
   (call_indirect (type $3)
-   (i32.load
-    (block (result i32)
-     (global.set $~argumentsLength
-      (i32.const 0)
+   (block (result i32)
+    (call $~lib/rt/closure/setClosureEnv
+     (i32.load offset=4
+      (global.get $function-call/fnVoid)
      )
+    )
+    (global.set $~argumentsLength
+     (i32.const 0)
+    )
+    (i32.load
      (global.get $function-call/fnVoid)
     )
    )
   )
   (call_indirect (type $3)
-   (i32.load
-    (block (result i32)
-     (global.set $~argumentsLength
-      (i32.const 0)
+   (block (result i32)
+    (call $~lib/rt/closure/setClosureEnv
+     (i32.load offset=4
+      (global.get $function-call/faVoid)
      )
+    )
+    (global.set $~argumentsLength
+     (i32.const 0)
+    )
+    (i32.load
      (global.get $function-call/faVoid)
     )
    )
@@ -3006,11 +3017,16 @@
      (call_indirect (type $4)
       (i32.const 1)
       (i32.const 2)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 2)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (global.get $function-call/fnRet)
         )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
         (global.get $function-call/fnRet)
        )
       )
@@ -3034,11 +3050,16 @@
      (call_indirect (type $4)
       (i32.const 2)
       (i32.const 3)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 2)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (global.get $function-call/faRet)
         )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
         (global.get $function-call/faRet)
        )
       )
@@ -3061,11 +3082,16 @@
     (i32.eq
      (call_indirect (type $0)
       (i32.const 1)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 0)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (global.get $function-call/fnThis)
         )
+       )
+       (global.set $~argumentsLength
+        (i32.const 0)
+       )
+       (i32.load
         (global.get $function-call/fnThis)
        )
       )
@@ -3124,11 +3150,16 @@
    (call $~lib/rt/__tmptostack
     (global.get $function-call/foo)
    )
-   (i32.load
-    (block (result i32)
-     (global.set $~argumentsLength
-      (i32.const 0)
+   (block (result i32)
+    (call $~lib/rt/closure/setClosureEnv
+     (i32.load offset=4
+      (i32.const 656)
      )
+    )
+    (global.set $~argumentsLength
+     (i32.const 0)
+    )
+    (i32.load
      (i32.const 656)
     )
    )
@@ -3138,11 +3169,16 @@
     (i32.eq
      (call_indirect (type $0)
       (i32.const 1)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 0)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (i32.const 688)
         )
+       )
+       (global.set $~argumentsLength
+        (i32.const 0)
+       )
+       (i32.load
         (i32.const 688)
        )
       )
@@ -3169,11 +3205,16 @@
       )
       (i32.const 1)
       (i32.const 2)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 2)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (i32.const 720)
         )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
         (i32.const 720)
        )
       )
