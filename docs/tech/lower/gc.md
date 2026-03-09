@@ -4,6 +4,12 @@
 
 caller site should ensure the lifetime of GC typed arguments during `call` and `call_indirect`.
 
+```mermaid
+flowchart TD
+  A[call/call_indirect] --> B[ensure GC argument lifetime]
+  B --> C[lower pass keeps references alive]
+```
+
 ## Fast Lower
 
 Fast lowering passes focus on speed.
