@@ -4,8 +4,7 @@
 #include <array>
 #include <atomic>
 #include <cassert>
-#include <cstdlib>
-#include <fmt/core.h>
+#include <optional>
 #include <string>
 
 #include "Closure.hpp"
@@ -107,21 +106,15 @@ protected:
 wasm::Expression *fastLowerGetClosureEnvByLevel(wasm::Call *const curr, wasm::Module *module, wasm::Function *func,
                                                 VariableInfo const *variableInfo) {
   wasm::Builder b{*module};
-  auto const *const levelConst = curr->operands[0]->dynCast<wasm::Const>();
+  wasm::Const const *const levelConst = curr->operands[0]->dynCast<wasm::Const>();
   assert(levelConst && "getClosureEnvByLevel parameter must be i32.const");
   int32_t const level = levelConst->value.geti32();
 
-  auto const &lookupMap = variableInfo->getSubProgramLookupMap();
-  auto it = lookupMap.find(func->name.str);
-  if (it == lookupMap.end()) {
-    fmt::println(stderr, "[ClosureEnvLower] function '{}' not found in SubProgramLookupMap", func->name.str);
-    std::abort();
-  }
-  auto heapIdx = it->second.getHeapVariableStorageLocalIndex();
-  if (!heapIdx.has_value()) {
-    fmt::println(stderr, "[ClosureEnvLower] function '{}' has no heapVariableStorageLocalIndex", func->name.str);
-    std::abort();
-  }
+  VariableInfo::SubProgramLookupMap const &lookupMap = variableInfo->getSubProgramLookupMap();
+  VariableInfo::SubProgramLookupMap::const_iterator const it = lookupMap.find(func->name.str);
+  assert(it != lookupMap.end() && "function not found in SubProgramLookupMap");
+  std::optional<uint32_t> heapIdx = it->second.getHeapVariableStorageLocalIndex();
+  assert(heapIdx.has_value() && "function has no heapVariableStorageLocalIndex");
 
   wasm::Name const memoryName = module->memories.front()->name;
   wasm::Expression *addr = b.makeLocalGet(*heapIdx, wasm::Type::i32);
@@ -166,7 +159,7 @@ void runClosureLower(wasm::PassRunner *parentRunner, wasm::Module *m, VariableIn
     runner.add(std::make_unique<SetClosureEnvRemover>(kSetClosureEnv));
   }
   runner.run();
-  for (auto const &name : kClosureImportBases)
+  for (const char *const name : kClosureImportBases)
     m->removeFunction(name);
 }
 
@@ -194,6 +187,7 @@ TEST(ClosureLower, SetOnlyRemovesCallsAndFunctions) {
       (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (memory 1)
       (func $caller
         (call $~lib/rt/closure/setClosureEnv (i32.load (i32.const 0)))
       )
@@ -319,7 +313,7 @@ TEST(ClosureLower, GetClosureEnvByLevelWithChainedLoads) {
   wasm::Function *const level2 = m->getFunctionOrNull("level2");
   ASSERT_NE(level2, nullptr);
   ASSERT_TRUE(level2->body->is<wasm::Load>());
-  auto *const outerLoad = level2->body->cast<wasm::Load>();
+  wasm::Load *const outerLoad = level2->body->cast<wasm::Load>();
   ASSERT_TRUE(outerLoad->ptr->is<wasm::Load>());
   EXPECT_TRUE(outerLoad->ptr->cast<wasm::Load>()->ptr->is<wasm::LocalGet>());
 }
