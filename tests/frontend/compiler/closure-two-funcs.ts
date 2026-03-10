@@ -8,3 +8,5 @@ export function outer(x: i32): i32 {
   }
   return add1() + add2();
 }
+
+assert(outer(10) == 23);

@@ -5,13 +5,18 @@
 
 #include "pass.h"
 #include "warpo/common/VariableInfo.hpp"
-namespace warpo::passes {
+namespace warpo::passes::closure {
 
-/// @brief lowering tostack function
-struct ClosureLower final : public wasm::Pass {
+struct FastLower final : public wasm::Pass {
   VariableInfo const *variableInfo_;
-  explicit ClosureLower(VariableInfo const *variableInfo) : variableInfo_(variableInfo) { name = "gc::ClosureLower"; }
+  explicit FastLower(VariableInfo const *variableInfo) : variableInfo_(variableInfo) { name = "closure::FastLower"; }
   void run(wasm::Module *m) override;
 };
 
-} // namespace warpo::passes
+struct OptLower final : public wasm::Pass {
+  VariableInfo const *variableInfo_;
+  explicit OptLower(VariableInfo const *variableInfo) : variableInfo_(variableInfo) { name = "closure::OptLower"; }
+  void run(wasm::Module *m) override;
+};
+
+} // namespace warpo::passes::closure
