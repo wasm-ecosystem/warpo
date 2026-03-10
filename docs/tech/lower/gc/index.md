@@ -60,31 +60,26 @@ Both end up with the same essential shape in Wasm:
 
 ```mermaid
 flowchart TD
-  A[Input Wasm with __localtostack/__tmptostack markers]
-  A --> B{Lowering mode}
+  A["Input Wasm with __localtostack / __tmptostack markers"]
+  A --> B{"Lowering mode"}
 
-  B --> C[FastLower]
-  B --> D[OptLower]
+  B --> C["FastLower"]
+  B --> D["OptLower"]
 
-  C --> C1[Assign slots + attach offsets]
-  C1 --> C2[Insert prologue/epilogue]
-  C2 --> C3[Lower marker builtins into stores]
+  C --> C1["Assign slots + attach offsets"]
+  C1 --> C2["Insert prologue / epilogue"]
+  C2 --> C3["Lower marker builtins into stores"]
 
-  D --> D1[Preprocess: vacuum + merge-blocks]
-  D1 --> D2[ImmutableGlobalToStackRemover]
-  D2 --> D3[SSAObj]
-  D3 --> D4[CollectLeafFunction]
-  D4 --> D5[ObjLivenessAnalyzer]
-  D5 --> D6[MergeSSA (optional)]
-  D6 --> D7[LeafFunctionFilter]
-  D7 --> D8[StackAssigner]
-  D8 --> D9[ShrinkWrapAnalysis (optional)]
-  D9 --> D10[PrologEpilogInserter]
-  D10 --> D11[ToStackReplacer]
-  D11 --> D12[Cleanup: remove markers + add SP helpers]
+  D --> D1["Preprocess: vacuum + merge-blocks"]
+  D1 --> D2["Build analyses: SSA / call graph / liveness"]
+  D2 --> D3["Optimize roots: remove immutable globals + merge/filter SSA"]
+  D3 --> D4["Assign stack offsets + insertion hints"]
+  D4 --> D5["Insert prologue / epilogue"]
+  D5 --> D6["Rewrite tostack markers into stores"]
+  D6 --> D7["Cleanup: remove markers + add SP helpers"]
 
-  C3 --> E[Output Wasm with explicit shadow-stack stores]
-  D12 --> E
+  C3 --> E["Output Wasm with explicit shadow-stack stores"]
+  D7 --> E
 ```
 
 ### stack-pointer helpers
@@ -143,34 +138,40 @@ It is possible to have nested call. We should make sure the slot of first argume
 ### Optimized lowering (`gc::OptLower`)
 
 Optimized lowering runs a pipeline to minimize both reserved frame size and the number of stores.
-For more detailed per-pass notes, see [gc_opt_lower.md](gc_opt_lower.md).
+For more detailed per-pass notes, see [opt_lower_details.md](opt_lower_details.md).
 
 1. **Preprocess**
    - `vacuum` and `merge-blocks` (Binaryen passes) to reduce IR noise / block count.
-2. **Remove obviously-unnecessary `tostack`** (optional)
+2. **Remove obviously-unnecessary `tostack`**
    - `ImmutableGlobalToStackRemover` drops `__tmptostack(global.get $immutable)` because immutable globals
      don’t need re-rooting.
 3. **Build SSA model for GC objects**
-   - `SSAObj` builds an SSA index space over locals, temporaries, and parameters that are treated as GC objects.
+
+- A module-level SSA map is created over locals, temporaries, and parameters that are treated as GC objects.
+
 4. **Compute call graph + leaf functions**
    - `CollectLeafFunction` marks functions that do _not_ (transitively) call `__new`/`__collect`.
 5. **Object liveness analysis**
    - `ObjLivenessAnalyzer` computes a liveness bitset per expression for the SSA objects.
-6. **SSA cleanup / merging** (optional)
+6. **SSA cleanup / merging**
    - `MergeSSA` can merge certain tmp-SSA values into the local-SSA they reference to reduce slots.
 7. **Filter to “GC-relevant” regions**
    - `LeafFunctionFilter` invalidates SSA values that are never live around a _non-leaf_ call. Intuitively:
      if no GC can happen, there’s no reason to keep a root in the shadow stack.
 8. **Assign stack offsets**
    - `StackAssigner` assigns offsets to the `tostack` sites where an SSA value becomes live.
-   - In the default optimized mode it builds a conflict graph from liveness and uses greedy coloring so
-     non-overlapping lifetimes can reuse the same slot.
-9. **Shrink-wrap prologue/epilogue** (optional)
+
+- It builds a conflict graph from liveness and uses greedy coloring so
+  non-overlapping lifetimes can reuse the same slot.
+
+9. **Compute insertion hints for prologue/epilogue**
    - `ShrinkWrapAnalysis` chooses insertion points (dominating / post-dominating all required stack activity)
      and avoids loops.
 10. **Insert prologue/epilogue**
-    - `PrologEpilogInserter` uses the computed max offset and (optionally) shrink-wrap hints; it also rewrites
-      `return` sites to ensure the epilogue executes on early returns.
+
+- `PrologEpilogInserter` uses the computed max offset and insertion hints; it also rewrites
+  `return` sites to ensure the epilogue executes on early returns.
+
 11. **Inline `tostack` into stores (or remove it)**
     - `ToStackReplacer` replaces `__localtostack` / `__tmptostack` with an `i32.store` into
       `__stack_pointer + offset`, returning the original value.

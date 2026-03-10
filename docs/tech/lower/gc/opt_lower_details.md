@@ -215,9 +215,7 @@ Build an SSA-like model for “GC-object values that may need rooting”, then c
 
 #### Example
 
-Moved to a dedicated page: [ObjLivenessAnalyzer example](examples/gc_opt_liveness_example.md).
-
-This separation keeps this page focused on pass behavior while preserving a runnable, line-by-line walkthrough in one place.
+see [ObjLivenessAnalyzer example](examples/gc_opt_liveness_example.md).
 
 ## `MergeSSA`
 
@@ -227,13 +225,35 @@ Many `Tmp SSA` values are just a “move/reference” of an existing value in `L
 
 #### Method
 
-Coalesce “pure forwarding” `Tmp SSA` dimensions into the underlying `Local SSA` source dimension.
+Coalesce “pure forwarding” `Tmp SSA` into the underlying `Local SSA` source.
 
 - Use `LivenessMap` to resolve which source SSA dimension is alive at the forwarding site.
 - Merge the temporary alive range into the source alive range.
-- Mark the temporary dimension as invalid so it does not consume a stack slot later.
+- Mark the temporary dimension as invalid.
 
-Note: in `OptLower`, this step must happen before `LeafFunctionFilter`, because that pass may mark some SSA values as invalid, which would break `MergeSSA`.
+Bit view (column-wise): think of each SSA dimension as one bit column over tracked program points.
+
+- `1` means alive at that point, `0` means not alive.
+- A forwarding `Tmp SSA` is mergeable into a `Local SSA` when their overlap check is consistent with “same value flow” at that site.
+
+Example matrix:
+
+| Program point | Local SSA `L0` | Tmp SSA `T0` |
+| ------------- | -------------- | ------------ |
+| p0            | 1              | 0            |
+| p1            | 1              | 1            |
+| p2            | 0              | 1            |
+| p3            | 0              | 0            |
+
+Columns as bit vectors (top to bottom `p0..p3`):
+
+- `L0 = 1100`
+- `T0 = 0110`
+
+After merging SSA, `T0` is alignment of `L0`, so we only need to tracking `L0`.
+
+- `L0 = 1100 | 0110 = 1110`
+- `T0 = invalid`
 
 #### Example
 
