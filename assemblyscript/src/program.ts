@@ -4388,6 +4388,15 @@ export class Function extends TypedElement {
         mir.addSubProgram(this, null);
       }
 
+      const isClosureFunction = this.isClosureFunction();
+      if (isClosureFunction) {
+        heapLocalsTypeBuilder.push(
+          program.smallTupleInstance.type,
+          prototype.declarationBase.nameRange,
+          ReportMode.Report
+        );
+      }
+
       let localIndex = 0;
       let thisType = signature.thisType;
       if (thisType) {
@@ -4408,15 +4417,15 @@ export class Function extends TypedElement {
       }
       let parameterTypes = signature.parameterTypes;
       const paramsNodeList = prototype.functionTypeNode.parameters;
+
       for (let i = 0, k = parameterTypes.length; i < k; ++i) {
         let parameterType = parameterTypes[i];
         let parameterName = this.getParameterName(i);
         let tupleIndex = -1;
-        if (this.isClosureFunction()) {
+        if (isClosureFunction) {
           let closureVariables = prototype.closureVariables;
           const paramNode = paramsNodeList[i];
           if (closureVariables != null && closureVariables.has(paramNode)) {
-            trace(`closure variable: ${parameterName} in ${this.name}`);
             tupleIndex = heapLocalsTypeBuilder.size;
             heapLocalsTypeBuilder.push(parameterType, paramNode.range, ReportMode.Report);
           }
