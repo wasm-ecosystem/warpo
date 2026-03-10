@@ -103,6 +103,14 @@ uint32_t addScope(uint32_t const subProgramNamePtr, uint64_t const startExprPtr,
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   return pCompiler->asModule_.variableInfo_.addScope(subProgramName, startExpr, endExpr);
 }
+
+void addHeapVariableStorageLocalIndex(uint32_t const subProgramNamePtr, uint32_t const index,
+                                      vb::WasmModule const *const ctx) {
+  std::string const subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.addHeapVariableStorageLocalIndex(subProgramName, index);
+}
+
 } // namespace
 
 std::vector<vb::NativeSymbol> createVariableInfoAPI() {
@@ -118,6 +126,7 @@ std::vector<vb::NativeSymbol> createVariableInfoAPI() {
       STATIC_LINK("warpo", "_WarpoAddParameter", addParameter),
       STATIC_LINK("warpo", "_WarpoAddLocal", addLocal),
       STATIC_LINK("warpo", "_WarpoAddScope", addScope),
+      STATIC_LINK("warpo", "_WarpoAddHeapVariableStorageLocalIndex", addHeapVariableStorageLocalIndex),
   };
 }
 

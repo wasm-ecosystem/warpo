@@ -27,17 +27,14 @@
 #include "asmjs/shared-constants.h"
 #include "ir/find_all.h"
 #include "ir/gc-type-utils.h"
-#include "ir/global-utils.h"
 #include "ir/import-utils.h"
 #include "ir/literal-utils.h"
 #include "ir/memory-utils.h"
 #include "ir/names.h"
 #include "pass.h"
-#include "shell-interface.h"
 #include "support/colors.h"
 #include "support/file.h"
 #include "support/insert_ordered.h"
-#include "support/small_set.h"
 #include "support/string.h"
 #include "support/topological_sort.h"
 #include "tool-options.h"
@@ -75,7 +72,8 @@ public:
   // Return an unused stub value. We throw FailToEvalException on reading any
   // imported globals. We ignore the type and return an i32 literal since some
   // types can't be created anyway (e.g. ref none).
-  Literals* getGlobalOrNull(ImportNames name, Type type) const override {
+  Literals*
+  getGlobalOrNull(ImportNames name, Type type, bool mut) const override {
     return &stubLiteral;
   }
 
@@ -84,8 +82,22 @@ public:
     throw FailToEvalException{"Imported table access."};
   }
 
+  // We assume that each tag import is distinct. This is wrong if the same tag
+  // instantiation is imported twice with different import names.
+  Tag* getTagOrNull(ImportNames name,
+                    const Signature& signature) const override {
+    auto [it, inserted] = importedTags.try_emplace(name, Tag{});
+    if (inserted) {
+      auto& tag = it->second;
+      tag.type = HeapType(signature);
+    }
+
+    return &it->second;
+  }
+
 private:
   mutable Literals stubLiteral;
+  mutable std::unordered_map<ImportNames, Tag> importedTags;
 };
 
 class EvallingRuntimeTable : public RuntimeTable {
@@ -99,13 +111,13 @@ public:
     : RuntimeTable(table), instanceInitialized(instanceInitialized), wasm(wasm),
       makeFuncData(std::move(makeFuncData)) {}
 
-  void set(std::size_t i, Literal l) override {
+  void set(Address i, Literal l) override {
     if (instanceInitialized) {
       throw FailToEvalException("tableStore after init: TODO");
     }
   }
 
-  Literal get(std::size_t index) const override {
+  Literal get(Address index) const override {
     // Look through the segments and find the value. Segments can overlap,
     // so we want the last one.
     Expression* value = nullptr;
@@ -150,12 +162,12 @@ public:
     return Properties::getLiteral(value);
   }
 
-  [[nodiscard]] virtual std::optional<std::size_t> grow(std::size_t delta,
-                                                        Literal fill) override {
+  [[nodiscard]] virtual std::optional<Address> grow(Address delta,
+                                                    Literal fill) override {
     throw FailToEvalException("grow table");
   }
 
-  std::size_t size() const override {
+  Address size() const override {
     // See set() above, we assume the table is not modified FIXME
     return tableDefinition.initial;
   }
@@ -393,10 +405,6 @@ struct CtorEvalExternalInterface : EvallingModuleRunner::ExternalInterface {
                    import->type);
   }
 
-  Tag* getImportedTag(Tag* tag) override {
-    WASM_UNREACHABLE("missing imported tag");
-  }
-
   int8_t load8s(Address addr, Name memoryName) override {
     return doLoad<int8_t>(addr, memoryName);
   }
@@ -575,6 +583,7 @@ private:
 
     for (auto& oldGlobal : oldGlobals) {
       if (oldGlobal->imported()) {
+        wasm->addGlobal(std::move(oldGlobal));
         continue;
       }
       // Serialize the global's value. While doing so, pass in the name of this

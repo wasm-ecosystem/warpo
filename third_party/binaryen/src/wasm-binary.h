@@ -369,8 +369,9 @@ enum EncodedType {
   f64 = -0x4,  // 0x7c
   v128 = -0x5, // 0x7b
   // packed types
-  i8 = -0x8,  // 0x78
-  i16 = -0x9, // 0x77
+  i8 = -0x8,         // 0x78
+  i16 = -0x9,        // 0x77
+  waitQueue = -0x24, // 0x5c
   // reference types
   nullfuncref = -0xd,   // 0x73
   nullexternref = -0xe, // 0x72
@@ -701,6 +702,8 @@ enum ASTNodes {
   I64AtomicWait = 0x02,
   AtomicFence = 0x03,
   Pause = 0x04,
+  StructWait = 0x05,
+  StructNotify = 0x06,
 
   I32AtomicLoad = 0x10,
   I64AtomicLoad = 0x11,
@@ -1441,6 +1444,9 @@ public:
 
   std::optional<BufferWithRandomAccess> getBranchHintsBuffer();
   std::optional<BufferWithRandomAccess> getInlineHintsBuffer();
+  std::optional<BufferWithRandomAccess> getRemovableIfUnusedHintsBuffer();
+  std::optional<BufferWithRandomAccess> getJSCalledHintsBuffer();
+  std::optional<BufferWithRandomAccess> getIdempotentHintsBuffer();
 
   // helpers
   void writeInlineString(std::string_view name);
@@ -1735,6 +1741,9 @@ public:
 
   void readBranchHints(size_t payloadLen);
   void readInlineHints(size_t payloadLen);
+  void readRemovableIfUnusedHints(size_t payloadLen);
+  void readJSCalledHints(size_t payloadLen);
+  void readIdempotentHints(size_t payloadLen);
 
   std::tuple<Address, Address, Index, MemoryOrder>
   readMemoryAccess(bool isAtomic, bool isRMW);

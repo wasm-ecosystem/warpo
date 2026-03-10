@@ -15,7 +15,6 @@
  */
 
 #include "analysis/cfg.h"
-#include "analysis/lattice.h"
 #include "analysis/lattices/inverted.h"
 #include "analysis/lattices/shared.h"
 #include "analysis/lattices/stack.h"
@@ -28,7 +27,9 @@
 #include "wasm-traversal.h"
 #include "wasm.h"
 
+#ifndef TYPE_GENERALIZING_DEBUG
 #define TYPE_GENERALIZING_DEBUG 0
+#endif
 
 #if TYPE_GENERALIZING_DEBUG
 #define DBG(statement) statement
@@ -687,12 +688,19 @@ struct TransferFn : OverriddenVisitor<TransferFn> {
     }
     auto generalized = generalizeStructType(type, curr->index);
     push(Type(generalized, Nullable));
-    push(generalized.getStruct().fields[curr->index].type);
+    auto fieldType = generalized.getStruct().fields[curr->index].type;
+    if (fieldType.isRef()) {
+      push(fieldType);
+    }
   }
 
   void visitStructRMW(StructRMW* curr) { WASM_UNREACHABLE("TODO"); }
 
   void visitStructCmpxchg(StructCmpxchg* curr) { WASM_UNREACHABLE("TODO"); }
+
+  void visitStructWait(StructWait* curr) { WASM_UNREACHABLE("TODO"); }
+
+  void visitStructNotify(StructNotify* curr) { WASM_UNREACHABLE("TODO"); }
 
   void visitArrayNew(ArrayNew* curr) {
     // We cannot yet generalize allocations. Push a requirement for the
@@ -861,6 +869,11 @@ struct TransferFn : OverriddenVisitor<TransferFn> {
 
   void visitRefAs(RefAs* curr) {
     auto type = pop();
+    if (type == Type::none) {
+      // No downstream requirement, so no requirement for the input either.
+      push(Type::none);
+      return;
+    }
     switch (curr->op) {
       case RefAsNonNull:
         push(Type(type.getHeapType(), Nullable));

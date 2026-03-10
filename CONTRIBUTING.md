@@ -51,24 +51,19 @@ git config remote.binaryen-origin.tagopt --no-tags
 # git remote add binaryen-fork https://github.com/<fork_org>/binaryen.git
 # git config remote.binaryen-fork.tagopt --no-tags
 
-git remote add assemblyscript-origin https://github.com/AssemblyScript/assemblyscript.git
-git config --local remote.assemblyscript-origin.fetch +refs/heads/main:refs/remotes/assemblyscript-origin/main
-git config remote.assemblyscript-origin.tagopt --no-tags
-
-# git remote add binaryen-fork https://github.com/<fork_org>/assemblyscript.git
-# git config remote.assemblyscript-fork.tagopt --no-tags
-
 git fetch -p --all
 ```
 
 ### update
 
+Don't use normal squash merge after bump the subtree!
+
+It may disrupt subtree history tracking and make future updates to the subtree impossible.
+You can use push after all CI passed to update main branch and close the PR. `git push origin bump:main`
+
 ```bash
 # update the whole subtree
 git subtree pull --prefix third_party/binaryen https://github.com/WebAssembly/binaryen.git main --squash
-git subtree pull --prefix assemblyscript https://github.com/AssemblyScript/assemblyscript.git main --squash
-# update special PR
-git -C ../assemblyscript diff main ./src | git am -3 --directory=assemblyscript
 ```
 
 ### backport

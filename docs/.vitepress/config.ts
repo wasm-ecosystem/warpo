@@ -1,6 +1,7 @@
 import { readdirSync } from "node:fs";
 import path from "node:path";
 import { DefaultTheme, defineConfig } from "vitepress";
+import { overrideMermaidFence } from "./mermaid-markdown";
 
 function listItems(folder: string): DefaultTheme.SidebarItem[] {
   return readdirSync(path.join("docs", folder))
@@ -133,6 +134,11 @@ function getThemeConfig(language: "en" | "zh-CN"): DefaultTheme.Config {
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  markdown: {
+    config: (md) => {
+      overrideMermaidFence(md);
+    },
+  },
   locales: {
     en: {
       label: "English",
@@ -150,6 +156,7 @@ export default defineConfig({
     },
   },
   base: "/warpo/",
+  title: "warpo document",
   head: [
     ["link", { rel: "icon", href: "/warpo/favicon.ico" }],
     ["meta", { name: "google-site-verification", content: "762vxla4bLoGKFlH_iYkk7TVUhrwwpMFS2r7idty0_Y" }],

@@ -20,36 +20,59 @@
 #include "ir/iteration.h"
 #include "ir/local-structural-dominance.h"
 #include "ir/module-utils.h"
+#include "ir/names.h"
 #include "ir/subtype-exprs.h"
 #include "ir/subtypes.h"
 #include "ir/type-updating.h"
 #include "support/string.h"
 #include "tools/fuzzing/heap-types.h"
 #include "wasm-io.h"
+#include "wasm-type.h"
 
 namespace wasm {
+
+namespace {
+
+std::vector<Type> getLoggableTypes(const FeatureSet& features) {
+  std::vector<Type> loggableTypes = {
+    Type::i32, Type::i64, Type::f32, Type::f64};
+  if (features.hasSIMD()) {
+    loggableTypes.push_back(Type::v128);
+  }
+  if (features.hasReferenceTypes()) {
+    if (features.hasGC()) {
+      loggableTypes.push_back(Type(HeapType::any, Nullable));
+      loggableTypes.push_back(Type(HeapType::func, Nullable));
+      loggableTypes.push_back(Type(HeapType::ext, Nullable));
+    }
+    if (features.hasStackSwitching()) {
+      loggableTypes.push_back(Type(HeapType::cont, Nullable));
+    }
+    // Note: exnref traps on the JS boundary, so we cannot try to log it.
+  }
+
+  return loggableTypes;
+}
+
+std::vector<MemoryOrder> getMemoryOrders(const FeatureSet& features) {
+  return features.hasRelaxedAtomics()
+           ? std::vector{MemoryOrder::AcqRel, MemoryOrder::SeqCst}
+           : std::vector{MemoryOrder::SeqCst};
+}
+
+} // namespace
 
 TranslateToFuzzReader::TranslateToFuzzReader(Module& wasm,
                                              std::vector<char>&& input,
                                              bool closedWorld)
   : wasm(wasm), closedWorld(closedWorld), builder(wasm),
-    random(std::move(input), wasm.features),
+    random(std::move(input), wasm.features), intrinsics(wasm),
+    loggableTypes(getLoggableTypes(wasm.features)),
+    atomicMemoryOrders(getMemoryOrders(wasm.features)),
+
     publicTypeValidator(wasm.features) {
 
-  atomicMemoryOrders = wasm.features.hasRelaxedAtomics()
-                         ? std::vector{MemoryOrder::AcqRel, MemoryOrder::SeqCst}
-                         : std::vector{MemoryOrder::SeqCst};
-
   haveInitialFunctions = !wasm.functions.empty();
-
-  // - funcref cannot be logged because referenced functions can be inlined or
-  // removed during optimization
-  // - there's no point in logging anyref because it is opaque
-  // - don't bother logging tuples
-  loggableTypes = {Type::i32, Type::i64, Type::f32, Type::f64};
-  if (wasm.features.hasSIMD()) {
-    loggableTypes.push_back(Type::v128);
-  }
 
   // Setup params. Start with the defaults.
   globalParams = std::make_unique<FuzzParamsContext>(*this);
@@ -665,28 +688,47 @@ void TranslateToFuzzReader::useGlobalLater(Global* global) {
   }
 }
 
+bool TranslateToFuzzReader::isImportableGlobalType(Type type) {
+  // TODO: Support more types, but this would require being able to reflect on
+  // them from JS.
+  return type.isRef() && type.getHeapType() == HeapType::ext;
+}
+
+bool TranslateToFuzzReader::isImportableGlobal(Global* global) {
+  // TODO: Support mutable globals, but this would require being able to reflect
+  // on them from JS.
+  return global->mutable_ == false && isImportableGlobalType(global->type);
+}
+
 void TranslateToFuzzReader::setupGlobals() {
-  // If there were initial wasm contents, there may be imported globals. That
-  // would be a problem in the fuzzer harness as we'd error if we do not
-  // provide them (and provide the proper type, etc.).
-  // Avoid that, so that all the standard fuzzing infrastructure can always
-  // run the wasm.
+  // If there were initial wasm contents, there may be imported globals. The
+  // fuzzer harness cannot provide all types of imports, so make any imports it
+  // can't satisfy into declared globals.
   for (auto& global : wasm.globals) {
     if (global->imported()) {
-      if (!preserveImportsAndExports) {
+      // TODO: Once we support more importable global types, sometimes choose to
+      // make the global non-imported even if we don't have to. (Right now that
+      // isn't very interesting because there's no way to materialize an
+      // externref except via another imported global.)
+      if (!preserveImportsAndExports && !isImportableGlobal(global.get())) {
         // Remove import info from imported globals, and give them a simple
         // initializer.
         global->module = global->base = Name();
         global->init = makeConst(global->type);
       }
     } else {
-      // If the initialization referred to an imported global, it no longer can
-      // point to the same global after we make it a non-imported global unless
-      // GC is enabled, since before GC, Wasm only made imported globals
-      // available in constant expressions.
-      if (!wasm.features.hasGC() &&
-          !FindAll<GlobalGet>(global->init).list.empty()) {
-        global->init = makeConst(global->type);
+      // If the initialization used an imported global that we made
+      // non-imported, it can no longer use the same global unless GC is
+      // enabled, since before GC Wasm only made imported globals available in
+      // constant expressions.
+      if (!wasm.features.hasGC()) {
+        auto gets = FindAll<GlobalGet>(global->init);
+        for (auto& get : gets.list) {
+          if (!wasm.getGlobal(get->name)->imported()) {
+            global->init = makeConst(global->type);
+            break;
+          }
+        }
       }
     }
   }
@@ -708,53 +750,58 @@ void TranslateToFuzzReader::setupGlobals() {
 
   // Create new random globals.
   for (size_t index = upTo(fuzzParams->MAX_GLOBALS); index > 0; --index) {
-    auto type = getConcreteType();
-
-    // Prefer immutable ones as they can be used in global.gets in other
-    // globals, for more interesting patterns.
+    // Prefer immutable globals as they can be used in global.gets in other
+    // globals for more interesting patterns.
     auto mutability = oneIn(3) ? Builder::Mutable : Builder::Immutable;
-
-    // We can only make something trivial (like a constant) in a global
-    // initializer.
-    auto* init = makeTrivial(type);
-
-    if (type.isTuple() && !init->is<TupleMake>()) {
-      // For now we disallow anything but tuple.make at the top level of tuple
-      // globals (see details in wasm-binary.cpp). In the future we may allow
-      // global.get or other things here.
-      init = makeConst(type);
-      assert(init->is<TupleMake>());
-    }
-    if (!FindAll<RefAs>(init).list.empty() ||
-        !FindAll<ContNew>(init).list.empty()) {
-      // When creating this initial value we ended up emitting a RefAs, which
-      // means we had to stop in the middle of an overly-nested struct or array,
-      // which we can break out of using ref.as_non_null of a nullable ref. That
-      // traps in normal code, which is bad enough, but it does not even
-      // validate in a global. Switch to something safe instead.
-      //
-      // Likewise, if we see cont.new, we must switch as well. That can happen
-      // if a nested struct we create has a continuation field, for example.
-      type = getMVPType();
-      init = makeConst(type);
-    }
     auto name = Names::getValidGlobalName(wasm, "global$");
-    auto global = builder.makeGlobal(name, type, init, mutability);
-    useGlobalLater(wasm.addGlobal(std::move(global)));
+    auto global =
+      builder.makeGlobal(name, getConcreteType(), nullptr, mutability);
+
+    // Sometimes make a new imported global if we can import the type and it is
+    // valid to do so.
+    if (!preserveImportsAndExports && isImportableGlobal(global.get()) &&
+        oneIn(2)) {
+      global->module = importedGlobalModuleName;
+      global->base = name;
+    } else {
+      // We can only make something trivial (like a constant) in a global
+      // initializer.
+      global->init = makeTrivial(global->type);
+
+      if (global->type.isTuple() && !global->init->is<TupleMake>()) {
+        // For now we disallow anything but tuple.make at the top level of tuple
+        // globals (see details in wasm-binary.cpp). In the future we may allow
+        // global.get or other things here.
+        global->init = makeConst(global->type);
+        assert(global->init->is<TupleMake>());
+      }
+      if (!FindAll<RefAs>(global->init).list.empty() ||
+          !FindAll<ContNew>(global->init).list.empty()) {
+        // When creating this initial value we ended up emitting a RefAs, which
+        // means we had to stop in the middle of an overly-nested struct or
+        // array, which we can break out of using ref.as_non_null of a nullable
+        // ref. That traps in normal code, which is bad enough, but it does not
+        // even validate in a global. Switch to something safe instead.
+        //
+        // Likewise, if we see cont.new, we must switch as well. That can happen
+        // if a nested struct we create has a continuation field, for example.
+        global->type = getMVPType();
+        global->init = makeConst(global->type);
+      }
+    }
 
     // Export some globals, where we can.
-    if (preserveImportsAndExports || type.isTuple() ||
-        !isValidPublicType(type)) {
-      continue;
-    }
-    if (mutability == Builder::Mutable && !wasm.features.hasMutableGlobals()) {
-      continue;
-    }
-    if (oneIn(2)) {
+    if (!preserveImportsAndExports && !global->type.isTuple() &&
+        isValidPublicType(global->type) &&
+        (mutability == Builder::Immutable ||
+         wasm.features.hasMutableGlobals()) &&
+        oneIn(2)) {
       auto exportName = Names::getValidExportName(wasm, name);
       wasm.addExport(
         Builder::makeExport(exportName, name, ExternalKind::Global));
     }
+
+    useGlobalLater(wasm.addGlobal(std::move(global)));
   }
 }
 
@@ -810,14 +857,14 @@ void TranslateToFuzzReader::finalizeMemory() {
         // unless GC is enabled. This can occur due to us adding a local
         // definition to what used to be an imported global in initial contents.
         // To fix that, replace such invalid offsets with a constant.
-        for ([[maybe_unused]] auto* get :
-             FindAll<GlobalGet>(segment->offset).list) {
-          // No imported globals should remain.
-          assert(!wasm.getGlobal(get->name)->imported());
-          // TODO: It would be better to avoid segment overlap so that
-          //       MemoryPacking can run.
-          segment->offset =
-            builder.makeConst(Literal::makeFromInt32(0, memory->addressType));
+        // TODO: It would be better to avoid segment overlap so that
+        // MemoryPacking can run.
+        for (auto* get : FindAll<GlobalGet>(segment->offset).list) {
+          if (!wasm.getGlobal(get->name)->imported()) {
+            segment->offset =
+              builder.makeConst(Literal::makeFromInt32(0, memory->addressType));
+            break;
+          }
         }
       }
       if (auto* offset = segment->offset->dynCast<Const>()) {
@@ -979,25 +1026,6 @@ void TranslateToFuzzReader::addImportCallingSupport() {
     return;
   }
 
-  if (wasm.features.hasReferenceTypes() && closedWorld) {
-    // In closed world mode we must *remove* the call-ref* imports, if they
-    // exist in the initial content. These are not valid to call in closed-world
-    // mode as they call function references. (Another solution here would be to
-    // make closed-world issue validation errors on these imports, but that
-    // would require changes to the general-purpose validator.)
-    for (auto& func : wasm.functions) {
-      if (func->imported() && func->module == "fuzzing-support" &&
-          func->base.startsWith("call-ref")) {
-        // Make it non-imported, and with a simple body.
-        func->module = func->base = Name();
-        func->type = func->type.with(Exact);
-        auto results = func->getResults();
-        func->body =
-          results.isConcrete() ? makeConst(results) : makeNop(Type::none);
-      }
-    }
-  }
-
   // Only add these some of the time, as they inhibit some fuzzing (things like
   // wasm-ctor-eval and wasm-merge are sensitive to the wasm being able to call
   // its own exports, and to care about the indexes of the exports).
@@ -1037,9 +1065,7 @@ void TranslateToFuzzReader::addImportCallingSupport() {
     wasm.addFunction(std::move(func));
   }
 
-  // If the wasm will be used for closed-world testing, we cannot use the
-  // call-ref variants, as mentioned before.
-  if (wasm.features.hasReferenceTypes() && !closedWorld) {
+  if (wasm.features.hasReferenceTypes()) {
     if (choice & 4) {
       // Given an funcref, call it from JS.
       callRefImportName = Names::getValidFunctionName(wasm, "call-ref");
@@ -1617,6 +1643,16 @@ void TranslateToFuzzReader::processFunctions() {
       }
     }
   }
+
+  // Also fix up closed world, if we need to. We must do this at the end, so
+  // nothing can break the closed world assumptions after.
+  if (closedWorld) {
+    for (auto& func : wasm.functions) {
+      if (!func->imported()) {
+        fixClosedWorld(func.get());
+      }
+    }
+  }
 }
 
 // TODO: return std::unique_ptr<Function>
@@ -1674,8 +1710,8 @@ Function* TranslateToFuzzReader::addFunction() {
     func->body = make(bodyType);
   }
 
-  // Add hang limit checks after all other operations on the function body.
   wasm.addFunction(std::move(allocation));
+
   // Export some functions, but not all (to allow inlining etc.). Try to export
   // at least one, though, to keep each testcase interesting. Avoid non-
   // nullable params, as those cannot be constructed by the fuzzer on the
@@ -1692,7 +1728,10 @@ Function* TranslateToFuzzReader::addFunction() {
     wasm.addExport(
       Builder::makeExport(func->name, func->name, ExternalKind::Function));
   }
-  // add some to an elem segment TODO we could do this for imported funcs too
+
+  // Add some to an elem segment TODO we could do this for imported funcs too,
+  // but in closed world must be careful of callRef*, see the jsCalled logic
+  // and isValidRefFuncTarget.
   while (oneIn(3) && !random.finished()) {
     auto type = func->type;
     std::vector<ElementSegment*> compatibleSegments;
@@ -1704,6 +1743,23 @@ Function* TranslateToFuzzReader::addFunction() {
     auto& randomElem = compatibleSegments[upTo(compatibleSegments.size())];
     randomElem->data.push_back(builder.makeRefFunc(func->name));
   }
+
+  // Mark some functions as jsCalled. This allows them to be called by
+  // reference even in closed world, using the callRef* imports.
+  // TODO: We could do this, and exporting above, to initial content too.
+  if (oneIn(4)) {
+    auto annotations = intrinsics.getAnnotations(func);
+    annotations.jsCalled = true;
+    intrinsics.setAnnotations(func, annotations);
+
+    // We cannot actually use this as jsCalled if it does not have a type
+    // compatible with the callRef* imports. They send a funcref, so we must
+    // only send non-shared functions.
+    if (!func->type.getHeapType().isShared()) {
+      jsCalled.push_back(func->name);
+    }
+  }
+
   numAddedFunctions++;
   return func;
 }
@@ -2102,6 +2158,60 @@ void TranslateToFuzzReader::mutate(Function* func) {
 
   Modder modder(*this, percentChance, finder);
   modder.walkFunctionInModule(func, &wasm);
+}
+
+void TranslateToFuzzReader::fixClosedWorld(Function* func) {
+  assert(closedWorld);
+
+  struct Fixer
+    : public ExpressionStackWalker<Fixer, UnifiedExpressionVisitor<Fixer>> {
+    TranslateToFuzzReader& parent;
+
+    Fixer(TranslateToFuzzReader& parent) : parent(parent) {}
+
+    void visitCall(Call* curr) {
+      // In closed world, the callRef* imports can cause misoptimization later:
+      // they send a funcref to JS to call, and in closed world we assume such
+      // calls do not happen unless the function is annotated as jsCalled. We
+      // must therefore ensure that calls to these imports only send a jsCalled
+      // method and nothing else.
+      if (!parent.isCallRefImport(curr->target)) {
+        return;
+      }
+
+      // These imports take a funcref as the first param.
+      assert(!curr->operands.empty());
+      if (curr->operands[0]->type == Type::unreachable) {
+        // This call is not executed anyhow, and we shouldn't replace it, as
+        // that could change the type.
+        return;
+      }
+
+      if (parent.jsCalled.empty()) {
+        // There is nothing valid to call at all. Keep the children (we may
+        // need them to validate, e.g. if there is a `pop`), but remove the
+        // call.
+        std::vector<Expression*> list;
+        for (auto* child : curr->operands) {
+          list.push_back(parent.builder.makeDrop(child));
+        }
+        list.push_back(parent.makeTrivial(curr->type));
+        replaceCurrent(parent.builder.makeBlock(list));
+        return;
+      }
+
+      // Set something valid. As above, we must keep the old child for
+      // validation reasons.
+      auto old = parent.builder.makeDrop(curr->operands[0]);
+      auto target = parent.pick(parent.jsCalled);
+      assert(parent.isValidRefFuncTarget(target));
+      auto new_ = parent.builder.makeRefFunc(target);
+      curr->operands[0] = parent.builder.makeSequence(old, new_);
+    }
+  } fixer(*this);
+
+  FunctionCreationContext context(*this, func);
+  fixer.walk(func->body);
 }
 
 void TranslateToFuzzReader::fixAfterChanges(Function* func) {
@@ -2981,6 +3091,10 @@ Expression* TranslateToFuzzReader::makeCallRef(Type type) {
     target = wasm.functions[upTo(wasm.functions.size())].get();
     isReturn = type == Type::unreachable && wasm.features.hasTailCall() &&
                funcContext->func->getResults() == target->getResults();
+    if (!isValidRefFuncTarget(target->name)) {
+      i++;
+      continue;
+    }
     if (target->getResults() == type || isReturn) {
       break;
     }
@@ -3617,7 +3731,9 @@ Expression* TranslateToFuzzReader::makeRefFuncConst(Type type) {
         funcContext->func->type.getHeapType().getShared() == share &&
         !oneIn(4)) {
       auto* target = funcContext->func;
-      return builder.makeRefFunc(target->name, target->type);
+      if (isValidRefFuncTarget(target->name)) {
+        return builder.makeRefFunc(target->name, target->type);
+      }
     }
   }
   // Look for a proper function starting from a random location, and loop from
@@ -3627,7 +3743,8 @@ Expression* TranslateToFuzzReader::makeRefFuncConst(Type type) {
     Index i = start;
     do {
       auto& func = wasm.functions[i];
-      if (Type::isSubType(func->type, type)) {
+      if (Type::isSubType(func->type, type) &&
+          isValidRefFuncTarget(func->name)) {
         return builder.makeRefFunc(func->name);
       }
       i = (i + 1) % wasm.functions.size();
@@ -3667,6 +3784,7 @@ Expression* TranslateToFuzzReader::makeRefFuncConst(Type type) {
                          Type(heapType, NonNullable, Exact),
                          {},
                          body));
+  assert(isValidRefFuncTarget(func->name));
   return builder.makeRefFunc(func->name);
 }
 
@@ -3709,9 +3827,38 @@ Expression* TranslateToFuzzReader::makeBasicRef(Type type) {
         // Shared strings not yet supported.
         return makeConst(Type(HeapType::string, NonNullable));
       }
+      // If we can, prefer using an imported global over a null.
+      bool canImport =
+        !preserveImportsAndExports && isImportableGlobalType(type);
+      if (canImport) {
+        bool shouldImport;
+        if (type.isNonNullable()) {
+          // If we are not in a function context, casting a null is not an
+          // option, so always use a global. Otherwise very rarely cast a null.
+          shouldImport = !funcContext || !oneIn(16);
+        } else {
+          // Still prefer a global over a null, but allow nulls more since they
+          // will not need immediate casts.
+          shouldImport = !oneIn(4);
+        }
+        if (shouldImport) {
+          auto [it, inserted] =
+            importedImmutableGlobalsByType.insert({type, {}});
+          if (inserted) {
+            auto name = Names::getValidGlobalName(wasm, "extern$");
+            auto global =
+              builder.makeGlobal(name, type, nullptr, Builder::Immutable);
+            global->module = importedGlobalModuleName;
+            global->base = name;
+            useGlobalLater(wasm.addGlobal(std::move(global)));
+          }
+          assert(!it->second.empty());
+          auto global = pick(it->second);
+          return builder.makeGlobalGet(global, type);
+        }
+      }
+      // Use a null value, making it non-null if necessary.
       auto null = builder.makeRefNull(HeapTypes::ext.getBasic(share));
-      // TODO: support actual non-nullable externrefs via imported globals or
-      // similar.
       if (!type.isNullable()) {
         return builder.makeRefAs(RefAsNonNull, null);
       }
@@ -6005,6 +6152,33 @@ Type TranslateToFuzzReader::getTargetType(Expression* target) {
     return Type::none;
   }
   WASM_UNREACHABLE("unexpected expr type");
+}
+
+bool TranslateToFuzzReader::isValidRefFuncTarget(Name func) {
+  // In closed world, we must not take callRef* by reference: if we do, then we
+  // might end up calling them indirectly, and with any possible function
+  // reference, but in that mode we must only pass in jsCalled functions. We
+  // handle direct calls in fixClosedWorld, but cannot handle indirect ones
+  // easily, so just disallow taking references of those functions.
+  if (!closedWorld) {
+    return true;
+  }
+  return !isCallRefImport(func);
+}
+
+bool TranslateToFuzzReader::isCallRefImport(Name target) {
+  // Check the import module and base. Note we do not just compare to
+  // callRefImportName / callRefCatchImportName because those are the names of
+  // the methods we added, but the initial content may import those methods
+  // under other internal names.
+  auto* func = wasm.getFunctionOrNull(target);
+  if (!func) {
+    // We are called while a function is still being constructed. Such a new
+    // defined function can never be an import.
+    return false;
+  }
+  return func->imported() && func->module == "fuzzing-support" &&
+         func->base.startsWith("call-ref");
 }
 
 } // namespace wasm

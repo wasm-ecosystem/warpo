@@ -43,6 +43,8 @@ export declare function _WarpoAddScope(
   endExpression: ExpressionRef
 ): u32;
 
+export declare function _WarpoAddHeapVariableStorageLocalIndex(subProgramName: string, index: u32): void;
+
 export function markDataElementImmutable(begin: i64, size: i32): void {
   _WarpoMarkDataElementImmutable(i64_low(begin), <u32>size);
 }

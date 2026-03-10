@@ -17,6 +17,7 @@
 // TODO: Replace this test file with spec tests as soon as possible.
 
 #include "interpreter/interpreter.h"
+#include "interpreter/store.h"
 #include "literal.h"
 #include "wasm-ir-builder.h"
 #include "wasm.h"
@@ -684,6 +685,22 @@ TEST(InterpreterTest, SqrtF32) {
   EXPECT_EQ(results, expected);
 }
 
+TEST(InterpreterTest, SqrtF32Neg) {
+  Module wasm;
+  IRBuilder builder(wasm);
+
+  ASSERT_FALSE(builder.makeConst(Literal(float(-5.0))).getErr());
+  ASSERT_FALSE(builder.makeUnary(SqrtFloat32).getErr());
+
+  auto expr = builder.build();
+  ASSERT_FALSE(expr.getErr());
+
+  auto results = Interpreter{}.runTest(*expr);
+  std::vector<Literal> expected{Literal(std::nanf("0x400000"))};
+
+  EXPECT_EQ(results, expected);
+}
+
 TEST(InterpreterTest, CeilF32) {
   Module wasm;
   IRBuilder builder(wasm);
@@ -851,6 +868,22 @@ TEST(InterpreterTest, SqrtF64) {
   EXPECT_EQ(results, expected);
 }
 
+TEST(InterpreterTest, SqrtF64Neg) {
+  Module wasm;
+  IRBuilder builder(wasm);
+
+  ASSERT_FALSE(builder.makeConst(Literal(double(-5.0))).getErr());
+  ASSERT_FALSE(builder.makeUnary(SqrtFloat64).getErr());
+
+  auto expr = builder.build();
+  ASSERT_FALSE(expr.getErr());
+
+  auto results = Interpreter{}.runTest(*expr);
+  std::vector<Literal> expected{Literal(std::nan("0x8000000000000"))};
+
+  EXPECT_EQ(results, expected);
+}
+
 TEST(InterpreterTest, CeilF64) {
   Module wasm;
   IRBuilder builder(wasm);
@@ -943,6 +976,54 @@ TEST(InterpreterTest, GlobalI32) {
   EXPECT_EQ(results, expected);
 }
 
+TEST(InterpreterTest, ImportedGlobalI32) {
+  auto wasm = std::make_shared<Module>();
+  Builder builder(*wasm);
+
+  auto importedGlobal =
+    builder.makeGlobal("g", Type::i32, nullptr, Builder::Immutable);
+  importedGlobal->module = "env";
+  importedGlobal->base = "g";
+  wasm->addGlobal(std::move(importedGlobal));
+
+  Interpreter interpreter;
+  auto result = interpreter.addInstance(wasm);
+  EXPECT_FALSE(result.getErr());
+}
+
+TEST(InterpreterTest, MixedImportedAndLocalGlobals) {
+  auto wasm = std::make_shared<Module>();
+  Builder builder(*wasm);
+  IRBuilder irBuilder(*wasm);
+
+  auto importedGlobal =
+    builder.makeGlobal("imported", Type::i32, nullptr, Builder::Immutable);
+  importedGlobal->module = "env";
+  importedGlobal->base = "imported";
+  wasm->addGlobal(std::move(importedGlobal));
+
+  wasm->addGlobal(builder.makeGlobal("local",
+                                     Type::i32,
+                                     builder.makeConst(Literal(int32_t(42))),
+                                     Builder::Mutable));
+
+  ASSERT_FALSE(
+    irBuilder.makeBlock(Name{}, Signature(Type::none, Type::i32)).getErr());
+  ASSERT_FALSE(irBuilder.makeGlobalGet("local").getErr());
+  ASSERT_FALSE(irBuilder.visitEnd().getErr());
+
+  auto expr = irBuilder.build();
+  ASSERT_FALSE(expr.getErr());
+
+  Interpreter interpreter;
+  auto result = interpreter.addInstance(wasm);
+  ASSERT_FALSE(result.getErr());
+
+  auto results = interpreter.runTest(*expr);
+  std::vector<Literal> expected{Literal(int32_t(42))};
+  EXPECT_EQ(results, expected);
+}
+
 TEST(InterpreterTest, GlobalInitI32) {
   auto wasm = std::make_shared<Module>();
   Builder builder(*wasm);
@@ -968,4 +1049,32 @@ TEST(InterpreterTest, GlobalInitI32) {
   std::vector<Literal> expected{Literal(int32_t(5))};
 
   EXPECT_EQ(results, expected);
+}
+
+TEST(InterpreterTest, InstanceReferenceStability) {
+  using namespace interpreter;
+
+  auto module = std::make_shared<Module>();
+
+  WasmStore store;
+  store.instances.emplace_back(module);
+  store.instances[0].globalValues["x"] = Literal(int32_t(42));
+
+  Instance* addrBefore = &store.instances[0];
+
+  ExpressionIterator emptyIter;
+  store.callStack.emplace_back(store.instances[0], std::move(emptyIter));
+
+  // Add many more instances to exercise container growth.
+  for (int i = 0; i < 100; ++i) {
+    store.instances.emplace_back(module);
+  }
+
+  // With std::deque, existing elements are never relocated.
+  Instance* addrAfter = &store.instances[0];
+  EXPECT_EQ(addrBefore, addrAfter);
+
+  // The frame's Instance& reference is still valid.
+  EXPECT_EQ(store.callStack.back().instance.globalValues["x"],
+            Literal(int32_t(42)));
 }

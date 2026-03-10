@@ -1,3 +1,5 @@
+#preprocess
+
 // export friendly API methods
 function preserveStack(func) {
   try {
@@ -1101,10 +1103,17 @@ function wrapModule(module, self = {}) {
     'store32'(offset, align, ptr, value, name) {
       return preserveStack(() => Module['_BinaryenStore'](module, 4, offset, align, ptr, value, Module['i64'], strToStack(name)));
     },
-    'const'(x, y) {
+    'const'(x, y = undefined) {
       return preserveStack(() => {
         const tempLiteral = stackAlloc(sizeOfLiteral);
+#if WASM_BIGINT
+        assert(typeof y == 'undefined', 'i64.const now takes a single argument (which can be a bigint)');
+        // We insert a cast to BigInt here in an attempt to be backwards
+        // compatible with callers who passed a single `number` here.
+        Module['_BinaryenLiteralInt64'](tempLiteral, BigInt(x));
+#else
         Module['_BinaryenLiteralInt64'](tempLiteral, x, y);
+#endif
         return Module['_BinaryenConst'](module, tempLiteral);
       });
     },
@@ -1518,10 +1527,15 @@ function wrapModule(module, self = {}) {
         return Module['_BinaryenConst'](module, tempLiteral);
       });
     },
-    'const_bits'(x, y) {
+    'const_bits'(x, y = undefined) {
       return preserveStack(() => {
         const tempLiteral = stackAlloc(sizeOfLiteral);
+#if WASM_BIGINT
+        assert(typeof y == 'undefined', 'f64.const_bits now takes a single argument (which can be a bigint)');
+        Module['_BinaryenLiteralFloat64Bits'](tempLiteral, BigInt(x));
+#else
         Module['_BinaryenLiteralFloat64Bits'](tempLiteral, x, y);
+#endif
         return Module['_BinaryenConst'](module, tempLiteral);
       });
     },
@@ -3099,10 +3113,7 @@ Module['getExpressionInfo'] = function(expr) {
     case Module['ConstId']:
       switch (type) {
         case Module['i32']: info.value = Module['_BinaryenConstGetValueI32'](expr); break;
-        case Module['i64']: info.value = {
-          'low':  Module['_BinaryenConstGetValueI64Low'](expr),
-          'high': Module['_BinaryenConstGetValueI64High'](expr)
-        }; break;
+        case Module['i64']: info.value = Module['_BinaryenConstGetValueI64'](expr); break;
         case Module['f32']: info.value = Module['_BinaryenConstGetValueF32'](expr); break;
         case Module['f64']: info.value = Module['_BinaryenConstGetValueF64'](expr); break;
         case Module['v128']: {
@@ -3254,6 +3265,31 @@ Module['emitText'] = function(expr) {
   return ret;
 };
 
+// Calls a function, wrapping it in error handling code so that if it hits a
+// fatal error, we throw a JS exception (which JS can handle) rather than
+// abort the entire process (which would not be a friendly behavior for a
+// library like binaryen.js).
+function handleFatalError(func) {
+  try {
+    return func();
+  } catch (e) {
+    // Fatal errors begin with that prefix. Strip it out, and the newline.
+    // C++ exceptions are thrown as pointers (numbers) in release builds
+    // but CppException JS class in debug builds.
+    if (typeof e === 'number') {
+      var [_, message] = getExceptionMessage(e);
+      if (message?.startsWith('Fatal: ')) {
+        throw new Error(message.substr(7).trim());
+      }
+    } else  {
+      e.message = e.message.replace('Fatal:', '');
+      e.message = e.message.trim();
+    }
+    // Rethrow anything else.
+    throw e;
+  }
+}
+
 // Parses a binary to a module
 
 // If building with Emscripten ASSERTIONS, there is a property added to
@@ -3264,7 +3300,7 @@ Object.defineProperty(Module, 'readBinary', { writable: true });
 Module['readBinary'] = function(data) {
   const buffer = _malloc(data.length);
   HEAP8.set(data, buffer);
-  const ptr = Module['_BinaryenModuleRead'](buffer, data.length);
+  const ptr = handleFatalError(() => Module['_BinaryenModuleRead'](buffer, data.length));
   _free(buffer);
   return wrapModule(ptr);
 };
@@ -3273,7 +3309,7 @@ Module['readBinary'] = function(data) {
 Module['parseText'] = function(text) {
   const buffer = _malloc(text.length + 1);
   stringToAscii(text, buffer);
-  const ptr = Module['_BinaryenModuleParse'](buffer);
+  const ptr = handleFatalError(() => Module['_BinaryenModuleParse'](buffer));
   _free(buffer);
   return wrapModule(ptr);
 };
@@ -4034,17 +4070,11 @@ Module['Const'] = makeExpressionWrapper(Module['_BinaryenConstId'](), {
   'setValueI32'(expr, value) {
     Module['_BinaryenConstSetValueI32'](expr, value);
   },
-  'getValueI64Low'(expr) {
-    return Module['_BinaryenConstGetValueI64Low'](expr);
+  'getValueI64'(expr) {
+    return Module['_BinaryenConstGetValueI64'](expr);
   },
-  'setValueI64Low'(expr, value) {
-    Module['_BinaryenConstSetValueI64Low'](expr, value);
-  },
-  'getValueI64High'(expr) {
-    return Module['_BinaryenConstGetValueI64High'](expr);
-  },
-  'setValueI64High'(expr, value) {
-    Module['_BinaryenConstSetValueI64High'](expr, value);
+  'setValueI64'(expr, value) {
+    Module['_BinaryenConstSetValueI64'](expr, BigInt(value));
   },
   'getValueF32'(expr) {
     return Module['_BinaryenConstGetValueF32'](expr);

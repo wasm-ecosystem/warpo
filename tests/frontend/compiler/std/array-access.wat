@@ -4,7 +4,9 @@
  (type $2 (func (param i32 i32 i32 i32)))
  (type $3 (func (param i32 i32 i32 i32 i32) (result i32)))
  (type $4 (func (param i32 i32 i32) (result i32)))
+ (type $5 (func (param i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
@@ -724,20 +726,29 @@
   )
  )
  (func $std/array-access/functionArrayElementCall (param $a i32) (result i32)
+  (local $1 i32)
   (return
    (call_indirect (type $0)
     (i32.const 123)
-    (i32.load
-     (block (result i32)
-      (global.set $~argumentsLength
-       (i32.const 1)
-      )
+    (block (result i32)
+     (local.set $1
       (call $~lib/array/Array<%28i32%29=>i32>#__get
        (call $~lib/rt/__tmptostack
         (local.get $a)
        )
        (i32.const 0)
       )
+     )
+     (call $~lib/rt/closure/setClosureEnv
+      (i32.load offset=4
+       (local.get $1)
+      )
+     )
+     (global.set $~argumentsLength
+      (i32.const 1)
+     )
+     (i32.load
+      (local.get $1)
      )
     )
    )

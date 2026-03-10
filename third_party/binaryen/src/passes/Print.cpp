@@ -279,6 +279,7 @@ struct PrintSExpression : public UnifiedExpressionVisitor<PrintSExpression> {
   // Print code annotations for an expression. If the expression is nullptr,
   // prints for the current function.
   void printCodeAnnotations(Expression* curr);
+  void printCodeAnnotations(const CodeAnnotation& annotation);
 
   void printExpressionContents(Expression* curr);
 
@@ -2203,7 +2204,9 @@ struct PrintExpressionContents
     // If the tuple is unreachable, its size will be reported as 1, but that's
     // not a valid tuple size. The size we print mostly doesn't matter if the
     // tuple is unreachable, but it does have to be valid.
-    o << std::max(curr->tuple->type.size(), size_t(2)) << " ";
+    o << std::max(
+           {curr->tuple->type.size(), size_t(2), size_t(curr->index + 1)})
+      << " ";
     o << curr->index;
   }
   void visitRefI31(RefI31* curr) {
@@ -2349,7 +2352,7 @@ struct PrintExpressionContents
     if (curr->order != MemoryOrder::Unordered) {
       printMedium(o, ".atomic");
     }
-    if (field.type == Type::i32 && field.packedType != Field::not_packed) {
+    if (field.type == Type::i32 && field.packedType != Field::NotPacked) {
       if (curr->signed_) {
         printMedium(o, ".get_s");
       } else {
@@ -2402,6 +2405,20 @@ struct PrintExpressionContents
     o << ' ';
     printFieldName(heapType, curr->index);
   }
+  void visitStructWait(StructWait* curr) {
+    printMedium(o, "struct.wait");
+    o << ' ';
+    printHeapTypeName(curr->ref->type.getHeapType());
+    o << ' ';
+    o << curr->index;
+  }
+  void visitStructNotify(StructNotify* curr) {
+    printMedium(o, "struct.notify");
+    o << ' ';
+    printHeapTypeName(curr->ref->type.getHeapType());
+    o << ' ';
+    o << curr->index;
+  }
   void visitArrayNew(ArrayNew* curr) {
     printMedium(o, "array.new");
     if (curr->isWithDefault()) {
@@ -2437,7 +2454,7 @@ struct PrintExpressionContents
     if (curr->order != MemoryOrder::Unordered) {
       printMedium(o, ".atomic");
     }
-    if (element.type == Type::i32 && element.packedType != Field::not_packed) {
+    if (element.type == Type::i32 && element.packedType != Field::NotPacked) {
       if (curr->signed_) {
         printMedium(o, ".get_s");
       } else {
@@ -2770,25 +2787,46 @@ void PrintSExpression::printDebugDelimiterLocation(Expression* curr, Index i) {
 void PrintSExpression::printCodeAnnotations(Expression* curr) {
   if (auto iter = currFunction->codeAnnotations.find(curr);
       iter != currFunction->codeAnnotations.end()) {
-    auto& annotation = iter->second;
-    if (annotation.branchLikely) {
-      Colors::grey(o);
-      o << "(@" << Annotations::BranchHint << " \"\\0"
-        << (*annotation.branchLikely ? "1" : "0") << "\")\n";
-      restoreNormalColor(o);
-      doIndent(o, indent);
-    }
-    if (annotation.inline_) {
-      Colors::grey(o);
-      std::ofstream saved;
-      saved.copyfmt(o);
-      o << "(@" << Annotations::InlineHint << " \"\\" << std::hex
-        << std::setfill('0') << std::setw(2) << int(*annotation.inline_)
-        << "\")\n";
-      o.copyfmt(saved);
-      restoreNormalColor(o);
-      doIndent(o, indent);
-    }
+    printCodeAnnotations(iter->second);
+  }
+}
+
+void PrintSExpression::printCodeAnnotations(const CodeAnnotation& annotation) {
+  if (annotation.branchLikely) {
+    Colors::grey(o);
+    o << "(@" << Annotations::BranchHint << " \"\\0"
+      << (*annotation.branchLikely ? "1" : "0") << "\")\n";
+    restoreNormalColor(o);
+    doIndent(o, indent);
+  }
+  if (annotation.inline_) {
+    Colors::grey(o);
+    std::ofstream saved;
+    saved.copyfmt(o);
+    o << "(@" << Annotations::InlineHint << " \"\\" << std::hex
+      << std::setfill('0') << std::setw(2) << int(*annotation.inline_)
+      << "\")\n";
+    o.copyfmt(saved);
+    restoreNormalColor(o);
+    doIndent(o, indent);
+  }
+  if (annotation.removableIfUnused) {
+    Colors::grey(o);
+    o << "(@" << Annotations::RemovableIfUnusedHint << ")\n";
+    restoreNormalColor(o);
+    doIndent(o, indent);
+  }
+  if (annotation.jsCalled) {
+    Colors::grey(o);
+    o << "(@" << Annotations::JSCalledHint << ")\n";
+    restoreNormalColor(o);
+    doIndent(o, indent);
+  }
+  if (annotation.idempotent) {
+    Colors::grey(o);
+    o << "(@" << Annotations::IdempotentHint << ")\n";
+    restoreNormalColor(o);
+    doIndent(o, indent);
   }
 }
 
@@ -3246,7 +3284,7 @@ void PrintSExpression::visitImportedFunction(Function* curr) {
   lastPrintedLocation = std::nullopt;
   o << '(';
   emitImportHeader(curr);
-  printCodeAnnotations(nullptr);
+  printCodeAnnotations(curr->funcAnnotations);
   handleSignature(curr);
   o << "))";
   o << maybeNewLine;
@@ -3260,7 +3298,7 @@ void PrintSExpression::visitDefinedFunction(Function* curr) {
   if (currFunction->prologLocation) {
     printDebugLocation(*currFunction->prologLocation);
   }
-  printCodeAnnotations(nullptr);
+  printCodeAnnotations(curr->funcAnnotations);
   handleSignature(curr, true);
   incIndent();
   for (size_t i = curr->getVarIndexBase(); i < curr->getNumLocals(); i++) {
@@ -3946,7 +3984,10 @@ std::ostream& operator<<(std::ostream& o, wasm::ModuleType pair) {
 std::ostream& operator<<(std::ostream& o, wasm::ModuleHeapType pair) {
   if (auto it = pair.first.typeNames.find(pair.second);
       it != pair.first.typeNames.end()) {
-    return o << it->second.name;
+    return o << '$' << it->second.name;
+  }
+  if (pair.second.isBasic()) {
+    return o << pair.second;
   }
   return o << "(unnamed)";
 }

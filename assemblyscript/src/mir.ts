@@ -14,6 +14,7 @@ import {
   _WarpoCreateBaseType,
   _WarpoCreateClass,
   _WarpoCreateClassWithoutRtid,
+  _WarpoAddHeapVariableStorageLocalIndex,
 } from "./warpo";
 
 function typeToMIRName(type: Type): string {
@@ -50,7 +51,7 @@ function classToMIRName(clazz: Class): string {
 }
 
 export function addScope(subprogram: Function, startExpression: ExpressionRef, endExpression: ExpressionRef): u32 {
-  return _WarpoAddScope(decodeURIComponent(subprogram.internalName), startExpression, endExpression);
+  return _WarpoAddScope(subprogram.internalName, startExpression, endExpression);
 }
 
 export function addGlobal(variable: Global, type: Type): void {
@@ -64,7 +65,7 @@ export function addGlobal(variable: Global, type: Type): void {
 
 export function addParameter(subprogram: Function, variable: Local): void {
   _WarpoAddParameter(
-    decodeURIComponent(subprogram.internalName),
+    subprogram.internalName,
     variable.name,
     decodeURIComponent(typeToMIRName(variable.type)),
     variable.index,
@@ -73,7 +74,7 @@ export function addParameter(subprogram: Function, variable: Local): void {
 }
 export function addLocal(subProgram: Function, variable: Local, scopeId: u32): void {
   _WarpoAddLocal(
-    decodeURIComponent(subProgram.internalName),
+    subProgram.internalName,
     variable.name,
     decodeURIComponent(typeToMIRName(variable.type)),
     variable.index,
@@ -91,7 +92,11 @@ export function addSubProgram(subprogram: Function, belongClass: Class | null): 
   if (belongClass !== null) {
     belongClassName = decodeURIComponent(typeToMIRName(belongClass.type));
   }
-  _WarpoAddSubProgram(decodeURIComponent(subprogram.internalName), belongClassName);
+  _WarpoAddSubProgram(subprogram.internalName, belongClassName);
+}
+
+export function addHeapVariableStorageLocalIndex(subprogram: Function, index: u32): void {
+  _WarpoAddHeapVariableStorageLocalIndex(subprogram.internalName, index);
 }
 
 export function createClass(clazz: Class): void {

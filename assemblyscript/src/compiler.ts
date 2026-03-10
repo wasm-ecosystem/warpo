@@ -30,8 +30,7 @@ import {
   getExpressionId,
   getExpressionType,
   getConstValueI32,
-  getConstValueI64Low,
-  getConstValueI64High,
+  getConstValueI64,
   getConstValueF32,
   getConstValueF64,
   getConstValueV128,
@@ -175,8 +174,6 @@ import {
 import { markDataElementImmutable, markCallInlined } from "./warpo";
 import { mangleImportName, STATIC_DELIMITER, INDEX_SUFFIX } from "./mangle";
 import { addGlobal } from "./mir";
-
-import { ClosureScanner } from "./ast/closureScanner";
 
 /** Features enabled by default. */
 export const defaultFeatures =
@@ -410,6 +407,10 @@ export class Compiler extends DiagnosticEmitter {
   pendingElements: Set<Element> = new Set();
   /** Elements, that are module exports, already processed */
   doneModuleExports: Set<Element> = new Set();
+
+  private getClosureEnvImported: boolean = false;
+  private setClosureEnvImported: boolean = false;
+  private getClosureEnvByLevelImported: boolean = false;
 
   /** Constructs a new compiler for a {@link Program} using the specified options. */
   constructor(program: Program) {
@@ -646,32 +647,49 @@ export class Compiler extends DiagnosticEmitter {
         TypeRef.I32
       );
     }
-    // this.setClosureImport(); fixme: closure support is currently not finished yet.
     return module;
   }
 
-  setClosureImport(): void {
-    this.module.addFunctionImport(
-      BuiltinNames.getClosureEnv,
-      BuiltinNames.externalFuncName,
-      BuiltinNames.getClosureEnv,
-      TypeRef.None,
-      TypeRef.I32
-    );
-    this.module.addFunctionImport(
-      BuiltinNames.setClosureEnv,
-      BuiltinNames.externalFuncName,
-      BuiltinNames.setClosureEnv,
-      TypeRef.I32,
-      TypeRef.None
-    );
-    this.module.addFunctionImport(
-      BuiltinNames.getClosureEnvByLevel,
-      BuiltinNames.externalFuncName,
-      BuiltinNames.getClosureEnvByLevel,
-      TypeRef.I32,
-      TypeRef.I32
-    );
+  getClosureEnv(): ExpressionRef {
+    if (!this.getClosureEnvImported) {
+      this.getClosureEnvImported = true;
+      this.module.addFunctionImport(
+        BuiltinNames.getClosureEnv,
+        BuiltinNames.externalFuncName,
+        BuiltinNames.getClosureEnv,
+        TypeRef.None,
+        TypeRef.I32
+      );
+    }
+    return this.module.get_closure_env();
+  }
+
+  setClosureEnv(value: ExpressionRef): ExpressionRef {
+    if (!this.setClosureEnvImported) {
+      this.setClosureEnvImported = true;
+      this.module.addFunctionImport(
+        BuiltinNames.setClosureEnv,
+        BuiltinNames.externalFuncName,
+        BuiltinNames.setClosureEnv,
+        TypeRef.I32,
+        TypeRef.None
+      );
+    }
+    return this.module.set_closure_env(value);
+  }
+
+  getClosureEnvByLevel(level: i32): ExpressionRef {
+    if (!this.getClosureEnvByLevelImported) {
+      this.getClosureEnvByLevelImported = true;
+      this.module.addFunctionImport(
+        BuiltinNames.getClosureEnvByLevel,
+        BuiltinNames.externalFuncName,
+        BuiltinNames.getClosureEnvByLevel,
+        TypeRef.I32,
+        TypeRef.I32
+      );
+    }
+    return this.module.get_closure_env_by_level(level);
   }
 
   private initDefaultMemory(memoryOffset: i64): void {
@@ -922,9 +940,6 @@ export class Compiler extends DiagnosticEmitter {
   compileFile(file: File): void {
     if (file.is(CommonFlags.Compiled)) return;
     file.set(CommonFlags.Compiled);
-    const closureScanner = new ClosureScanner();
-    this.program.closureScanner = closureScanner;
-    file.source.accept(closureScanner);
 
     // compile top-level statements within the file's start function
     let startFunction = file.startFunction;
@@ -1175,7 +1190,7 @@ export class Compiler extends DiagnosticEmitter {
             }
             case <u32>TypeRef.I64: {
               global.constantValueKind = ConstantValueKind.Integer;
-              global.constantIntegerValue = i64_new(getConstValueI64Low(initExpr), getConstValueI64High(initExpr));
+              global.constantIntegerValue = getConstValueI64(initExpr);
               break;
             }
             case <u32>TypeRef.F32: {
@@ -1601,10 +1616,8 @@ export class Compiler extends DiagnosticEmitter {
       let flow = instance.flow;
       this.currentFlow = flow;
       let stmts = new Array<ExpressionRef>();
-
-      stmts.push(0); // placeholder for the closure heapLocals.
-      stmts.push(0); // placeholder for saving the parent function's context.
-
+      const heapLocalsStorage = flow.getTempLocal(Type.i32);
+      instance.heapLocalsStorage = heapLocalsStorage;
       instance.heapLocalsTypeBuilder.push(
         this.program.smallTupleInstance.type,
         instance.declarationBase.nameRange,
@@ -1623,21 +1636,28 @@ export class Compiler extends DiagnosticEmitter {
       );
       const closureDummyNode = Node.createComment(CommentKind.Line, "", new Range(0, 0)); // fixme: it's just a place holder node.
       const tupleInfo = assert(assert(heapLocalsTupleType).tupleInfo);
-      const heapLocalsTuple = this.makeNewTuple(tupleInfo.elementCount, tupleInfo.getBitmap(), closureDummyNode);
-      const heapLocalsStorage = flow.getTempLocal(Type.i32);
-      stmts[0] = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
+      const heapLocalsTuple = this.makeNewTuple(
+        tupleInfo.getElementsAreaByteSize(),
+        tupleInfo.getBitmap(),
+        closureDummyNode
+      );
+
+      const heapLocalsStmt = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
       const parentEnvElementInfo = tupleInfo.elements[0];
-      const getClosureEnvStmt = module.get_closure_env();
-      const tupleSetter = assert(this.program.smallTupleInstance.getMethod("__set"));
-      stmts[1] = this.makeCallDirect(
+      const getClosureEnvStmt = this.getClosureEnv();
+      const tupleSetter = assert(this.program.smallTupleInstance.getMethod("__set", [parentEnvElementInfo.type]));
+      const saveParentEnvStmt = this.makeCallDirect(
         tupleSetter,
         [
           module.local_get(heapLocalsStorage.index, this.program.smallTupleInstance.type.toRef()),
-          parentEnvElementInfo.offset,
+          module.usize(parentEnvElementInfo.offset),
           getClosureEnvStmt,
         ],
         closureDummyNode
       );
+      // insert closure setup at the beginning
+      stmts.unshift(saveParentEnvStmt);
+      stmts.unshift(heapLocalsStmt);
       // create the function
       funcRef = module.addFunction(
         instance.internalName,
@@ -1944,7 +1964,7 @@ export class Compiler extends DiagnosticEmitter {
           let value = values[i];
           assert(getExpressionType(value) == elementTypeRef);
           assert(getExpressionId(value) == ExpressionId.Const);
-          writeI64(i64_new(getConstValueI64Low(value), getConstValueI64High(value)), buf, pos);
+          writeI64(getConstValueI64(value), buf, pos);
           pos += 8;
         }
         break;
@@ -2742,7 +2762,7 @@ export class Compiler extends DiagnosticEmitter {
     );
     const variableType = this.currentType;
     // body flow is new created, there are definitely no duplicate identifier.
-    const variableLocal = bodyFlow.addScopedLocal(variable.name.text, variableType);
+    const variableLocal = bodyFlow.addScopedLocal(variable.name.text, variableType, variable);
     if (variable.is(CommonFlags.Const)) bodyFlow.setLocalFlag(variableLocal.index, LocalFlags.Constant);
     bodyStmts.push(this.makeLocalAssignment(variableLocal, variableExpr, variableType, false));
     if (body.kind == NodeKind.Block) {
@@ -3165,10 +3185,7 @@ export class Compiler extends DiagnosticEmitter {
               }
               case <u32>TypeRef.I64: {
                 local = new Local(name, -1, type, flow.targetFunction, variableLikeBase, declarationBase);
-                local.setConstantIntegerValue(
-                  i64_new(getConstValueI64Low(initExpr), getConstValueI64High(initExpr)),
-                  type
-                );
+                local.setConstantIntegerValue(getConstValueI64(initExpr), type);
                 break;
               }
               case <u32>TypeRef.F32: {
@@ -3225,7 +3242,7 @@ export class Compiler extends DiagnosticEmitter {
             }
             local = existingLocal;
           } else {
-            local = flow.addScopedLocal(name, type);
+            local = flow.addScopedLocal(name, type, declaration);
           }
           if (isConst) flow.setLocalFlag(local.index, LocalFlags.Constant);
         } else {
@@ -5219,8 +5236,8 @@ export class Compiler extends DiagnosticEmitter {
           // Precompute power if LHS and RHS constants
           // TODO: move this optimization to AIR
           if (getExpressionId(leftExpr) == ExpressionId.Const && getExpressionId(rightExpr) == ExpressionId.Const) {
-            let leftValue = i64_new(getConstValueI64Low(leftExpr), getConstValueI64High(leftExpr));
-            let rightValue = i64_new(getConstValueI64Low(rightExpr), getConstValueI64High(rightExpr));
+            let leftValue = getConstValueI64(leftExpr);
+            let rightValue = getConstValueI64(rightExpr);
             let result = i64_pow(leftValue, rightValue);
             this.currentType = type;
             return module.i64(i64_low(result), i64_high(result));
@@ -6974,7 +6991,12 @@ export class Compiler extends DiagnosticEmitter {
     let expr = module.call(instance.internalName, operands, returnType.toRef());
     if (shouldInlined) markCallInlined(expr);
     this.currentType = returnType;
-    return expr;
+    if (instance.isClosureFunction()) {
+      const closureEnvExpr = this.setClosureEnv(module.i32(0));
+      return module.flatten([closureEnvExpr, expr], returnType.toRef());
+    } else {
+      return expr;
+    }
   }
 
   /** Compiles an indirect call to a first-class function. */
@@ -7054,41 +7076,48 @@ export class Compiler extends DiagnosticEmitter {
       }
     }
 
+    let callPrepareStmts: ExpressionRef[] = new Array();
+
+    let functionAddrExprForEnv = module.tryCopyTrivialExpression(functionArg);
+    let functionAddrExprForIndex: ExpressionRef;
+    if (functionAddrExprForEnv) {
+      functionAddrExprForIndex = functionArg;
+    } else {
+      const tempFunctionAddrLocal = this.currentFlow.getTempLocal(Type.i32);
+      const setExpr = module.local_set(tempFunctionAddrLocal.index, functionArg, false);
+      callPrepareStmts.push(setExpr);
+      functionAddrExprForEnv = module.local_get(tempFunctionAddrLocal.index, TypeRef.I32);
+      functionAddrExprForIndex = module.local_get(tempFunctionAddrLocal.index, TypeRef.I32);
+    }
+
+    callPrepareStmts.push(
+      this.setClosureEnv(
+        module.load(4, false, functionAddrExprForEnv, TypeRef.I32, 4) // ._env
+      )
+    );
+
     // We might be calling a varargs stub here, even if all operands have been
     // provided, so we must set `argumentsLength` in any case. Inject setting it
     // into the index argument, which becomes executed last after any operands.
     let argumentsLength = this.ensureArgumentsLength();
     let sizeTypeRef = TypeRef.I32;
-    if (getSideEffects(functionArg, module.ref) & SideEffects.WritesGlobal) {
-      let flow = this.currentFlow;
-      let temp = flow.getTempLocal(Type.usize32);
-      let tempIndex = temp.index;
-      functionArg = module.block(
-        null,
-        [
-          module.local_set(tempIndex, functionArg, true), // Function
-          module.global_set(argumentsLength, module.i32(numArguments)),
-          module.local_get(tempIndex, sizeTypeRef),
-        ],
-        sizeTypeRef
-      );
-    } else {
-      // simplify
-      functionArg = module.block(
-        null,
-        [module.global_set(argumentsLength, module.i32(numArguments)), functionArg],
-        sizeTypeRef
-      );
-    }
+
+    callPrepareStmts.push(module.global_set(argumentsLength, module.i32(numArguments)));
+    callPrepareStmts.push(module.load(4, false, functionAddrExprForIndex, TypeRef.I32)); // ._index
+
+    const indexExprWithVarArgs = module.block(null, callPrepareStmts, sizeTypeRef);
+
     if (operands) this.operandsTostack(signature, operands);
+
     let expr = module.call_indirect(
       null, // TODO: handle multiple tables
-      module.load(4, false, functionArg, TypeRef.I32), // ._index
+      indexExprWithVarArgs,
       operands,
       signature.paramRefs,
       signature.resultRefs
     );
     this.currentType = returnType;
+
     return expr;
   }
 
@@ -7348,7 +7377,7 @@ export class Compiler extends DiagnosticEmitter {
         }
       } else {
         let ftype = instance.type;
-        let local = flow.addScopedLocal(instance.name, ftype);
+        let local = flow.addScopedLocal(instance.name, ftype, null);
         flow.setLocalFlag(local.index, LocalFlags.Constant | LocalFlags.Initialized);
         expr = module.local_tee(local.index, expr, ftype.isManaged);
       }
@@ -7487,7 +7516,8 @@ export class Compiler extends DiagnosticEmitter {
           return this.compileInlineConstant(local, contextualType, constraints);
         }
         let localIndex = local.index;
-        if (!flow.isLocalFlag(localIndex, LocalFlags.Initialized)) {
+        // fixme need to check init of closure variable also
+        if (!local.isClosureVariable() && !flow.isLocalFlag(localIndex, LocalFlags.Initialized)) {
           this.error(DiagnosticCode.Variable_0_is_used_before_being_assigned, expression.range, local.name);
         }
         assert(localIndex >= 0);
@@ -7502,11 +7532,6 @@ export class Compiler extends DiagnosticEmitter {
           this.currentType = localType;
         }
 
-        if (!local.declaredByFlow(flow)) {
-          // TODO: closures
-          this.error(DiagnosticCode.Not_implemented_0, expression.range, "Closures");
-          return module.unreachable();
-        }
         let expr = this.makeLocalGet(local);
         if (isNonNull && localType.isNullableExternalReference && this.options.hasFeature(Feature.GC)) {
           // If the local's type is nullable, but its value is known to be non-null, propagate
@@ -7628,7 +7653,7 @@ export class Compiler extends DiagnosticEmitter {
 
   private makeGetHeapLocalTuple(local: Local): ExpressionRef {
     const nestedLevel = this.getClosureVariableNestedLevel(local);
-    const envTupleExpr = this.module.get_closure_env_by_level(nestedLevel);
+    const envTupleExpr = this.getClosureEnvByLevel(nestedLevel);
     return envTupleExpr;
   }
 
