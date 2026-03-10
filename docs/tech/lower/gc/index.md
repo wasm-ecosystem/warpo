@@ -56,7 +56,38 @@ Both end up with the same essential shape in Wasm:
 2. Replace `__localtostack` / `__tmptostack` with stores into that frame.
 3. Restore `__stack_pointer` on all exits.
 
-### Shared: stack-pointer helpers
+### Lowering pass flow
+
+```mermaid
+flowchart TD
+  A[Input Wasm with __localtostack/__tmptostack markers]
+  A --> B{Lowering mode}
+
+  B --> C[FastLower]
+  B --> D[OptLower]
+
+  C --> C1[Assign slots + attach offsets]
+  C1 --> C2[Insert prologue/epilogue]
+  C2 --> C3[Lower marker builtins into stores]
+
+  D --> D1[Preprocess: vacuum + merge-blocks]
+  D1 --> D2[ImmutableGlobalToStackRemover]
+  D2 --> D3[SSAObj]
+  D3 --> D4[CollectLeafFunction]
+  D4 --> D5[ObjLivenessAnalyzer]
+  D5 --> D6[MergeSSA (optional)]
+  D6 --> D7[LeafFunctionFilter]
+  D7 --> D8[StackAssigner]
+  D8 --> D9[ShrinkWrapAnalysis (optional)]
+  D9 --> D10[PrologEpilogInserter]
+  D10 --> D11[ToStackReplacer]
+  D11 --> D12[Cleanup: remove markers + add SP helpers]
+
+  C3 --> E[Output Wasm with explicit shadow-stack stores]
+  D12 --> E
+```
+
+### stack-pointer helpers
 
 GC lowering materializes two helper functions (see `passes/GC/BaseLower.cpp`):
 
