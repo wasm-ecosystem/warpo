@@ -15,6 +15,83 @@ Compared with `gc::FastLower`, the optimized pipeline costs more time, but it us
 
 The sections below follow the pass order in `OptLower::run()`.
 
+## Thought Exercise: Precisely Compute `new` Object Lifetimes
+
+Consider the simplified AssemblyScript code below, and try to precisely mark the lifetime interval (start and end) of each object created by `new`.
+
+```ts
+class Node {
+  constructor(id: i32) {}
+}
+
+declare function use(n: Node): void;
+
+export function demo(flag: bool): i32 {
+  let a = new Node(1);
+  let b = new Node(2);
+  if (flag) {
+    let c = new Node(3);
+    use(c);
+    use(b);
+    a = c;
+  }
+  use(a);
+  return 0;
+}
+```
+
+::: details Analysis Framework
+
+Use a lightweight dataflow workflow. The goal is to separate "variable flow" from "object lifetime" and make each step checkable.
+
+1. Build the CFG for this exact shape
+
+- Basic blocks are enough as: `Entry`, `Then(flag=true)`, `Join`, `Exit`.
+- Control edges: `Entry -> Then`, `Entry -> Join`, `Then -> Join`, `Join -> Exit`.
+- Note: this version has a single `return` at the end (single exit block).
+
+2. Label program points and classify facts
+
+- Definitions on variables:
+  - `d1: a = new Node(1)`
+  - `d2: b = new Node(2)`
+  - `d3: c = new Node(3)` (inside `Then`)
+  - `d4: a = c` (inside `Then`)
+- Uses:
+  - `u1: use(c)`
+  - `u2: use(b)`
+  - `u3: use(a)`
+- Distinguish two layers:
+  - Variable definitions (`a`, `b`, `c`)
+  - Allocation sites / abstract objects (`O1`, `O2`, `O3` from the three `new` calls)
+
+3. Run Reaching Definitions (forward) for variables
+
+- Dataflow equations:
+  - `IN[B] = ∪ OUT[P]` over predecessors `P`
+  - `OUT[B] = GEN[B] ∪ (IN[B] - KILL[B])`
+- Key point in this updated code: `a` has multiple reaching defs (`d1` and `d4`) at `Join`.
+- Use this result to answer: at `u3: use(a)`, which defs of `a` may reach?
+
+4. Run Variable Liveness (backward)
+
+- Dataflow equations:
+  - `OUT[B] = ∪ IN[S]` over successors `S`
+  - `IN[B] = USE[B] ∪ (OUT[B] - DEF[B])`
+- Compute live-before/live-after for `a`, `b`, `c` at least around `u1/u2/u3` and `d4`.
+- Pay attention to branch sensitivity: `c` is only in `Then`, but its value can flow to `a` through `d4`.
+
+5. Lift from variable flow to object lifetimes
+
+- Object lifetime starts:
+  - `O1` starts after `new Node(1)`
+  - `O2` starts after `new Node(2)`
+  - `O3` starts after `new Node(3)`
+- Object lifetime ends are determined by the last reachable use of any variable aliasing that object.
+- Because `a = c`, the final `use(a)` may refer to `O1` (false path) or `O3` (true path). This is the core join-point case.
+
+:::
+
 ## Preprocess: `vacuum` / `merge-blocks` (Binaryen)
 
 #### Rationale
