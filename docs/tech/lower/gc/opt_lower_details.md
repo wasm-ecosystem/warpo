@@ -366,7 +366,7 @@ After (shadow-stack ops removed):
 
 #### Rationale
 
-After we know “which SSA values become alive at which points”, we need to map these “become-alive `tostack` sites” to concrete shadow-stack offsets (slot/offset). A better assignment lets non-conflicting objects (no overlap in lifetime) reuse the same slot, which reduces the frame size.
+After we know “which SSA values become alive at which points”, we need to map these “become-alive `tostack` sites” to concrete shadow-stack offsets (slot/offset). A better assignment lets non-conflicting objects (no overlap in lifetime) reuse the same slot, which reduces the frame size, and even can reduce the peak ram usage.
 
 #### Method
 
