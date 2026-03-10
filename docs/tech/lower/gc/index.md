@@ -103,8 +103,9 @@ Fast lowering avoids CFG/liveness work and instead assigns slots with a simple, 
    - A walker scans the function and:
      - maps each local that goes through `__localtostack` to a stable slot.
      - allocates slots for `__tmptostack` values using a stack-like allocator that respects [nested calls](#nested-calls-in-fast-lowering).
-   - It rewrites each `__localtostack(v)` / `__tmptostack(v)` to carry an extra operand: the byte offset
-     (i.e. `4 * slotIndex`).
+   - It rewrites each marker call from unary to binary form, e.g.
+     `__localtostack(v) -> __localtostack(v, b)` and `__tmptostack(v) -> __tmptostack(v, b)`,
+     where `b` is the shadow-stack byte offset for the assigned slot (`b = 4 * slotIndex`).
 2. **Insert prologue/epilogue**
    - `PrologEpilogInserter` reserves `maxOffset` bytes at function entry (or at an equivalent safe point), and
      restores the stack pointer on all exits.
