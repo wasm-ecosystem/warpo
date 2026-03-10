@@ -296,6 +296,29 @@ i32.store $0 offset=4 align=1
 
 If an SSA object is alive only around leaf calls, then even if it is alive, it will not meet a real GC trigger point. Such a root can be removed, which reduces shadow-stack pressure.
 
+#### Intuition (visual)
+
+Use the following picture to read the rule quickly:
+
+- Vertical line (`|`): one object's liveness range.
+- Horizontal solid line (`====`): a program point that may trigger GC.
+- Horizontal dashed line (`----`): a program point irrelevant to GC.
+- Intersection on a solid line (`X`): this object must be root.
+
+```text
+program points (top -> bottom)
+
+           ObjA   ObjB
+p0  ---- ----|----|----
+p1  ---- ----|----|----
+p2  ---- ----|---------
+p3  ==== ====X=========
+
+Decision:
+- ObjA intersects a solid line at p3 -> keep root.
+- ObjB intersects only dashed lines -> root can be removed.
+```
+
 #### Method
 
 Filter the liveness model to keep only roots that matter at potential GC trigger points.
@@ -303,8 +326,6 @@ Filter the liveness model to keep only roots that matter at potential GC trigger
 - Treat **non-leaf direct calls** and **all indirect calls** as potential GC trigger points.
 - Collect the set of SSA dimensions that are alive at those points.
 - Invalidate all other SSA dimensions so they do not affect slot assignment or shrink-wrapping decisions.
-
-Note: caller-managed parameters are handled specially by later stages (they should not force opening the shadow stack in the callee).
 
 #### Example
 
@@ -316,10 +337,12 @@ Before (conservative rooting around call):
 (func $.../_start (result i32)
   ...
   i32.const 4
+  ;; start liveness of $obj
   call $~lib/rt/__decrease_sp
   global.get $~lib/memory/__stack_pointer
   local.get $obj
   i32.store $0 align=1
+  ;; end liveness of $obj
   call $.../constructor ;; leaf-only path
   i32.const 4
   call $~lib/rt/__increase_sp
