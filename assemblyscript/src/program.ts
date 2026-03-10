@@ -2465,6 +2465,7 @@ export class Program extends DiagnosticEmitter {
     if (declaration.range.source.isLibrary) {
       acceptedFlags |= DecoratorFlags.Builtin;
     }
+    let closureInfo = this.closureScanner.getClosureFunctionInfo(declaration);
     let element = new FunctionPrototype(
       propertyName.text,
       parent,
@@ -2473,7 +2474,7 @@ export class Program extends DiagnosticEmitter {
       declaration.toFunctionLikeWithBodyBase(),
       propertyName,
       declaration.identifierAndSignatureRange,
-      null
+      closureInfo
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
       this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
@@ -2602,6 +2603,7 @@ export class Program extends DiagnosticEmitter {
         return;
       }
     }
+    let closureInfo = this.closureScanner.getClosureFunctionInfo(declaration);
     let element = new FunctionPrototype(
       isGetter ? mangleGetterName(name) : mangleSetterName(name),
       property.parent, // same level as property
@@ -2610,7 +2612,7 @@ export class Program extends DiagnosticEmitter {
       declaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
       declaration.identifierAndSignatureRange,
-      null
+      closureInfo
     );
     if (isGetter) {
       property.getterPrototype = element;
