@@ -546,4 +546,178 @@ describe("closureScanner", () => {
     `);
     expect(scanner.closureFunctions.size).equal(0);
   });
+
+  test("closure: arrow function in method captures this", () => {
+    const scanner = makeScanner(`
+      export class Foo {
+          x: i32 = 0;
+          bar(): i32 {
+              let inner = (): i32 => {
+                  return this.x;
+              }
+              return inner();
+          }
+      }
+    `);
+    expect(scanner.closureFunctions.size).equal(2);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const name = getDeclarationName(func);
+      const info = scanner.closureFunctions.get(func);
+      if (name === "") {
+        expect(info.capturesThis).equal(false);
+        expect(info.nestedLevel).equal(1);
+      } else if (name === "bar") {
+        expect(info.capturesThis).equal(true);
+        expect(info.closureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(0);
+      } else {
+        assert(false, `Unexpected closure function: ${name}`);
+      }
+    }
+  });
+
+  test("closure: inner function captures both this and variable", () => {
+    const scanner = makeScanner(`
+      export class Foo {
+          x: i32 = 0;
+          bar(): i32 {
+              let a = 1;
+              let inner = (): i32 => {
+                  return this.x + a;
+              }
+              return inner();
+          }
+      }
+    `);
+    expect(scanner.closureFunctions.size).equal(2);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const name = getDeclarationName(func);
+      const info = scanner.closureFunctions.get(func);
+      if (name === "") {
+        expect(info.capturesThis).equal(false);
+        expect(info.closureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(1);
+      } else if (name === "bar") {
+        expect(info.capturesThis).equal(true);
+        expect(info.closureVariables.size).equal(1);
+        expect(info.nestedLevel).equal(0);
+      } else {
+        assert(false, `Unexpected closure function: ${name}`);
+      }
+    }
+  });
+
+  test("no closure: this used in own method scope", () => {
+    const scanner = makeScanner(`
+      export class Foo {
+          x: i32 = 0;
+          bar(): i32 {
+              return this.x;
+          }
+      }
+    `);
+    expect(scanner.closureFunctions.size).equal(0);
+  });
+
+  test("no capturesThis: closure in static method does not capture this", () => {
+    const scanner = makeScanner(`
+      export class Foo {
+          static bar(): i32 {
+              let a = 1;
+              let inner = (): i32 => {
+                  return a;
+              }
+              return inner();
+          }
+      }
+    `);
+    expect(scanner.closureFunctions.size).equal(2);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const info = scanner.closureFunctions.get(func);
+      expect(info.capturesThis).equal(false);
+    }
+  });
+
+  test("closure: deep nesting captures this", () => {
+    const scanner = makeScanner(`
+      export class Foo {
+          x: i32 = 0;
+          bar(): i32 {
+              let middle = (): i32 => {
+                  let inner = (): i32 => {
+                      return this.x;
+                  }
+                  return inner();
+              }
+              return middle();
+          }
+      }
+    `);
+    expect(scanner.closureFunctions.size).equal(3);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const name = getDeclarationName(func);
+      const info = scanner.closureFunctions.get(func);
+      if (name === "bar") {
+        expect(info.capturesThis).equal(true);
+        expect(info.nestedLevel).equal(0);
+      } else if (info.nestedLevel === 1) {
+        expect(info.capturesThis).equal(false);
+      } else if (info.nestedLevel === 2) {
+        expect(info.capturesThis).equal(false);
+      } else {
+        assert(false, `Unexpected closure function: ${name}`);
+      }
+    }
+  });
+
+  test("closure: constructor arrow function captures this", () => {
+    const scanner = makeScanner(`
+      export class Foo {
+          x: i32;
+          constructor() {
+              let init = (): void => {
+                  this.x = 42;
+              }
+              init();
+          }
+      }
+    `);
+    expect(scanner.closureFunctions.size).equal(2);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const name = getDeclarationName(func);
+      const info = scanner.closureFunctions.get(func);
+      if (name === "") {
+        expect(info.capturesThis).equal(false);
+        expect(info.nestedLevel).equal(1);
+      } else if (name === "constructor") {
+        expect(info.capturesThis).equal(true);
+        expect(info.nestedLevel).equal(0);
+      } else {
+        assert(false, `Unexpected closure function: ${name}`);
+      }
+    }
+  });
+
+  test("no capturesThis: arrow function in standalone function", () => {
+    const scanner = makeScanner(`
+      export function outer(): i32 {
+          let a = 1;
+          let inner = (): i32 => {
+              return a;
+          }
+          return inner();
+      }
+    `);
+    expect(scanner.closureFunctions.size).equal(2);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const info = scanner.closureFunctions.get(func);
+      expect(info.capturesThis).equal(false);
+    }
+  });
 });

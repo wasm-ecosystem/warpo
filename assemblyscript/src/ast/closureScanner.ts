@@ -12,10 +12,12 @@ import {
   Node,
   ParameterNode,
   SwitchCase,
+  ThisExpression,
   TypeDeclaration,
   VariableDeclaration,
   WhileStatement,
 } from "../ast";
+import { CommonFlags } from "../common";
 
 class VariableMark {
   get node(): Node {
@@ -60,6 +62,8 @@ class FunctionScope {
   private node_: DeclarationStatement;
   private isClosureFunction_: bool;
   private closureVariables_: Set<Node>;
+  private hasThis_: bool;
+  private capturesThis_: bool;
   get node(): DeclarationStatement {
     return this.node_;
   }
@@ -69,10 +73,18 @@ class FunctionScope {
   get closureVariables(): Set<Node> {
     return this.closureVariables_;
   }
+  get hasThis(): bool {
+    return this.hasThis_;
+  }
+  get capturesThis(): bool {
+    return this.capturesThis_;
+  }
   constructor(node: DeclarationStatement) {
     this.node_ = node;
     this.isClosureFunction_ = false;
     this.closureVariables_ = new Set();
+    this.hasThis_ = node instanceof MethodDeclaration && node.is(CommonFlags.Instance); // static function doesn't have `this`
+    this.capturesThis_ = false;
     this.scopeStack_ = new Array();
     this.scopeStack_.push(new Scope());
   }
@@ -128,10 +140,15 @@ class FunctionScope {
   markAsClosureFunction(): void {
     this.isClosureFunction_ = true;
   }
+
+  markCapturesThis(): void {
+    this.capturesThis_ = true;
+  }
 }
 
 export class ClosureFunctionInfo {
   closureVariables: Set<Node> = new Set();
+  capturesThis: bool = false;
   nestedLevel: i32 = 0;
 }
 
@@ -155,6 +172,7 @@ class FunctionScopeChain {
     if (lastFunctionScope.isClosureFunction) {
       const info = new ClosureFunctionInfo();
       info.closureVariables = lastFunctionScope.closureVariables;
+      info.capturesThis = lastFunctionScope.capturesThis;
       info.nestedLevel = this.functionScopes_.length - 1;
       this.closureFunctions_.set(lastFunctionScope.node, info);
     }
@@ -202,6 +220,23 @@ class FunctionScopeChain {
     for (let i = this.functionScopes_.length - 2; i >= 0; i--) {
       const functionScope = this.functionScopes_[i];
       if (functionScope.markVariableCapturedIfExists(name)) {
+        this.markRangeAsClosureFunction(i);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  checkAndMarkCapturedThis(): bool {
+    if (this.functionScopes_.length === 0) return false;
+    const currentFunctionScope = this.functionScopes_[this.functionScopes_.length - 1];
+    if (currentFunctionScope.hasThis) return false;
+
+    if (this.functionScopes_.length < 2) return false;
+    for (let i = this.functionScopes_.length - 2; i >= 0; i--) {
+      const functionScope = this.functionScopes_[i];
+      if (functionScope.hasThis) {
+        functionScope.markCapturesThis();
         this.markRangeAsClosureFunction(i);
         return true;
       }
@@ -335,5 +370,9 @@ export class ClosureScanner extends BaseVisitor {
 
   visitIdentifierExpression(node: IdentifierExpression): void {
     this.functionScopeChain_.checkAndMarkClosureVariable(node.text);
+  }
+
+  visitThisExpression(node: ThisExpression): void {
+    this.functionScopeChain_.checkAndMarkCapturedThis();
   }
 }
