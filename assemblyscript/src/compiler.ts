@@ -1619,11 +1619,6 @@ export class Compiler extends DiagnosticEmitter {
       const heapLocalsStorage = flow.getTempLocal(Type.i32);
       mir.addHeapVariableStorageLocalIndex(instance, heapLocalsStorage.index);
       instance.heapLocalsStorage = heapLocalsStorage;
-      instance.heapLocalsTypeBuilder.push(
-        this.program.smallTupleInstance.type,
-        instance.declarationBase.nameRange,
-        ReportMode.Report
-      );
 
       if (!this.compileFunctionBody(instance, stmts)) {
         stmts.push(module.unreachable());
@@ -1643,12 +1638,14 @@ export class Compiler extends DiagnosticEmitter {
         closureDummyNode
       );
 
+      const functionClosurePrepareStmts: ExpressionRef[] = new Array();
       const heapLocalsStmt = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
+      functionClosurePrepareStmts.push(heapLocalsStmt);
       const parentEnvElementInfo = tupleInfo.elements[0];
       const getClosureEnvStmt = this.getClosureEnv();
-      const tupleSetter = assert(this.program.smallTupleInstance.getMethod("__set", [parentEnvElementInfo.type]));
+      const parentEnvSetter = assert(this.program.smallTupleInstance.getMethod("__set", [parentEnvElementInfo.type]));
       const saveParentEnvStmt = this.makeCallDirect(
-        tupleSetter,
+        parentEnvSetter,
         [
           module.local_get(heapLocalsStorage.index, this.program.smallTupleInstance.type.toRef()),
           module.usize(parentEnvElementInfo.offset),
@@ -1656,9 +1653,30 @@ export class Compiler extends DiagnosticEmitter {
         ],
         closureDummyNode
       );
+
+      functionClosurePrepareStmts.push(saveParentEnvStmt);
+      const heapLocalsTypeBuilder = instance.heapLocalsTypeBuilder;
+
+      for (let i = 0; i < numParameters; i++) {
+        const paramLocal = instance.localsByIndex[i];
+        if (paramLocal.isClosureVariable()) {
+          const tupleElementInfo = heapLocalsTypeBuilder.getTupleElementInfo(paramLocal.tupleIndex);
+          const paramSetter = assert(this.program.smallTupleInstance.getMethod("__set", [tupleElementInfo.type]));
+          const saveClosureParamStmt = this.makeCallDirect(
+            paramSetter,
+            [
+              module.local_get(heapLocalsStorage.index, this.program.smallTupleInstance.type.toRef()),
+              module.usize(tupleElementInfo.offset),
+              module.local_get(paramLocal.index, paramLocal.type.toRef()),
+            ],
+            closureDummyNode
+          );
+          functionClosurePrepareStmts.push(saveClosureParamStmt);
+        }
+      }
+
       // insert closure setup at the beginning
-      stmts.unshift(saveParentEnvStmt);
-      stmts.unshift(heapLocalsStmt);
+      stmts = functionClosurePrepareStmts.concat(stmts);
       // create the function
       funcRef = module.addFunction(
         instance.internalName,
