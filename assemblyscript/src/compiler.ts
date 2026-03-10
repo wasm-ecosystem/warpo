@@ -1656,9 +1656,29 @@ export class Compiler extends DiagnosticEmitter {
         ],
         closureDummyNode
       );
+
+      const functionClosurePrepareStmts: ExpressionRef[] = new Array();
+      functionClosurePrepareStmts.push(heapLocalsStmt);
+      functionClosurePrepareStmts.push(saveParentEnvStmt);
+      const heapLocalsTypeBuilder = instance.heapLocalsTypeBuilder;
+
+      for (let i = 0; i < numParameters; i++) {
+        const paramLocal = instance.localsByIndex[i];
+        const tupleElementInfo = heapLocalsTypeBuilder.getTupleElementInfo(i);
+        const saveClosureParamStmt = this.makeCallDirect(
+          tupleSetter,
+          [
+            module.local_get(heapLocalsStorage.index, this.program.smallTupleInstance.type.toRef()),
+            module.usize(tupleElementInfo.offset),
+            module.local_get(paramLocal.index, paramLocal.type.toRef()),
+          ],
+          closureDummyNode
+        );
+        functionClosurePrepareStmts.push(saveClosureParamStmt);
+      }
+
       // insert closure setup at the beginning
-      stmts.unshift(saveParentEnvStmt);
-      stmts.unshift(heapLocalsStmt);
+      stmts = functionClosurePrepareStmts.concat(stmts);
       // create the function
       funcRef = module.addFunction(
         instance.internalName,

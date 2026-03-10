@@ -4368,7 +4368,8 @@ export class Function extends TypedElement {
       prototype.parent,
       prototype.declarationBase
     );
-    this.heapLocalsTypeBuilder = new TupleTypeBuilder(prototype.program, prototype.program.registeredTupleTypes);
+    const heapLocalsTypeBuilder = new TupleTypeBuilder(prototype.program, prototype.program.registeredTupleTypes);
+    this.heapLocalsTypeBuilder = heapLocalsTypeBuilder;
     this.prototype = prototype;
     this.typeArguments = typeArguments;
     this.signature = signature;
@@ -4406,16 +4407,28 @@ export class Function extends TypedElement {
         mir.addParameter(this, local);
       }
       let parameterTypes = signature.parameterTypes;
+      const paramsNodeList = prototype.functionTypeNode.parameters;
       for (let i = 0, k = parameterTypes.length; i < k; ++i) {
         let parameterType = parameterTypes[i];
         let parameterName = this.getParameterName(i);
+        let tupleIndex = -1;
+        if (this.isClosureFunction()) {
+          let closureVariables = prototype.closureVariables;
+          const paramNode = paramsNodeList[i];
+          if (closureVariables != null && closureVariables.has(paramNode)) {
+            trace(`closure variable: ${parameterName} in ${this.name}`);
+            tupleIndex = heapLocalsTypeBuilder.size;
+            heapLocalsTypeBuilder.push(parameterType, paramNode.range, ReportMode.Report);
+          }
+        }
         let local = new Local(
           parameterName,
           localIndex++,
           parameterType,
           this,
           new VariableLikeBase(Node.createIdentifierExpression(parameterName, Source.native.range), null, null),
-          new DeclarationBase(null, CommonFlags.None, Source.native.range, null)
+          new DeclarationBase(null, CommonFlags.None, Source.native.range, null),
+          tupleIndex
         );
         let scopedLocals = this.flow.scopedLocals;
         if (!scopedLocals) this.flow.scopedLocals = scopedLocals = new Map();
