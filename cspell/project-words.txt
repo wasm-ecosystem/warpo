@@ -121,6 +121,7 @@ popcntll
 popcountll
 powi
 precomp
+preds
 protozero
 q15mulr
 rdtsc
