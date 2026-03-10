@@ -1,12 +1,14 @@
 import { BaseVisitor } from "./visitor";
 import {
   BlockStatement,
+  DeclarationStatement,
   DoStatement,
   ForOfStatement,
   ForStatement,
   FunctionDeclaration,
   IdentifierExpression,
   IfStatement,
+  MethodDeclaration,
   Node,
   ParameterNode,
   SwitchCase,
@@ -55,10 +57,10 @@ class Scope {
 }
 
 class FunctionScope {
-  private node_: FunctionDeclaration;
+  private node_: DeclarationStatement;
   private isClosureFunction_: bool;
   private closureVariables_: Set<Node>;
-  get node(): FunctionDeclaration {
+  get node(): DeclarationStatement {
     return this.node_;
   }
   get isClosureFunction(): bool {
@@ -67,7 +69,7 @@ class FunctionScope {
   get closureVariables(): Set<Node> {
     return this.closureVariables_;
   }
-  constructor(node: FunctionDeclaration) {
+  constructor(node: DeclarationStatement) {
     this.node_ = node;
     this.isClosureFunction_ = false;
     this.closureVariables_ = new Set();
@@ -135,14 +137,14 @@ export class ClosureFunctionInfo {
 
 class FunctionScopeChain {
   private functionScopes_: FunctionScope[];
-  private closureFunctions_: Map<FunctionDeclaration, ClosureFunctionInfo>;
+  private closureFunctions_: Map<DeclarationStatement, ClosureFunctionInfo>;
 
-  constructor(closureFunctions: Map<FunctionDeclaration, ClosureFunctionInfo>) {
+  constructor(closureFunctions: Map<DeclarationStatement, ClosureFunctionInfo>) {
     this.closureFunctions_ = closureFunctions;
     this.functionScopes_ = new Array();
   }
 
-  enterFunction(node: FunctionDeclaration): void {
+  enterFunction(node: DeclarationStatement): void {
     const scope = new FunctionScope(node);
     this.functionScopes_.push(scope);
   }
@@ -225,21 +227,21 @@ class FunctionScopeChain {
 }
 
 export class ClosureScanner extends BaseVisitor {
-  private closureFunctions_: Map<FunctionDeclaration, ClosureFunctionInfo>;
+  private closureFunctions_: Map<DeclarationStatement, ClosureFunctionInfo>;
   private functionScopeChain_: FunctionScopeChain;
 
-  get closureFunctions(): Map<FunctionDeclaration, ClosureFunctionInfo> {
+  get closureFunctions(): Map<DeclarationStatement, ClosureFunctionInfo> {
     return this.closureFunctions_;
   }
 
   constructor() {
     super();
-    const closureFunctions = new Map<FunctionDeclaration, ClosureFunctionInfo>();
+    const closureFunctions = new Map<DeclarationStatement, ClosureFunctionInfo>();
     this.closureFunctions_ = closureFunctions;
     this.functionScopeChain_ = new FunctionScopeChain(closureFunctions);
   }
 
-  getClosureFunctionInfo(node: FunctionDeclaration): ClosureFunctionInfo | null {
+  getClosureFunctionInfo(node: DeclarationStatement): ClosureFunctionInfo | null {
     if (this.closureFunctions_.has(node)) {
       return this.closureFunctions_.get(node);
     } else {
@@ -247,7 +249,7 @@ export class ClosureScanner extends BaseVisitor {
     }
   }
 
-  getCapturedVariablesOfFunction(node: FunctionDeclaration): Set<Node> | null {
+  getCapturedVariablesOfFunction(node: DeclarationStatement): Set<Node> | null {
     const info = this.getClosureFunctionInfo(node);
     return info ? info.closureVariables : null;
   }
@@ -262,6 +264,12 @@ export class ClosureScanner extends BaseVisitor {
   visitFunctionDeclaration(node: FunctionDeclaration): void {
     this.functionScopeChain_.enterFunction(node);
     super.visitFunctionDeclaration(node);
+    this.functionScopeChain_.leaveFunction();
+  }
+
+  visitMethodDeclaration(node: MethodDeclaration): void {
+    this.functionScopeChain_.enterFunction(node);
+    super.visitMethodDeclaration(node);
     this.functionScopeChain_.leaveFunction();
   }
 
