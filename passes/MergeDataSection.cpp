@@ -392,8 +392,8 @@ TEST(MergeDataSectionPassTest, OverlapMergeOverwritesLaterBytes) {
   auto m = loadWat(R"(
     (module
       (memory $m0 1)
-      (data (i32.const 0) "ABCD")
-      (data (i32.const 2) "XY")
+      (data (i32.const 0) "AB_CD")
+      (data (i32.const 3) "XY")
     )
   )");
 
@@ -401,7 +401,7 @@ TEST(MergeDataSectionPassTest, OverlapMergeOverwritesLaterBytes) {
 
   ASSERT_EQ(m->dataSegments.size(), 1U);
   EXPECT_EQ(getConstOffset(*m->dataSegments[0]), 0U);
-  EXPECT_EQ(payload(*m->dataSegments[0]), "ABXY");
+  EXPECT_EQ(payload(*m->dataSegments[0]), "AB_XY");
 }
 
 TEST(MergeDataSectionPassTest, CrossGapPositiveBenefitMergesAndFillsZeros) {
