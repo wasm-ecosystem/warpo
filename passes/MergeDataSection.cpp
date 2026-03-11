@@ -1,8 +1,9 @@
-// Copyright (C) 2025 wasm-ecosystem
+// Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
 #include <algorithm>
 #include <cstdint>
+#include <fmt/base.h>
 #include <limits>
 #include <llvm/Support/LEB128.h>
 #include <memory>
@@ -11,7 +12,11 @@
 
 #include "MergeDataSection.hpp"
 #include "pass.h"
+#include "warpo/support/Debug.hpp"
+#include "warpo/support/Unreachable.hpp"
 #include "wasm.h"
+
+#define PASS_NAME "MergeDataSection"
 
 namespace warpo::passes {
 
@@ -24,25 +29,57 @@ enum class MergeDataSectionDecisionReason {
 };
 
 struct MergeDataSectionDecisionInput {
-  std::uint64_t a0;
-  std::uint64_t aSize;
-  std::uint64_t b0;
-  std::uint64_t bSize;
-  std::int64_t estimatedKeepSize;
-  std::int64_t estimatedMergeSize;
+  uint64_t a0;
+  uint64_t aSize;
+  uint64_t b0;
+  uint64_t bSize;
+  uint64_t estimatedKeepSize;
+  uint64_t estimatedMergeSize;
 };
 
 struct MergeDataSectionDecisionResult {
   bool shouldMerge;
   MergeDataSectionDecisionReason reason;
-  std::int64_t benefit;
+  int64_t benefit;
 };
+
+static char const *toString(MergeDataSectionDecisionReason const reason) {
+  switch (reason) {
+    case MergeDataSectionDecisionReason::InvalidOrder:
+      return "invalid-order";
+    case MergeDataSectionDecisionReason::Overlap:
+      return "overlap";
+    case MergeDataSectionDecisionReason::Adjacent:
+      return "adjacent";
+    case MergeDataSectionDecisionReason::CrossGapBenefitPositive:
+      return "cross-gap-benefit-positive";
+    case MergeDataSectionDecisionReason::CrossGapBenefitNonPositive:
+      return "cross-gap-benefit-non-positive";
+  }
+  WARPO_UNREACHABLE;
+}
+
+static char const *describeReason(MergeDataSectionDecisionReason const reason) {
+  switch (reason) {
+    case MergeDataSectionDecisionReason::InvalidOrder:
+      return "second block is before first block";
+    case MergeDataSectionDecisionReason::Overlap:
+      return "blocks overlap in memory, merged payload avoids duplicate active segment encoding";
+    case MergeDataSectionDecisionReason::Adjacent:
+      return "blocks are contiguous, merged payload keeps layout and removes one segment header";
+    case MergeDataSectionDecisionReason::CrossGapBenefitPositive:
+      return "cross-gap merge reduces estimated binary size more than keeping two segments";
+    case MergeDataSectionDecisionReason::CrossGapBenefitNonPositive:
+      return "cross-gap merge does not reduce estimated binary size";
+  }
+  WARPO_UNREACHABLE;
+}
 
 MergeDataSectionDecisionResult decideMergeDataSection(MergeDataSectionDecisionInput const &input) {
   if (input.b0 < input.a0)
     return {.shouldMerge = false, .reason = MergeDataSectionDecisionReason::InvalidOrder, .benefit = 0};
 
-  std::uint64_t const a1 = input.a0 + input.aSize;
+  uint64_t const a1 = input.a0 + input.aSize;
 
   if (input.b0 < a1)
     return {.shouldMerge = true, .reason = MergeDataSectionDecisionReason::Overlap, .benefit = 0};
@@ -50,7 +87,13 @@ MergeDataSectionDecisionResult decideMergeDataSection(MergeDataSectionDecisionIn
   if (input.b0 == a1)
     return {.shouldMerge = true, .reason = MergeDataSectionDecisionReason::Adjacent, .benefit = 0};
 
-  std::int64_t const benefit = input.estimatedKeepSize - input.estimatedMergeSize;
+  uint64_t const absDiff = input.estimatedKeepSize >= input.estimatedMergeSize
+                               ? input.estimatedKeepSize - input.estimatedMergeSize
+                               : input.estimatedMergeSize - input.estimatedKeepSize;
+  int64_t const boundedDiff = absDiff > static_cast<uint64_t>(std::numeric_limits<int64_t>::max())
+                                  ? std::numeric_limits<int64_t>::max()
+                                  : static_cast<int64_t>(absDiff);
+  int64_t const benefit = input.estimatedKeepSize >= input.estimatedMergeSize ? boundedDiff : -boundedDiff;
 
   if (benefit > 0)
     return {.shouldMerge = true, .reason = MergeDataSectionDecisionReason::CrossGapBenefitPositive, .benefit = benefit};
@@ -59,95 +102,60 @@ MergeDataSectionDecisionResult decideMergeDataSection(MergeDataSectionDecisionIn
       .shouldMerge = false, .reason = MergeDataSectionDecisionReason::CrossGapBenefitNonPositive, .benefit = benefit};
 }
 
-char const *toString(MergeDataSectionDecisionReason const reason) {
-  switch (reason) {
-  case MergeDataSectionDecisionReason::InvalidOrder:
-    return "invalid-order";
-  case MergeDataSectionDecisionReason::Overlap:
-    return "overlap";
-  case MergeDataSectionDecisionReason::Adjacent:
-    return "adjacent";
-  case MergeDataSectionDecisionReason::CrossGapBenefitPositive:
-    return "cross-gap-benefit-positive";
-  case MergeDataSectionDecisionReason::CrossGapBenefitNonPositive:
-    return "cross-gap-benefit-non-positive";
+static uint64_t ulebSize(uint64_t value) { return static_cast<uint64_t>(llvm::getULEB128Size(value)); }
+
+static uint64_t slebSize(int64_t value) { return static_cast<uint64_t>(llvm::getSLEB128Size(value)); }
+
+static uint32_t findMemoryIndex(wasm::Module const &m, wasm::Name const &name) {
+  for (uint32_t i = 0; i < m.memories.size(); ++i) {
+    if (m.memories[i]->name == name)
+      return i;
   }
-  return "unknown";
+  WARPO_UNREACHABLE;
 }
 
-namespace {
-std::optional<std::int64_t> toInt64(std::uint64_t const value) {
-  if (value > static_cast<std::uint64_t>(std::numeric_limits<std::int64_t>::max()))
-    return std::nullopt;
-  return static_cast<std::int64_t>(value);
-}
-
-std::uint64_t ulebSize(std::uint64_t value) { return static_cast<std::uint64_t>(llvm::getULEB128Size(value)); }
-
-std::uint64_t slebSize(std::int64_t value) { return static_cast<std::uint64_t>(llvm::getSLEB128Size(value)); }
-
-std::optional<std::uint32_t> findMemoryIndex(wasm::Module const &module, wasm::Name const &name) {
-  for (std::size_t i = 0; i < module.memories.size(); ++i) {
-    if (module.memories[i]->name == name) {
-      if (i > static_cast<std::size_t>(std::numeric_limits<std::uint32_t>::max()))
-        return std::nullopt;
-      return static_cast<std::uint32_t>(i);
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<std::uint64_t> estimateActiveSegmentBinarySize(wasm::Module const &module, wasm::Name const &memory,
-                                                             std::int64_t const offset,
-                                                             std::uint64_t const payloadSize) {
-  std::optional<std::uint32_t> const memoryIndex = findMemoryIndex(module, memory);
-  if (!memoryIndex.has_value())
-    return std::nullopt;
-
-  std::uint64_t size = 0;
+static uint64_t estimateActiveSegmentBinarySize(wasm::Module const &m, wasm::Name const &memory, uint64_t const offset,
+                                                uint64_t const payloadSize) {
+  uint32_t const memoryIndex = findMemoryIndex(m, memory);
+  uint64_t size = 0;
 
   // Flags: 0 when memory index is 0, 2 when explicit memory index is present.
-  size += ulebSize(*memoryIndex == 0U ? 0U : 2U);
-  if (*memoryIndex != 0U)
-    size += ulebSize(*memoryIndex);
+  size += ulebSize(memoryIndex == 0U ? 0U : 2U);
+  if (memoryIndex != 0U)
+    size += ulebSize(memoryIndex);
 
   // Offset expression: i32.const/i64.const opcode + immediate + end opcode.
   size += 1U;
-  size += slebSize(offset);
+  size += slebSize(static_cast<int64_t>(offset));
   size += 1U;
 
   size += ulebSize(payloadSize);
   return size + payloadSize;
 }
 
-std::optional<std::int64_t> estimateKeepBinarySize(wasm::Module const &module, wasm::DataSegment const &a,
-                                                   std::int64_t const a0, wasm::DataSegment const &b,
-                                                   std::int64_t const b0) {
-  std::optional<std::uint64_t> const aSize =
-      estimateActiveSegmentBinarySize(module, a.memory, a0, static_cast<std::uint64_t>(a.data.size()));
-  std::optional<std::uint64_t> const bSize =
-      estimateActiveSegmentBinarySize(module, b.memory, b0, static_cast<std::uint64_t>(b.data.size()));
-  if (!aSize.has_value() || !bSize.has_value())
-    return std::nullopt;
+static uint64_t estimateKeepBinarySize(wasm::Module const &m, wasm::DataSegment const &a, uint64_t const a0,
+                                       wasm::DataSegment const &b, uint64_t const b0) {
+  uint64_t const aSize = estimateActiveSegmentBinarySize(m, a.memory, a0, static_cast<uint64_t>(a.data.size()));
+  uint64_t const bSize = estimateActiveSegmentBinarySize(m, b.memory, b0, static_cast<uint64_t>(b.data.size()));
 
-  return toInt64(*aSize + *bSize);
+  // when aSize and bSize are both large, we definitely can merge them.
+  if (aSize > std::numeric_limits<uint64_t>::max() - bSize)
+    return std::numeric_limits<uint64_t>::max();
+  return aSize + bSize;
 }
 
-std::optional<std::int64_t> estimateMergedBinarySize(wasm::Module const &module, wasm::DataSegment const &a,
-                                                     std::int64_t const a0, std::uint64_t const mergedPayloadSize) {
-  std::optional<std::uint64_t> const size = estimateActiveSegmentBinarySize(module, a.memory, a0, mergedPayloadSize);
-  if (!size.has_value())
-    return std::nullopt;
-  return toInt64(*size);
+static uint64_t estimateMergedBinarySize(wasm::Module const &m, wasm::DataSegment const &a, uint64_t const a0,
+                                         uint64_t const mergedPayloadSize) {
+  return estimateActiveSegmentBinarySize(m, a.memory, a0, mergedPayloadSize);
 }
 
 struct SegmentInfo {
-  std::int64_t offset;
-  std::uint64_t size;
-  std::uint64_t end;
+  uint64_t offset;
+  uint64_t size;
+  uint64_t end;
 };
 
-std::optional<SegmentInfo> getSegmentInfo(wasm::DataSegment const &segment) {
+static std::optional<SegmentInfo> getSegmentInfo(wasm::DataSegment const &segment) {
   if (segment.isPassive)
     return std::nullopt;
 
@@ -155,21 +163,21 @@ std::optional<SegmentInfo> getSegmentInfo(wasm::DataSegment const &segment) {
   if (offset == nullptr || !offset->value.type.isInteger())
     return std::nullopt;
 
-  std::uint64_t const start = offset->value.getUnsigned();
-  std::uint64_t const dataSize = static_cast<std::uint64_t>(segment.data.size());
-  std::uint64_t const end = start + dataSize;
+  uint64_t const start = offset->value.getUnsigned();
+  uint64_t const dataSize = static_cast<uint64_t>(segment.data.size());
+  uint64_t const end = start + dataSize;
 
-  if (start > static_cast<std::uint64_t>(std::numeric_limits<std::int64_t>::max()))
+  if (start > static_cast<uint64_t>(std::numeric_limits<int64_t>::max()))
     return std::nullopt;
 
   return SegmentInfo{
-      .offset = static_cast<std::int64_t>(start),
+      .offset = start,
       .size = dataSize,
       .end = end,
   };
 }
 
-bool tryMergePair(wasm::Module &module, std::unique_ptr<wasm::DataSegment> &first, wasm::DataSegment const &second) {
+static bool tryMergePair(wasm::Module &m, std::unique_ptr<wasm::DataSegment> &first, wasm::DataSegment const &second) {
   if (first->memory != second.memory)
     return false;
 
@@ -181,28 +189,38 @@ bool tryMergePair(wasm::Module &module, std::unique_ptr<wasm::DataSegment> &firs
   if (b->offset < a->offset)
     return false;
 
-  std::uint64_t const offsetDiff = static_cast<std::uint64_t>(b->offset) - static_cast<std::uint64_t>(a->offset);
+  uint64_t const offsetDiff = b->offset - a->offset;
 
-  std::uint64_t const mergedEnd = std::max(a->end, b->end);
-  std::uint64_t const mergedSize = mergedEnd - static_cast<std::uint64_t>(a->offset);
+  uint64_t const mergedEnd = std::max(a->end, b->end);
+  uint64_t const mergedSize = mergedEnd - a->offset;
 
-  std::optional<std::int64_t> const estimatedKeepSize =
-      estimateKeepBinarySize(module, *first, a->offset, second, b->offset);
-  std::optional<std::int64_t> const estimatedMergeSize =
-      estimateMergedBinarySize(module, *first, a->offset, mergedSize);
-  if (!estimatedKeepSize.has_value() || !estimatedMergeSize.has_value())
-    return false;
+  uint64_t const estimatedKeepSize = estimateKeepBinarySize(m, *first, a->offset, second, b->offset);
+  uint64_t const estimatedMergeSize = estimateMergedBinarySize(m, *first, a->offset, mergedSize);
 
   MergeDataSectionDecisionResult const decision = decideMergeDataSection({
-      .a0 = static_cast<std::uint64_t>(a->offset),
+      .a0 = a->offset,
       .aSize = a->size,
-      .b0 = static_cast<std::uint64_t>(b->offset),
+      .b0 = b->offset,
       .bSize = b->size,
-      .estimatedKeepSize = *estimatedKeepSize,
-      .estimatedMergeSize = *estimatedMergeSize,
+      .estimatedKeepSize = estimatedKeepSize,
+      .estimatedMergeSize = estimatedMergeSize,
   });
   if (!decision.shouldMerge)
     return false;
+
+  if (support::isDebug(PASS_NAME)) {
+    fmt::println("[" PASS_NAME "] merged data block [{}..{}) + [{}..{}) reason={} because={} "
+                 "(keepSize={}, mergeSize={}, benefit={})",
+                 a->offset,
+                 a->end,
+                 b->offset,
+                 b->end,
+                 toString(decision.reason),
+                 describeReason(decision.reason),
+                 estimatedKeepSize,
+                 estimatedMergeSize,
+                 decision.benefit);
+  }
 
   std::vector<char> mergedData(mergedSize, 0);
   std::copy(first->data.begin(), first->data.end(), mergedData.begin());
@@ -214,34 +232,39 @@ bool tryMergePair(wasm::Module &module, std::unique_ptr<wasm::DataSegment> &firs
   return true;
 }
 
+static bool shouldSkipMergeDataSection(wasm::Module const &m) {
+  return m.features.hasMultiMemory() || m.features.hasExtendedConst();
+}
+
 class MergeDataSection : public wasm::Pass {
 public:
   std::unique_ptr<Pass> create() override { return std::make_unique<MergeDataSection>(); }
   bool modifiesBinaryenIR() override { return true; }
 
-  void run(wasm::Module *module) override {
-    if (module->dataSegments.size() < 2)
+  void run(wasm::Module *m) override {
+    if (shouldSkipMergeDataSection(*m))
+      return;
+
+    if (m->dataSegments.size() < 2)
       return;
 
     bool changed = false;
-    for (std::size_t i = 0; i + 1 < module->dataSegments.size();) {
-      std::unique_ptr<wasm::DataSegment> &first = module->dataSegments[i];
-      std::unique_ptr<wasm::DataSegment> const &second = module->dataSegments[i + 1];
-      if (!tryMergePair(*module, first, *second)) {
+    for (std::size_t i = 0; i + 1 < m->dataSegments.size();) {
+      std::unique_ptr<wasm::DataSegment> &first = m->dataSegments[i];
+      std::unique_ptr<wasm::DataSegment> const &second = m->dataSegments[i + 1];
+      if (!tryMergePair(*m, first, *second)) {
         i++;
         continue;
       }
 
-      module->dataSegments.erase(module->dataSegments.begin() + static_cast<std::ptrdiff_t>(i + 1));
+      m->dataSegments.erase(m->dataSegments.begin() + static_cast<std::ptrdiff_t>(i + 1));
       changed = true;
     }
 
     if (changed)
-      module->updateDataSegmentsMap();
+      m->updateDataSegmentsMap();
   }
 };
-
-} // namespace
 
 wasm::Pass *createMergeDataSectionPass() { return new MergeDataSection(); }
 
@@ -252,17 +275,15 @@ wasm::Pass *createMergeDataSectionPass() { return new MergeDataSection(); }
 #include <gtest/gtest.h>
 
 #include "Runner.hpp"
-#include "wasm-builder.h"
 
 namespace warpo::passes::ut {
-namespace {
 
-void runMergeDataSection(wasm::Module *const module) {
+static void runMergeDataSection(wasm::Module *const m) {
   std::unique_ptr<wasm::Pass> const pass{createMergeDataSectionPass()};
-  pass->run(module);
+  pass->run(m);
 }
 
-std::uint64_t getConstOffset(wasm::DataSegment const &segment) {
+static uint64_t getConstOffset(wasm::DataSegment const &segment) {
   wasm::Const const *const offset = segment.offset != nullptr ? segment.offset->dynCast<wasm::Const>() : nullptr;
   EXPECT_NE(offset, nullptr);
   if (offset == nullptr)
@@ -270,9 +291,7 @@ std::uint64_t getConstOffset(wasm::DataSegment const &segment) {
   return offset->value.getUnsigned();
 }
 
-std::string payload(wasm::DataSegment const &segment) { return {segment.data.begin(), segment.data.end()}; }
-
-} // namespace
+static std::string payload(wasm::DataSegment const &segment) { return {segment.data.begin(), segment.data.end()}; }
 
 TEST(MergeDataSectionDecisionTest, OverlapAlwaysMerge) {
   MergeDataSectionDecisionInput const input{
@@ -437,46 +456,6 @@ TEST(MergeDataSectionPassTest, CrossGapNonPositiveBenefitDoesNotMerge) {
   EXPECT_EQ(payload(*m->dataSegments[0]), "AB");
   EXPECT_EQ(getConstOffset(*m->dataSegments[1]), 40U);
   EXPECT_EQ(payload(*m->dataSegments[1]), "Z");
-}
-
-TEST(MergeDataSectionPassTest, DoesNotMergeDifferentMemory) {
-  auto m = loadWat(R"(
-    (module
-      (memory $m0 1)
-      (data (i32.const 0) "A")
-      (data (i32.const 1) "B")
-    )
-  )");
-  m->dataSegments[1]->memory = wasm::Name("other-memory");
-
-  runMergeDataSection(m.get());
-
-  ASSERT_EQ(m->dataSegments.size(), 2U);
-  EXPECT_EQ(m->dataSegments[0]->memory, wasm::Name("m0"));
-  EXPECT_EQ(m->dataSegments[1]->memory, wasm::Name("other-memory"));
-  EXPECT_EQ(payload(*m->dataSegments[0]), "A");
-  EXPECT_EQ(payload(*m->dataSegments[1]), "B");
-}
-
-TEST(MergeDataSectionPassTest, DoesNotMergeNonConstOffsets) {
-  auto m = loadWat(R"(
-    (module
-      (memory $m0 1)
-      (global $g i32 (i32.const 0))
-      (data (i32.const 0) "A")
-      (data (i32.const 1) "B")
-    )
-  )");
-  wasm::Builder builder{*m};
-  m->dataSegments[0]->offset = builder.makeGlobalGet("g", wasm::Type::i32);
-
-  runMergeDataSection(m.get());
-
-  ASSERT_EQ(m->dataSegments.size(), 2U);
-  EXPECT_FALSE(m->dataSegments[0]->offset->is<wasm::Const>());
-  EXPECT_EQ(getConstOffset(*m->dataSegments[1]), 1U);
-  EXPECT_EQ(payload(*m->dataSegments[0]), "A");
-  EXPECT_EQ(payload(*m->dataSegments[1]), "B");
 }
 
 } // namespace warpo::passes::ut
