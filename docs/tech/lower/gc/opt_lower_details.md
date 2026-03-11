@@ -667,7 +667,7 @@ Lower rooting markers into concrete memory stores and remove markers that were p
 
 - If a marker has no assigned stack slot, replace it with its underlying value expression.
 - If a marker has an assigned slot, emit a store to the shadow stack at that offset while preserving the original value as the expression result.
-- Ensure the rooted value is eval only once (introducing a temporary local only when expression is complex).
+- Ensure the rooted value is eval only once (introducing a temporary local only for expression with side effect).
 
 #### Example
 
