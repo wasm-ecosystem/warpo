@@ -29,9 +29,9 @@ enum class MergeDataSectionDecisionReason {
 };
 
 struct MergeDataSectionDecisionInput {
-  uint64_t a0;
+  uint64_t aOffset;
   uint64_t aSize;
-  uint64_t b0;
+  uint64_t bOffset;
   uint64_t bSize;
   uint64_t estimatedKeepSize;
   uint64_t estimatedMergeSize;
@@ -76,15 +76,15 @@ static char const *describeReason(MergeDataSectionDecisionReason const reason) {
 }
 
 MergeDataSectionDecisionResult decideMergeDataSection(MergeDataSectionDecisionInput const &input) {
-  if (input.b0 < input.a0)
+  if (input.bOffset < input.aOffset)
     return {.shouldMerge = false, .reason = MergeDataSectionDecisionReason::InvalidOrder, .benefit = 0};
 
-  uint64_t const a1 = input.a0 + input.aSize;
+  uint64_t const a1 = input.aOffset + input.aSize;
 
-  if (input.b0 < a1)
+  if (input.bOffset < a1)
     return {.shouldMerge = true, .reason = MergeDataSectionDecisionReason::Overlap, .benefit = 0};
 
-  if (input.b0 == a1)
+  if (input.bOffset == a1)
     return {.shouldMerge = true, .reason = MergeDataSectionDecisionReason::Adjacent, .benefit = 0};
 
   uint64_t const absDiff = input.estimatedKeepSize >= input.estimatedMergeSize
@@ -198,11 +198,11 @@ static std::vector<SegmentInfo> collectOrderedSegmentInfo(wasm::Module const &m)
   return info;
 }
 
-static bool tryMergePair(wasm::Module &m, std::unique_ptr<wasm::DataSegment> &first, wasm::DataSegment const &second) {
-  if (first->memory != second.memory)
+static bool tryMergePair(wasm::Module &m, wasm::DataSegment &first, wasm::DataSegment const &second) {
+  if (first.memory != second.memory)
     return false;
 
-  std::optional<SegmentInfo> const a = getSegmentInfo(*first);
+  std::optional<SegmentInfo> const a = getSegmentInfo(first);
   std::optional<SegmentInfo> const b = getSegmentInfo(second);
   if (!a.has_value() || !b.has_value())
     return false;
@@ -215,13 +215,13 @@ static bool tryMergePair(wasm::Module &m, std::unique_ptr<wasm::DataSegment> &fi
   uint64_t const mergedEnd = std::max(a->end, b->end);
   uint64_t const mergedSize = mergedEnd - a->offset;
 
-  uint64_t const estimatedKeepSize = estimateKeepBinarySize(m, *first, a->offset, second, b->offset);
-  uint64_t const estimatedMergeSize = estimateMergedBinarySize(m, *first, a->offset, mergedSize);
+  uint64_t const estimatedKeepSize = estimateKeepBinarySize(m, first, a->offset, second, b->offset);
+  uint64_t const estimatedMergeSize = estimateMergedBinarySize(m, first, a->offset, mergedSize);
 
   MergeDataSectionDecisionResult const decision = decideMergeDataSection({
-      .a0 = a->offset,
+      .aOffset = a->offset,
       .aSize = a->size,
-      .b0 = b->offset,
+      .bOffset = b->offset,
       .bSize = b->size,
       .estimatedKeepSize = estimatedKeepSize,
       .estimatedMergeSize = estimatedMergeSize,
@@ -237,12 +237,12 @@ static bool tryMergePair(wasm::Module &m, std::unique_ptr<wasm::DataSegment> &fi
   }
 
   std::vector<char> mergedData(mergedSize, 0);
-  std::copy(first->data.begin(), first->data.end(), mergedData.begin());
+  std::copy(first.data.begin(), first.data.end(), mergedData.begin());
 
   auto secondBegin = mergedData.begin() + static_cast<std::ptrdiff_t>(offsetDiff);
   std::copy(second.data.begin(), second.data.end(), secondBegin);
 
-  first->data = std::move(mergedData);
+  first.data = std::move(mergedData);
   return true;
 }
 
@@ -277,7 +277,7 @@ public:
 
       std::unique_ptr<wasm::DataSegment> &first = m->dataSegments[firstInfo.index];
       std::unique_ptr<wasm::DataSegment> const &second = m->dataSegments[secondInfo.index];
-      if (tryMergePair(*m, first, *second)) {
+      if (tryMergePair(*m, *first, *second)) {
         removed[secondInfo.index] = true;
         changed = true;
         ++secondCursor;
@@ -328,9 +328,9 @@ static std::string payload(wasm::DataSegment const &segment) { return {segment.d
 
 TEST(MergeDataSectionDecisionTest, OverlapAlwaysMerge) {
   MergeDataSectionDecisionInput const input{
-      .a0 = 100,
+      .aOffset = 100,
       .aSize = 10,
-      .b0 = 105,
+      .bOffset = 105,
       .bSize = 7,
       .estimatedKeepSize = 0,
       .estimatedMergeSize = 0,
@@ -345,9 +345,9 @@ TEST(MergeDataSectionDecisionTest, OverlapAlwaysMerge) {
 
 TEST(MergeDataSectionDecisionTest, AdjacentAlwaysMerge) {
   MergeDataSectionDecisionInput const input{
-      .a0 = 42,
+      .aOffset = 42,
       .aSize = 8,
-      .b0 = 50,
+      .bOffset = 50,
       .bSize = 3,
       .estimatedKeepSize = 0,
       .estimatedMergeSize = 0,
@@ -362,9 +362,9 @@ TEST(MergeDataSectionDecisionTest, AdjacentAlwaysMerge) {
 
 TEST(MergeDataSectionDecisionTest, CrossGapPositiveBenefitMerges) {
   MergeDataSectionDecisionInput const input{
-      .a0 = 0,
+      .aOffset = 0,
       .aSize = 4,
-      .b0 = 9,
+      .bOffset = 9,
       .bSize = 4,
       .estimatedKeepSize = 40,
       .estimatedMergeSize = 30,
@@ -379,17 +379,17 @@ TEST(MergeDataSectionDecisionTest, CrossGapPositiveBenefitMerges) {
 
 TEST(MergeDataSectionDecisionTest, CrossGapZeroOrNegativeBenefitDoesNotMerge) {
   MergeDataSectionDecisionInput const zeroBenefitInput{
-      .a0 = 0,
+      .aOffset = 0,
       .aSize = 4,
-      .b0 = 10,
+      .bOffset = 10,
       .bSize = 4,
       .estimatedKeepSize = 25,
       .estimatedMergeSize = 25,
   };
   MergeDataSectionDecisionInput const negativeBenefitInput{
-      .a0 = 0,
+      .aOffset = 0,
       .aSize = 4,
-      .b0 = 10,
+      .bOffset = 10,
       .bSize = 4,
       .estimatedKeepSize = 20,
       .estimatedMergeSize = 25,
@@ -409,9 +409,9 @@ TEST(MergeDataSectionDecisionTest, CrossGapZeroOrNegativeBenefitDoesNotMerge) {
 
 TEST(MergeDataSectionDecisionTest, InvalidOrderingDoesNotMerge) {
   MergeDataSectionDecisionInput const input{
-      .a0 = 100,
+      .aOffset = 100,
       .aSize = 5,
-      .b0 = 99,
+      .bOffset = 99,
       .bSize = 7,
       .estimatedKeepSize = 0,
       .estimatedMergeSize = 0,
