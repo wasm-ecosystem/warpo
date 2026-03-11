@@ -242,12 +242,47 @@ GC trigger points (`~lib/rt/*/__new`, `~lib/rt/*/__collect`) decide which functi
 
 #### Method
 
-Do a reverse reachability marking on the call graph:
+Key word: Taint Analysis
 
 - Start from known runtime GC trigger entrypoints (allocation / collection).
 - Mark all functions that can reach those entrypoints (transitively) as **non-leaf**.
 - The remaining functions are treated as **leaf** (cannot trigger GC through any call chain).
 - Emit this classification for later filtering passes to decide which call sites must be treated as potential GC points.
+
+Directed graph example (taint back-propagation view):
+
+```mermaid
+flowchart LR
+  A[f_alloc_wrapper]
+  B[f_user_api]
+  C[f_helper]
+  D[f_math_only]
+  E[f_string_util]
+  N[~lib/rt/__new]
+  M[~lib/rt/__collect]
+  T[(GC trigger set)]
+
+  B --> A
+  A --> N
+  C --> B
+  C --> M
+  D --> E
+  N --> T
+  M --> T
+  C --> D
+
+  classDef trigger fill:#f8b4b4,stroke:#b91c1c,color:#111111,stroke-width:2px;
+  classDef leaf fill:#bbf7d0,stroke:#166534,color:#111111,stroke-width:2px;
+  classDef nonleaf fill:#fde68a,stroke:#a16207,color:#111111,stroke-width:2px;
+
+  class N,M,T trigger;
+  class D,E leaf;
+  class A,B,C nonleaf;
+```
+
+- Red: GC trigger points.
+- Green: leaf functions (cannot reach any GC trigger point).
+- Yellow: non-leaf functions (can reach GC trigger points transitively).
 
 ## `ObjLivenessAnalyzer`
 
@@ -308,7 +343,7 @@ see [ObjLivenessAnalyzer example](examples/gc_opt_liveness_example.md).
 
 #### Rationale
 
-Many `Tmp SSA` values are just a “move/reference” of an existing value in `Local SSA` (for example, `__tmptostack(local.get ...)`). If we merge such `Tmp SSA` values into `Local SSA`, we reduce the SSA size and can further reduce the needed slot count.
+Many `Tmp SSA` values are just a “move/reference” of an existing value in `Local SSA` (for example, `__tmptostack(local.get ...)` when call function with parameters). If we merge such `Tmp SSA` values into `Local SSA`, we reduce the SSA size and can further reduce the needed slot count.
 
 #### Method
 
@@ -593,7 +628,7 @@ In the end we must guarantee: if a function has any shadow-stack store, it must 
 
 Compute the required frame size from the assigned stack positions, then ensure stack-pointer adjustments are correct on all paths.
 
-- If shrink-wrap hints are available and insertion is legal, insert “open shadow stack” near the first needed point and “close shadow stack” near the last needed point.
+- If shrink-wrap hints are available and inserter support to insert at this point (TODO: let inserter support all kinds of expression), insert "alloca shadow stack" near the first needed point and "free shadow stack" near the last needed point.
 - Otherwise, fall back to a conservative scheme that opens at function entry and closes on all return paths.
 
 #### Example
