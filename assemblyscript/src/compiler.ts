@@ -7458,13 +7458,13 @@ export class Compiler extends DiagnosticEmitter {
       }
       case NodeKind.This: {
         let thisType = sourceFunction.signature.thisType;
-        let thisLocalOptinonal = flow.lookupLocal(CommonNames.this_);
+        let thisLocalOptional = flow.lookupLocal(CommonNames.this_);
         if (!thisType) {
           let outerFlow = flow.outer;
           while (outerFlow) {
             thisType = outerFlow.targetFunction.signature.thisType;
             if (thisType) {
-              thisLocalOptinonal = assert(outerFlow.lookupLocal(CommonNames.this_));
+              thisLocalOptional = assert(outerFlow.lookupLocal(CommonNames.this_));
               break;
             }
             outerFlow = outerFlow.outer;
@@ -7485,7 +7485,7 @@ export class Compiler extends DiagnosticEmitter {
             this.checkFieldInitialization(<Class>parent, expression);
           }
         }
-        const thisLocal = assert(thisLocalOptinonal);
+        const thisLocal = assert(thisLocalOptional);
         flow.set(FlowFlags.AccessesThis);
         this.currentType = thisType;
         const thisIndex = thisLocal.index;
