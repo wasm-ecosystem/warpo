@@ -28,6 +28,8 @@ Please follow these instructions after modifying the code.
   Example command is `clang-tidy -p build <file>`.
 - After changing code, please use clang-format to ensure the format for C++ and prettier for ts/js.
 - Prefer to use east const style.
+- In C++ naming, do not use module keywords (such as `module`) as variable names.
+  - For variables of type `wasm::Module`, use `m` as the variable name.
 - Don't touch all files in `third_party` folder.
 - When there is only a simple statement (such as return or break) in the if block, do not add braces.
 
