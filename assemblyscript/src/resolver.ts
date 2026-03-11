@@ -2162,11 +2162,15 @@ export class Resolver extends DiagnosticEmitter {
     /** How to proceed with eventual diagnostics. */
     reportMode: ReportMode = ReportMode.Report
   ): Element | null {
-    let parent = ctxFlow.targetFunction.parent;
-    if (parent) {
-      this.currentThisExpression = null;
-      this.currentElementExpression = null;
-      return parent;
+    let outerFlow: Flow | null = ctxFlow;
+    while (outerFlow) {
+      let parent = outerFlow.targetFunction.parent;
+      if (parent && (parent.kind == ElementKind.Class || parent.kind == ElementKind.Interface)) {
+        this.currentThisExpression = null;
+        this.currentElementExpression = null;
+        return parent;
+      }
+      outerFlow = outerFlow.outer;
     }
     if (reportMode == ReportMode.Report) {
       this.error(DiagnosticCode._this_cannot_be_referenced_in_current_location, node.range);
