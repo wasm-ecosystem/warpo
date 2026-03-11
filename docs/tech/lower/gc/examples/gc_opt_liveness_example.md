@@ -4,7 +4,7 @@
 
 The following is a real, runnable example captured from Warpo debug output.
 
-Dummy module (`/tmp/gc_liveness_demo.ts`):
+Dummy module (`gc_liveness_demo.ts`):
 
 ```ts
 class Box {

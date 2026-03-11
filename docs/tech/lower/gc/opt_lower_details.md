@@ -46,9 +46,18 @@ Use a lightweight dataflow workflow. The goal is to separate "variable flow" fro
 
 1. Build the CFG for this exact shape
 
-- Basic blocks are enough as: `Entry`, `Then(flag=true)`, `Join`, `Exit`.
-- Control edges: `Entry -> Then`, `Entry -> Join`, `Then -> Join`, `Join -> Exit`.
-- Note: this version has a single `return` at the end (single exit block).
+```mermaid
+flowchart TD
+  Entry[Entry]
+  Then[Then flag=true]
+  Join[Join]
+  Exit[Exit]
+
+  Entry --> Then
+  Entry --> Join
+  Then --> Join
+  Join --> Exit
+```
 
 2. Label program points and classify facts
 
@@ -63,7 +72,7 @@ Use a lightweight dataflow workflow. The goal is to separate "variable flow" fro
   - `u3: use(a)`
 - Distinguish two layers:
   - Variable definitions (`a`, `b`, `c`)
-  - Allocation sites / abstract objects (`O1`, `O2`, `O3` from the three `new` calls)
+  - Allocation sites (`O1`, `O2`, `O3` from the three `new` calls)
 
 3. Run Reaching Definitions (forward) for variables
 
@@ -153,9 +162,9 @@ Before (immutable global routed through marker):
 
 ```wasm
 (func $.../_start
-  call $~lib/rt/__tmptostack
     global.get $.../a ;; immutable
-  global.get $.../a
+  call $~lib/rt/__tmptostack
+    global.get $.../a
   call $.../bar
 )
 ```
@@ -164,18 +173,18 @@ After (marker removed):
 
 ```wasm
 (func $.../_start
-  global.get $.../a
-  global.get $.../a
+    global.get $.../a
   call $.../bar
 )
 ```
 
-Mutable global: the store is preserved, and the function opens/closes the shadow stack.
+Mutable global: the store is preserved, and the function maintain shadow stack.
 
 Before (mutable global must be rooted across call):
 
 ```wasm
 (func $.../_start
+    global.get $.../a ;; mutable
   call $~lib/rt/__tmptostack
     global.get $.../a ;; mutable
   call $.../bar
@@ -286,7 +295,8 @@ Build an SSA-like model for “GC-object values that may need rooting”, then c
   - `call` and `call_indirect` (potential GC-relevant boundaries)
   - extra parent use sites of `__tmptostack(...)` values (including function-return use), so temporary rooted values also have observable liveness boundaries
 - `LivenessMap` is the per-function table that stores liveness snapshots for those expression sites (`passes/GC/Liveness.hpp`).
-  - Logical key: `(expr, pos, ssaIndex)` where `pos` is `Before` or `After`.
+  - Logical key: `(expr, pos, ssaIndex)` where `pos` is `Before` or `After` expression.
+    Expression execution is a status modifying stage, but it is not a point. We cannot say ssa is alive or not alive during this stage, we can only say ssa is alive or not alive before / after expression.
   - Logical value: `isLive` (`bool`).
 - Record this compact `before`/`after` representation (`LivenessMap`) for later filtering and slot assignment.
 
@@ -622,7 +632,7 @@ Lower rooting markers into concrete memory stores and remove markers that were p
 
 - If a marker has no assigned stack slot, replace it with its underlying value expression.
 - If a marker has an assigned slot, emit a store to the shadow stack at that offset while preserving the original value as the expression result.
-- Ensure the rooted value is evaluated exactly once (introducing a temporary only when required by expression complexity).
+- Ensure the rooted value is eval only once (introducing a temporary local only when expression is complex).
 
 #### Example
 
