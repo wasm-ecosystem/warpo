@@ -7490,16 +7490,15 @@ export class Compiler extends DiagnosticEmitter {
         this.currentType = thisType;
         const thisIndex = thisLocal.index;
         const thisTypeRef = thisType.toRef();
-        
+
         const closureInfo = sourceFunction.prototype.closureInfo;
         if (closureInfo && closureInfo.capturesThis) {
-          // if `this` is define in current function, it can be load from local variable. 
+          // if `this` is define in current function, it can be load from local variable.
           // Don't need to load from tuple.
           return module.local_get(thisIndex, thisTypeRef);
         } else {
           return this.makeLocalGet(thisLocal);
         }
-       
       }
       case NodeKind.Super: {
         if (sourceFunction.is(CommonFlags.Constructor)) {
