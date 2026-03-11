@@ -273,11 +273,11 @@ flowchart LR
 
   classDef trigger fill:#f8b4b4,stroke:#b91c1c,color:#111111,stroke-width:2px;
   classDef leaf fill:#bbf7d0,stroke:#166534,color:#111111,stroke-width:2px;
-  classDef nonleaf fill:#fde68a,stroke:#a16207,color:#111111,stroke-width:2px;
+  classDef non-leaf fill:#fde68a,stroke:#a16207,color:#111111,stroke-width:2px;
 
   class N,M,T trigger;
   class D,E leaf;
-  class A,B,C nonleaf;
+  class A,B,C non-leaf;
 ```
 
 - Red: GC trigger points.
