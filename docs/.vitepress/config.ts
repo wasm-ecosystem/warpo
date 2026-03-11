@@ -91,7 +91,14 @@ function getThemeConfig(language: "en" | "zh-CN"): DefaultTheme.Config {
           {
             text: "Lowering Passes",
             link: "/tech/lower/index",
-            items: listItems("tech/lower"),
+            items: [
+              ...listItems("tech/lower"),
+              {
+                text: "gc",
+                link: "/tech/lower/gc/index",
+                items: listItems("tech/lower/gc"),
+              },
+            ],
           },
           {
             text: "Builtin Transform",

@@ -1,9 +1,9 @@
 // Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-import type MarkdownIt from "markdown-it";
+import type { MarkdownRenderer } from "vitepress";
 
-export function overrideMermaidFence(md: MarkdownIt): void {
+export function overrideMermaidFence(md: MarkdownRenderer): void {
   const defaultFenceRenderer =
     md.renderer.rules.fence ?? ((tokens, idx, options, _env, self) => self.renderToken(tokens, idx, options));
 
