@@ -5,10 +5,10 @@ class FromMethod {
     let getValue = (): i32 => {
       return this.value;
     };
-    return getValue();
+    return getValue() + this.value;
   }
 }
 
 let m = new FromMethod();
 m.value = 10;
-assert(m.run() == 10);
+assert(m.run() == 20);

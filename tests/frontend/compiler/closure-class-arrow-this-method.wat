@@ -3220,18 +3220,25 @@
    )
   )
   (return
-   (call_indirect (type $6)
-    (block (result i32)
-     (call $~lib/rt/closure/setClosureEnv
-      (i32.load offset=4
+   (i32.add
+    (call_indirect (type $6)
+     (block (result i32)
+      (call $~lib/rt/closure/setClosureEnv
+       (i32.load offset=4
+        (local.get $getValue)
+       )
+      )
+      (global.set $~argumentsLength
+       (i32.const 0)
+      )
+      (i32.load
        (local.get $getValue)
       )
      )
-     (global.set $~argumentsLength
-      (i32.const 0)
-     )
-     (i32.load
-      (local.get $getValue)
+    )
+    (call $closure-class-arrow-this-method/FromMethod#get:value
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
      )
     )
    )
@@ -3294,7 +3301,7 @@
        )
       )
      )
-     (i32.const 10)
+     (i32.const 20)
     )
    )
    (then

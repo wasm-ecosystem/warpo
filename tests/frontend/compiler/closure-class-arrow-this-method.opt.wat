@@ -133,7 +133,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$86
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$87
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -157,7 +157,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$86
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$87
    end
    local.get $0
    i32.load offset=8
@@ -992,7 +992,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$91 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$92 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1008,7 +1008,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$91
+         br $__inlined_func$~lib/rt/itcms/step$92
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1047,7 +1047,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$91
+           br $__inlined_func$~lib/rt/itcms/step$92
           end
           local.get $2
           i32.load offset=4
@@ -1139,7 +1139,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$91
+        br $__inlined_func$~lib/rt/itcms/step$92
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1238,7 +1238,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$91
+        br $__inlined_func$~lib/rt/itcms/step$92
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1679,6 +1679,7 @@
  (func $~start
   (local $0 i32)
   (local $1 i32)
+  (local $2 i32)
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.sub
@@ -1737,22 +1738,23 @@
   global.get $closure-class-arrow-this-method/m
   i32.store align=1
   global.get $closure-class-arrow-this-method/m
-  local.set $0
+  local.set $1
   i32.const 16
   i32.const 5
   call $~lib/rt/itcms/__new
-  local.tee $1
+  local.tee $0
   i32.const 8
   i32.add
   i64.const 3
   i64.store
-  local.get $1
+  local.get $0
+  local.tee $2
   i32.const 0
   global.get $~lib/rt/closure/env
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
-  local.get $1
-  i32.const 4
   local.get $0
+  i32.const 4
+  local.get $1
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
   i32.const 8
   i32.const 6
@@ -1763,7 +1765,7 @@
   local.get $0
   i32.const 4
   i32.add
-  local.get $1
+  local.get $2
   i32.store
   local.get $0
   i32.load offset=4
@@ -1771,7 +1773,10 @@
   local.get $0
   i32.load
   call_indirect (type $5)
-  i32.const 10
+  local.get $1
+  i32.load
+  i32.add
+  i32.const 20
   i32.ne
   if
    i32.const 0

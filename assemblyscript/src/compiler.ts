@@ -7458,13 +7458,13 @@ export class Compiler extends DiagnosticEmitter {
       }
       case NodeKind.This: {
         let thisType = sourceFunction.signature.thisType;
-        let thisLocalOpt = flow.lookupLocal(CommonNames.this_);
+        let thisLocalOptinonal = flow.lookupLocal(CommonNames.this_);
         if (!thisType) {
           let outerFlow = flow.outer;
           while (outerFlow) {
             thisType = outerFlow.targetFunction.signature.thisType;
             if (thisType) {
-              thisLocalOpt = assert(outerFlow.lookupLocal(CommonNames.this_));
+              thisLocalOptinonal = assert(outerFlow.lookupLocal(CommonNames.this_));
               break;
             }
             outerFlow = outerFlow.outer;
@@ -7485,21 +7485,21 @@ export class Compiler extends DiagnosticEmitter {
             this.checkFieldInitialization(<Class>parent, expression);
           }
         }
-        const thisLocal = assert(thisLocalOpt);
+        const thisLocal = assert(thisLocalOptinonal);
         flow.set(FlowFlags.AccessesThis);
         this.currentType = thisType;
         const thisIndex = thisLocal.index;
         const thisTypeRef = thisType.toRef();
-        if (sourceFunction.isClosureFunction()) {
-          const closureInfo = assert(sourceFunction.prototype.closureInfo);
-          if (closureInfo.capturesThis) {
-            return module.local_get(thisIndex, thisTypeRef);
-          } else {
-            return this.makeLocalGet(thisLocal);
-          }
-        } else {
+        
+        const closureInfo = sourceFunction.prototype.closureInfo;
+        if (closureInfo && closureInfo.capturesThis) {
+          // if `this` is define in current function, it can be load from local variable. 
+          // Don't need to load from tuple.
           return module.local_get(thisIndex, thisTypeRef);
+        } else {
+          return this.makeLocalGet(thisLocal);
         }
+       
       }
       case NodeKind.Super: {
         if (sourceFunction.is(CommonFlags.Constructor)) {
