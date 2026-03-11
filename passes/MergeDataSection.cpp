@@ -45,32 +45,32 @@ struct MergeDataSectionDecisionResult {
 
 static char const *toString(MergeDataSectionDecisionReason const reason) {
   switch (reason) {
-    case MergeDataSectionDecisionReason::InvalidOrder:
-      return "invalid-order";
-    case MergeDataSectionDecisionReason::Overlap:
-      return "overlap";
-    case MergeDataSectionDecisionReason::Adjacent:
-      return "adjacent";
-    case MergeDataSectionDecisionReason::CrossGapBenefitPositive:
-      return "cross-gap-benefit-positive";
-    case MergeDataSectionDecisionReason::CrossGapBenefitNonPositive:
-      return "cross-gap-benefit-non-positive";
+  case MergeDataSectionDecisionReason::InvalidOrder:
+    return "invalid-order";
+  case MergeDataSectionDecisionReason::Overlap:
+    return "overlap";
+  case MergeDataSectionDecisionReason::Adjacent:
+    return "adjacent";
+  case MergeDataSectionDecisionReason::CrossGapBenefitPositive:
+    return "cross-gap-benefit-positive";
+  case MergeDataSectionDecisionReason::CrossGapBenefitNonPositive:
+    return "cross-gap-benefit-non-positive";
   }
   WARPO_UNREACHABLE;
 }
 
 static char const *describeReason(MergeDataSectionDecisionReason const reason) {
   switch (reason) {
-    case MergeDataSectionDecisionReason::InvalidOrder:
-      return "second block is before first block";
-    case MergeDataSectionDecisionReason::Overlap:
-      return "blocks overlap in memory, merged payload avoids duplicate active segment encoding";
-    case MergeDataSectionDecisionReason::Adjacent:
-      return "blocks are contiguous, merged payload keeps layout and removes one segment header";
-    case MergeDataSectionDecisionReason::CrossGapBenefitPositive:
-      return "cross-gap merge reduces estimated binary size more than keeping two segments";
-    case MergeDataSectionDecisionReason::CrossGapBenefitNonPositive:
-      return "cross-gap merge does not reduce estimated binary size";
+  case MergeDataSectionDecisionReason::InvalidOrder:
+    return "second block is before first block";
+  case MergeDataSectionDecisionReason::Overlap:
+    return "blocks overlap in memory, merged payload avoids duplicate active segment encoding";
+  case MergeDataSectionDecisionReason::Adjacent:
+    return "blocks are contiguous, merged payload keeps layout and removes one segment header";
+  case MergeDataSectionDecisionReason::CrossGapBenefitPositive:
+    return "cross-gap merge reduces estimated binary size more than keeping two segments";
+  case MergeDataSectionDecisionReason::CrossGapBenefitNonPositive:
+    return "cross-gap merge does not reduce estimated binary size";
   }
   WARPO_UNREACHABLE;
 }
@@ -150,12 +150,13 @@ static uint64_t estimateMergedBinarySize(wasm::Module const &m, wasm::DataSegmen
 }
 
 struct SegmentInfo {
+  std::size_t index;
   uint64_t offset;
   uint64_t size;
   uint64_t end;
 };
 
-static std::optional<SegmentInfo> getSegmentInfo(wasm::DataSegment const &segment) {
+static std::optional<SegmentInfo> getSegmentInfo(wasm::DataSegment const &segment, std::size_t const index = 0U) {
   if (segment.isPassive)
     return std::nullopt;
 
@@ -171,10 +172,30 @@ static std::optional<SegmentInfo> getSegmentInfo(wasm::DataSegment const &segmen
     return std::nullopt;
 
   return SegmentInfo{
+      .index = index,
       .offset = start,
       .size = dataSize,
       .end = end,
   };
+}
+
+static std::vector<SegmentInfo> collectOrderedSegmentInfo(wasm::Module const &m) {
+  std::vector<SegmentInfo> info;
+  info.reserve(m.dataSegments.size());
+
+  for (std::size_t i = 0; i < m.dataSegments.size(); ++i) {
+    std::optional<SegmentInfo> const segmentInfo = getSegmentInfo(*m.dataSegments[i], i);
+    if (segmentInfo.has_value())
+      info.push_back(*segmentInfo);
+  }
+
+  std::sort(info.begin(), info.end(), [](SegmentInfo const &a, SegmentInfo const &b) {
+    if (a.offset != b.offset)
+      return a.offset < b.offset;
+    return a.index < b.index;
+  });
+
+  return info;
 }
 
 static bool tryMergePair(wasm::Module &m, std::unique_ptr<wasm::DataSegment> &first, wasm::DataSegment const &second) {
@@ -211,15 +232,8 @@ static bool tryMergePair(wasm::Module &m, std::unique_ptr<wasm::DataSegment> &fi
   if (support::isDebug(PASS_NAME)) {
     fmt::println("[" PASS_NAME "] merged data block [{}..{}) + [{}..{}) reason={} because={} "
                  "(keepSize={}, mergeSize={}, benefit={})",
-                 a->offset,
-                 a->end,
-                 b->offset,
-                 b->end,
-                 toString(decision.reason),
-                 describeReason(decision.reason),
-                 estimatedKeepSize,
-                 estimatedMergeSize,
-                 decision.benefit);
+                 a->offset, a->end, b->offset, b->end, toString(decision.reason), describeReason(decision.reason),
+                 estimatedKeepSize, estimatedMergeSize, decision.benefit);
   }
 
   std::vector<char> mergedData(mergedSize, 0);
@@ -245,24 +259,43 @@ public:
     if (shouldSkipMergeDataSection(*m))
       return;
 
-    if (m->dataSegments.size() < 2)
+    if (m->dataSegments.size() <= 1)
+      return;
+
+    std::vector<SegmentInfo> const orderedSegments = collectOrderedSegmentInfo(*m);
+    if (orderedSegments.size() <= 1)
       return;
 
     bool changed = false;
-    for (std::size_t i = 0; i + 1 < m->dataSegments.size();) {
-      std::unique_ptr<wasm::DataSegment> &first = m->dataSegments[i];
-      std::unique_ptr<wasm::DataSegment> const &second = m->dataSegments[i + 1];
-      if (!tryMergePair(*m, first, *second)) {
-        i++;
+    std::vector<bool> removed(m->dataSegments.size(), false);
+
+    std::size_t firstCursor = 0;
+    std::size_t secondCursor = 1;
+    while (secondCursor < orderedSegments.size()) {
+      SegmentInfo const &firstInfo = orderedSegments[firstCursor];
+      SegmentInfo const &secondInfo = orderedSegments[secondCursor];
+
+      std::unique_ptr<wasm::DataSegment> &first = m->dataSegments[firstInfo.index];
+      std::unique_ptr<wasm::DataSegment> const &second = m->dataSegments[secondInfo.index];
+      if (tryMergePair(*m, first, *second)) {
+        removed[secondInfo.index] = true;
+        changed = true;
+        ++secondCursor;
         continue;
       }
 
-      m->dataSegments.erase(m->dataSegments.begin() + static_cast<std::ptrdiff_t>(i + 1));
-      changed = true;
+      firstCursor = secondCursor;
+      ++secondCursor;
     }
-
-    if (changed)
+    if (changed) {
+      for (std::size_t i = m->dataSegments.size(); i > 0; --i) {
+        std::size_t const index = i - 1;
+        if (!removed[index])
+          continue;
+        m->dataSegments.erase(m->dataSegments.begin() + static_cast<std::ptrdiff_t>(index));
+      }
       m->updateDataSegmentsMap();
+    }
   }
 };
 
@@ -456,6 +489,25 @@ TEST(MergeDataSectionPassTest, CrossGapNonPositiveBenefitDoesNotMerge) {
   EXPECT_EQ(payload(*m->dataSegments[0]), "AB");
   EXPECT_EQ(getConstOffset(*m->dataSegments[1]), 40U);
   EXPECT_EQ(payload(*m->dataSegments[1]), "Z");
+}
+
+TEST(MergeDataSectionPassTest, UnorderedOffsetsStillMergeBySortedScan) {
+  auto m = loadWat(R"(
+    (module
+      (memory $m0 1)
+      (data (i32.const 0) "A")
+      (data (i32.const 100) "X")
+      (data (i32.const 1) "B")
+    )
+  )");
+
+  runMergeDataSection(m.get());
+
+  ASSERT_EQ(m->dataSegments.size(), 2U);
+  EXPECT_EQ(getConstOffset(*m->dataSegments[0]), 0U);
+  EXPECT_EQ(payload(*m->dataSegments[0]), "AB");
+  EXPECT_EQ(getConstOffset(*m->dataSegments[1]), 100U);
+  EXPECT_EQ(payload(*m->dataSegments[1]), "X");
 }
 
 } // namespace warpo::passes::ut
