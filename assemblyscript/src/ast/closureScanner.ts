@@ -17,7 +17,6 @@ import {
   VariableDeclaration,
   WhileStatement,
 } from "../ast";
-import { CommonFlags } from "../common";
 
 class VariableMark {
   get node(): Node {
