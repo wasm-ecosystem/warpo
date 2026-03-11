@@ -3,7 +3,9 @@
  (type $1 (func))
  (type $2 (func (param i32) (result i32)))
  (type $3 (func (param i32 i32 i32 i32)))
+ (type $4 (func (param i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $~argumentsLength (mut i32) (i32.const 0))
@@ -138,11 +140,16 @@
       (i32.const 3)
       (i32.const 0)
       (i32.const 0)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 1)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (global.get $call-optional/optIndirect)
         )
+       )
+       (global.set $~argumentsLength
+        (i32.const 1)
+       )
+       (i32.load
         (global.get $call-optional/optIndirect)
        )
       )
@@ -167,11 +174,16 @@
       (i32.const 3)
       (i32.const 4)
       (i32.const 0)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 2)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (global.get $call-optional/optIndirect)
         )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
         (global.get $call-optional/optIndirect)
        )
       )
@@ -196,11 +208,16 @@
       (i32.const 3)
       (i32.const 4)
       (i32.const 5)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 3)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (global.get $call-optional/optIndirect)
         )
+       )
+       (global.set $~argumentsLength
+        (i32.const 3)
+       )
+       (i32.load
         (global.get $call-optional/optIndirect)
        )
       )

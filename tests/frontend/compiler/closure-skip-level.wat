@@ -2,18 +2,18 @@
  (type $0 (func (param i32) (result i32)))
  (type $1 (func (param i32 i32)))
  (type $2 (func (param i32)))
- (type $3 (func (result i32)))
- (type $4 (func (param i32 i32 i32)))
+ (type $3 (func (param i32 i32 i32)))
+ (type $4 (func (result i32)))
  (type $5 (func (param i32 i32) (result i32)))
  (type $6 (func))
  (type $7 (func (param i32 i32 i32 i32)))
  (type $8 (func (param i32 i32 i32) (result i32)))
  (type $9 (func (param i32 i32 i64) (result i32)))
  (type $10 (func (param i32 i64) (result i32)))
- (import "as-builtin-fn" "~lib/closure/getClosureEnv" (func $~lib/closure/getClosureEnv (result i32)))
- (import "as-builtin-fn" "~lib/closure/setClosureEnv" (func $~lib/closure/setClosureEnv (param i32)))
- (import "as-builtin-fn" "~lib/closure/getClosureEnvByLevel" (func $~lib/closure/getClosureEnvByLevel (param i32) (result i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
@@ -30,10 +30,10 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $~argumentsLength (mut i32) (i32.const 0))
- (global $~lib/rt/__rtti_base i32 (i32.const 416))
- (global $~lib/memory/__data_end i32 (i32.const 444))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33212))
- (global $~lib/memory/__heap_base i32 (i32.const 33212))
+ (global $~lib/rt/__rtti_base i32 (i32.const 480))
+ (global $~lib/memory/__data_end i32 (i32.const 508))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33276))
+ (global $~lib/memory/__heap_base i32 (i32.const 33276))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -43,7 +43,8 @@
  (data $5 (i32.const 268) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $8 (i32.const 416) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $8 (i32.const 412) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00*\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00s\00k\00i\00p\00-\00l\00e\00v\00e\00l\00.\00t\00s\00\00\00")
+ (data $9 (i32.const 480) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (table $0 3 3 funcref)
  (elem $0 (i32.const 1) $closure-skip-level/outer~middle~inner $closure-skip-level/outer~middle)
  (export "outer" (func $closure-skip-level/outer))
@@ -3108,14 +3109,14 @@
    )
    (i32.const 0)
    (call $~lib/rt/__tmptostack
-    (call $~lib/closure/getClosureEnv)
+    (call $~lib/rt/closure/getClosureEnv)
    )
   )
   (return
    (i32.add
     (call $~lib/tuple/SmallTuple#__get<i32>
      (call $~lib/rt/__tmptostack
-      (call $~lib/closure/getClosureEnvByLevel
+      (call $~lib/rt/closure/getClosureEnvByLevel
        (i32.const 2)
       )
      )
@@ -3166,7 +3167,7 @@
    )
    (i32.const 0)
    (call $~lib/rt/__tmptostack
-    (call $~lib/closure/getClosureEnv)
+    (call $~lib/rt/closure/getClosureEnv)
    )
   )
   (local.set $y
@@ -3185,12 +3186,17 @@
   )
   (return
    (i32.add
-    (call_indirect (type $3)
-     (i32.load
-      (block (result i32)
-       (global.set $~argumentsLength
-        (i32.const 0)
+    (call_indirect (type $4)
+     (block (result i32)
+      (call $~lib/rt/closure/setClosureEnv
+       (i32.load offset=4
+        (local.get $inner)
        )
+      )
+      (global.set $~argumentsLength
+       (i32.const 0)
+      )
+      (i32.load
        (local.get $inner)
       )
      )
@@ -3217,12 +3223,12 @@
    )
    (i32.const 0)
    (call $~lib/rt/__tmptostack
-    (call $~lib/closure/getClosureEnv)
+    (call $~lib/rt/closure/getClosureEnv)
    )
   )
   (call $~lib/tuple/SmallTuple#__set<i32>
    (call $~lib/rt/__tmptostack
-    (call $~lib/closure/getClosureEnvByLevel
+    (call $~lib/rt/closure/getClosureEnvByLevel
      (i32.const 0)
     )
    )
@@ -3241,15 +3247,73 @@
    )
   )
   (return
-   (call_indirect (type $3)
-    (i32.load
-     (block (result i32)
-      (global.set $~argumentsLength
-       (i32.const 0)
+   (call_indirect (type $4)
+    (block (result i32)
+     (call $~lib/rt/closure/setClosureEnv
+      (i32.load offset=4
+       (local.get $middle)
       )
+     )
+     (global.set $~argumentsLength
+      (i32.const 0)
+     )
+     (i32.load
       (local.get $middle)
      )
     )
+   )
+  )
+ )
+ (func $start:closure-skip-level
+  (global.set $~lib/rt/itcms/threshold
+   (i32.shr_u
+    (i32.sub
+     (i32.shl
+      (memory.size)
+      (i32.const 16)
+     )
+     (global.get $~lib/memory/__heap_base)
+    )
+    (i32.const 1)
+   )
+  )
+  (global.set $~lib/rt/itcms/pinSpace
+   (call $~lib/rt/itcms/initLazy
+    (i32.const 144)
+   )
+  )
+  (global.set $~lib/rt/itcms/toSpace
+   (call $~lib/rt/itcms/initLazy
+    (i32.const 176)
+   )
+  )
+  (global.set $~lib/rt/itcms/fromSpace
+   (call $~lib/rt/itcms/initLazy
+    (i32.const 320)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (block (result i32)
+      (call $~lib/rt/closure/setClosureEnv
+       (i32.const 0)
+      )
+      (call $closure-skip-level/outer
+       (i32.const 7)
+      )
+     )
+     (i32.const 117)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 432)
+     (i32.const 13)
+     (i32.const 1)
+    )
+    (unreachable)
    )
   )
  )
@@ -3449,32 +3513,6 @@
   (unreachable)
  )
  (func $~start
-  (global.set $~lib/rt/itcms/threshold
-   (i32.shr_u
-    (i32.sub
-     (i32.shl
-      (memory.size)
-      (i32.const 16)
-     )
-     (global.get $~lib/memory/__heap_base)
-    )
-    (i32.const 1)
-   )
-  )
-  (global.set $~lib/rt/itcms/pinSpace
-   (call $~lib/rt/itcms/initLazy
-    (i32.const 144)
-   )
-  )
-  (global.set $~lib/rt/itcms/toSpace
-   (call $~lib/rt/itcms/initLazy
-    (i32.const 176)
-   )
-  )
-  (global.set $~lib/rt/itcms/fromSpace
-   (call $~lib/rt/itcms/initLazy
-    (i32.const 320)
-   )
-  )
+  (call $start:closure-skip-level)
  )
 )

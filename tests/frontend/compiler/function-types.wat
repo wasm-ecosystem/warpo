@@ -6,7 +6,9 @@
  (type $4 (func (param f64 f64) (result f64)))
  (type $5 (func))
  (type $6 (func (param i32) (result i32)))
- (type $7 (func (param i32 i32 i32 i32)))
+ (type $7 (func (param i32)))
+ (type $8 (func (param i32 i32 i32 i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -70,11 +72,16 @@
    (call_indirect (type $0)
     (local.get $a)
     (local.get $b)
-    (i32.load
-     (block (result i32)
-      (global.set $~argumentsLength
-       (i32.const 2)
+    (block (result i32)
+     (call $~lib/rt/closure/setClosureEnv
+      (i32.load offset=4
+       (local.get $fn)
       )
+     )
+     (global.set $~argumentsLength
+      (i32.const 2)
+     )
+     (i32.load
       (local.get $fn)
      )
     )
@@ -82,16 +89,25 @@
   )
  )
  (func $function-types/doAdd<i32> (param $a i32) (param $b i32) (result i32)
+  (local $2 i32)
   (return
    (call_indirect (type $0)
     (local.get $a)
     (local.get $b)
-    (i32.load
-     (block (result i32)
-      (global.set $~argumentsLength
-       (i32.const 2)
-      )
+    (block (result i32)
+     (local.set $2
       (call $function-types/makeAdder<i32>)
+     )
+     (call $~lib/rt/closure/setClosureEnv
+      (i32.load offset=4
+       (local.get $2)
+      )
+     )
+     (global.set $~argumentsLength
+      (i32.const 2)
+     )
+     (i32.load
+      (local.get $2)
      )
     )
    )
@@ -110,11 +126,16 @@
    (call_indirect (type $0)
     (local.get $a)
     (local.get $b)
-    (i32.load
-     (block (result i32)
-      (global.set $~argumentsLength
-       (i32.const 2)
+    (block (result i32)
+     (call $~lib/rt/closure/setClosureEnv
+      (i32.load offset=4
+       (local.get $adder)
       )
+     )
+     (global.set $~argumentsLength
+      (i32.const 2)
+     )
+     (i32.load
       (local.get $adder)
      )
     )
@@ -149,6 +170,7 @@
   )
  )
  (func $start:function-types
+  (local $0 i32)
   (global.set $function-types/i32Adder
    (call $function-types/makeAdder<i32>)
   )
@@ -158,11 +180,16 @@
      (call_indirect (type $0)
       (i32.const 1)
       (i32.const 2)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 2)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (global.get $function-types/i32Adder)
         )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
         (global.get $function-types/i32Adder)
        )
       )
@@ -189,11 +216,16 @@
      (call_indirect (type $3)
       (i64.const 10)
       (i64.const 20)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 2)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (global.get $function-types/i64Adder)
         )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
         (global.get $function-types/i64Adder)
        )
       )
@@ -217,12 +249,20 @@
      (call_indirect (type $4)
       (f64.const 1.5)
       (f64.const 2.5)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 2)
-        )
+      (block (result i32)
+       (local.set $0
         (call $function-types/makeAdder<f64>)
+       )
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (local.get $0)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
+        (local.get $0)
        )
       )
      )

@@ -9,3 +9,5 @@ export function outer(a: i32): i32 {
   }
   return middle();
 }
+
+assert(outer(7) == 117);

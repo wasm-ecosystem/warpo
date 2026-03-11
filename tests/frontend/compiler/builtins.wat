@@ -4,9 +4,11 @@
  (type $2 (func))
  (type $3 (func (param i32 i32 i32) (result i32)))
  (type $4 (func (param i32 i32 i32 i32)))
- (type $5 (func (param i32 i32 i32 i32 i32) (result i32)))
- (type $6 (func (param i32 i32 f64 f64 f64 f64 f64)))
+ (type $5 (func (param i32)))
+ (type $6 (func (param i32 i32 i32 i32 i32) (result i32)))
+ (type $7 (func (param i32 i32 f64 f64 f64 f64 f64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
+ (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "env" "trace" (func $~lib/builtins/trace (param i32 i32 f64 f64 f64 f64 f64)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -3550,11 +3552,16 @@
      (call_indirect (type $1)
       (i32.const 1)
       (i32.const 2)
-      (i32.load
-       (block (result i32)
-        (global.set $~argumentsLength
-         (i32.const 2)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (global.get $builtins/fn)
         )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
         (global.get $builtins/fn)
        )
       )

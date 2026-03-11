@@ -146,9 +146,8 @@
  )
  (func $assert-nonnull/testFn (param $0 i32) (result i32)
   local.get $0
-  if (result i32)
-   local.get $0
-  else
+  i32.eqz
+  if
    i32.const 32
    i32.const 160
    i32.const 35
@@ -156,6 +155,7 @@
    call $~lib/builtins/abort
    unreachable
   end
+  local.get $0
   i32.load
   call_indirect (type $1)
  )
@@ -177,11 +177,9 @@
  (func $assert-nonnull/testRet (param $0 i32) (result i32)
   block $folding-inner0
    local.get $0
-   if (result i32)
-    local.get $0
-   else
-    br $folding-inner0
-   end
+   i32.eqz
+   br_if $folding-inner0
+   local.get $0
    i32.load
    call_indirect (type $1)
    local.tee $0
@@ -203,9 +201,8 @@
   local.get $0
   i32.load offset=4
   local.tee $0
-  if (result i32)
-   local.get $0
-  else
+  i32.eqz
+  if
    i32.const 32
    i32.const 160
    i32.const 48
@@ -213,6 +210,7 @@
    call $~lib/builtins/abort
    unreachable
   end
+  local.get $0
   i32.load
   call_indirect (type $1)
  )
@@ -221,11 +219,9 @@
    local.get $0
    i32.load offset=4
    local.tee $0
-   if (result i32)
-    local.get $0
-   else
-    br $folding-inner0
-   end
+   i32.eqz
+   br_if $folding-inner0
+   local.get $0
    i32.load
    call_indirect (type $1)
    local.tee $0
