@@ -2165,7 +2165,13 @@ export class Resolver extends DiagnosticEmitter {
     let outerFlow: Flow | null = ctxFlow;
     while (outerFlow) {
       let parent = outerFlow.targetFunction.parent;
-      if (parent && (parent.kind == ElementKind.Class || parent.kind == ElementKind.Interface)) {
+      if (
+        parent &&
+        (parent.kind == ElementKind.Class ||
+          parent.kind == ElementKind.Interface ||
+          parent.kind == ElementKind.ClassPrototype ||
+          parent.kind == ElementKind.InterfacePrototype)
+      ) {
         this.currentThisExpression = null;
         this.currentElementExpression = null;
         return parent;
