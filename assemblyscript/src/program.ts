@@ -4404,13 +4404,20 @@ export class Function extends TypedElement {
       let localIndex = 0;
       let thisType = signature.thisType;
       if (thisType) {
+        let tupleIndex = -1;
+        const thisDeclareBase = new DeclarationBase(null, CommonFlags.None, Source.native.range, null);
+        if (isClosureFunction && assert(prototype.closureInfo).capturesThis) {
+          tupleIndex = heapLocalsTypeBuilder.size;
+          heapLocalsTypeBuilder.push(thisType, thisDeclareBase.nameRange, ReportMode.Report);
+        }
         let local = new Local(
           CommonNames.this_,
           localIndex++,
           thisType,
           this,
           new VariableLikeBase(Node.createIdentifierExpression(CommonNames.this_, Source.native.range), null, null),
-          new DeclarationBase(null, CommonFlags.None, Source.native.range, null)
+          thisDeclareBase,
+          tupleIndex
         );
         let scopedLocals = this.flow.scopedLocals;
         if (!scopedLocals) this.flow.scopedLocals = scopedLocals = new Map();

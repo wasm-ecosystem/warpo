@@ -2116,12 +2116,14 @@ export class Compiler extends DiagnosticEmitter {
     let flow = this.currentFlow;
     const localForEnv = assert(flow.targetFunction.heapLocalsStorage);
 
+    let savedType = this.currentType;
     const expr = this.makeNewFunction(
       index,
       localForEnv,
       rtInstance.id,
       Node.createComment(CommentKind.Line, "", instance.nameRange)
     );
+    this.currentType = savedType;
 
     return expr;
   }
