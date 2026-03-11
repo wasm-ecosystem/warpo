@@ -112,7 +112,7 @@ import {
 import { Lookup } from "./lookup";
 import * as mir from "./mir";
 
-import { ClosureScanner } from "./ast/closureScanner";
+import { ClosureFunctionInfo, ClosureScanner } from "./ast/closureScanner";
 
 // Memory manager constants
 const AL_SIZE = 16;
@@ -1042,8 +1042,7 @@ export class Program extends DiagnosticEmitter {
         declaration.toFunctionLikeWithBodyBase(),
         CompiledNameNode.fromIdentifier(declaration.name),
         declaration.identifierAndSignatureRange,
-        null,
-        0
+        null
       ),
       null,
       signature
@@ -2466,6 +2465,7 @@ export class Program extends DiagnosticEmitter {
     if (declaration.range.source.isLibrary) {
       acceptedFlags |= DecoratorFlags.Builtin;
     }
+    let closureInfo = this.closureScanner.getClosureFunctionInfo(declaration);
     let element = new FunctionPrototype(
       propertyName.text,
       parent,
@@ -2474,8 +2474,7 @@ export class Program extends DiagnosticEmitter {
       declaration.toFunctionLikeWithBodyBase(),
       propertyName,
       declaration.identifierAndSignatureRange,
-      null,
-      0
+      closureInfo
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
       this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
@@ -2604,6 +2603,7 @@ export class Program extends DiagnosticEmitter {
         return;
       }
     }
+    let closureInfo = this.closureScanner.getClosureFunctionInfo(declaration);
     let element = new FunctionPrototype(
       isGetter ? mangleGetterName(name) : mangleSetterName(name),
       property.parent, // same level as property
@@ -2612,8 +2612,7 @@ export class Program extends DiagnosticEmitter {
       declaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
       declaration.identifierAndSignatureRange,
-      null,
-      0
+      closureInfo
     );
     if (isGetter) {
       property.getterPrototype = element;
@@ -2944,8 +2943,7 @@ export class Program extends DiagnosticEmitter {
       declaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(declaration.name),
       declaration.identifierAndSignatureRange,
-      closureInfo ? closureInfo.closureVariables : null,
-      closureInfo ? closureInfo.nestedLevel : 0
+      closureInfo
     );
     if (element.hasDecorator(DecoratorFlags.Builtin) && !builtinFunctions.has(element.internalName)) {
       this.error(DiagnosticCode.Not_implemented_0, declaration.range, `Builtin '${element.internalName}'`);
@@ -4207,8 +4205,7 @@ export class FunctionPrototype extends DeclaredElement {
       origin.functionLikeWithBodyBase,
       origin.identifierNode,
       origin.identifierAndSignatureRange,
-      origin.closureVariables,
-      origin.nestedLevel
+      origin.closureInfo
     );
   }
 
@@ -4224,8 +4221,7 @@ export class FunctionPrototype extends DeclaredElement {
     public readonly functionLikeWithBodyBase: FunctionLikeWithBodyBase,
     public readonly identifierNode: CompiledNameNode,
     public readonly identifierAndSignatureRange: Range,
-    public readonly closureVariables: Set<Node> | null,
-    public readonly nestedLevel: i32
+    public readonly closureInfo: ClosureFunctionInfo | null
   ) {
     super(
       ElementKind.FunctionPrototype,
@@ -4236,6 +4232,14 @@ export class FunctionPrototype extends DeclaredElement {
       declarationBase
     );
     this.decoratorFlags = decoratorFlags;
+  }
+
+  get closureVariables(): Set<Node> {
+    return assert(this.closureInfo).closureVariables;
+  }
+
+  get nestedLevel(): i32 {
+    return assert(this.closureInfo).nestedLevel;
   }
 
   /** Gets the associated type parameter nodes. */
@@ -4425,7 +4429,7 @@ export class Function extends TypedElement {
         if (isClosureFunction) {
           let closureVariables = prototype.closureVariables;
           const paramNode = paramsNodeList[i];
-          if (closureVariables != null && closureVariables.has(paramNode)) {
+          if (closureVariables.has(paramNode)) {
             tupleIndex = heapLocalsTypeBuilder.size;
             heapLocalsTypeBuilder.push(parameterType, paramNode.range, ReportMode.Report);
           }
@@ -4509,7 +4513,7 @@ export class Function extends TypedElement {
       const sourceFunction = this.flow.targetFunction;
       if (sourceFunction.isClosureFunction()) {
         let closureVariables = sourceFunction.prototype.closureVariables;
-        if (closureVariables != null && closureVariables.has(declaration)) {
+        if (closureVariables.has(declaration)) {
           const heapLocalsTypeBuilder = sourceFunction.heapLocalsTypeBuilder;
           tupleIndex = heapLocalsTypeBuilder.size;
           heapLocalsTypeBuilder.push(type, declarationBase.nameRange, ReportMode.Report);
@@ -4590,7 +4594,7 @@ export class Function extends TypedElement {
   }
 
   isClosureFunction(): bool {
-    return this.prototype.closureVariables != null;
+    return this.prototype.closureInfo != null;
   }
 }
 
@@ -4670,8 +4674,7 @@ export class PropertyPrototype extends DeclaredElement {
       getterDeclaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
       getterDeclaration.identifierAndSignatureRange,
-      null,
-      0
+      null
     );
     prototype.setterPrototype = new FunctionPrototype(
       mangleSetterName(name),
@@ -4681,8 +4684,7 @@ export class PropertyPrototype extends DeclaredElement {
       setterDeclaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(identifier),
       setterDeclaration.identifierAndSignatureRange,
-      null,
-      0
+      null
     );
     return prototype;
   }

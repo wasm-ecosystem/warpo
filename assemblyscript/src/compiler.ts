@@ -7251,8 +7251,7 @@ export class Compiler extends DiagnosticEmitter {
       declaration.toFunctionLikeWithBodyBase(),
       CompiledNameNode.fromIdentifier(declaration.name),
       declaration.identifierAndSignatureRange,
-      closureInfo ? closureInfo.closureVariables : null,
-      closureInfo ? closureInfo.nestedLevel : 0
+      closureInfo
     );
     let instance: Function | null;
     let contextualTypeArguments = cloneMap(flow.contextualTypeArguments);
@@ -7663,7 +7662,10 @@ export class Compiler extends DiagnosticEmitter {
   private getClosureVariableNestedLevel(local: Local): i32 {
     const localDeclaredFunction = local.getBelongingFunction();
     const currentFunction = this.currentFlow.targetFunction;
-    return currentFunction.prototype.nestedLevel - localDeclaredFunction.prototype.nestedLevel;
+    return (
+      assert(currentFunction.prototype.closureInfo).nestedLevel -
+      assert(localDeclaredFunction.prototype.closureInfo).nestedLevel
+    );
   }
 
   private makeGetHeapLocalTuple(local: Local): ExpressionRef {
@@ -8995,8 +8997,7 @@ export class Compiler extends DiagnosticEmitter {
             declaration.toFunctionLikeWithBodyBase(),
             CompiledNameNode.fromIdentifier(declaration.name),
             declaration.identifierAndSignatureRange,
-            null,
-            0
+            null
           ),
           null,
           Signature.create(this.program, [], classInstance.type, classInstance.type),
