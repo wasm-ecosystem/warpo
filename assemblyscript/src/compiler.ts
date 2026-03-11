@@ -1657,7 +1657,8 @@ export class Compiler extends DiagnosticEmitter {
       functionClosurePrepareStmts.push(saveParentEnvStmt);
       const heapLocalsTypeBuilder = instance.heapLocalsTypeBuilder;
 
-      for (let i = 0; i < numParameters; i++) {
+      const thisCount = signature.thisType ? 1 : 0;
+      for (let i = 0; i < thisCount + numParameters; i++) {
         const paramLocal = instance.localsByIndex[i];
         if (paramLocal.isClosureVariable()) {
           const tupleElementInfo = heapLocalsTypeBuilder.getTupleElementInfo(paramLocal.tupleIndex);
@@ -7457,6 +7458,18 @@ export class Compiler extends DiagnosticEmitter {
       }
       case NodeKind.This: {
         let thisType = sourceFunction.signature.thisType;
+        let thisLocalOptional = flow.lookupLocal(CommonNames.this_);
+        if (!thisType) {
+          let outerFlow = flow.outer;
+          while (outerFlow) {
+            thisType = outerFlow.targetFunction.signature.thisType;
+            if (thisType) {
+              thisLocalOptional = assert(outerFlow.lookupLocal(CommonNames.this_));
+              break;
+            }
+            outerFlow = outerFlow.outer;
+          }
+        }
         if (!thisType) {
           this.error(DiagnosticCode._this_cannot_be_referenced_in_current_location, expression.range);
           this.currentType = Type.usize32;
@@ -7472,10 +7485,20 @@ export class Compiler extends DiagnosticEmitter {
             this.checkFieldInitialization(<Class>parent, expression);
           }
         }
-        let thisLocal = assert(flow.lookupLocal(CommonNames.this_));
+        const thisLocal = assert(thisLocalOptional);
         flow.set(FlowFlags.AccessesThis);
         this.currentType = thisType;
-        return module.local_get(thisLocal.index, thisType.toRef());
+        const thisIndex = thisLocal.index;
+        const thisTypeRef = thisType.toRef();
+
+        const closureInfo = sourceFunction.prototype.closureInfo;
+        if (closureInfo && closureInfo.capturesThis) {
+          // if `this` is define in current function, it can be load from local variable.
+          // Don't need to load from tuple.
+          return module.local_get(thisIndex, thisTypeRef);
+        } else {
+          return this.makeLocalGet(thisLocal);
+        }
       }
       case NodeKind.Super: {
         if (sourceFunction.is(CommonFlags.Constructor)) {
