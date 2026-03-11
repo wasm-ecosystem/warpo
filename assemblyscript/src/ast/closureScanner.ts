@@ -83,7 +83,7 @@ class FunctionScope {
     this.node_ = node;
     this.isClosureFunction_ = false;
     this.closureVariables_ = new Set();
-    this.hasThis_ = node instanceof MethodDeclaration && node.is(CommonFlags.Instance); // static function doesn't have `this`
+    this.hasThis_ = node instanceof MethodDeclaration; // both instance and static methods have `this`
     this.capturesThis_ = false;
     this.scopeStack_ = new Array();
     this.scopeStack_.push(new Scope());

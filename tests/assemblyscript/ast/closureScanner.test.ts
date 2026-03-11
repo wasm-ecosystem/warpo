@@ -703,6 +703,35 @@ describe("closureScanner", () => {
     }
   });
 
+  test("closure: static method arrow captures this", () => {
+    const scanner = makeScanner(`
+      export class Foo {
+          static bar: i32 = 42;
+          static getBar(): i32 {
+              let inner = (): i32 => {
+                  return this.bar;
+              };
+              return inner();
+          }
+      }
+    `);
+    expect(scanner.closureFunctions.size).equal(2);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const name = getDeclarationName(func);
+      const info = scanner.closureFunctions.get(func);
+      if (name === "getBar") {
+        // Static method that has a captured-this arrow: it IS a closure owner
+        expect(info.capturesThis).equal(true);
+        expect(info.nestedLevel).equal(0);
+      } else {
+        // The arrow itself does not directly capture this (it's propagated to getBar)
+        expect(info.capturesThis).equal(false);
+        expect(info.nestedLevel).equal(1);
+      }
+    }
+  });
+
   test("no capturesThis: arrow function in standalone function", () => {
     const scanner = makeScanner(`
       export function outer(): i32 {
