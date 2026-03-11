@@ -1,19 +1,23 @@
 import { BaseVisitor } from "./visitor";
 import {
   BlockStatement,
+  DeclarationStatement,
   DoStatement,
   ForOfStatement,
   ForStatement,
   FunctionDeclaration,
   IdentifierExpression,
   IfStatement,
+  MethodDeclaration,
   Node,
   ParameterNode,
   SwitchCase,
+  ThisExpression,
   TypeDeclaration,
   VariableDeclaration,
   WhileStatement,
 } from "../ast";
+import { CommonFlags } from "../common";
 
 class VariableMark {
   get node(): Node {
@@ -55,10 +59,12 @@ class Scope {
 }
 
 class FunctionScope {
-  private node_: FunctionDeclaration;
+  private node_: DeclarationStatement;
   private isClosureFunction_: bool;
   private closureVariables_: Set<Node>;
-  get node(): FunctionDeclaration {
+  private hasThis_: bool;
+  private capturesThis_: bool;
+  get node(): DeclarationStatement {
     return this.node_;
   }
   get isClosureFunction(): bool {
@@ -67,10 +73,18 @@ class FunctionScope {
   get closureVariables(): Set<Node> {
     return this.closureVariables_;
   }
-  constructor(node: FunctionDeclaration) {
+  get hasThis(): bool {
+    return this.hasThis_;
+  }
+  get capturesThis(): bool {
+    return this.capturesThis_;
+  }
+  constructor(node: DeclarationStatement) {
     this.node_ = node;
     this.isClosureFunction_ = false;
     this.closureVariables_ = new Set();
+    this.hasThis_ = node instanceof MethodDeclaration && node.is(CommonFlags.Instance); // static function doesn't have `this`
+    this.capturesThis_ = false;
     this.scopeStack_ = new Array();
     this.scopeStack_.push(new Scope());
   }
@@ -126,23 +140,28 @@ class FunctionScope {
   markAsClosureFunction(): void {
     this.isClosureFunction_ = true;
   }
+
+  markCapturesThis(): void {
+    this.capturesThis_ = true;
+  }
 }
 
 export class ClosureFunctionInfo {
   closureVariables: Set<Node> = new Set();
+  capturesThis: bool = false;
   nestedLevel: i32 = 0;
 }
 
 class FunctionScopeChain {
   private functionScopes_: FunctionScope[];
-  private closureFunctions_: Map<FunctionDeclaration, ClosureFunctionInfo>;
+  private closureFunctions_: Map<DeclarationStatement, ClosureFunctionInfo>;
 
-  constructor(closureFunctions: Map<FunctionDeclaration, ClosureFunctionInfo>) {
+  constructor(closureFunctions: Map<DeclarationStatement, ClosureFunctionInfo>) {
     this.closureFunctions_ = closureFunctions;
     this.functionScopes_ = new Array();
   }
 
-  enterFunction(node: FunctionDeclaration): void {
+  enterFunction(node: DeclarationStatement): void {
     const scope = new FunctionScope(node);
     this.functionScopes_.push(scope);
   }
@@ -153,6 +172,7 @@ class FunctionScopeChain {
     if (lastFunctionScope.isClosureFunction) {
       const info = new ClosureFunctionInfo();
       info.closureVariables = lastFunctionScope.closureVariables;
+      info.capturesThis = lastFunctionScope.capturesThis;
       info.nestedLevel = this.functionScopes_.length - 1;
       this.closureFunctions_.set(lastFunctionScope.node, info);
     }
@@ -207,6 +227,23 @@ class FunctionScopeChain {
     return false;
   }
 
+  checkAndMarkCapturedThis(): bool {
+    if (this.functionScopes_.length === 0) return false;
+    const currentFunctionScope = this.functionScopes_[this.functionScopes_.length - 1];
+    if (currentFunctionScope.hasThis) return false;
+
+    if (this.functionScopes_.length < 2) return false;
+    for (let i = this.functionScopes_.length - 2; i >= 0; i--) {
+      const functionScope = this.functionScopes_[i];
+      if (functionScope.hasThis) {
+        functionScope.markCapturesThis();
+        this.markRangeAsClosureFunction(i);
+        return true;
+      }
+    }
+    return false;
+  }
+
   private markRangeAsClosureFunction(start: i32): void {
     for (let i = start; i < this.functionScopes_.length; i++) {
       this.functionScopes_[i].markAsClosureFunction();
@@ -225,21 +262,21 @@ class FunctionScopeChain {
 }
 
 export class ClosureScanner extends BaseVisitor {
-  private closureFunctions_: Map<FunctionDeclaration, ClosureFunctionInfo>;
+  private closureFunctions_: Map<DeclarationStatement, ClosureFunctionInfo>;
   private functionScopeChain_: FunctionScopeChain;
 
-  get closureFunctions(): Map<FunctionDeclaration, ClosureFunctionInfo> {
+  get closureFunctions(): Map<DeclarationStatement, ClosureFunctionInfo> {
     return this.closureFunctions_;
   }
 
   constructor() {
     super();
-    const closureFunctions = new Map<FunctionDeclaration, ClosureFunctionInfo>();
+    const closureFunctions = new Map<DeclarationStatement, ClosureFunctionInfo>();
     this.closureFunctions_ = closureFunctions;
     this.functionScopeChain_ = new FunctionScopeChain(closureFunctions);
   }
 
-  getClosureFunctionInfo(node: FunctionDeclaration): ClosureFunctionInfo | null {
+  getClosureFunctionInfo(node: DeclarationStatement): ClosureFunctionInfo | null {
     if (this.closureFunctions_.has(node)) {
       return this.closureFunctions_.get(node);
     } else {
@@ -247,7 +284,7 @@ export class ClosureScanner extends BaseVisitor {
     }
   }
 
-  getCapturedVariablesOfFunction(node: FunctionDeclaration): Set<Node> | null {
+  getCapturedVariablesOfFunction(node: DeclarationStatement): Set<Node> | null {
     const info = this.getClosureFunctionInfo(node);
     return info ? info.closureVariables : null;
   }
@@ -262,6 +299,12 @@ export class ClosureScanner extends BaseVisitor {
   visitFunctionDeclaration(node: FunctionDeclaration): void {
     this.functionScopeChain_.enterFunction(node);
     super.visitFunctionDeclaration(node);
+    this.functionScopeChain_.leaveFunction();
+  }
+
+  visitMethodDeclaration(node: MethodDeclaration): void {
+    this.functionScopeChain_.enterFunction(node);
+    super.visitMethodDeclaration(node);
     this.functionScopeChain_.leaveFunction();
   }
 
@@ -327,5 +370,9 @@ export class ClosureScanner extends BaseVisitor {
 
   visitIdentifierExpression(node: IdentifierExpression): void {
     this.functionScopeChain_.checkAndMarkClosureVariable(node.text);
+  }
+
+  visitThisExpression(node: ThisExpression): void {
+    this.functionScopeChain_.checkAndMarkCapturedThis();
   }
 }
