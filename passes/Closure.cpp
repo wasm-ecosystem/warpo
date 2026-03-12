@@ -373,11 +373,11 @@ TEST(ClosureLower, FFISetClosureEnvLowersToStore) {
   ASSERT_NE(callback, nullptr);
   ASSERT_TRUE(callback->body->is<wasm::Store>());
   wasm::Store *const store = callback->body->cast<wasm::Store>();
-  EXPECT_EQ(store->offset, 0u);
+  EXPECT_EQ(store->offset, 0U);
   EXPECT_TRUE(store->ptr->is<wasm::LocalGet>());
-  EXPECT_EQ(store->ptr->cast<wasm::LocalGet>()->index, 1u);
+  EXPECT_EQ(store->ptr->cast<wasm::LocalGet>()->index, 1U);
   EXPECT_TRUE(store->value->is<wasm::LocalGet>());
-  EXPECT_EQ(store->value->cast<wasm::LocalGet>()->index, 0u);
+  EXPECT_EQ(store->value->cast<wasm::LocalGet>()->index, 0U);
 }
 
 } // namespace
