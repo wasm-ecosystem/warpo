@@ -515,9 +515,8 @@ TEST(TestConfigFile, TestGetFileConfigImpl) {
     EXPECT_EQ(result->options.optimizeLevel, 3);    // Overridden by release target
     EXPECT_EQ(result->options.shrinkLevel, 2);      // From release target}
   }
-
-  // Test with config file and missing target
   {
+    // Test with config file and missing target
     EXPECT_THROW((void)createFileConfigImpl(configContent, "fast"), std::runtime_error);
   }
 }
