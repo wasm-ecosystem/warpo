@@ -1,7 +1,7 @@
 import expect from "expect";
 import { env } from "node:process";
 import { describe, it } from "node:test";
-import { main as warpoMain } from "../../../dist/warpo.js";
+import { main as warpoMain } from "../../../dist/warpo_internal.js";
 
 const __dirname = import.meta.dirname;
 const projectRoot = __dirname;
