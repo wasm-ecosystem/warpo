@@ -517,7 +517,9 @@ TEST(TestConfigFile, TestGetFileConfigImpl) {
   }
 
   // Test with config file and missing target
-  { EXPECT_THROW((void)createFileConfigImpl(configContent, "fast"), std::runtime_error); }
+  {
+    EXPECT_THROW((void)createFileConfigImpl(configContent, "fast"), std::runtime_error);
+  }
 }
 } // namespace warpo::common::ut
 
