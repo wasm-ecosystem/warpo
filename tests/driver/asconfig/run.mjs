@@ -6,7 +6,7 @@ import { instantiate } from "@assemblyscript/loader";
 import expect from "expect";
 import { diff } from "../diff.js";
 import asconfig from "./asconfig.json" with { type: "json" };
-import { main as warpoMain } from "../../../dist/warpo.js";
+import { main as warpoMain } from "../../../dist/warpo_internal.js";
 
 const __dirname = import.meta.dirname;
 const projectRoot = __dirname;
