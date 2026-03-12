@@ -17,7 +17,6 @@ WARPO 支持大多数常见 TS 特性：
 - `any`、`unknown`
 - prototype
 - iterator、for...of、for...in
-- closure
 - 类型推导
 
 ## WebAssembly 特性

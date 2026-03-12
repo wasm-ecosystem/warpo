@@ -2274,6 +2274,12 @@ export namespace f64x2 {
   export declare function relaxed_max(a: v128, b: v128): v128;
 }
 
+export declare namespace ffi {
+  // @ts-ignore: decorator
+  @external("as-builtin-fn", "set_ffi_closure_env")
+  export function set_ffi_closure_env(value: i32): void;
+}
+
 
 @final
 export abstract class i31 {

@@ -20,6 +20,8 @@ static constexpr const char *const kGetClosureEnv = "~lib/rt/closure/getClosureE
 static constexpr const char *const kSetClosureEnv = "~lib/rt/closure/setClosureEnv";
 static constexpr const char *const kGetClosureEnvByLevel = "~lib/rt/closure/getClosureEnvByLevel";
 
+static constexpr const char *const kSetFFIClosureEnv = "~lib/builtins/ffi.set_ffi_closure_env";
+
 static constexpr const char *const kClosureEnvGlobal = "~lib/rt/closure/env";
 
 static std::array<const char *const, 3> kClosureImportBases = {
@@ -32,21 +34,27 @@ namespace {
 
 class ClosureCallScanner : public wasm::WalkerPass<wasm::PostWalker<ClosureCallScanner>> {
 public:
-  ClosureCallScanner(std::atomic<bool> &hasGet, std::atomic<bool> &hasSet) : hasGet(hasGet), hasSet(hasSet) {}
+  ClosureCallScanner(std::atomic<bool> &hasGet, std::atomic<bool> &hasSet, std::atomic<bool> &hasFFISet)
+      : hasGet(hasGet), hasSet(hasSet), hasFFISet(hasFFISet) {}
 
   bool isFunctionParallel() override { return true; }
-  std::unique_ptr<wasm::Pass> create() override { return std::make_unique<ClosureCallScanner>(hasGet, hasSet); }
+  std::unique_ptr<wasm::Pass> create() override {
+    return std::make_unique<ClosureCallScanner>(hasGet, hasSet, hasFFISet);
+  }
 
   void visitCall(wasm::Call *curr) {
     if ((curr->target == kGetClosureEnv) || (curr->target == kGetClosureEnvByLevel))
       hasGet.store(true, std::memory_order_relaxed);
     else if (curr->target == kSetClosureEnv)
       hasSet.store(true, std::memory_order_relaxed);
+    else if (curr->target == kSetFFIClosureEnv)
+      hasFFISet.store(true, std::memory_order_relaxed);
   }
 
 private:
   std::atomic<bool> &hasGet;
   std::atomic<bool> &hasSet;
+  std::atomic<bool> &hasFFISet;
 };
 
 class SetClosureEnvRemover : public wasm::WalkerPass<wasm::PostWalker<SetClosureEnvRemover>> {
@@ -96,7 +104,23 @@ public:
       this->replaceCurrent(b.makeGlobalSet(kClosureEnvGlobal, curr->operands[0]));
     } else if (curr->target == kGetClosureEnvByLevel) {
       this->replaceCurrent(static_cast<Derived *>(this)->lowerGetClosureEnvByLevel(curr));
+    } else if (curr->target == kSetFFIClosureEnv) {
+      this->lowerSetFFIClosureEnv(curr);
     }
+  }
+
+  void lowerSetFFIClosureEnv(wasm::Call *const curr) {
+    wasm::Builder b{*this->getModule()};
+    VariableInfo::SubProgramLookupMap const &lookupMap = this->variableInfo->getSubProgramLookupMap();
+    auto const it = lookupMap.find(this->getFunction()->name.str);
+    assert(it != lookupMap.end() && "function not found in SubProgramLookupMap");
+    std::optional<uint32_t> heapIdx = it->second.getHeapVariableStorageLocalIndex();
+    assert(heapIdx.has_value() && "function has no heapVariableStorageLocalIndex");
+
+    wasm::Name const memoryName = this->getModule()->memories.front()->name;
+    wasm::Store *const storeExpr =
+        b.makeStore(4, 0, 4, b.makeLocalGet(*heapIdx, wasm::Type::i32), curr->operands[0], wasm::Type::i32, memoryName);
+    this->replaceCurrent(storeExpr);
   }
 
 protected:
@@ -146,14 +170,15 @@ template <typename ClosureEnvLowerT>
 void runClosureLower(wasm::PassRunner *parentRunner, wasm::Module *m, VariableInfo const *variableInfo) {
   std::atomic<bool> hasGet{false};
   std::atomic<bool> hasSet{false};
+  std::atomic<bool> hasFFISet{false};
   {
     wasm::PassRunner runner{parentRunner};
-    runner.add(std::make_unique<ClosureCallScanner>(hasGet, hasSet));
+    runner.add(std::make_unique<ClosureCallScanner>(hasGet, hasSet, hasFFISet));
     runner.run();
   }
 
   wasm::PassRunner runner{parentRunner};
-  if (hasGet && hasSet) {
+  if ((hasGet && hasSet) || hasFFISet) {
     runner.add(std::make_unique<ClosureEnvLowerT>(variableInfo));
   } else if (!hasGet && hasSet) {
     runner.add(std::make_unique<SetClosureEnvRemover>(kSetClosureEnv));
@@ -161,6 +186,8 @@ void runClosureLower(wasm::PassRunner *parentRunner, wasm::Module *m, VariableIn
   runner.run();
   for (const char *const name : kClosureImportBases)
     m->removeFunction(name);
+  if (m->getFunctionOrNull(kSetFFIClosureEnv))
+    m->removeFunction(kSetFFIClosureEnv);
 }
 
 } // namespace
@@ -316,6 +343,41 @@ TEST(ClosureLower, GetClosureEnvByLevelWithChainedLoads) {
   wasm::Load *const outerLoad = level2->body->cast<wasm::Load>();
   ASSERT_TRUE(outerLoad->ptr->is<wasm::Load>());
   EXPECT_TRUE(outerLoad->ptr->cast<wasm::Load>()->ptr->is<wasm::LocalGet>());
+}
+
+TEST(ClosureLower, FFISetClosureEnvLowersToStore) {
+  auto m = loadWat(R"(
+    (module
+      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
+      (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
+      (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (import "as-builtin-fn" "set_ffi_closure_env" (func $~lib/builtins/ffi.set_ffi_closure_env (param i32)))
+      (memory 1)
+      (func $callback (param i32) (local i32)
+        (call $~lib/builtins/ffi.set_ffi_closure_env (local.get 0))
+      )
+    )
+  )");
+
+  VariableInfo variableInfo;
+  variableInfo.addSubProgram("callback", "");
+  variableInfo.addHeapVariableStorageLocalIndex("callback", 1);
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{new closure::FastLower(&variableInfo)});
+  runner.run();
+
+  EXPECT_EQ(m->getFunctionOrNull("~lib/builtins/ffi.set_ffi_closure_env"), nullptr);
+
+  wasm::Function *const callback = m->getFunctionOrNull("callback");
+  ASSERT_NE(callback, nullptr);
+  ASSERT_TRUE(callback->body->is<wasm::Store>());
+  wasm::Store *const store = callback->body->cast<wasm::Store>();
+  EXPECT_EQ(store->offset, 0u);
+  EXPECT_TRUE(store->ptr->is<wasm::LocalGet>());
+  EXPECT_EQ(store->ptr->cast<wasm::LocalGet>()->index, 1u);
+  EXPECT_TRUE(store->value->is<wasm::LocalGet>());
+  EXPECT_EQ(store->value->cast<wasm::LocalGet>()->index, 0u);
 }
 
 } // namespace
