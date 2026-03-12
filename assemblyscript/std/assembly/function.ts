@@ -11,6 +11,11 @@ type auto = i32;
   }
 
   // @ts-ignore: this on getter
+  get env(this: T): usize {
+    return load<usize>(changetype<usize>(this), offsetof<Function<T>>("_env"));
+  }
+
+  // @ts-ignore: this on getter
   get name(this: T): string {
     return "";
   }

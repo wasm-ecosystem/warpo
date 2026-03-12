@@ -21,3 +21,5 @@ Comparison with AS, we support some new features.
 - [tuple](/en/using_language/details/tuple)
 
 <img src="/version/nightly.svg" alt="nightly" />
+
+- [closure](/en/using_language/details/closure)

@@ -1521,6 +1521,10 @@ declare namespace f64x2 {
   export function relaxed_max(a: v128, b: v128): v128;
 }
 
+declare namespace ffi {
+  function set_ffi_closure_env(value: i32): void;
+}
+
 declare abstract class i31 {
   /** Creates a new 31-bit integer reference from the specified integer value. */
   static new(value: i32): ref_i31;
@@ -2136,6 +2140,8 @@ declare class URIError extends Error {}
 interface Function {
   /** Function table index. */
   readonly index: u32;
+  /** Function closure environment pointer. */
+  readonly env: usize;
   /** Function name. Always an empty string. */
   readonly name: string;
   /** Number of expected parameters. */

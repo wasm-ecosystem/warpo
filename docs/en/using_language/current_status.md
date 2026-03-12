@@ -17,7 +17,6 @@ But also misses some features
 - `any`, `unknown`
 - prototype
 - iterator, for...of, for...in
-- closure
 - type deduction
 
 ## WebAssembly Features
