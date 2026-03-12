@@ -25,6 +25,7 @@
 #include <vector>
 #include <wasm-binary.h>
 
+#include "SnapshotDiff.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/passes/Runner.hpp"
 #include "warpo/support/FileSystem.hpp"
@@ -244,10 +245,11 @@ passes::Config getPassConfig() {
 
 [[nodiscard]] bool compareWithSnapshot(std::string const &actual, std::filesystem::path const &snapshotPath) {
   std::string const expected = readTextFile(snapshotPath);
-  bool const success = expected == actual;
-  if (!success)
-    std::cerr << actual << "\n";
-  return success;
+  if (expected == actual)
+    return true;
+
+  printCompactDiff(expected, actual);
+  return false;
 }
 
 [[nodiscard]] bool compareModuleWithSnapshot(wasm::Module &m, std::filesystem::path const &snapshotPath) {
