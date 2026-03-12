@@ -72,6 +72,8 @@ public:
           wasm::EffectAnalyzer::SideEffects::WritesLocal | wasm::EffectAnalyzer::SideEffects::Calls |
           wasm::EffectAnalyzer::SideEffects::Branches | wasm::EffectAnalyzer::SideEffects::WritesMemory |
           wasm::EffectAnalyzer::SideEffects::WritesGlobal;
+      static_cast<void>(load);
+      static_cast<void>(kForbiddenEffects);
       assert(!(wasm::EffectAnalyzer(getPassOptions(), *getModule(), load->ptr).getSideEffects() & kForbiddenEffects) &&
              "address of i32.load must not write locals/globals/memory, call, or branch");
       wasm::Builder b{*getModule()};
