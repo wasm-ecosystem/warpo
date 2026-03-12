@@ -38,8 +38,7 @@ void LeafFunctionFilter::runOnFunction(wasm::Module *m, wasm::Function *func) {
   private:
     void markCurrentLivedSSAValid(wasm::Expression *expr) {
       std::optional<Liveness> const l = livenessMap_.getLiveness(expr);
-      if (!l.has_value())
-        return;
+      assert(l.has_value());
       validSSAValue_ |= l->before();
       validSSAValue_ |= l->after();
     }

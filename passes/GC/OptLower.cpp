@@ -76,6 +76,8 @@ void OptLower::preprocess(wasm::PassRunner &runner) {
   runner.add("vacuum");
   // reduce basic blocks count to avoid to many fixed pointer calculations
   runner.add("merge-blocks");
+  // remove dead / unreachable expressions before GC liveness-based passes
+  runner.add("dce");
 }
 
 void OptLower::run(wasm::Module *m) {
