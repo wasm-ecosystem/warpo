@@ -43,7 +43,7 @@
  (data $10 (i32.const 512) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\02\t\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
- (export "main" (func $issues/408/main))
+ (export "main" (func $issues/warpo_408/main))
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
@@ -3118,7 +3118,7 @@
   )
   (local.get $this)
  )
- (func $issues/408/Node<i32>#set:elements (param $this i32) (param $elements i32)
+ (func $issues/warpo_408/Node<i32>#set:elements (param $this i32) (param $elements i32)
   (i32.store
    (local.get $this)
    (local.get $elements)
@@ -3129,9 +3129,9 @@
    (i32.const 0)
   )
  )
- (func $issues/408/Node<i32>#constructor (param $this i32) (param $capacity i32) (result i32)
+ (func $issues/warpo_408/Node<i32>#constructor (param $this i32) (param $capacity i32) (result i32)
   (nop)
-  (call $issues/408/Node<i32>#set:elements
+  (call $issues/warpo_408/Node<i32>#set:elements
    (call $~lib/rt/__tmptostack
     (local.get $this)
    )
@@ -3149,7 +3149,7 @@
   )
   (local.get $this)
  )
- (func $issues/408/Node<i32>#get:elements (param $this i32) (result i32)
+ (func $issues/warpo_408/Node<i32>#get:elements (param $this i32) (result i32)
   (i32.load
    (local.get $this)
   )
@@ -3446,10 +3446,10 @@
    (i32.const 0)
   )
  )
- (func $issues/408/Node<i32>#pop (param $this i32)
+ (func $issues/warpo_408/Node<i32>#pop (param $this i32)
   (call $~lib/array/Array<i32>#__set
    (call $~lib/rt/__tmptostack
-    (call $issues/408/Node<i32>#get:elements
+    (call $issues/warpo_408/Node<i32>#get:elements
      (call $~lib/rt/__tmptostack
       (local.get $this)
      )
@@ -3459,11 +3459,11 @@
    (unreachable)
   )
  )
- (func $issues/408/main
+ (func $issues/warpo_408/main
   (local $node i32)
   (local.set $node
    (call $~lib/rt/__localtostack
-    (call $issues/408/Node<i32>#constructor
+    (call $issues/warpo_408/Node<i32>#constructor
      (call $~lib/rt/__tmptostack
       (call $~lib/rt/itcms/__new
        (i32.const 4)
@@ -3474,7 +3474,7 @@
     )
    )
   )
-  (call $issues/408/Node<i32>#pop
+  (call $issues/warpo_408/Node<i32>#pop
    (call $~lib/rt/__tmptostack
     (local.get $node)
    )
@@ -3500,7 +3500,7 @@
  (func $~lib/object/Object~visit (param $0 i32) (param $1 i32)
   (nop)
  )
- (func $issues/408/Node<i32>~visit (param $0 i32) (param $1 i32)
+ (func $issues/warpo_408/Node<i32>~visit (param $0 i32) (param $1 i32)
   (local $2 i32)
   (call $~lib/object/Object~visit
    (local.get $0)
@@ -3545,12 +3545,12 @@
   (block $invalid
    (block $~lib/iterator/Iterable<i32>
     (block $~lib/array/Array<i32>
-     (block $issues/408/Node<i32>
+     (block $issues/warpo_408/Node<i32>
       (block $~lib/arraybuffer/ArrayBufferView
        (block $~lib/string/String
         (block $~lib/arraybuffer/ArrayBuffer
          (block $~lib/object/Object
-          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $issues/408/Node<i32> $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $invalid
+          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $issues/warpo_408/Node<i32> $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $invalid
            (i32.load
             (i32.sub
              (local.get $0)
@@ -3574,7 +3574,7 @@
       )
      )
      (block
-      (call $issues/408/Node<i32>~visit
+      (call $issues/warpo_408/Node<i32>~visit
        (local.get $0)
        (local.get $1)
       )

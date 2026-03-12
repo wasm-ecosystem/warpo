@@ -32,7 +32,7 @@
  (data $9.1 (i32.const 456) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
  (data $10 (i32.const 512) "\07\00\00\00 \00\00\00 \00\00\00 ")
  (data $10.1 (i32.const 536) "\02\t\00\00 ")
- (export "main" (func $issues/408/main))
+ (export "main" (func $issues/warpo_408/main))
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -1564,7 +1564,7 @@
    end
   end
  )
- (func $issues/408/main
+ (func $issues/warpo_408/main
   (local $0 i32)
   (local $1 i32)
   (local $2 i32)
