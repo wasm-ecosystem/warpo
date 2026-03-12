@@ -85,6 +85,8 @@ struct Config {
   bool exportRuntime = false;
   bool exportTable = false;
   std::optional<uint32_t> initialMemory;
+  std::optional<uint32_t> maximumMemory;
+  std::optional<uint32_t> lowMemoryLimit;
   uint32_t stackSize = 32768U;
   HostKind host = HostKind::None;
 

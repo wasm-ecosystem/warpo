@@ -176,6 +176,10 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
                                       config_.emitDebugLine ? WasmFFIBool::WASM_TRUE : WasmFFIBool::WASM_FALSE);
     if (config_.initialMemory.has_value())
       r.callExportedFunctionWithName<0>("setInitialMemory", option, *config_.initialMemory);
+    if (config_.lowMemoryLimit.has_value())
+      r.callExportedFunctionWithName<0>("setLowMemoryLimit", option, *config_.lowMemoryLimit);
+    else if (config_.maximumMemory.has_value())
+      r.callExportedFunctionWithName<0>("setMaximumMemory", option, *config_.maximumMemory);
 
     for (auto const &[useName, useValue] : config_.uses) {
       r.callExportedFunctionWithName<0>("addGlobalAlias", option, r.allocString(useName), r.allocString(useValue));

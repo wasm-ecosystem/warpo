@@ -49,6 +49,19 @@
           "type": "integer",
           "description": "Initial memory size for the WebAssembly module, in WebAssembly pages."
         },
+        "maximumMemory": {
+          "description": "Maximum memory limit with optional unit suffix. If smaller than one WebAssembly page, it is applied as lowMemoryLimit; otherwise it must be an exact multiple of one WebAssembly page and is converted to maximumMemory pages.",
+          "oneOf": [
+            {
+              "type": "integer",
+              "description": "Memory size in bytes."
+            },
+            {
+              "type": "string",
+              "description": "Memory size with unit suffix, e.g. 64KiB, 1MiB, 2MB, 3pages."
+            }
+          ]
+        },
         "stackSize": {
           "type": "integer",
           "description": "Stack size for the WebAssembly module, in bytes."

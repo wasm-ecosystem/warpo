@@ -5,13 +5,13 @@
 #include <cstdlib>
 #include <cstring>
 #include <fmt/base.h>
-#include <fmt/format.h>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "CompilerImpl.hpp"
 #include "warpo/common/ConfigProvider.hpp"
+#include "warpo/common/MaximumMemory.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/Color.hpp"
 #include "warpo/support/Opt.hpp"
@@ -40,6 +40,11 @@ static void applyJsonConfig(Config &config, const common::FileConfigOptions &jso
     config.exportTable = *jsonConfig.exportTable;
   if (jsonConfig.initialMemory)
     config.initialMemory = *jsonConfig.initialMemory;
+  if (jsonConfig.maximumMemory) {
+    common::MaximumMemory const parsed = common::MaximumMemory::parse(*jsonConfig.maximumMemory);
+    config.maximumMemory = parsed.toMaximumMemoryOption();
+    config.lowMemoryLimit = parsed.toLowMemoryLimitOption();
+  }
   if (jsonConfig.runtime)
     config.runtime = RuntimeUtils::fromString(*jsonConfig.runtime);
   if (jsonConfig.host)
@@ -65,6 +70,8 @@ Config Config::getDefault() {
       .exportRuntime = false,
       .exportTable = false,
       .initialMemory = std::nullopt,
+      .maximumMemory = std::nullopt,
+      .lowMemoryLimit = std::nullopt,
       .stackSize = 32768U,
       .host = HostKind::None,
 

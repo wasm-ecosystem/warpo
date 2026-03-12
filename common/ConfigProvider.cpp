@@ -68,6 +68,14 @@ cli::Opt<uint32_t> initialMemoryOption{
     [](argparse::Argument &arg) -> void { arg.help("Sets the initial memory size in pages.").nargs(1); },
 };
 
+cli::Opt<std::string> maximumMemoryOption{
+    cli::Category::Frontend,
+    "--maximumMemory",
+    [](argparse::Argument &arg) -> void {
+      arg.help("Sets the maximum memory limit with optional units (e.g. 64KiB, 1MiB, 2MB, 3pages).").nargs(1);
+    },
+};
+
 cli::Opt<uint32_t> stackSizeOption{
     cli::Category::Frontend,
     "--stackSize",
@@ -174,6 +182,8 @@ FileConfigOptions ConfigProvider::mergedFrontendOptions() {
     merged.exportTable = exportTableOption.get();
   if (initialMemoryOption.isSet())
     merged.initialMemory = initialMemoryOption.get();
+  if (maximumMemoryOption.isSet())
+    merged.maximumMemory = convertEmptyStringToNullOpt(maximumMemoryOption.get());
   if (stackSizeOption.isSet())
     merged.stackSize = stackSizeOption.get();
   if (runtimeOption.isSet())
