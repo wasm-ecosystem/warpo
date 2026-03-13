@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "ConfigFile.hpp"
+#include "warpo/common/MaximumMemory.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
 
@@ -69,9 +70,9 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
     if (jsonOptions.contains("maximumMemory")) {
       nlohmann::json const &maximumMemory = jsonOptions["maximumMemory"];
       if (maximumMemory.is_string())
-        config.maximumMemory = maximumMemory.get<std::string>();
+        config.maximumMemory = MaximumMemory::parse(maximumMemory.get<std::string>());
       else if (maximumMemory.is_number_integer())
-        config.maximumMemory = std::to_string(maximumMemory.get<int64_t>());
+        config.maximumMemory = MaximumMemory::parse(std::to_string(maximumMemory.get<int64_t>()));
       else
         throw std::runtime_error{"'maximumMemory' must be a string or integer"};
     }
@@ -266,7 +267,8 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   EXPECT_EQ(config.exportRuntime, true);
   EXPECT_EQ(config.exportTable, false);
   EXPECT_EQ(config.initialMemory, 65536);
-  EXPECT_EQ(config.maximumMemory, "96KiB");
+  ASSERT_TRUE(config.maximumMemory.has_value());
+  EXPECT_EQ(config.maximumMemory->toBytes(), 98304U);
   EXPECT_EQ(config.runtime, "instantiate");
   EXPECT_EQ(config.host, "none");
   EXPECT_EQ(config.optimizeLevel, 3);
@@ -291,7 +293,8 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   })";
   nlohmann::json const maximumMemoryAsIntegerJson = nlohmann::json::parse(maximumMemoryAsInteger);
   FileConfigOptions const maximumMemoryAsIntegerConfig = parseFileConfigOptions(maximumMemoryAsIntegerJson);
-  EXPECT_EQ(maximumMemoryAsIntegerConfig.maximumMemory, "131072");
+  ASSERT_TRUE(maximumMemoryAsIntegerConfig.maximumMemory.has_value());
+  EXPECT_EQ(maximumMemoryAsIntegerConfig.maximumMemory->toBytes(), 131072U);
 
   // Invalid maximumMemory type should throw
   std::string const invalidMaximumMemory = R"({
@@ -349,7 +352,7 @@ TEST(TestConfigFile, TestMergeFileConfigOptions) {
   baseConfig.project = "./base";
   baseConfig.exportStart = "base_start";
   baseConfig.exportRuntime = false;
-  baseConfig.maximumMemory = "2MiB";
+  baseConfig.maximumMemory = MaximumMemory::parse("2MiB");
   baseConfig.debug = true;
   baseConfig.optimizeLevel = 1;
 
@@ -358,7 +361,7 @@ TEST(TestConfigFile, TestMergeFileConfigOptions) {
   overrideConfig.project = "./override";
   overrideConfig.exportStart = "override_start";
   overrideConfig.exportTable = true;
-  overrideConfig.maximumMemory = "4MiB";
+  overrideConfig.maximumMemory = MaximumMemory::parse("4MiB");
   overrideConfig.optimizeLevel = 3;
   overrideConfig.shrinkLevel = 2;
 
@@ -370,10 +373,11 @@ TEST(TestConfigFile, TestMergeFileConfigOptions) {
   EXPECT_EQ(mergedConfig.exportStart, "override_start"); // Override takes precedence
   EXPECT_EQ(mergedConfig.exportRuntime, false);          // From base
   EXPECT_EQ(mergedConfig.exportTable, true);             // From override
-  EXPECT_EQ(mergedConfig.maximumMemory, "4MiB");         // Override takes precedence
-  EXPECT_EQ(mergedConfig.debug, true);                   // From base
-  EXPECT_EQ(mergedConfig.optimizeLevel, 3);              // Override takes precedence
-  EXPECT_EQ(mergedConfig.shrinkLevel, 2);                // From override
+  ASSERT_TRUE(mergedConfig.maximumMemory.has_value());
+  EXPECT_EQ(mergedConfig.maximumMemory->toBytes(), 4U * 1024U * 1024U); // Override takes precedence
+  EXPECT_EQ(mergedConfig.debug, true);                                  // From base
+  EXPECT_EQ(mergedConfig.optimizeLevel, 3);                             // Override takes precedence
+  EXPECT_EQ(mergedConfig.shrinkLevel, 2);                               // From override
 
   // Test merging with empty base
   FileConfigOptions const emptyBase;

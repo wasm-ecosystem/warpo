@@ -11,6 +11,7 @@
 
 #include "ConfigFile.hpp"
 #include "warpo/common/ConfigProvider.hpp"
+#include "warpo/common/MaximumMemory.hpp"
 #include "warpo/support/Opt.hpp"
 
 namespace warpo::common {
@@ -21,6 +22,12 @@ std::optional<std::string> convertEmptyStringToNullOpt(std::string const &str) {
   if (!str.empty())
     return str;
   return std::nullopt;
+}
+
+std::optional<MaximumMemory> parseMaximumMemoryOption(std::string const &rawValue) {
+  if (rawValue.empty())
+    return std::nullopt;
+  return MaximumMemory::parse(rawValue);
 }
 
 cli::Opt<std::vector<std::string>> entryPathsOption{
@@ -183,7 +190,7 @@ FileConfigOptions ConfigProvider::mergedFrontendOptions() {
   if (initialMemoryOption.isSet())
     merged.initialMemory = initialMemoryOption.get();
   if (maximumMemoryOption.isSet())
-    merged.maximumMemory = convertEmptyStringToNullOpt(maximumMemoryOption.get());
+    merged.maximumMemory = parseMaximumMemoryOption(maximumMemoryOption.get());
   if (stackSizeOption.isSet())
     merged.stackSize = stackSizeOption.get();
   if (runtimeOption.isSet())

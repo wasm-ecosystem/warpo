@@ -11,7 +11,6 @@
 
 #include "CompilerImpl.hpp"
 #include "warpo/common/ConfigProvider.hpp"
-#include "warpo/common/MaximumMemory.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/Color.hpp"
 #include "warpo/support/Opt.hpp"
@@ -41,9 +40,8 @@ static void applyJsonConfig(Config &config, const common::FileConfigOptions &jso
   if (jsonConfig.initialMemory)
     config.initialMemory = *jsonConfig.initialMemory;
   if (jsonConfig.maximumMemory) {
-    common::MaximumMemory const parsed = common::MaximumMemory::parse(*jsonConfig.maximumMemory);
-    config.maximumMemory = parsed.toMaximumMemoryOption();
-    config.lowMemoryLimit = parsed.toLowMemoryLimitOption();
+    config.maximumMemory = jsonConfig.maximumMemory->toMaximumMemoryOption();
+    config.lowMemoryLimit = jsonConfig.maximumMemory->toLowMemoryLimitOption();
   }
   if (jsonConfig.runtime)
     config.runtime = RuntimeUtils::fromString(*jsonConfig.runtime);
