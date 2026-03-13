@@ -11,7 +11,7 @@ WARPO 编译器使用名为 `asconfig.json` 的配置文件来控制构建流程
 
 ```json
 {
-	"$schema": "https://raw.githubusercontent.com/wasm-ecosystem/warpo/refs/tags/2.3.0-alpha-1/asconfig.schema.json",
+	"$schema": "./node_modules/warpo/asconfig.schema.json",
 	"entries": [ ... ],
 	"options": { ... },
 	"targets": { ... }

@@ -22,4 +22,5 @@ Comparison with AS, we support some new features.
 
 <img src="/version/nightly.svg" alt="nightly" />
 
+- [build and test with WARPO CLI](/en/using_compiler/build_and_test)
 - [closure](/en/using_language/details/closure)
