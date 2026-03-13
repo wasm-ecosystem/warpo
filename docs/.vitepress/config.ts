@@ -48,6 +48,10 @@ function getThemeConfig(language: "en" | "zh-CN"): DefaultTheme.Config {
         link: `/${language}/using_compiler/quick_start`,
         items: [
           {
+            text: "build and test",
+            link: `/${language}/using_compiler/build_and_test`,
+          },
+          {
             text: "manage build configurations",
             link: `/${language}/using_compiler/config`,
           },

@@ -21,3 +21,6 @@
 - [Tuple](/zh-CN/using_language/details/tuple)
 
 <img src="/version/nightly.svg" alt="nightly" />
+
+- [使用 WARPO CLI 进行构建与测试](/zh-CN/using_compiler/build_and_test)
+- [闭包函数](/zh-CN/using_language/details/closure)

@@ -11,7 +11,7 @@ The WARPO compiler uses a configuration file named `asconfig.json` to control th
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/wasm-ecosystem/warpo/refs/tags/2.3.0-alpha-1/asconfig.schema.json",
+  "$schema": "./node_modules/warpo/asconfig.schema.json",
   "entries": [ ... ],
   "options": { ... },
   "targets": { ... }

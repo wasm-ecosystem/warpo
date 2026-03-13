@@ -20,10 +20,19 @@ export function add(a: i32, b: i32): i32 {
 编译：
 
 ```bash
-node node_modules/.bin/warpo assembly/index.ts -o build/debug.wat
-node node_modules/.bin/warpo assembly/index.ts -o build/release.wasm --optimizeLevel 3 --shrinkLevel 2
-npx warpo assembly/index.ts -o build/debug.wat # 使用 npx 简化命令
-npx warpo -h # 查看更多 CLI 选项
+npx warpo build
+npx warpo build --target debug
+npx warpo build --target release
+npx warpo test
+npx warpo -h
+```
+
+关于最新的 CLI 工作流，可进一步参考 [使用 WARPO CLI 进行构建与测试](/zh-CN/using_compiler/build_and_test)。
+
+旧的直接调用方式仍然可用：
+
+```bash
+npx warpo assembly/index.ts -o build/debug.wat
 ```
 
 ## 调试构建

@@ -16,7 +16,7 @@ But also misses some features
   In standard libarary, script will crash in runtime when return value is undefined in TS, e.g. get from non-existed key in map.
 - `any`, `unknown`
 - prototype
-- iterator, for...of, for...in
+- for...in
 - type deduction
 
 ## WebAssembly Features
