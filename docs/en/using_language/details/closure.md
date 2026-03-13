@@ -39,6 +39,39 @@ class Counter {
 }
 ```
 
+## Current limitation: self-reference during initialization
+
+WARPO closures currently cannot reference a variable from inside the same variable's
+initializer expression.
+
+This pattern is not supported:
+
+```ts
+// Not supported: `stop` is referenced while `stop` is still being initialized.
+let stop = register((): void => {
+  stop();
+});
+```
+
+Use a two-phase pattern instead: declare first, assign later.
+
+```ts
+type StopFn = () => void;
+
+let stop: StopFn | null = null;
+
+const onEvent = (): void => {
+  if (stop) {
+    stop();
+  }
+};
+
+stop = register(onEvent);
+```
+
+Why this works: the closure captures a stable outer binding (`stop`), and the binding is
+assigned after the closure is created.
+
 ## Closure with FFI
 
 When passing a closure to a host function (e.g. `setTimeout`, `setInterval`), extra steps are required because the host cannot call closures directly. You need to:
@@ -86,6 +119,7 @@ export function setTimeout_wrapper(cb: () => void, timeout: i32): void {
 ### Repeating callback
 
 For callbacks that fire multiple times (e.g. `setInterval`), keep the environment pinned and unpin when you clear it.
+Also follow the two-phase pattern above: declare the handle variable first, then assign it.
 
 **WebAssembly side (`counter.ts`)**
 
