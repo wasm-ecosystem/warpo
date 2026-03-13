@@ -8,6 +8,7 @@
 #include <string>
 
 #include "warpo/common/Features.hpp"
+#include "warpo/common/MaximumMemory.hpp"
 #include "warpo/common/UsesOption.hpp"
 
 namespace warpo::common {
@@ -47,6 +48,12 @@ struct FileConfigOptions {
   /// - config: `options.initialMemory` / `targets.<name>.initialMemory`
   /// - cli: `--initialMemory <pages>`
   std::optional<uint32_t> initialMemory = std::nullopt;
+
+  /// Maximum memory limit with optional unit suffix.
+  /// - config: `options.maximumMemory` / `targets.<name>.maximumMemory`
+  /// - cli: `--maximumMemory <size>`
+  /// Examples: `65536`, `64KiB`, `1MiB`, `2MB`, `3pages`
+  std::optional<MaximumMemory> maximumMemory = std::nullopt;
 
   /// Stack size in bytes.
   /// - config: `options.stackSize` / `targets.<name>.stackSize`

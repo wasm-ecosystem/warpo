@@ -11,6 +11,7 @@
 
 #include "ConfigFile.hpp"
 #include "warpo/common/ConfigProvider.hpp"
+#include "warpo/common/MaximumMemory.hpp"
 #include "warpo/support/Opt.hpp"
 
 namespace warpo::common {
@@ -21,6 +22,12 @@ std::optional<std::string> convertEmptyStringToNullOpt(std::string const &str) {
   if (!str.empty())
     return str;
   return std::nullopt;
+}
+
+std::optional<MaximumMemory> parseMaximumMemoryOption(std::string const &rawValue) {
+  if (rawValue.empty())
+    return std::nullopt;
+  return MaximumMemory::parse(rawValue);
 }
 
 cli::Opt<std::vector<std::string>> entryPathsOption{
@@ -66,6 +73,14 @@ cli::Opt<uint32_t> initialMemoryOption{
     cli::Category::Frontend,
     "--initialMemory",
     [](argparse::Argument &arg) -> void { arg.help("Sets the initial memory size in pages.").nargs(1); },
+};
+
+cli::Opt<std::string> maximumMemoryOption{
+    cli::Category::Frontend,
+    "--maximumMemory",
+    [](argparse::Argument &arg) -> void {
+      arg.help("Sets the maximum memory limit with optional units (e.g. 64KiB, 1MiB, 2MB, 3pages).").nargs(1);
+    },
 };
 
 cli::Opt<uint32_t> stackSizeOption{
@@ -174,6 +189,8 @@ FileConfigOptions ConfigProvider::mergedFrontendOptions() {
     merged.exportTable = exportTableOption.get();
   if (initialMemoryOption.isSet())
     merged.initialMemory = initialMemoryOption.get();
+  if (maximumMemoryOption.isSet())
+    merged.maximumMemory = parseMaximumMemoryOption(maximumMemoryOption.get());
   if (stackSizeOption.isSet())
     merged.stackSize = stackSizeOption.get();
   if (runtimeOption.isSet())

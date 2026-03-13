@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <cstddef>
+#include <cstdint>
 #include <exception>
 #include <fmt/format.h>
 #include <map>
@@ -12,6 +13,7 @@
 #include <vector>
 
 #include "ConfigFile.hpp"
+#include "warpo/common/MaximumMemory.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Opt.hpp"
 
@@ -65,6 +67,15 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
       config.exportTable = jsonOptions["exportTable"].get<bool>();
     if (jsonOptions.contains("initialMemory"))
       config.initialMemory = jsonOptions["initialMemory"].get<uint32_t>();
+    if (jsonOptions.contains("maximumMemory")) {
+      nlohmann::json const &maximumMemory = jsonOptions["maximumMemory"];
+      if (maximumMemory.is_string())
+        config.maximumMemory = MaximumMemory::parse(maximumMemory.get<std::string>());
+      else if (maximumMemory.is_number_integer())
+        config.maximumMemory = MaximumMemory::parse(std::to_string(maximumMemory.get<int64_t>()));
+      else
+        throw std::runtime_error{"'maximumMemory' must be a string or integer"};
+    }
     if (jsonOptions.contains("stackSize"))
       config.stackSize = jsonOptions["stackSize"].get<uint32_t>();
     if (jsonOptions.contains("runtime"))
@@ -132,6 +143,8 @@ static FileConfigOptions mergeFileConfigOptions(FileConfigOptions const &baseCon
     result.exportTable = overrideConfig.exportTable;
   if (overrideConfig.initialMemory.has_value())
     result.initialMemory = overrideConfig.initialMemory;
+  if (overrideConfig.maximumMemory.has_value())
+    result.maximumMemory = overrideConfig.maximumMemory;
   if (overrideConfig.stackSize.has_value())
     result.stackSize = overrideConfig.stackSize;
   if (overrideConfig.runtime.has_value())
@@ -235,6 +248,7 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
     "exportRuntime": true,
     "exportTable": false,
     "initialMemory": 65536,
+    "maximumMemory": "96KiB",
     "runtime": "instantiate",
     "host": "none",
     "optimizeLevel": 3,
@@ -253,6 +267,8 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   EXPECT_EQ(config.exportRuntime, true);
   EXPECT_EQ(config.exportTable, false);
   EXPECT_EQ(config.initialMemory, 65536);
+  ASSERT_TRUE(config.maximumMemory.has_value());
+  EXPECT_EQ(config.maximumMemory->toBytes(), 98304U);
   EXPECT_EQ(config.runtime, "instantiate");
   EXPECT_EQ(config.host, "none");
   EXPECT_EQ(config.optimizeLevel, 3);
@@ -270,6 +286,22 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   ASSERT_TRUE(useArrayConfig.use.has_value());
   EXPECT_EQ(useArrayConfig.use->at("U1"), "10");
   EXPECT_EQ(useArrayConfig.use->at("U2"), "20");
+
+  // maximumMemory as integer is interpreted as bytes
+  std::string const maximumMemoryAsInteger = R"({
+    "maximumMemory": 131072
+  })";
+  nlohmann::json const maximumMemoryAsIntegerJson = nlohmann::json::parse(maximumMemoryAsInteger);
+  FileConfigOptions const maximumMemoryAsIntegerConfig = parseFileConfigOptions(maximumMemoryAsIntegerJson);
+  ASSERT_TRUE(maximumMemoryAsIntegerConfig.maximumMemory.has_value());
+  EXPECT_EQ(maximumMemoryAsIntegerConfig.maximumMemory->toBytes(), 131072U);
+
+  // Invalid maximumMemory type should throw
+  std::string const invalidMaximumMemory = R"({
+    "maximumMemory": true
+  })";
+  nlohmann::json const invalidMaximumMemoryJson = nlohmann::json::parse(invalidMaximumMemory);
+  EXPECT_THROW((void)parseFileConfigOptions(invalidMaximumMemoryJson), std::runtime_error);
 
   // Invalid `use` entry should throw
   std::string const invalidUseArrayJsonStr = R"({
@@ -292,6 +324,7 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   EXPECT_FALSE(partialConfig.project.has_value());
   EXPECT_FALSE(partialConfig.exportRuntime.has_value());
   EXPECT_FALSE(partialConfig.initialMemory.has_value());
+  EXPECT_FALSE(partialConfig.maximumMemory.has_value());
   EXPECT_FALSE(partialConfig.host.has_value());
 
   // Test empty JSON options
@@ -302,6 +335,7 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   EXPECT_FALSE(emptyConfig.exportRuntime.has_value());
   EXPECT_FALSE(emptyConfig.exportTable.has_value());
   EXPECT_FALSE(emptyConfig.initialMemory.has_value());
+  EXPECT_FALSE(emptyConfig.maximumMemory.has_value());
   EXPECT_FALSE(emptyConfig.runtime.has_value());
   EXPECT_FALSE(emptyConfig.host.has_value());
   EXPECT_FALSE(emptyConfig.optimizeLevel.has_value());
@@ -318,6 +352,7 @@ TEST(TestConfigFile, TestMergeFileConfigOptions) {
   baseConfig.project = "./base";
   baseConfig.exportStart = "base_start";
   baseConfig.exportRuntime = false;
+  baseConfig.maximumMemory = MaximumMemory::parse("2MiB");
   baseConfig.debug = true;
   baseConfig.optimizeLevel = 1;
 
@@ -326,6 +361,7 @@ TEST(TestConfigFile, TestMergeFileConfigOptions) {
   overrideConfig.project = "./override";
   overrideConfig.exportStart = "override_start";
   overrideConfig.exportTable = true;
+  overrideConfig.maximumMemory = MaximumMemory::parse("4MiB");
   overrideConfig.optimizeLevel = 3;
   overrideConfig.shrinkLevel = 2;
 
@@ -337,9 +373,11 @@ TEST(TestConfigFile, TestMergeFileConfigOptions) {
   EXPECT_EQ(mergedConfig.exportStart, "override_start"); // Override takes precedence
   EXPECT_EQ(mergedConfig.exportRuntime, false);          // From base
   EXPECT_EQ(mergedConfig.exportTable, true);             // From override
-  EXPECT_EQ(mergedConfig.debug, true);                   // From base
-  EXPECT_EQ(mergedConfig.optimizeLevel, 3);              // Override takes precedence
-  EXPECT_EQ(mergedConfig.shrinkLevel, 2);                // From override
+  ASSERT_TRUE(mergedConfig.maximumMemory.has_value());
+  EXPECT_EQ(mergedConfig.maximumMemory->toBytes(), 4U * 1024U * 1024U); // Override takes precedence
+  EXPECT_EQ(mergedConfig.debug, true);                                  // From base
+  EXPECT_EQ(mergedConfig.optimizeLevel, 3);                             // Override takes precedence
+  EXPECT_EQ(mergedConfig.shrinkLevel, 2);                               // From override
 
   // Test merging with empty base
   FileConfigOptions const emptyBase;
@@ -481,9 +519,8 @@ TEST(TestConfigFile, TestGetFileConfigImpl) {
     EXPECT_EQ(result->options.optimizeLevel, 3);    // Overridden by release target
     EXPECT_EQ(result->options.shrinkLevel, 2);      // From release target}
   }
-
-  // Test with config file and missing target
   {
+    // Test with config file and missing target
     EXPECT_THROW((void)createFileConfigImpl(configContent, "fast"), std::runtime_error);
   }
 }
