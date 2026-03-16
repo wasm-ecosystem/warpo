@@ -81,6 +81,40 @@ Options 用于控制构建过程与输出。它们可以全局设置（`options`
 warpo assembly/index.ts -o build/app.wasm --host wasi_snapshot_preview1
 ```
 
+### `initialMemory` 与 `maximumMemory`
+
+用于配置 WARPO 生成 WebAssembly 模块时的内存限制。
+
+- `initialMemory`：初始内存大小，单位是 WebAssembly page（每页 `64KiB`）。
+- `maximumMemory`：最大内存限制，支持可选单位后缀。
+
+`maximumMemory` 支持：
+
+- 整数：按字节（bytes）解释。
+- 带单位字符串，例如：`65536`、`64KiB`、`1MiB`、`2MB`、`3pages`。
+
+`maximumMemory` 的生效规则：
+
+- 若值小于一页（`65536` 字节），WARPO 会将其作为 `lowMemoryLimit`。
+- 若值大于等于一页，则必须是整页倍数，并以 page 数形式应用到 `maximumMemory`。
+
+`asconfig.json` 示例：
+
+```json
+{
+  "options": {
+    "initialMemory": 2,
+    "maximumMemory": "64MiB"
+  }
+}
+```
+
+等价 CLI 写法：
+
+```bash
+warpo assembly/index.ts -o build/app.wasm --initialMemory 2 --maximumMemory 64MiB
+```
+
 ## Targets
 
 Targets 允许你定义多个构建配置（例如 `debug`、`release`）。每个 target 都是一个带有独立 options 的对象，用于覆盖全局 options。

@@ -81,6 +81,40 @@ Or via CLI:
 warpo assembly/index.ts -o build/app.wasm --host wasi_snapshot_preview1
 ```
 
+### `initialMemory` and `maximumMemory`
+
+Configure the WebAssembly memory limits used by WARPO.
+
+- `initialMemory`: initial memory size in WebAssembly pages (`64KiB` per page).
+- `maximumMemory`: maximum memory limit with optional unit suffix.
+
+`maximumMemory` accepts:
+
+- an integer: interpreted as bytes.
+- a string with unit, for example: `65536`, `64KiB`, `1MiB`, `2MB`, `3pages`.
+
+How `maximumMemory` is applied:
+
+- if value is smaller than one page (`65536` bytes), WARPO applies it as `lowMemoryLimit`.
+- if value is one page or larger, it must be an exact multiple of one page and is applied as `maximumMemory` pages.
+
+Example in `asconfig.json`:
+
+```json
+{
+  "options": {
+    "initialMemory": 2,
+    "maximumMemory": "64MiB"
+  }
+}
+```
+
+Equivalent CLI options:
+
+```bash
+warpo assembly/index.ts -o build/app.wasm --initialMemory 2 --maximumMemory 64MiB
+```
+
 ## Targets
 
 Targets allow you to define multiple build configurations (e.g., `debug`, `release`). Each target is an object with its own options, overriding the global options.
