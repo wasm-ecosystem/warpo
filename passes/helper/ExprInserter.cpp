@@ -89,8 +89,18 @@ void ExprInserter::insertBefore(wasm::Builder &b, wasm::Expression *insertedExpr
 }
 
 bool ExprInserter::canInsertAfter(wasm::Expression *insertPosition) {
+  if (insertPosition->type == wasm::Type::none)
+    return true;
+  if (insertPosition->type != wasm::Type::unreachable)
+    return true;
+  fmt::println("[" PASS_NAME "] fn '{}', failed to insert after {}", func_->name.str, toString(insertPosition));
+  return false;
+}
+
+bool ExprInserter::canInsertAtEndOfBB(wasm::Expression *insertPosition) {
+  // When insert position is a terminator, we must insert before it to ensure this instruction is executed in current
+  // BB.
   if (isTerminator(insertPosition)) {
-    // special handler for terminator
     if (insertPosition->is<wasm::Unreachable>())
       return true;
     if (wasm::Return const *const expr = insertPosition->dynCast<wasm::Return>(); expr != nullptr) {
@@ -106,17 +116,36 @@ bool ExprInserter::canInsertAfter(wasm::Expression *insertPosition) {
       if (canInsertAfter(expr->value))
         return true;
     }
-  } else {
-    if (insertPosition->type == wasm::Type::none)
-      return true;
-    if (insertPosition->type != wasm::Type::unreachable)
-      return true;
   }
-  fmt::println("[" PASS_NAME "] fn '{}', failed to insert after {}", func_->name.str, toString(insertPosition));
-  return false;
+  return canInsertAfter(insertPosition);
 }
 
 void ExprInserter::insertAfter(wasm::Builder &b, wasm::Expression *insertedExpr, wasm::Expression **insertPositionPtr) {
+  assert(insertedExpr->type == wasm::Type::none);
+  wasm::Expression *const insertPosition = *insertPositionPtr;
+
+  wasm::Type const exprType = insertPosition->type;
+  if (exprType == wasm::Type::none) {
+    *insertPositionPtr = b.makeBlock({insertPosition, insertedExpr}, wasm::Type::none);
+    return;
+  }
+  if (exprType != wasm::Type::unreachable) {
+    wasm::Index const tmpLocal = wasm::Builder::addVar(func_, exprType);
+    *insertPositionPtr = b.makeBlock(
+        {
+            b.makeLocalSet(tmpLocal, insertPosition),
+            insertedExpr,
+            b.makeLocalGet(tmpLocal, exprType),
+        },
+        exprType);
+    return;
+  }
+
+  WARPO_UNREACHABLE;
+}
+
+void ExprInserter::insertAtEndOfBB(wasm::Builder &b, wasm::Expression *insertedExpr,
+                                   wasm::Expression **insertPositionPtr) {
   assert(insertedExpr->type == wasm::Type::none);
   wasm::Expression *const insertPosition = *insertPositionPtr;
 
@@ -142,25 +171,9 @@ void ExprInserter::insertAfter(wasm::Builder &b, wasm::Expression *insertedExpr,
       insertAfter(b, insertedExpr, &expr->value);
       return;
     }
-  } else {
-    wasm::Type const exprType = insertPosition->type;
-    if (exprType == wasm::Type::none) {
-      *insertPositionPtr = b.makeBlock({insertPosition, insertedExpr}, wasm::Type::none);
-      return;
-    }
-    if (exprType != wasm::Type::unreachable) {
-      wasm::Index const tmpLocal = wasm::Builder::addVar(func_, exprType);
-      *insertPositionPtr = b.makeBlock(
-          {
-              b.makeLocalSet(tmpLocal, insertPosition),
-              insertedExpr,
-              b.makeLocalGet(tmpLocal, exprType),
-          },
-          exprType);
-      return;
-    }
   }
-  WARPO_UNREACHABLE;
+
+  insertAfter(b, insertedExpr, insertPositionPtr);
 }
 
 } // namespace warpo::passes
@@ -335,8 +348,8 @@ TEST(ExprInserter, InsertAfterReturnWithoutValue) {
   std::unique_ptr<wasm::Function> f = wasm::Builder::makeFunction("test", wasm::Signature(), {}, insertPos);
   ExprInserter inserter{f.get()};
 
-  ASSERT_TRUE(inserter.canInsertAfter(insertPos));
-  inserter.insertAfter(b, b.makeNop(), findExprPointer(insertPos, f.get()));
+  ASSERT_TRUE(inserter.canInsertAtEndOfBB(insertPos));
+  inserter.insertAtEndOfBB(b, b.makeNop(), findExprPointer(insertPos, f.get()));
 
   ASSERT_TRUE(f->body->is<Block>());
   ASSERT_TRUE(f->body->cast<Block>()->list[0]->is<Nop>());
@@ -350,8 +363,8 @@ TEST(ExprInserter, InsertAfterReturnWithValue) {
   std::unique_ptr<wasm::Function> f = wasm::Builder::makeFunction("test", wasm::Signature(), {}, insertPos);
   ExprInserter inserter{f.get()};
 
-  ASSERT_TRUE(inserter.canInsertAfter(insertPos));
-  inserter.insertAfter(b, b.makeNop(), findExprPointer(insertPos, f.get()));
+  ASSERT_TRUE(inserter.canInsertAtEndOfBB(insertPos));
+  inserter.insertAtEndOfBB(b, b.makeNop(), findExprPointer(insertPos, f.get()));
 
   ASSERT_EQ(f->body, insertPos);
   ASSERT_TRUE(f->body->cast<Return>()->value->is<Block>());
@@ -368,8 +381,8 @@ TEST(ExprInserter, InsertAfterBrWithoutValue) {
   std::unique_ptr<wasm::Function> f = wasm::Builder::makeFunction("test", wasm::Signature(), {}, insertPos);
   ExprInserter inserter{f.get()};
 
-  ASSERT_TRUE(inserter.canInsertAfter(insertPos));
-  inserter.insertAfter(b, b.makeNop(), findExprPointer(insertPos, f.get()));
+  ASSERT_TRUE(inserter.canInsertAtEndOfBB(insertPos));
+  inserter.insertAtEndOfBB(b, b.makeNop(), findExprPointer(insertPos, f.get()));
 
   ASSERT_TRUE(f->body->is<Block>());
   ASSERT_TRUE(f->body->cast<Block>()->list[0]->is<Nop>());
@@ -383,8 +396,8 @@ TEST(ExprInserter, InsertAfterBrWithValue) {
   std::unique_ptr<wasm::Function> f = wasm::Builder::makeFunction("test", wasm::Signature(), {}, insertPos);
   ExprInserter inserter{f.get()};
 
-  ASSERT_TRUE(inserter.canInsertAfter(insertPos));
-  inserter.insertAfter(b, b.makeNop(), findExprPointer(insertPos, f.get()));
+  ASSERT_TRUE(inserter.canInsertAtEndOfBB(insertPos));
+  inserter.insertAtEndOfBB(b, b.makeNop(), findExprPointer(insertPos, f.get()));
 
   ASSERT_EQ(f->body, insertPos);
   ASSERT_TRUE(f->body->cast<Break>()->value->is<Block>());
@@ -392,6 +405,16 @@ TEST(ExprInserter, InsertAfterBrWithValue) {
   ASSERT_TRUE(f->body->cast<Break>()->value->cast<Block>()->list[0]->cast<LocalSet>()->value->is<Const>());
   ASSERT_TRUE(f->body->cast<Break>()->value->cast<Block>()->list[1]->is<Nop>());
   ASSERT_TRUE(f->body->cast<Break>()->value->cast<Block>()->list[2]->is<LocalGet>());
+}
+
+TEST(ExprInserter, CanNotInsertAfterTerminator) {
+  wasm::Module m{};
+  wasm::Builder b{m};
+  wasm::Expression *const insertPos = b.makeReturn();
+  std::unique_ptr<wasm::Function> const f = wasm::Builder::makeFunction("test", wasm::Signature(), {}, insertPos);
+  ExprInserter inserter{f.get()};
+
+  ASSERT_FALSE(inserter.canInsertAfter(insertPos));
 }
 
 } // namespace warpo::passes::ut
