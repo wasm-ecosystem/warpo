@@ -1,11 +1,14 @@
 // Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <cassert>
 #include <optional>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "Closure.hpp"
 #include "ir/effects.h"
@@ -156,6 +159,47 @@ public:
   wasm::Expression *lowerGetClosureEnvByLevel(wasm::Call *const curr) {
     return fastLowerGetClosureEnvByLevel(curr, this->getModule(), this->getFunction(), this->variableInfo);
   }
+};
+
+class ClosureEnvDefMap final {
+
+public:
+  struct LevelDef final {
+    int32_t level;
+    wasm::Index localIndex;
+  };
+
+  explicit ClosureEnvDefMap(wasm::Function *func) noexcept : func_(func) {}
+
+  // Allocates a new i32 local and records (level -> localIndex) in the sorted list for the given block.
+  // Returns the allocated local index, or nullopt if the level is already defined.
+  std::optional<wasm::Index> addDef(wasm::Block *const block, int32_t const level) {
+    std::vector<LevelDef> &list = map_[block];
+    std::vector<LevelDef>::iterator const it = std::lower_bound(
+        list.begin(), list.end(), level, [](LevelDef const &def, int32_t val) { return def.level < val; });
+    if (it != list.end() && it->level == level)
+      return std::nullopt;
+    wasm::Index const localIdx = wasm::Builder::addVar(func_, wasm::Type::i32);
+    list.insert(it, {level, localIdx});
+    return localIdx;
+  }
+
+  // Returns the closest def with level <= the given level in the given block, or nullopt if none.
+  std::optional<LevelDef> getClosestDef(wasm::Block *const block, int32_t const level) const noexcept {
+    std::unordered_map<wasm::Block *, std::vector<LevelDef>>::const_iterator const mapIt = map_.find(block);
+    if (mapIt == map_.end())
+      return std::nullopt;
+    std::vector<LevelDef> const &list = mapIt->second;
+    std::vector<LevelDef>::const_iterator const it = std::upper_bound(
+        list.begin(), list.end(), level, [](int32_t val, LevelDef const &def) { return val < def.level; });
+    if (it == list.begin())
+      return std::nullopt;
+    return *std::prev(it);
+  }
+
+private:
+  std::unordered_map<wasm::Block *, std::vector<LevelDef>> map_;
+  wasm::Function *func_;
 };
 
 class OptClosureEnvLower : public ClosureEnvLowerBase<OptClosureEnvLower> {
