@@ -11,8 +11,7 @@
 #include "warpo/support/Debug.hpp"
 #include "wasm.h"
 
-#define PASS_NAME "GCLeafFunction"
-#define DEBUG_PREFIX "[GCLeafFunction] "
+#define PASS_NAME "GCCollectLeafFunction"
 
 namespace warpo::passes::gc {
 
@@ -46,7 +45,7 @@ void LeafFunctionCollector::run(wasm::Module *m) {
   if (support::isDebug(PASS_NAME)) {
     for (wasm::Name const &name : *result_) {
       if (support::isDebug(PASS_NAME, name.str))
-        fmt::println(DEBUG_PREFIX "leaf function: '{}'", name.str);
+        fmt::println("[" PASS_NAME "] leaf function: '{}'", name.str);
     }
   }
 }

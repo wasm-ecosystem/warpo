@@ -17,7 +17,7 @@
 #include "warpo/support/DynBitSet.hpp"
 #include "wasm.h"
 
-#define PASS_NAME "SHRINK_WRAP"
+#define PASS_NAME "GCShrinkWrap"
 
 namespace warpo::passes::gc {
 

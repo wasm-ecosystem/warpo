@@ -40,7 +40,7 @@
 #include "warpo/support/Opt.hpp"
 #include "wasm.h"
 
-#define PASS_NAME "AdvInline"
+#define PASS_NAME "AdvancedInlining"
 
 using namespace wasm;
 

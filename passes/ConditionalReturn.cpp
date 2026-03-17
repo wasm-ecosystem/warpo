@@ -53,7 +53,7 @@
 #include "wasm-type.h"
 #include "wasm.h"
 
-#define PASS_NAME "CONDITION_RETURN"
+#define PASS_NAME "ConditionalReturn"
 
 namespace warpo::passes {
 namespace {
@@ -69,7 +69,7 @@ struct Scanner : public wasm::PostWalker<Scanner> {
   }
 };
 
-wasm::Name getBlockName(size_t id) { return fmt::format(PASS_NAME "#{}", id); }
+wasm::Name getBlockName(size_t id) { return fmt::format("CONDITION_RETURN#{}", id); }
 
 wasm::Name getValidBlockName(wasm::Function *func) {
   struct Visitor final : public wasm::PostWalker<Visitor> {

@@ -15,7 +15,7 @@
 #include "wasm-type.h"
 #include "wasm.h"
 
-#define PASS_NAME "EXPR_INSERTER"
+#define PASS_NAME "ExprInserter"
 
 namespace warpo::passes {
 

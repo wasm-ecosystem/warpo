@@ -32,8 +32,7 @@
 #include "wasm-type.h"
 #include "wasm.h"
 
-#define PASS_NAME "ObjLivenessAnalyzer"
-#define DEBUG_PREFIX "[ObjLivenessAnalyzer] "
+#define PASS_NAME "GCObjLivenessAnalyzer"
 
 namespace warpo::passes::gc {
 namespace {

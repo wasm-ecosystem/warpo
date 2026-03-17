@@ -11,7 +11,7 @@
 #include "wasm-traversal.h"
 #include "wasm.h"
 
-#define PASS_NAME "ImmutableGlobalToStackRemover"
+#define PASS_NAME "GCImmutableGlobalToStackRemover"
 
 namespace warpo::passes::gc {
 
