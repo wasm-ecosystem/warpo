@@ -20,7 +20,7 @@
 #include "wasm-traversal.h"
 #include "wasm.h"
 
-#define PASS_NAME "STACK_ASSIGNER"
+#define PASS_NAME "GCStackAssigner"
 
 namespace warpo::passes::gc {
 

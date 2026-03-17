@@ -20,7 +20,7 @@
 #include "wasm-type.h"
 #include "wasm.h"
 
-#define PASS_NAME "ToStackReplacer"
+#define PASS_NAME "GCToStackReplacer"
 
 namespace warpo::passes::gc {
 

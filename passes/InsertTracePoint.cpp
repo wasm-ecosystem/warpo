@@ -23,8 +23,7 @@
 #include "wasm-type.h"
 #include "wasm.h"
 
-#define PASS_NAME "Tracing"
-#define DEBUG_PREFIX "[Tracing] "
+#define PASS_NAME "InsertTracePoint"
 
 constexpr const char *tracePointFunctionName = "~/lib/trace_point";
 constexpr size_t traceOffset = 0x1'000000;
@@ -92,7 +91,8 @@ struct TracingInserter : public wasm::Pass {
               b, b.makeCall(tracePointFunctionName, {b.makeConst(wasm::Literal(-index))}, wasm::Type::none),
               getCurrentPointer());
         } else {
-          fmt::println(PASS_NAME "failed to insert trace point for call import to function '{}'", targetFunc->name.str);
+          fmt::println("[" PASS_NAME "] failed to insert trace point for call import to function '{}'",
+                       targetFunc->name.str);
         }
       }
     };

@@ -25,7 +25,7 @@
 #include "wasm-type.h"
 #include "wasm.h"
 
-#define PASS_NAME "PrologEpilogInserter"
+#define PASS_NAME "GCPrologEpilogInserter"
 
 namespace warpo::passes::gc {
 

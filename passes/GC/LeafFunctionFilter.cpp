@@ -12,7 +12,7 @@
 #include "wasm-traversal.h"
 #include "wasm.h"
 
-#define PASS_NAME "LeafFunctionFilter"
+#define PASS_NAME "GCLeafFunctionFilter"
 
 namespace warpo::passes::gc {
 

@@ -8,8 +8,6 @@
 #include "support/name.h"
 #include "wasm.h"
 
-#define DEBUG_PREFIX "[CallGraph] "
-
 namespace warpo::passes {
 
 CallGraph CallGraphBuilder::createResults(wasm::Module &m) {
