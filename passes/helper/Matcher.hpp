@@ -120,6 +120,13 @@ static inline M<wasm::Store> offset(wasm::Address const &offset) {
 }
 } // namespace store
 
+constexpr IsMatcherImpl<wasm::Load, wasm::Expression> isLoad;
+namespace load {
+static inline M<wasm::Load> ptr(M<wasm::Expression> &&m) {
+  return M<wasm::Load>([m = std::move(m)](wasm::Load const &expr, Context &ctx) -> bool { return m(*expr.ptr, ctx); });
+}
+} // namespace load
+
 constexpr IsMatcherImpl<wasm::LocalGet, wasm::Expression> isLocalGet;
 namespace local_get {
 static inline M<wasm::LocalGet> index(wasm::Index index) {
