@@ -206,9 +206,9 @@ public:
 class ClosureEnvDefMap final {
 
 public:
-  explicit ClosureEnvDefMap(wasm::Function *func) noexcept : cfg_(CFG::fromFunction(func)), func_(func) {}
+  explicit ClosureEnvDefMap(wasm::Function *func) : cfg_(std::make_unique<CFG>(CFG::fromFunction(func))), func_(func) {}
 
-  CFG const &cfg() const noexcept { return cfg_; }
+  CFG const &cfg() const noexcept { return *cfg_; }
 
   // Allocates a new i32 local and records (level -> localIndex) in the sorted list for the given block.
   // Returns the allocated local index, or nullopt if the level is already defined.
@@ -263,7 +263,7 @@ public:
   }
 
 private:
-  CFG cfg_;
+  std::unique_ptr<CFG> cfg_;
   std::unordered_map<BasicBlock const *, std::vector<LevelDef>> map_;
   wasm::Function *func_;
 };
