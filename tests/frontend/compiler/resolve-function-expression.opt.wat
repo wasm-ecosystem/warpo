@@ -166,7 +166,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$81
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$80
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -190,7 +190,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$81
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$80
      end
      local.get $0
      i32.load offset=8
@@ -1074,7 +1074,7 @@
   i32.store
   i32.const 720
   global.set $~lib/rt/itcms/fromSpace
-  block $__inlined_func$~lib/string/String.__eq$88 (result i32)
+  block $__inlined_func$~lib/string/String.__eq$87 (result i32)
    i32.const 1
    i32.const 0
    call $start:resolve-function-expression~anonymous|2
@@ -1152,12 +1152,12 @@
     global.get $~lib/rt/itcms/threshold
     i32.ge_u
     if
-     block $__inlined_func$~lib/rt/itcms/interrupt$68
+     block $__inlined_func$~lib/rt/itcms/interrupt$67
       i32.const 2048
       local.set $0
       loop $do-loop|0
        local.get $0
-       block $__inlined_func$~lib/rt/itcms/step$86 (result i32)
+       block $__inlined_func$~lib/rt/itcms/step$85 (result i32)
         block $break|0
          block $case2|0
           block $case1|0
@@ -1173,7 +1173,7 @@
            global.get $~lib/rt/itcms/toSpace
            global.set $~lib/rt/itcms/iter
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$86
+           br $__inlined_func$~lib/rt/itcms/step$85
           end
           global.get $~lib/rt/itcms/white
           i32.eqz
@@ -1212,7 +1212,7 @@
              i32.add
              call $~lib/rt/__visit_members
              global.get $~lib/rt/itcms/visitCount
-             br $__inlined_func$~lib/rt/itcms/step$86
+             br $__inlined_func$~lib/rt/itcms/step$85
             end
             local.get $0
             i32.load offset=4
@@ -1304,7 +1304,7 @@
            global.set $~lib/rt/itcms/state
           end
           global.get $~lib/rt/itcms/visitCount
-          br $__inlined_func$~lib/rt/itcms/step$86
+          br $__inlined_func$~lib/rt/itcms/step$85
          end
          global.get $~lib/rt/itcms/iter
          local.tee $0
@@ -1403,7 +1403,7 @@
            end
           end
           i32.const 10
-          br $__inlined_func$~lib/rt/itcms/step$86
+          br $__inlined_func$~lib/rt/itcms/step$85
          end
          global.get $~lib/rt/itcms/toSpace
          global.get $~lib/rt/itcms/toSpace
@@ -1427,7 +1427,7 @@
         i32.const 1024
         i32.add
         global.set $~lib/rt/itcms/threshold
-        br $__inlined_func$~lib/rt/itcms/interrupt$68
+        br $__inlined_func$~lib/rt/itcms/interrupt$67
        end
        local.get $0
        i32.const 0
@@ -1641,16 +1641,13 @@
      local.get $0
      i32.const 4
      i32.add
-     local.tee $1
      local.get $0
      i32.load
      i32.const -4
      i32.and
-     local.tee $4
      i32.add
+     local.tee $1
      local.get $1
-     local.get $4
-     i32.add
      i32.load
      i32.const -3
      i32.and
@@ -1800,12 +1797,12 @@
    local.tee $3
    i32.const 2384
    i32.eq
-   br_if $__inlined_func$~lib/string/String.__eq$88
+   br_if $__inlined_func$~lib/string/String.__eq$87
    drop
    i32.const 0
    local.get $3
    i32.eqz
-   br_if $__inlined_func$~lib/string/String.__eq$88
+   br_if $__inlined_func$~lib/string/String.__eq$87
    drop
    i32.const 0
    local.get $3
@@ -1820,9 +1817,9 @@
    i32.const 1
    i32.shr_u
    i32.ne
-   br_if $__inlined_func$~lib/string/String.__eq$88
+   br_if $__inlined_func$~lib/string/String.__eq$87
    drop
-   block $__inlined_func$~lib/util/string/compareImpl$75 (result i32)
+   block $__inlined_func$~lib/util/string/compareImpl$74 (result i32)
     i32.const 2384
     local.set $1
     local.get $3
@@ -1878,7 +1875,7 @@
        local.get $0
        local.get $4
        i32.sub
-       br $__inlined_func$~lib/util/string/compareImpl$75
+       br $__inlined_func$~lib/util/string/compareImpl$74
       end
       local.get $3
       i32.const 2

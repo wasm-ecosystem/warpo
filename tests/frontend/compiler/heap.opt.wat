@@ -797,16 +797,13 @@
    local.get $1
    i32.const 4
    i32.add
-   local.tee $0
    local.get $1
    i32.load
    i32.const -4
    i32.and
-   local.tee $1
    i32.add
+   local.tee $0
    local.get $0
-   local.get $1
-   i32.add
    i32.load
    i32.const -3
    i32.and
@@ -1047,7 +1044,7 @@
    call $~lib/rt/tlsf/checkUsedBlock
    call $~lib/rt/tlsf/moveBlock
   else
-   block $__inlined_func$~lib/rt/tlsf/reallocateBlock$51 (result i32)
+   block $__inlined_func$~lib/rt/tlsf/reallocateBlock$50 (result i32)
     global.get $~lib/rt/tlsf/ROOT
     local.set $1
     block $folding-inner0
@@ -1103,7 +1100,7 @@
      local.get $1
      local.get $0
      call $~lib/rt/tlsf/moveBlock
-     br $__inlined_func$~lib/rt/tlsf/reallocateBlock$51
+     br $__inlined_func$~lib/rt/tlsf/reallocateBlock$50
     end
     local.get $1
     local.get $0

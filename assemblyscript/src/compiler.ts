@@ -348,6 +348,37 @@ export const runtimeFunctions = ["__new", "__pin", "__unpin", "__collect"];
 /** Globals to export if `--exportRuntime` is set. */
 export const runtimeGlobals = ["__rtti_base"];
 
+class CompoundAssignmentCacheContext {
+  target: Element;
+  leftExpr: ExpressionRef;
+  leftType: Type;
+  assignmentThisExpression: Expression | null;
+  assignmentElementExpression: Expression | null;
+  assignmentThisExpr: ExpressionRef;
+  assignmentElementExpr: ExpressionRef;
+  setupPrefixExprs: ExpressionRef[] | null;
+
+  constructor(
+    target: Element,
+    leftExpr: ExpressionRef,
+    leftType: Type,
+    assignmentThisExpression: Expression | null,
+    assignmentElementExpression: Expression | null,
+    assignmentThisExpr: ExpressionRef,
+    assignmentElementExpr: ExpressionRef,
+    setupPrefixExprs: ExpressionRef[] | null
+  ) {
+    this.target = target;
+    this.leftExpr = leftExpr;
+    this.leftType = leftType;
+    this.assignmentThisExpression = assignmentThisExpression;
+    this.assignmentElementExpression = assignmentElementExpression;
+    this.assignmentThisExpr = assignmentThisExpr;
+    this.assignmentElementExpr = assignmentElementExpr;
+    this.setupPrefixExprs = setupPrefixExprs;
+  }
+}
+
 /** Compiler interface. */
 export class Compiler extends DiagnosticEmitter {
   /** Program reference. */
@@ -4095,6 +4126,7 @@ export class Compiler extends DiagnosticEmitter {
 
     let expr: ExpressionRef;
     let compound = false;
+    let compoundAssignmentCacheContext: CompoundAssignmentCacheContext | null = null;
 
     let operator = expression.operator;
     switch (operator) {
@@ -4116,8 +4148,21 @@ export class Compiler extends DiagnosticEmitter {
       case Token.Plus_Equals:
         compound = true;
       case Token.Plus: {
-        leftExpr = this.compileExpression(left, contextualType);
-        leftType = this.currentType;
+        if (compound) {
+          let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(left);
+          if (cacheTarget && this.needsCompoundAssignmentSideEffectCache(cacheTarget)) {
+            compoundAssignmentCacheContext = this.prepareCompoundAssignmentCache(cacheTarget, contextualType);
+            if (!compoundAssignmentCacheContext) return module.unreachable();
+            leftExpr = compoundAssignmentCacheContext.leftExpr;
+            leftType = compoundAssignmentCacheContext.leftType;
+          } else {
+            leftExpr = this.compileExpression(left, contextualType);
+            leftType = this.currentType;
+          }
+        } else {
+          leftExpr = this.compileExpression(left, contextualType);
+          leftType = this.currentType;
+        }
 
         // check operator overload
         let classReference = leftType.getClassOrWrapper(this.program);
@@ -4166,8 +4211,21 @@ export class Compiler extends DiagnosticEmitter {
       case Token.Minus_Equals:
         compound = true;
       case Token.Minus: {
-        leftExpr = this.compileExpression(left, contextualType);
-        leftType = this.currentType;
+        if (compound) {
+          let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(left);
+          if (cacheTarget && this.needsCompoundAssignmentSideEffectCache(cacheTarget)) {
+            compoundAssignmentCacheContext = this.prepareCompoundAssignmentCache(cacheTarget, contextualType);
+            if (!compoundAssignmentCacheContext) return module.unreachable();
+            leftExpr = compoundAssignmentCacheContext.leftExpr;
+            leftType = compoundAssignmentCacheContext.leftType;
+          } else {
+            leftExpr = this.compileExpression(left, contextualType);
+            leftType = this.currentType;
+          }
+        } else {
+          leftExpr = this.compileExpression(left, contextualType);
+          leftType = this.currentType;
+        }
 
         // check operator overload
         let classReference = leftType.getClassOrWrapper(this.program);
@@ -4217,8 +4275,21 @@ export class Compiler extends DiagnosticEmitter {
       case Token.Asterisk_Equals:
         compound = true;
       case Token.Asterisk: {
-        leftExpr = this.compileExpression(left, contextualType);
-        leftType = this.currentType;
+        if (compound) {
+          let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(left);
+          if (cacheTarget && this.needsCompoundAssignmentSideEffectCache(cacheTarget)) {
+            compoundAssignmentCacheContext = this.prepareCompoundAssignmentCache(cacheTarget, contextualType);
+            if (!compoundAssignmentCacheContext) return module.unreachable();
+            leftExpr = compoundAssignmentCacheContext.leftExpr;
+            leftType = compoundAssignmentCacheContext.leftType;
+          } else {
+            leftExpr = this.compileExpression(left, contextualType);
+            leftType = this.currentType;
+          }
+        } else {
+          leftExpr = this.compileExpression(left, contextualType);
+          leftType = this.currentType;
+        }
 
         // check operator overload
         let classReference = leftType.getClassOrWrapper(this.program);
@@ -4268,8 +4339,21 @@ export class Compiler extends DiagnosticEmitter {
       case Token.Asterisk_Asterisk_Equals:
         compound = true;
       case Token.Asterisk_Asterisk: {
-        leftExpr = this.compileExpression(left, contextualType);
-        leftType = this.currentType;
+        if (compound) {
+          let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(left);
+          if (cacheTarget && this.needsCompoundAssignmentSideEffectCache(cacheTarget)) {
+            compoundAssignmentCacheContext = this.prepareCompoundAssignmentCache(cacheTarget, contextualType);
+            if (!compoundAssignmentCacheContext) return module.unreachable();
+            leftExpr = compoundAssignmentCacheContext.leftExpr;
+            leftType = compoundAssignmentCacheContext.leftType;
+          } else {
+            leftExpr = this.compileExpression(left, contextualType);
+            leftType = this.currentType;
+          }
+        } else {
+          leftExpr = this.compileExpression(left, contextualType);
+          leftType = this.currentType;
+        }
 
         // check operator overload
         let classReference = leftType.getClassOrWrapper(this.program);
@@ -4319,8 +4403,21 @@ export class Compiler extends DiagnosticEmitter {
       case Token.Slash_Equals:
         compound = true;
       case Token.Slash: {
-        leftExpr = this.compileExpression(left, contextualType);
-        leftType = this.currentType;
+        if (compound) {
+          let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(left);
+          if (cacheTarget && this.needsCompoundAssignmentSideEffectCache(cacheTarget)) {
+            compoundAssignmentCacheContext = this.prepareCompoundAssignmentCache(cacheTarget, contextualType);
+            if (!compoundAssignmentCacheContext) return module.unreachable();
+            leftExpr = compoundAssignmentCacheContext.leftExpr;
+            leftType = compoundAssignmentCacheContext.leftType;
+          } else {
+            leftExpr = this.compileExpression(left, contextualType);
+            leftType = this.currentType;
+          }
+        } else {
+          leftExpr = this.compileExpression(left, contextualType);
+          leftType = this.currentType;
+        }
 
         // check operator overload
         let classReference = leftType.getClassOrWrapper(this.program);
@@ -4370,8 +4467,21 @@ export class Compiler extends DiagnosticEmitter {
       case Token.Percent_Equals:
         compound = true;
       case Token.Percent: {
-        leftExpr = this.compileExpression(left, contextualType);
-        leftType = this.currentType;
+        if (compound) {
+          let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(left);
+          if (cacheTarget && this.needsCompoundAssignmentSideEffectCache(cacheTarget)) {
+            compoundAssignmentCacheContext = this.prepareCompoundAssignmentCache(cacheTarget, contextualType);
+            if (!compoundAssignmentCacheContext) return module.unreachable();
+            leftExpr = compoundAssignmentCacheContext.leftExpr;
+            leftType = compoundAssignmentCacheContext.leftType;
+          } else {
+            leftExpr = this.compileExpression(left, contextualType);
+            leftType = this.currentType;
+          }
+        } else {
+          leftExpr = this.compileExpression(left, contextualType);
+          leftType = this.currentType;
+        }
 
         // check operator overload
         let classReference = leftType.getClassOrWrapper(this.program);
@@ -4421,8 +4531,21 @@ export class Compiler extends DiagnosticEmitter {
       case Token.LessThan_LessThan_Equals:
         compound = true;
       case Token.LessThan_LessThan: {
-        leftExpr = this.compileExpression(left, contextualType.intType);
-        leftType = this.currentType;
+        if (compound) {
+          let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(left);
+          if (cacheTarget && this.needsCompoundAssignmentSideEffectCache(cacheTarget)) {
+            compoundAssignmentCacheContext = this.prepareCompoundAssignmentCache(cacheTarget, contextualType.intType);
+            if (!compoundAssignmentCacheContext) return module.unreachable();
+            leftExpr = compoundAssignmentCacheContext.leftExpr;
+            leftType = compoundAssignmentCacheContext.leftType;
+          } else {
+            leftExpr = this.compileExpression(left, contextualType.intType);
+            leftType = this.currentType;
+          }
+        } else {
+          leftExpr = this.compileExpression(left, contextualType.intType);
+          leftType = this.currentType;
+        }
 
         // check operator overload
         let classReference = leftType.getClassOrWrapper(this.program);
@@ -4451,8 +4574,21 @@ export class Compiler extends DiagnosticEmitter {
       case Token.GreaterThan_GreaterThan_Equals:
         compound = true;
       case Token.GreaterThan_GreaterThan: {
-        leftExpr = this.compileExpression(left, contextualType.intType);
-        leftType = this.currentType;
+        if (compound) {
+          let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(left);
+          if (cacheTarget && this.needsCompoundAssignmentSideEffectCache(cacheTarget)) {
+            compoundAssignmentCacheContext = this.prepareCompoundAssignmentCache(cacheTarget, contextualType.intType);
+            if (!compoundAssignmentCacheContext) return module.unreachable();
+            leftExpr = compoundAssignmentCacheContext.leftExpr;
+            leftType = compoundAssignmentCacheContext.leftType;
+          } else {
+            leftExpr = this.compileExpression(left, contextualType.intType);
+            leftType = this.currentType;
+          }
+        } else {
+          leftExpr = this.compileExpression(left, contextualType.intType);
+          leftType = this.currentType;
+        }
 
         // check operator overload
         let classReference = leftType.getClassOrWrapper(this.program);
@@ -4482,8 +4618,21 @@ export class Compiler extends DiagnosticEmitter {
       case Token.GreaterThan_GreaterThan_GreaterThan_Equals:
         compound = true;
       case Token.GreaterThan_GreaterThan_GreaterThan: {
-        leftExpr = this.compileExpression(left, contextualType.intType);
-        leftType = this.currentType;
+        if (compound) {
+          let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(left);
+          if (cacheTarget && this.needsCompoundAssignmentSideEffectCache(cacheTarget)) {
+            compoundAssignmentCacheContext = this.prepareCompoundAssignmentCache(cacheTarget, contextualType.intType);
+            if (!compoundAssignmentCacheContext) return module.unreachable();
+            leftExpr = compoundAssignmentCacheContext.leftExpr;
+            leftType = compoundAssignmentCacheContext.leftType;
+          } else {
+            leftExpr = this.compileExpression(left, contextualType.intType);
+            leftType = this.currentType;
+          }
+        } else {
+          leftExpr = this.compileExpression(left, contextualType.intType);
+          leftType = this.currentType;
+        }
 
         // check operator overload
         let classReference = leftType.getClassOrWrapper(this.program);
@@ -4512,8 +4661,21 @@ export class Compiler extends DiagnosticEmitter {
       case Token.Ampersand_Equals:
         compound = true;
       case Token.Ampersand: {
-        leftExpr = this.compileExpression(left, contextualType.intType);
-        leftType = this.currentType;
+        if (compound) {
+          let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(left);
+          if (cacheTarget && this.needsCompoundAssignmentSideEffectCache(cacheTarget)) {
+            compoundAssignmentCacheContext = this.prepareCompoundAssignmentCache(cacheTarget, contextualType.intType);
+            if (!compoundAssignmentCacheContext) return module.unreachable();
+            leftExpr = compoundAssignmentCacheContext.leftExpr;
+            leftType = compoundAssignmentCacheContext.leftType;
+          } else {
+            leftExpr = this.compileExpression(left, contextualType.intType);
+            leftType = this.currentType;
+          }
+        } else {
+          leftExpr = this.compileExpression(left, contextualType.intType);
+          leftType = this.currentType;
+        }
 
         // check operator overload
         let classReference = leftType.getClassOrWrapper(this.program);
@@ -4563,8 +4725,21 @@ export class Compiler extends DiagnosticEmitter {
       case Token.Bar_Equals:
         compound = true;
       case Token.Bar: {
-        leftExpr = this.compileExpression(left, contextualType.intType);
-        leftType = this.currentType;
+        if (compound) {
+          let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(left);
+          if (cacheTarget && this.needsCompoundAssignmentSideEffectCache(cacheTarget)) {
+            compoundAssignmentCacheContext = this.prepareCompoundAssignmentCache(cacheTarget, contextualType.intType);
+            if (!compoundAssignmentCacheContext) return module.unreachable();
+            leftExpr = compoundAssignmentCacheContext.leftExpr;
+            leftType = compoundAssignmentCacheContext.leftType;
+          } else {
+            leftExpr = this.compileExpression(left, contextualType.intType);
+            leftType = this.currentType;
+          }
+        } else {
+          leftExpr = this.compileExpression(left, contextualType.intType);
+          leftType = this.currentType;
+        }
 
         // check operator overload
         let classReference = leftType.getClassOrWrapper(this.program);
@@ -4614,8 +4789,21 @@ export class Compiler extends DiagnosticEmitter {
       case Token.Caret_Equals:
         compound = true;
       case Token.Caret: {
-        leftExpr = this.compileExpression(left, contextualType.intType);
-        leftType = this.currentType;
+        if (compound) {
+          let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(left);
+          if (cacheTarget && this.needsCompoundAssignmentSideEffectCache(cacheTarget)) {
+            compoundAssignmentCacheContext = this.prepareCompoundAssignmentCache(cacheTarget, contextualType.intType);
+            if (!compoundAssignmentCacheContext) return module.unreachable();
+            leftExpr = compoundAssignmentCacheContext.leftExpr;
+            leftType = compoundAssignmentCacheContext.leftType;
+          } else {
+            leftExpr = this.compileExpression(left, contextualType.intType);
+            leftType = this.currentType;
+          }
+        } else {
+          leftExpr = this.compileExpression(left, contextualType.intType);
+          leftType = this.currentType;
+        }
 
         // check operator overload
         let classReference = leftType.getClassOrWrapper(this.program);
@@ -4856,8 +5044,24 @@ export class Compiler extends DiagnosticEmitter {
     }
     if (!compound) return expr;
     let resolver = this.resolver;
-    let target = resolver.lookupExpression(left, this.currentFlow);
-    if (!target) return module.unreachable();
+    let target: Element | null;
+    let thisExpression: Expression | null;
+    let elementExpression: Expression | null;
+    let thisExpr: ExpressionRef = 0;
+    let indexExpr: ExpressionRef = 0;
+    if (compoundAssignmentCacheContext) {
+      target = compoundAssignmentCacheContext.target;
+      thisExpression = compoundAssignmentCacheContext.assignmentThisExpression;
+      elementExpression = compoundAssignmentCacheContext.assignmentElementExpression;
+      thisExpr = compoundAssignmentCacheContext.assignmentThisExpr;
+      indexExpr = compoundAssignmentCacheContext.assignmentElementExpr;
+    } else {
+      target = resolver.lookupExpression(left, this.currentFlow);
+      if (!target) return module.unreachable();
+      thisExpression = resolver.currentThisExpression;
+      elementExpression = resolver.currentElementExpression;
+    }
+    target = assert(target);
     let targetType = resolver.getTypeOfElement(target);
     if (!targetType) targetType = Type.void;
     if (!this.currentType.isStrictlyAssignableTo(targetType)) {
@@ -4869,15 +5073,357 @@ export class Compiler extends DiagnosticEmitter {
       );
       return module.unreachable();
     }
-    return this.makeAssignment(
+    let assignmentExpr = this.makeAssignment(
       target,
       expr,
       this.currentType,
       right,
-      resolver.currentThisExpression,
-      resolver.currentElementExpression,
-      contextualType != Type.void
+      thisExpression,
+      elementExpression,
+      contextualType != Type.void,
+      thisExpr,
+      indexExpr
     );
+    return compoundAssignmentCacheContext
+      ? this.prependSetupPrefixExpressions(compoundAssignmentCacheContext.setupPrefixExprs, assignmentExpr, contextualType != Type.void)
+      : assignmentExpr;
+  }
+
+  private prepareCompoundAssignmentCache(
+    cacheTarget: Expression,
+    contextualType: Type
+  ): CompoundAssignmentCacheContext | null {
+    let module = this.module;
+    let flow = this.currentFlow;
+    let resolver = this.resolver;
+    let target = resolver.lookupExpression(cacheTarget, flow);
+    if (!target) return null;
+
+    let setupPrefixExprs: ExpressionRef[] | null = null;
+    let assignmentThisExpression: Expression | null = null;
+    let assignmentElementExpression: Expression | null = null;
+    let assignmentThisExpr: ExpressionRef = 0;
+    let assignmentElementExpr: ExpressionRef = 0;
+    let cachedThisLocal: Local | null = null;
+    let cachedThisType: Type = Type.void;
+    let cachedElementLocal: Local | null = null;
+    let cachedElementType: Type = Type.void;
+    let readThisExpression: Expression | null = null;
+    let readElementExpression: Expression | null = null;
+
+    if (cacheTarget.kind == NodeKind.PropertyAccess) {
+      let access = <PropertyAccessExpression>cacheTarget;
+      let receiverExpression = access.expression;
+      assignmentThisExpression = receiverExpression;
+      let receiverExpr = this.compileExpression(receiverExpression, Type.auto);
+      let receiverType = this.currentType;
+      let receiverTemp = flow.getTempLocal(receiverType);
+      cachedThisLocal = receiverTemp;
+      cachedThisType = receiverType;
+      flow.setLocalFlag(receiverTemp.index, LocalFlags.Initialized);
+      setupPrefixExprs = [module.local_set(receiverTemp.index, receiverExpr, receiverType.isManaged)];
+    } else {
+      let access = <ElementAccessExpression>cacheTarget;
+      let receiverExpression = access.expression;
+      let elementExpression = access.elementExpression;
+
+      readThisExpression = receiverExpression;
+      readElementExpression = elementExpression;
+      assignmentThisExpression = receiverExpression;
+      assignmentElementExpression = elementExpression;
+
+      if (this.expressionHasSideEffects(receiverExpression)) {
+        let receiverExpr = this.compileExpression(receiverExpression, Type.auto);
+        let receiverType = this.currentType;
+        let receiverTemp = flow.getTempLocal(receiverType);
+        cachedThisLocal = receiverTemp;
+        cachedThisType = receiverType;
+        flow.setLocalFlag(receiverTemp.index, LocalFlags.Initialized);
+        if (!setupPrefixExprs) setupPrefixExprs = [];
+        setupPrefixExprs.push(module.local_set(receiverTemp.index, receiverExpr, receiverType.isManaged));
+      }
+
+      if (this.expressionHasSideEffects(elementExpression)) {
+        let elementExpr = this.compileExpression(elementExpression, Type.auto);
+        let elementType = this.currentType;
+        let elementTemp = flow.getTempLocal(elementType);
+        cachedElementLocal = elementTemp;
+        cachedElementType = elementType;
+        flow.setLocalFlag(elementTemp.index, LocalFlags.Initialized);
+        if (!setupPrefixExprs) setupPrefixExprs = [];
+        setupPrefixExprs.push(module.local_set(elementTemp.index, elementExpr, elementType.isManaged));
+      }
+    }
+
+    let leftExpr: ExpressionRef;
+    let leftType: Type;
+    switch (target.kind) {
+      case ElementKind.PropertyPrototype: {
+        let propertyInstance = resolver.resolveProperty(<PropertyPrototype>target);
+        if (!propertyInstance) return null;
+        target = propertyInstance;
+      }
+      // falls through
+      case ElementKind.Property: {
+        let getterInstance = (<Property>target).getterInstance;
+        if (!getterInstance) return null;
+        if (getterInstance.is(CommonFlags.Instance)) {
+          let thisType = assert(getterInstance.signature.thisType);
+          if (cachedThisLocal) {
+            let thisRef = cachedThisType.toRef();
+            let thisArg = this.convertExpression(
+              module.local_get(cachedThisLocal.index, thisRef),
+              cachedThisType,
+              thisType,
+              false,
+              cacheTarget
+            );
+            assignmentThisExpr = this.convertExpression(
+              module.local_get(cachedThisLocal.index, thisRef),
+              cachedThisType,
+              thisType,
+              false,
+              cacheTarget
+            );
+            leftExpr = this.compileCallDirect(getterInstance, [], cacheTarget, thisArg);
+          } else {
+            let thisArg = this.compileExpression(
+              assert(readThisExpression),
+              thisType,
+              Constraints.ConvImplicit | Constraints.IsThis
+            );
+            assignmentThisExpr = this.compileExpression(
+              assert(assignmentThisExpression),
+              thisType,
+              Constraints.ConvImplicit | Constraints.IsThis
+            );
+            leftExpr = this.compileCallDirect(getterInstance, [], cacheTarget, thisArg);
+          }
+        } else {
+          leftExpr = this.compileCallDirect(getterInstance, [], cacheTarget);
+        }
+        leftType = this.currentType;
+        break;
+      }
+      case ElementKind.IndexSignature: {
+        let parent = (<IndexSignature>target).parent;
+        assert(parent.kind == ElementKind.Class);
+        let classInstance = <Class>parent;
+        let isUnchecked = flow.is(FlowFlags.UncheckedContext);
+        let getterInstance = classInstance.lookupOverload(OperatorKind.IndexedGet, isUnchecked);
+        if (!getterInstance) {
+          this.error(
+            DiagnosticCode.Index_signature_is_missing_in_type_0,
+            cacheTarget.range,
+            classInstance.internalName
+          );
+          return null;
+        }
+        let thisType = classInstance.type;
+        let thisArg: ExpressionRef;
+        if (cachedThisLocal) {
+          let thisRef = cachedThisType.toRef();
+          thisArg = this.convertExpression(
+            module.local_get(cachedThisLocal.index, thisRef),
+            cachedThisType,
+            thisType,
+            false,
+            cacheTarget
+          );
+          assignmentThisExpr = this.convertExpression(
+            module.local_get(cachedThisLocal.index, thisRef),
+            cachedThisType,
+            thisType,
+            false,
+            cacheTarget
+          );
+        } else {
+          thisArg = this.compileExpression(
+            assert(readThisExpression),
+            thisType,
+            Constraints.ConvImplicit | Constraints.IsThis
+          );
+          assignmentThisExpr = this.compileExpression(
+            assert(assignmentThisExpression),
+            thisType,
+            Constraints.ConvImplicit | Constraints.IsThis
+          );
+        }
+        let indexType = getterInstance.signature.parameterTypes[0];
+        let indexArg: ExpressionRef;
+        if (cachedElementLocal) {
+          let elementRef = cachedElementType.toRef();
+          indexArg = this.convertExpression(
+            module.local_get(cachedElementLocal.index, elementRef),
+            cachedElementType,
+            indexType,
+            false,
+            cacheTarget
+          );
+          assignmentElementExpr = this.convertExpression(
+            module.local_get(cachedElementLocal.index, elementRef),
+            cachedElementType,
+            indexType,
+            false,
+            cacheTarget
+          );
+        } else {
+          indexArg = this.compileExpression(
+            assert(readElementExpression),
+            indexType,
+            Constraints.ConvImplicit
+          );
+          assignmentElementExpr = this.compileExpression(
+            assert(assignmentElementExpression),
+            indexType,
+            Constraints.ConvImplicit
+          );
+        }
+        leftExpr = this.makeCallDirect(getterInstance, [thisArg, indexArg], cacheTarget);
+        leftType = this.currentType;
+        break;
+      }
+      default: {
+        leftExpr = this.compileExpression(cacheTarget, contextualType);
+        leftType = this.currentType;
+        break;
+      }
+    }
+
+    return new CompoundAssignmentCacheContext(
+      target,
+      leftExpr,
+      leftType,
+      assignmentThisExpression,
+      assignmentElementExpression,
+      assignmentThisExpr,
+      assignmentElementExpr,
+      setupPrefixExprs
+    );
+  }
+
+  private prependSetupPrefixExpressions(
+    setupPrefixExprs: ExpressionRef[] | null,
+    expr: ExpressionRef,
+    tee: bool
+  ): ExpressionRef {
+    if (!setupPrefixExprs || !setupPrefixExprs.length) return expr;
+    let setupAndExpr = new Array<ExpressionRef>(setupPrefixExprs.length + 1);
+    for (let i = 0, k = setupPrefixExprs.length; i < k; ++i) {
+      setupAndExpr[i] = unchecked(setupPrefixExprs[i]);
+    }
+    setupAndExpr[setupPrefixExprs.length] = expr;
+    return this.module.block(
+      null,
+      setupAndExpr,
+      tee ? this.currentType.toRef() : TypeRef.None
+    );
+  }
+
+  private needsCompoundAssignmentSideEffectCache(target: Expression): bool {
+    let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(target);
+    if (!cacheTarget) return false;
+    if (cacheTarget.kind == NodeKind.PropertyAccess) {
+      return this.expressionHasSideEffects((<PropertyAccessExpression>cacheTarget).expression);
+    }
+    if (cacheTarget.kind == NodeKind.ElementAccess) {
+      let access = <ElementAccessExpression>cacheTarget;
+      return this.expressionHasSideEffects(access.expression)
+          || this.expressionHasSideEffects(access.elementExpression);
+    }
+    return false;
+  }
+
+  private getCompoundAssignmentSideEffectCacheTarget(target: Expression): Expression | null {
+    while (target.kind == NodeKind.Parenthesized) {
+      target = (<ParenthesizedExpression>target).expression;
+    }
+    switch (target.kind) {
+      case NodeKind.PropertyAccess:
+      case NodeKind.ElementAccess:
+        return target;
+      case NodeKind.Assertion: {
+        let assertion = <AssertionExpression>target;
+        if (assertion.assertionKind == AssertionKind.NonNull) {
+          return this.getCompoundAssignmentSideEffectCacheTarget(assertion.expression);
+        }
+        return null;
+      }
+      case NodeKind.Comma: {
+        let expressions = (<CommaExpression>target).expressions;
+        return this.getCompoundAssignmentSideEffectCacheTarget(expressions[assert(expressions.length) - 1]);
+      }
+      default:
+        return null;
+    }
+  }
+
+  private expressionHasSideEffects(expression: Expression): bool {
+    while (expression.kind == NodeKind.Parenthesized) {
+      expression = (<ParenthesizedExpression>expression).expression;
+    }
+    switch (expression.kind) {
+      case NodeKind.Call:
+      case NodeKind.New:
+      case NodeKind.UnaryPostfix:
+        return true;
+      case NodeKind.UnaryPrefix: {
+        let unaryPrefix = <UnaryPrefixExpression>expression;
+        let operator = unaryPrefix.operator;
+        return operator == Token.Plus_Plus
+            || operator == Token.Minus_Minus
+            || operator == Token.Delete
+            || operator == Token.Await
+            || operator == Token.Yield
+            || this.expressionHasSideEffects(unaryPrefix.operand);
+      }
+      case NodeKind.Assertion:
+        return this.expressionHasSideEffects((<AssertionExpression>expression).expression);
+      case NodeKind.PropertyAccess:
+        return this.expressionHasSideEffects((<PropertyAccessExpression>expression).expression);
+      case NodeKind.ElementAccess: {
+        let access = <ElementAccessExpression>expression;
+        return this.expressionHasSideEffects(access.expression)
+            || this.expressionHasSideEffects(access.elementExpression);
+      }
+      case NodeKind.Comma: {
+        let expressions = (<CommaExpression>expression).expressions;
+        for (let i = 0, k = expressions.length; i < k; ++i) {
+          if (this.expressionHasSideEffects(unchecked(expressions[i]))) return true;
+        }
+        return false;
+      }
+      case NodeKind.Ternary: {
+        let ternary = <TernaryExpression>expression;
+        return this.expressionHasSideEffects(ternary.condition)
+            || this.expressionHasSideEffects(ternary.ifThen)
+            || this.expressionHasSideEffects(ternary.ifElse);
+      }
+      case NodeKind.Binary: {
+        let binary = <BinaryExpression>expression;
+        switch (binary.operator) {
+          case Token.Equals:
+          case Token.Plus_Equals:
+          case Token.Minus_Equals:
+          case Token.Asterisk_Equals:
+          case Token.Asterisk_Asterisk_Equals:
+          case Token.Slash_Equals:
+          case Token.Percent_Equals:
+          case Token.LessThan_LessThan_Equals:
+          case Token.GreaterThan_GreaterThan_Equals:
+          case Token.GreaterThan_GreaterThan_GreaterThan_Equals:
+          case Token.Ampersand_Equals:
+          case Token.Bar_Equals:
+          case Token.Caret_Equals:
+            return true;
+          default:
+            return this.expressionHasSideEffects(binary.left)
+                || this.expressionHasSideEffects(binary.right);
+        }
+      }
+      default:
+        return false;
+    }
   }
 
   makeLt(leftExpr: ExpressionRef, rightExpr: ExpressionRef, type: Type): ExpressionRef {
@@ -5841,7 +6387,9 @@ export class Compiler extends DiagnosticEmitter {
       valueExpression,
       thisExpression,
       elementExpression,
-      contextualType != Type.void
+      contextualType != Type.void,
+      0,
+      0
     );
   }
 
@@ -5930,7 +6478,11 @@ export class Compiler extends DiagnosticEmitter {
     /** Index expression reference if an indexed set. */
     indexExpression: Expression | null,
     /** Whether to tee the value. */
-    tee: bool
+    tee: bool,
+    /** Precompiled `this` expression reference if available. */
+    thisExpr: ExpressionRef,
+    /** Precompiled index expression reference if available. */
+    indexExpr: ExpressionRef
   ): ExpressionRef {
     let module = this.module;
     let flow = this.currentFlow;
@@ -6006,11 +6558,13 @@ export class Compiler extends DiagnosticEmitter {
         assert(setterInstance.signature.returnType == Type.void);
         if (propertyInstance.is(CommonFlags.Instance)) {
           let thisType = assert(setterInstance.signature.thisType);
-          let thisExpr = this.compileExpression(
-            assert(thisExpression),
-            thisType,
-            Constraints.ConvImplicit | Constraints.IsThis
-          );
+          if (!thisExpr) {
+            thisExpr = this.compileExpression(
+              assert(thisExpression),
+              thisType,
+              Constraints.ConvImplicit | Constraints.IsThis
+            );
+          }
           if (!tee) return this.makeCallDirect(setterInstance, [thisExpr, valueExpr], valueExpression);
           let tempLocal = flow.getTempLocal(valueType);
           let valueTypeRef = valueType.toRef();
@@ -6076,11 +6630,13 @@ export class Compiler extends DiagnosticEmitter {
         }
         assert(setterInstance.signature.parameterTypes.length == 2);
         let thisType = classInstance.type;
-        let thisExpr = this.compileExpression(
-          assert(thisExpression),
-          thisType,
-          Constraints.ConvImplicit | Constraints.IsThis
-        );
+        if (!thisExpr) {
+          thisExpr = this.compileExpression(
+            assert(thisExpression),
+            thisType,
+            Constraints.ConvImplicit | Constraints.IsThis
+          );
+        }
         let setterIndexType = setterInstance.signature.parameterTypes[0];
         let getterIndexType = getterInstance.signature.parameterTypes[0];
         if (!setterIndexType.equals(getterIndexType)) {
@@ -6093,8 +6649,15 @@ export class Compiler extends DiagnosticEmitter {
           this.currentType = tee ? getterInstance.signature.returnType : Type.void;
           return module.unreachable();
         }
-        let elementExpr = this.compileExpression(assert(indexExpression), setterIndexType, Constraints.ConvImplicit);
-        let elementType = this.currentType;
+        let elementExpr: ExpressionRef;
+        let elementType: Type;
+        if (indexExpr) {
+          elementExpr = indexExpr;
+          elementType = getterIndexType;
+        } else {
+          elementExpr = this.compileExpression(assert(indexExpression), setterIndexType, Constraints.ConvImplicit);
+          elementType = this.currentType;
+        }
         if (tee) {
           let tempTarget = flow.getTempLocal(thisType);
           let tempElement = flow.getTempLocal(elementType);
@@ -9561,7 +10124,9 @@ export class Compiler extends DiagnosticEmitter {
         expression.operand,
         resolver.currentThisExpression,
         resolver.currentElementExpression,
-        false
+        false,
+        0,
+        0
       );
     }
 
@@ -9573,7 +10138,9 @@ export class Compiler extends DiagnosticEmitter {
       expression.operand,
       resolver.currentThisExpression,
       resolver.currentElementExpression,
-      false
+      false,
+      0,
+      0
     );
 
     this.currentType = tempLocal.type;
@@ -9909,7 +10476,9 @@ export class Compiler extends DiagnosticEmitter {
       expression.operand,
       resolver.currentThisExpression,
       resolver.currentElementExpression,
-      contextualType != Type.void
+      contextualType != Type.void,
+      0,
+      0
     );
   }
 

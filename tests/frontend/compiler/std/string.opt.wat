@@ -987,7 +987,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$268
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$267
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -1011,7 +1011,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$268
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$267
    end
    local.get $0
    i32.load offset=8
@@ -2103,7 +2103,7 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$69
+   block $__inlined_func$~lib/rt/itcms/interrupt$68
     i32.const 2048
     local.set $3
     loop $do-loop|0
@@ -2120,7 +2120,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$69
+      br $__inlined_func$~lib/rt/itcms/interrupt$68
      end
      local.get $3
      i32.const 0
@@ -2145,7 +2145,7 @@
    call $~lib/rt/tlsf/initialize
   end
   global.get $~lib/rt/tlsf/ROOT
-  local.set $5
+  local.set $4
   local.get $0
   i32.const 16
   i32.add
@@ -2160,7 +2160,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $5
+  local.get $4
   i32.const 12
   local.get $3
   i32.const 19
@@ -2202,10 +2202,10 @@
     local.get $2
    end
    i32.const 4
-   local.get $5
+   local.get $4
    i32.load offset=1568
    memory.size
-   local.tee $4
+   local.tee $5
    i32.const 16
    i32.shl
    i32.const 4
@@ -2220,10 +2220,10 @@
    i32.const 16
    i32.shr_u
    local.set $2
-   local.get $4
+   local.get $5
    local.get $2
    local.get $2
-   local.get $4
+   local.get $5
    i32.lt_s
    select
    memory.grow
@@ -2238,8 +2238,8 @@
      unreachable
     end
    end
-   local.get $5
    local.get $4
+   local.get $5
    i32.const 16
    i32.shl
    memory.size
@@ -2247,7 +2247,7 @@
    i64.const 16
    i64.shl
    call $~lib/rt/tlsf/addMemory
-   local.get $5
+   local.get $4
    local.get $3
    call $~lib/rt/tlsf/searchBlock
    local.tee $2
@@ -2275,7 +2275,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $5
+  local.get $4
   local.get $2
   call $~lib/rt/tlsf/removeBlock
   local.get $2
@@ -2299,7 +2299,7 @@
   i32.and
   local.get $3
   i32.sub
-  local.tee $4
+  local.tee $5
   i32.const 16
   i32.ge_u
   if
@@ -2316,13 +2316,13 @@
    local.get $3
    i32.add
    local.tee $3
-   local.get $4
+   local.get $5
    i32.const 4
    i32.sub
    i32.const 1
    i32.or
    i32.store
-   local.get $5
+   local.get $4
    local.get $3
    call $~lib/rt/tlsf/insertBlock
   else
@@ -2334,16 +2334,13 @@
    local.get $2
    i32.const 4
    i32.add
-   local.tee $4
    local.get $2
    i32.load
    i32.const -4
    i32.and
+   i32.add
    local.tee $3
-   i32.add
    local.get $3
-   local.get $4
-   i32.add
    i32.load
    i32.const -3
    i32.and
@@ -3427,7 +3424,7 @@
   (local $4 i32)
   (local $5 f64)
   (local $6 f64)
-  block $__inlined_func$~lib/util/string/strtol<f64>$77 (result f64)
+  block $__inlined_func$~lib/util/string/strtol<f64>$76 (result f64)
    local.get $1
    local.set $3
    f64.const nan:0x8000000000000
@@ -3439,7 +3436,7 @@
    i32.shr_u
    local.tee $1
    i32.eqz
-   br_if $__inlined_func$~lib/util/string/strtol<f64>$77
+   br_if $__inlined_func$~lib/util/string/strtol<f64>$76
    drop
    local.get $0
    i32.load16_u
@@ -3478,7 +3475,7 @@
     i32.sub
     local.tee $1
     i32.eqz
-    br_if $__inlined_func$~lib/util/string/strtol<f64>$77
+    br_if $__inlined_func$~lib/util/string/strtol<f64>$76
     drop
     f64.const -1
     f64.const 1
@@ -3502,7 +3499,7 @@
     i32.const 36
     i32.gt_s
     i32.or
-    br_if $__inlined_func$~lib/util/string/strtol<f64>$77
+    br_if $__inlined_func$~lib/util/string/strtol<f64>$76
     drop
     local.get $3
     i32.const 16
@@ -3661,7 +3658,7 @@
        local.get $1
        local.get $4
        i32.eq
-       br_if $__inlined_func$~lib/util/string/strtol<f64>$77
+       br_if $__inlined_func$~lib/util/string/strtol<f64>$76
        drop
        br $while-break|2
       end
@@ -7660,7 +7657,7 @@
   i64.const 1
   i64.sub
   local.set $4
-  block $__inlined_func$~lib/util/number/prettify$95 (result i32)
+  block $__inlined_func$~lib/util/number/prettify$94 (result i32)
    local.get $13
    i32.const 1
    i32.shl
@@ -7709,7 +7706,7 @@
    i64.add
    i64.add
    local.set $9
-   block $__inlined_func$~lib/util/number/genDigits$94 (result i32)
+   block $__inlined_func$~lib/util/number/genDigits$93 (result i32)
     local.get $4
     local.get $5
     global.get $~lib/util/number/_frc_minus
@@ -7996,7 +7993,7 @@
        local.get $2
        i32.store16
        local.get $1
-       br $__inlined_func$~lib/util/number/genDigits$94
+       br $__inlined_func$~lib/util/number/genDigits$93
       end
       br $while-continue|0
      end
@@ -8128,7 +8125,7 @@
     local.get $1
     i32.const 2
     i32.add
-    br $__inlined_func$~lib/util/number/prettify$95
+    br $__inlined_func$~lib/util/number/prettify$94
    end
    local.get $1
    local.get $3
@@ -8602,7 +8599,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  block $__inlined_func$~lib/string/String#codePointAt$97 (result i32)
+  block $__inlined_func$~lib/string/String#codePointAt$96 (result i32)
    i32.const -1
    global.get $std/string/str
    local.tee $2
@@ -8614,7 +8611,7 @@
    local.tee $0
    i32.const 1
    i32.le_u
-   br_if $__inlined_func$~lib/string/String#codePointAt$97
+   br_if $__inlined_func$~lib/string/String#codePointAt$96
    drop
    local.get $0
    i32.const 2
@@ -8631,7 +8628,7 @@
    i32.or
    if
     local.get $0
-    br $__inlined_func$~lib/string/String#codePointAt$97
+    br $__inlined_func$~lib/string/String#codePointAt$96
    end
    local.get $0
    local.get $2
@@ -8643,7 +8640,7 @@
    i32.and
    i32.const 56320
    i32.ne
-   br_if $__inlined_func$~lib/string/String#codePointAt$97
+   br_if $__inlined_func$~lib/string/String#codePointAt$96
    drop
    local.get $0
    i32.const 10

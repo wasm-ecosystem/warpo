@@ -131,7 +131,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$88
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$87
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -155,7 +155,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$88
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$87
    end
    local.get $0
    i32.load offset=8
@@ -985,12 +985,12 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$68
+   block $__inlined_func$~lib/rt/itcms/interrupt$67
     i32.const 2048
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$93 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$92 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1006,7 +1006,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$93
+         br $__inlined_func$~lib/rt/itcms/step$92
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1045,7 +1045,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$93
+           br $__inlined_func$~lib/rt/itcms/step$92
           end
           local.get $2
           i32.load offset=4
@@ -1137,7 +1137,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$93
+        br $__inlined_func$~lib/rt/itcms/step$92
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1236,7 +1236,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$93
+        br $__inlined_func$~lib/rt/itcms/step$92
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1260,7 +1260,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$68
+      br $__inlined_func$~lib/rt/itcms/interrupt$67
      end
      local.get $2
      i32.const 0
@@ -1474,16 +1474,13 @@
    local.get $2
    i32.const 4
    i32.add
-   local.tee $4
    local.get $2
    i32.load
    i32.const -4
    i32.and
+   i32.add
    local.tee $3
-   i32.add
    local.get $3
-   local.get $4
-   i32.add
    i32.load
    i32.const -3
    i32.and
@@ -1746,7 +1743,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  block $__inlined_func$~lib/string/String.__eq$95 (result i32)
+  block $__inlined_func$~lib/string/String.__eq$94 (result i32)
    i32.const 1
    global.get $tuple-type-field/a
    i32.load
@@ -1756,12 +1753,12 @@
    local.tee $1
    i32.const 432
    i32.eq
-   br_if $__inlined_func$~lib/string/String.__eq$95
+   br_if $__inlined_func$~lib/string/String.__eq$94
    drop
    i32.const 0
    local.get $1
    i32.eqz
-   br_if $__inlined_func$~lib/string/String.__eq$95
+   br_if $__inlined_func$~lib/string/String.__eq$94
    drop
    i32.const 0
    local.get $1
@@ -1776,9 +1773,9 @@
    i32.const 1
    i32.shr_u
    i32.ne
-   br_if $__inlined_func$~lib/string/String.__eq$95
+   br_if $__inlined_func$~lib/string/String.__eq$94
    drop
-   block $__inlined_func$~lib/util/string/compareImpl$77 (result i32)
+   block $__inlined_func$~lib/util/string/compareImpl$76 (result i32)
     i32.const 432
     local.set $3
     local.get $1
@@ -1834,7 +1831,7 @@
        local.get $2
        local.get $4
        i32.sub
-       br $__inlined_func$~lib/util/string/compareImpl$77
+       br $__inlined_func$~lib/util/string/compareImpl$76
       end
       local.get $1
       i32.const 2

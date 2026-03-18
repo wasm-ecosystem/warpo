@@ -304,7 +304,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$132
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$131
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -328,7 +328,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$132
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$131
    end
    local.get $0
    i32.load offset=8
@@ -1414,7 +1414,7 @@
    call $~lib/rt/tlsf/initialize
   end
   global.get $~lib/rt/tlsf/ROOT
-  local.set $2
+  local.set $3
   local.get $0
   i32.const 1073741820
   i32.gt_u
@@ -1426,7 +1426,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $2
+  local.get $3
   i32.const 12
   local.get $0
   i32.const 19
@@ -1468,10 +1468,10 @@
     local.get $0
    end
    i32.const 4
-   local.get $2
+   local.get $3
    i32.load offset=1568
    memory.size
-   local.tee $3
+   local.tee $2
    i32.const 16
    i32.shl
    i32.const 4
@@ -1486,10 +1486,10 @@
    i32.const 16
    i32.shr_u
    local.set $0
-   local.get $3
+   local.get $2
    local.get $0
    local.get $0
-   local.get $3
+   local.get $2
    i32.lt_s
    select
    memory.grow
@@ -1504,8 +1504,8 @@
      unreachable
     end
    end
-   local.get $2
    local.get $3
+   local.get $2
    i32.const 16
    i32.shl
    memory.size
@@ -1513,7 +1513,7 @@
    i64.const 16
    i64.shl
    call $~lib/rt/tlsf/addMemory
-   local.get $2
+   local.get $3
    local.get $1
    call $~lib/rt/tlsf/searchBlock
    local.tee $0
@@ -1541,12 +1541,12 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $2
+  local.get $3
   local.get $0
   call $~lib/rt/tlsf/removeBlock
   local.get $0
   i32.load
-  local.set $3
+  local.set $2
   local.get $1
   i32.const 4
   i32.add
@@ -1560,7 +1560,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  local.get $3
+  local.get $2
   i32.const -4
   i32.and
   local.get $1
@@ -1571,7 +1571,7 @@
   if
    local.get $0
    local.get $1
-   local.get $3
+   local.get $2
    i32.const 2
    i32.and
    i32.or
@@ -1588,28 +1588,25 @@
    i32.const 1
    i32.or
    i32.store
-   local.get $2
+   local.get $3
    local.get $1
    call $~lib/rt/tlsf/insertBlock
   else
    local.get $0
-   local.get $3
+   local.get $2
    i32.const -2
    i32.and
    i32.store
    local.get $0
    i32.const 4
    i32.add
-   local.tee $1
    local.get $0
    i32.load
    i32.const -4
    i32.and
-   local.tee $2
    i32.add
+   local.tee $1
    local.get $1
-   local.get $2
-   i32.add
    i32.load
    i32.const -3
    i32.and
@@ -1636,7 +1633,7 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$69
+   block $__inlined_func$~lib/rt/itcms/interrupt$68
     i32.const 2048
     local.set $2
     loop $do-loop|0
@@ -1653,7 +1650,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$69
+      br $__inlined_func$~lib/rt/itcms/interrupt$68
      end
      local.get $2
      i32.const 0
@@ -2103,7 +2100,7 @@
    i32.const 0
    return
   end
-  block $__inlined_func$~lib/util/string/compareImpl$78 (result i32)
+  block $__inlined_func$~lib/util/string/compareImpl$77 (result i32)
    local.get $0
    local.tee $2
    i32.const 7
@@ -2163,7 +2160,7 @@
       local.get $3
       local.get $4
       i32.sub
-      br $__inlined_func$~lib/util/string/compareImpl$78
+      br $__inlined_func$~lib/util/string/compareImpl$77
      end
      local.get $2
      i32.const 2
@@ -2289,7 +2286,7 @@
  )
  (func $~lib/staticarray/StaticArray<~lib/string/String>#includes (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
-  block $__inlined_func$~lib/staticarray/StaticArray<~lib/string/String>#indexOf$81 (result i32)
+  block $__inlined_func$~lib/staticarray/StaticArray<~lib/string/String>#indexOf$80 (result i32)
    i32.const -1
    local.get $0
    i32.const 20
@@ -2303,7 +2300,7 @@
    local.get $3
    i32.ge_s
    i32.or
-   br_if $__inlined_func$~lib/staticarray/StaticArray<~lib/string/String>#indexOf$81
+   br_if $__inlined_func$~lib/staticarray/StaticArray<~lib/string/String>#indexOf$80
    drop
    local.get $2
    i32.const 0
@@ -2334,7 +2331,7 @@
      i32.load
      local.get $1
      call $~lib/string/String.__eq
-     br_if $__inlined_func$~lib/staticarray/StaticArray<~lib/string/String>#indexOf$81
+     br_if $__inlined_func$~lib/staticarray/StaticArray<~lib/string/String>#indexOf$80
      drop
      local.get $2
      i32.const 1
@@ -2494,7 +2491,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinStringArray$83 (result i32)
+  block $__inlined_func$~lib/util/string/joinStringArray$82 (result i32)
    i32.const 1904
    local.get $0
    i32.const 20
@@ -2508,7 +2505,7 @@
    local.tee $6
    i32.const 0
    i32.lt_s
-   br_if $__inlined_func$~lib/util/string/joinStringArray$83
+   br_if $__inlined_func$~lib/util/string/joinStringArray$82
    drop
    local.get $6
    i32.eqz
@@ -2521,7 +2518,7 @@
     else
      i32.const 1904
     end
-    br $__inlined_func$~lib/util/string/joinStringArray$83
+    br $__inlined_func$~lib/util/string/joinStringArray$82
    end
    loop $for-loop|0
     local.get $2
@@ -4328,7 +4325,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  block $__inlined_func$~lib/staticarray/StaticArray<f64>#includes$102 (result i32)
+  block $__inlined_func$~lib/staticarray/StaticArray<f64>#includes$101 (result i32)
    i32.const 0
    local.set $2
    i32.const 0
@@ -4347,7 +4344,7 @@
    local.get $1
    i32.eqz
    i32.or
-   br_if $__inlined_func$~lib/staticarray/StaticArray<f64>#includes$102
+   br_if $__inlined_func$~lib/staticarray/StaticArray<f64>#includes$101
    drop
    loop $while-continue|0
     local.get $1
@@ -4364,7 +4361,7 @@
      local.tee $14
      local.get $14
      f64.ne
-     br_if $__inlined_func$~lib/staticarray/StaticArray<f64>#includes$102
+     br_if $__inlined_func$~lib/staticarray/StaticArray<f64>#includes$101
      drop
      local.get $2
      i32.const 1
@@ -4385,7 +4382,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  block $__inlined_func$~lib/staticarray/StaticArray<f32>#includes$103 (result i32)
+  block $__inlined_func$~lib/staticarray/StaticArray<f32>#includes$102 (result i32)
    i32.const 0
    local.set $2
    i32.const 0
@@ -4404,7 +4401,7 @@
    local.get $1
    i32.eqz
    i32.or
-   br_if $__inlined_func$~lib/staticarray/StaticArray<f32>#includes$103
+   br_if $__inlined_func$~lib/staticarray/StaticArray<f32>#includes$102
    drop
    loop $while-continue|02
     local.get $1
@@ -4421,7 +4418,7 @@
      local.tee $15
      local.get $15
      f32.ne
-     br_if $__inlined_func$~lib/staticarray/StaticArray<f32>#includes$103
+     br_if $__inlined_func$~lib/staticarray/StaticArray<f32>#includes$102
      drop
      local.get $2
      i32.const 1
@@ -5193,7 +5190,7 @@
       local.get $8
       i32.load
       local.tee $12
-      block $__inlined_func$~lib/rt/itcms/__renew$140 (result i32)
+      block $__inlined_func$~lib/rt/itcms/__renew$139 (result i32)
        i32.const 1073741820
        local.get $0
        i32.const 1
@@ -5233,7 +5230,7 @@
         local.get $6
         i32.store offset=16
         local.get $12
-        br $__inlined_func$~lib/rt/itcms/__renew$140
+        br $__inlined_func$~lib/rt/itcms/__renew$139
        end
        local.get $6
        local.get $0
@@ -5612,7 +5609,7 @@
   global.set $~argumentsLength
   i32.const 0
   local.set $0
-  block $__inlined_func$~lib/util/sort/SORT<i32>$141
+  block $__inlined_func$~lib/util/sort/SORT<i32>$140
    local.get $7
    i32.const 20
    i32.sub
@@ -5626,7 +5623,7 @@
     local.get $4
     i32.const 1
     i32.le_u
-    br_if $__inlined_func$~lib/util/sort/SORT<i32>$141
+    br_if $__inlined_func$~lib/util/sort/SORT<i32>$140
     block $break|0
      block $case1|0
       local.get $4
@@ -5717,7 +5714,7 @@
      local.get $0
      select
      i32.store offset=4
-     br $__inlined_func$~lib/util/sort/SORT<i32>$141
+     br $__inlined_func$~lib/util/sort/SORT<i32>$140
     end
     local.get $7
     i32.const 0
@@ -5726,7 +5723,7 @@
     i32.sub
     i32.const 0
     call $~lib/util/sort/insertionSort<i32>
-    br $__inlined_func$~lib/util/sort/SORT<i32>$141
+    br $__inlined_func$~lib/util/sort/SORT<i32>$140
    end
    i32.const 33
    local.get $4

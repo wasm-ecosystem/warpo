@@ -1948,16 +1948,13 @@
    local.get $1
    i32.const 4
    i32.add
-   local.tee $4
    local.get $1
    i32.load
    i32.const -4
    i32.and
+   i32.add
    local.tee $2
-   i32.add
    local.get $2
-   local.get $4
-   i32.add
    i32.load
    i32.const -3
    i32.and
