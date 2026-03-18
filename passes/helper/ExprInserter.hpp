@@ -18,10 +18,13 @@ public:
   explicit ExprInserter(wasm::Function *func) : func_(func) {}
 
   bool canInsertBefore(wasm::Expression *insertPosition);
-  /// @note when insertPosition is a terminator, it will insert before terminator
   bool canInsertAfter(wasm::Expression *insertPosition);
+  /// @note when insertPosition is a terminator, it will insert before terminator
+  bool canInsertAtEndOfBB(wasm::Expression *insertPosition);
   void insertBefore(wasm::Builder &b, wasm::Expression *insertedExpr, wasm::Expression **insertPositionPtr);
   void insertAfter(wasm::Builder &b, wasm::Expression *insertedExpr, wasm::Expression **insertPositionPtr);
+  /// @note when insertPosition is a terminator, it will insert before terminator
+  void insertAtEndOfBB(wasm::Builder &b, wasm::Expression *insertedExpr, wasm::Expression **insertPositionPtr);
 };
 
 } // namespace warpo::passes
