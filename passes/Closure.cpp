@@ -7,6 +7,7 @@
 #include <cassert>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -268,11 +269,22 @@ private:
   wasm::Function *func_;
 };
 
+struct PerFunctionAnalysisResult final {
+  ClosureEnvDefMap defMap;
+  std::unordered_map<wasm::Call *, LevelDef> lowerAction;
+};
+
 class OptClosureEnvAnalyzer final : public wasm::WalkerPass<wasm::PostWalker<OptClosureEnvAnalyzer>> {
 public:
-  OptClosureEnvAnalyzer(VariableInfo const *variableInfo, std::vector<ClosureEnvDefMap> &funcResults,
-                        std::unordered_map<wasm::Call *, LevelDef> &lowerAction) noexcept
-      : variableInfo_(variableInfo), funcResults_(funcResults), lowerAction_(lowerAction) {}
+  OptClosureEnvAnalyzer(VariableInfo const *variableInfo, std::vector<PerFunctionAnalysisResult> &results,
+                        std::mutex &mu) noexcept
+      : variableInfo_(variableInfo), results_(results), mu_(mu) {}
+
+  bool isFunctionParallel() override { return true; }
+  std::unique_ptr<wasm::Pass> create() override {
+    return std::make_unique<OptClosureEnvAnalyzer>(variableInfo_, results_, mu_);
+  }
+
   void doWalkFunction(wasm::Function *func) {
     VariableInfo::SubProgramLookupMap const &lookupMap = variableInfo_->getSubProgramLookupMap();
     VariableInfo::SubProgramLookupMap::const_iterator const spIt = lookupMap.find(func->name.str);
@@ -302,6 +314,7 @@ public:
       }
     }
 
+    std::unordered_map<wasm::Call *, LevelDef> localLowerAction;
     for (BasicBlock const &bb : defMap.cfg()) {
       for (wasm::Expression *const expr : bb) {
         wasm::Call *const call = expr->dynCast<wasm::Call>();
@@ -312,19 +325,21 @@ public:
         int32_t const level = levelConst->value.geti32();
         std::optional<LevelDef> const def = defMap.getClosestDef(&bb, level);
         if (def.has_value()) {
-          lowerAction_[call] = *def;
+          localLowerAction[call] = *def;
         } else {
-          lowerAction_[call] = {0, heapIdx};
+          localLowerAction[call] = {0, heapIdx};
         }
       }
     }
-    funcResults_.push_back(std::move(defMap));
+
+    std::lock_guard<std::mutex> const lock(mu_);
+    results_.push_back({std::move(defMap), std::move(localLowerAction)});
   }
 
 private:
   VariableInfo const *variableInfo_;
-  std::vector<ClosureEnvDefMap> &funcResults_;
-  std::unordered_map<wasm::Call *, LevelDef> &lowerAction_;
+  std::vector<PerFunctionAnalysisResult> &results_;
+  std::mutex &mu_;
 };
 
 class OptClosureEnvLower
@@ -402,9 +417,9 @@ void FastLower::run(wasm::Module *m) {
   ClosureCallSummary const summary = scanClosureCalls(parentRunner);
 
   if (summary.needsLowering()) {
-    wasm::PassRunner runner{parentRunner};
-    runner.add(std::make_unique<FastClosureEnvLower>(variableInfo_));
-    runner.run();
+    wasm::PassRunner passRunner{parentRunner};
+    passRunner.add(std::make_unique<FastClosureEnvLower>(variableInfo_));
+    passRunner.run();
   } else if (summary.needsSetOnlyRemoval()) {
     runSetClosureEnvRemoval(parentRunner);
   }
@@ -417,21 +432,23 @@ void OptLower::run(wasm::Module *m) {
   ClosureCallSummary const summary = scanClosureCalls(parentRunner);
 
   if (summary.needsLowering()) {
-    std::vector<ClosureEnvDefMap> funcResults;
+    std::vector<PerFunctionAnalysisResult> analysisResults;
     std::unordered_map<wasm::Expression *, std::vector<CacheLevelInLocalAction>> addDefMap;
     std::unordered_map<wasm::Call *, LevelDef> lowerAction;
+    std::mutex mu;
     {
-      wasm::PassRunner runner{parentRunner};
-      runner.add(std::make_unique<OptClosureEnvAnalyzer>(variableInfo_, funcResults, lowerAction));
-      runner.run();
+      wasm::PassRunner passRunner{parentRunner};
+      passRunner.add(std::make_unique<OptClosureEnvAnalyzer>(variableInfo_, analysisResults, mu));
+      passRunner.run();
 
-      for (ClosureEnvDefMap const &result : funcResults) {
-        result.getInsertions(variableInfo_, addDefMap);
+      for (PerFunctionAnalysisResult &result : analysisResults) {
+        result.defMap.getInsertions(variableInfo_, addDefMap);
+        lowerAction.merge(result.lowerAction);
       }
     }
-    wasm::PassRunner runner{parentRunner};
-    runner.add(std::make_unique<OptClosureEnvLower>(variableInfo_, addDefMap, lowerAction));
-    runner.run();
+    wasm::PassRunner passRunner{parentRunner};
+    passRunner.add(std::make_unique<OptClosureEnvLower>(variableInfo_, addDefMap, lowerAction));
+    passRunner.run();
   } else if (summary.needsSetOnlyRemoval()) {
     runSetClosureEnvRemoval(parentRunner);
   }
