@@ -5085,7 +5085,11 @@ export class Compiler extends DiagnosticEmitter {
       indexExpr
     );
     return compoundAssignmentCacheContext
-      ? this.prependSetupPrefixExpressions(compoundAssignmentCacheContext.setupPrefixExprs, assignmentExpr, contextualType != Type.void)
+      ? this.prependSetupPrefixExpressions(
+          compoundAssignmentCacheContext.setupPrefixExprs,
+          assignmentExpr,
+          contextualType != Type.void
+        )
       : assignmentExpr;
   }
 
@@ -5268,11 +5272,7 @@ export class Compiler extends DiagnosticEmitter {
             cacheTarget
           );
         } else {
-          indexArg = this.compileExpression(
-            assert(readElementExpression),
-            indexType,
-            Constraints.ConvImplicit
-          );
+          indexArg = this.compileExpression(assert(readElementExpression), indexType, Constraints.ConvImplicit);
           assignmentElementExpr = this.compileExpression(
             assert(assignmentElementExpression),
             indexType,
@@ -5313,11 +5313,7 @@ export class Compiler extends DiagnosticEmitter {
       setupAndExpr[i] = unchecked(setupPrefixExprs[i]);
     }
     setupAndExpr[setupPrefixExprs.length] = expr;
-    return this.module.block(
-      null,
-      setupAndExpr,
-      tee ? this.currentType.toRef() : TypeRef.None
-    );
+    return this.module.block(null, setupAndExpr, tee ? this.currentType.toRef() : TypeRef.None);
   }
 
   private needsCompoundAssignmentSideEffectCache(target: Expression): bool {
@@ -5328,8 +5324,9 @@ export class Compiler extends DiagnosticEmitter {
     }
     if (cacheTarget.kind == NodeKind.ElementAccess) {
       let access = <ElementAccessExpression>cacheTarget;
-      return this.expressionHasSideEffects(access.expression)
-          || this.expressionHasSideEffects(access.elementExpression);
+      return (
+        this.expressionHasSideEffects(access.expression) || this.expressionHasSideEffects(access.elementExpression)
+      );
     }
     return false;
   }
@@ -5370,12 +5367,14 @@ export class Compiler extends DiagnosticEmitter {
       case NodeKind.UnaryPrefix: {
         let unaryPrefix = <UnaryPrefixExpression>expression;
         let operator = unaryPrefix.operator;
-        return operator == Token.Plus_Plus
-            || operator == Token.Minus_Minus
-            || operator == Token.Delete
-            || operator == Token.Await
-            || operator == Token.Yield
-            || this.expressionHasSideEffects(unaryPrefix.operand);
+        return (
+          operator == Token.Plus_Plus ||
+          operator == Token.Minus_Minus ||
+          operator == Token.Delete ||
+          operator == Token.Await ||
+          operator == Token.Yield ||
+          this.expressionHasSideEffects(unaryPrefix.operand)
+        );
       }
       case NodeKind.Assertion:
         return this.expressionHasSideEffects((<AssertionExpression>expression).expression);
@@ -5383,8 +5382,9 @@ export class Compiler extends DiagnosticEmitter {
         return this.expressionHasSideEffects((<PropertyAccessExpression>expression).expression);
       case NodeKind.ElementAccess: {
         let access = <ElementAccessExpression>expression;
-        return this.expressionHasSideEffects(access.expression)
-            || this.expressionHasSideEffects(access.elementExpression);
+        return (
+          this.expressionHasSideEffects(access.expression) || this.expressionHasSideEffects(access.elementExpression)
+        );
       }
       case NodeKind.Comma: {
         let expressions = (<CommaExpression>expression).expressions;
@@ -5395,9 +5395,11 @@ export class Compiler extends DiagnosticEmitter {
       }
       case NodeKind.Ternary: {
         let ternary = <TernaryExpression>expression;
-        return this.expressionHasSideEffects(ternary.condition)
-            || this.expressionHasSideEffects(ternary.ifThen)
-            || this.expressionHasSideEffects(ternary.ifElse);
+        return (
+          this.expressionHasSideEffects(ternary.condition) ||
+          this.expressionHasSideEffects(ternary.ifThen) ||
+          this.expressionHasSideEffects(ternary.ifElse)
+        );
       }
       case NodeKind.Binary: {
         let binary = <BinaryExpression>expression;
@@ -5417,8 +5419,7 @@ export class Compiler extends DiagnosticEmitter {
           case Token.Caret_Equals:
             return true;
           default:
-            return this.expressionHasSideEffects(binary.left)
-                || this.expressionHasSideEffects(binary.right);
+            return this.expressionHasSideEffects(binary.left) || this.expressionHasSideEffects(binary.right);
         }
       }
       default:
