@@ -1581,12 +1581,12 @@
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
   local.get $0
   i32.load
+  local.tee $0
   i32.load
   i32.const 4
   i32.add
   i32.load
   local.get $0
-  i32.load
   i32.const 4
   i32.add
   i32.load
