@@ -26,6 +26,7 @@ public:
   /// @brief return true if node dominates dominator
   bool isDom(BasicBlock const *dominatorNode, BasicBlock const *dominatedNode) const;
   bool isPostDom(BasicBlock const *dominatorNode, BasicBlock const *dominatedNode) const;
+  BasicBlock const *getIDom(BasicBlock const *node) const;
 
   /// @brief get all dominators of @param node
   DynBitset getDominators(BasicBlock const *node) const;
