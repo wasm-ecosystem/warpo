@@ -158,11 +158,11 @@ wasm::Index getHeapLocalIndex(VariableInfo const *variableInfo, wasm::Function *
   return *heapIdx;
 }
 
-wasm::Expression *lowerSetFFIClosureEnv(wasm::Call *const curr, wasm::Module *module, wasm::Function *func,
+wasm::Expression *lowerSetFFIClosureEnv(wasm::Call *const curr, wasm::Module *m, wasm::Function *func,
                                         VariableInfo const *variableInfo) {
-  wasm::Builder b{*module};
+  wasm::Builder b{*m};
   wasm::Index const heapIdx = getHeapLocalIndex(variableInfo, func);
-  wasm::Name const memoryName = module->memories.front()->name;
+  wasm::Name const memoryName = m->memories.front()->name;
   return b.makeStore(4, 0, 4, b.makeLocalGet(heapIdx, wasm::Type::i32), curr->operands[0], wasm::Type::i32, memoryName);
 }
 
@@ -188,15 +188,15 @@ private:
   VariableInfo const *variableInfo_;
 };
 
-wasm::Expression *fastLowerGetClosureEnvByLevel(wasm::Call *const curr, wasm::Module *module, wasm::Function *func,
+wasm::Expression *fastLowerGetClosureEnvByLevel(wasm::Call *const curr, wasm::Module *m, wasm::Function *func,
                                                 VariableInfo const *variableInfo) {
-  wasm::Builder b{*module};
+  wasm::Builder b{*m};
   wasm::Const const *const levelConst = curr->operands[0]->dynCast<wasm::Const>();
   assert(levelConst && "getClosureEnvByLevel parameter must be i32.const");
   int32_t const level = levelConst->value.geti32();
 
   wasm::Index const heapIdx = getHeapLocalIndex(variableInfo, func);
-  wasm::Name const memoryName = module->memories.front()->name;
+  wasm::Name const memoryName = m->memories.front()->name;
   wasm::Expression *addr = b.makeLocalGet(heapIdx, wasm::Type::i32);
   for (int32_t i = 0; i < level; ++i)
     addr = b.makeLoad(4, false, 0, 4, addr, wasm::Type::i32, memoryName);
@@ -405,13 +405,13 @@ public:
   }
 
   wasm::Expression *lowerGetClosureEnvByLevel(LevelDef const &action, int32_t const neededLevel) {
-    wasm::Module *const module = this->getModule();
+    wasm::Module *const m = this->getModule();
 
-    wasm::Builder b{*module};
+    wasm::Builder b{*m};
 
     wasm::Expression *addr = b.makeLocalGet(action.localIndex, wasm::Type::i32);
 
-    wasm::Name const memoryName = module->memories.front()->name;
+    wasm::Name const memoryName = m->memories.front()->name;
     for (int32_t i = action.level; i < neededLevel; ++i)
       addr = b.makeLoad(4, false, 0, 4, addr, wasm::Type::i32, memoryName);
 
