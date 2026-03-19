@@ -5317,13 +5317,11 @@ export class Compiler extends DiagnosticEmitter {
   }
 
   private needsCompoundAssignmentSideEffectCache(target: Expression): bool {
-    let cacheTarget = this.getCompoundAssignmentSideEffectCacheTarget(target);
-    if (!cacheTarget) return false;
-    if (cacheTarget.kind == NodeKind.PropertyAccess) {
-      return this.expressionHasSideEffects((<PropertyAccessExpression>cacheTarget).expression);
+    if (target.kind == NodeKind.PropertyAccess) {
+      return this.expressionHasSideEffects((<PropertyAccessExpression>target).expression);
     }
-    if (cacheTarget.kind == NodeKind.ElementAccess) {
-      let access = <ElementAccessExpression>cacheTarget;
+    if (target.kind == NodeKind.ElementAccess) {
+      let access = <ElementAccessExpression>target;
       return (
         this.expressionHasSideEffects(access.expression) || this.expressionHasSideEffects(access.elementExpression)
       );
