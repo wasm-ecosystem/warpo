@@ -5,7 +5,6 @@
 #include <array>
 #include <atomic>
 #include <cassert>
-#include <map>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -145,12 +144,20 @@ wasm::Index getHeapLocalIndex(VariableInfo const *variableInfo, wasm::Function *
   return *heapIdx;
 }
 
-template <typename Derived, typename VisitorType = wasm::Visitor<Derived>>
-class ClosureEnvLowerBase : public wasm::WalkerPass<wasm::PostWalker<Derived, VisitorType>> {
-  using Super = wasm::WalkerPass<wasm::PostWalker<Derived, VisitorType>>;
+wasm::Expression *lowerSetFFIClosureEnv(wasm::Call *const curr, wasm::Module *module, wasm::Function *func,
+                                        VariableInfo const *variableInfo) {
+  wasm::Builder b{*module};
+  wasm::Index const heapIdx = getHeapLocalIndex(variableInfo, func);
+  wasm::Name const memoryName = module->memories.front()->name;
+  return b.makeStore(4, 0, 4, b.makeLocalGet(heapIdx, wasm::Type::i32), curr->operands[0], wasm::Type::i32, memoryName);
+}
 
+class ClosureEnvCommonLower : public wasm::WalkerPass<wasm::PostWalker<ClosureEnvCommonLower>> {
 public:
-  explicit ClosureEnvLowerBase(VariableInfo const *variableInfo) : variableInfo(variableInfo) {}
+  explicit ClosureEnvCommonLower(VariableInfo const *variableInfo) : variableInfo_(variableInfo) {}
+
+  bool isFunctionParallel() override { return true; }
+  std::unique_ptr<wasm::Pass> create() override { return std::make_unique<ClosureEnvCommonLower>(variableInfo_); }
 
   void run(wasm::Module *module) override {
     wasm::Builder b{*module};
@@ -160,29 +167,20 @@ public:
   }
 
   void visitCall(wasm::Call *const curr) {
-    wasm::Builder b{*this->getModule()};
+    wasm::Builder b{*getModule()};
     if (curr->target == kGetClosureEnv) {
-      this->replaceCurrent(b.makeGlobalGet(kClosureEnvGlobal, wasm::Type::i32));
+      replaceCurrent(b.makeGlobalGet(kClosureEnvGlobal, wasm::Type::i32));
     } else if (curr->target == kSetClosureEnv) {
-      this->replaceCurrent(b.makeGlobalSet(kClosureEnvGlobal, curr->operands[0]));
-    } else if (curr->target == kGetClosureEnvByLevel) {
-      this->replaceCurrent(static_cast<Derived *>(this)->lowerGetClosureEnvByLevel(curr));
+      replaceCurrent(b.makeGlobalSet(kClosureEnvGlobal, curr->operands[0]));
     } else if (curr->target == kSetFFIClosureEnv) {
-      this->lowerSetFFIClosureEnv(curr);
+      replaceCurrent(lowerSetFFIClosureEnv(curr, getModule(), getFunction(), variableInfo_));
     }
   }
 
-  void lowerSetFFIClosureEnv(wasm::Call *const curr) {
-    wasm::Builder b{*this->getModule()};
-    wasm::Index const heapIdx = getHeapLocalIndex(variableInfo, this->getFunction());
-    wasm::Name const memoryName = this->getModule()->memories.front()->name;
-    wasm::Store *const storeExpr =
-        b.makeStore(4, 0, 4, b.makeLocalGet(heapIdx, wasm::Type::i32), curr->operands[0], wasm::Type::i32, memoryName);
-    this->replaceCurrent(storeExpr);
-  }
+private:
+  using Super = wasm::WalkerPass<wasm::PostWalker<ClosureEnvCommonLower>>;
 
-protected:
-  VariableInfo const *variableInfo;
+  VariableInfo const *variableInfo_;
 };
 
 wasm::Expression *fastLowerGetClosureEnvByLevel(wasm::Call *const curr, wasm::Module *module, wasm::Function *func,
@@ -200,13 +198,22 @@ wasm::Expression *fastLowerGetClosureEnvByLevel(wasm::Call *const curr, wasm::Mo
   return addr;
 }
 
-class FastClosureEnvLower : public ClosureEnvLowerBase<FastClosureEnvLower> {
+class FastGetClosureEnvByLevelLower : public wasm::WalkerPass<wasm::PostWalker<FastGetClosureEnvByLevelLower>> {
 public:
-  using ClosureEnvLowerBase::ClosureEnvLowerBase;
+  explicit FastGetClosureEnvByLevelLower(VariableInfo const *variableInfo) : variableInfo_(variableInfo) {}
 
-  wasm::Expression *lowerGetClosureEnvByLevel(wasm::Call *const curr) {
-    return fastLowerGetClosureEnvByLevel(curr, this->getModule(), this->getFunction(), this->variableInfo);
+  bool isFunctionParallel() override { return true; }
+  std::unique_ptr<wasm::Pass> create() override {
+    return std::make_unique<FastGetClosureEnvByLevelLower>(variableInfo_);
   }
+
+  void visitCall(wasm::Call *const curr) {
+    if (curr->target == kGetClosureEnvByLevel)
+      replaceCurrent(fastLowerGetClosureEnvByLevel(curr, getModule(), getFunction(), variableInfo_));
+  }
+
+private:
+  VariableInfo const *variableInfo_;
 };
 
 class ClosureEnvDefMap final {
@@ -296,7 +303,7 @@ public:
     wasm::Index const heapIdx = *spIt->second.getHeapVariableStorageLocalIndex();
     ClosureEnvDefMap defMap(func);
     for (BasicBlock const &bb : defMap.cfg()) {
-      std::map<int32_t, int32_t> levelCounts;
+      std::vector<uint32_t> levelCounts;
       for (wasm::Expression *const expr : bb) {
         wasm::Call const *const call = expr->dynCast<wasm::Call>();
         if (call == nullptr || call->target != kGetClosureEnvByLevel)
@@ -305,15 +312,22 @@ public:
         assert(levelConst != nullptr);
         int32_t const level = levelConst->value.geti32();
         if (level > 0) {
-          ++levelCounts[level];
+          size_t const levelIndex = static_cast<size_t>(level);
+          if (levelIndex >= levelCounts.size())
+            levelCounts.resize(levelIndex + 1, 0);
+          ++levelCounts[levelIndex];
         }
       }
       if (levelCounts.empty())
         continue;
-      int32_t const maxLevel = levelCounts.rbegin()->first;
-      for (std::map<int32_t, int32_t>::const_iterator it = levelCounts.begin(); it != levelCounts.end(); ++it) {
-        if (it->first < maxLevel || it->second > 1)
-          defMap.addDef(&bb, it->first);
+      int32_t const maxLevel = static_cast<int32_t>(levelCounts.size() - 1);
+      for (size_t levelIndex = 1; levelIndex < levelCounts.size(); ++levelIndex) {
+        uint32_t const count = levelCounts[levelIndex];
+        if (count == 0)
+          continue;
+        int32_t const level = static_cast<int32_t>(levelIndex);
+        if (level < maxLevel || count > 1)
+          defMap.addDef(&bb, level);
       }
     }
 
@@ -345,20 +359,22 @@ private:
   std::mutex &mu_;
 };
 
-class OptClosureEnvLower
-    : public ClosureEnvLowerBase<OptClosureEnvLower, wasm::UnifiedExpressionVisitor<OptClosureEnvLower>> {
-  using Base = ClosureEnvLowerBase<OptClosureEnvLower, wasm::UnifiedExpressionVisitor<OptClosureEnvLower>>;
-
+class OptGetClosureEnvByLevelLower
+    : public wasm::WalkerPass<wasm::PostWalker<OptGetClosureEnvByLevelLower,
+                                               wasm::UnifiedExpressionVisitor<OptGetClosureEnvByLevelLower>>> {
 public:
-  using Base::ClosureEnvLowerBase;
+  OptGetClosureEnvByLevelLower(std::unordered_map<wasm::Expression *, std::vector<CacheLevelInLocalAction>> addDefMap,
+                               std::unordered_map<wasm::Call *, LevelDef> &lowerAction)
+      : addDefMap_(std::move(addDefMap)), lowerAction_(lowerAction) {}
 
-  OptClosureEnvLower(VariableInfo const *variableInfo,
-                     std::unordered_map<wasm::Expression *, std::vector<CacheLevelInLocalAction>> addDefMap,
-                     std::unordered_map<wasm::Call *, LevelDef> &lowerAction)
-      : Base(variableInfo), addDefMap_(addDefMap), lowerAction_(lowerAction) {}
+  bool isFunctionParallel() override { return true; }
+  std::unique_ptr<wasm::Pass> create() override {
+    return std::make_unique<OptGetClosureEnvByLevelLower>(addDefMap_, lowerAction_);
+  }
 
   void visitCall(wasm::Call *const curr) {
-    Base::visitCall(curr);
+    if (curr->target == kGetClosureEnvByLevel)
+      replaceCurrent(lowerGetClosureEnvByLevel(curr));
     auto const it = addDefMap_.find(curr);
     if (it != addDefMap_.end())
       wrapWithCache(it->second);
@@ -395,9 +411,9 @@ public:
 
 private:
   void wrapWithCache(std::vector<CacheLevelInLocalAction> const &actions) {
-    wasm::Builder b{*this->getModule()};
-    wasm::Name const memoryName = this->getModule()->memories.front()->name;
-    wasm::Expression *const current = this->getCurrent();
+    wasm::Builder b{*getModule()};
+    wasm::Name const memoryName = getModule()->memories.front()->name;
+    wasm::Expression *const current = getCurrent();
     std::vector<wasm::Expression *> items;
     for (CacheLevelInLocalAction const &action : actions) {
       wasm::Expression *addr = b.makeLocalGet(action.levelAlreadyInLocal.localIndex, wasm::Type::i32);
@@ -421,7 +437,8 @@ void FastLower::run(wasm::Module *m) {
 
   if (summary.needsLowering()) {
     wasm::PassRunner passRunner{parentRunner};
-    passRunner.add(std::make_unique<FastClosureEnvLower>(variableInfo_));
+    passRunner.add(std::make_unique<ClosureEnvCommonLower>(variableInfo_));
+    passRunner.add(std::make_unique<FastGetClosureEnvByLevelLower>(variableInfo_));
     passRunner.run();
   } else if (summary.needsSetOnlyRemoval()) {
     runSetClosureEnvRemoval(parentRunner);
@@ -435,6 +452,11 @@ void OptLower::run(wasm::Module *m) {
   ClosureCallSummary const summary = scanClosureCalls(parentRunner);
 
   if (summary.needsLowering()) {
+    {
+      wasm::PassRunner passRunner{parentRunner};
+      passRunner.add(std::make_unique<ClosureEnvCommonLower>(variableInfo_));
+      passRunner.run();
+    }
     std::vector<PerFunctionAnalysisResult> analysisResults;
     std::unordered_map<wasm::Expression *, std::vector<CacheLevelInLocalAction>> addDefMap;
     std::unordered_map<wasm::Call *, LevelDef> lowerAction;
@@ -450,7 +472,7 @@ void OptLower::run(wasm::Module *m) {
       }
     }
     wasm::PassRunner passRunner{parentRunner};
-    passRunner.add(std::make_unique<OptClosureEnvLower>(variableInfo_, addDefMap, lowerAction));
+    passRunner.add(std::make_unique<OptGetClosureEnvByLevelLower>(addDefMap, lowerAction));
     passRunner.run();
   } else if (summary.needsSetOnlyRemoval()) {
     runSetClosureEnvRemoval(parentRunner);
