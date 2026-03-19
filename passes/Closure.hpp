@@ -18,11 +18,6 @@ struct LevelDef final {
   wasm::Index localIndex;
 };
 
-struct CacheLevelInLocalAction final {
-  LevelDef fromLevel;
-  LevelDef toLevel;
-};
-
 struct OptLower final : public wasm::Pass {
   VariableInfo const *variableInfo_;
   explicit OptLower(VariableInfo const *variableInfo) : variableInfo_(variableInfo) { name = "closure::OptLower"; }

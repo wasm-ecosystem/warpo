@@ -40,6 +40,11 @@ static std::array<const char *const, 3> kClosureImportBases = {
 
 namespace {
 
+struct CacheLevelInLocalAction final {
+  LevelDef levelAlreadyInLocal;
+  LevelDef levelNeedStorageInLocal;
+};
+
 struct ClosureCallSummary final {
   bool hasGet;
   bool hasSet;
@@ -241,9 +246,7 @@ public:
                      std::unordered_map<wasm::Expression *, std::vector<CacheLevelInLocalAction>> &insertions) const {
     wasm::Index const heapIdx = getHeapLocalIndex(variableInfo, func_);
     LevelDef const level0{0, heapIdx};
-    for (std::pair<BasicBlock const *const, std::vector<LevelDef>> const &pair : map_) {
-      BasicBlock const *const block = pair.first;
-      std::vector<LevelDef> const &defs = pair.second;
+    for (auto const &[block, defs] : map_) {
       if (defs.empty())
         continue;
       wasm::Expression *anchor = nullptr;
@@ -257,8 +260,8 @@ public:
       assert(anchor != nullptr && "no getClosureEnvByLevel found in BasicBlock");
       for (LevelDef const &def : defs) {
         assert(def.level > 0 && "cached closure levels must be greater than zero");
-        std::optional<LevelDef> const fromLevel = getClosestDef(block, def.level - 1);
-        insertions[anchor].push_back({fromLevel.value_or(level0), def});
+        std::optional<LevelDef> const levelAlreadyInLocal = getClosestDef(block, def.level - 1);
+        insertions[anchor].push_back({levelAlreadyInLocal.value_or(level0), def});
       }
     }
   }
@@ -397,10 +400,10 @@ private:
     wasm::Expression *const current = this->getCurrent();
     std::vector<wasm::Expression *> items;
     for (CacheLevelInLocalAction const &action : actions) {
-      wasm::Expression *addr = b.makeLocalGet(action.fromLevel.localIndex, wasm::Type::i32);
-      for (int32_t i = action.fromLevel.level; i < action.toLevel.level; ++i)
+      wasm::Expression *addr = b.makeLocalGet(action.levelAlreadyInLocal.localIndex, wasm::Type::i32);
+      for (int32_t i = action.levelAlreadyInLocal.level; i < action.levelNeedStorageInLocal.level; ++i)
         addr = b.makeLoad(4, false, 0, 4, addr, wasm::Type::i32, memoryName);
-      items.push_back(b.makeLocalSet(action.toLevel.localIndex, addr));
+      items.push_back(b.makeLocalSet(action.levelNeedStorageInLocal.localIndex, addr));
     }
     items.push_back(current);
     this->replaceCurrent(b.makeBlock(items, current->type));
