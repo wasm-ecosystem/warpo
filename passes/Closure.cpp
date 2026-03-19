@@ -15,12 +15,14 @@
 #include "Closure.hpp"
 #include "helper/CFG.hpp"
 #include "helper/ExprInserter.hpp"
+#include "helper/FindExpr.hpp"
 #include "ir/effects.h"
 #include "warpo/support/Opt.hpp"
 #include "wasm-builder.h"
 #include "wasm-traversal.h"
 #include "wasm-type.h"
 #include "wasm.h"
+
 namespace warpo::passes::closure {
 
 static constexpr const char *const kGetClosureEnv = "~lib/rt/closure/getClosureEnv";
@@ -42,6 +44,11 @@ namespace {
 struct CacheLevelInLocalAction final {
   LevelDef levelAlreadyInLocal;
   LevelDef levelNeedStorageInLocal;
+};
+
+struct ActionPlan final {
+  std::optional<std::vector<CacheLevelInLocalAction>> saveTempLevelAction;
+  std::optional<LevelDef> lowerCallAction;
 };
 
 struct ClosureCallSummary final {
@@ -99,6 +106,13 @@ void removeClosureImports(wasm::Module *const m) {
     m->removeFunction(name);
   if (m->getFunctionOrNull(kSetFFIClosureEnv) != nullptr)
     m->removeFunction(kSetFFIClosureEnv);
+}
+
+void ensureClosureEnvGlobal(wasm::Module *const m) {
+  if (m->getGlobalOrNull(kClosureEnvGlobal) != nullptr)
+    return;
+  wasm::Builder b{*m};
+  m->addGlobal(wasm::Builder::makeGlobal(kClosureEnvGlobal, wasm::Type::i32, b.makeConst(0), wasm::Builder::Mutable));
 }
 
 class SetClosureEnvRemover : public wasm::WalkerPass<wasm::PostWalker<SetClosureEnvRemover>> {
@@ -159,13 +173,6 @@ public:
   bool isFunctionParallel() override { return true; }
   std::unique_ptr<wasm::Pass> create() override { return std::make_unique<ClosureEnvCommonLower>(variableInfo_); }
 
-  void run(wasm::Module *module) override {
-    wasm::Builder b{*module};
-    module->addGlobal(
-        wasm::Builder::makeGlobal(kClosureEnvGlobal, wasm::Type::i32, b.makeConst(0), wasm::Builder::Mutable));
-    Super::run(module);
-  }
-
   void visitCall(wasm::Call *const curr) {
     wasm::Builder b{*getModule()};
     if (curr->target == kGetClosureEnv) {
@@ -178,8 +185,6 @@ public:
   }
 
 private:
-  using Super = wasm::WalkerPass<wasm::PostWalker<ClosureEnvCommonLower>>;
-
   VariableInfo const *variableInfo_;
 };
 
@@ -250,7 +255,7 @@ public:
   }
 
   void getInsertions(VariableInfo const *variableInfo,
-                     std::unordered_map<wasm::Expression *, std::vector<CacheLevelInLocalAction>> &insertions) const {
+                     std::unordered_map<wasm::Expression *, ActionPlan> &actionPlans) const {
     wasm::Index const heapIdx = getHeapLocalIndex(variableInfo, func_);
     LevelDef const level0{0, heapIdx};
     for (auto const &[block, defs] : map_) {
@@ -268,7 +273,10 @@ public:
       for (LevelDef const &def : defs) {
         assert(def.level > 0 && "cached closure levels must be greater than zero");
         std::optional<LevelDef> const levelAlreadyInLocal = getClosestDef(block, def.level - 1);
-        insertions[anchor].push_back({levelAlreadyInLocal.value_or(level0), def});
+        ActionPlan &actionPlan = actionPlans[anchor];
+        if (!actionPlan.saveTempLevelAction.has_value())
+          actionPlan.saveTempLevelAction.emplace();
+        actionPlan.saveTempLevelAction->push_back({levelAlreadyInLocal.value_or(level0), def});
       }
     }
   }
@@ -280,8 +288,7 @@ private:
 };
 
 struct PerFunctionAnalysisResult final {
-  ClosureEnvDefMap defMap;
-  std::unordered_map<wasm::Call *, LevelDef> lowerAction;
+  std::unordered_map<wasm::Expression *, ActionPlan> actionPlans;
 };
 
 class OptClosureEnvAnalyzer final : public wasm::WalkerPass<wasm::PostWalker<OptClosureEnvAnalyzer>> {
@@ -331,7 +338,8 @@ public:
       }
     }
 
-    std::unordered_map<wasm::Call *, LevelDef> localLowerAction;
+    std::unordered_map<wasm::Expression *, ActionPlan> localActionPlans;
+    defMap.getInsertions(variableInfo_, localActionPlans);
     for (BasicBlock const &bb : defMap.cfg()) {
       for (wasm::Expression *const expr : bb) {
         wasm::Call *const call = expr->dynCast<wasm::Call>();
@@ -341,16 +349,12 @@ public:
         assert(levelConst != nullptr);
         int32_t const level = levelConst->value.geti32();
         std::optional<LevelDef> const def = defMap.getClosestDef(&bb, level);
-        if (def.has_value()) {
-          localLowerAction[call] = *def;
-        } else {
-          localLowerAction[call] = {0, heapIdx};
-        }
+        localActionPlans[call].lowerCallAction = def.value_or(LevelDef{0, heapIdx});
       }
     }
 
     std::lock_guard<std::mutex> const lock(mu_);
-    results_.push_back({std::move(defMap), std::move(localLowerAction)});
+    results_.push_back({std::move(localActionPlans)});
   }
 
 private:
@@ -363,39 +367,44 @@ class OptGetClosureEnvByLevelLower
     : public wasm::WalkerPass<wasm::PostWalker<OptGetClosureEnvByLevelLower,
                                                wasm::UnifiedExpressionVisitor<OptGetClosureEnvByLevelLower>>> {
 public:
-  OptGetClosureEnvByLevelLower(std::unordered_map<wasm::Expression *, std::vector<CacheLevelInLocalAction>> addDefMap,
-                               std::unordered_map<wasm::Call *, LevelDef> &lowerAction)
-      : addDefMap_(std::move(addDefMap)), lowerAction_(lowerAction) {}
+  explicit OptGetClosureEnvByLevelLower(std::unordered_map<wasm::Expression *, ActionPlan> const &actionPlans)
+      : actionPlans_(actionPlans) {}
 
   bool isFunctionParallel() override { return true; }
-  std::unique_ptr<wasm::Pass> create() override {
-    return std::make_unique<OptGetClosureEnvByLevelLower>(addDefMap_, lowerAction_);
-  }
-
-  void visitCall(wasm::Call *const curr) {
-    if (curr->target == kGetClosureEnvByLevel)
-      replaceCurrent(lowerGetClosureEnvByLevel(curr));
-    auto const it = addDefMap_.find(curr);
-    if (it != addDefMap_.end())
-      wrapWithCache(it->second);
-  }
+  std::unique_ptr<wasm::Pass> create() override { return std::make_unique<OptGetClosureEnvByLevelLower>(actionPlans_); }
 
   void visitExpression(wasm::Expression *const curr) {
-    if (curr->is<wasm::Call>())
+    std::unordered_map<wasm::Expression *, ActionPlan>::const_iterator const actionIt = actionPlans_.find(curr);
+    if (actionIt == actionPlans_.end())
       return;
-    auto const cacheIt = addDefMap_.find(curr);
-    if (cacheIt != addDefMap_.end())
-      wrapWithCache(cacheIt->second);
+    ActionPlan const &actionPlan = actionIt->second;
+    if (actionPlan.saveTempLevelAction.has_value() && actionPlan.lowerCallAction.has_value()) {
+      wasm::Call *const call = curr->dynCast<wasm::Call>();
+      assert(call != nullptr && call->target == kGetClosureEnvByLevel);
+      wasm::Const const *const levelConst = call->operands[0]->dynCast<wasm::Const>();
+      assert(levelConst && "getClosureEnvByLevel parameter must be i32.const");
+      wasm::Expression *const lowered =
+          lowerGetClosureEnvByLevel(*actionPlan.lowerCallAction, levelConst->value.geti32());
+      replaceCurrent(makeSaveTempLevelBlock(*actionPlan.saveTempLevelAction, lowered));
+      return;
+    }
+
+    if (actionPlan.saveTempLevelAction.has_value()) {
+      insertSaveTempLevelActions(curr, *actionPlan.saveTempLevelAction);
+      return;
+    }
+
+    if (!actionPlan.lowerCallAction.has_value())
+      return;
+
+    wasm::Call *const call = curr->dynCast<wasm::Call>();
+    assert(call != nullptr && call->target == kGetClosureEnvByLevel);
+    wasm::Const const *const levelConst = call->operands[0]->dynCast<wasm::Const>();
+    assert(levelConst && "getClosureEnvByLevel parameter must be i32.const");
+    replaceCurrent(lowerGetClosureEnvByLevel(*actionPlan.lowerCallAction, levelConst->value.geti32()));
   }
 
-  wasm::Expression *lowerGetClosureEnvByLevel(wasm::Call *const curr) {
-    auto const actionIt = lowerAction_.find(curr);
-    assert(actionIt != lowerAction_.end() && "call not found in lowerAction_");
-    LevelDef const &action = actionIt->second;
-    wasm::Const const *const levelConst = curr->operands[0]->dynCast<wasm::Const>();
-    assert(levelConst && "getClosureEnvByLevel parameter must be i32.const");
-    int32_t const neededLevel = levelConst->value.geti32();
-
+  wasm::Expression *lowerGetClosureEnvByLevel(LevelDef const &action, int32_t const neededLevel) {
     wasm::Module *const module = this->getModule();
 
     wasm::Builder b{*module};
@@ -410,23 +419,36 @@ public:
   }
 
 private:
-  void wrapWithCache(std::vector<CacheLevelInLocalAction> const &actions) {
+  std::vector<wasm::Expression *> makeSaveTempLevelLocalSets(std::vector<CacheLevelInLocalAction> const &actions) {
     wasm::Builder b{*getModule()};
     wasm::Name const memoryName = getModule()->memories.front()->name;
-    wasm::Expression *const current = getCurrent();
-    std::vector<wasm::Expression *> items;
+    std::vector<wasm::Expression *> localSets;
     for (CacheLevelInLocalAction const &action : actions) {
       wasm::Expression *addr = b.makeLocalGet(action.levelAlreadyInLocal.localIndex, wasm::Type::i32);
       for (int32_t i = action.levelAlreadyInLocal.level; i < action.levelNeedStorageInLocal.level; ++i)
         addr = b.makeLoad(4, false, 0, 4, addr, wasm::Type::i32, memoryName);
-      items.push_back(b.makeLocalSet(action.levelNeedStorageInLocal.localIndex, addr));
+      localSets.push_back(b.makeLocalSet(action.levelNeedStorageInLocal.localIndex, addr));
     }
-    items.push_back(current);
-    this->replaceCurrent(b.makeBlock(items, current->type));
+    return localSets;
   }
 
-  std::unordered_map<wasm::Expression *, std::vector<CacheLevelInLocalAction>> addDefMap_;
-  std::unordered_map<wasm::Call *, LevelDef> &lowerAction_;
+  wasm::Expression *makeSaveTempLevelBlock(std::vector<CacheLevelInLocalAction> const &actions,
+                                           wasm::Expression *resultExpr) {
+    wasm::Builder b{*getModule()};
+    std::vector<wasm::Expression *> exprs = makeSaveTempLevelLocalSets(actions);
+    exprs.push_back(resultExpr);
+    return b.makeBlock(exprs, resultExpr->type);
+  }
+
+  void insertSaveTempLevelActions(wasm::Expression *const curr, std::vector<CacheLevelInLocalAction> const &actions) {
+    wasm::Builder b{*getModule()};
+    ExprInserter inserter{getFunction()};
+    wasm::Expression *const inserted = b.makeBlock(makeSaveTempLevelLocalSets(actions), wasm::Type::none);
+
+    inserter.insertBefore(b, inserted, findExprPointer(curr, getFunction()));
+  }
+
+  std::unordered_map<wasm::Expression *, ActionPlan> const &actionPlans_;
 };
 
 } // namespace
@@ -436,6 +458,7 @@ void FastLower::run(wasm::Module *m) {
   ClosureCallSummary const summary = scanClosureCalls(parentRunner);
 
   if (summary.needsLowering()) {
+    ensureClosureEnvGlobal(m);
     wasm::PassRunner passRunner{parentRunner};
     passRunner.add(std::make_unique<ClosureEnvCommonLower>(variableInfo_));
     passRunner.add(std::make_unique<FastGetClosureEnvByLevelLower>(variableInfo_));
@@ -452,14 +475,14 @@ void OptLower::run(wasm::Module *m) {
   ClosureCallSummary const summary = scanClosureCalls(parentRunner);
 
   if (summary.needsLowering()) {
+    ensureClosureEnvGlobal(m);
     {
       wasm::PassRunner passRunner{parentRunner};
       passRunner.add(std::make_unique<ClosureEnvCommonLower>(variableInfo_));
       passRunner.run();
     }
     std::vector<PerFunctionAnalysisResult> analysisResults;
-    std::unordered_map<wasm::Expression *, std::vector<CacheLevelInLocalAction>> addDefMap;
-    std::unordered_map<wasm::Call *, LevelDef> lowerAction;
+    std::unordered_map<wasm::Expression *, ActionPlan> actionPlans;
     std::mutex mu;
     {
       wasm::PassRunner passRunner{parentRunner};
@@ -467,12 +490,11 @@ void OptLower::run(wasm::Module *m) {
       passRunner.run();
 
       for (PerFunctionAnalysisResult &result : analysisResults) {
-        result.defMap.getInsertions(variableInfo_, addDefMap);
-        lowerAction.merge(result.lowerAction);
+        actionPlans.merge(result.actionPlans);
       }
     }
     wasm::PassRunner passRunner{parentRunner};
-    passRunner.add(std::make_unique<OptGetClosureEnvByLevelLower>(addDefMap, lowerAction));
+    passRunner.add(std::make_unique<OptGetClosureEnvByLevelLower>(actionPlans));
     passRunner.run();
   } else if (summary.needsSetOnlyRemoval()) {
     runSetClosureEnvRemoval(parentRunner);
