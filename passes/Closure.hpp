@@ -13,6 +13,11 @@ struct FastLower final : public wasm::Pass {
   void run(wasm::Module *m) override;
 };
 
+struct LevelDef final {
+  int32_t level;
+  wasm::Index localIndex;
+};
+
 struct OptLower final : public wasm::Pass {
   VariableInfo const *variableInfo_;
   explicit OptLower(VariableInfo const *variableInfo) : variableInfo_(variableInfo) { name = "closure::OptLower"; }

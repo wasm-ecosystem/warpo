@@ -143,7 +143,7 @@ bool PrologEpilogInserter::tryInsertPrologueAndEpilogue(wasm::Module *m, wasm::F
   ExprInserter inserter{func};
 
   bool const isInsertedPrologue = inserter.canInsertBefore(prologue);
-  bool const isInsertedEpilogue = inserter.canInsertAfter(epilogue);
+  bool const isInsertedEpilogue = inserter.canInsertAtEndOfBB(epilogue);
   if (isInsertedPrologue && isInsertedEpilogue) {
     wasm::Expression **const prologuePtr = findExprPointer(prologue, func);
     wasm::Expression **const epiloguePtr = findExprPointer(epilogue, func);
@@ -155,7 +155,7 @@ bool PrologEpilogInserter::tryInsertPrologueAndEpilogue(wasm::Module *m, wasm::F
       fmt::println("[" PASS_NAME "] fn '{}' insert epilogue in {}", func->name.str, toString(epilogue));
     inserter.insertBefore(
         b, b.makeCall(FnDecreaseSP, {b.makeConst(wasm::Literal(maxShadowStackOffset))}, wasm::Type::none), prologuePtr);
-    inserter.insertAfter(
+    inserter.insertAtEndOfBB(
         b, b.makeCall(FnIncreaseSP, {b.makeConst(wasm::Literal(maxShadowStackOffset))}, wasm::Type::none), epiloguePtr);
   }
   return isInsertedPrologue && isInsertedEpilogue;

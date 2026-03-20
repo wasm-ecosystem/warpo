@@ -2,7 +2,10 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-/// copy and modify from third_party/binaryen/src/analysis/cfg.h
+// Copy and modify from third_party/binaryen/src/analysis/cfg.h
+//
+// The reason why we don't reuse the binaryen's CFG is that binaryen's CFG constructor will consider the exception
+// handling. Then it will create lots of additional blocks after calls which slow down the data flow analysis.
 
 #pragma once
 
@@ -63,6 +66,8 @@ private:
   friend struct BasicBlockForTest;
 };
 
+// NOTE: CFG doesn't contain all expressions in the function. Only reachable expression will be existed in CFG.
+// use "dce" pass to remove unreachable expressions before creating CFG if needed.
 struct CFG {
   static CFG fromFunction(wasm::Function *func);
 

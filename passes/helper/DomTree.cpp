@@ -40,6 +40,13 @@ bool DomTree::isPostDom(BasicBlock const *dominatorNode, BasicBlock const *domin
   return storage_->postDomTree[dominatedNode->getIndex()].get(dominatorNode->getIndex());
 }
 
+BasicBlock const *DomTree::getIDom(BasicBlock const *node) const {
+  size_t const idomIndex = storage_->idomTree[node->getIndex()];
+  if (idomIndex == ::warpo::undef || idomIndex == node->getIndex())
+    return nullptr;
+  return &(*storage_->cfg_)[idomIndex];
+}
+
 DynBitset DomTree::getDominators(BasicBlock const *node) const { return storage_->domTree[node->getIndex()]; }
 DynBitset DomTree::getPostDominators(BasicBlock const *node) const { return storage_->postDomTree[node->getIndex()]; }
 
@@ -82,6 +89,11 @@ TEST_F(DomTreeTest, Base) {
   EXPECT_TRUE(domTree.isDom(&(*cfg)[0], &(*cfg)[3]));
   EXPECT_FALSE(domTree.isDom(&(*cfg)[1], &(*cfg)[3]));
   EXPECT_FALSE(domTree.isDom(&(*cfg)[2], &(*cfg)[3]));
+
+  EXPECT_EQ(domTree.getIDom(&(*cfg)[0]), nullptr);
+  EXPECT_EQ(domTree.getIDom(&(*cfg)[1]), &(*cfg)[0]);
+  EXPECT_EQ(domTree.getIDom(&(*cfg)[2]), &(*cfg)[0]);
+  EXPECT_EQ(domTree.getIDom(&(*cfg)[3]), &(*cfg)[0]);
 
   EXPECT_TRUE(domTree.isPostDom(&(*cfg)[3], &(*cfg)[0]));
   EXPECT_TRUE(domTree.isPostDom(&(*cfg)[3], &(*cfg)[1]));
