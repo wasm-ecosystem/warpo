@@ -117,122 +117,175 @@ levels are accessed multiple times.
 ## Optimized Lowering (`closure::OptLower`)
 
 The optimized path caches intermediate level results in locals to avoid redundant
-pointer-chasing. It runs three sub-passes:
+pointer-chasing. The key idea: if level 1 is needed to compute level 2, and both are
+used in the same function, compute level 1 once, store it in a local, and reuse that
+local for both the level 1 access and as the starting point for level 2.
 
-```
-OptLower::run(m)
-├─ Pass 1: ClosureEnvCommonLower
-│   Replace get/set with global.get/global.set
-├─ Pass 2: OptClosureEnvAnalyzer (per-function, parallel)
-│   Build CFG + dominator tree
-│   Three-phase analysis → ActionPlan per call site
-├─ Pass 3: OptGetClosureEnvByLevelLower
-│   Apply ActionPlans: insert cache stores + rewrite calls
-└─ removeClosureImports
-```
+The pass operates per-function and builds a CFG with a dominator tree to decide
+**where** to place these cache stores.
 
-### Key data structures
+### When to cache
 
-#### `ClosureEnvDefMap`
+Consider a function `inner` that accesses level 1 (parent) and level 2 (grandparent):
 
-Per-function map tracking which basic blocks have cached level definitions.
-
-- **`BlockClosureInfo`** — per-block state:
-  - `definedLevels`: sorted list of `(level, localIndex)` pairs — levels cached in this block.
-  - `levelCounts`: per-level usage count vector.
-- **`CFG`** + **`DomTree`** — control flow graph and dominator tree for the function.
-
-#### `ActionPlan`
-
-Describes what to do at a specific IR expression:
-
-- `saveTempLevelAction`: list of cache assignments (load from source level local, store to
-  target level local).
-- `lowerCallAction`: which cached local to start from when lowering a `getClosureEnvByLevel`
-  call.
-
-### Three-phase analysis (`doWalkFunction`)
-
-#### Phase 1: Record level usage
-
-```
-forEachGetClosureEnvByLevel → insertUsedLevel(block, level)
+```ts
+function inner(): i32 {
+  return x + y; // x at level 2, y at level 1
+}
 ```
 
-Walks all `getClosureEnvByLevel` calls and records which levels are used in each basic block,
-along with their usage counts.
-
-#### Phase 2: Loop hoisting
+Without caching (fast path), each access walks the full chain independently:
 
 ```
-for each block inside a loop:
-  if block has at least one successor inside the loop:
-    hoist all used levels via addDef(&bb, level, &insideLoop)
+access y (level 1):  heapIdx ──load──► level 1
+access x (level 2):  heapIdx ──load──► level 1 ──load──► level 2
+                                       ^^^^^^^^
+                                       redundant — same load as above
 ```
 
-Blocks inside loops benefit from caching: the chained loads are hoisted out of the loop.
-The `insideLoop` parameter tells `addDef` to walk the dominator tree up until it escapes
-the loop.
-
-Blocks that are loop exits (all successors leave the loop, e.g. `return` or `br` out) are
-**skipped** — there is no benefit to hoisting since the code runs at most once.
-
-Blocks handled by loop hoisting are recorded in `loopHandled` and skipped in Phase 3.
-
-#### Phase 3: Branch hoisting
+With caching, level 1 is stored in a local and shared:
 
 ```
-for each block NOT handled by loop hoisting:
-  for each level with count > 0:
-    if level < maxLevel OR count > 1:
-      addDef(&bb, level)
+cache:     heapIdx ──load──► $cached1        (one load)
+access y:  $cached1                          (zero loads)
+access x:  $cached1 ──load──► level 2        (one load)
+                                        total: 2 loads instead of 3
 ```
 
-Caching decision:
+The analysis decides to cache a level when:
 
-- **Multiple uses** (`count > 1`): cache to avoid redundant load chains.
-- **Intermediate level** (`level < maxLevel`): cache because a deeper level will
-  reuse this intermediate result.
-- **Single use of max level**: not cached — inline the loads directly.
+- The same level is used **multiple times** in one basic block, or
+- It is an **intermediate level** (a deeper level also exists, so the intermediate
+  result would be computed anyway).
 
-### The `addDef` algorithm
+A level that is used only once and is the deepest level accessed — no sharing is
+possible, so it is lowered inline without caching.
 
-`addDef` decides where to place the cache assignment by walking the dominator tree:
+### Dominator-based placement
 
-1. **Find highest reusable ancestor**: walk dominator chain upward from the original block.
-   A block is "reusable" if it already has closure-related activity (levels with non-zero
-   usage counts, or existing cached definitions) at a level ≥ the current level.
+Once a level is marked for caching, the pass decides which basic block should hold the
+cache store. The goal is to place it as early as possible so more downstream blocks benefit.
 
-2. **Escape loop** (when `insideLoop` is provided): continue walking dominators upward until
-   reaching a block outside the loop. This ensures the cache store is placed before the loop.
+The pass walks up the dominator tree from the use site, looking for the highest block
+that also has closure-related work:
 
-3. **Allocate local**: create a new i32 local and record `(level, localIndex)` in the target
-   block's `definedLevels`. If the level already has a definition in that block, return
-   `nullopt` (no duplicate).
+```mermaid
+graph TD
+    A["BB0 (entry)"] --> B["BB1: uses level 1, 2"]
+    A --> C["BB2: uses level 1"]
 
-### Generating cache stores (`getInsertions`)
+    style A fill:#e8f5e9
+    style B fill:#fff3e0
+    style C fill:#fff3e0
+```
 
-After analysis, `getInsertions` determines where to insert cache stores:
+BB0 dominates both BB1 and BB2. Both use level 1, so the cache store for level 1 is
+**hoisted to BB0** — computed once, available to both branches:
 
-For each block with cached definitions:
+```mermaid
+graph TD
+    A["BB0 (entry)<br/>─────────────<br/>$cached1 = load(heapIdx)"] --> B["BB1: use $cached1"]
+    A --> C["BB2: use $cached1"]
 
-1. Find an **anchor** expression:
-   - The first `getClosureEnvByLevel` call in the block, or
-   - The last expression in the block (fallback for blocks with no such call, e.g. loop
-     preheader after hoisting).
-2. For each defined level, build a `CacheLevelInLocalAction`:
-   - Source: closest cached level ≤ `(targetLevel - 1)`, or level 0 (`heapIdx`).
-   - Target: the new local for this level.
+    style A fill:#e8f5e9
+    style B fill:#fff3e0
+    style C fill:#fff3e0
+```
 
-### Applying the plans
+### Loop-aware hoisting
 
-`OptGetClosureEnvByLevelLower` walks the module and applies each `ActionPlan`:
+Closure accesses inside a loop re-walk the same pointer chain every iteration, but the
+environment pointer never changes. The pass hoists the cache store outside the loop:
 
-- **Both save + lower at same anchor**: combine into a single block —
-  cache stores followed by the lowered call.
-- **Save only**: insert cache stores at end of basic block (via `ExprInserter::insertAtEndOfBB`).
-- **Lower only**: replace `getClosureEnvByLevel(N)` with loads starting from the closest
-  cached local.
+```ts
+function inner(n: i32): i32 {
+  let sum: i32 = 0;
+  for (let i = 0; i < n; i++) {
+    sum += x; // x at level 1, accessed every iteration
+  }
+  return sum;
+}
+```
+
+```mermaid
+graph TD
+    E["BB0 (entry)"] --> H["BB1 (loop header)"]
+    H --> B["BB2 (loop body)<br/>uses level 1"]
+    B --> H
+    H --> X["BB3 (exit)"]
+
+    style E fill:#e8f5e9
+    style H fill:#e3f2fd
+    style B fill:#fff3e0
+    style X fill:#fce4ec
+```
+
+Level 1 is used in BB2 (loop body). Without hoisting, `load(heapIdx)` runs every
+iteration. The pass hoists the cache to BB0, outside the loop:
+
+```mermaid
+graph TD
+    E["BB0 (entry)<br/>─────────────<br/>$cached1 = load(heapIdx)"] --> H["BB1 (loop header)"]
+    H --> B["BB2 (loop body)<br/>use $cached1"]
+    B --> H
+    H --> X["BB3 (exit)"]
+
+    style E fill:#e8f5e9
+    style H fill:#e3f2fd
+    style B fill:#fff3e0
+    style X fill:#fce4ec
+```
+
+Now the load executes once; every iteration just reads `$cached1`.
+
+**Exception — loop exit blocks:** if a block inside a loop always exits (e.g. early
+`return`), its code runs at most once, so hoisting provides no benefit:
+
+```mermaid
+graph TD
+    H["loop header"] --> B["loop body<br/>uses level 1"]
+    H --> R["early return block<br/>uses level 1"]
+    B --> H
+    R --> Exit["function exit"]
+
+    style H fill:#e3f2fd
+    style B fill:#fff3e0
+    style R fill:#fce4ec
+    style Exit fill:#f5f5f5
+```
+
+Here, the "early return block" has no successor inside the loop — it always exits. Its
+level 1 access is **not** hoisted out of the loop; it is handled by normal caching instead.
+
+### Incremental chaining
+
+Cache stores chain through intermediate levels rather than each level independently
+walking from level 0:
+
+```
+To cache level 1 and level 2:
+
+  $cached1 = load(heapIdx)       ← 1 load from level 0
+  $cached2 = load($cached1)      ← 1 load from cached level 1
+                                    total: 2 loads
+
+Without chaining:
+
+  $cached1 = load(heapIdx)                ← 1 load
+  $cached2 = load(load(heapIdx))          ← 2 loads (redundant!)
+                                            total: 3 loads
+```
+
+### Rewriting call sites
+
+After analysis, each `getClosureEnvByLevel(N)` call is replaced with loads that start
+from the nearest cached level instead of from level 0:
+
+| Situation                    | Before                    | After                                                          |
+| ---------------------------- | ------------------------- | -------------------------------------------------------------- |
+| Level 1 cached in `$c1`      | `getClosureEnvByLevel(1)` | `local.get $c1`                                                |
+| Level 1 cached, need level 2 | `getClosureEnvByLevel(2)` | `i32.load (local.get $c1)` — 1 hop instead of 2                |
+| No cache available           | `getClosureEnvByLevel(2)` | `i32.load (i32.load (local.get $heapIdx))` — same as fast path |
 
 ### Example
 
