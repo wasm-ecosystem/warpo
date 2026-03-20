@@ -264,9 +264,9 @@ class ClosureEnvDefMap final {
     BlockClosureInfo const &info = infoIt->second;
     for (size_t i = 1; i < info.levelCounts.size(); ++i) {
       if (info.levelCounts[i] > 0)
-        return level < static_cast<int32_t>(i);
+        return level <= static_cast<int32_t>(i);
     }
-    return !info.definedLevels.empty() && level < info.definedLevels.front().level;
+    return !info.definedLevels.empty() && level <= info.definedLevels.front().level;
   }
 
 public:
