@@ -1882,21 +1882,17 @@ TEST(ClosureLower, OptLowerHoistsLoopDefToBlockWithClosureCall) {
   wasm::Function *const levelGetter = m->getFunctionOrNull("levelGetter");
   ASSERT_NE(levelGetter, nullptr);
 
-  // Entry block has getClosureEnvByLevel(2), so the hoisted level 1 def
-  // should be inserted at the existing anchor (before the level 2 call).
-  // level1 cached from heapIdx, level2 uses level1 cache + one load.
+  // Entry block has getClosureEnvByLevel(2) — single use of max level, so level 2 is NOT cached.
+  // Level 1 is cached (intermediate level used by both entry and loop).
+  // The drop block: { local.set $cached1 (load heapIdx), i32.load($cached1) }
   matcher::M<wasm::Expression> const match = isBlock({
       block::at(0, isGlobalSet()),
-      block::at(
-          1,
-          isDrop(drop::v(isBlock({
-              block::has(3),
-              block::at(
-                  0, isLocalSet(local_set::v(isLoad(load::ptr(isLocalGet(local_get::index(1)))))).bind("level1Cache")),
-              block::at(
-                  1, isLocalSet(local_set::v(isLoad(load::ptr(isLocalGet().bind("level2From"))))).bind("level2Cache")),
-              block::at(2, isLocalGet().bind("level2Use")),
-          })))),
+      block::at(1, isDrop(drop::v(isBlock({
+                       block::has(2),
+                       block::at(0, isLocalSet(local_set::v(isLoad(load::ptr(isLocalGet(local_get::index(1))))))
+                                        .bind("level1Cache")),
+                       block::at(1, isLoad(load::ptr(isLocalGet().bind("level2From")))),
+                   })))),
   });
   isMatched(match, levelGetter->body);
 
@@ -1904,15 +1900,10 @@ TEST(ClosureLower, OptLowerHoistsLoopDefToBlockWithClosureCall) {
   ASSERT_TRUE(match(*levelGetter->body, ctx));
 
   wasm::LocalSet const *const level1Cache = ctx.getBinding<wasm::LocalSet>("level1Cache");
-  wasm::LocalSet const *const level2Cache = ctx.getBinding<wasm::LocalSet>("level2Cache");
   wasm::LocalGet const *const level2From = ctx.getBinding<wasm::LocalGet>("level2From");
-  wasm::LocalGet const *const level2Use = ctx.getBinding<wasm::LocalGet>("level2Use");
   ASSERT_NE(level1Cache, nullptr);
-  ASSERT_NE(level2Cache, nullptr);
   ASSERT_NE(level2From, nullptr);
-  ASSERT_NE(level2Use, nullptr);
   EXPECT_EQ(level2From->index, level1Cache->index);
-  EXPECT_EQ(level2Use->index, level2Cache->index);
 }
 
 } // namespace
