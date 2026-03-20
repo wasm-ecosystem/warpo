@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "Closure.hpp"
@@ -292,11 +293,20 @@ public:
 
   // Allocates a new i32 local and records (level -> localIndex) in the sorted list for the given block.
   // Returns the allocated local index, or nullopt if the level is already defined.
-  std::optional<wasm::Index> addDef(BasicBlock const *const block, int32_t const level) {
+  std::optional<wasm::Index> addDef(BasicBlock const *const block, int32_t const level,
+                                    DynBitset const *const insideLoop = nullptr) {
     BasicBlock const *insertBlock = block;
     for (BasicBlock const *domBlock = block; domBlock != nullptr; domBlock = domTree_.getIDom(domBlock)) {
       if (isReusableNode(domBlock, level))
         insertBlock = domBlock;
+    }
+    if (insideLoop != nullptr) {
+      for (BasicBlock const *domBlock = insertBlock; domBlock != nullptr; domBlock = domTree_.getIDom(domBlock)) {
+        if (!insideLoop->get(domBlock->getIndex())) {
+          insertBlock = domBlock;
+          break;
+        }
+      }
     }
 
     wasm::Index const localIdx = wasm::Builder::addVar(func_, wasm::Type::i32);
@@ -334,7 +344,10 @@ public:
           break;
         }
       }
-      assert(anchor != nullptr && "no insertion anchor found in BasicBlock");
+      if (anchor == nullptr) {
+        assert(block->size() > 0 && "no expressions in BasicBlock for block-end insertion");
+        anchor = *block->rbegin();
+      }
       for (LevelDef const &def : info.definedLevels) {
         assert(def.level > 0 && "cached closure levels must be greater than zero");
         std::optional<LevelDef> const levelAlreadyInLocal = getClosestDef(block, def.level - 1);
@@ -393,7 +406,27 @@ public:
       if (level > 0)
         defMap.insertUsedLevel(&bb, level);
     });
+    DynBitset const insideLoop = defMap.cfg().getBlockInsideLoop();
+    std::unordered_set<BasicBlock const *> loopHandled;
     for (BasicBlock const &bb : defMap.cfg()) {
+      if (!insideLoop.get(bb.getIndex()))
+        continue;
+      bool const anySuccInLoop = std::any_of(bb.succs().begin(), bb.succs().end(),
+                                             [&](BasicBlock const *succ) { return insideLoop.get(succ->getIndex()); });
+      if (!anySuccInLoop)
+        continue;
+      std::vector<uint32_t> const *const levelCounts = defMap.getLevelCounts(&bb);
+      if (levelCounts == nullptr || levelCounts->empty())
+        continue;
+      for (size_t levelIndex = 1; levelIndex < levelCounts->size(); ++levelIndex) {
+        if ((*levelCounts)[levelIndex] > 0)
+          defMap.addDef(&bb, static_cast<int32_t>(levelIndex), &insideLoop);
+      }
+      loopHandled.insert(&bb);
+    }
+    for (BasicBlock const &bb : defMap.cfg()) {
+      if (loopHandled.contains(&bb))
+        continue;
       std::vector<uint32_t> const *const levelCounts = defMap.getLevelCounts(&bb);
       if (levelCounts == nullptr || levelCounts->empty())
         continue;
@@ -507,7 +540,7 @@ private:
     ExprInserter inserter{getFunction()};
     wasm::Expression *const inserted = b.makeBlock(makeSaveTempLevelLocalSets(actions), wasm::Type::none);
 
-    inserter.insertBefore(b, inserted, findExprPointer(curr, getFunction()));
+    inserter.insertAtEndOfBB(b, inserted, findExprPointer(curr, getFunction()));
   }
 
   std::unordered_map<wasm::Expression *, ActionPlan> const &actionPlans_;
@@ -1643,6 +1676,234 @@ TEST(ClosureLower, OptLowerHoistsPastIntermediateDomWithoutClosureCalls) {
   ASSERT_NE(secondL1Use, nullptr);
   EXPECT_EQ(firstL1Use->index, level1Cache->index);
   EXPECT_EQ(secondL1Use->index, level1Cache->index);
+}
+
+TEST(ClosureLower, OptLowerHoistsOutOfLoop) {
+  auto m = loadWat(R"(
+    (module
+      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
+      (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
+      (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (memory 1)
+      (func $levelGetter (param i32) (result i32) (local i32)
+        (call $~lib/rt/closure/setClosureEnv (i32.const 42))
+        (block $break
+          (loop $loop
+            (drop (call $~lib/rt/closure/getClosureEnvByLevel (i32.const 1)))
+            (br_if $break (local.get 0))
+            (br $loop)
+          )
+        )
+        (i32.const 0)
+      )
+    )
+  )");
+
+  VariableInfo variableInfo;
+  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 1);
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{new closure::OptLower(&variableInfo)});
+  runner.run();
+
+  using namespace matcher;
+  wasm::Function *const levelGetter = m->getFunctionOrNull("levelGetter");
+  ASSERT_NE(levelGetter, nullptr);
+
+  // The local.set for level 1 should be hoisted to the entry block (before the loop),
+  // and inside the loop the getClosureEnvByLevel should use local.get of the cached local.
+  matcher::M<wasm::Expression> const match = isBlock({
+      block::at(
+          0,
+          isBlock({
+              block::at(0, isGlobalSet()),
+              block::at(1, isBlock({
+                               block::at(0, isLocalSet(local_set::v(isLoad(load::ptr(isLocalGet(local_get::index(1))))))
+                                                .bind("level1Cache")),
+                               block::has(1),
+                           })),
+              block::has(2),
+          })),
+      block::has(3),
+  });
+  isMatched(match, levelGetter->body);
+
+  matcher::Context ctx{};
+  ASSERT_TRUE(match(*levelGetter->body, ctx));
+
+  wasm::LocalSet const *const level1Cache = ctx.getBinding<wasm::LocalSet>("level1Cache");
+  ASSERT_NE(level1Cache, nullptr);
+}
+
+TEST(ClosureLower, OptLowerHoistsOutOfNestedLoop) {
+  auto m = loadWat(R"(
+    (module
+      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
+      (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
+      (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (memory 1)
+      (func $levelGetter (param i32 i32) (result i32) (local i32)
+        (call $~lib/rt/closure/setClosureEnv (i32.const 42))
+        (block $outerBreak
+          (loop $outerLoop
+            (block $innerBreak
+              (loop $innerLoop
+                (drop (call $~lib/rt/closure/getClosureEnvByLevel (i32.const 1)))
+                (br_if $innerBreak (local.get 1))
+                (br $innerLoop)
+              )
+            )
+            (br_if $outerBreak (local.get 0))
+            (br $outerLoop)
+          )
+        )
+        (i32.const 0)
+      )
+    )
+  )");
+
+  VariableInfo variableInfo;
+  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 2);
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{new closure::OptLower(&variableInfo)});
+  runner.run();
+
+  using namespace matcher;
+  wasm::Function *const levelGetter = m->getFunctionOrNull("levelGetter");
+  ASSERT_NE(levelGetter, nullptr);
+
+  // The local.set for level 1 should be hoisted past both loops to the entry block.
+  matcher::M<wasm::Expression> const match = isBlock({
+      block::at(
+          0,
+          isBlock({
+              block::at(0, isGlobalSet()),
+              block::at(1, isBlock({
+                               block::at(0, isLocalSet(local_set::v(isLoad(load::ptr(isLocalGet(local_get::index(2))))))
+                                                .bind("level1Cache")),
+                               block::has(1),
+                           })),
+              block::has(2),
+          })),
+      block::has(3),
+  });
+  isMatched(match, levelGetter->body);
+
+  matcher::Context ctx{};
+  ASSERT_TRUE(match(*levelGetter->body, ctx));
+
+  wasm::LocalSet const *const level1Cache = ctx.getBinding<wasm::LocalSet>("level1Cache");
+  ASSERT_NE(level1Cache, nullptr);
+}
+
+TEST(ClosureLower, OptLowerSkipsHoistWhenLoopBlockExits) {
+  auto m = loadWat(R"(
+    (module
+      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
+      (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
+      (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (memory 1)
+      (func $levelGetter (param i32) (result i32) (local i32)
+        (call $~lib/rt/closure/setClosureEnv (i32.const 42))
+        (block $break
+          (loop $loop
+            (if (local.get 0)
+              (then
+                (return (call $~lib/rt/closure/getClosureEnvByLevel (i32.const 1)))
+              )
+            )
+            (br $loop)
+          )
+        )
+        (i32.const 0)
+      )
+    )
+  )");
+
+  VariableInfo variableInfo;
+  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 1);
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{new closure::OptLower(&variableInfo)});
+  runner.run();
+
+  using namespace matcher;
+  wasm::Function *const levelGetter = m->getFunctionOrNull("levelGetter");
+  ASSERT_NE(levelGetter, nullptr);
+
+  // The getClosureEnvByLevel is in a block that exits the loop (return),
+  // so it should NOT be hoisted. It should be lowered in place with i32.load.
+  // No local.set should appear before the loop.
+  matcher::M<wasm::Expression> const match = isBlock({
+      block::at(0, isGlobalSet()),
+      block::has(3),
+  });
+  isMatched(match, levelGetter->body);
+
+  matcher::Context ctx{};
+  ASSERT_TRUE(match(*levelGetter->body, ctx));
+}
+
+TEST(ClosureLower, OptLowerHoistsLoopDefToBlockWithClosureCall) {
+  auto m = loadWat(R"(
+    (module
+      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
+      (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
+      (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (memory 1)
+      (func $levelGetter (param i32) (result i32) (local i32)
+        (call $~lib/rt/closure/setClosureEnv (i32.const 42))
+        (drop (call $~lib/rt/closure/getClosureEnvByLevel (i32.const 2)))
+        (block $break
+          (loop $loop
+            (drop (call $~lib/rt/closure/getClosureEnvByLevel (i32.const 1)))
+            (br_if $break (local.get 0))
+            (br $loop)
+          )
+        )
+        (i32.const 0)
+      )
+    )
+  )");
+
+  VariableInfo variableInfo;
+  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 1);
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{new closure::OptLower(&variableInfo)});
+  runner.run();
+
+  using namespace matcher;
+  wasm::Function *const levelGetter = m->getFunctionOrNull("levelGetter");
+  ASSERT_NE(levelGetter, nullptr);
+
+  // Entry block has getClosureEnvByLevel(2) — single use of max level, so level 2 is NOT cached.
+  // Level 1 is cached (intermediate level used by both entry and loop).
+  // The drop block: { local.set $cached1 (load heapIdx), i32.load($cached1) }
+  matcher::M<wasm::Expression> const match = isBlock({
+      block::at(0, isGlobalSet()),
+      block::at(1, isDrop(drop::v(isBlock({
+                       block::has(2),
+                       block::at(0, isLocalSet(local_set::v(isLoad(load::ptr(isLocalGet(local_get::index(1))))))
+                                        .bind("level1Cache")),
+                       block::at(1, isLoad(load::ptr(isLocalGet().bind("level2From")))),
+                   })))),
+  });
+  isMatched(match, levelGetter->body);
+
+  matcher::Context ctx{};
+  ASSERT_TRUE(match(*levelGetter->body, ctx));
+
+  wasm::LocalSet const *const level1Cache = ctx.getBinding<wasm::LocalSet>("level1Cache");
+  wasm::LocalGet const *const level2From = ctx.getBinding<wasm::LocalGet>("level2From");
+  ASSERT_NE(level1Cache, nullptr);
+  ASSERT_NE(level2From, nullptr);
+  EXPECT_EQ(level2From->index, level1Cache->index);
 }
 
 } // namespace
