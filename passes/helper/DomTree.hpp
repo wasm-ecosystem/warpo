@@ -9,6 +9,14 @@
 
 namespace warpo::passes {
 
+// In a program, pathological CFGs containing unreachable may occur. Such pathological CFGs have no impact on the
+// Dominator Tree, but can affect the Post-dominator Tree. As a program has multiple exit points, a large number of
+// nodes cannot be post-dominated by their successor nodes. To prevent unreachable from interfering with optimizations,
+// Basic Blocks (BBs) terminated by unreachable are ignored in this Dominator Tree implementation.
+// This is analogous to the handling of Undefined Behavior (UB) in C++.
+//
+// Example:
+// `TEST_F(DomTreeImplTest, Unreachable)`
 class DomTree {
   struct Storage;
   Storage *storage_;
