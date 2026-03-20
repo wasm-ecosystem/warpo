@@ -5293,11 +5293,7 @@ export class Compiler extends DiagnosticEmitter {
           );
         } else {
           indexArg = this.compileExpression(assert(indexExpression), indexType, Constraints.ConvImplicit);
-          assignmentElementExpr = this.compileExpression(
-            assert(indexExpression),
-            indexType,
-            Constraints.ConvImplicit
-          );
+          assignmentElementExpr = this.compileExpression(assert(indexExpression), indexType, Constraints.ConvImplicit);
         }
         leftExpr = this.makeCallDirect(getterInstance, [thisArg, indexArg], cacheTarget);
         leftType = this.currentType;
@@ -5317,13 +5313,7 @@ export class Compiler extends DiagnosticEmitter {
       assignmentElementExpr
     );
 
-    return new CompoundAssignmentCacheContext(
-      target,
-      leftExpr,
-      leftType,
-      assignmentAccessContext,
-      setupPrefixExprs
-    );
+    return new CompoundAssignmentCacheContext(target, leftExpr, leftType, assignmentAccessContext, setupPrefixExprs);
   }
 
   private prependSetupPrefixExpressions(
