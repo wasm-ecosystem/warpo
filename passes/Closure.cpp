@@ -226,7 +226,7 @@ class ClosureEnvDefMap final {
 
   struct BlockClosureInfo final {
     std::vector<LevelDef> definedLevels;
-    std::vector<int32_t> usedLevels;
+    std::vector<uint32_t> levelCounts;
   };
 
   static std::optional<LevelDef> getClosestDefInList(std::vector<LevelDef> const &definedLevels,
@@ -244,8 +244,10 @@ class ClosureEnvDefMap final {
     if (infoIt == blockInfos_.end())
       return false;
     BlockClosureInfo const &info = infoIt->second;
-    if (!info.usedLevels.empty() && level < info.usedLevels.front())
-      return true;
+    for (size_t i = 1; i < info.levelCounts.size(); ++i) {
+      if (info.levelCounts[i] > 0)
+        return level < static_cast<int32_t>(i);
+    }
     return !info.definedLevels.empty() && level < info.definedLevels.front().level;
   }
 
@@ -256,9 +258,18 @@ public:
   CFG const &cfg() const noexcept { return *cfg_; }
 
   void insertUsedLevel(BasicBlock const *const block, int32_t const level) {
-    std::vector<int32_t> &usedLevels = blockInfos_[block].usedLevels;
-    std::vector<int32_t>::iterator const it = std::lower_bound(usedLevels.begin(), usedLevels.end(), level);
-    usedLevels.insert(it, level);
+    std::vector<uint32_t> &counts = blockInfos_[block].levelCounts;
+    size_t const levelIndex = static_cast<size_t>(level);
+    if (levelIndex >= counts.size())
+      counts.resize(levelIndex + 1, 0);
+    ++counts[levelIndex];
+  }
+
+  std::vector<uint32_t> const *getLevelCounts(BasicBlock const *const block) const noexcept {
+    std::unordered_map<BasicBlock const *, BlockClosureInfo>::const_iterator const it = blockInfos_.find(block);
+    if (it == blockInfos_.end())
+      return nullptr;
+    return &it->second.levelCounts;
   }
 
   // Allocates a new i32 local and records (level -> localIndex) in the sorted list for the given block.
@@ -337,6 +348,20 @@ private:
   wasm::Function *func_;
 };
 
+template <typename F> void forEachGetClosureEnvByLevel(CFG const &cfg, F &&fn) {
+  for (BasicBlock const &bb : cfg) {
+    for (wasm::Expression *const expr : bb) {
+      wasm::Call *const call = expr->dynCast<wasm::Call>();
+      if (call == nullptr || call->target != kGetClosureEnvByLevel)
+        continue;
+      wasm::Const const *const levelConst = call->operands[0]->dynCast<wasm::Const>();
+      assert(levelConst != nullptr);
+      int32_t const level = levelConst->value.geti32();
+      fn(bb, call, level);
+    }
+  }
+}
+
 struct PerFunctionAnalysisResult final {
   std::unordered_map<wasm::Expression *, ActionPlan> actionPlans;
 };
@@ -359,39 +384,17 @@ public:
       return;
     wasm::Index const heapIdx = *spIt->second.getHeapVariableStorageLocalIndex();
     ClosureEnvDefMap defMap(func);
+    forEachGetClosureEnvByLevel(defMap.cfg(), [&](BasicBlock const &bb, wasm::Call *, int32_t const level) {
+      if (level > 0)
+        defMap.insertUsedLevel(&bb, level);
+    });
     for (BasicBlock const &bb : defMap.cfg()) {
-      for (wasm::Expression *const expr : bb) {
-        wasm::Call const *const call = expr->dynCast<wasm::Call>();
-        if (call == nullptr || call->target != kGetClosureEnvByLevel)
-          continue;
-        wasm::Const const *const levelConst = call->operands[0]->dynCast<wasm::Const>();
-        assert(levelConst != nullptr);
-        int32_t const level = levelConst->value.geti32();
-        if (level > 0)
-          defMap.insertUsedLevel(&bb, level);
-      }
-    }
-    for (BasicBlock const &bb : defMap.cfg()) {
-      std::vector<uint32_t> levelCounts;
-      for (wasm::Expression *const expr : bb) {
-        wasm::Call const *const call = expr->dynCast<wasm::Call>();
-        if (call == nullptr || call->target != kGetClosureEnvByLevel)
-          continue;
-        wasm::Const const *const levelConst = call->operands[0]->dynCast<wasm::Const>();
-        assert(levelConst != nullptr);
-        int32_t const level = levelConst->value.geti32();
-        if (level > 0) {
-          size_t const levelIndex = static_cast<size_t>(level);
-          if (levelIndex >= levelCounts.size())
-            levelCounts.resize(levelIndex + 1, 0);
-          ++levelCounts[levelIndex];
-        }
-      }
-      if (levelCounts.empty())
+      std::vector<uint32_t> const *levelCounts = defMap.getLevelCounts(&bb);
+      if (levelCounts == nullptr || levelCounts->empty())
         continue;
-      int32_t const maxLevel = static_cast<int32_t>(levelCounts.size() - 1);
-      for (size_t levelIndex = 1; levelIndex < levelCounts.size(); ++levelIndex) {
-        uint32_t const count = levelCounts[levelIndex];
+      int32_t const maxLevel = static_cast<int32_t>(levelCounts->size() - 1);
+      for (size_t levelIndex = 1; levelIndex < levelCounts->size(); ++levelIndex) {
+        uint32_t const count = (*levelCounts)[levelIndex];
         if (count == 0)
           continue;
         int32_t const level = static_cast<int32_t>(levelIndex);
@@ -402,18 +405,10 @@ public:
 
     std::unordered_map<wasm::Expression *, ActionPlan> localActionPlans;
     defMap.getInsertions(variableInfo_, localActionPlans);
-    for (BasicBlock const &bb : defMap.cfg()) {
-      for (wasm::Expression *const expr : bb) {
-        wasm::Call *const call = expr->dynCast<wasm::Call>();
-        if (call == nullptr || call->target != kGetClosureEnvByLevel)
-          continue;
-        wasm::Const const *const levelConst = call->operands[0]->dynCast<wasm::Const>();
-        assert(levelConst != nullptr);
-        int32_t const level = levelConst->value.geti32();
-        std::optional<LevelDef> const def = defMap.getClosestDef(&bb, level);
-        localActionPlans[call].lowerCallAction = def.value_or(LevelDef{0, heapIdx});
-      }
-    }
+    forEachGetClosureEnvByLevel(defMap.cfg(), [&](BasicBlock const &bb, wasm::Call *call, int32_t const level) {
+      std::optional<LevelDef> const def = defMap.getClosestDef(&bb, level);
+      localActionPlans[call].lowerCallAction = def.value_or(LevelDef{0, heapIdx});
+    });
 
     std::lock_guard<std::mutex> const lock(mu_);
     results_.push_back({std::move(localActionPlans)});
