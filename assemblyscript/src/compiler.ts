@@ -352,30 +352,60 @@ class CompoundAssignmentCacheContext {
   target: Element;
   leftExpr: ExpressionRef;
   leftType: Type;
-  assignmentThisExpression: Expression | null;
-  assignmentElementExpression: Expression | null;
-  assignmentThisExpr: ExpressionRef;
-  assignmentElementExpr: ExpressionRef;
+  assignmentAccessContext: AssignmentAccessContext;
   setupPrefixExprs: ExpressionRef[] | null;
 
   constructor(
     target: Element,
     leftExpr: ExpressionRef,
     leftType: Type,
-    assignmentThisExpression: Expression | null,
-    assignmentElementExpression: Expression | null,
-    assignmentThisExpr: ExpressionRef,
-    assignmentElementExpr: ExpressionRef,
+    assignmentAccessContext: AssignmentAccessContext,
     setupPrefixExprs: ExpressionRef[] | null
   ) {
     this.target = target;
     this.leftExpr = leftExpr;
     this.leftType = leftType;
-    this.assignmentThisExpression = assignmentThisExpression;
-    this.assignmentElementExpression = assignmentElementExpression;
-    this.assignmentThisExpr = assignmentThisExpr;
-    this.assignmentElementExpr = assignmentElementExpr;
+    this.assignmentAccessContext = assignmentAccessContext;
     this.setupPrefixExprs = setupPrefixExprs;
+  }
+}
+
+class AssignmentAccessContext {
+  thisExpression: Expression | null;
+  indexExpression: Expression | null;
+  thisExpr: ExpressionRef;
+  indexExpr: ExpressionRef;
+
+  constructor(
+    thisExpression: Expression | null,
+    indexExpression: Expression | null,
+    thisExpr: ExpressionRef = 0,
+    indexExpr: ExpressionRef = 0
+  ) {
+    this.thisExpression = thisExpression;
+    this.indexExpression = indexExpression;
+    this.thisExpr = thisExpr;
+    this.indexExpr = indexExpr;
+  }
+
+  resolveThisExpr(compiler: Compiler, targetType: Type): ExpressionRef {
+    if (this.thisExpr) return this.thisExpr;
+    let thisExpression = this.thisExpression;
+    if (!thisExpression) return 0;
+    this.thisExpr = compiler.compileExpression(
+      thisExpression,
+      targetType,
+      Constraints.ConvImplicit | Constraints.IsThis
+    );
+    return this.thisExpr;
+  }
+
+  resolveIndexExpr(compiler: Compiler, targetType: Type): ExpressionRef {
+    if (this.indexExpr) return this.indexExpr;
+    let indexExpression = this.indexExpression;
+    if (!indexExpression) return 0;
+    this.indexExpr = compiler.compileExpression(indexExpression, targetType, Constraints.ConvImplicit);
+    return this.indexExpr;
   }
 }
 
@@ -5045,21 +5075,17 @@ export class Compiler extends DiagnosticEmitter {
     if (!compound) return expr;
     let resolver = this.resolver;
     let target: Element | null;
-    let thisExpression: Expression | null;
-    let elementExpression: Expression | null;
-    let thisExpr: ExpressionRef = 0;
-    let indexExpr: ExpressionRef = 0;
+    let assignmentAccessContext: AssignmentAccessContext;
     if (compoundAssignmentCacheContext) {
       target = compoundAssignmentCacheContext.target;
-      thisExpression = compoundAssignmentCacheContext.assignmentThisExpression;
-      elementExpression = compoundAssignmentCacheContext.assignmentElementExpression;
-      thisExpr = compoundAssignmentCacheContext.assignmentThisExpr;
-      indexExpr = compoundAssignmentCacheContext.assignmentElementExpr;
+      assignmentAccessContext = compoundAssignmentCacheContext.assignmentAccessContext;
     } else {
       target = resolver.lookupExpression(left, this.currentFlow);
       if (!target) return module.unreachable();
-      thisExpression = resolver.currentThisExpression;
-      elementExpression = resolver.currentElementExpression;
+      assignmentAccessContext = new AssignmentAccessContext(
+        resolver.currentThisExpression,
+        resolver.currentElementExpression
+      );
     }
     target = assert(target);
     let targetType = resolver.getTypeOfElement(target);
@@ -5078,11 +5104,8 @@ export class Compiler extends DiagnosticEmitter {
       expr,
       this.currentType,
       right,
-      thisExpression,
-      elementExpression,
-      contextualType != Type.void,
-      thisExpr,
-      indexExpr
+      assignmentAccessContext,
+      contextualType != Type.void
     );
     return compoundAssignmentCacheContext
       ? this.prependSetupPrefixExpressions(
@@ -5104,21 +5127,19 @@ export class Compiler extends DiagnosticEmitter {
     if (!target) return null;
 
     let setupPrefixExprs: ExpressionRef[] | null = null;
-    let assignmentThisExpression: Expression | null = null;
-    let assignmentElementExpression: Expression | null = null;
+    let thisExpression: Expression | null = null;
+    let indexExpression: Expression | null = null;
     let assignmentThisExpr: ExpressionRef = 0;
     let assignmentElementExpr: ExpressionRef = 0;
     let cachedThisLocal: Local | null = null;
     let cachedThisType: Type = Type.void;
     let cachedElementLocal: Local | null = null;
     let cachedElementType: Type = Type.void;
-    let readThisExpression: Expression | null = null;
-    let readElementExpression: Expression | null = null;
 
     if (cacheTarget.kind == NodeKind.PropertyAccess) {
       let access = <PropertyAccessExpression>cacheTarget;
       let receiverExpression = access.expression;
-      assignmentThisExpression = receiverExpression;
+      thisExpression = receiverExpression;
       let receiverExpr = this.compileExpression(receiverExpression, Type.auto);
       let receiverType = this.currentType;
       let receiverTemp = flow.getTempLocal(receiverType);
@@ -5127,14 +5148,13 @@ export class Compiler extends DiagnosticEmitter {
       flow.setLocalFlag(receiverTemp.index, LocalFlags.Initialized);
       setupPrefixExprs = [module.local_set(receiverTemp.index, receiverExpr, receiverType.isManaged)];
     } else {
+      assert(cacheTarget.kind == NodeKind.ElementAccess);
       let access = <ElementAccessExpression>cacheTarget;
       let receiverExpression = access.expression;
       let elementExpression = access.elementExpression;
 
-      readThisExpression = receiverExpression;
-      readElementExpression = elementExpression;
-      assignmentThisExpression = receiverExpression;
-      assignmentElementExpression = elementExpression;
+      thisExpression = receiverExpression;
+      indexExpression = elementExpression;
 
       if (this.expressionHasSideEffects(receiverExpression)) {
         let receiverExpr = this.compileExpression(receiverExpression, Type.auto);
@@ -5192,12 +5212,12 @@ export class Compiler extends DiagnosticEmitter {
             leftExpr = this.compileCallDirect(getterInstance, [], cacheTarget, thisArg);
           } else {
             let thisArg = this.compileExpression(
-              assert(readThisExpression),
+              assert(thisExpression),
               thisType,
               Constraints.ConvImplicit | Constraints.IsThis
             );
             assignmentThisExpr = this.compileExpression(
-              assert(assignmentThisExpression),
+              assert(thisExpression),
               thisType,
               Constraints.ConvImplicit | Constraints.IsThis
             );
@@ -5243,12 +5263,12 @@ export class Compiler extends DiagnosticEmitter {
           );
         } else {
           thisArg = this.compileExpression(
-            assert(readThisExpression),
+            assert(thisExpression),
             thisType,
             Constraints.ConvImplicit | Constraints.IsThis
           );
           assignmentThisExpr = this.compileExpression(
-            assert(assignmentThisExpression),
+            assert(thisExpression),
             thisType,
             Constraints.ConvImplicit | Constraints.IsThis
           );
@@ -5272,9 +5292,9 @@ export class Compiler extends DiagnosticEmitter {
             cacheTarget
           );
         } else {
-          indexArg = this.compileExpression(assert(readElementExpression), indexType, Constraints.ConvImplicit);
+          indexArg = this.compileExpression(assert(indexExpression), indexType, Constraints.ConvImplicit);
           assignmentElementExpr = this.compileExpression(
-            assert(assignmentElementExpression),
+            assert(indexExpression),
             indexType,
             Constraints.ConvImplicit
           );
@@ -5290,14 +5310,18 @@ export class Compiler extends DiagnosticEmitter {
       }
     }
 
+    let assignmentAccessContext = new AssignmentAccessContext(
+      thisExpression,
+      indexExpression,
+      assignmentThisExpr,
+      assignmentElementExpr
+    );
+
     return new CompoundAssignmentCacheContext(
       target,
       leftExpr,
       leftType,
-      assignmentThisExpression,
-      assignmentElementExpression,
-      assignmentThisExpr,
-      assignmentElementExpr,
+      assignmentAccessContext,
       setupPrefixExprs
     );
   }
@@ -6390,11 +6414,8 @@ export class Compiler extends DiagnosticEmitter {
       this.convertExpression(valueExpr, valueType, targetType, false, valueExpression),
       targetType,
       valueExpression,
-      thisExpression,
-      elementExpression,
-      contextualType != Type.void,
-      0,
-      0
+      new AssignmentAccessContext(thisExpression, elementExpression),
+      contextualType != Type.void
     );
   }
 
@@ -6478,16 +6499,10 @@ export class Compiler extends DiagnosticEmitter {
     valueType: Type,
     /** Expression reference. Has already been compiled to `valueExpr`. */
     valueExpression: Expression,
-    /** `this` expression reference if a field or property set. */
-    thisExpression: Expression | null,
-    /** Index expression reference if an indexed set. */
-    indexExpression: Expression | null,
+    /** Assignment access context for property/index targets. */
+    accessContext: AssignmentAccessContext,
     /** Whether to tee the value. */
-    tee: bool,
-    /** Precompiled `this` expression reference if available. */
-    thisExpr: ExpressionRef,
-    /** Precompiled index expression reference if available. */
-    indexExpr: ExpressionRef
+    tee: bool
   ): ExpressionRef {
     let module = this.module;
     let flow = this.currentFlow;
@@ -6545,6 +6560,7 @@ export class Compiler extends DiagnosticEmitter {
             }
           }
           // Mark initialized fields in constructors
+          let thisExpression = accessContext.thisExpression;
           thisExpression = assert(thisExpression);
           if (isConstructor && thisExpression.kind == NodeKind.This) {
             flow.setThisFieldFlag(propertyInstance, FieldFlags.Initialized);
@@ -6563,13 +6579,7 @@ export class Compiler extends DiagnosticEmitter {
         assert(setterInstance.signature.returnType == Type.void);
         if (propertyInstance.is(CommonFlags.Instance)) {
           let thisType = assert(setterInstance.signature.thisType);
-          if (!thisExpr) {
-            thisExpr = this.compileExpression(
-              assert(thisExpression),
-              thisType,
-              Constraints.ConvImplicit | Constraints.IsThis
-            );
-          }
+          let thisExpr = accessContext.resolveThisExpr(this, thisType);
           if (!tee) return this.makeCallDirect(setterInstance, [thisExpr, valueExpr], valueExpression);
           let tempLocal = flow.getTempLocal(valueType);
           let valueTypeRef = valueType.toRef();
@@ -6635,13 +6645,7 @@ export class Compiler extends DiagnosticEmitter {
         }
         assert(setterInstance.signature.parameterTypes.length == 2);
         let thisType = classInstance.type;
-        if (!thisExpr) {
-          thisExpr = this.compileExpression(
-            assert(thisExpression),
-            thisType,
-            Constraints.ConvImplicit | Constraints.IsThis
-          );
-        }
+        let thisExpr = accessContext.resolveThisExpr(this, thisType);
         let setterIndexType = setterInstance.signature.parameterTypes[0];
         let getterIndexType = getterInstance.signature.parameterTypes[0];
         if (!setterIndexType.equals(getterIndexType)) {
@@ -6654,15 +6658,8 @@ export class Compiler extends DiagnosticEmitter {
           this.currentType = tee ? getterInstance.signature.returnType : Type.void;
           return module.unreachable();
         }
-        let elementExpr: ExpressionRef;
-        let elementType: Type;
-        if (indexExpr) {
-          elementExpr = indexExpr;
-          elementType = getterIndexType;
-        } else {
-          elementExpr = this.compileExpression(assert(indexExpression), setterIndexType, Constraints.ConvImplicit);
-          elementType = this.currentType;
-        }
+        let elementExpr = accessContext.resolveIndexExpr(this, setterIndexType);
+        let elementType = this.currentType;
         if (tee) {
           let tempTarget = flow.getTempLocal(thisType);
           let tempElement = flow.getTempLocal(elementType);
@@ -10127,11 +10124,8 @@ export class Compiler extends DiagnosticEmitter {
         expr,
         this.currentType,
         expression.operand,
-        resolver.currentThisExpression,
-        resolver.currentElementExpression,
-        false,
-        0,
-        0
+        new AssignmentAccessContext(resolver.currentThisExpression, resolver.currentElementExpression),
+        false
       );
     }
 
@@ -10141,11 +10135,8 @@ export class Compiler extends DiagnosticEmitter {
       expr, // includes a tee of getValue to tempLocal
       this.currentType,
       expression.operand,
-      resolver.currentThisExpression,
-      resolver.currentElementExpression,
-      false,
-      0,
-      0
+      new AssignmentAccessContext(resolver.currentThisExpression, resolver.currentElementExpression),
+      false
     );
 
     this.currentType = tempLocal.type;
@@ -10479,11 +10470,8 @@ export class Compiler extends DiagnosticEmitter {
       expr,
       this.currentType,
       expression.operand,
-      resolver.currentThisExpression,
-      resolver.currentElementExpression,
-      contextualType != Type.void,
-      0,
-      0
+      new AssignmentAccessContext(resolver.currentThisExpression, resolver.currentElementExpression),
+      contextualType != Type.void
     );
   }
 
