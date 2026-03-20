@@ -497,7 +497,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$252
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$251
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -521,7 +521,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$252
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$251
    end
    local.get $0
    i32.load offset=8
@@ -1351,12 +1351,12 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$72
+   block $__inlined_func$~lib/rt/itcms/interrupt$71
     i32.const 2048
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$257 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$256 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1372,7 +1372,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$257
+         br $__inlined_func$~lib/rt/itcms/step$256
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1411,7 +1411,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$257
+           br $__inlined_func$~lib/rt/itcms/step$256
           end
           local.get $2
           i32.load offset=4
@@ -1503,7 +1503,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$257
+        br $__inlined_func$~lib/rt/itcms/step$256
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1602,7 +1602,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$257
+        br $__inlined_func$~lib/rt/itcms/step$256
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1626,7 +1626,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$72
+      br $__inlined_func$~lib/rt/itcms/interrupt$71
      end
      local.get $2
      i32.const 0
@@ -1840,16 +1840,13 @@
    local.get $2
    i32.const 4
    i32.add
-   local.tee $4
    local.get $2
    i32.load
    i32.const -4
    i32.and
+   i32.add
    local.tee $3
-   i32.add
    local.get $3
-   local.get $4
-   i32.add
    i32.load
    i32.const -3
    i32.and
@@ -2547,7 +2544,7 @@
   (local $4 i32)
   (local $5 i32)
   (local $6 i32)
-  block $__inlined_func$~lib/util/string/joinStringArray$107 (result i32)
+  block $__inlined_func$~lib/util/string/joinStringArray$106 (result i32)
    i32.const 2432
    local.get $0
    i32.const 20
@@ -2561,7 +2558,7 @@
    local.tee $5
    i32.const 0
    i32.lt_s
-   br_if $__inlined_func$~lib/util/string/joinStringArray$107
+   br_if $__inlined_func$~lib/util/string/joinStringArray$106
    drop
    local.get $5
    i32.eqz
@@ -2574,7 +2571,7 @@
     else
      i32.const 2432
     end
-    br $__inlined_func$~lib/util/string/joinStringArray$107
+    br $__inlined_func$~lib/util/string/joinStringArray$106
    end
    loop $for-loop|0
     local.get $1
@@ -3516,7 +3513,7 @@
   i32.load16_u
   local.set $1
   loop $while-continue|0
-   block $__inlined_func$~lib/util/string/isSpace$117 (result i32)
+   block $__inlined_func$~lib/util/string/isSpace$116 (result i32)
     local.get $1
     i32.const 128
     i32.or
@@ -3531,7 +3528,7 @@
     local.get $1
     i32.const 5760
     i32.lt_u
-    br_if $__inlined_func$~lib/util/string/isSpace$117
+    br_if $__inlined_func$~lib/util/string/isSpace$116
     drop
     i32.const 1
     local.get $1
@@ -3539,7 +3536,7 @@
     i32.add
     i32.const 10
     i32.le_u
-    br_if $__inlined_func$~lib/util/string/isSpace$117
+    br_if $__inlined_func$~lib/util/string/isSpace$116
     drop
     i32.const 1
     local.get $1
@@ -3569,7 +3566,7 @@
     i32.eq
     i32.or
     i32.or
-    br_if $__inlined_func$~lib/util/string/isSpace$117
+    br_if $__inlined_func$~lib/util/string/isSpace$116
     drop
     i32.const 0
    end
@@ -3834,7 +3831,7 @@
    local.get $0
    i32.load
    local.tee $4
-   block $__inlined_func$~lib/rt/itcms/__renew$262 (result i32)
+   block $__inlined_func$~lib/rt/itcms/__renew$261 (result i32)
     i32.const 1073741820
     local.get $2
     i32.const 1
@@ -3874,7 +3871,7 @@
      local.get $3
      i32.store offset=16
      local.get $4
-     br $__inlined_func$~lib/rt/itcms/__renew$262
+     br $__inlined_func$~lib/rt/itcms/__renew$261
     end
     local.get $3
     local.get $1
@@ -3969,7 +3966,7 @@
    i32.const 2147483647
    local.set $2
   end
-  block $__inlined_func$~lib/string/String#split$274 (result i32)
+  block $__inlined_func$~lib/string/String#split$273 (result i32)
    i32.const 12
    call $~lib/rt/__decrease_sp
    block $folding-inner1
@@ -4010,7 +4007,7 @@
       i32.add
       global.set $~lib/memory/__stack_pointer
       local.get $1
-      br $__inlined_func$~lib/string/String#split$274
+      br $__inlined_func$~lib/string/String#split$273
      end
      local.get $0
      i32.const 20
@@ -4043,7 +4040,7 @@
        i32.add
        global.set $~lib/memory/__stack_pointer
        local.get $0
-       br $__inlined_func$~lib/string/String#split$274
+       br $__inlined_func$~lib/string/String#split$273
       end
      else
       local.get $3
@@ -4105,7 +4102,7 @@
       i32.add
       global.set $~lib/memory/__stack_pointer
       local.get $2
-      br $__inlined_func$~lib/string/String#split$274
+      br $__inlined_func$~lib/string/String#split$273
      end
      i32.const 0
      call $~lib/rt/__newArray
@@ -4220,7 +4217,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/string/String#split$274
+    br $__inlined_func$~lib/string/String#split$273
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 12
@@ -4810,7 +4807,7 @@
   if
    i32.const 1
    global.set $~started
-   block $__inlined_func$start:std/date$270
+   block $__inlined_func$start:std/date$269
     block $folding-inner0
      i32.const 1970
      i32.const 1
@@ -7223,7 +7220,7 @@
       call $~lib/builtins/abort
       unreachable
      end
-     br $__inlined_func$start:std/date$270
+     br $__inlined_func$start:std/date$269
     end
     i32.const 32
     i32.const 80

@@ -171,7 +171,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$105
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$104
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -195,7 +195,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$105
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$104
    end
    local.get $0
    i32.load offset=8
@@ -1035,7 +1035,7 @@
    local.get $0
    i32.load
    local.tee $6
-   block $__inlined_func$~lib/rt/itcms/__renew$111 (result i32)
+   block $__inlined_func$~lib/rt/itcms/__renew$110 (result i32)
     i32.const 1073741820
     local.get $2
     i32.const 1
@@ -1054,7 +1054,7 @@
     local.get $2
     i32.lt_u
     select
-    local.tee $4
+    local.tee $3
     local.get $6
     i32.const 20
     i32.sub
@@ -1067,15 +1067,15 @@
     i32.le_u
     if
      local.get $7
-     local.get $4
+     local.get $3
      i32.store offset=16
      local.get $6
-     br $__inlined_func$~lib/rt/itcms/__renew$111
+     br $__inlined_func$~lib/rt/itcms/__renew$110
     end
     local.get $7
     i32.load offset=12
     local.set $8
-    local.get $4
+    local.get $3
     i32.const 1073741804
     i32.ge_u
     if
@@ -1090,12 +1090,12 @@
     global.get $~lib/rt/itcms/threshold
     i32.ge_u
     if
-     block $__inlined_func$~lib/rt/itcms/interrupt$71
+     block $__inlined_func$~lib/rt/itcms/interrupt$70
       i32.const 2048
       local.set $1
       loop $do-loop|0
        local.get $1
-       block $__inlined_func$~lib/rt/itcms/step$110 (result i32)
+       block $__inlined_func$~lib/rt/itcms/step$109 (result i32)
         block $break|0
          block $case2|0
           block $case1|0
@@ -1111,7 +1111,7 @@
            global.get $~lib/rt/itcms/toSpace
            global.set $~lib/rt/itcms/iter
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$110
+           br $__inlined_func$~lib/rt/itcms/step$109
           end
           global.get $~lib/rt/itcms/white
           i32.eqz
@@ -1150,7 +1150,7 @@
              i32.add
              call $~lib/rt/__visit_members
              global.get $~lib/rt/itcms/visitCount
-             br $__inlined_func$~lib/rt/itcms/step$110
+             br $__inlined_func$~lib/rt/itcms/step$109
             end
             local.get $1
             i32.load offset=4
@@ -1242,7 +1242,7 @@
            global.set $~lib/rt/itcms/state
           end
           global.get $~lib/rt/itcms/visitCount
-          br $__inlined_func$~lib/rt/itcms/step$110
+          br $__inlined_func$~lib/rt/itcms/step$109
          end
          global.get $~lib/rt/itcms/iter
          local.tee $1
@@ -1302,7 +1302,7 @@
              call $~lib/rt/tlsf/initialize
             end
             global.get $~lib/rt/tlsf/ROOT
-            local.set $3
+            local.set $4
             local.get $2
             i32.const 4
             i32.sub
@@ -1335,13 +1335,13 @@
             i32.const 1
             i32.or
             i32.store
-            local.get $3
+            local.get $4
             local.get $1
             call $~lib/rt/tlsf/insertBlock
            end
           end
           i32.const 10
-          br $__inlined_func$~lib/rt/itcms/step$110
+          br $__inlined_func$~lib/rt/itcms/step$109
          end
          global.get $~lib/rt/itcms/toSpace
          global.get $~lib/rt/itcms/toSpace
@@ -1365,7 +1365,7 @@
         i32.const 1024
         i32.add
         global.set $~lib/rt/itcms/threshold
-        br $__inlined_func$~lib/rt/itcms/interrupt$71
+        br $__inlined_func$~lib/rt/itcms/interrupt$70
        end
        local.get $1
        i32.const 0
@@ -1390,8 +1390,8 @@
      call $~lib/rt/tlsf/initialize
     end
     global.get $~lib/rt/tlsf/ROOT
-    local.set $3
-    local.get $4
+    local.set $4
+    local.get $3
     i32.const 16
     i32.add
     local.tee $1
@@ -1405,7 +1405,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    local.get $3
+    local.get $4
     i32.const 12
     local.get $1
     i32.const 19
@@ -1447,7 +1447,7 @@
       local.get $1
      end
      i32.const 4
-     local.get $3
+     local.get $4
      i32.load offset=1568
      memory.size
      local.tee $5
@@ -1483,7 +1483,7 @@
        unreachable
       end
      end
-     local.get $3
+     local.get $4
      local.get $5
      i32.const 16
      i32.shl
@@ -1492,7 +1492,7 @@
      i64.const 16
      i64.shl
      call $~lib/rt/tlsf/addMemory
-     local.get $3
+     local.get $4
      local.get $2
      call $~lib/rt/tlsf/searchBlock
      local.tee $1
@@ -1520,7 +1520,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    local.get $3
+    local.get $4
     local.get $1
     call $~lib/rt/tlsf/removeBlock
     local.get $1
@@ -1567,7 +1567,7 @@
      i32.const 1
      i32.or
      i32.store
-     local.get $3
+     local.get $4
      local.get $2
      call $~lib/rt/tlsf/insertBlock
     else
@@ -1579,16 +1579,13 @@
      local.get $1
      i32.const 4
      i32.add
-     local.tee $2
      local.get $1
      i32.load
      i32.const -4
      i32.and
-     local.tee $3
      i32.add
+     local.tee $2
      local.get $2
-     local.get $3
-     i32.add
      i32.load
      i32.const -3
      i32.and
@@ -1598,7 +1595,7 @@
     local.get $8
     i32.store offset=12
     local.get $1
-    local.get $4
+    local.get $3
     i32.store offset=16
     local.get $1
     global.get $~lib/rt/itcms/fromSpace
@@ -1618,16 +1615,16 @@
     i32.add
     local.tee $1
     i32.const 0
-    local.get $4
+    local.get $3
     memory.fill
     local.get $1
     local.get $6
-    local.get $4
+    local.get $3
     local.get $7
     i32.load offset=16
     local.tee $2
     local.get $2
-    local.get $4
+    local.get $3
     i32.gt_u
     select
     memory.copy
@@ -1694,7 +1691,7 @@
     end
    end
    local.get $0
-   local.get $4
+   local.get $3
    i32.store offset=8
   end
  )

@@ -793,16 +793,13 @@
    local.get $0
    i32.const 4
    i32.add
-   local.tee $1
    local.get $0
    i32.load
    i32.const -4
    i32.and
+   i32.add
    local.tee $0
-   i32.add
    local.get $0
-   local.get $1
-   i32.add
    i32.load
    i32.const -3
    i32.and

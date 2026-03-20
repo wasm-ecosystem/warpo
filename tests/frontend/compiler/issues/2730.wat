@@ -6,16 +6,12 @@
  (type $4 (func))
  (type $5 (func (param i32 i32 i32)))
  (type $6 (func (param i32 i32 i32 i32)))
- (type $7 (func (param i32 i32 i32) (result i32)))
- (type $8 (func (param i32 i32 i64) (result i32)))
- (type $9 (func (result i32)))
- (type $10 (func (param i32 i32 i32 i32 i32) (result i32)))
+ (type $7 (func (result i32)))
+ (type $8 (func (param i32 i32 i32) (result i32)))
+ (type $9 (func (param i32 i32 i64) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
- (global $extension/utf8_const_str/s (mut i32) (i32.const 32))
- (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
- (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -24,48 +20,53 @@
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
+ (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
+ (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
+ (global $issues/2730/box (mut i32) (i32.const 0))
+ (global $issues/2730/boxCalls (mut i32) (i32.const 0))
+ (global $issues/2730/arr (mut i32) (i32.const 464))
+ (global $issues/2730/idxCalls (mut i32) (i32.const 0))
  (global $~lib/native/ASC_SHRINK_LEVEL i32 (i32.const 0))
- (global $~lib/rt/__rtti_base i32 (i32.const 608))
- (global $~lib/memory/__data_end i32 (i32.const 628))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33396))
- (global $~lib/memory/__heap_base i32 (i32.const 33396))
+ (global $~lib/rt/__rtti_base i32 (i32.const 640))
+ (global $~lib/memory/__data_end i32 (i32.const 672))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33440))
+ (global $~lib/memory/__heap_base i32 (i32.const 33440))
  (memory $0 1)
- (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\06\00\00\00abcdef\00\00\00\00\00\00")
- (data $1 (i32.const 44) "L\00\00\00\00\00\00\00\00\00\00\00\02\00\00\006\00\00\00e\00x\00t\00e\00n\00s\00i\00o\00n\00/\00u\00t\00f\008\00_\00c\00o\00n\00s\00t\00_\00s\00t\00r\00.\00t\00s\00\00\00\00\00\00\00")
- (data $2 (i32.const 124) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00~\00l\00i\00b\00/\00s\00t\00r\00i\00n\00g\00.\00t\00s\00")
- (data $3 (i32.const 172) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
- (data $4 (i32.const 236) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $5 (i32.const 304) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $6 (i32.const 336) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $7 (i32.const 364) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00$\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e\00\00\00\00\00\00\00\00\00")
- (data $8 (i32.const 428) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
- (data $9 (i32.const 480) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $10 (i32.const 508) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $11 (i32.const 572) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\0c\00\00\00a\00b\00c\00d\00e\00f\00")
- (data $12 (i32.const 608) "\04\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00")
+ (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
+ (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $2 (i32.const 144) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $3 (i32.const 176) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $4 (i32.const 204) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00$\00\00\00I\00n\00d\00e\00x\00 \00o\00u\00t\00 \00o\00f\00 \00r\00a\00n\00g\00e\00\00\00\00\00\00\00\00\00")
+ (data $5 (i32.const 268) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
+ (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $8 (i32.const 412) "\1c\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\08\00\00\00\01\00\00\00\02\00\00\00\00\00\00\00")
+ (data $9 (i32.const 444) ",\00\00\00\00\00\00\00\00\00\00\00\05\00\00\00\10\00\00\00\b0\01\00\00\b0\01\00\00\08\00\00\00\02\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $10 (i32.const 492) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00i\00s\00s\00u\00e\00s\00/\002\007\003\000\00.\00t\00s\00")
+ (data $11 (i32.const 540) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s\00\00\00")
+ (data $12 (i32.const 588) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1c\00\00\00I\00n\00v\00a\00l\00i\00d\00 \00l\00e\00n\00g\00t\00h\00")
+ (data $13 (i32.const 640) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00\02\t\00\00 \00\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
  (start $~start)
- (func $~lib/warpo/utf8/const_str/ConstStr#get:addr (param $this i32) (result i32)
-  (return
-   (local.get $this)
-  )
+ (func $~lib/object/Object#constructor (param $this i32) (result i32)
+  (local.get $this)
  )
- (func $~lib/warpo/utf8/const_str/ConstStr#get:size (param $this i32) (result i32)
-  (return
-   (i32.load
-    (i32.sub
-     (call $~lib/warpo/utf8/const_str/ConstStr#get:addr
+ (func $issues/2730/Box#constructor (param $this i32) (result i32)
+  (local.set $this
+   (call $~lib/rt/__localtostack
+    (call $~lib/object/Object#constructor
+     (call $~lib/rt/__tmptostack
       (local.get $this)
      )
-     (i32.const 4)
     )
    )
   )
+  (local.get $this)
  )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
@@ -157,7 +158,7 @@
        (then
         (call $~lib/builtins/abort
          (i32.const 0)
-         (i32.const 256)
+         (i32.const 96)
          (i32.const 159)
          (i32.const 16)
         )
@@ -258,7 +259,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 256)
+       (i32.const 96)
        (i32.const 127)
        (i32.const 18)
       )
@@ -283,7 +284,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 256)
+     (i32.const 96)
      (i32.const 131)
      (i32.const 16)
     )
@@ -323,8 +324,8 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 384)
-     (i32.const 448)
+     (i32.const 224)
+     (i32.const 288)
      (i32.const 22)
      (i32.const 28)
     )
@@ -423,7 +424,7 @@
       (then
        (call $~lib/builtins/abort
         (i32.const 0)
-        (i32.const 256)
+        (i32.const 96)
         (i32.const 147)
         (i32.const 30)
        )
@@ -707,7 +708,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 528)
+     (i32.const 368)
      (i32.const 245)
      (i32.const 14)
     )
@@ -736,7 +737,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 528)
+     (i32.const 368)
      (i32.const 247)
      (i32.const 14)
     )
@@ -832,7 +833,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 528)
+     (i32.const 368)
      (i32.const 261)
      (i32.const 14)
     )
@@ -970,7 +971,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 528)
+     (i32.const 368)
      (i32.const 178)
      (i32.const 14)
     )
@@ -995,7 +996,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 528)
+     (i32.const 368)
      (i32.const 180)
      (i32.const 14)
     )
@@ -1081,7 +1082,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 528)
+       (i32.const 368)
        (i32.const 198)
        (i32.const 16)
       )
@@ -1144,7 +1145,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 528)
+     (i32.const 368)
      (i32.const 210)
      (i32.const 14)
     )
@@ -1170,7 +1171,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 528)
+     (i32.const 368)
      (i32.const 211)
      (i32.const 14)
     )
@@ -1273,7 +1274,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 528)
+     (i32.const 368)
      (i32.const 228)
      (i32.const 14)
     )
@@ -1364,7 +1365,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 528)
+     (i32.const 368)
      (i32.const 357)
      (i32.const 14)
     )
@@ -1425,7 +1426,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 528)
+       (i32.const 368)
        (i32.const 365)
        (i32.const 16)
       )
@@ -1475,7 +1476,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 528)
+       (i32.const 368)
        (i32.const 378)
        (i32.const 5)
       )
@@ -1767,7 +1768,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 528)
+     (i32.const 368)
      (i32.const 532)
      (i32.const 3)
     )
@@ -2099,7 +2100,7 @@
        (then
         (call $~lib/builtins/abort
          (i32.const 0)
-         (i32.const 256)
+         (i32.const 96)
          (i32.const 229)
          (i32.const 20)
         )
@@ -2251,8 +2252,8 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 192)
-     (i32.const 528)
+     (i32.const 32)
+     (i32.const 368)
      (i32.const 435)
      (i32.const 29)
     )
@@ -2388,7 +2389,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 528)
+     (i32.const 368)
      (i32.const 309)
      (i32.const 14)
     )
@@ -2466,7 +2467,7 @@
        (then
         (call $~lib/builtins/abort
          (i32.const 0)
-         (i32.const 528)
+         (i32.const 368)
          (i32.const 322)
          (i32.const 18)
         )
@@ -2644,7 +2645,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 528)
+     (i32.const 368)
      (i32.const 336)
      (i32.const 14)
     )
@@ -2776,7 +2777,7 @@
      (then
       (call $~lib/builtins/abort
        (i32.const 0)
-       (i32.const 528)
+       (i32.const 368)
        (i32.const 472)
        (i32.const 16)
       )
@@ -2806,7 +2807,7 @@
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 528)
+     (i32.const 368)
      (i32.const 474)
      (i32.const 14)
     )
@@ -2867,8 +2868,8 @@
    )
    (then
     (call $~lib/builtins/abort
-     (i32.const 192)
-     (i32.const 256)
+     (i32.const 32)
+     (i32.const 96)
      (i32.const 262)
      (i32.const 31)
     )
@@ -2929,6 +2930,939 @@
   )
   (return
    (local.get $ptr)
+  )
+ )
+ (func $issues/2730/Box#set:value (param $this i32) (param $value i32)
+  (i32.store
+   (local.get $this)
+   (local.get $value)
+  )
+ )
+ (func $issues/2730/resetBox (param $value i32)
+  (call $issues/2730/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (global.get $issues/2730/box)
+   )
+   (local.get $value)
+  )
+  (global.set $issues/2730/boxCalls
+   (i32.const 0)
+  )
+ )
+ (func $issues/2730/getBox (result i32)
+  (global.set $issues/2730/boxCalls
+   (i32.add
+    (global.get $issues/2730/boxCalls)
+    (i32.const 1)
+   )
+  )
+  (return
+   (global.get $issues/2730/box)
+  )
+ )
+ (func $issues/2730/Box#get:value (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $issues/2730/assertOneBoxCall
+  (if
+   (i32.eqz
+    (i32.eq
+     (global.get $issues/2730/boxCalls)
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 19)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
+ (func $~lib/math/ipow32 (param $x i32) (param $e i32) (result i32)
+  (local $out i32)
+  (local $log i32)
+  (local $4 i32)
+  (local.set $out
+   (i32.const 1)
+  )
+  (drop
+   (i32.lt_s
+    (i32.const 0)
+    (i32.const 1)
+   )
+  )
+  (block
+   (if
+    (i32.eq
+     (local.get $x)
+     (i32.const 2)
+    )
+    (then
+     (return
+      (select
+       (i32.shl
+        (i32.const 1)
+        (local.get $e)
+       )
+       (i32.const 0)
+       (i32.lt_u
+        (local.get $e)
+        (i32.const 32)
+       )
+      )
+     )
+    )
+   )
+   (if
+    (i32.le_s
+     (local.get $e)
+     (i32.const 0)
+    )
+    (then
+     (if
+      (i32.eq
+       (local.get $x)
+       (i32.const -1)
+      )
+      (then
+       (return
+        (select
+         (i32.const -1)
+         (i32.const 1)
+         (i32.and
+          (local.get $e)
+          (i32.const 1)
+         )
+        )
+       )
+      )
+     )
+     (return
+      (i32.or
+       (i32.eq
+        (local.get $e)
+        (i32.const 0)
+       )
+       (i32.eq
+        (local.get $x)
+        (i32.const 1)
+       )
+      )
+     )
+    )
+    (else
+     (if
+      (i32.eq
+       (local.get $e)
+       (i32.const 1)
+      )
+      (then
+       (return
+        (local.get $x)
+       )
+      )
+      (else
+       (if
+        (i32.eq
+         (local.get $e)
+         (i32.const 2)
+        )
+        (then
+         (return
+          (i32.mul
+           (local.get $x)
+           (local.get $x)
+          )
+         )
+        )
+        (else
+         (if
+          (i32.lt_s
+           (local.get $e)
+           (i32.const 32)
+          )
+          (then
+           (local.set $log
+            (i32.sub
+             (i32.const 32)
+             (i32.clz
+              (local.get $e)
+             )
+            )
+           )
+           (block $break|0
+            (block $case4|0
+             (block $case3|0
+              (block $case2|0
+               (block $case1|0
+                (block $case0|0
+                 (local.set $4
+                  (local.get $log)
+                 )
+                 (br_if $case0|0
+                  (i32.eq
+                   (local.get $4)
+                   (i32.const 5)
+                  )
+                 )
+                 (br_if $case1|0
+                  (i32.eq
+                   (local.get $4)
+                   (i32.const 4)
+                  )
+                 )
+                 (br_if $case2|0
+                  (i32.eq
+                   (local.get $4)
+                   (i32.const 3)
+                  )
+                 )
+                 (br_if $case3|0
+                  (i32.eq
+                   (local.get $4)
+                   (i32.const 2)
+                  )
+                 )
+                 (br_if $case4|0
+                  (i32.eq
+                   (local.get $4)
+                   (i32.const 1)
+                  )
+                 )
+                 (br $break|0)
+                )
+                (block
+                 (if
+                  (i32.and
+                   (local.get $e)
+                   (i32.const 1)
+                  )
+                  (then
+                   (local.set $out
+                    (i32.mul
+                     (local.get $out)
+                     (local.get $x)
+                    )
+                   )
+                  )
+                 )
+                 (local.set $e
+                  (i32.shr_u
+                   (local.get $e)
+                   (i32.const 1)
+                  )
+                 )
+                 (local.set $x
+                  (i32.mul
+                   (local.get $x)
+                   (local.get $x)
+                  )
+                 )
+                )
+               )
+               (block
+                (if
+                 (i32.and
+                  (local.get $e)
+                  (i32.const 1)
+                 )
+                 (then
+                  (local.set $out
+                   (i32.mul
+                    (local.get $out)
+                    (local.get $x)
+                   )
+                  )
+                 )
+                )
+                (local.set $e
+                 (i32.shr_u
+                  (local.get $e)
+                  (i32.const 1)
+                 )
+                )
+                (local.set $x
+                 (i32.mul
+                  (local.get $x)
+                  (local.get $x)
+                 )
+                )
+               )
+              )
+              (block
+               (if
+                (i32.and
+                 (local.get $e)
+                 (i32.const 1)
+                )
+                (then
+                 (local.set $out
+                  (i32.mul
+                   (local.get $out)
+                   (local.get $x)
+                  )
+                 )
+                )
+               )
+               (local.set $e
+                (i32.shr_u
+                 (local.get $e)
+                 (i32.const 1)
+                )
+               )
+               (local.set $x
+                (i32.mul
+                 (local.get $x)
+                 (local.get $x)
+                )
+               )
+              )
+             )
+             (block
+              (if
+               (i32.and
+                (local.get $e)
+                (i32.const 1)
+               )
+               (then
+                (local.set $out
+                 (i32.mul
+                  (local.get $out)
+                  (local.get $x)
+                 )
+                )
+               )
+              )
+              (local.set $e
+               (i32.shr_u
+                (local.get $e)
+                (i32.const 1)
+               )
+              )
+              (local.set $x
+               (i32.mul
+                (local.get $x)
+                (local.get $x)
+               )
+              )
+             )
+            )
+            (if
+             (i32.and
+              (local.get $e)
+              (i32.const 1)
+             )
+             (then
+              (local.set $out
+               (i32.mul
+                (local.get $out)
+                (local.get $x)
+               )
+              )
+             )
+            )
+           )
+           (return
+            (local.get $out)
+           )
+          )
+         )
+        )
+       )
+      )
+     )
+    )
+   )
+  )
+  (block $while-break|1
+   (loop $while-continue|1
+    (if
+     (local.get $e)
+     (then
+      (if
+       (i32.and
+        (local.get $e)
+        (i32.const 1)
+       )
+       (then
+        (local.set $out
+         (i32.mul
+          (local.get $out)
+          (local.get $x)
+         )
+        )
+       )
+      )
+      (local.set $e
+       (i32.shr_u
+        (local.get $e)
+        (i32.const 1)
+       )
+      )
+      (local.set $x
+       (i32.mul
+        (local.get $x)
+        (local.get $x)
+       )
+      )
+      (br $while-continue|1)
+     )
+    )
+   )
+  )
+  (return
+   (local.get $out)
+  )
+ )
+ (func $issues/2730/testPropertyCompoundAssignments
+  (local $0 i32)
+  (local $1 i32)
+  (local $2 i32)
+  (local $3 i32)
+  (local $4 i32)
+  (local $5 i32)
+  (local $6 i32)
+  (local $7 i32)
+  (local $8 i32)
+  (local $9 i32)
+  (local $10 i32)
+  (local $11 i32)
+  (call $issues/2730/resetBox
+   (i32.const 8)
+  )
+  (local.set $0
+   (call $~lib/rt/__localtostack
+    (call $issues/2730/getBox)
+   )
+  )
+  (call $issues/2730/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $0)
+   )
+   (i32.add
+    (call $issues/2730/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (local.get $0)
+     )
+    )
+    (i32.const 2)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $issues/2730/Box#get:value
+      (call $~lib/rt/__tmptostack
+       (global.get $issues/2730/box)
+      )
+     )
+     (i32.const 10)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 33)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $issues/2730/assertOneBoxCall)
+  (call $issues/2730/resetBox
+   (i32.const 8)
+  )
+  (local.set $1
+   (call $~lib/rt/__localtostack
+    (call $issues/2730/getBox)
+   )
+  )
+  (call $issues/2730/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $1)
+   )
+   (i32.sub
+    (call $issues/2730/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (local.get $1)
+     )
+    )
+    (i32.const 3)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $issues/2730/Box#get:value
+      (call $~lib/rt/__tmptostack
+       (global.get $issues/2730/box)
+      )
+     )
+     (i32.const 5)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 38)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $issues/2730/assertOneBoxCall)
+  (call $issues/2730/resetBox
+   (i32.const 8)
+  )
+  (local.set $2
+   (call $~lib/rt/__localtostack
+    (call $issues/2730/getBox)
+   )
+  )
+  (call $issues/2730/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $2)
+   )
+   (i32.mul
+    (call $issues/2730/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (local.get $2)
+     )
+    )
+    (i32.const 3)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $issues/2730/Box#get:value
+      (call $~lib/rt/__tmptostack
+       (global.get $issues/2730/box)
+      )
+     )
+     (i32.const 24)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 43)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $issues/2730/assertOneBoxCall)
+  (call $issues/2730/resetBox
+   (i32.const 8)
+  )
+  (local.set $3
+   (call $~lib/rt/__localtostack
+    (call $issues/2730/getBox)
+   )
+  )
+  (call $issues/2730/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $3)
+   )
+   (i32.div_s
+    (call $issues/2730/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (local.get $3)
+     )
+    )
+    (i32.const 2)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $issues/2730/Box#get:value
+      (call $~lib/rt/__tmptostack
+       (global.get $issues/2730/box)
+      )
+     )
+     (i32.const 4)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 48)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $issues/2730/assertOneBoxCall)
+  (call $issues/2730/resetBox
+   (i32.const 8)
+  )
+  (local.set $4
+   (call $~lib/rt/__localtostack
+    (call $issues/2730/getBox)
+   )
+  )
+  (call $issues/2730/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $4)
+   )
+   (i32.rem_s
+    (call $issues/2730/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (local.get $4)
+     )
+    )
+    (i32.const 3)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $issues/2730/Box#get:value
+      (call $~lib/rt/__tmptostack
+       (global.get $issues/2730/box)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 53)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $issues/2730/assertOneBoxCall)
+  (call $issues/2730/resetBox
+   (i32.const 8)
+  )
+  (local.set $5
+   (call $~lib/rt/__localtostack
+    (call $issues/2730/getBox)
+   )
+  )
+  (call $issues/2730/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $5)
+   )
+   (i32.shl
+    (call $issues/2730/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (local.get $5)
+     )
+    )
+    (i32.const 1)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $issues/2730/Box#get:value
+      (call $~lib/rt/__tmptostack
+       (global.get $issues/2730/box)
+      )
+     )
+     (i32.const 16)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 58)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $issues/2730/assertOneBoxCall)
+  (call $issues/2730/resetBox
+   (i32.const 8)
+  )
+  (local.set $6
+   (call $~lib/rt/__localtostack
+    (call $issues/2730/getBox)
+   )
+  )
+  (call $issues/2730/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $6)
+   )
+   (i32.shr_s
+    (call $issues/2730/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (local.get $6)
+     )
+    )
+    (i32.const 1)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $issues/2730/Box#get:value
+      (call $~lib/rt/__tmptostack
+       (global.get $issues/2730/box)
+      )
+     )
+     (i32.const 4)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 63)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $issues/2730/assertOneBoxCall)
+  (call $issues/2730/resetBox
+   (i32.const -8)
+  )
+  (local.set $7
+   (call $~lib/rt/__localtostack
+    (call $issues/2730/getBox)
+   )
+  )
+  (call $issues/2730/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $7)
+   )
+   (i32.shr_u
+    (call $issues/2730/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (local.get $7)
+     )
+    )
+    (i32.const 1)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $issues/2730/Box#get:value
+      (call $~lib/rt/__tmptostack
+       (global.get $issues/2730/box)
+      )
+     )
+     (i32.const 2147483644)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 68)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $issues/2730/assertOneBoxCall)
+  (call $issues/2730/resetBox
+   (i32.const 10)
+  )
+  (local.set $8
+   (call $~lib/rt/__localtostack
+    (call $issues/2730/getBox)
+   )
+  )
+  (call $issues/2730/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $8)
+   )
+   (i32.and
+    (call $issues/2730/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (local.get $8)
+     )
+    )
+    (i32.const 3)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $issues/2730/Box#get:value
+      (call $~lib/rt/__tmptostack
+       (global.get $issues/2730/box)
+      )
+     )
+     (i32.const 2)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 73)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $issues/2730/assertOneBoxCall)
+  (call $issues/2730/resetBox
+   (i32.const 8)
+  )
+  (local.set $9
+   (call $~lib/rt/__localtostack
+    (call $issues/2730/getBox)
+   )
+  )
+  (call $issues/2730/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $9)
+   )
+   (i32.or
+    (call $issues/2730/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (local.get $9)
+     )
+    )
+    (i32.const 3)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $issues/2730/Box#get:value
+      (call $~lib/rt/__tmptostack
+       (global.get $issues/2730/box)
+      )
+     )
+     (i32.const 11)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 78)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $issues/2730/assertOneBoxCall)
+  (call $issues/2730/resetBox
+   (i32.const 8)
+  )
+  (local.set $10
+   (call $~lib/rt/__localtostack
+    (call $issues/2730/getBox)
+   )
+  )
+  (call $issues/2730/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $10)
+   )
+   (i32.xor
+    (call $issues/2730/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (local.get $10)
+     )
+    )
+    (i32.const 3)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $issues/2730/Box#get:value
+      (call $~lib/rt/__tmptostack
+       (global.get $issues/2730/box)
+      )
+     )
+     (i32.const 11)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 83)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $issues/2730/assertOneBoxCall)
+  (call $issues/2730/resetBox
+   (i32.const 3)
+  )
+  (local.set $11
+   (call $~lib/rt/__localtostack
+    (call $issues/2730/getBox)
+   )
+  )
+  (call $issues/2730/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $11)
+   )
+   (call $~lib/math/ipow32
+    (call $issues/2730/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (local.get $11)
+     )
+    )
+    (i32.const 2)
+   )
+  )
+  (if
+   (i32.eqz
+    (i32.eq
+     (call $issues/2730/Box#get:value
+      (call $~lib/rt/__tmptostack
+       (global.get $issues/2730/box)
+      )
+     )
+     (i32.const 9)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 88)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+  (call $issues/2730/assertOneBoxCall)
+ )
+ (func $~lib/array/Array<i32>#get:length_ (param $this i32) (result i32)
+  (i32.load offset=12
+   (local.get $this)
+  )
+ )
+ (func $~lib/arraybuffer/ArrayBufferView#get:byteLength (param $this i32) (result i32)
+  (i32.load offset=8
+   (local.get $this)
+  )
+ )
+ (func $~lib/arraybuffer/ArrayBufferView#get:buffer (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
   )
  )
  (func $~lib/rt/itcms/Object#get:rtSize (param $this i32) (result i32)
@@ -3003,606 +3937,447 @@
    (local.get $newPtr)
   )
  )
- (func $~lib/string/String.UTF8.decodeUnsafe (param $buf i32) (param $len i32) (param $nullTerminated i32) (result i32)
-  (local $bufOff i32)
-  (local $bufEnd i32)
-  (local $str i32)
-  (local $strOff i32)
-  (local $u0 i32)
-  (local $u1 i32)
-  (local $u2 i32)
-  (local $lo i32)
-  (local $hi i32)
-  (local.set $bufOff
-   (local.get $buf)
-  )
-  (local.set $bufEnd
-   (i32.add
-    (local.get $buf)
-    (local.get $len)
+ (func $~lib/rt/itcms/__link (param $parentPtr i32) (param $childPtr i32) (param $expectMultiple i32)
+  (local $child i32)
+  (local $parent i32)
+  (local $parentColor i32)
+  (if
+   (i32.eqz
+    (local.get $childPtr)
    )
+   (then
+    (return)
+   )
+  )
+  (drop
+   (i32.const 1)
   )
   (if
    (i32.eqz
-    (i32.ge_u
-     (local.get $bufEnd)
-     (local.get $bufOff)
-    )
+    (local.get $parentPtr)
    )
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 144)
-     (i32.const 813)
-     (i32.const 7)
+     (i32.const 96)
+     (i32.const 296)
+     (i32.const 14)
     )
     (unreachable)
    )
   )
-  (local.set $str
-   (call $~lib/rt/__localtostack
-    (call $~lib/rt/itcms/__new
-     (i32.shl
-      (local.get $len)
-      (i32.const 1)
-     )
-     (i32.const 2)
-    )
-   )
-  )
-  (local.set $strOff
-   (local.get $str)
-  )
-  (block $while-break|0
-   (loop $while-continue|0
-    (if
-     (i32.lt_u
-      (local.get $bufOff)
-      (local.get $bufEnd)
-     )
-     (then
-      (local.set $u0
-       (i32.load8_u
-        (local.get $bufOff)
-       )
-      )
-      (local.set $bufOff
-       (i32.add
-        (local.get $bufOff)
-        (i32.const 1)
-       )
-      )
-      (if
-       (i32.eqz
-        (i32.and
-         (local.get $u0)
-         (i32.const 128)
-        )
-       )
-       (then
-        (if
-         (i32.and
-          (local.get $nullTerminated)
-          (i32.eqz
-           (local.get $u0)
-          )
-         )
-         (then
-          (br $while-break|0)
-         )
-        )
-        (i32.store16
-         (local.get $strOff)
-         (local.get $u0)
-        )
-       )
-       (else
-        (if
-         (i32.eq
-          (local.get $bufEnd)
-          (local.get $bufOff)
-         )
-         (then
-          (br $while-break|0)
-         )
-        )
-        (local.set $u1
-         (i32.and
-          (i32.load8_u
-           (local.get $bufOff)
-          )
-          (i32.const 63)
-         )
-        )
-        (local.set $bufOff
-         (i32.add
-          (local.get $bufOff)
-          (i32.const 1)
-         )
-        )
-        (if
-         (i32.eq
-          (i32.and
-           (local.get $u0)
-           (i32.const 224)
-          )
-          (i32.const 192)
-         )
-         (then
-          (i32.store16
-           (local.get $strOff)
-           (i32.or
-            (i32.shl
-             (i32.and
-              (local.get $u0)
-              (i32.const 31)
-             )
-             (i32.const 6)
-            )
-            (local.get $u1)
-           )
-          )
-         )
-         (else
-          (if
-           (i32.eq
-            (local.get $bufEnd)
-            (local.get $bufOff)
-           )
-           (then
-            (br $while-break|0)
-           )
-          )
-          (local.set $u2
-           (i32.and
-            (i32.load8_u
-             (local.get $bufOff)
-            )
-            (i32.const 63)
-           )
-          )
-          (local.set $bufOff
-           (i32.add
-            (local.get $bufOff)
-            (i32.const 1)
-           )
-          )
-          (if
-           (i32.eq
-            (i32.and
-             (local.get $u0)
-             (i32.const 240)
-            )
-            (i32.const 224)
-           )
-           (then
-            (local.set $u0
-             (i32.or
-              (i32.or
-               (i32.shl
-                (i32.and
-                 (local.get $u0)
-                 (i32.const 15)
-                )
-                (i32.const 12)
-               )
-               (i32.shl
-                (local.get $u1)
-                (i32.const 6)
-               )
-              )
-              (local.get $u2)
-             )
-            )
-           )
-           (else
-            (if
-             (i32.eq
-              (local.get $bufEnd)
-              (local.get $bufOff)
-             )
-             (then
-              (br $while-break|0)
-             )
-            )
-            (local.set $u0
-             (i32.or
-              (i32.or
-               (i32.or
-                (i32.shl
-                 (i32.and
-                  (local.get $u0)
-                  (i32.const 7)
-                 )
-                 (i32.const 18)
-                )
-                (i32.shl
-                 (local.get $u1)
-                 (i32.const 12)
-                )
-               )
-               (i32.shl
-                (local.get $u2)
-                (i32.const 6)
-               )
-              )
-              (i32.and
-               (i32.load8_u
-                (local.get $bufOff)
-               )
-               (i32.const 63)
-              )
-             )
-            )
-            (local.set $bufOff
-             (i32.add
-              (local.get $bufOff)
-              (i32.const 1)
-             )
-            )
-           )
-          )
-          (if
-           (i32.lt_u
-            (local.get $u0)
-            (i32.const 65536)
-           )
-           (then
-            (i32.store16
-             (local.get $strOff)
-             (local.get $u0)
-            )
-           )
-           (else
-            (local.set $u0
-             (i32.sub
-              (local.get $u0)
-              (i32.const 65536)
-             )
-            )
-            (local.set $lo
-             (i32.or
-              (i32.shr_u
-               (local.get $u0)
-               (i32.const 10)
-              )
-              (i32.const 55296)
-             )
-            )
-            (local.set $hi
-             (i32.or
-              (i32.and
-               (local.get $u0)
-               (i32.const 1023)
-              )
-              (i32.const 56320)
-             )
-            )
-            (i32.store
-             (local.get $strOff)
-             (i32.or
-              (local.get $lo)
-              (i32.shl
-               (local.get $hi)
-               (i32.const 16)
-              )
-             )
-            )
-            (local.set $strOff
-             (i32.add
-              (local.get $strOff)
-              (i32.const 2)
-             )
-            )
-           )
-          )
-         )
-        )
-       )
-      )
-      (local.set $strOff
-       (i32.add
-        (local.get $strOff)
-        (i32.const 2)
-       )
-      )
-      (br $while-continue|0)
-     )
-    )
-   )
-  )
-  (return
-   (call $~lib/rt/itcms/__renew
-    (local.get $str)
-    (i32.sub
-     (local.get $strOff)
-     (local.get $str)
-    )
-   )
-  )
- )
- (func $~lib/warpo/utf8/const_str/ConstStr#toString (param $this i32) (result i32)
-  (return
-   (call $~lib/string/String.UTF8.decodeUnsafe
-    (call $~lib/warpo/utf8/const_str/ConstStr#get:addr
-     (local.get $this)
-    )
-    (call $~lib/warpo/utf8/const_str/ConstStr#get:size
-     (local.get $this)
-    )
-    (i32.const 1)
-   )
-  )
- )
- (func $~lib/rt/common/OBJECT#get:rtSize (param $this i32) (result i32)
-  (i32.load offset=16
-   (local.get $this)
-  )
- )
- (func $~lib/string/String#get:length (param $this i32) (result i32)
-  (return
-   (i32.shr_u
-    (call $~lib/rt/common/OBJECT#get:rtSize
-     (i32.sub
-      (local.get $this)
-      (i32.const 20)
-     )
-    )
-    (i32.const 1)
-   )
-  )
- )
- (func $~lib/util/string/compareImpl (param $str1 i32) (param $index1 i32) (param $str2 i32) (param $index2 i32) (param $len i32) (result i32)
-  (local $ptr1 i32)
-  (local $ptr2 i32)
-  (local $7 i32)
-  (local $a i32)
-  (local $b i32)
-  (local.set $ptr1
-   (i32.add
-    (local.get $str1)
-    (i32.shl
-     (local.get $index1)
-     (i32.const 1)
-    )
-   )
-  )
-  (local.set $ptr2
-   (i32.add
-    (local.get $str2)
-    (i32.shl
-     (local.get $index2)
-     (i32.const 1)
-    )
-   )
-  )
-  (drop
-   (i32.lt_s
-    (i32.const 0)
-    (i32.const 2)
+  (local.set $child
+   (i32.sub
+    (local.get $childPtr)
+    (i32.const 20)
    )
   )
   (if
-   (if (result i32)
-    (i32.ge_u
-     (local.get $len)
-     (i32.const 4)
+   (i32.eq
+    (call $~lib/rt/itcms/Object#get:color
+     (local.get $child)
     )
-    (then
-     (i32.eqz
-      (i32.or
-       (i32.and
-        (local.get $ptr1)
-        (i32.const 7)
+    (global.get $~lib/rt/itcms/white)
+   )
+   (then
+    (local.set $parent
+     (i32.sub
+      (local.get $parentPtr)
+      (i32.const 20)
+     )
+    )
+    (local.set $parentColor
+     (call $~lib/rt/itcms/Object#get:color
+      (local.get $parent)
+     )
+    )
+    (if
+     (i32.eq
+      (local.get $parentColor)
+      (i32.eqz
+       (global.get $~lib/rt/itcms/white)
+      )
+     )
+     (then
+      (if
+       (local.get $expectMultiple)
+       (then
+        (call $~lib/rt/itcms/Object#makeGray
+         (local.get $parent)
+        )
        )
-       (i32.and
-        (local.get $ptr2)
-        (i32.const 7)
+       (else
+        (call $~lib/rt/itcms/Object#makeGray
+         (local.get $child)
+        )
        )
       )
      )
-    )
-    (else
-     (i32.const 0)
-    )
-   )
-   (then
-    (block $do-break|0
-     (loop $do-loop|0
+     (else
       (if
-       (i64.ne
-        (i64.load
-         (local.get $ptr1)
+       (if (result i32)
+        (i32.eq
+         (local.get $parentColor)
+         (i32.const 3)
         )
-        (i64.load
-         (local.get $ptr2)
+        (then
+         (i32.eq
+          (global.get $~lib/rt/itcms/state)
+          (i32.const 1)
+         )
+        )
+        (else
+         (i32.const 0)
         )
        )
        (then
-        (br $do-break|0)
-       )
-      )
-      (local.set $ptr1
-       (i32.add
-        (local.get $ptr1)
-        (i32.const 8)
-       )
-      )
-      (local.set $ptr2
-       (i32.add
-        (local.get $ptr2)
-        (i32.const 8)
-       )
-      )
-      (local.set $len
-       (i32.sub
-        (local.get $len)
-        (i32.const 4)
-       )
-      )
-      (br_if $do-loop|0
-       (i32.ge_u
-        (local.get $len)
-        (i32.const 4)
+        (call $~lib/rt/itcms/Object#makeGray
+         (local.get $child)
+        )
        )
       )
      )
     )
    )
   )
-  (block $while-break|1
-   (loop $while-continue|1
+ )
+ (func $~lib/array/ensureCapacity (param $array i32) (param $newSize i32) (param $alignLog2 i32) (param $canGrow i32)
+  (local $oldCapacity i32)
+  (local $oldData i32)
+  (local $6 i32)
+  (local $7 i32)
+  (local $newCapacity i32)
+  (local $9 i32)
+  (local $10 i32)
+  (local $11 i32)
+  (local $12 i32)
+  (local $newData i32)
+  (local.set $oldCapacity
+   (call $~lib/arraybuffer/ArrayBufferView#get:byteLength
+    (call $~lib/rt/__tmptostack
+     (local.get $array)
+    )
+   )
+  )
+  (if
+   (i32.gt_u
+    (local.get $newSize)
+    (i32.shr_u
+     (local.get $oldCapacity)
+     (local.get $alignLog2)
+    )
+   )
+   (then
     (if
-     (block (result i32)
-      (local.set $len
-       (i32.sub
-        (local.tee $7
-         (local.get $len)
-        )
-        (i32.const 1)
-       )
+     (i32.gt_u
+      (local.get $newSize)
+      (i32.shr_u
+       (i32.const 1073741820)
+       (local.get $alignLog2)
       )
-      (local.get $7)
      )
      (then
-      (local.set $a
-       (i32.load16_u
-        (local.get $ptr1)
+      (call $~lib/builtins/abort
+       (i32.const 608)
+       (i32.const 560)
+       (i32.const 30)
+       (i32.const 48)
+      )
+      (unreachable)
+     )
+    )
+    (local.set $oldData
+     (call $~lib/arraybuffer/ArrayBufferView#get:buffer
+      (call $~lib/rt/__tmptostack
+       (local.get $array)
+      )
+     )
+    )
+    (local.set $newCapacity
+     (i32.shl
+      (select
+       (local.tee $6
+        (local.get $newSize)
+       )
+       (local.tee $7
+        (i32.const 8)
+       )
+       (i32.gt_u
+        (local.get $6)
+        (local.get $7)
        )
       )
-      (local.set $b
-       (i32.load16_u
-        (local.get $ptr2)
-       )
-      )
-      (if
-       (i32.ne
-        (local.get $a)
-        (local.get $b)
-       )
-       (then
-        (return
-         (i32.sub
-          (local.get $a)
-          (local.get $b)
+      (local.get $alignLog2)
+     )
+    )
+    (if
+     (local.get $canGrow)
+     (then
+      (local.set $newCapacity
+       (select
+        (local.tee $11
+         (select
+          (local.tee $9
+           (i32.shl
+            (local.get $oldCapacity)
+            (i32.const 1)
+           )
+          )
+          (local.tee $10
+           (i32.const 1073741820)
+          )
+          (i32.lt_u
+           (local.get $9)
+           (local.get $10)
+          )
          )
+        )
+        (local.tee $12
+         (local.get $newCapacity)
+        )
+        (i32.gt_u
+         (local.get $11)
+         (local.get $12)
         )
        )
       )
-      (local.set $ptr1
-       (i32.add
-        (local.get $ptr1)
-        (i32.const 2)
-       )
-      )
-      (local.set $ptr2
-       (i32.add
-        (local.get $ptr2)
-        (i32.const 2)
-       )
-      )
-      (br $while-continue|1)
      )
     )
+    (local.set $newData
+     (call $~lib/rt/itcms/__renew
+      (local.get $oldData)
+      (local.get $newCapacity)
+     )
+    )
+    (if
+     (i32.ne
+      (local.get $newData)
+      (local.get $oldData)
+     )
+     (then
+      (i32.store
+       (local.get $array)
+       (local.get $newData)
+      )
+      (i32.store offset=4
+       (local.get $array)
+       (local.get $newData)
+      )
+      (call $~lib/rt/itcms/__link
+       (local.get $array)
+       (local.get $newData)
+       (i32.const 0)
+      )
+     )
+    )
+    (i32.store offset=8
+     (local.get $array)
+     (local.get $newCapacity)
+    )
+   )
+  )
+ )
+ (func $~lib/array/Array<i32>#set:length_ (param $this i32) (param $length_ i32)
+  (i32.store offset=12
+   (local.get $this)
+   (local.get $length_)
+  )
+ )
+ (func $~lib/array/Array<i32>#get:dataStart (param $this i32) (result i32)
+  (i32.load offset=4
+   (local.get $this)
+  )
+ )
+ (func $~lib/array/Array<i32>#__set (param $this i32) (param $index i32) (param $value i32)
+  (if
+   (i32.ge_u
+    (local.get $index)
+    (call $~lib/array/Array<i32>#get:length_
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+   )
+   (then
+    (if
+     (i32.lt_s
+      (local.get $index)
+      (i32.const 0)
+     )
+     (then
+      (call $~lib/builtins/abort
+       (i32.const 224)
+       (i32.const 560)
+       (i32.const 141)
+       (i32.const 22)
+      )
+      (unreachable)
+     )
+    )
+    (call $~lib/array/ensureCapacity
+     (local.get $this)
+     (i32.add
+      (local.get $index)
+      (i32.const 1)
+     )
+     (i32.const 2)
+     (i32.const 1)
+    )
+    (call $~lib/array/Array<i32>#set:length_
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+     (i32.add
+      (local.get $index)
+      (i32.const 1)
+     )
+    )
+   )
+  )
+  (i32.store
+   (i32.add
+    (call $~lib/array/Array<i32>#get:dataStart
+     (call $~lib/rt/__tmptostack
+      (local.get $this)
+     )
+    )
+    (i32.shl
+     (local.get $index)
+     (i32.const 2)
+    )
+   )
+   (local.get $value)
+  )
+  (drop
+   (i32.const 0)
+  )
+ )
+ (func $issues/2730/getIndex (result i32)
+  (global.set $issues/2730/idxCalls
+   (i32.add
+    (global.get $issues/2730/idxCalls)
+    (i32.const 1)
    )
   )
   (return
    (i32.const 0)
   )
  )
- (func $~lib/string/String.__eq (param $left i32) (param $right i32) (result i32)
-  (local $leftLength i32)
+ (func $~lib/array/Array<i32>#__get (param $this i32) (param $index i32) (result i32)
+  (local $value i32)
   (if
-   (i32.eq
-    (local.get $left)
-    (local.get $right)
-   )
-   (then
-    (return
-     (i32.const 1)
-    )
-   )
-  )
-  (if
-   (if (result i32)
-    (i32.eq
-     (local.get $left)
-     (i32.const 0)
-    )
-    (then
-     (i32.const 1)
-    )
-    (else
-     (i32.eq
-      (local.get $right)
-      (i32.const 0)
-     )
-    )
-   )
-   (then
-    (return
-     (i32.const 0)
-    )
-   )
-  )
-  (local.set $leftLength
-   (call $~lib/string/String#get:length
-    (call $~lib/rt/__tmptostack
-     (local.get $left)
-    )
-   )
-  )
-  (if
-   (i32.ne
-    (local.get $leftLength)
-    (call $~lib/string/String#get:length
+   (i32.ge_u
+    (local.get $index)
+    (call $~lib/array/Array<i32>#get:length_
      (call $~lib/rt/__tmptostack
-      (local.get $right)
+      (local.get $this)
      )
     )
    )
    (then
-    (return
-     (i32.const 0)
+    (call $~lib/builtins/abort
+     (i32.const 224)
+     (i32.const 560)
+     (i32.const 123)
+     (i32.const 42)
+    )
+    (unreachable)
+   )
+  )
+  (local.set $value
+   (i32.load
+    (i32.add
+     (call $~lib/array/Array<i32>#get:dataStart
+      (call $~lib/rt/__tmptostack
+       (local.get $this)
+      )
+     )
+     (i32.shl
+      (local.get $index)
+      (i32.const 2)
+     )
     )
    )
+  )
+  (drop
+   (i32.const 0)
   )
   (return
-   (i32.eqz
-    (call $~lib/util/string/compareImpl
-     (call $~lib/rt/__tmptostack
-      (local.get $left)
-     )
-     (i32.const 0)
-     (call $~lib/rt/__tmptostack
-      (local.get $right)
-     )
-     (i32.const 0)
-     (local.get $leftLength)
-    )
-   )
+   (local.get $value)
   )
  )
- (func $start:extension/utf8_const_str
+ (func $issues/2730/testElementCompoundAssignments
+  (local $0 i32)
+  (global.set $issues/2730/idxCalls
+   (i32.const 0)
+  )
+  (call $~lib/array/Array<i32>#__set
+   (call $~lib/rt/__tmptostack
+    (global.get $issues/2730/arr)
+   )
+   (i32.const 0)
+   (i32.const 1)
+  )
+  (local.set $0
+   (call $issues/2730/getIndex)
+  )
+  (call $~lib/array/Array<i32>#__set
+   (call $~lib/rt/__tmptostack
+    (global.get $issues/2730/arr)
+   )
+   (local.get $0)
+   (i32.or
+    (call $~lib/array/Array<i32>#__get
+     (call $~lib/rt/__tmptostack
+      (global.get $issues/2730/arr)
+     )
+     (local.get $0)
+    )
+    (i32.const 2)
+   )
+  )
   (if
    (i32.eqz
     (i32.eq
-     (call $~lib/warpo/utf8/const_str/ConstStr#get:size
-      (global.get $extension/utf8_const_str/s)
+     (call $~lib/array/Array<i32>#__get
+      (call $~lib/rt/__tmptostack
+       (global.get $issues/2730/arr)
+      )
+      (i32.const 0)
      )
-     (i32.const 6)
+     (i32.const 3)
     )
    )
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
-     (i32.const 64)
-     (i32.const 5)
-     (i32.const 1)
+     (i32.const 512)
+     (i32.const 96)
+     (i32.const 3)
     )
     (unreachable)
    )
   )
+  (if
+   (i32.eqz
+    (i32.eq
+     (global.get $issues/2730/idxCalls)
+     (i32.const 1)
+    )
+   )
+   (then
+    (call $~lib/builtins/abort
+     (i32.const 0)
+     (i32.const 512)
+     (i32.const 97)
+     (i32.const 3)
+    )
+    (unreachable)
+   )
+  )
+ )
+ (func $start:issues/2730
+  (local $0 i32)
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -3617,44 +4392,56 @@
   )
   (global.set $~lib/rt/itcms/pinSpace
    (call $~lib/rt/itcms/initLazy
-    (i32.const 304)
+    (i32.const 144)
    )
   )
   (global.set $~lib/rt/itcms/toSpace
    (call $~lib/rt/itcms/initLazy
-    (i32.const 336)
+    (i32.const 176)
    )
   )
   (global.set $~lib/rt/itcms/fromSpace
    (call $~lib/rt/itcms/initLazy
-    (i32.const 480)
+    (i32.const 320)
    )
   )
-  (if
-   (i32.eqz
-    (call $~lib/string/String.__eq
-     (call $~lib/rt/__tmptostack
-      (call $~lib/warpo/utf8/const_str/ConstStr#toString
-       (global.get $extension/utf8_const_str/s)
-      )
+  (global.set $issues/2730/box
+   (call $issues/2730/Box#constructor
+    (call $~lib/rt/__tmptostack
+     (call $~lib/rt/itcms/__new
+      (i32.const 4)
+      (i32.const 4)
      )
-     (i32.const 592)
     )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 64)
-     (i32.const 7)
-     (i32.const 1)
-    )
-    (unreachable)
    )
   )
+  (call $issues/2730/testPropertyCompoundAssignments)
+  (call $issues/2730/testElementCompoundAssignments)
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
-  (nop)
+  (if
+   (local.tee $1
+    (global.get $issues/2730/box)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $issues/2730/arr)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
  )
  (func $~lib/arraybuffer/ArrayBufferView~visit (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -3672,38 +4459,81 @@
  (func $~lib/object/Object~visit (param $0 i32) (param $1 i32)
   (nop)
  )
+ (func $~lib/array/Array<i32>#get:buffer (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $~lib/array/Array<i32>#__visit (param $this i32) (param $cookie i32)
+  (drop
+   (i32.const 0)
+  )
+  (call $~lib/rt/itcms/__visit
+   (call $~lib/array/Array<i32>#get:buffer
+    (call $~lib/rt/__tmptostack
+     (local.get $this)
+    )
+   )
+   (local.get $cookie)
+  )
+ )
+ (func $~lib/array/Array<i32>~visit (param $0 i32) (param $1 i32)
+  (call $~lib/object/Object~visit
+   (local.get $0)
+   (local.get $1)
+  )
+  (call $~lib/array/Array<i32>#__visit
+   (local.get $0)
+   (local.get $1)
+  )
+ )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $~lib/arraybuffer/ArrayBufferView
-    (block $~lib/string/String
-     (block $~lib/arraybuffer/ArrayBuffer
-      (block $~lib/object/Object
-       (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $invalid
-        (i32.load
-         (i32.sub
-          (local.get $0)
-          (i32.const 8)
+   (block $~lib/iterator/Iterable<i32>
+    (block $~lib/array/Array<i32>
+     (block $issues/2730/Box
+      (block $~lib/arraybuffer/ArrayBufferView
+       (block $~lib/string/String
+        (block $~lib/arraybuffer/ArrayBuffer
+         (block $~lib/object/Object
+          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $issues/2730/Box $~lib/array/Array<i32> $~lib/iterator/Iterable<i32> $invalid
+           (i32.load
+            (i32.sub
+             (local.get $0)
+             (i32.const 8)
+            )
+           )
+          )
          )
+         (return)
         )
+        (return)
        )
+       (return)
       )
-      (return)
+      (block
+       (call $~lib/arraybuffer/ArrayBufferView~visit
+        (local.get $0)
+        (local.get $1)
+       )
+       (return)
+      )
      )
      (return)
     )
-    (return)
-   )
-   (block
-    (call $~lib/arraybuffer/ArrayBufferView~visit
-     (local.get $0)
-     (local.get $1)
+    (block
+     (call $~lib/array/Array<i32>~visit
+      (local.get $0)
+      (local.get $1)
+     )
+     (return)
     )
-    (return)
    )
+   (return)
   )
   (unreachable)
  )
  (func $~start
-  (call $start:extension/utf8_const_str)
+  (call $start:issues/2730)
  )
 )

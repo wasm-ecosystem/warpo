@@ -178,7 +178,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$98
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$97
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -202,7 +202,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$98
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$97
    end
    local.get $0
    i32.load offset=8
@@ -1032,12 +1032,12 @@
   global.get $~lib/rt/itcms/threshold
   i32.ge_u
   if
-   block $__inlined_func$~lib/rt/itcms/interrupt$68
+   block $__inlined_func$~lib/rt/itcms/interrupt$67
     i32.const 2048
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$103 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$102 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1053,7 +1053,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$103
+         br $__inlined_func$~lib/rt/itcms/step$102
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1092,7 +1092,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$103
+           br $__inlined_func$~lib/rt/itcms/step$102
           end
           local.get $2
           i32.load offset=4
@@ -1184,7 +1184,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$103
+        br $__inlined_func$~lib/rt/itcms/step$102
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1283,7 +1283,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$103
+        br $__inlined_func$~lib/rt/itcms/step$102
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1307,7 +1307,7 @@
       i32.const 1024
       i32.add
       global.set $~lib/rt/itcms/threshold
-      br $__inlined_func$~lib/rt/itcms/interrupt$68
+      br $__inlined_func$~lib/rt/itcms/interrupt$67
      end
      local.get $2
      i32.const 0
@@ -1521,16 +1521,13 @@
    local.get $2
    i32.const 4
    i32.add
-   local.tee $4
    local.get $2
    i32.load
    i32.const -4
    i32.and
+   i32.add
    local.tee $3
-   i32.add
    local.get $3
-   local.get $4
-   i32.add
    i32.load
    i32.const -3
    i32.and
@@ -2053,7 +2050,7 @@
    i64.const 1
    i64.sub
    local.set $17
-   block $__inlined_func$~lib/util/number/prettify$80 (result i32)
+   block $__inlined_func$~lib/util/number/prettify$79 (result i32)
     local.get $16
     i32.const 1
     i32.shl
@@ -2102,7 +2099,7 @@
     i64.add
     i64.add
     local.set $14
-    block $__inlined_func$~lib/util/number/genDigits$79 (result i32)
+    block $__inlined_func$~lib/util/number/genDigits$78 (result i32)
      local.get $17
      local.get $8
      global.get $~lib/util/number/_frc_minus
@@ -2389,7 +2386,7 @@
         local.get $1
         i32.store16
         local.get $2
-        br $__inlined_func$~lib/util/number/genDigits$79
+        br $__inlined_func$~lib/util/number/genDigits$78
        end
        br $while-continue|0
       end
@@ -2521,7 +2518,7 @@
      local.get $2
      i32.const 2
      i32.add
-     br $__inlined_func$~lib/util/number/prettify$80
+     br $__inlined_func$~lib/util/number/prettify$79
     end
     local.get $2
     local.get $3
@@ -2799,7 +2796,7 @@
    i32.const 0
    return
   end
-  block $__inlined_func$~lib/util/string/compareImpl$83 (result i32)
+  block $__inlined_func$~lib/util/string/compareImpl$82 (result i32)
    local.get $0
    local.tee $2
    i32.const 7
@@ -2859,7 +2856,7 @@
       local.get $3
       local.get $4
       i32.sub
-      br $__inlined_func$~lib/util/string/compareImpl$83
+      br $__inlined_func$~lib/util/string/compareImpl$82
      end
      local.get $2
      i32.const 2

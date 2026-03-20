@@ -2770,6 +2770,7 @@
   (local $blockInfo i32)
   (local $remaining i32)
   (local $spare i32)
+  (local $6 i32)
   (local.set $blockInfo
    (call $~lib/rt/common/BLOCK#get:mmInfo
     (local.get $block)
@@ -2866,15 +2867,16 @@
       )
      )
     )
-    (call $~lib/rt/common/BLOCK#set:mmInfo
+    (local.set $6
      (call $~lib/rt/tlsf/GETRIGHT
       (local.get $block)
      )
+    )
+    (call $~lib/rt/common/BLOCK#set:mmInfo
+     (local.get $6)
      (i32.and
       (call $~lib/rt/common/BLOCK#get:mmInfo
-       (call $~lib/rt/tlsf/GETRIGHT
-        (local.get $block)
-       )
+       (local.get $6)
       )
       (i32.xor
        (i32.const 2)
