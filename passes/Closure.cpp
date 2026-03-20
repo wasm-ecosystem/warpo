@@ -360,6 +360,18 @@ public:
     wasm::Index const heapIdx = *spIt->second.getHeapVariableStorageLocalIndex();
     ClosureEnvDefMap defMap(func);
     for (BasicBlock const &bb : defMap.cfg()) {
+      for (wasm::Expression *const expr : bb) {
+        wasm::Call const *const call = expr->dynCast<wasm::Call>();
+        if (call == nullptr || call->target != kGetClosureEnvByLevel)
+          continue;
+        wasm::Const const *const levelConst = call->operands[0]->dynCast<wasm::Const>();
+        assert(levelConst != nullptr);
+        int32_t const level = levelConst->value.geti32();
+        if (level > 0)
+          defMap.insertUsedLevel(&bb, level);
+      }
+    }
+    for (BasicBlock const &bb : defMap.cfg()) {
       std::vector<uint32_t> levelCounts;
       for (wasm::Expression *const expr : bb) {
         wasm::Call const *const call = expr->dynCast<wasm::Call>();
@@ -369,7 +381,6 @@ public:
         assert(levelConst != nullptr);
         int32_t const level = levelConst->value.geti32();
         if (level > 0) {
-          defMap.insertUsedLevel(&bb, level);
           size_t const levelIndex = static_cast<size_t>(level);
           if (levelIndex >= levelCounts.size())
             levelCounts.resize(levelIndex + 1, 0);
@@ -1534,6 +1545,104 @@ TEST(ClosureLower, OptLowerCachesSingleMaxLevelWhenCountExceedsOne) {
   EXPECT_EQ(firstUse->index, level2Cache->index);
   EXPECT_EQ(secondUse->index, level2Cache->index);
   EXPECT_EQ(thirdUse->index, level2Cache->index);
+}
+
+TEST(ClosureLower, OptLowerHoistsPastIntermediateDomWithoutClosureCalls) {
+  auto m = loadWat(R"(
+    (module
+      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
+      (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
+      (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (memory 1)
+      (func $levelGetter (param i32 i32) (result i32) (local i32)
+        (call $~lib/rt/closure/setClosureEnv (i32.const 42))
+        (drop (call $~lib/rt/closure/getClosureEnvByLevel (i32.const 3)))
+        (drop (call $~lib/rt/closure/getClosureEnvByLevel (i32.const 3)))
+        (if (local.get 0)
+          (then
+            (if (local.get 1)
+              (then
+                (drop (call $~lib/rt/closure/getClosureEnvByLevel (i32.const 1)))
+                (drop (call $~lib/rt/closure/getClosureEnvByLevel (i32.const 1)))
+              )
+            )
+          )
+        )
+        (i32.const 0)
+      )
+    )
+  )");
+
+  VariableInfo variableInfo;
+  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 2);
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{new closure::OptLower(&variableInfo)});
+  runner.run();
+
+  using namespace matcher;
+  wasm::Function *const levelGetter = m->getFunctionOrNull("levelGetter");
+  ASSERT_NE(levelGetter, nullptr);
+
+  // Level 1 should be hoisted past the intermediate dom node (outer then-block
+  // with no closure calls) all the way to the entry block where level 3 lives.
+  // Level 3 cache chains from level 1 cache.
+  matcher::M<wasm::Expression> const match = isBlock({
+      block::at(0, isGlobalSet()),
+      block::at(1, isDrop(drop::v(isBlock({
+                       block::has(3),
+                       block::at(0, isLocalSet(local_set::v(isLoad(load::ptr(isLocalGet(local_get::index(2))))))
+                                        .bind("level1Cache")),
+                       block::at(1, isLocalSet(local_set::v(isLoad(
+                                                   load::ptr(isLoad(load::ptr(isLocalGet().bind("level3From")))))))
+                                        .bind("level3Cache")),
+                       block::at(2, isLocalGet().bind("firstL3Use")),
+                   })))),
+      block::at(2, isDrop(drop::v(isLocalGet().bind("secondL3Use")))),
+      block::at(3, isIf().bind("outerIf")),
+  });
+  isMatched(match, levelGetter->body);
+
+  matcher::Context ctx{};
+  ASSERT_TRUE(match(*levelGetter->body, ctx));
+
+  wasm::LocalSet const *const level1Cache = ctx.getBinding<wasm::LocalSet>("level1Cache");
+  wasm::LocalGet const *const level3From = ctx.getBinding<wasm::LocalGet>("level3From");
+  wasm::LocalSet const *const level3Cache = ctx.getBinding<wasm::LocalSet>("level3Cache");
+  wasm::LocalGet const *const firstL3Use = ctx.getBinding<wasm::LocalGet>("firstL3Use");
+  wasm::LocalGet const *const secondL3Use = ctx.getBinding<wasm::LocalGet>("secondL3Use");
+  wasm::If const *const outerIf = ctx.getBinding<wasm::If>("outerIf");
+  ASSERT_NE(level1Cache, nullptr);
+  ASSERT_NE(level3From, nullptr);
+  ASSERT_NE(level3Cache, nullptr);
+  ASSERT_NE(firstL3Use, nullptr);
+  ASSERT_NE(secondL3Use, nullptr);
+  ASSERT_NE(outerIf, nullptr);
+  EXPECT_EQ(level3From->index, level1Cache->index);
+  EXPECT_EQ(firstL3Use->index, level3Cache->index);
+  EXPECT_EQ(secondL3Use->index, level3Cache->index);
+
+  // Outer if then-block has no closure calls — it's just the inner if.
+  ASSERT_TRUE(outerIf->ifTrue->is<wasm::If>());
+  wasm::If const *const innerIf = outerIf->ifTrue->cast<wasm::If>();
+
+  // Inner then uses level 1 cache from the entry block (hoisted past the intermediate dom).
+  matcher::M<wasm::Expression> const innerThenMatch = isBlock({
+      block::at(0, isDrop(drop::v(isLocalGet().bind("firstL1Use")))),
+      block::at(1, isDrop(drop::v(isLocalGet().bind("secondL1Use")))),
+  });
+  isMatched(innerThenMatch, innerIf->ifTrue);
+
+  matcher::Context innerCtx{};
+  ASSERT_TRUE(innerThenMatch(*innerIf->ifTrue, innerCtx));
+
+  wasm::LocalGet const *const firstL1Use = innerCtx.getBinding<wasm::LocalGet>("firstL1Use");
+  wasm::LocalGet const *const secondL1Use = innerCtx.getBinding<wasm::LocalGet>("secondL1Use");
+  ASSERT_NE(firstL1Use, nullptr);
+  ASSERT_NE(secondL1Use, nullptr);
+  EXPECT_EQ(firstL1Use->index, level1Cache->index);
+  EXPECT_EQ(secondL1Use->index, level1Cache->index);
 }
 
 } // namespace
