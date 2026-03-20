@@ -5353,6 +5353,12 @@ export class Compiler extends DiagnosticEmitter {
     }
   }
 
+  /**
+   * Returns whether evaluating an expression has observable effects beyond producing a value.
+   *
+   * In this context, a side effect means behavior that must not be duplicated when lowering
+   * compound assignments, such as state mutation (e.g. ++, --, assignment), calls/allocation.
+   */
   private expressionHasSideEffects(expression: Expression): bool {
     while (expression.kind == NodeKind.Parenthesized) {
       expression = (<ParenthesizedExpression>expression).expression;
