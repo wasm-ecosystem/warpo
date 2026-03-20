@@ -222,22 +222,40 @@ private:
   VariableInfo const *variableInfo_;
 };
 
-class ClosureEnvDefMap final {
+class SortedLevelDefs final {
+public:
+  bool insert(int32_t const level, wasm::Index const localIndex) {
+    std::vector<LevelDef>::iterator const it = std::lower_bound(
+        defs_.begin(), defs_.end(), level, [](LevelDef const &def, int32_t val) { return def.level < val; });
+    if (it != defs_.end() && it->level == level)
+      return false;
+    defs_.insert(it, {level, localIndex});
+    return true;
+  }
 
-  struct BlockClosureInfo final {
-    std::vector<LevelDef> definedLevels;
-    std::vector<uint32_t> levelCounts;
-  };
-
-  static std::optional<LevelDef> getClosestDefInList(std::vector<LevelDef> const &definedLevels,
-                                                     int32_t const level) noexcept {
-    std::vector<LevelDef>::const_iterator const it =
-        std::upper_bound(definedLevels.begin(), definedLevels.end(), level,
-                         [](int32_t val, LevelDef const &def) { return val < def.level; });
-    if (it == definedLevels.begin())
+  std::optional<LevelDef> getClosest(int32_t const level) const noexcept {
+    std::vector<LevelDef>::const_iterator const it = std::upper_bound(
+        defs_.begin(), defs_.end(), level, [](int32_t val, LevelDef const &def) { return val < def.level; });
+    if (it == defs_.begin())
       return std::nullopt;
     return *std::prev(it);
   }
+
+  bool empty() const noexcept { return defs_.empty(); }
+  LevelDef const &front() const noexcept { return defs_.front(); }
+  std::vector<LevelDef>::const_iterator begin() const noexcept { return defs_.begin(); }
+  std::vector<LevelDef>::const_iterator end() const noexcept { return defs_.end(); }
+
+private:
+  std::vector<LevelDef> defs_;
+};
+
+class ClosureEnvDefMap final {
+
+  struct BlockClosureInfo final {
+    SortedLevelDefs definedLevels;
+    std::vector<uint32_t> levelCounts;
+  };
 
   bool isReusableNode(BasicBlock const *const block, int32_t const level) const noexcept {
     std::unordered_map<BasicBlock const *, BlockClosureInfo>::const_iterator const infoIt = blockInfos_.find(block);
@@ -275,28 +293,15 @@ public:
   // Allocates a new i32 local and records (level -> localIndex) in the sorted list for the given block.
   // Returns the allocated local index, or nullopt if the level is already defined.
   std::optional<wasm::Index> addDef(BasicBlock const *const block, int32_t const level) {
-    for (BasicBlock const *domBlock = block; domBlock != nullptr; domBlock = domTree_.getIDom(domBlock)) {
-      std::unordered_map<BasicBlock const *, BlockClosureInfo>::const_iterator const infoIt =
-          blockInfos_.find(domBlock);
-      if (infoIt == blockInfos_.end())
-        continue;
-      std::optional<LevelDef> const existingDef = getClosestDefInList(infoIt->second.definedLevels, level);
-      if (existingDef.has_value() && existingDef->level == level)
-        return std::nullopt;
-    }
-
     BasicBlock const *insertBlock = block;
     for (BasicBlock const *domBlock = block; domBlock != nullptr; domBlock = domTree_.getIDom(domBlock)) {
       if (isReusableNode(domBlock, level))
         insertBlock = domBlock;
     }
 
-    std::vector<LevelDef> &definedLevels = blockInfos_[insertBlock].definedLevels;
-    std::vector<LevelDef>::iterator const it =
-        std::lower_bound(definedLevels.begin(), definedLevels.end(), level,
-                         [](LevelDef const &def, int32_t val) { return def.level < val; });
     wasm::Index const localIdx = wasm::Builder::addVar(func_, wasm::Type::i32);
-    definedLevels.insert(it, {level, localIdx});
+    if (!blockInfos_[insertBlock].definedLevels.insert(level, localIdx))
+      return std::nullopt;
     return localIdx;
   }
 
@@ -307,7 +312,7 @@ public:
           blockInfos_.find(domBlock);
       if (infoIt == blockInfos_.end())
         continue;
-      std::optional<LevelDef> const def = getClosestDefInList(infoIt->second.definedLevels, level);
+      std::optional<LevelDef> const def = infoIt->second.definedLevels.getClosest(level);
       if (def.has_value())
         return def;
     }
@@ -389,7 +394,7 @@ public:
         defMap.insertUsedLevel(&bb, level);
     });
     for (BasicBlock const &bb : defMap.cfg()) {
-      std::vector<uint32_t> const *levelCounts = defMap.getLevelCounts(&bb);
+      std::vector<uint32_t> const *const levelCounts = defMap.getLevelCounts(&bb);
       if (levelCounts == nullptr || levelCounts->empty())
         continue;
       int32_t const maxLevel = static_cast<int32_t>(levelCounts->size() - 1);
