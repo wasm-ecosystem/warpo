@@ -1527,7 +1527,9 @@
   local.get $0
   i32.store align=1
   local.get $0
-  call $start:issues/2707~anonymous|0
+  i32.const 32
+  i32.load
+  call_indirect (type $0)
   drop
   global.get $~lib/memory/__stack_pointer
   i32.const 4

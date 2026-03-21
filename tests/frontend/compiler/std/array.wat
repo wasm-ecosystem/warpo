@@ -8497,6 +8497,7 @@
   (local $len i32)
   (local $4 i32)
   (local $5 i32)
+  (local $6 i32)
   (block
    (local.set $i
     (i32.const 0)
@@ -8532,35 +8533,40 @@
     )
     (then
      (if
-      (call_indirect (type $3)
-       (i32.load
-        (i32.add
-         (call $~lib/array/Array<i32>#get:dataStart
-          (call $~lib/rt/__tmptostack
-           (local.get $this)
+      (block (result i32)
+       (local.set $6
+        (local.get $fn)
+       )
+       (call_indirect (type $3)
+        (i32.load
+         (i32.add
+          (call $~lib/array/Array<i32>#get:dataStart
+           (call $~lib/rt/__tmptostack
+            (local.get $this)
+           )
+          )
+          (i32.shl
+           (local.get $i)
+           (i32.const 2)
           )
          )
-         (i32.shl
-          (local.get $i)
-          (i32.const 2)
+        )
+        (local.get $i)
+        (call $~lib/rt/__tmptostack
+         (local.get $this)
+        )
+        (block (result i32)
+         (call $~lib/rt/closure/setClosureEnv
+          (i32.load offset=4
+           (local.get $6)
+          )
          )
-        )
-       )
-       (local.get $i)
-       (call $~lib/rt/__tmptostack
-        (local.get $this)
-       )
-       (block (result i32)
-        (call $~lib/rt/closure/setClosureEnv
-         (i32.load offset=4
-          (local.get $fn)
+         (global.set $~argumentsLength
+          (i32.const 3)
          )
-        )
-        (global.set $~argumentsLength
-         (i32.const 3)
-        )
-        (i32.load
-         (local.get $fn)
+         (i32.load
+          (local.get $6)
+         )
         )
        )
       )
@@ -8641,6 +8647,7 @@
  )
  (func $~lib/array/Array<i32>#findLastIndex (param $this i32) (param $fn i32) (result i32)
   (local $i i32)
+  (local $3 i32)
   (local.set $i
    (i32.sub
     (call $~lib/array/Array<i32>#get:length_
@@ -8659,35 +8666,40 @@
     )
     (then
      (if
-      (call_indirect (type $3)
-       (i32.load
-        (i32.add
-         (call $~lib/array/Array<i32>#get:dataStart
-          (call $~lib/rt/__tmptostack
-           (local.get $this)
+      (block (result i32)
+       (local.set $3
+        (local.get $fn)
+       )
+       (call_indirect (type $3)
+        (i32.load
+         (i32.add
+          (call $~lib/array/Array<i32>#get:dataStart
+           (call $~lib/rt/__tmptostack
+            (local.get $this)
+           )
+          )
+          (i32.shl
+           (local.get $i)
+           (i32.const 2)
           )
          )
-         (i32.shl
-          (local.get $i)
-          (i32.const 2)
+        )
+        (local.get $i)
+        (call $~lib/rt/__tmptostack
+         (local.get $this)
+        )
+        (block (result i32)
+         (call $~lib/rt/closure/setClosureEnv
+          (i32.load offset=4
+           (local.get $3)
+          )
          )
-        )
-       )
-       (local.get $i)
-       (call $~lib/rt/__tmptostack
-        (local.get $this)
-       )
-       (block (result i32)
-        (call $~lib/rt/closure/setClosureEnv
-         (i32.load offset=4
-          (local.get $fn)
+         (global.set $~argumentsLength
+          (i32.const 3)
          )
-        )
-        (global.set $~argumentsLength
-         (i32.const 3)
-        )
-        (i32.load
-         (local.get $fn)
+         (i32.load
+          (local.get $3)
+         )
         )
        )
       )
@@ -8749,6 +8761,7 @@
   (local $len i32)
   (local $4 i32)
   (local $5 i32)
+  (local $6 i32)
   (block
    (local.set $i
     (i32.const 0)
@@ -8785,35 +8798,40 @@
     (then
      (if
       (i32.eqz
-       (call_indirect (type $3)
-        (i32.load
-         (i32.add
-          (call $~lib/array/Array<i32>#get:dataStart
-           (call $~lib/rt/__tmptostack
-            (local.get $this)
+       (block (result i32)
+        (local.set $6
+         (local.get $fn)
+        )
+        (call_indirect (type $3)
+         (i32.load
+          (i32.add
+           (call $~lib/array/Array<i32>#get:dataStart
+            (call $~lib/rt/__tmptostack
+             (local.get $this)
+            )
+           )
+           (i32.shl
+            (local.get $i)
+            (i32.const 2)
            )
           )
-          (i32.shl
-           (local.get $i)
-           (i32.const 2)
+         )
+         (local.get $i)
+         (call $~lib/rt/__tmptostack
+          (local.get $this)
+         )
+         (block (result i32)
+          (call $~lib/rt/closure/setClosureEnv
+           (i32.load offset=4
+            (local.get $6)
+           )
           )
-         )
-        )
-        (local.get $i)
-        (call $~lib/rt/__tmptostack
-         (local.get $this)
-        )
-        (block (result i32)
-         (call $~lib/rt/closure/setClosureEnv
-          (i32.load offset=4
-           (local.get $fn)
+          (global.set $~argumentsLength
+           (i32.const 3)
           )
-         )
-         (global.set $~argumentsLength
-          (i32.const 3)
-         )
-         (i32.load
-          (local.get $fn)
+          (i32.load
+           (local.get $6)
+          )
          )
         )
        )
@@ -8892,6 +8910,7 @@
   (local $len i32)
   (local $4 i32)
   (local $5 i32)
+  (local $6 i32)
   (block
    (local.set $i
     (i32.const 0)
@@ -8927,35 +8946,40 @@
     )
     (then
      (if
-      (call_indirect (type $3)
-       (i32.load
-        (i32.add
-         (call $~lib/array/Array<i32>#get:dataStart
-          (call $~lib/rt/__tmptostack
-           (local.get $this)
+      (block (result i32)
+       (local.set $6
+        (local.get $fn)
+       )
+       (call_indirect (type $3)
+        (i32.load
+         (i32.add
+          (call $~lib/array/Array<i32>#get:dataStart
+           (call $~lib/rt/__tmptostack
+            (local.get $this)
+           )
+          )
+          (i32.shl
+           (local.get $i)
+           (i32.const 2)
           )
          )
-         (i32.shl
-          (local.get $i)
-          (i32.const 2)
+        )
+        (local.get $i)
+        (call $~lib/rt/__tmptostack
+         (local.get $this)
+        )
+        (block (result i32)
+         (call $~lib/rt/closure/setClosureEnv
+          (i32.load offset=4
+           (local.get $6)
+          )
          )
-        )
-       )
-       (local.get $i)
-       (call $~lib/rt/__tmptostack
-        (local.get $this)
-       )
-       (block (result i32)
-        (call $~lib/rt/closure/setClosureEnv
-         (i32.load offset=4
-          (local.get $fn)
+         (global.set $~argumentsLength
+          (i32.const 3)
          )
-        )
-        (global.set $~argumentsLength
-         (i32.const 3)
-        )
-        (i32.load
-         (local.get $fn)
+         (i32.load
+          (local.get $6)
+         )
         )
        )
       )
@@ -9035,6 +9059,7 @@
   (local $len i32)
   (local $4 i32)
   (local $5 i32)
+  (local $6 i32)
   (block
    (local.set $i
     (i32.const 0)
@@ -9069,6 +9094,9 @@
      )
     )
     (then
+     (local.set $6
+      (local.get $fn)
+     )
      (call_indirect (type $5)
       (i32.load
        (i32.add
@@ -9090,14 +9118,14 @@
       (block (result i32)
        (call $~lib/rt/closure/setClosureEnv
         (i32.load offset=4
-         (local.get $fn)
+         (local.get $6)
         )
        )
        (global.set $~argumentsLength
         (i32.const 3)
        )
        (i32.load
-        (local.get $fn)
+        (local.get $6)
        )
       )
      )
@@ -11919,8 +11947,11 @@
  )
  (func $~lib/util/sort/extendRunRight<f32> (param $ptr i32) (param $i i32) (param $right i32) (param $comparator i32) (result i32)
   (local $j i32)
+  (local $5 i32)
+  (local $6 i32)
   (local $k i32)
   (local $tmp f32)
+  (local $9 i32)
   (if
    (i32.eq
     (local.get $i)
@@ -11937,41 +11968,46 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $7)
-     (f32.load
-      (i32.add
-       (local.get $ptr)
-       (i32.shl
-        (local.get $j)
-        (i32.const 2)
-       )
-      )
+    (block (result i32)
+     (local.set $5
+      (local.get $comparator)
      )
-     (f32.load
-      (i32.add
-       (local.get $ptr)
-       (i32.shl
-        (local.tee $j
-         (i32.add
-          (local.get $j)
-          (i32.const 1)
-         )
+     (call_indirect (type $7)
+      (f32.load
+       (i32.add
+        (local.get $ptr)
+        (i32.shl
+         (local.get $j)
+         (i32.const 2)
         )
+       )
+      )
+      (f32.load
+       (i32.add
+        (local.get $ptr)
+        (i32.shl
+         (local.tee $j
+          (i32.add
+           (local.get $j)
+           (i32.const 1)
+          )
+         )
+         (i32.const 2)
+        )
+       )
+      )
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (local.get $5)
+        )
+       )
+       (global.set $~argumentsLength
         (i32.const 2)
        )
-      )
-     )
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.load offset=4
-        (local.get $comparator)
+       (i32.load
+        (local.get $5)
        )
-      )
-      (global.set $~argumentsLength
-       (i32.const 2)
-      )
-      (i32.load
-       (local.get $comparator)
       )
      )
     )
@@ -11988,36 +12024,41 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $7)
-           (f32.load offset=4
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
+          (block (result i32)
+           (local.set $6
+            (local.get $comparator)
+           )
+           (call_indirect (type $7)
+            (f32.load offset=4
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 2)
+              )
+             )
+            )
+            (f32.load
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 2)
+              )
+             )
+            )
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $6)
+              )
+             )
+             (global.set $~argumentsLength
               (i32.const 2)
              )
-            )
-           )
-           (f32.load
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 2)
+             (i32.load
+              (local.get $6)
              )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
-             (i32.load offset=4
-              (local.get $comparator)
-             )
-            )
-            (global.set $~argumentsLength
-             (i32.const 2)
-            )
-            (i32.load
-             (local.get $comparator)
             )
            )
           )
@@ -12119,36 +12160,41 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $7)
-           (f32.load offset=4
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
+          (block (result i32)
+           (local.set $9
+            (local.get $comparator)
+           )
+           (call_indirect (type $7)
+            (f32.load offset=4
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 2)
+              )
+             )
+            )
+            (f32.load
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 2)
+              )
+             )
+            )
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $9)
+              )
+             )
+             (global.set $~argumentsLength
               (i32.const 2)
              )
-            )
-           )
-           (f32.load
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 2)
+             (i32.load
+              (local.get $9)
              )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
-             (i32.load offset=4
-              (local.get $comparator)
-             )
-            )
-            (global.set $~argumentsLength
-             (i32.const 2)
-            )
-            (i32.load
-             (local.get $comparator)
             )
            )
           )
@@ -13479,8 +13525,11 @@
  )
  (func $~lib/util/sort/extendRunRight<f64> (param $ptr i32) (param $i i32) (param $right i32) (param $comparator i32) (result i32)
   (local $j i32)
+  (local $5 i32)
+  (local $6 i32)
   (local $k i32)
   (local $tmp f64)
+  (local $9 i32)
   (if
    (i32.eq
     (local.get $i)
@@ -13497,41 +13546,46 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $8)
-     (f64.load
-      (i32.add
-       (local.get $ptr)
-       (i32.shl
-        (local.get $j)
-        (i32.const 3)
-       )
-      )
+    (block (result i32)
+     (local.set $5
+      (local.get $comparator)
      )
-     (f64.load
-      (i32.add
-       (local.get $ptr)
-       (i32.shl
-        (local.tee $j
-         (i32.add
-          (local.get $j)
-          (i32.const 1)
-         )
+     (call_indirect (type $8)
+      (f64.load
+       (i32.add
+        (local.get $ptr)
+        (i32.shl
+         (local.get $j)
+         (i32.const 3)
         )
-        (i32.const 3)
        )
       )
-     )
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.load offset=4
-        (local.get $comparator)
+      (f64.load
+       (i32.add
+        (local.get $ptr)
+        (i32.shl
+         (local.tee $j
+          (i32.add
+           (local.get $j)
+           (i32.const 1)
+          )
+         )
+         (i32.const 3)
+        )
        )
       )
-      (global.set $~argumentsLength
-       (i32.const 2)
-      )
-      (i32.load
-       (local.get $comparator)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (local.get $5)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
+        (local.get $5)
+       )
       )
      )
     )
@@ -13548,36 +13602,41 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $8)
-           (f64.load offset=8
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 3)
-             )
-            )
+          (block (result i32)
+           (local.set $6
+            (local.get $comparator)
            )
-           (f64.load
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 3)
+           (call_indirect (type $8)
+            (f64.load offset=8
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 3)
+              )
              )
             )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
-             (i32.load offset=4
-              (local.get $comparator)
+            (f64.load
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 3)
+              )
              )
             )
-            (global.set $~argumentsLength
-             (i32.const 2)
-            )
-            (i32.load
-             (local.get $comparator)
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $6)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $6)
+             )
             )
            )
           )
@@ -13679,36 +13738,41 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $8)
-           (f64.load offset=8
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 3)
-             )
-            )
+          (block (result i32)
+           (local.set $9
+            (local.get $comparator)
            )
-           (f64.load
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 3)
+           (call_indirect (type $8)
+            (f64.load offset=8
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 3)
+              )
              )
             )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
-             (i32.load offset=4
-              (local.get $comparator)
+            (f64.load
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 3)
+              )
              )
             )
-            (global.set $~argumentsLength
-             (i32.const 2)
-            )
-            (i32.load
-             (local.get $comparator)
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $9)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $9)
+             )
             )
            )
           )
@@ -15171,8 +15235,11 @@
  )
  (func $~lib/util/sort/extendRunRight<i32> (param $ptr i32) (param $i i32) (param $right i32) (param $comparator i32) (result i32)
   (local $j i32)
+  (local $5 i32)
+  (local $6 i32)
   (local $k i32)
   (local $tmp i32)
+  (local $9 i32)
   (if
    (i32.eq
     (local.get $i)
@@ -15189,41 +15256,46 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
-     (i32.load
-      (i32.add
-       (local.get $ptr)
-       (i32.shl
-        (local.get $j)
-        (i32.const 2)
-       )
-      )
+    (block (result i32)
+     (local.set $5
+      (local.get $comparator)
      )
-     (i32.load
-      (i32.add
-       (local.get $ptr)
-       (i32.shl
-        (local.tee $j
-         (i32.add
-          (local.get $j)
-          (i32.const 1)
-         )
+     (call_indirect (type $0)
+      (i32.load
+       (i32.add
+        (local.get $ptr)
+        (i32.shl
+         (local.get $j)
+         (i32.const 2)
         )
-        (i32.const 2)
        )
-      )
-     )
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.load offset=4
-        (local.get $comparator)
-       )
-      )
-      (global.set $~argumentsLength
-       (i32.const 2)
       )
       (i32.load
-       (local.get $comparator)
+       (i32.add
+        (local.get $ptr)
+        (i32.shl
+         (local.tee $j
+          (i32.add
+           (local.get $j)
+           (i32.const 1)
+          )
+         )
+         (i32.const 2)
+        )
+       )
+      )
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (local.get $5)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
+        (local.get $5)
+       )
       )
      )
     )
@@ -15240,36 +15312,41 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
-           (i32.load offset=4
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 2)
-             )
-            )
+          (block (result i32)
+           (local.set $6
+            (local.get $comparator)
            )
-           (i32.load
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 2)
+           (call_indirect (type $0)
+            (i32.load offset=4
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 2)
+              )
              )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
-             (i32.load offset=4
-              (local.get $comparator)
-             )
-            )
-            (global.set $~argumentsLength
-             (i32.const 2)
             )
             (i32.load
-             (local.get $comparator)
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 2)
+              )
+             )
+            )
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $6)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $6)
+             )
             )
            )
           )
@@ -15371,36 +15448,41 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
-           (i32.load offset=4
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 2)
-             )
-            )
+          (block (result i32)
+           (local.set $9
+            (local.get $comparator)
            )
-           (i32.load
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 2)
+           (call_indirect (type $0)
+            (i32.load offset=4
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 2)
+              )
              )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
-             (i32.load offset=4
-              (local.get $comparator)
-             )
-            )
-            (global.set $~argumentsLength
-             (i32.const 2)
             )
             (i32.load
-             (local.get $comparator)
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 2)
+              )
+             )
+            )
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $9)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $9)
+             )
             )
            )
           )
@@ -16607,8 +16689,11 @@
  )
  (func $~lib/util/sort/extendRunRight<u32> (param $ptr i32) (param $i i32) (param $right i32) (param $comparator i32) (result i32)
   (local $j i32)
+  (local $5 i32)
+  (local $6 i32)
   (local $k i32)
   (local $tmp i32)
+  (local $9 i32)
   (if
    (i32.eq
     (local.get $i)
@@ -16625,41 +16710,46 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
-     (i32.load
-      (i32.add
-       (local.get $ptr)
-       (i32.shl
-        (local.get $j)
-        (i32.const 2)
-       )
-      )
+    (block (result i32)
+     (local.set $5
+      (local.get $comparator)
      )
-     (i32.load
-      (i32.add
-       (local.get $ptr)
-       (i32.shl
-        (local.tee $j
-         (i32.add
-          (local.get $j)
-          (i32.const 1)
-         )
+     (call_indirect (type $0)
+      (i32.load
+       (i32.add
+        (local.get $ptr)
+        (i32.shl
+         (local.get $j)
+         (i32.const 2)
         )
-        (i32.const 2)
        )
-      )
-     )
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.load offset=4
-        (local.get $comparator)
-       )
-      )
-      (global.set $~argumentsLength
-       (i32.const 2)
       )
       (i32.load
-       (local.get $comparator)
+       (i32.add
+        (local.get $ptr)
+        (i32.shl
+         (local.tee $j
+          (i32.add
+           (local.get $j)
+           (i32.const 1)
+          )
+         )
+         (i32.const 2)
+        )
+       )
+      )
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (local.get $5)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
+        (local.get $5)
+       )
       )
      )
     )
@@ -16676,36 +16766,41 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
-           (i32.load offset=4
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 2)
-             )
-            )
+          (block (result i32)
+           (local.set $6
+            (local.get $comparator)
            )
-           (i32.load
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 2)
+           (call_indirect (type $0)
+            (i32.load offset=4
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 2)
+              )
              )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
-             (i32.load offset=4
-              (local.get $comparator)
-             )
-            )
-            (global.set $~argumentsLength
-             (i32.const 2)
             )
             (i32.load
-             (local.get $comparator)
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 2)
+              )
+             )
+            )
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $6)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $6)
+             )
             )
            )
           )
@@ -16807,36 +16902,41 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
-           (i32.load offset=4
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 2)
-             )
-            )
+          (block (result i32)
+           (local.set $9
+            (local.get $comparator)
            )
-           (i32.load
-            (i32.add
-             (local.get $ptr)
-             (i32.shl
-              (local.get $j)
-              (i32.const 2)
+           (call_indirect (type $0)
+            (i32.load offset=4
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 2)
+              )
              )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
-             (i32.load offset=4
-              (local.get $comparator)
-             )
-            )
-            (global.set $~argumentsLength
-             (i32.const 2)
             )
             (i32.load
-             (local.get $comparator)
+             (i32.add
+              (local.get $ptr)
+              (i32.shl
+               (local.get $j)
+               (i32.const 2)
+              )
+             )
+            )
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $9)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $9)
+             )
             )
            )
           )
@@ -17866,6 +17966,7 @@
  (func $std/array/isSorted<i32> (param $data i32) (param $comparator i32) (result i32)
   (local $i i32)
   (local $len i32)
+  (local $4 i32)
   (block
    (local.set $i
     (i32.const 1)
@@ -17887,33 +17988,38 @@
     (then
      (if
       (i32.gt_s
-       (call_indirect (type $0)
-        (call $~lib/array/Array<i32>#__get
-         (call $~lib/rt/__tmptostack
-          (local.get $data)
-         )
-         (i32.sub
-          (local.get $i)
-          (i32.const 1)
-         )
+       (block (result i32)
+        (local.set $4
+         (local.get $comparator)
         )
-        (call $~lib/array/Array<i32>#__get
-         (call $~lib/rt/__tmptostack
-          (local.get $data)
-         )
-         (local.get $i)
-        )
-        (block (result i32)
-         (call $~lib/rt/closure/setClosureEnv
-          (i32.load offset=4
-           (local.get $comparator)
+        (call_indirect (type $0)
+         (call $~lib/array/Array<i32>#__get
+          (call $~lib/rt/__tmptostack
+           (local.get $data)
+          )
+          (i32.sub
+           (local.get $i)
+           (i32.const 1)
           )
          )
-         (global.set $~argumentsLength
-          (i32.const 2)
+         (call $~lib/array/Array<i32>#__get
+          (call $~lib/rt/__tmptostack
+           (local.get $data)
+          )
+          (local.get $i)
          )
-         (i32.load
-          (local.get $comparator)
+         (block (result i32)
+          (call $~lib/rt/closure/setClosureEnv
+           (i32.load offset=4
+            (local.get $4)
+           )
+          )
+          (global.set $~argumentsLength
+           (i32.const 2)
+          )
+          (i32.load
+           (local.get $4)
+          )
          )
         )
        )
@@ -18550,8 +18656,11 @@
  )
  (func $~lib/util/sort/extendRunRight<std/array/Dim> (param $ptr i32) (param $i i32) (param $right i32) (param $comparator i32) (result i32)
   (local $j i32)
+  (local $5 i32)
+  (local $6 i32)
   (local $k i32)
   (local $tmp i32)
+  (local $9 i32)
   (if
    (i32.eq
     (local.get $i)
@@ -18568,45 +18677,50 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
-     (call $~lib/rt/__tmptostack
-      (i32.load
-       (i32.add
-        (local.get $ptr)
-        (i32.shl
-         (local.get $j)
-         (i32.const 2)
-        )
-       )
-      )
+    (block (result i32)
+     (local.set $5
+      (local.get $comparator)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.load
-       (i32.add
-        (local.get $ptr)
-        (i32.shl
-         (local.tee $j
-          (i32.add
-           (local.get $j)
-           (i32.const 1)
-          )
+     (call_indirect (type $0)
+      (call $~lib/rt/__tmptostack
+       (i32.load
+        (i32.add
+         (local.get $ptr)
+         (i32.shl
+          (local.get $j)
+          (i32.const 2)
          )
-         (i32.const 2)
         )
        )
       )
-     )
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.load offset=4
-        (local.get $comparator)
+      (call $~lib/rt/__tmptostack
+       (i32.load
+        (i32.add
+         (local.get $ptr)
+         (i32.shl
+          (local.tee $j
+           (i32.add
+            (local.get $j)
+            (i32.const 1)
+           )
+          )
+          (i32.const 2)
+         )
+        )
        )
       )
-      (global.set $~argumentsLength
-       (i32.const 2)
-      )
-      (i32.load
-       (local.get $comparator)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (local.get $5)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
+        (local.get $5)
+       )
       )
      )
     )
@@ -18623,40 +18737,45 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
-           (call $~lib/rt/__tmptostack
-            (i32.load offset=4
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
+          (block (result i32)
+           (local.set $6
+            (local.get $comparator)
            )
-           (call $~lib/rt/__tmptostack
-            (i32.load
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
+           (call_indirect (type $0)
+            (call $~lib/rt/__tmptostack
              (i32.load offset=4
-              (local.get $comparator)
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
              )
             )
-            (global.set $~argumentsLength
-             (i32.const 2)
+            (call $~lib/rt/__tmptostack
+             (i32.load
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
+             )
             )
-            (i32.load
-             (local.get $comparator)
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $6)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $6)
+             )
             )
            )
           )
@@ -18760,40 +18879,45 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
-           (call $~lib/rt/__tmptostack
-            (i32.load offset=4
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
+          (block (result i32)
+           (local.set $9
+            (local.get $comparator)
            )
-           (call $~lib/rt/__tmptostack
-            (i32.load
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
+           (call_indirect (type $0)
+            (call $~lib/rt/__tmptostack
              (i32.load offset=4
-              (local.get $comparator)
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
              )
             )
-            (global.set $~argumentsLength
-             (i32.const 2)
+            (call $~lib/rt/__tmptostack
+             (i32.load
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
+             )
             )
-            (i32.load
-             (local.get $comparator)
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $9)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $9)
+             )
             )
            )
           )
@@ -20532,8 +20656,11 @@
  )
  (func $~lib/util/sort/extendRunRight<~lib/array/Array<i32>> (param $ptr i32) (param $i i32) (param $right i32) (param $comparator i32) (result i32)
   (local $j i32)
+  (local $5 i32)
+  (local $6 i32)
   (local $k i32)
   (local $tmp i32)
+  (local $9 i32)
   (if
    (i32.eq
     (local.get $i)
@@ -20550,45 +20677,50 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
-     (call $~lib/rt/__tmptostack
-      (i32.load
-       (i32.add
-        (local.get $ptr)
-        (i32.shl
-         (local.get $j)
-         (i32.const 2)
-        )
-       )
-      )
+    (block (result i32)
+     (local.set $5
+      (local.get $comparator)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.load
-       (i32.add
-        (local.get $ptr)
-        (i32.shl
-         (local.tee $j
-          (i32.add
-           (local.get $j)
-           (i32.const 1)
-          )
+     (call_indirect (type $0)
+      (call $~lib/rt/__tmptostack
+       (i32.load
+        (i32.add
+         (local.get $ptr)
+         (i32.shl
+          (local.get $j)
+          (i32.const 2)
          )
-         (i32.const 2)
         )
        )
       )
-     )
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.load offset=4
-        (local.get $comparator)
+      (call $~lib/rt/__tmptostack
+       (i32.load
+        (i32.add
+         (local.get $ptr)
+         (i32.shl
+          (local.tee $j
+           (i32.add
+            (local.get $j)
+            (i32.const 1)
+           )
+          )
+          (i32.const 2)
+         )
+        )
        )
       )
-      (global.set $~argumentsLength
-       (i32.const 2)
-      )
-      (i32.load
-       (local.get $comparator)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (local.get $5)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
+        (local.get $5)
+       )
       )
      )
     )
@@ -20605,40 +20737,45 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
-           (call $~lib/rt/__tmptostack
-            (i32.load offset=4
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
+          (block (result i32)
+           (local.set $6
+            (local.get $comparator)
            )
-           (call $~lib/rt/__tmptostack
-            (i32.load
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
+           (call_indirect (type $0)
+            (call $~lib/rt/__tmptostack
              (i32.load offset=4
-              (local.get $comparator)
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
              )
             )
-            (global.set $~argumentsLength
-             (i32.const 2)
+            (call $~lib/rt/__tmptostack
+             (i32.load
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
+             )
             )
-            (i32.load
-             (local.get $comparator)
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $6)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $6)
+             )
             )
            )
           )
@@ -20742,40 +20879,45 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
-           (call $~lib/rt/__tmptostack
-            (i32.load offset=4
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
+          (block (result i32)
+           (local.set $9
+            (local.get $comparator)
            )
-           (call $~lib/rt/__tmptostack
-            (i32.load
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
+           (call_indirect (type $0)
+            (call $~lib/rt/__tmptostack
              (i32.load offset=4
-              (local.get $comparator)
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
              )
             )
-            (global.set $~argumentsLength
-             (i32.const 2)
+            (call $~lib/rt/__tmptostack
+             (i32.load
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
+             )
             )
-            (i32.load
-             (local.get $comparator)
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $9)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $9)
+             )
             )
            )
           )
@@ -21755,6 +21897,7 @@
  (func $std/array/isSorted<~lib/array/Array<i32>> (param $data i32) (param $comparator i32) (result i32)
   (local $i i32)
   (local $len i32)
+  (local $4 i32)
   (block
    (local.set $i
     (i32.const 1)
@@ -21776,37 +21919,42 @@
     (then
      (if
       (i32.gt_s
-       (call_indirect (type $0)
-        (call $~lib/rt/__tmptostack
-         (call $~lib/array/Array<~lib/array/Array<i32>>#__get
-          (call $~lib/rt/__tmptostack
-           (local.get $data)
+       (block (result i32)
+        (local.set $4
+         (local.get $comparator)
+        )
+        (call_indirect (type $0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/array/Array<~lib/array/Array<i32>>#__get
+           (call $~lib/rt/__tmptostack
+            (local.get $data)
+           )
+           (i32.sub
+            (local.get $i)
+            (i32.const 1)
+           )
           )
-          (i32.sub
+         )
+         (call $~lib/rt/__tmptostack
+          (call $~lib/array/Array<~lib/array/Array<i32>>#__get
+           (call $~lib/rt/__tmptostack
+            (local.get $data)
+           )
            (local.get $i)
-           (i32.const 1)
           )
          )
-        )
-        (call $~lib/rt/__tmptostack
-         (call $~lib/array/Array<~lib/array/Array<i32>>#__get
-          (call $~lib/rt/__tmptostack
-           (local.get $data)
+         (block (result i32)
+          (call $~lib/rt/closure/setClosureEnv
+           (i32.load offset=4
+            (local.get $4)
+           )
           )
-          (local.get $i)
-         )
-        )
-        (block (result i32)
-         (call $~lib/rt/closure/setClosureEnv
-          (i32.load offset=4
-           (local.get $comparator)
+          (global.set $~argumentsLength
+           (i32.const 2)
           )
-         )
-         (global.set $~argumentsLength
-          (i32.const 2)
-         )
-         (i32.load
-          (local.get $comparator)
+          (i32.load
+           (local.get $4)
+          )
          )
         )
        )
@@ -22462,8 +22610,11 @@
  )
  (func $~lib/util/sort/extendRunRight<std/array/Proxy<i32>> (param $ptr i32) (param $i i32) (param $right i32) (param $comparator i32) (result i32)
   (local $j i32)
+  (local $5 i32)
+  (local $6 i32)
   (local $k i32)
   (local $tmp i32)
+  (local $9 i32)
   (if
    (i32.eq
     (local.get $i)
@@ -22480,45 +22631,50 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
-     (call $~lib/rt/__tmptostack
-      (i32.load
-       (i32.add
-        (local.get $ptr)
-        (i32.shl
-         (local.get $j)
-         (i32.const 2)
-        )
-       )
-      )
+    (block (result i32)
+     (local.set $5
+      (local.get $comparator)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.load
-       (i32.add
-        (local.get $ptr)
-        (i32.shl
-         (local.tee $j
-          (i32.add
-           (local.get $j)
-           (i32.const 1)
-          )
+     (call_indirect (type $0)
+      (call $~lib/rt/__tmptostack
+       (i32.load
+        (i32.add
+         (local.get $ptr)
+         (i32.shl
+          (local.get $j)
+          (i32.const 2)
          )
-         (i32.const 2)
         )
        )
       )
-     )
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.load offset=4
-        (local.get $comparator)
+      (call $~lib/rt/__tmptostack
+       (i32.load
+        (i32.add
+         (local.get $ptr)
+         (i32.shl
+          (local.tee $j
+           (i32.add
+            (local.get $j)
+            (i32.const 1)
+           )
+          )
+          (i32.const 2)
+         )
+        )
        )
       )
-      (global.set $~argumentsLength
-       (i32.const 2)
-      )
-      (i32.load
-       (local.get $comparator)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (local.get $5)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
+        (local.get $5)
+       )
       )
      )
     )
@@ -22535,40 +22691,45 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
-           (call $~lib/rt/__tmptostack
-            (i32.load offset=4
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
+          (block (result i32)
+           (local.set $6
+            (local.get $comparator)
            )
-           (call $~lib/rt/__tmptostack
-            (i32.load
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
+           (call_indirect (type $0)
+            (call $~lib/rt/__tmptostack
              (i32.load offset=4
-              (local.get $comparator)
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
              )
             )
-            (global.set $~argumentsLength
-             (i32.const 2)
+            (call $~lib/rt/__tmptostack
+             (i32.load
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
+             )
             )
-            (i32.load
-             (local.get $comparator)
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $6)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $6)
+             )
             )
            )
           )
@@ -22672,40 +22833,45 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
-           (call $~lib/rt/__tmptostack
-            (i32.load offset=4
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
+          (block (result i32)
+           (local.set $9
+            (local.get $comparator)
            )
-           (call $~lib/rt/__tmptostack
-            (i32.load
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
+           (call_indirect (type $0)
+            (call $~lib/rt/__tmptostack
              (i32.load offset=4
-              (local.get $comparator)
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
              )
             )
-            (global.set $~argumentsLength
-             (i32.const 2)
+            (call $~lib/rt/__tmptostack
+             (i32.load
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
+             )
             )
-            (i32.load
-             (local.get $comparator)
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $9)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $9)
+             )
             )
            )
           )
@@ -23685,6 +23851,7 @@
  (func $std/array/isSorted<std/array/Proxy<i32>> (param $data i32) (param $comparator i32) (result i32)
   (local $i i32)
   (local $len i32)
+  (local $4 i32)
   (block
    (local.set $i
     (i32.const 1)
@@ -23706,37 +23873,42 @@
     (then
      (if
       (i32.gt_s
-       (call_indirect (type $0)
-        (call $~lib/rt/__tmptostack
-         (call $~lib/array/Array<std/array/Proxy<i32>>#__get
-          (call $~lib/rt/__tmptostack
-           (local.get $data)
+       (block (result i32)
+        (local.set $4
+         (local.get $comparator)
+        )
+        (call_indirect (type $0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/array/Array<std/array/Proxy<i32>>#__get
+           (call $~lib/rt/__tmptostack
+            (local.get $data)
+           )
+           (i32.sub
+            (local.get $i)
+            (i32.const 1)
+           )
           )
-          (i32.sub
+         )
+         (call $~lib/rt/__tmptostack
+          (call $~lib/array/Array<std/array/Proxy<i32>>#__get
+           (call $~lib/rt/__tmptostack
+            (local.get $data)
+           )
            (local.get $i)
-           (i32.const 1)
           )
          )
-        )
-        (call $~lib/rt/__tmptostack
-         (call $~lib/array/Array<std/array/Proxy<i32>>#__get
-          (call $~lib/rt/__tmptostack
-           (local.get $data)
+         (block (result i32)
+          (call $~lib/rt/closure/setClosureEnv
+           (i32.load offset=4
+            (local.get $4)
+           )
           )
-          (local.get $i)
-         )
-        )
-        (block (result i32)
-         (call $~lib/rt/closure/setClosureEnv
-          (i32.load offset=4
-           (local.get $comparator)
+          (global.set $~argumentsLength
+           (i32.const 2)
           )
-         )
-         (global.set $~argumentsLength
-          (i32.const 2)
-         )
-         (i32.load
-          (local.get $comparator)
+          (i32.load
+           (local.get $4)
+          )
          )
         )
        )
@@ -24120,8 +24292,11 @@
  )
  (func $~lib/util/sort/extendRunRight<~lib/string/String|null> (param $ptr i32) (param $i i32) (param $right i32) (param $comparator i32) (result i32)
   (local $j i32)
+  (local $5 i32)
+  (local $6 i32)
   (local $k i32)
   (local $tmp i32)
+  (local $9 i32)
   (if
    (i32.eq
     (local.get $i)
@@ -24138,45 +24313,50 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
-     (call $~lib/rt/__tmptostack
-      (i32.load
-       (i32.add
-        (local.get $ptr)
-        (i32.shl
-         (local.get $j)
-         (i32.const 2)
-        )
-       )
-      )
+    (block (result i32)
+     (local.set $5
+      (local.get $comparator)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.load
-       (i32.add
-        (local.get $ptr)
-        (i32.shl
-         (local.tee $j
-          (i32.add
-           (local.get $j)
-           (i32.const 1)
-          )
+     (call_indirect (type $0)
+      (call $~lib/rt/__tmptostack
+       (i32.load
+        (i32.add
+         (local.get $ptr)
+         (i32.shl
+          (local.get $j)
+          (i32.const 2)
          )
-         (i32.const 2)
         )
        )
       )
-     )
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.load offset=4
-        (local.get $comparator)
+      (call $~lib/rt/__tmptostack
+       (i32.load
+        (i32.add
+         (local.get $ptr)
+         (i32.shl
+          (local.tee $j
+           (i32.add
+            (local.get $j)
+            (i32.const 1)
+           )
+          )
+          (i32.const 2)
+         )
+        )
        )
       )
-      (global.set $~argumentsLength
-       (i32.const 2)
-      )
-      (i32.load
-       (local.get $comparator)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (local.get $5)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
+        (local.get $5)
+       )
       )
      )
     )
@@ -24193,40 +24373,45 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
-           (call $~lib/rt/__tmptostack
-            (i32.load offset=4
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
+          (block (result i32)
+           (local.set $6
+            (local.get $comparator)
            )
-           (call $~lib/rt/__tmptostack
-            (i32.load
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
+           (call_indirect (type $0)
+            (call $~lib/rt/__tmptostack
              (i32.load offset=4
-              (local.get $comparator)
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
              )
             )
-            (global.set $~argumentsLength
-             (i32.const 2)
+            (call $~lib/rt/__tmptostack
+             (i32.load
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
+             )
             )
-            (i32.load
-             (local.get $comparator)
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $6)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $6)
+             )
             )
            )
           )
@@ -24330,40 +24515,45 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
-           (call $~lib/rt/__tmptostack
-            (i32.load offset=4
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
+          (block (result i32)
+           (local.set $9
+            (local.get $comparator)
            )
-           (call $~lib/rt/__tmptostack
-            (i32.load
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
+           (call_indirect (type $0)
+            (call $~lib/rt/__tmptostack
              (i32.load offset=4
-              (local.get $comparator)
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
              )
             )
-            (global.set $~argumentsLength
-             (i32.const 2)
+            (call $~lib/rt/__tmptostack
+             (i32.load
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
+             )
             )
-            (i32.load
-             (local.get $comparator)
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $9)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $9)
+             )
             )
            )
           )
@@ -25327,6 +25517,7 @@
  (func $std/array/isSorted<~lib/string/String|null> (param $data i32) (param $comparator i32) (result i32)
   (local $i i32)
   (local $len i32)
+  (local $4 i32)
   (block
    (local.set $i
     (i32.const 1)
@@ -25348,37 +25539,42 @@
     (then
      (if
       (i32.gt_s
-       (call_indirect (type $0)
-        (call $~lib/rt/__tmptostack
-         (call $~lib/array/Array<~lib/string/String|null>#__get
-          (call $~lib/rt/__tmptostack
-           (local.get $data)
+       (block (result i32)
+        (local.set $4
+         (local.get $comparator)
+        )
+        (call_indirect (type $0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/array/Array<~lib/string/String|null>#__get
+           (call $~lib/rt/__tmptostack
+            (local.get $data)
+           )
+           (i32.sub
+            (local.get $i)
+            (i32.const 1)
+           )
           )
-          (i32.sub
+         )
+         (call $~lib/rt/__tmptostack
+          (call $~lib/array/Array<~lib/string/String|null>#__get
+           (call $~lib/rt/__tmptostack
+            (local.get $data)
+           )
            (local.get $i)
-           (i32.const 1)
           )
          )
-        )
-        (call $~lib/rt/__tmptostack
-         (call $~lib/array/Array<~lib/string/String|null>#__get
-          (call $~lib/rt/__tmptostack
-           (local.get $data)
+         (block (result i32)
+          (call $~lib/rt/closure/setClosureEnv
+           (i32.load offset=4
+            (local.get $4)
+           )
           )
-          (local.get $i)
-         )
-        )
-        (block (result i32)
-         (call $~lib/rt/closure/setClosureEnv
-          (i32.load offset=4
-           (local.get $comparator)
+          (global.set $~argumentsLength
+           (i32.const 2)
           )
-         )
-         (global.set $~argumentsLength
-          (i32.const 2)
-         )
-         (i32.load
-          (local.get $comparator)
+          (i32.load
+           (local.get $4)
+          )
          )
         )
        )
@@ -26696,8 +26892,11 @@
  )
  (func $~lib/util/sort/extendRunRight<~lib/string/String> (param $ptr i32) (param $i i32) (param $right i32) (param $comparator i32) (result i32)
   (local $j i32)
+  (local $5 i32)
+  (local $6 i32)
   (local $k i32)
   (local $tmp i32)
+  (local $9 i32)
   (if
    (i32.eq
     (local.get $i)
@@ -26714,45 +26913,50 @@
   )
   (if
    (i32.gt_s
-    (call_indirect (type $0)
-     (call $~lib/rt/__tmptostack
-      (i32.load
-       (i32.add
-        (local.get $ptr)
-        (i32.shl
-         (local.get $j)
-         (i32.const 2)
-        )
-       )
-      )
+    (block (result i32)
+     (local.set $5
+      (local.get $comparator)
      )
-     (call $~lib/rt/__tmptostack
-      (i32.load
-       (i32.add
-        (local.get $ptr)
-        (i32.shl
-         (local.tee $j
-          (i32.add
-           (local.get $j)
-           (i32.const 1)
-          )
+     (call_indirect (type $0)
+      (call $~lib/rt/__tmptostack
+       (i32.load
+        (i32.add
+         (local.get $ptr)
+         (i32.shl
+          (local.get $j)
+          (i32.const 2)
          )
-         (i32.const 2)
         )
        )
       )
-     )
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.load offset=4
-        (local.get $comparator)
+      (call $~lib/rt/__tmptostack
+       (i32.load
+        (i32.add
+         (local.get $ptr)
+         (i32.shl
+          (local.tee $j
+           (i32.add
+            (local.get $j)
+            (i32.const 1)
+           )
+          )
+          (i32.const 2)
+         )
+        )
        )
       )
-      (global.set $~argumentsLength
-       (i32.const 2)
-      )
-      (i32.load
-       (local.get $comparator)
+      (block (result i32)
+       (call $~lib/rt/closure/setClosureEnv
+        (i32.load offset=4
+         (local.get $5)
+        )
+       )
+       (global.set $~argumentsLength
+        (i32.const 2)
+       )
+       (i32.load
+        (local.get $5)
+       )
       )
      )
     )
@@ -26769,40 +26973,45 @@
         )
         (then
          (i32.shr_u
-          (call_indirect (type $0)
-           (call $~lib/rt/__tmptostack
-            (i32.load offset=4
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
+          (block (result i32)
+           (local.set $6
+            (local.get $comparator)
            )
-           (call $~lib/rt/__tmptostack
-            (i32.load
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
+           (call_indirect (type $0)
+            (call $~lib/rt/__tmptostack
              (i32.load offset=4
-              (local.get $comparator)
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
              )
             )
-            (global.set $~argumentsLength
-             (i32.const 2)
+            (call $~lib/rt/__tmptostack
+             (i32.load
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
+             )
             )
-            (i32.load
-             (local.get $comparator)
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $6)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $6)
+             )
             )
            )
           )
@@ -26906,40 +27115,45 @@
         )
         (then
          (i32.ge_s
-          (call_indirect (type $0)
-           (call $~lib/rt/__tmptostack
-            (i32.load offset=4
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
+          (block (result i32)
+           (local.set $9
+            (local.get $comparator)
            )
-           (call $~lib/rt/__tmptostack
-            (i32.load
-             (i32.add
-              (local.get $ptr)
-              (i32.shl
-               (local.get $j)
-               (i32.const 2)
-              )
-             )
-            )
-           )
-           (block (result i32)
-            (call $~lib/rt/closure/setClosureEnv
+           (call_indirect (type $0)
+            (call $~lib/rt/__tmptostack
              (i32.load offset=4
-              (local.get $comparator)
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
              )
             )
-            (global.set $~argumentsLength
-             (i32.const 2)
+            (call $~lib/rt/__tmptostack
+             (i32.load
+              (i32.add
+               (local.get $ptr)
+               (i32.shl
+                (local.get $j)
+                (i32.const 2)
+               )
+              )
+             )
             )
-            (i32.load
-             (local.get $comparator)
+            (block (result i32)
+             (call $~lib/rt/closure/setClosureEnv
+              (i32.load offset=4
+               (local.get $9)
+              )
+             )
+             (global.set $~argumentsLength
+              (i32.const 2)
+             )
+             (i32.load
+              (local.get $9)
+             )
             )
            )
           )
@@ -27919,6 +28133,7 @@
  (func $std/array/isSorted<~lib/string/String> (param $data i32) (param $comparator i32) (result i32)
   (local $i i32)
   (local $len i32)
+  (local $4 i32)
   (block
    (local.set $i
     (i32.const 1)
@@ -27940,37 +28155,42 @@
     (then
      (if
       (i32.gt_s
-       (call_indirect (type $0)
-        (call $~lib/rt/__tmptostack
-         (call $~lib/array/Array<~lib/string/String>#__get
-          (call $~lib/rt/__tmptostack
-           (local.get $data)
+       (block (result i32)
+        (local.set $4
+         (local.get $comparator)
+        )
+        (call_indirect (type $0)
+         (call $~lib/rt/__tmptostack
+          (call $~lib/array/Array<~lib/string/String>#__get
+           (call $~lib/rt/__tmptostack
+            (local.get $data)
+           )
+           (i32.sub
+            (local.get $i)
+            (i32.const 1)
+           )
           )
-          (i32.sub
+         )
+         (call $~lib/rt/__tmptostack
+          (call $~lib/array/Array<~lib/string/String>#__get
+           (call $~lib/rt/__tmptostack
+            (local.get $data)
+           )
            (local.get $i)
-           (i32.const 1)
           )
          )
-        )
-        (call $~lib/rt/__tmptostack
-         (call $~lib/array/Array<~lib/string/String>#__get
-          (call $~lib/rt/__tmptostack
-           (local.get $data)
+         (block (result i32)
+          (call $~lib/rt/closure/setClosureEnv
+           (i32.load offset=4
+            (local.get $4)
+           )
           )
-          (local.get $i)
-         )
-        )
-        (block (result i32)
-         (call $~lib/rt/closure/setClosureEnv
-          (i32.load offset=4
-           (local.get $comparator)
+          (global.set $~argumentsLength
+           (i32.const 2)
           )
-         )
-         (global.set $~argumentsLength
-          (i32.const 2)
-         )
-         (i32.load
-          (local.get $comparator)
+          (i32.load
+           (local.get $4)
+          )
          )
         )
        )

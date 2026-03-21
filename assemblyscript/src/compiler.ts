@@ -7650,15 +7650,25 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     let callPrepareStmts: ExpressionRef[] = new Array();
+    let stmts: ExpressionRef[] = new Array();
 
     let functionAddrExprForEnv = module.tryCopyTrivialExpression(functionArg);
+    let allTrivial = functionAddrExprForEnv != 0;
+    if (operands && allTrivial) {
+      for (let i = 0; i < numOperands; ++i) {
+        if (!module.isTrivialExpression(operands[i])) {
+          allTrivial = false;
+          break;
+        }
+      }
+    }
     let functionAddrExprForIndex: ExpressionRef;
-    if (functionAddrExprForEnv) {
+    if (allTrivial) {
       functionAddrExprForIndex = functionArg;
     } else {
       const tempFunctionAddrLocal = this.currentFlow.getTempLocal(Type.i32);
       const setExpr = module.local_set(tempFunctionAddrLocal.index, functionArg, false);
-      callPrepareStmts.push(setExpr);
+      stmts.push(setExpr);
       functionAddrExprForEnv = module.local_get(tempFunctionAddrLocal.index, TypeRef.I32);
       functionAddrExprForIndex = module.local_get(tempFunctionAddrLocal.index, TypeRef.I32);
     }
@@ -7690,8 +7700,8 @@ export class Compiler extends DiagnosticEmitter {
       signature.resultRefs
     );
     this.currentType = returnType;
-
-    return expr;
+    stmts.push(expr);
+    return module.flatten(stmts, returnType.toRef());
   }
 
   private compileCommaExpression(

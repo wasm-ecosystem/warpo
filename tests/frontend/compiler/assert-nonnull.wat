@@ -460,39 +460,41 @@
   (local $1 i32)
   (local $2 i32)
   (return
-   (call_indirect (type $1)
-    (block (result i32)
-     (local.set $2
-      (if (result i32)
-       (local.tee $1
-        (call $~lib/rt/__localtostack
-         (local.get $fn)
-        )
-       )
-       (then
-        (local.get $1)
-       )
-       (else
-        (call $~lib/builtins/abort
-         (i32.const 32)
-         (i32.const 160)
-         (i32.const 35)
-         (i32.const 10)
-        )
-        (unreachable)
+   (block (result i32)
+    (local.set $2
+     (if (result i32)
+      (local.tee $1
+       (call $~lib/rt/__localtostack
+        (local.get $fn)
        )
       )
+      (then
+       (local.get $1)
+      )
+      (else
+       (call $~lib/builtins/abort
+        (i32.const 32)
+        (i32.const 160)
+        (i32.const 35)
+        (i32.const 10)
+       )
+       (unreachable)
+      )
      )
-     (call $~lib/rt/closure/setClosureEnv
-      (i32.load offset=4
+    )
+    (call_indirect (type $1)
+     (block (result i32)
+      (call $~lib/rt/closure/setClosureEnv
+       (i32.load offset=4
+        (local.get $2)
+       )
+      )
+      (global.set $~argumentsLength
+       (i32.const 0)
+      )
+      (i32.load
        (local.get $2)
       )
-     )
-     (global.set $~argumentsLength
-      (i32.const 0)
-     )
-     (i32.load
-      (local.get $2)
      )
     )
    )
@@ -550,39 +552,41 @@
    (if (result i32)
     (local.tee $3
      (call $~lib/rt/__localtostack
-      (call_indirect (type $1)
-       (block (result i32)
-        (local.set $2
-         (if (result i32)
-          (local.tee $1
-           (call $~lib/rt/__localtostack
-            (local.get $fn)
-           )
-          )
-          (then
-           (local.get $1)
-          )
-          (else
-           (call $~lib/builtins/abort
-            (i32.const 32)
-            (i32.const 160)
-            (i32.const 44)
-            (i32.const 10)
-           )
-           (unreachable)
+      (block (result i32)
+       (local.set $2
+        (if (result i32)
+         (local.tee $1
+          (call $~lib/rt/__localtostack
+           (local.get $fn)
           )
          )
+         (then
+          (local.get $1)
+         )
+         (else
+          (call $~lib/builtins/abort
+           (i32.const 32)
+           (i32.const 160)
+           (i32.const 44)
+           (i32.const 10)
+          )
+          (unreachable)
+         )
         )
-        (call $~lib/rt/closure/setClosureEnv
-         (i32.load offset=4
+       )
+       (call_indirect (type $1)
+        (block (result i32)
+         (call $~lib/rt/closure/setClosureEnv
+          (i32.load offset=4
+           (local.get $2)
+          )
+         )
+         (global.set $~argumentsLength
+          (i32.const 0)
+         )
+         (i32.load
           (local.get $2)
          )
-        )
-        (global.set $~argumentsLength
-         (i32.const 0)
-        )
-        (i32.load
-         (local.get $2)
         )
        )
       )
@@ -612,43 +616,45 @@
   (local $1 i32)
   (local $2 i32)
   (return
-   (call_indirect (type $1)
-    (block (result i32)
-     (local.set $2
-      (if (result i32)
-       (local.tee $1
-        (call $~lib/rt/__localtostack
-         (call $assert-nonnull/Foo#get:baz
-          (call $~lib/rt/__tmptostack
-           (local.get $foo)
-          )
+   (block (result i32)
+    (local.set $2
+     (if (result i32)
+      (local.tee $1
+       (call $~lib/rt/__localtostack
+        (call $assert-nonnull/Foo#get:baz
+         (call $~lib/rt/__tmptostack
+          (local.get $foo)
          )
         )
        )
-       (then
-        (local.get $1)
+      )
+      (then
+       (local.get $1)
+      )
+      (else
+       (call $~lib/builtins/abort
+        (i32.const 32)
+        (i32.const 160)
+        (i32.const 48)
+        (i32.const 10)
        )
-       (else
-        (call $~lib/builtins/abort
-         (i32.const 32)
-         (i32.const 160)
-         (i32.const 48)
-         (i32.const 10)
-        )
-        (unreachable)
-       )
+       (unreachable)
       )
      )
-     (call $~lib/rt/closure/setClosureEnv
-      (i32.load offset=4
+    )
+    (call_indirect (type $1)
+     (block (result i32)
+      (call $~lib/rt/closure/setClosureEnv
+       (i32.load offset=4
+        (local.get $2)
+       )
+      )
+      (global.set $~argumentsLength
+       (i32.const 0)
+      )
+      (i32.load
        (local.get $2)
       )
-     )
-     (global.set $~argumentsLength
-      (i32.const 0)
-     )
-     (i32.load
-      (local.get $2)
      )
     )
    )
@@ -662,43 +668,45 @@
    (if (result i32)
     (local.tee $3
      (call $~lib/rt/__localtostack
-      (call_indirect (type $1)
-       (block (result i32)
-        (local.set $2
-         (if (result i32)
-          (local.tee $1
-           (call $~lib/rt/__localtostack
-            (call $assert-nonnull/Foo#get:baz
-             (call $~lib/rt/__tmptostack
-              (local.get $foo)
-             )
+      (block (result i32)
+       (local.set $2
+        (if (result i32)
+         (local.tee $1
+          (call $~lib/rt/__localtostack
+           (call $assert-nonnull/Foo#get:baz
+            (call $~lib/rt/__tmptostack
+             (local.get $foo)
             )
            )
           )
-          (then
-           (local.get $1)
+         )
+         (then
+          (local.get $1)
+         )
+         (else
+          (call $~lib/builtins/abort
+           (i32.const 32)
+           (i32.const 160)
+           (i32.const 52)
+           (i32.const 10)
           )
-          (else
-           (call $~lib/builtins/abort
-            (i32.const 32)
-            (i32.const 160)
-            (i32.const 52)
-            (i32.const 10)
-           )
-           (unreachable)
-          )
+          (unreachable)
          )
         )
-        (call $~lib/rt/closure/setClosureEnv
-         (i32.load offset=4
+       )
+       (call_indirect (type $1)
+        (block (result i32)
+         (call $~lib/rt/closure/setClosureEnv
+          (i32.load offset=4
+           (local.get $2)
+          )
+         )
+         (global.set $~argumentsLength
+          (i32.const 0)
+         )
+         (i32.load
           (local.get $2)
          )
-        )
-        (global.set $~argumentsLength
-         (i32.const 0)
-        )
-        (i32.load
-         (local.get $2)
         )
        )
       )

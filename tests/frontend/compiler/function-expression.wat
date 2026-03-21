@@ -189,36 +189,38 @@
   (if
    (i32.eqz
     (i32.eq
-     (call_indirect (type $0)
-      (i32.const 1)
-      (block (result i32)
-       (local.set $0
-        (call_indirect (type $3)
-         (block (result i32)
-          (call $~lib/rt/closure/setClosureEnv
-           (i32.load offset=4
-            (global.get $function-expression/globalFunc)
-           )
-          )
-          (global.set $~argumentsLength
-           (i32.const 0)
-          )
-          (i32.load
+     (block (result i32)
+      (local.set $0
+       (call_indirect (type $3)
+        (block (result i32)
+         (call $~lib/rt/closure/setClosureEnv
+          (i32.load offset=4
            (global.get $function-expression/globalFunc)
           )
          )
+         (global.set $~argumentsLength
+          (i32.const 0)
+         )
+         (i32.load
+          (global.get $function-expression/globalFunc)
+         )
         )
        )
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
+      )
+      (call_indirect (type $0)
+       (i32.const 1)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $0)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 1)
+        )
+        (i32.load
          (local.get $0)
         )
-       )
-       (global.set $~argumentsLength
-        (i32.const 1)
-       )
-       (i32.load
-        (local.get $0)
        )
       )
      )
@@ -266,36 +268,38 @@
   (if
    (i32.eqz
     (i32.eq
-     (call_indirect (type $0)
-      (i32.const 1)
-      (block (result i32)
-       (local.set $1
-        (call_indirect (type $3)
-         (block (result i32)
-          (call $~lib/rt/closure/setClosureEnv
-           (i32.load offset=4
-            (local.get $localFunc)
-           )
-          )
-          (global.set $~argumentsLength
-           (i32.const 0)
-          )
-          (i32.load
+     (block (result i32)
+      (local.set $1
+       (call_indirect (type $3)
+        (block (result i32)
+         (call $~lib/rt/closure/setClosureEnv
+          (i32.load offset=4
            (local.get $localFunc)
           )
          )
+         (global.set $~argumentsLength
+          (i32.const 0)
+         )
+         (i32.load
+          (local.get $localFunc)
+         )
         )
        )
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
+      )
+      (call_indirect (type $0)
+       (i32.const 1)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $1)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 1)
+        )
+        (i32.load
          (local.get $1)
         )
-       )
-       (global.set $~argumentsLength
-        (i32.const 1)
-       )
-       (i32.load
-        (local.get $1)
        )
       )
      )
@@ -3349,19 +3353,18 @@
   (if
    (i32.eqz
     (i32.eq
-     (call_indirect (type $0)
-      (i32.const 1)
-      (block (result i32)
-       (local.set $2
+     (block (result i32)
+      (local.set $2
+       (block (result i32)
+        (local.set $1
+         (call $function-expression/FieldClass#get:fieldFunc
+          (call $~lib/rt/__tmptostack
+           (local.get $fieldInst)
+          )
+         )
+        )
         (call_indirect (type $3)
          (block (result i32)
-          (local.set $1
-           (call $function-expression/FieldClass#get:fieldFunc
-            (call $~lib/rt/__tmptostack
-             (local.get $fieldInst)
-            )
-           )
-          )
           (call $~lib/rt/closure/setClosureEnv
            (i32.load offset=4
             (local.get $1)
@@ -3376,16 +3379,21 @@
          )
         )
        )
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
+      )
+      (call_indirect (type $0)
+       (i32.const 1)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $2)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 1)
+        )
+        (i32.load
          (local.get $2)
         )
-       )
-       (global.set $~argumentsLength
-        (i32.const 1)
-       )
-       (i32.load
-        (local.get $2)
        )
       )
      )
@@ -3620,23 +3628,25 @@
   (if
    (i32.eqz
     (i32.eq
-     (call_indirect (type $2)
-      (i32.const 1)
-      (i32.const 2)
-      (block (result i32)
-       (local.set $0
-        (call $function-expression/testOmittedReturn1)
-       )
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
+     (block (result i32)
+      (local.set $0
+       (call $function-expression/testOmittedReturn1)
+      )
+      (call_indirect (type $2)
+       (i32.const 1)
+       (i32.const 2)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $0)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 2)
+        )
+        (i32.load
          (local.get $0)
         )
-       )
-       (global.set $~argumentsLength
-        (i32.const 2)
-       )
-       (i32.load
-        (local.get $0)
        )
       )
      )
@@ -3656,23 +3666,25 @@
   (if
    (i32.eqz
     (i32.eq
-     (call_indirect (type $2)
-      (i32.const 1)
-      (i32.const 2)
-      (block (result i32)
-       (local.set $1
-        (call $function-expression/testOmittedReturn2)
-       )
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
+     (block (result i32)
+      (local.set $1
+       (call $function-expression/testOmittedReturn2)
+      )
+      (call_indirect (type $2)
+       (i32.const 1)
+       (i32.const 2)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $1)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 2)
+        )
+        (i32.load
          (local.get $1)
         )
-       )
-       (global.set $~argumentsLength
-        (i32.const 2)
-       )
-       (i32.load
-        (local.get $1)
        )
       )
      )
@@ -3692,23 +3704,25 @@
   (if
    (i32.eqz
     (i32.eq
-     (call_indirect (type $2)
-      (i32.const 1)
-      (i32.const 2)
-      (block (result i32)
-       (local.set $2
-        (call $function-expression/testOmittedReturn3)
-       )
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
+     (block (result i32)
+      (local.set $2
+       (call $function-expression/testOmittedReturn3)
+      )
+      (call_indirect (type $2)
+       (i32.const 1)
+       (i32.const 2)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $2)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 2)
+        )
+        (i32.load
          (local.get $2)
         )
-       )
-       (global.set $~argumentsLength
-        (i32.const 2)
-       )
-       (i32.load
-        (local.get $2)
        )
       )
      )

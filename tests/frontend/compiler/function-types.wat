@@ -91,23 +91,25 @@
  (func $function-types/doAdd<i32> (param $a i32) (param $b i32) (result i32)
   (local $2 i32)
   (return
-   (call_indirect (type $0)
-    (local.get $a)
-    (local.get $b)
-    (block (result i32)
-     (local.set $2
-      (call $function-types/makeAdder<i32>)
-     )
-     (call $~lib/rt/closure/setClosureEnv
-      (i32.load offset=4
+   (block (result i32)
+    (local.set $2
+     (call $function-types/makeAdder<i32>)
+    )
+    (call_indirect (type $0)
+     (local.get $a)
+     (local.get $b)
+     (block (result i32)
+      (call $~lib/rt/closure/setClosureEnv
+       (i32.load offset=4
+        (local.get $2)
+       )
+      )
+      (global.set $~argumentsLength
+       (i32.const 2)
+      )
+      (i32.load
        (local.get $2)
       )
-     )
-     (global.set $~argumentsLength
-      (i32.const 2)
-     )
-     (i32.load
-      (local.get $2)
      )
     )
    )
@@ -246,23 +248,25 @@
   (if
    (i32.eqz
     (f64.eq
-     (call_indirect (type $4)
-      (f64.const 1.5)
-      (f64.const 2.5)
-      (block (result i32)
-       (local.set $0
-        (call $function-types/makeAdder<f64>)
-       )
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
+     (block (result f64)
+      (local.set $0
+       (call $function-types/makeAdder<f64>)
+      )
+      (call_indirect (type $4)
+       (f64.const 1.5)
+       (f64.const 2.5)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $0)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 2)
+        )
+        (i32.load
          (local.get $0)
         )
-       )
-       (global.set $~argumentsLength
-        (i32.const 2)
-       )
-       (i32.load
-        (local.get $0)
        )
       )
      )

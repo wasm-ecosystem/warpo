@@ -3096,6 +3096,7 @@
  )
  (func $start:issues/2707
   (local $0 i32)
+  (local $1 i32)
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -3124,26 +3125,31 @@
    )
   )
   (drop
-   (call_indirect (type $0)
-    (call $~lib/rt/__tmptostack
-     (call $~lib/rt/__newArray
-      (i32.const 4)
-      (i32.const 2)
-      (i32.const 4)
-      (i32.const 64)
-     )
+   (block (result i32)
+    (local.set $1
+     (global.get $issues/2707/func)
     )
-    (block (result i32)
-     (call $~lib/rt/closure/setClosureEnv
-      (i32.load offset=4
-       (global.get $issues/2707/func)
+    (call_indirect (type $0)
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/__newArray
+       (i32.const 4)
+       (i32.const 2)
+       (i32.const 4)
+       (i32.const 64)
       )
      )
-     (global.set $~argumentsLength
-      (i32.const 1)
-     )
-     (i32.load
-      (global.get $issues/2707/func)
+     (block (result i32)
+      (call $~lib/rt/closure/setClosureEnv
+       (i32.load offset=4
+        (local.get $1)
+       )
+      )
+      (global.set $~argumentsLength
+       (i32.const 1)
+      )
+      (i32.load
+       (local.get $1)
+      )
      )
     )
    )

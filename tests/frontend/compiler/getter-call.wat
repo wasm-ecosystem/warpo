@@ -2950,25 +2950,27 @@
    )
   )
   (return
-   (call_indirect (type $4)
-    (block (result i32)
-     (local.set $1
-      (call $getter-call/C#get:x
-       (call $~lib/rt/__tmptostack
-        (local.get $c)
+   (block (result i32)
+    (local.set $1
+     (call $getter-call/C#get:x
+      (call $~lib/rt/__tmptostack
+       (local.get $c)
+      )
+     )
+    )
+    (call_indirect (type $4)
+     (block (result i32)
+      (call $~lib/rt/closure/setClosureEnv
+       (i32.load offset=4
+        (local.get $1)
        )
       )
-     )
-     (call $~lib/rt/closure/setClosureEnv
-      (i32.load offset=4
+      (global.set $~argumentsLength
+       (i32.const 0)
+      )
+      (i32.load
        (local.get $1)
       )
-     )
-     (global.set $~argumentsLength
-      (i32.const 0)
-     )
-     (i32.load
-      (local.get $1)
      )
     )
    )
