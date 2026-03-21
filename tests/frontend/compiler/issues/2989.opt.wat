@@ -40,7 +40,7 @@
   if
    i32.const 0
    i32.const 96
-   i32.const 20
+   i32.const 19
    i32.const 1
    call $~lib/builtins/abort
    unreachable
