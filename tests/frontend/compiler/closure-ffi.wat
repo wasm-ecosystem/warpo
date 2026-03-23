@@ -3266,28 +3266,30 @@
    (local.get $userData)
   )
   (return
-   (call_indirect (type $5)
-    (block (result i32)
-     (local.set $2
-      (call $~lib/tuple/SmallTuple#__get<%28%29=>i32>
-       (call $~lib/rt/__tmptostack
-        (call $~lib/rt/closure/getClosureEnvByLevel
-         (i32.const 1)
-        )
+   (block (result i32)
+    (local.set $2
+     (call $~lib/tuple/SmallTuple#__get<%28%29=>i32>
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/closure/getClosureEnvByLevel
+        (i32.const 1)
        )
-       (i32.const 4)
       )
+      (i32.const 4)
      )
-     (call $~lib/rt/closure/setClosureEnv
-      (i32.load offset=4
+    )
+    (call_indirect (type $5)
+     (block (result i32)
+      (call $~lib/rt/closure/setClosureEnv
+       (i32.load offset=4
+        (local.get $2)
+       )
+      )
+      (global.set $~argumentsLength
+       (i32.const 0)
+      )
+      (i32.load
        (local.get $2)
       )
-     )
-     (global.set $~argumentsLength
-      (i32.const 0)
-     )
-     (i32.load
-      (local.get $2)
      )
     )
    )

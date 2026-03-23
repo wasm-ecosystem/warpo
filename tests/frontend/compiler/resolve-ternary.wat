@@ -5820,30 +5820,32 @@
   (if
    (i32.eqz
     (i32.eq
-     (call_indirect (type $0)
-      (i32.const 1)
-      (block (result i32)
-       (local.set $0
-        (if (result i32)
-         (global.get $resolve-ternary/b)
-         (then
-          (global.get $resolve-ternary/f1)
-         )
-         (else
-          (global.get $resolve-ternary/f2)
-         )
+     (block (result i32)
+      (local.set $0
+       (if (result i32)
+        (global.get $resolve-ternary/b)
+        (then
+         (global.get $resolve-ternary/f1)
+        )
+        (else
+         (global.get $resolve-ternary/f2)
         )
        )
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
+      )
+      (call_indirect (type $0)
+       (i32.const 1)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $0)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 1)
+        )
+        (i32.load
          (local.get $0)
         )
-       )
-       (global.set $~argumentsLength
-        (i32.const 1)
-       )
-       (i32.load
-        (local.get $0)
        )
       )
      )
@@ -5863,30 +5865,32 @@
   (if
    (i32.eqz
     (i32.eq
-     (call_indirect (type $0)
-      (i32.const 1)
-      (block (result i32)
-       (local.set $1
-        (if (result i32)
-         (global.get $resolve-ternary/b)
-         (then
-          (i32.const 3536)
-         )
-         (else
-          (i32.const 3568)
-         )
+     (block (result i32)
+      (local.set $1
+       (if (result i32)
+        (global.get $resolve-ternary/b)
+        (then
+         (i32.const 3536)
+        )
+        (else
+         (i32.const 3568)
         )
        )
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
+      )
+      (call_indirect (type $0)
+       (i32.const 1)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $1)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 1)
+        )
+        (i32.load
          (local.get $1)
         )
-       )
-       (global.set $~argumentsLength
-        (i32.const 1)
-       )
-       (i32.load
-        (local.get $1)
        )
       )
      )
@@ -5906,30 +5910,32 @@
   (if
    (i32.eqz
     (i32.eq
-     (call_indirect (type $0)
-      (i32.const 1)
-      (block (result i32)
-       (local.set $2
-        (if (result i32)
-         (global.get $resolve-ternary/b)
-         (then
-          (global.get $resolve-ternary/f2)
-         )
-         (else
-          (i32.const 3568)
-         )
+     (block (result i32)
+      (local.set $2
+       (if (result i32)
+        (global.get $resolve-ternary/b)
+        (then
+         (global.get $resolve-ternary/f2)
+        )
+        (else
+         (i32.const 3568)
         )
        )
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
+      )
+      (call_indirect (type $0)
+       (i32.const 1)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $2)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 1)
+        )
+        (i32.load
          (local.get $2)
         )
-       )
-       (global.set $~argumentsLength
-        (i32.const 1)
-       )
-       (i32.load
-        (local.get $2)
        )
       )
      )

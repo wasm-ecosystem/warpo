@@ -728,27 +728,29 @@
  (func $std/array-access/functionArrayElementCall (param $a i32) (result i32)
   (local $1 i32)
   (return
-   (call_indirect (type $0)
-    (i32.const 123)
-    (block (result i32)
-     (local.set $1
-      (call $~lib/array/Array<%28i32%29=>i32>#__get
-       (call $~lib/rt/__tmptostack
-        (local.get $a)
-       )
-       (i32.const 0)
+   (block (result i32)
+    (local.set $1
+     (call $~lib/array/Array<%28i32%29=>i32>#__get
+      (call $~lib/rt/__tmptostack
+       (local.get $a)
       )
+      (i32.const 0)
      )
-     (call $~lib/rt/closure/setClosureEnv
-      (i32.load offset=4
+    )
+    (call_indirect (type $0)
+     (i32.const 123)
+     (block (result i32)
+      (call $~lib/rt/closure/setClosureEnv
+       (i32.load offset=4
+        (local.get $1)
+       )
+      )
+      (global.set $~argumentsLength
+       (i32.const 1)
+      )
+      (i32.load
        (local.get $1)
       )
-     )
-     (global.set $~argumentsLength
-      (i32.const 1)
-     )
-     (i32.load
-      (local.get $1)
      )
     )
    )

@@ -3866,6 +3866,8 @@
   (local $6 i32)
   (local $7 i32)
   (local $8 i32)
+  (local $9 i32)
+  (local $10 i32)
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -4072,28 +4074,33 @@
   (if
    (i32.eqz
     (i32.eq
-     (call_indirect (type $2)
-      (i32.const 1)
-      (i32.const 2)
-      (call $~lib/rt/__tmptostack
-       (call $~lib/rt/__newArray
-        (i32.const 1)
-        (i32.const 2)
-        (i32.const 4)
-        (i32.const 656)
-       )
+     (block (result i32)
+      (local.set $3
+       (global.get $call-rest/indirect)
       )
-      (block (result i32)
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
-         (global.get $call-rest/indirect)
+      (call_indirect (type $2)
+       (i32.const 1)
+       (i32.const 2)
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/__newArray
+         (i32.const 1)
+         (i32.const 2)
+         (i32.const 4)
+         (i32.const 656)
         )
        )
-       (global.set $~argumentsLength
-        (i32.const 3)
-       )
-       (i32.load
-        (global.get $call-rest/indirect)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $3)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 3)
+        )
+        (i32.load
+         (local.get $3)
+        )
        )
       )
      )
@@ -4113,28 +4120,33 @@
   (if
    (i32.eqz
     (i32.eq
-     (call_indirect (type $2)
-      (i32.const 1)
-      (i32.const 2)
-      (call $~lib/rt/__tmptostack
-       (call $~lib/rt/__newArray
-        (i32.const 3)
-        (i32.const 2)
-        (i32.const 4)
-        (i32.const 688)
-       )
+     (block (result i32)
+      (local.set $5
+       (global.get $call-rest/indirect)
       )
-      (block (result i32)
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
-         (global.get $call-rest/indirect)
+      (call_indirect (type $2)
+       (i32.const 1)
+       (i32.const 2)
+       (call $~lib/rt/__tmptostack
+        (call $~lib/rt/__newArray
+         (i32.const 3)
+         (i32.const 2)
+         (i32.const 4)
+         (i32.const 688)
         )
        )
-       (global.set $~argumentsLength
-        (i32.const 3)
-       )
-       (i32.load
-        (global.get $call-rest/indirect)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $5)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 3)
+        )
+        (i32.load
+         (local.get $5)
+        )
        )
       )
      )

@@ -3247,40 +3247,42 @@
    )
   )
   (return
-   (call_indirect (type $0)
-    (call $closure-class-arrow-this-capture-fn/CaptureFunc#get:value
-     (call $~lib/rt/__tmptostack
-      (call $~lib/tuple/SmallTuple#__get<closure-class-arrow-this-capture-fn/CaptureFunc>
-       (call $~lib/rt/__tmptostack
-        (call $~lib/rt/closure/getClosureEnvByLevel
-         (i32.const 1)
-        )
+   (block (result i32)
+    (local.set $1
+     (call $~lib/tuple/SmallTuple#__get<%28i32%29=>i32>
+      (call $~lib/rt/__tmptostack
+       (call $~lib/rt/closure/getClosureEnvByLevel
+        (i32.const 1)
        )
-       (i32.const 4)
       )
+      (i32.const 12)
      )
     )
-    (block (result i32)
-     (local.set $1
-      (call $~lib/tuple/SmallTuple#__get<%28i32%29=>i32>
-       (call $~lib/rt/__tmptostack
-        (call $~lib/rt/closure/getClosureEnvByLevel
-         (i32.const 1)
+    (call_indirect (type $0)
+     (call $closure-class-arrow-this-capture-fn/CaptureFunc#get:value
+      (call $~lib/rt/__tmptostack
+       (call $~lib/tuple/SmallTuple#__get<closure-class-arrow-this-capture-fn/CaptureFunc>
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/closure/getClosureEnvByLevel
+          (i32.const 1)
+         )
         )
+        (i32.const 4)
        )
-       (i32.const 12)
       )
      )
-     (call $~lib/rt/closure/setClosureEnv
-      (i32.load offset=4
+     (block (result i32)
+      (call $~lib/rt/closure/setClosureEnv
+       (i32.load offset=4
+        (local.get $1)
+       )
+      )
+      (global.set $~argumentsLength
+       (i32.const 1)
+      )
+      (i32.load
        (local.get $1)
       )
-     )
-     (global.set $~argumentsLength
-      (i32.const 1)
-     )
-     (i32.load
-      (local.get $1)
      )
     )
    )

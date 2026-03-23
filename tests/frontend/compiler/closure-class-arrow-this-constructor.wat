@@ -3281,25 +3281,27 @@
   (if
    (i32.eqz
     (i32.eq
-     (call_indirect (type $6)
-      (block (result i32)
-       (local.set $0
-        (call $closure-class-arrow-this-constructor/FromConstructor#get:fn
-         (call $~lib/rt/__tmptostack
-          (global.get $closure-class-arrow-this-constructor/c)
+     (block (result i32)
+      (local.set $0
+       (call $closure-class-arrow-this-constructor/FromConstructor#get:fn
+        (call $~lib/rt/__tmptostack
+         (global.get $closure-class-arrow-this-constructor/c)
+        )
+       )
+      )
+      (call_indirect (type $6)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $0)
          )
         )
-       )
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
+        (global.set $~argumentsLength
+         (i32.const 0)
+        )
+        (i32.load
          (local.get $0)
         )
-       )
-       (global.set $~argumentsLength
-        (i32.const 0)
-       )
-       (i32.load
-        (local.get $0)
        )
       )
      )

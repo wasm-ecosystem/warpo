@@ -317,22 +317,24 @@
   (if
    (i32.eqz
     (i32.eq
-     (call_indirect (type $0)
-      (i32.const 2)
-      (block (result i32)
-       (local.set $2
-        (call $inlining/func_fe)
-       )
-       (call $~lib/rt/closure/setClosureEnv
-        (i32.load offset=4
+     (block (result i32)
+      (local.set $2
+       (call $inlining/func_fe)
+      )
+      (call_indirect (type $0)
+       (i32.const 2)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $2)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 1)
+        )
+        (i32.load
          (local.get $2)
         )
-       )
-       (global.set $~argumentsLength
-        (i32.const 1)
-       )
-       (i32.load
-        (local.get $2)
        )
       )
      )

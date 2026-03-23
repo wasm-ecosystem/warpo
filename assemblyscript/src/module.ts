@@ -1267,6 +1267,13 @@ export class Module {
 
   /** Makes a copy of a trivial expression (doesn't contain subexpressions). Returns `0` if non-trivial. */
   tryCopyTrivialExpression(expr: ExpressionRef): ExpressionRef {
+    if (this.isTrivialExpression(expr)) {
+      return this.copyExpression(expr);
+    }
+    return 0;
+  }
+
+  isTrivialExpression(expr: ExpressionRef): bool {
     switch (binaryen._BinaryenExpressionGetId(expr)) {
       case ExpressionId.LocalGet:
       case ExpressionId.GlobalGet:
@@ -1276,9 +1283,9 @@ export class Module {
       case ExpressionId.Unreachable:
       case ExpressionId.DataDrop:
       case ExpressionId.RefNull:
-        return this.copyExpression(expr);
+        return true;
     }
-    return 0;
+    return false;
   }
 
   /** Makes a copy of any expression including all subexpressions. */
