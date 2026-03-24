@@ -5120,6 +5120,19 @@ export class Compiler extends DiagnosticEmitter {
     cacheTarget: Expression,
     contextualType: Type
   ): CompoundAssignmentCacheContext | null {
+    if (cacheTarget.kind == NodeKind.PropertyAccess) {
+      return this.prepareCompoundAssignmentPropertyAccessCache(<PropertyAccessExpression>cacheTarget, contextualType);
+    }
+    if (cacheTarget.kind == NodeKind.ElementAccess) {
+      return this.prepareCompoundAssignmentElementAccessCache(<ElementAccessExpression>cacheTarget, contextualType);
+    }
+    return null;
+  }
+
+  private prepareCompoundAssignmentPropertyAccessCache(
+    cacheTarget: PropertyAccessExpression,
+    contextualType: Type
+  ): CompoundAssignmentCacheContext | null {
     let module = this.module;
     let flow = this.currentFlow;
     let resolver = this.resolver;
@@ -5127,57 +5140,14 @@ export class Compiler extends DiagnosticEmitter {
     if (!target) return null;
 
     let setupPrefixExprs: ExpressionRef[] | null = null;
-    let thisExpression: Expression | null = null;
-    let indexExpression: Expression | null = null;
+    let thisExpression: Expression = cacheTarget.expression;
     let assignmentThisExpr: ExpressionRef = 0;
-    let assignmentElementExpr: ExpressionRef = 0;
-    let cachedThisLocal: Local | null = null;
-    let cachedThisType: Type = Type.void;
-    let cachedElementLocal: Local | null = null;
-    let cachedElementType: Type = Type.void;
-
-    if (cacheTarget.kind == NodeKind.PropertyAccess) {
-      let access = <PropertyAccessExpression>cacheTarget;
-      let receiverExpression = access.expression;
-      thisExpression = receiverExpression;
-      let receiverExpr = this.compileExpression(receiverExpression, Type.auto);
-      let receiverType = this.currentType;
-      let receiverTemp = flow.getTempLocal(receiverType);
-      cachedThisLocal = receiverTemp;
-      cachedThisType = receiverType;
-      flow.setLocalFlag(receiverTemp.index, LocalFlags.Initialized);
-      setupPrefixExprs = [module.local_set(receiverTemp.index, receiverExpr, receiverType.isManaged)];
-    } else {
-      assert(cacheTarget.kind == NodeKind.ElementAccess);
-      let access = <ElementAccessExpression>cacheTarget;
-      let receiverExpression = access.expression;
-      let elementExpression = access.elementExpression;
-
-      thisExpression = receiverExpression;
-      indexExpression = elementExpression;
-
-      if (this.expressionHasSideEffects(receiverExpression)) {
-        let receiverExpr = this.compileExpression(receiverExpression, Type.auto);
-        let receiverType = this.currentType;
-        let receiverTemp = flow.getTempLocal(receiverType);
-        cachedThisLocal = receiverTemp;
-        cachedThisType = receiverType;
-        flow.setLocalFlag(receiverTemp.index, LocalFlags.Initialized);
-        if (!setupPrefixExprs) setupPrefixExprs = [];
-        setupPrefixExprs.push(module.local_set(receiverTemp.index, receiverExpr, receiverType.isManaged));
-      }
-
-      if (this.expressionHasSideEffects(elementExpression)) {
-        let elementExpr = this.compileExpression(elementExpression, Type.auto);
-        let elementType = this.currentType;
-        let elementTemp = flow.getTempLocal(elementType);
-        cachedElementLocal = elementTemp;
-        cachedElementType = elementType;
-        flow.setLocalFlag(elementTemp.index, LocalFlags.Initialized);
-        if (!setupPrefixExprs) setupPrefixExprs = [];
-        setupPrefixExprs.push(module.local_set(elementTemp.index, elementExpr, elementType.isManaged));
-      }
-    }
+    let receiverExpr = this.compileExpression(thisExpression, Type.auto);
+    let receiverType = this.currentType;
+    let cachedThisLocal = flow.getTempLocal(receiverType);
+    let cachedThisType = receiverType;
+    flow.setLocalFlag(cachedThisLocal.index, LocalFlags.Initialized);
+    setupPrefixExprs = [module.local_set(cachedThisLocal.index, receiverExpr, receiverType.isManaged)];
 
     let leftExpr: ExpressionRef;
     let leftType: Type;
@@ -5193,42 +5163,81 @@ export class Compiler extends DiagnosticEmitter {
         if (!getterInstance) return null;
         if (getterInstance.is(CommonFlags.Instance)) {
           let thisType = assert(getterInstance.signature.thisType);
-          if (cachedThisLocal) {
-            let thisRef = cachedThisType.toRef();
-            let thisArg = this.convertExpression(
-              module.local_get(cachedThisLocal.index, thisRef),
-              cachedThisType,
-              thisType,
-              false,
-              cacheTarget
-            );
-            assignmentThisExpr = this.convertExpression(
-              module.local_get(cachedThisLocal.index, thisRef),
-              cachedThisType,
-              thisType,
-              false,
-              cacheTarget
-            );
-            leftExpr = this.compileCallDirect(getterInstance, [], cacheTarget, thisArg);
-          } else {
-            let thisArg = this.compileExpression(
-              assert(thisExpression),
-              thisType,
-              Constraints.ConvImplicit | Constraints.IsThis
-            );
-            assignmentThisExpr = this.compileExpression(
-              assert(thisExpression),
-              thisType,
-              Constraints.ConvImplicit | Constraints.IsThis
-            );
-            leftExpr = this.compileCallDirect(getterInstance, [], cacheTarget, thisArg);
-          }
+          let thisRef = cachedThisType.toRef();
+          let thisArg = this.convertExpression(
+            module.local_get(cachedThisLocal.index, thisRef),
+            cachedThisType,
+            thisType,
+            false,
+            cacheTarget
+          );
+          assignmentThisExpr = this.convertExpression(
+            module.local_get(cachedThisLocal.index, thisRef),
+            cachedThisType,
+            thisType,
+            false,
+            cacheTarget
+          );
+          leftExpr = this.compileCallDirect(getterInstance, [], cacheTarget, thisArg);
         } else {
           leftExpr = this.compileCallDirect(getterInstance, [], cacheTarget);
         }
         leftType = this.currentType;
         break;
       }
+      default:
+        return null;
+    }
+
+    let assignmentAccessContext = new AssignmentAccessContext(thisExpression, null, assignmentThisExpr, 0);
+    return new CompoundAssignmentCacheContext(target, leftExpr, leftType, assignmentAccessContext, setupPrefixExprs);
+  }
+
+  private prepareCompoundAssignmentElementAccessCache(
+    cacheTarget: ElementAccessExpression,
+    contextualType: Type
+  ): CompoundAssignmentCacheContext | null {
+    let module = this.module;
+    let flow = this.currentFlow;
+    let resolver = this.resolver;
+    let target = resolver.lookupExpression(cacheTarget, flow);
+    if (!target) return null;
+
+    let setupPrefixExprs: ExpressionRef[] | null = null;
+    let thisExpression: Expression = cacheTarget.expression;
+    let indexExpression: Expression = cacheTarget.elementExpression;
+    let assignmentThisExpr: ExpressionRef = 0;
+    let assignmentElementExpr: ExpressionRef = 0;
+    let cachedThisLocal: Local | null = null;
+    let cachedThisType: Type = Type.void;
+    let cachedElementLocal: Local | null = null;
+    let cachedElementType: Type = Type.void;
+
+    if (this.expressionHasSideEffects(thisExpression)) {
+      let receiverExpr = this.compileExpression(thisExpression, Type.auto);
+      let receiverType = this.currentType;
+      let receiverTemp = flow.getTempLocal(receiverType);
+      cachedThisLocal = receiverTemp;
+      cachedThisType = receiverType;
+      flow.setLocalFlag(receiverTemp.index, LocalFlags.Initialized);
+      if (!setupPrefixExprs) setupPrefixExprs = [];
+      setupPrefixExprs.push(module.local_set(receiverTemp.index, receiverExpr, receiverType.isManaged));
+    }
+
+    if (this.expressionHasSideEffects(indexExpression)) {
+      let elementExpr = this.compileExpression(indexExpression, Type.auto);
+      let elementType = this.currentType;
+      let elementTemp = flow.getTempLocal(elementType);
+      cachedElementLocal = elementTemp;
+      cachedElementType = elementType;
+      flow.setLocalFlag(elementTemp.index, LocalFlags.Initialized);
+      if (!setupPrefixExprs) setupPrefixExprs = [];
+      setupPrefixExprs.push(module.local_set(elementTemp.index, elementExpr, elementType.isManaged));
+    }
+
+    let leftExpr: ExpressionRef;
+    let leftType: Type;
+    switch (target.kind) {
       case ElementKind.IndexSignature: {
         let parent = (<IndexSignature>target).parent;
         assert(parent.kind == ElementKind.Class);
@@ -5299,11 +5308,8 @@ export class Compiler extends DiagnosticEmitter {
         leftType = this.currentType;
         break;
       }
-      default: {
-        leftExpr = this.compileExpression(cacheTarget, contextualType);
-        leftType = this.currentType;
-        break;
-      }
+      default:
+        return null;
     }
 
     let assignmentAccessContext = new AssignmentAccessContext(
