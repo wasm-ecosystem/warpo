@@ -12,7 +12,7 @@ jobs:
   build_and_upload:
     strategy:
       matrix:
-        os: [ubuntu-22.04, macos-latest]
+        os: [ubuntu-22.04, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -37,14 +37,21 @@ jobs:
           OS_ID: ${{ matrix.os }}
       - run: npm run build:ts
 
-      - name: pack build/warpo directory
+      - name: pack build/warpo directory (unix)
+        if: runner.os != 'Windows'
         run: |
           tar -czvf build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.tar.gz -C build warpo
+      - name: pack build/warpo directory (windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build/warpo -DestinationPath build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.zip
       - name: upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.tar.gz
+            build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.zip
 
   npm:
     runs-on: ubuntu-latest
