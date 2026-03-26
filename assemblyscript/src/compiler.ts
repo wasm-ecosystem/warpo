@@ -8132,7 +8132,6 @@ export class Compiler extends DiagnosticEmitter {
           return this.compileInlineConstant(local, contextualType, constraints);
         }
         let localIndex = local.index;
-        // fixme need to check init of closure variable also
         if (!local.isClosureVariable() && !flow.isLocalFlag(localIndex, LocalFlags.Initialized)) {
           this.error(DiagnosticCode.Variable_0_is_used_before_being_assigned, expression.range, local.name);
         }
