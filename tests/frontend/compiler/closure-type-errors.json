@@ -1,0 +1,7 @@
+{
+  "stderr": [
+    "TS2554: Expected 1 arguments, but got 2.",
+    "TS2322: Type 'f64' is not assignable to type 'i32'.",
+    "TS2322: Type 'i32' is not assignable to type 'f64'."
+  ]
+}

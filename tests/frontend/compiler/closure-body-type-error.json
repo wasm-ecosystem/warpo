@@ -1,0 +1,3 @@
+{
+  "stderr": ["TS2365: Operator '+' cannot be applied to types 'i32' and '~lib/string/String'."]
+}
