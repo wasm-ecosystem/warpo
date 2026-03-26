@@ -452,6 +452,16 @@ export class Resolver extends DiagnosticEmitter {
       }
       let parameterType = this.resolveType(parameterTypeNode, flow, ctxElement, ctxTypes, reportMode);
       if (!parameterType) return null;
+      if (parameterType == Type.void) {
+        if (reportMode == ReportMode.Report) {
+          this.error(
+            DiagnosticCode.Type_0_is_illegal_in_this_context,
+            parameterTypeNode.range,
+            parameterType.toString()
+          );
+        }
+        return null;
+      }
       parameterTypes[i] = parameterType;
     }
     let returnTypeNode = node.returnType;
