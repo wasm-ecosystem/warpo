@@ -1,5 +1,11 @@
 /// <reference path="../std/index.d.ts" />
 
+declare module "warpo/ffi" {
+  namespace ffi {
+    function set_ffi_closure_env(value: i32): void;
+  }
+}
+
 declare module "rt/index" {
   // allocate new object with size and rtid
   function __new(size: usize, id: u32): usize;

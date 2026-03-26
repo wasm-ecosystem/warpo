@@ -51,9 +51,9 @@ The frontend (AssemblyScript compiler) imports three closure builtins:
 
 There is also an FFI variant:
 
-| Import name                             | Signature      | Purpose                           |
-| --------------------------------------- | -------------- | --------------------------------- |
-| `~lib/builtins/ffi.set_ffi_closure_env` | `(i32) → void` | Set environment for FFI callbacks |
+| Import name                              | Signature      | Purpose                           |
+| ---------------------------------------- | -------------- | --------------------------------- |
+| `~lib/warpo/ffi/ffi.set_ffi_closure_env` | `(i32) → void` | Set environment for FFI callbacks |
 
 ### Global variable
 

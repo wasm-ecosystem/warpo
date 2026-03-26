@@ -13,7 +13,7 @@
  (import "as-builtin-fn" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
- (import "as-builtin-fn" "set_ffi_closure_env" (func $~lib/builtins/ffi.set_ffi_closure_env (param i32)))
+ (import "as-builtin-fn" "set_ffi_closure_env" (func $~lib/warpo/ffi/ffi.set_ffi_closure_env (param i32)))
  (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -3259,7 +3259,7 @@
     (call $~lib/rt/closure/getClosureEnv)
    )
   )
-  (call $~lib/builtins/ffi.set_ffi_closure_env
+  (call $~lib/warpo/ffi/ffi.set_ffi_closure_env
    (local.get $userData)
   )
   (call $~lib/rt/itcms/__unpin

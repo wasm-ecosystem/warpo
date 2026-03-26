@@ -31,7 +31,7 @@ static constexpr const char *const kGetClosureEnv = "~lib/rt/closure/getClosureE
 static constexpr const char *const kSetClosureEnv = "~lib/rt/closure/setClosureEnv";
 static constexpr const char *const kGetClosureEnvByLevel = "~lib/rt/closure/getClosureEnvByLevel";
 
-static constexpr const char *const kSetFFIClosureEnv = "~lib/builtins/ffi.set_ffi_closure_env";
+static constexpr const char *const kSetFFIClosureEnv = "~lib/warpo/ffi/ffi.set_ffi_closure_env";
 
 static constexpr const char *const kClosureEnvGlobal = "~lib/rt/closure/env";
 
@@ -753,10 +753,10 @@ TEST(ClosureLower, FFISetClosureEnvLowersToStore) {
       (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
-      (import "as-builtin-fn" "set_ffi_closure_env" (func $~lib/builtins/ffi.set_ffi_closure_env (param i32)))
+      (import "as-builtin-fn" "set_ffi_closure_env" (func $~lib/warpo/ffi/ffi.set_ffi_closure_env (param i32)))
       (memory 1)
       (func $callback (param i32) (local i32)
-        (call $~lib/builtins/ffi.set_ffi_closure_env (local.get 0))
+        (call $~lib/warpo/ffi/ffi.set_ffi_closure_env (local.get 0))
       )
     )
   )");
@@ -769,7 +769,7 @@ TEST(ClosureLower, FFISetClosureEnvLowersToStore) {
   runner.add(std::unique_ptr<wasm::Pass>{new closure::FastLower(&variableInfo)});
   runner.run();
 
-  EXPECT_EQ(m->getFunctionOrNull("~lib/builtins/ffi.set_ffi_closure_env"), nullptr);
+  EXPECT_EQ(m->getFunctionOrNull("~lib/warpo/ffi/ffi.set_ffi_closure_env"), nullptr);
 
   wasm::Function *const callback = m->getFunctionOrNull("callback");
   ASSERT_NE(callback, nullptr);
