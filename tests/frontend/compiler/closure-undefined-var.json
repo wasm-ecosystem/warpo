@@ -1,0 +1,3 @@
+{
+  "stderr": ["TS2304: Cannot find name 'undefinedVar'."]
+}
