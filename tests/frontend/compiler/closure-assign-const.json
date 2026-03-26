@@ -1,0 +1,3 @@
+{
+  "stderr": ["TS2540: Cannot assign to 'closure-assign-const/test~x' because it is a constant or a read-only property."]
+}
