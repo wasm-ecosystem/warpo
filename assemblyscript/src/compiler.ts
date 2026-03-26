@@ -1691,13 +1691,19 @@ export class Compiler extends DiagnosticEmitter {
         instance.declarationBase.nameRange,
         ReportMode.Report
       );
-      const closureDummyNode = Node.createComment(CommentKind.Line, "", new Range(0, 0)); // fixme: it's just a place holder node.
-      const tupleInfo = assert(assert(heapLocalsTupleType).tupleInfo);
-      const heapLocalsTuple = this.makeNewTuple(
-        tupleInfo.getElementsAreaByteSize(),
-        tupleInfo.getBitmap(),
-        closureDummyNode
-      );
+      if (!heapLocalsTupleType) {
+        this.error(
+          DiagnosticCode.Not_implemented_0,
+          instance.declarationBase.nameRange,
+          "closure captures too much data; reduce the number or size of captured variables"
+        );
+        instance.set(CommonFlags.Errored);
+        this.currentType = previousType;
+        pendingElements.delete(instance);
+        return false;
+      }
+      const tupleInfo = assert(heapLocalsTupleType.tupleInfo);
+      const heapLocalsTuple = this.makeNewTuple(tupleInfo.getElementsAreaByteSize(), tupleInfo.getBitmap(), bodyNode);
 
       const functionClosurePrepareStmts: ExpressionRef[] = new Array();
       const heapLocalsStmt = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
@@ -1712,7 +1718,7 @@ export class Compiler extends DiagnosticEmitter {
           module.usize(parentEnvElementInfo.offset),
           getClosureEnvStmt,
         ],
-        closureDummyNode
+        bodyNode
       );
 
       functionClosurePrepareStmts.push(saveParentEnvStmt);
@@ -1731,7 +1737,7 @@ export class Compiler extends DiagnosticEmitter {
               module.usize(tupleElementInfo.offset),
               module.local_get(paramLocal.index, paramLocal.type.toRef()),
             ],
-            closureDummyNode
+            bodyNode
           );
           functionClosurePrepareStmts.push(saveClosureParamStmt);
         }

@@ -1,0 +1,6 @@
+{
+  "stderr": [
+    "AS100: Not implemented: tuple large than 256 bytes",
+    "AS100: Not implemented: closure captures too much data; reduce the number or size of captured variables"
+  ]
+}
