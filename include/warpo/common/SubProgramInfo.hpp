@@ -24,9 +24,12 @@ public:
   using ScopeInfoMap = std::unordered_map<ScopeId, ScopeInfo>;
   using LocalsMap = std::map<ScopeId, std::vector<LocalInfo>>;
 
-  explicit inline SubProgramInfo(std::string_view const name) noexcept : name_(name) {}
+  explicit inline SubProgramInfo(std::string_view const name,
+                                 std::optional<std::string_view> const outerFunction = std::nullopt) noexcept
+      : name_(name), outerFunction_(outerFunction) {}
 
   inline std::string_view getName() const noexcept { return name_; }
+  inline std::optional<std::string_view> getOuterFunction() const noexcept { return outerFunction_; }
 
   inline std::vector<ParameterInfo> const &getParameters() const noexcept { return parameters_; }
   inline LocalsMap const &getLocals() const noexcept { return locals_; }
@@ -56,6 +59,7 @@ public:
 
 private:
   std::string_view name_;
+  std::optional<std::string_view> outerFunction_;
   std::vector<ParameterInfo> parameters_;
   LocalsMap locals_;
   ScopeInfoMap scopeInfoMap_;

@@ -19,9 +19,10 @@
 
 namespace warpo {
 
-SubProgramInfo &SubProgramRegistry::addSubProgram(std::string const subProgramName) {
+SubProgramInfo &SubProgramRegistry::addSubProgram(std::string const subProgramName,
+                                                  std::optional<std::string_view> const outerFunction) {
   std::string_view const internedSubProgramName = stringPool_.internString(subProgramName);
-  return registry_.emplace_back(internedSubProgramName);
+  return registry_.emplace_back(internedSubProgramName, outerFunction);
 }
 
 } // namespace warpo

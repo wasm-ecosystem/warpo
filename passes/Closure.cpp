@@ -677,7 +677,7 @@ TEST(ClosureLower, BothGetAndSetLowersToGlobalAndLocal) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 0);
 
   wasm::PassRunner runner{m.get()};
@@ -723,9 +723,9 @@ TEST(ClosureLower, GetClosureEnvByLevelWithChainedLoads) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("level1", "");
+  variableInfo.addSubProgram("level1", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("level1", 0);
-  variableInfo.addSubProgram("level2", "");
+  variableInfo.addSubProgram("level2", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("level2", 0);
 
   wasm::PassRunner runner{m.get()};
@@ -762,7 +762,7 @@ TEST(ClosureLower, FFISetClosureEnvLowersToStore) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("callback", "");
+  variableInfo.addSubProgram("callback", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("callback", 1);
 
   wasm::PassRunner runner{m.get()};
@@ -799,7 +799,7 @@ TEST(ClosureLower, OptLowerCachesFromClosestDef) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 0);
 
   wasm::PassRunner runner{m.get()};
@@ -845,7 +845,7 @@ TEST(ClosureLower, OptLowerNoCachingWhenSingleUse) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 0);
 
   wasm::PassRunner runner{m.get()};
@@ -881,7 +881,7 @@ TEST(ClosureLower, OptLowerSingleLevelRepeated) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 0);
 
   wasm::PassRunner runner{m.get()};
@@ -940,7 +940,7 @@ TEST(ClosureLower, OptLowerReusesDominatingDefAcrossBasicBlocks) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 1);
 
   wasm::PassRunner runner{m.get()};
@@ -1002,7 +1002,7 @@ TEST(ClosureLower, OptLowerReusesExactDominatingDefAcrossBasicBlocks) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 1);
 
   wasm::PassRunner runner{m.get()};
@@ -1065,7 +1065,7 @@ TEST(ClosureLower, OptLowerCreatesChildDefFromDominatingParentCache) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 1);
 
   wasm::PassRunner runner{m.get()};
@@ -1142,7 +1142,7 @@ TEST(ClosureLower, OptLowerHoistsDefToTopMostReusableDominator) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 1);
 
   wasm::PassRunner runner{m.get()};
@@ -1233,7 +1233,7 @@ TEST(ClosureLower, OptLowerStopsHoistingAtNonReusableAncestor) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 2);
 
   wasm::PassRunner runner{m.get()};
@@ -1324,7 +1324,7 @@ TEST(ClosureLower, OptLowerThreeLevelsChaining) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 0);
 
   wasm::PassRunner runner{m.get()};
@@ -1396,7 +1396,7 @@ TEST(ClosureLower, OptLowerLevelZeroNoCaching) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 0);
 
   wasm::PassRunner runner{m.get()};
@@ -1443,7 +1443,7 @@ TEST(ClosureLower, OptLowerCachesIndependentlyInIfElseBranches) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 1);
 
   wasm::PassRunner runner{m.get()};
@@ -1537,7 +1537,7 @@ TEST(ClosureLower, OptLowerCachesSingleMaxLevelWhenCountExceedsOne) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 0);
 
   wasm::PassRunner runner{m.get()};
@@ -1607,7 +1607,7 @@ TEST(ClosureLower, OptLowerHoistsPastIntermediateDomWithoutClosureCalls) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 2);
 
   wasm::PassRunner runner{m.get()};
@@ -1700,7 +1700,7 @@ TEST(ClosureLower, OptLowerHoistsOutOfLoop) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 1);
 
   wasm::PassRunner runner{m.get()};
@@ -1764,7 +1764,7 @@ TEST(ClosureLower, OptLowerHoistsOutOfNestedLoop) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 2);
 
   wasm::PassRunner runner{m.get()};
@@ -1824,7 +1824,7 @@ TEST(ClosureLower, OptLowerSkipsHoistWhenLoopBlockExits) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 1);
 
   wasm::PassRunner runner{m.get()};
@@ -1871,7 +1871,7 @@ TEST(ClosureLower, OptLowerHoistsLoopDefToBlockWithClosureCall) {
   )");
 
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("levelGetter", "");
+  variableInfo.addSubProgram("levelGetter", "", "");
   variableInfo.addHeapVariableStorageLocalIndex("levelGetter", 1);
 
   wasm::PassRunner runner{m.get()};

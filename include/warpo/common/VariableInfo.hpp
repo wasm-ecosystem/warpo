@@ -49,7 +49,8 @@ public:
 
   SubProgramRegistry const &getSubProgramRegistry() const noexcept { return subProgramRegistry_; }
 
-  void addSubProgram(std::string subProgramName, std::string_view const belongClassName);
+  void addSubProgram(std::string subProgramName, std::string_view const belongClassName,
+                     std::string_view const outerFunctionName);
 
   void addParameter(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
                     uint32_t const index, bool const nullable);

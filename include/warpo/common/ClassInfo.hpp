@@ -33,8 +33,9 @@ public:
 
   std::vector<std::string_view> const &getTemplateTypes() const noexcept { return templateTypes_; }
 
-  SubProgramInfo &addSubProgram(std::string subProgramName) {
-    return classMemberFunctionRegistry_.addSubProgram(std::move(subProgramName));
+  SubProgramInfo &addSubProgram(std::string subProgramName,
+                                std::optional<std::string_view> const outerFunction = std::nullopt) {
+    return classMemberFunctionRegistry_.addSubProgram(std::move(subProgramName), outerFunction);
   }
 
   SubProgramRegistry const &getSubProgramRegistry() const noexcept { return classMemberFunctionRegistry_; }

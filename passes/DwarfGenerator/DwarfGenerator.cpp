@@ -221,7 +221,12 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
       abbrevFactory.create(llvm::dwarf::DW_TAG_variable, llvm::dwarf::DW_CHILDREN_no);
   tupleFieldLocalVariableAbbrev.Attributes.push_back(localVarNameAttr);
   tupleFieldLocalVariableAbbrev.Attributes.push_back(localVarTypeAttr);
-  tupleFieldLocalVariableAbbrev.Attributes.push_back(localVarLocationAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev tupleFieldOffsetAttr{};
+  tupleFieldOffsetAttr.Attribute = llvm::dwarf::DW_AT_data_member_location;
+  tupleFieldOffsetAttr.Form = llvm::dwarf::DW_FORM_data4;
+  tupleFieldOffsetAttr.Value = 0U;
+  tupleFieldLocalVariableAbbrev.Attributes.push_back(tupleFieldOffsetAttr);
 
   abbrevDecls.push_back(tupleFieldLocalVariableAbbrev);
 
@@ -276,17 +281,23 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
 
   abbrevDecls.push_back(subProgramAbbrev);
 
-  llvm::DWARFYAML::Abbrev subProgramWithHeapStorageAbbrev =
-      abbrevFactory.create(llvm::dwarf::DW_TAG_subprogram, llvm::dwarf::DW_CHILDREN_yes);
-  subProgramWithHeapStorageAbbrev.Attributes.push_back(subProgramNameAttr);
+  llvm::DWARFYAML::AttributeAbbrev outerFunctionAttr{};
+  outerFunctionAttr.Attribute = llvm::dwarf::DW_AT_description;
+  outerFunctionAttr.Form = llvm::dwarf::DW_FORM_string;
+  outerFunctionAttr.Value = 0U;
 
   llvm::DWARFYAML::AttributeAbbrev heapStorageAttr{};
-  heapStorageAttr.Attribute = llvm::dwarf::DW_AT_location;
+  heapStorageAttr.Attribute = llvm::dwarf::DW_AT_static_link;
   heapStorageAttr.Form = llvm::dwarf::DW_FORM_data4;
   heapStorageAttr.Value = 0U;
-  subProgramWithHeapStorageAbbrev.Attributes.push_back(heapStorageAttr);
 
-  abbrevDecls.push_back(subProgramWithHeapStorageAbbrev);
+  llvm::DWARFYAML::Abbrev closureSubProgramAbbrev =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_subprogram, llvm::dwarf::DW_CHILDREN_yes);
+  closureSubProgramAbbrev.Attributes.push_back(subProgramNameAttr);
+  closureSubProgramAbbrev.Attributes.push_back(heapStorageAttr);
+  closureSubProgramAbbrev.Attributes.push_back(outerFunctionAttr);
+
+  abbrevDecls.push_back(closureSubProgramAbbrev);
   llvm::DWARFYAML::Abbrev terminator;
   terminator.Code = 0U;
   terminator.Tag = llvm::dwarf::DW_TAG_null;
@@ -329,9 +340,10 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
     rootUnit.Entries.push_back(baseTypeEntry);
   }
 
-  DwarfGenerator::AbbrevCodes const abbrevCodes{subProgramAbbrev.Code,      subProgramWithHeapStorageAbbrev.Code,
-                                                formalParameterAbbrev.Code, lexicalBlockAbbrev.Code,
-                                                localVariableAbbrev.Code,   tupleFieldLocalVariableAbbrev.Code};
+  DwarfGenerator::AbbrevCodes const abbrevCodes{
+      subProgramAbbrev.Code,   closureSubProgramAbbrev.Code, formalParameterAbbrev.Code,
+      lexicalBlockAbbrev.Code, localVariableAbbrev.Code,     tupleFieldLocalVariableAbbrev.Code,
+  };
 
   for (auto const &[className, classInfo] : classRegistry) {
     std::optional<uint32_t> const rtid = classInfo.getRtid();
@@ -486,8 +498,10 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
                                                  std::vector<TypeRefFixup> &typeRefFixups) {
   llvm::DWARFYAML::Entry subprogramEntry;
   std::optional<uint32_t> const heapStorageLocalIndex = subProgram.getHeapVariableStorageLocalIndex();
-  subprogramEntry.AbbrCode =
-      heapStorageLocalIndex.has_value() ? abbrevCodes.subprogramWithHeapStorage : abbrevCodes.subprogram;
+  std::optional<std::string_view> const outerFunction = subProgram.getOuterFunction();
+  bool const isClosureFunction = outerFunction.has_value();
+  assert(!isClosureFunction || heapStorageLocalIndex.has_value());
+  subprogramEntry.AbbrCode = isClosureFunction ? abbrevCodes.closureSubprogram : abbrevCodes.subprogram;
 
   llvm::DWARFYAML::FormValue subprogramNameValue;
   subprogramNameValue.Value = 0;
@@ -495,10 +509,15 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
   subprogramNameValue.CStr = llvm::StringRef(subProgramName.data(), subProgramName.size());
   subprogramEntry.Values.push_back(subprogramNameValue);
 
-  if (heapStorageLocalIndex.has_value()) {
+  if (isClosureFunction) {
     llvm::DWARFYAML::FormValue heapStorageValue;
     heapStorageValue.Value = *heapStorageLocalIndex;
     subprogramEntry.Values.push_back(heapStorageValue);
+
+    llvm::DWARFYAML::FormValue outerFunctionValue;
+    outerFunctionValue.Value = 0U;
+    outerFunctionValue.CStr = llvm::StringRef(outerFunction->data(), outerFunction->size());
+    subprogramEntry.Values.push_back(outerFunctionValue);
   }
 
   rootUnit.Entries.push_back(subprogramEntry);
@@ -589,12 +608,15 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
             localTypeValue.Value = 0xDEADBEEFU;
             localEntry.Values.push_back(localTypeValue);
 
-            llvm::DWARFYAML::FormValue localLocationValue;
-            if (isTupleField)
-              localLocationValue.Value = std::get<TupleFieldLocation>(location).offset;
-            else
+            if (isTupleField) {
+              llvm::DWARFYAML::FormValue tupleFieldOffsetValue;
+              tupleFieldOffsetValue.Value = std::get<TupleFieldLocation>(location).offset;
+              localEntry.Values.push_back(tupleFieldOffsetValue);
+            } else {
+              llvm::DWARFYAML::FormValue localLocationValue;
               localLocationValue.Value = std::get<LocalIndexLocation>(location).index;
-            localEntry.Values.push_back(localLocationValue);
+              localEntry.Values.push_back(localLocationValue);
+            }
 
             size_t const localIndex = rootUnit_.Entries.size();
             typeRefFixups_.push_back({localIndex, 1U, local.getType()});

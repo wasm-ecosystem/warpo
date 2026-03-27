@@ -7845,6 +7845,7 @@ export class Compiler extends DiagnosticEmitter {
       declaration.identifierAndSignatureRange,
       closureInfo
     );
+    let outerFunctionInternalName = closureInfo ? sourceFunction.internalName : null;
     let instance: Function | null;
     let contextualTypeArguments = cloneMap(flow.contextualTypeArguments);
     let module = this.module;
@@ -7942,7 +7943,7 @@ export class Compiler extends DiagnosticEmitter {
       }
 
       let signature = Signature.create(this.program, parameterTypes, returnType, thisType, numParameters);
-      instance = new Function(prototype.name, prototype, null, signature, contextualTypeArguments);
+      instance = new Function(prototype.name, prototype, null, signature, contextualTypeArguments, outerFunctionInternalName);
       instance.flow.outer = flow;
       let worked = this.compileFunction(instance);
       this.currentType = contextualSignature.type;
@@ -7950,7 +7951,7 @@ export class Compiler extends DiagnosticEmitter {
 
       // otherwise compile like a normal function
     } else {
-      instance = this.resolver.resolveFunction(prototype, null, contextualTypeArguments);
+      instance = this.resolver.resolveFunction(prototype, null, contextualTypeArguments, ReportMode.Report, outerFunctionInternalName);
       if (!instance) return this.module.unreachable();
       instance.flow.outer = flow;
       let worked = this.compileFunction(instance);

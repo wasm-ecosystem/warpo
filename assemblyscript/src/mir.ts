@@ -105,12 +105,16 @@ export function createBaseType(type: Type): void {
   _WarpoCreateBaseType(typeToMIRName(type));
 }
 
-export function addSubProgram(subprogram: Function, belongClass: Class | null): void {
+export function addSubProgram(
+  subprogram: Function,
+  belongClass: Class | null,
+  outerFunctionName: string | null = null
+): void {
   let belongClassName: string | null = null;
   if (belongClass !== null) {
     belongClassName = decodeURIComponent(typeToMIRName(belongClass.type));
   }
-  _WarpoAddSubProgram(subprogram.internalName, belongClassName);
+  _WarpoAddSubProgram(subprogram.internalName, belongClassName, outerFunctionName);
 }
 
 export function addHeapVariableStorageLocalIndex(subprogram: Function, index: u32): void {

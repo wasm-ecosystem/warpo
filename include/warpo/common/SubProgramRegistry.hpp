@@ -12,7 +12,8 @@ namespace warpo {
 
 class SubProgramRegistry final {
 public:
-  SubProgramInfo &addSubProgram(std::string const subProgramName);
+  SubProgramInfo &addSubProgram(std::string const subProgramName,
+                                std::optional<std::string_view> const outerFunction = std::nullopt);
   inline std::deque<SubProgramInfo> const &getList() const noexcept { return registry_; }
 
 private:

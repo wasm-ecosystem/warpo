@@ -2754,7 +2754,9 @@ export class Resolver extends DiagnosticEmitter {
     /** Contextual types, i.e. `T`. */
     ctxTypes: Map<string, Type> = new Map(),
     /** How to proceed with eventual diagnostics. */
-    reportMode: ReportMode = ReportMode.Report
+    reportMode: ReportMode = ReportMode.Report,
+    /** Internal name of the outer (enclosing) function, for closures. */
+    outerFunctionInternalName: string | null = null
   ): Function | null {
     let classInstance: Class | null = null; // if an instance method
     const instanceKey = mangleGenericInstanceKey(typeArguments);
@@ -2881,7 +2883,7 @@ export class Resolver extends DiagnosticEmitter {
     let signature = Signature.create(this.program, parameterTypes, returnType, thisType, requiredParameters, hasRest);
 
     const nameInclTypeParameters = mangleGenericInstanceName(prototype.name, instanceKey);
-    let instance = new Function(nameInclTypeParameters, prototype, typeArguments, signature, ctxTypes);
+    let instance = new Function(nameInclTypeParameters, prototype, typeArguments, signature, ctxTypes, outerFunctionInternalName);
     prototype.setResolvedInstance(instanceKey, instance);
 
     // check against overridden base member

@@ -21,7 +21,7 @@ export declare function _WarpoAddField(
 ): void;
 export declare function _WarpoAddGlobal(variableName: string, typeName: string, nullable: bool, isMutable: bool): void;
 
-export declare function _WarpoAddSubProgram(subProgramName: string, belongClassName: string | null): void;
+export declare function _WarpoAddSubProgram(subProgramName: string, belongClassName: string | null, outerFunctionName: string | null): void;
 export declare function _WarpoAddParameter(
   subProgramName: string,
   variableName: string,

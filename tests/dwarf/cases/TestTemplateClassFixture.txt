@@ -31,17 +31,27 @@ Abbrev table for offset: 0x00000000
 	DW_AT_type	DW_FORM_ref4
 	DW_AT_location	DW_FORM_data4
 
-[9] DW_TAG_formal_parameter	DW_CHILDREN_no
+[9] DW_TAG_variable	DW_CHILDREN_no
+	DW_AT_name	DW_FORM_string
+	DW_AT_type	DW_FORM_ref4
+	DW_AT_data_member_location	DW_FORM_data4
+
+[10] DW_TAG_formal_parameter	DW_CHILDREN_no
 	DW_AT_name	DW_FORM_string
 	DW_AT_type	DW_FORM_ref4
 	DW_AT_location	DW_FORM_data4
 
-[10] DW_TAG_lexical_block	DW_CHILDREN_yes
+[11] DW_TAG_lexical_block	DW_CHILDREN_yes
 	DW_AT_low_pc	DW_FORM_addr
 	DW_AT_high_pc	DW_FORM_addr
 
-[11] DW_TAG_subprogram	DW_CHILDREN_yes
+[12] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
+
+[13] DW_TAG_subprogram	DW_CHILDREN_yes
+	DW_AT_name	DW_FORM_string
+	DW_AT_unknown_2000	DW_FORM_data4
+	DW_AT_description	DW_FORM_string
 
 
 .debug_info contents:

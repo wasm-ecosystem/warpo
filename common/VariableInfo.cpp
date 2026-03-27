@@ -58,16 +58,24 @@ void VariableInfo::addGlobalType(std::string variableName, std::string_view cons
                                                 });
 }
 
-void VariableInfo::addSubProgram(std::string subProgramName, std::string_view const belongClassName) {
+void VariableInfo::addSubProgram(std::string subProgramName, std::string_view const belongClassName,
+                                 std::string_view const outerFunctionName) {
+  std::optional<std::string_view> outerFunction = std::nullopt;
+  if (!outerFunctionName.empty() && (outerFunctionName != "<<NULL>>")) {
+    auto const outerIt = subProgramLookupMap_.find(outerFunctionName);
+    assert(outerIt != subProgramLookupMap_.end() && "Outer function not found in registry");
+    outerFunction = outerIt->second.getName();
+  }
+
   if (!belongClassName.empty() && (belongClassName != "<<NULL>>")) {
     auto classIt = classRegistry_.find(belongClassName);
     assert(classIt != classRegistry_.end() && "Class not found in registry");
     // NOLINTNEXTLINE(misc-const-correctness)
-    SubProgramInfo &subProgramInfo = classIt->second.addSubProgram(std::move(subProgramName));
+    SubProgramInfo &subProgramInfo = classIt->second.addSubProgram(std::move(subProgramName), outerFunction);
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
   } else {
     // NOLINTNEXTLINE(misc-const-correctness)
-    SubProgramInfo &subProgramInfo = subProgramRegistry_.addSubProgram(std::move(subProgramName));
+    SubProgramInfo &subProgramInfo = subProgramRegistry_.addSubProgram(std::move(subProgramName), outerFunction);
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
   }
 }
@@ -278,7 +286,7 @@ TEST(TestVariableInfo, TestAddParameter) {
   VariableInfo variableInfo;
 
   // Test adding parameters to global function
-  variableInfo.addSubProgram("calculateSum", "");
+  variableInfo.addSubProgram("calculateSum", "", "");
   variableInfo.addParameter("calculateSum", "a", "i32", 0, false);
   variableInfo.addParameter("calculateSum", "b", "i32", 1, false);
 
@@ -304,7 +312,7 @@ TEST(TestVariableInfo, TestAddParameter) {
   // Test adding parameters to class member function
   variableInfo.createClass("Math", 200);
   variableInfo.addBaseClass("Math", "Object");
-  variableInfo.addSubProgram("multiply", "Math");
+  variableInfo.addSubProgram("multiply", "Math", "");
   variableInfo.addParameter("multiply", "x", "i32", 0, false);
   variableInfo.addParameter("multiply", "y", "i32", 1, false);
 
@@ -334,7 +342,7 @@ TEST(TestVariableInfo, TestAddParameter) {
 
 TEST(TestVariableInfo, TestAddLocal) {
   VariableInfo variableInfo;
-  variableInfo.addSubProgram("processData", "");
+  variableInfo.addSubProgram("processData", "", "");
 
   BinaryenExpressionRef const startExpr = reinterpret_cast<BinaryenExpressionRef>(0x1000);
   BinaryenExpressionRef const endExpr = reinterpret_cast<BinaryenExpressionRef>(0x2000);
@@ -351,7 +359,7 @@ TEST(TestVariableInfo, TestAddLocal) {
   const std::vector<LocalInfo> &locals = localsMap.at(scopeId);
   ASSERT_EQ(locals.size(), 1);
   EXPECT_EQ(locals[0].getName(), "result");
-  EXPECT_EQ(locals[0].getIndex(), 1);
+  EXPECT_EQ(std::get<LocalIndexLocation>(locals[0].getLocation()).index, 1U);
   EXPECT_EQ(locals[0].getScopeId(), scopeId);
 
   const SubProgramInfo::ScopeInfoMap &scopeInfoMap = globalFunctions[0].getScopeInfoMap();
@@ -369,7 +377,7 @@ TEST(TestVariableInfo, TestAddLocalToClassMemberFunction) {
   // Test class member function
   variableInfo.createClass("Math", 300);
   variableInfo.addBaseClass("Math", "Object");
-  variableInfo.addSubProgram("compute", "Math");
+  variableInfo.addSubProgram("compute", "Math", "");
   BinaryenExpressionRef const startExpr2 = reinterpret_cast<BinaryenExpressionRef>(0x3000);
   BinaryenExpressionRef const endExpr2 = reinterpret_cast<BinaryenExpressionRef>(0x4000);
   uint32_t const scopeId2 = variableInfo.addScope("compute", startExpr2, endExpr2);
@@ -388,8 +396,20 @@ TEST(TestVariableInfo, TestAddLocalToClassMemberFunction) {
   const std::vector<LocalInfo> &computeLocals = computeLocalsMap.at(scopeId2);
   ASSERT_EQ(computeLocals.size(), 1);
   EXPECT_EQ(computeLocals[0].getName(), "temp");
-  EXPECT_EQ(computeLocals[0].getIndex(), 1);
+  EXPECT_EQ(std::get<LocalIndexLocation>(computeLocals[0].getLocation()).index, 1U);
   EXPECT_EQ(computeLocals[0].getScopeId(), scopeId2);
+}
+
+TEST(TestVariableInfo, TestAddSubProgramWithOuterFunction) {
+  VariableInfo variableInfo;
+
+  variableInfo.addSubProgram("outer", "", "");
+  variableInfo.addSubProgram("inner", "", "outer");
+
+  const std::deque<SubProgramInfo> &globalFunctions = variableInfo.getSubProgramRegistry().getList();
+  ASSERT_EQ(globalFunctions.size(), 2);
+  ASSERT_TRUE(globalFunctions[1].getOuterFunction().has_value());
+  EXPECT_EQ(*globalFunctions[1].getOuterFunction(), "outer");
 }
 
 } // namespace warpo::ut
