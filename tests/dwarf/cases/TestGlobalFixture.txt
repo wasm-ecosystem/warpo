@@ -50,7 +50,7 @@ Abbrev table for offset: 0x00000000
 
 [13] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
-	DW_AT_unknown_2000	DW_FORM_data4
+	DW_AT_static_link	DW_FORM_data4
 	DW_AT_description	DW_FORM_string
 
 

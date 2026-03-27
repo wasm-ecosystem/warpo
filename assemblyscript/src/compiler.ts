@@ -7943,7 +7943,14 @@ export class Compiler extends DiagnosticEmitter {
       }
 
       let signature = Signature.create(this.program, parameterTypes, returnType, thisType, numParameters);
-      instance = new Function(prototype.name, prototype, null, signature, contextualTypeArguments, outerFunctionInternalName);
+      instance = new Function(
+        prototype.name,
+        prototype,
+        null,
+        signature,
+        contextualTypeArguments,
+        outerFunctionInternalName
+      );
       instance.flow.outer = flow;
       let worked = this.compileFunction(instance);
       this.currentType = contextualSignature.type;
@@ -7951,7 +7958,13 @@ export class Compiler extends DiagnosticEmitter {
 
       // otherwise compile like a normal function
     } else {
-      instance = this.resolver.resolveFunction(prototype, null, contextualTypeArguments, ReportMode.Report, outerFunctionInternalName);
+      instance = this.resolver.resolveFunction(
+        prototype,
+        null,
+        contextualTypeArguments,
+        ReportMode.Report,
+        outerFunctionInternalName
+      );
       if (!instance) return this.module.unreachable();
       instance.flow.outer = flow;
       let worked = this.compileFunction(instance);

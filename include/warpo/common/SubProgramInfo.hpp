@@ -47,8 +47,8 @@ public:
   void addLocal(std::string variableName, std::string_view const typeName, uint32_t const index, ScopeId const scopeId,
                 bool const nullable);
 
-  void addTupleLocal(std::string variableName, std::string_view const typeName,
-                     uint32_t const tupleFieldOffset, ScopeId const scopeId, bool const nullable);
+  void addTupleLocal(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
+                     ScopeId const scopeId, bool const nullable);
 
   uint32_t addScope(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr);
 

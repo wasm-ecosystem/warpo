@@ -62,8 +62,7 @@ public:
                 uint32_t const index, uint32_t const scopeId, bool const nullable);
 
   void addTupleLocal(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
-                     uint32_t const tupleFieldOffset, uint32_t const scopeId,
-                     bool const nullable);
+                     uint32_t const tupleFieldOffset, uint32_t const scopeId, bool const nullable);
 
   SubProgramLookupMap const &getSubProgramLookupMap() const noexcept { return subProgramLookupMap_; }
 

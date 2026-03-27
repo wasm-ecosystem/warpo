@@ -74,14 +74,25 @@ export function addParameter(subprogram: Function, variable: Local): void {
   );
 }
 export function addLocal(subProgram: Function, variable: Local, scopeId: u32): void {
-  _WarpoAddLocal(
-    subProgram.internalName,
-    variable.name,
-    decodeURIComponent(typeToMIRName(variable.type)),
-    variable.index,
-    scopeId,
-    variable.type.is(TypeFlags.Nullable)
-  );
+  if (variable.isClosureVariable()) {
+    _WarpoAddTupleLocal(
+      subProgram.internalName,
+      variable.name,
+      decodeURIComponent(typeToMIRName(variable.type)),
+      variable.getTupleElementInfo().offset,
+      scopeId,
+      variable.type.is(TypeFlags.Nullable)
+    );
+  } else {
+    _WarpoAddLocal(
+      subProgram.internalName,
+      variable.name,
+      decodeURIComponent(typeToMIRName(variable.type)),
+      variable.index,
+      scopeId,
+      variable.type.is(TypeFlags.Nullable)
+    );
+  }
 }
 
 export function addTupleLocal(

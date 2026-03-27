@@ -2883,7 +2883,14 @@ export class Resolver extends DiagnosticEmitter {
     let signature = Signature.create(this.program, parameterTypes, returnType, thisType, requiredParameters, hasRest);
 
     const nameInclTypeParameters = mangleGenericInstanceName(prototype.name, instanceKey);
-    let instance = new Function(nameInclTypeParameters, prototype, typeArguments, signature, ctxTypes, outerFunctionInternalName);
+    let instance = new Function(
+      nameInclTypeParameters,
+      prototype,
+      typeArguments,
+      signature,
+      ctxTypes,
+      outerFunctionInternalName
+    );
     prototype.setResolvedInstance(instanceKey, instance);
 
     // check against overridden base member
