@@ -91,6 +91,17 @@ void VariableInfo::addLocal(std::string_view const subProgramName, std::string v
   it->second.addLocal(std::move(variableName), internedTypeName, index, scopeId, nullable);
 }
 
+void VariableInfo::addTupleLocal(std::string_view const subProgramName, std::string variableName,
+                                 std::string_view const typeName,
+                                 uint32_t const tupleFieldOffset, uint32_t const scopeId, bool const nullable) {
+  SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
+  std::string_view const normalizedTypeName = typeName;
+  std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
+  assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
+  it->second.addTupleLocal(std::move(variableName), internedTypeName, tupleFieldOffset, scopeId,
+                           nullable);
+}
+
 void VariableInfo::addHeapVariableStorageLocalIndex(std::string_view const subProgramName, uint32_t const index) {
   SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
   assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");

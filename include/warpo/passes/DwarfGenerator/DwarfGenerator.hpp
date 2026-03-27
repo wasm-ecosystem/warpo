@@ -26,9 +26,11 @@ public:
 private:
   struct AbbrevCodes final {
     uint32_t subprogram;
+    uint32_t subprogramWithHeapStorage;
     uint32_t formalParameter;
     uint32_t lexicalBlock;
     uint32_t localVariable;
+    uint32_t tupleFieldLocalVariable;
   };
 
   static void addSubProgramWithParameters(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
