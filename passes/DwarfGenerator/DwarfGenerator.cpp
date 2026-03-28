@@ -354,9 +354,12 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
   }
 
   DwarfGenerator::AbbrevCodes const abbrevCodes{
-      subProgramAbbrev.Code,                    closureSubProgramAbbrev.Code,
-      formalParameterAbbrev.Code,               tupleFieldFormalParameterAbbrev.Code,
-      lexicalBlockAbbrev.Code,                  localVariableAbbrev.Code,
+      subProgramAbbrev.Code,
+      closureSubProgramAbbrev.Code,
+      formalParameterAbbrev.Code,
+      tupleFieldFormalParameterAbbrev.Code,
+      lexicalBlockAbbrev.Code,
+      localVariableAbbrev.Code,
       tupleFieldLocalVariableAbbrev.Code,
   };
 
