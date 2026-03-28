@@ -50,6 +50,9 @@ public:
   void addTupleLocal(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
                      ScopeId const scopeId, bool const nullable);
 
+  void addTupleParameter(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
+                         bool const nullable);
+
   uint32_t addScope(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr);
 
   inline std::optional<uint32_t> getHeapVariableStorageLocalIndex() const noexcept {

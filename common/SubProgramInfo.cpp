@@ -52,6 +52,17 @@ void SubProgramInfo::addTupleLocal(std::string variableName, std::string_view co
   });
 }
 
+void SubProgramInfo::addTupleParameter(std::string variableName, std::string_view const typeName,
+                                       uint32_t const tupleFieldOffset, bool const nullable) {
+
+  addParameter(ParameterInfo{
+      std::move(variableName),
+      typeName,
+      TupleFieldLocation{tupleFieldOffset},
+      nullable,
+  });
+}
+
 uint32_t SubProgramInfo::addScope(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr) {
   uint32_t const scopeId = nextScopeId_;
   scopeInfoMap_.emplace(scopeId, ScopeInfo{startExpr, endExpr});

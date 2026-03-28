@@ -1,9 +1,9 @@
-export function outer(base: i32): (delta: i32) => i32 {
+export function outer(base: i32, scale: i32): (delta: i32) => i32 {
   let runningTotal = base;
   let fixedOffset = 10;
 
   return (delta: i32): i32 => {
-    let stepValue = delta + fixedOffset;
+    let stepValue = (delta + fixedOffset) * scale;
     runningTotal += stepValue;
     return runningTotal;
   };

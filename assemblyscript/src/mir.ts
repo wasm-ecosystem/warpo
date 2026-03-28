@@ -8,6 +8,7 @@ import {
   _WarpoAddGlobal,
   _WarpoAddLocal,
   _WarpoAddTupleLocal,
+  _WarpoAddTupleParameter,
   _WarpoAddParameter,
   _WarpoAddScope,
   _WarpoAddSubProgram,
@@ -65,13 +66,23 @@ export function addGlobal(variable: Global, type: Type): void {
 }
 
 export function addParameter(subprogram: Function, variable: Local): void {
-  _WarpoAddParameter(
-    subprogram.internalName,
-    variable.name,
-    decodeURIComponent(typeToMIRName(variable.type)),
-    variable.index,
-    variable.type.is(TypeFlags.Nullable)
-  );
+  if (variable.isClosureVariable()) {
+    _WarpoAddTupleParameter(
+      subprogram.internalName,
+      variable.name,
+      decodeURIComponent(typeToMIRName(variable.type)),
+      variable.getTupleElementInfo().offset,
+      variable.type.is(TypeFlags.Nullable)
+    );
+  } else {
+    _WarpoAddParameter(
+      subprogram.internalName,
+      variable.name,
+      decodeURIComponent(typeToMIRName(variable.type)),
+      variable.index,
+      variable.type.is(TypeFlags.Nullable)
+    );
+  }
 }
 export function addLocal(subProgram: Function, variable: Local, scopeId: u32): void {
   if (variable.isClosureVariable()) {

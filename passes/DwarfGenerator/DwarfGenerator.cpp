@@ -253,6 +253,19 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
 
   abbrevDecls.push_back(formalParameterAbbrev);
 
+  llvm::DWARFYAML::Abbrev tupleFieldFormalParameterAbbrev =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_formal_parameter, llvm::dwarf::DW_CHILDREN_no);
+  tupleFieldFormalParameterAbbrev.Attributes.push_back(formalParamNameAttr);
+  tupleFieldFormalParameterAbbrev.Attributes.push_back(formalParamTypeAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev tupleFieldFormalParamOffsetAttr{};
+  tupleFieldFormalParamOffsetAttr.Attribute = llvm::dwarf::DW_AT_data_member_location;
+  tupleFieldFormalParamOffsetAttr.Form = llvm::dwarf::DW_FORM_data4;
+  tupleFieldFormalParamOffsetAttr.Value = 0U;
+  tupleFieldFormalParameterAbbrev.Attributes.push_back(tupleFieldFormalParamOffsetAttr);
+
+  abbrevDecls.push_back(tupleFieldFormalParameterAbbrev);
+
   llvm::DWARFYAML::Abbrev lexicalBlockAbbrev =
       abbrevFactory.create(llvm::dwarf::DW_TAG_lexical_block, llvm::dwarf::DW_CHILDREN_yes);
 
@@ -341,8 +354,10 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
   }
 
   DwarfGenerator::AbbrevCodes const abbrevCodes{
-      subProgramAbbrev.Code,   closureSubProgramAbbrev.Code, formalParameterAbbrev.Code,
-      lexicalBlockAbbrev.Code, localVariableAbbrev.Code,     tupleFieldLocalVariableAbbrev.Code,
+      subProgramAbbrev.Code,                    closureSubProgramAbbrev.Code,
+      formalParameterAbbrev.Code,               tupleFieldFormalParameterAbbrev.Code,
+      lexicalBlockAbbrev.Code,                  localVariableAbbrev.Code,
+      tupleFieldLocalVariableAbbrev.Code,
   };
 
   for (auto const &[className, classInfo] : classRegistry) {
@@ -526,7 +541,9 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
   std::vector<ParameterInfo> const &parameters = subProgram.getParameters();
   for (ParameterInfo const &param : parameters) {
     llvm::DWARFYAML::Entry paramEntry;
-    paramEntry.AbbrCode = abbrevCodes.formalParameter;
+    VariableLocation const &paramLocation = param.getLocation();
+    bool const isTupleField = std::holds_alternative<TupleFieldLocation>(paramLocation);
+    paramEntry.AbbrCode = isTupleField ? abbrevCodes.tupleFieldFormalParameter : abbrevCodes.formalParameter;
 
     llvm::DWARFYAML::FormValue paramNameValue;
     paramNameValue.Value = 0;
@@ -539,7 +556,11 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
     paramEntry.Values.push_back(paramTypeValue);
 
     llvm::DWARFYAML::FormValue paramLocationValue;
-    paramLocationValue.Value = param.getIndex();
+    if (isTupleField) {
+      paramLocationValue.Value = std::get<TupleFieldLocation>(paramLocation).offset;
+    } else {
+      paramLocationValue.Value = std::get<LocalIndexLocation>(paramLocation).index;
+    }
     paramEntry.Values.push_back(paramLocationValue);
 
     size_t const paramIndex = rootUnit.Entries.size();

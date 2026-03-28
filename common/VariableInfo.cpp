@@ -109,6 +109,16 @@ void VariableInfo::addTupleLocal(std::string_view const subProgramName, std::str
   it->second.addTupleLocal(std::move(variableName), internedTypeName, tupleFieldOffset, scopeId, nullable);
 }
 
+void VariableInfo::addTupleParameter(std::string_view const subProgramName, std::string variableName,
+                                     std::string_view const typeName, uint32_t const tupleFieldOffset,
+                                     bool const nullable) {
+  SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
+  std::string_view const normalizedTypeName = typeName;
+  std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
+  assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
+  it->second.addTupleParameter(std::move(variableName), internedTypeName, tupleFieldOffset, nullable);
+}
+
 void VariableInfo::addHeapVariableStorageLocalIndex(std::string_view const subProgramName, uint32_t const index) {
   SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
   assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
@@ -301,11 +311,11 @@ TEST(TestVariableInfo, TestAddParameter) {
   ASSERT_EQ(calcParams.size(), 2);
   EXPECT_EQ(calcParams[0].getName(), "a");
   EXPECT_EQ(calcParams[0].getType(), "i32");
-  EXPECT_EQ(calcParams[0].getIndex(), 0);
+  EXPECT_EQ(std::get<LocalIndexLocation>(calcParams[0].getLocation()).index, 0U);
   EXPECT_FALSE(calcParams[0].isNullable());
   EXPECT_EQ(calcParams[1].getName(), "b");
   EXPECT_EQ(calcParams[1].getType(), "i32");
-  EXPECT_EQ(calcParams[1].getIndex(), 1);
+  EXPECT_EQ(std::get<LocalIndexLocation>(calcParams[1].getLocation()).index, 1U);
   EXPECT_FALSE(calcParams[1].isNullable());
 
   // Test adding parameters to class member function
@@ -331,11 +341,11 @@ TEST(TestVariableInfo, TestAddParameter) {
   ASSERT_EQ(multiplyParams.size(), 2);
   EXPECT_EQ(multiplyParams[0].getName(), "x");
   EXPECT_EQ(multiplyParams[0].getType(), "i32");
-  EXPECT_EQ(multiplyParams[0].getIndex(), 0);
+  EXPECT_EQ(std::get<LocalIndexLocation>(multiplyParams[0].getLocation()).index, 0U);
   EXPECT_FALSE(multiplyParams[0].isNullable());
   EXPECT_EQ(multiplyParams[1].getName(), "y");
   EXPECT_EQ(multiplyParams[1].getType(), "i32");
-  EXPECT_EQ(multiplyParams[1].getIndex(), 1);
+  EXPECT_EQ(std::get<LocalIndexLocation>(multiplyParams[1].getLocation()).index, 1U);
   EXPECT_FALSE(multiplyParams[1].isNullable());
 }
 

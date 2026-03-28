@@ -49,6 +49,13 @@ export declare function _WarpoAddTupleLocal(
   scopeId: u32,
   nullable: bool
 ): void;
+export declare function _WarpoAddTupleParameter(
+  subProgramName: string,
+  variableName: string,
+  typeName: string,
+  tupleFieldOffset: u32,
+  nullable: bool
+): void;
 export declare function _WarpoAddScope(
   functionName: string,
   startExpression: ExpressionRef,
