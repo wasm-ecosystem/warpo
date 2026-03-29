@@ -4458,7 +4458,12 @@ export class Function extends TypedElement {
         mir.addParameter(this, local);
       }
     }
-    registerConcreteElement(program, this);
+    if (program.instancesByName.has(this.internalName)) {
+      program.error(DiagnosticCode.Duplicate_function_implementation, prototype.identifierNode.range);
+      this.set(CommonFlags.Errored);
+    } else {
+      registerConcreteElement(program, this);
+    }
   }
 
   /** Gets the associated identifier node. */

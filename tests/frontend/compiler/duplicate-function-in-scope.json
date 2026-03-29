@@ -1,0 +1,6 @@
+{
+  "stderr": [
+    "TS2300: Duplicate identifier 'inner'.",
+    "TS2393: Duplicate function implementation."
+  ]
+}

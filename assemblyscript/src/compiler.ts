@@ -1465,7 +1465,8 @@ export class Compiler extends DiagnosticEmitter {
     /** Force compilation of stdlib alternative if a builtin. */
     forceStdAlternative: bool = false
   ): bool {
-    if (instance.is(CommonFlags.Compiled)) return !instance.is(CommonFlags.Errored);
+    if (instance.is(CommonFlags.Errored)) return false;
+    if (instance.is(CommonFlags.Compiled)) return true;
 
     if (instance.isClosureFunction()) {
       return this.compileClosureFunction(instance);
