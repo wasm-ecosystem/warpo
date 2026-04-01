@@ -1,4 +1,5 @@
 import { __pin, __unpin } from "rt/index";
+import { ffi } from "warpo/ffi";
 
 export function ffi_wrapper(cb: () => i32): i32 {
   const wrapper = (userData: i32): i32 => {

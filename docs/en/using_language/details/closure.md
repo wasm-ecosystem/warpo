@@ -77,7 +77,7 @@ assigned after the closure is created.
 When passing a closure to a host function (e.g. `setTimeout`, `setInterval`), extra steps are required because the host cannot call closures directly. You need to:
 
 1. Compile with `--exportTable` so the WebAssembly function table is exposed to the host.
-2. Call `ffi.set_ffi_closure_env(userData)` as the **first statement** in the callback.
+2. Import `ffi` from `"warpo/ffi"` and call `ffi.set_ffi_closure_env(userData)` as the **first statement** in the callback.
 3. Pin the closure environment with `__pin` before passing it to the host.
 4. Unpin with `__unpin` when the closure is no longer needed.
 
@@ -100,12 +100,13 @@ For callbacks that fire once (e.g. `setTimeout`), unpin inside the callback:
 
 ```ts
 import { __pin, __unpin } from "rt/index";
+import { ffi } from "warpo/ffi";
 
 // @ts-ignore: decorator
 @external("env", "setTimeout")
 declare function setTimeout(timeout: i32, functionIndex: i32, userData: i32): void;
 
-export function setTimeout_wrapper(cb: () => void, timeout: i32): void {
+function setTimeout_wrapper(cb: () => void, timeout: i32): void {
   const wrapper = (userData: i32): void => {
     ffi.set_ffi_closure_env(userData);
     __unpin(userData);
@@ -113,6 +114,15 @@ export function setTimeout_wrapper(cb: () => void, timeout: i32): void {
   };
   __pin(wrapper.env);
   setTimeout(timeout, wrapper.index, wrapper.env);
+}
+
+export function _start(): void {
+  let x: i32 = 0;
+  function tick(): void {
+    x = x + 1;
+    trace(`tick: x = ${x}`);
+  }
+  setTimeout_wrapper(tick, 100);
 }
 ```
 
@@ -125,6 +135,7 @@ Also follow the two-phase pattern above: declare the handle variable first, then
 
 ```ts
 import { __pin, __unpin } from "rt/index";
+import { ffi } from "warpo/ffi";
 
 // @ts-ignore: decorator
 @external("env", "setInterval")
@@ -179,48 +190,69 @@ export function _start(): void {
 
 ```js
 import { readFile } from "node:fs/promises";
+import assert from "node:assert";
 
 const utf16 = new TextDecoder("utf-16le");
 
 function decodeString(memory, ptr) {
   if (!ptr) return "null";
-  const view = new Uint8Array(memory.buffer);
-  const length = new DataView(memory.buffer).getUint32(ptr - 4, true) >>> 1;
-  return utf16.decode(new Uint8Array(memory.buffer, ptr, length << 1));
+  const view = memory instanceof Uint8Array ? memory : new Uint8Array(memory.buffer);
+  const length = new DataView(view.buffer, view.byteOffset, view.byteLength).getUint32(ptr - 4, true) >>> 1;
+  return utf16.decode(new Uint8Array(view.buffer, view.byteOffset + ptr, length << 1));
 }
 
-const binary = await readFile("counter.wasm");
-
-let memory = null;
 const intervalMap = new Map();
-let nextIntervalId = 0;
+let intervalCounter = 0;
+
+const binary = await readFile("counter.wasm");
+let exportedMemory = null;
 
 const imports = {
   env: {
-    abort(msg, file, line, col) {
-      throw new Error(`abort: ${decodeString(memory, msg)} at ${decodeString(memory, file)}:${line}:${col}`);
+    abort(msg, file, line, column) {
+      throw new Error(
+        `abort: ${decodeString(exportedMemory, msg)} at ${decodeString(exportedMemory, file)}:${line}:${column}`
+      );
     },
     trace(msg) {
-      console.log(decodeString(memory, msg));
+      console.log(decodeString(exportedMemory, msg));
     },
     setInterval(timeout, callbackIndex, userData) {
-      const id = nextIntervalId++;
-      const handle = setInterval(() => {
-        const fn = instance.exports.table.get(callbackIndex);
+      const handle = global.setInterval(() => {
+        const table = instance.exports.table;
+        const fn = table.get(callbackIndex);
         fn(userData);
       }, timeout);
-      intervalMap.set(id, handle);
-      return id;
+      const intervalId = intervalCounter;
+      intervalMap.set(intervalId, handle);
+      intervalCounter++;
+      return intervalId;
     },
-    clearInterval(id) {
-      clearInterval(intervalMap.get(id));
-      intervalMap.delete(id);
+    clearInterval(intervalId) {
+      const handle = intervalMap.get(intervalId);
+      if (handle) {
+        global.clearInterval(handle);
+        intervalMap.delete(intervalId);
+      }
+    },
+    setTimeout(delay, callbackIndex, userData) {
+      const id = intervalCounter;
+      const handle = global.setTimeout(() => {
+        intervalMap.delete(id);
+        const table = instance.exports.table;
+        const fn = table.get(callbackIndex);
+        fn(userData);
+      }, delay);
+      intervalMap.set(id, handle);
+      intervalCounter++;
+      return id;
     },
   },
 };
 
 const { instance } = await WebAssembly.instantiate(binary, imports);
-memory = instance.exports.memory;
+exportedMemory = instance.exports.memory;
+assert(typeof instance.exports._start === "function", "_start export not found");
 instance.exports._start();
 ```
 

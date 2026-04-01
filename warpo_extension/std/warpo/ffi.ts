@@ -1,0 +1,8 @@
+// Copyright (C) 2026 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
+export declare namespace ffi {
+  // @ts-ignore: decorator
+  @unsafe @external("as-builtin-fn", "set_ffi_closure_env")
+  export function set_ffi_closure_env(value: i32): void;
+}
