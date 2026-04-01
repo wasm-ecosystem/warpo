@@ -7,6 +7,8 @@ import {
   _WarpoAddField,
   _WarpoAddGlobal,
   _WarpoAddLocal,
+  _WarpoAddTupleLocal,
+  _WarpoAddTupleParameter,
   _WarpoAddParameter,
   _WarpoAddScope,
   _WarpoAddSubProgram,
@@ -64,22 +66,60 @@ export function addGlobal(variable: Global, type: Type): void {
 }
 
 export function addParameter(subprogram: Function, variable: Local): void {
-  _WarpoAddParameter(
-    subprogram.internalName,
-    variable.name,
-    decodeURIComponent(typeToMIRName(variable.type)),
-    variable.index,
-    variable.type.is(TypeFlags.Nullable)
-  );
+  if (variable.isClosureVariable()) {
+    _WarpoAddTupleParameter(
+      subprogram.internalName,
+      variable.name,
+      decodeURIComponent(typeToMIRName(variable.type)),
+      variable.getTupleElementInfo().offset,
+      variable.type.is(TypeFlags.Nullable)
+    );
+  } else {
+    _WarpoAddParameter(
+      subprogram.internalName,
+      variable.name,
+      decodeURIComponent(typeToMIRName(variable.type)),
+      variable.index,
+      variable.type.is(TypeFlags.Nullable)
+    );
+  }
 }
 export function addLocal(subProgram: Function, variable: Local, scopeId: u32): void {
-  _WarpoAddLocal(
+  if (variable.isClosureVariable()) {
+    _WarpoAddTupleLocal(
+      subProgram.internalName,
+      variable.name,
+      decodeURIComponent(typeToMIRName(variable.type)),
+      variable.getTupleElementInfo().offset,
+      scopeId,
+      variable.type.is(TypeFlags.Nullable)
+    );
+  } else {
+    _WarpoAddLocal(
+      subProgram.internalName,
+      variable.name,
+      decodeURIComponent(typeToMIRName(variable.type)),
+      variable.index,
+      scopeId,
+      variable.type.is(TypeFlags.Nullable)
+    );
+  }
+}
+
+export function addTupleLocal(
+  subProgram: Function,
+  variableName: string,
+  variableType: Type,
+  tupleFieldOffset: u32,
+  scopeId: u32
+): void {
+  _WarpoAddTupleLocal(
     subProgram.internalName,
-    variable.name,
-    decodeURIComponent(typeToMIRName(variable.type)),
-    variable.index,
+    variableName,
+    decodeURIComponent(typeToMIRName(variableType)),
+    tupleFieldOffset,
     scopeId,
-    variable.type.is(TypeFlags.Nullable)
+    variableType.is(TypeFlags.Nullable)
   );
 }
 
@@ -87,12 +127,16 @@ export function createBaseType(type: Type): void {
   _WarpoCreateBaseType(typeToMIRName(type));
 }
 
-export function addSubProgram(subprogram: Function, belongClass: Class | null): void {
+export function addSubProgram(
+  subprogram: Function,
+  belongClass: Class | null,
+  outerFunctionName: string | null = null
+): void {
   let belongClassName: string | null = null;
   if (belongClass !== null) {
     belongClassName = decodeURIComponent(typeToMIRName(belongClass.type));
   }
-  _WarpoAddSubProgram(subprogram.internalName, belongClassName);
+  _WarpoAddSubProgram(subprogram.internalName, belongClassName, outerFunctionName);
 }
 
 export function addHeapVariableStorageLocalIndex(subprogram: Function, index: u32): void {

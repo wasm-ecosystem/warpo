@@ -4362,7 +4362,9 @@ export class Function extends TypedElement {
     /** Concrete signature. */
     signature: Signature, // pre-resolved
     /** Contextual type arguments inherited from its parent class, if any. */
-    contextualTypeArguments: Map<string, Type> | null = null
+    contextualTypeArguments: Map<string, Type> | null = null,
+    /** Internal name of the outer (enclosing) function, for closures. */
+    outerFunctionInternalName: string | null = null
   ) {
     super(
       ElementKind.Function,
@@ -4387,9 +4389,9 @@ export class Function extends TypedElement {
     this.flow = flow;
     if (!prototype.is(CommonFlags.Ambient)) {
       if (this.parent.kind == ElementKind.Class) {
-        mir.addSubProgram(this, this.parent as Class);
+        mir.addSubProgram(this, this.parent as Class, outerFunctionInternalName);
       } else {
-        mir.addSubProgram(this, null);
+        mir.addSubProgram(this, null, outerFunctionInternalName);
       }
 
       const isClosureFunction = this.isClosureFunction();

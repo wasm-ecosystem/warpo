@@ -217,6 +217,19 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
 
   abbrevDecls.push_back(localVariableAbbrev);
 
+  llvm::DWARFYAML::Abbrev tupleFieldLocalVariableAbbrev =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_variable, llvm::dwarf::DW_CHILDREN_no);
+  tupleFieldLocalVariableAbbrev.Attributes.push_back(localVarNameAttr);
+  tupleFieldLocalVariableAbbrev.Attributes.push_back(localVarTypeAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev tupleFieldOffsetAttr{};
+  tupleFieldOffsetAttr.Attribute = llvm::dwarf::DW_AT_data_member_location;
+  tupleFieldOffsetAttr.Form = llvm::dwarf::DW_FORM_data4;
+  tupleFieldOffsetAttr.Value = 0U;
+  tupleFieldLocalVariableAbbrev.Attributes.push_back(tupleFieldOffsetAttr);
+
+  abbrevDecls.push_back(tupleFieldLocalVariableAbbrev);
+
   llvm::DWARFYAML::Abbrev formalParameterAbbrev =
       abbrevFactory.create(llvm::dwarf::DW_TAG_formal_parameter, llvm::dwarf::DW_CHILDREN_no);
 
@@ -239,6 +252,19 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
   formalParameterAbbrev.Attributes.push_back(formalParamLocationAttr);
 
   abbrevDecls.push_back(formalParameterAbbrev);
+
+  llvm::DWARFYAML::Abbrev tupleFieldFormalParameterAbbrev =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_formal_parameter, llvm::dwarf::DW_CHILDREN_no);
+  tupleFieldFormalParameterAbbrev.Attributes.push_back(formalParamNameAttr);
+  tupleFieldFormalParameterAbbrev.Attributes.push_back(formalParamTypeAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev tupleFieldFormalParamOffsetAttr{};
+  tupleFieldFormalParamOffsetAttr.Attribute = llvm::dwarf::DW_AT_data_member_location;
+  tupleFieldFormalParamOffsetAttr.Form = llvm::dwarf::DW_FORM_data4;
+  tupleFieldFormalParamOffsetAttr.Value = 0U;
+  tupleFieldFormalParameterAbbrev.Attributes.push_back(tupleFieldFormalParamOffsetAttr);
+
+  abbrevDecls.push_back(tupleFieldFormalParameterAbbrev);
 
   llvm::DWARFYAML::Abbrev lexicalBlockAbbrev =
       abbrevFactory.create(llvm::dwarf::DW_TAG_lexical_block, llvm::dwarf::DW_CHILDREN_yes);
@@ -267,6 +293,24 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
   subProgramAbbrev.Attributes.push_back(subProgramNameAttr);
 
   abbrevDecls.push_back(subProgramAbbrev);
+
+  llvm::DWARFYAML::AttributeAbbrev outerFunctionAttr{};
+  outerFunctionAttr.Attribute = llvm::dwarf::DW_AT_description;
+  outerFunctionAttr.Form = llvm::dwarf::DW_FORM_string;
+  outerFunctionAttr.Value = 0U;
+
+  llvm::DWARFYAML::AttributeAbbrev heapStorageAttr{};
+  heapStorageAttr.Attribute = llvm::dwarf::DW_AT_static_link;
+  heapStorageAttr.Form = llvm::dwarf::DW_FORM_data4;
+  heapStorageAttr.Value = 0U;
+
+  llvm::DWARFYAML::Abbrev closureSubProgramAbbrev =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_subprogram, llvm::dwarf::DW_CHILDREN_yes);
+  closureSubProgramAbbrev.Attributes.push_back(subProgramNameAttr);
+  closureSubProgramAbbrev.Attributes.push_back(heapStorageAttr);
+  closureSubProgramAbbrev.Attributes.push_back(outerFunctionAttr);
+
+  abbrevDecls.push_back(closureSubProgramAbbrev);
   llvm::DWARFYAML::Abbrev terminator;
   terminator.Code = 0U;
   terminator.Tag = llvm::dwarf::DW_TAG_null;
@@ -309,8 +353,15 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
     rootUnit.Entries.push_back(baseTypeEntry);
   }
 
-  DwarfGenerator::AbbrevCodes const abbrevCodes{subProgramAbbrev.Code, formalParameterAbbrev.Code,
-                                                lexicalBlockAbbrev.Code, localVariableAbbrev.Code};
+  DwarfGenerator::AbbrevCodes const abbrevCodes{
+      subProgramAbbrev.Code,
+      closureSubProgramAbbrev.Code,
+      formalParameterAbbrev.Code,
+      tupleFieldFormalParameterAbbrev.Code,
+      lexicalBlockAbbrev.Code,
+      localVariableAbbrev.Code,
+      tupleFieldLocalVariableAbbrev.Code,
+  };
 
   for (auto const &[className, classInfo] : classRegistry) {
     std::optional<uint32_t> const rtid = classInfo.getRtid();
@@ -464,7 +515,11 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
                                                  wasm::BinaryLocations const &binaryLocations,
                                                  std::vector<TypeRefFixup> &typeRefFixups) {
   llvm::DWARFYAML::Entry subprogramEntry;
-  subprogramEntry.AbbrCode = abbrevCodes.subprogram;
+  std::optional<uint32_t> const heapStorageLocalIndex = subProgram.getHeapVariableStorageLocalIndex();
+  std::optional<std::string_view> const outerFunction = subProgram.getOuterFunction();
+  bool const isClosureFunction = outerFunction.has_value();
+  assert(!isClosureFunction || heapStorageLocalIndex.has_value());
+  subprogramEntry.AbbrCode = isClosureFunction ? abbrevCodes.closureSubprogram : abbrevCodes.subprogram;
 
   llvm::DWARFYAML::FormValue subprogramNameValue;
   subprogramNameValue.Value = 0;
@@ -472,13 +527,26 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
   subprogramNameValue.CStr = llvm::StringRef(subProgramName.data(), subProgramName.size());
   subprogramEntry.Values.push_back(subprogramNameValue);
 
+  if (isClosureFunction) {
+    llvm::DWARFYAML::FormValue heapStorageValue;
+    heapStorageValue.Value = *heapStorageLocalIndex;
+    subprogramEntry.Values.push_back(heapStorageValue);
+
+    llvm::DWARFYAML::FormValue outerFunctionValue;
+    outerFunctionValue.Value = 0U;
+    outerFunctionValue.CStr = llvm::StringRef(outerFunction->data(), outerFunction->size());
+    subprogramEntry.Values.push_back(outerFunctionValue);
+  }
+
   rootUnit.Entries.push_back(subprogramEntry);
 
   // Add formal parameters
   std::vector<ParameterInfo> const &parameters = subProgram.getParameters();
   for (ParameterInfo const &param : parameters) {
     llvm::DWARFYAML::Entry paramEntry;
-    paramEntry.AbbrCode = abbrevCodes.formalParameter;
+    VariableLocation const &paramLocation = param.getLocation();
+    bool const isTupleField = std::holds_alternative<TupleFieldLocation>(paramLocation);
+    paramEntry.AbbrCode = isTupleField ? abbrevCodes.tupleFieldFormalParameter : abbrevCodes.formalParameter;
 
     llvm::DWARFYAML::FormValue paramNameValue;
     paramNameValue.Value = 0;
@@ -491,7 +559,11 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
     paramEntry.Values.push_back(paramTypeValue);
 
     llvm::DWARFYAML::FormValue paramLocationValue;
-    paramLocationValue.Value = param.getIndex();
+    if (isTupleField) {
+      paramLocationValue.Value = std::get<TupleFieldLocation>(paramLocation).offset;
+    } else {
+      paramLocationValue.Value = std::get<LocalIndexLocation>(paramLocation).index;
+    }
     paramEntry.Values.push_back(paramLocationValue);
 
     size_t const paramIndex = rootUnit.Entries.size();
@@ -519,9 +591,11 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
     class DwarfScopeVisitor : public IntervalVisitor<SubProgramInfo::ScopeId> {
     public:
       DwarfScopeVisitor(llvm::DWARFYAML::Unit &unit, uint32_t blockAbbrevCode, uint32_t localVarAbbrevCode,
-                        SubProgramInfo::LocalsMap const &locals, std::vector<TypeRefFixup> &fixups)
+                        uint32_t tupleFieldLocalVarAbbrevCode, SubProgramInfo::LocalsMap const &locals,
+                        std::vector<TypeRefFixup> &fixups)
           : rootUnit_(unit), lexicalBlockAbbrevCode_(blockAbbrevCode), localVariableAbbrevCode_(localVarAbbrevCode),
-            localsMap_(locals), typeRefFixups_(fixups) {}
+            tupleFieldLocalVariableAbbrevCode_(tupleFieldLocalVarAbbrevCode), localsMap_(locals),
+            typeRefFixups_(fixups) {}
 
       void onEnterScope(std::pair<wasm::BinaryLocations::Span, SubProgramInfo::ScopeId> const &interval) override {
         // Add lexical block entry
@@ -544,7 +618,9 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
           std::vector<LocalInfo> const &locals = localsIt->second;
           for (LocalInfo const &local : locals) {
             llvm::DWARFYAML::Entry localEntry;
-            localEntry.AbbrCode = localVariableAbbrevCode_;
+            VariableLocation const &location = local.getLocation();
+            bool const isTupleField = std::holds_alternative<TupleFieldLocation>(location);
+            localEntry.AbbrCode = isTupleField ? tupleFieldLocalVariableAbbrevCode_ : localVariableAbbrevCode_;
 
             llvm::DWARFYAML::FormValue localNameValue;
             localNameValue.Value = 0;
@@ -556,9 +632,15 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
             localTypeValue.Value = 0xDEADBEEFU;
             localEntry.Values.push_back(localTypeValue);
 
-            llvm::DWARFYAML::FormValue localLocationValue;
-            localLocationValue.Value = local.getIndex();
-            localEntry.Values.push_back(localLocationValue);
+            if (isTupleField) {
+              llvm::DWARFYAML::FormValue tupleFieldOffsetValue;
+              tupleFieldOffsetValue.Value = std::get<TupleFieldLocation>(location).offset;
+              localEntry.Values.push_back(tupleFieldOffsetValue);
+            } else {
+              llvm::DWARFYAML::FormValue localLocationValue;
+              localLocationValue.Value = std::get<LocalIndexLocation>(location).index;
+              localEntry.Values.push_back(localLocationValue);
+            }
 
             size_t const localIndex = rootUnit_.Entries.size();
             typeRefFixups_.push_back({localIndex, 1U, local.getType()});
@@ -579,11 +661,13 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
       llvm::DWARFYAML::Unit &rootUnit_;
       uint32_t lexicalBlockAbbrevCode_;
       uint32_t localVariableAbbrevCode_;
+      uint32_t tupleFieldLocalVariableAbbrevCode_;
       SubProgramInfo::LocalsMap const &localsMap_;
       std::vector<TypeRefFixup> &typeRefFixups_;
     };
 
-    DwarfScopeVisitor visitor(rootUnit, abbrevCodes.lexicalBlock, abbrevCodes.localVariable, localsMap, typeRefFixups);
+    DwarfScopeVisitor visitor(rootUnit, abbrevCodes.lexicalBlock, abbrevCodes.localVariable,
+                              abbrevCodes.tupleFieldLocalVariable, localsMap, typeRefFixups);
     IntervalTreeBuilder<uint32_t>::process(std::move(intervals), visitor);
   }
 

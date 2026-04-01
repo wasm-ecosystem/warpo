@@ -67,11 +67,12 @@ void addGlobal(uint32_t const variableNamePtr, uint32_t const typeNamePtr, uint3
 }
 
 void addSubProgram(uint32_t const subProgramNamePtr, uint32_t const belongClassNamePtr,
-                   vb::WasmModule const *const ctx) {
+                   uint32_t const outerFunctionNamePtr, vb::WasmModule const *const ctx) {
   std::string subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
   std::string const belongClassName = WarpRunner::getString(ctx, belongClassNamePtr);
+  std::string const outerFunctionName = WarpRunner::getString(ctx, outerFunctionNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
-  pCompiler->asModule_.variableInfo_.addSubProgram(std::move(subProgramName), belongClassName);
+  pCompiler->asModule_.variableInfo_.addSubProgram(std::move(subProgramName), belongClassName, outerFunctionName);
 }
 
 void addParameter(uint32_t const subProgramNamePtr, uint32_t const variableNamePtr, uint32_t const typeNamePtr,
@@ -104,6 +105,27 @@ uint32_t addScope(uint32_t const subProgramNamePtr, uint64_t const startExprPtr,
   return pCompiler->asModule_.variableInfo_.addScope(subProgramName, startExpr, endExpr);
 }
 
+void addTupleLocal(uint32_t const subProgramNamePtr, uint32_t const variableNamePtr, uint32_t const typeNamePtr,
+                   uint32_t const tupleFieldOffset, uint32_t const scopeIndex, uint32_t const nullable,
+                   vb::WasmModule const *const ctx) {
+  std::string const subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
+  std::string variableName = WarpRunner::getString(ctx, variableNamePtr);
+  std::string const typeName = WarpRunner::getString(ctx, typeNamePtr);
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.addTupleLocal(subProgramName, std::move(variableName), typeName, tupleFieldOffset,
+                                                   scopeIndex, nullable != 0);
+}
+
+void addTupleParameter(uint32_t const subProgramNamePtr, uint32_t const variableNamePtr, uint32_t const typeNamePtr,
+                       uint32_t const tupleFieldOffset, uint32_t const nullable, vb::WasmModule const *const ctx) {
+  std::string const subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
+  std::string variableName = WarpRunner::getString(ctx, variableNamePtr);
+  std::string const typeName = WarpRunner::getString(ctx, typeNamePtr);
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.addTupleParameter(subProgramName, std::move(variableName), typeName,
+                                                       tupleFieldOffset, nullable != 0);
+}
+
 void addHeapVariableStorageLocalIndex(uint32_t const subProgramNamePtr, uint32_t const index,
                                       vb::WasmModule const *const ctx) {
   std::string const subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
@@ -125,6 +147,8 @@ std::vector<vb::NativeSymbol> createVariableInfoAPI() {
       STATIC_LINK("warpo", "_WarpoAddSubProgram", addSubProgram),
       STATIC_LINK("warpo", "_WarpoAddParameter", addParameter),
       STATIC_LINK("warpo", "_WarpoAddLocal", addLocal),
+      STATIC_LINK("warpo", "_WarpoAddTupleLocal", addTupleLocal),
+      STATIC_LINK("warpo", "_WarpoAddTupleParameter", addTupleParameter),
       STATIC_LINK("warpo", "_WarpoAddScope", addScope),
       STATIC_LINK("warpo", "_WarpoAddHeapVariableStorageLocalIndex", addHeapVariableStorageLocalIndex),
   };

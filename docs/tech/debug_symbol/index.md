@@ -1,5 +1,10 @@
 # Debug symbol layout
 
+<p style="display: flex; gap: 10px;">
+  <img src="/version/nightly.svg" alt="nightly" />
+  <img src="/stability/experimental.svg" alt="experimental" />
+</p>
+
 Currently debug symbols has two parts:
 
 1. typescript source map file, which represents the mapping between source code and bytecode, this part is carried over from assemblyscript
@@ -53,13 +58,21 @@ Currently debug symbols has two parts:
 - `DW_AT_name` -> `DW_FORM_string`
 - `DW_AT_type` -> `DW_FORM_ref4` (reference to type DIE)
 
-### tag: DW_TAG_variable (Local)
+### tag: DW_TAG_variable (Local, Wasm local)
 
 **hasChildren:** false
 
 - `DW_AT_name` -> `DW_FORM_string`
 - `DW_AT_type` -> `DW_FORM_ref4` (reference to type DIE)
 - `DW_AT_location` -> `DW_FORM_data4` (Wasm local index)
+
+### tag: DW_TAG_variable (Local, closure-captured)
+
+**hasChildren:** false
+
+- `DW_AT_name` -> `DW_FORM_string`
+- `DW_AT_type` -> `DW_FORM_ref4` (reference to type DIE)
+- `DW_AT_data_member_location` -> `DW_FORM_data4` (offset inside closure environment tuple)
 
 ### tag: DW_TAG_formal_parameter
 
@@ -74,6 +87,14 @@ Currently debug symbols has two parts:
 **hasChildren:** true
 
 - `DW_AT_name` -> `DW_FORM_string`
+
+### tag: DW_TAG_subprogram (Closure)
+
+**hasChildren:** true
+
+- `DW_AT_name` -> `DW_FORM_string`
+- `DW_AT_static_link` -> `DW_FORM_data4` (Wasm local index of the closure environment pointer)
+- `DW_AT_description` -> `DW_FORM_string` (outer function name)
 
 ### tag: DW_TAG_lexical_block
 
@@ -149,3 +170,76 @@ The layout shows:
 - **Class A** has a total size of 12 bytes (i32 + reference to B), with `x` at offset 0 and `b` at offset 4
 - Each member references its type using the offset of the corresponding type DIE
 - Base types (i32, f32) are defined once and referenced by multiple members
+
+## Closure-specific layout
+
+Closure debug symbols use two different local-variable encodings:
+
+- Ordinary locals and parameters still use `DW_AT_location` with a Wasm local index.
+- Captured locals use `DW_AT_data_member_location` with the byte offset inside the heap closure environment tuple.
+
+Closure functions also use a dedicated subprogram form:
+
+- `DW_AT_static_link` stores the Wasm local index that holds the current closure environment pointer.
+- `DW_AT_description` stores the outer function name as a plain string.
+
+For member closures, the outer method still has `this` as a normal formal parameter, while the closure environment may also contain a captured object reference and captured locals. This is why a fixture can show both:
+
+- `this` on `Counter#makeAdder` as a parameter with `DW_AT_location`
+- `accumulator` and `biasSnapshot` on the same method as captured locals with `DW_AT_data_member_location`
+
+Example:
+
+```ts
+export function outer(base: i32): (delta: i32) => i32 {
+  let runningTotal = base;
+  let fixedOffset = 10;
+
+  return (delta: i32): i32 => {
+    let stepValue = delta + fixedOffset;
+    runningTotal += stepValue;
+    return runningTotal;
+  };
+}
+
+class Counter {
+  bias: i32 = 1;
+
+  makeAdder(base: i32): (delta: i32) => i32 {
+    let accumulator = base;
+    let biasSnapshot = this.bias;
+
+    return (delta: i32): i32 => {
+      let adjustedDelta = delta + biasSnapshot;
+      accumulator += adjustedDelta;
+      return accumulator + this.bias;
+    };
+  }
+}
+```
+
+Relevant DWARF shape:
+
+```text
+DW_TAG_subprogram
+  DW_AT_name ("tests/dwarf/cases/TestClosure/outer")
+  DW_TAG_lexical_block
+    DW_TAG_variable
+      DW_AT_name ("runningTotal")
+      DW_AT_data_member_location (0x00000004)
+    DW_TAG_variable
+      DW_AT_name ("fixedOffset")
+      DW_AT_data_member_location (0x00000008)
+
+DW_TAG_subprogram
+  DW_AT_name ("tests/dwarf/cases/TestClosure/outer~anonymous|0")
+  DW_AT_static_link (0x00000001)
+  DW_AT_description ("tests/dwarf/cases/TestClosure/outer")
+  DW_TAG_formal_parameter
+    DW_AT_name ("delta")
+    DW_AT_location (0x00000000)
+  DW_TAG_lexical_block
+    DW_TAG_variable
+      DW_AT_name ("stepValue")
+      DW_AT_location (0x00000002)
+```

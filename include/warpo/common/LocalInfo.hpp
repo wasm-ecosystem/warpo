@@ -6,25 +6,36 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 namespace warpo {
 
+struct LocalIndexLocation final {
+  uint32_t index;
+};
+
+struct TupleFieldLocation final {
+  uint32_t offset;
+};
+
+using VariableLocation = std::variant<LocalIndexLocation, TupleFieldLocation>;
+
 class LocalInfo final {
 public:
-  inline LocalInfo(std::string name, std::string_view const type, uint32_t const index, uint32_t const scopeId,
+  inline LocalInfo(std::string name, std::string_view const type, VariableLocation location, uint32_t const scopeId,
                    bool const nullable) noexcept
-      : name_(std::move(name)), type_(type), index_(index), scopeId_(scopeId), nullable_(nullable) {}
+      : name_(std::move(name)), type_(type), location_(location), scopeId_(scopeId), nullable_(nullable) {}
 
   inline std::string_view getName() const noexcept { return name_; }
   inline std::string_view getType() const noexcept { return type_; }
-  inline uint32_t getIndex() const noexcept { return index_; }
+  inline VariableLocation const &getLocation() const noexcept { return location_; }
   inline uint32_t getScopeId() const noexcept { return scopeId_; }
   inline bool isNullable() const noexcept { return nullable_; }
 
 private:
   std::string name_;
   std::string_view type_;
-  uint32_t index_;
+  VariableLocation location_;
   uint32_t scopeId_;
   bool nullable_;
 };

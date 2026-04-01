@@ -90,6 +90,107 @@ DW_TAG_compile_unit
   DW_TAG_base_type
                 DW_AT_name	("usize")
   DW_TAG_class_type
+                DW_AT_name	("[~lib/tuple/SmallTuple,i32,i32,i32]")
+    DW_TAG_member
+                  DW_AT_name	("0")
+                  DW_AT_type	("~lib/tuple/SmallTuple")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("1")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x00000004)
+    DW_TAG_member
+                  DW_AT_name	("2")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x00000008)
+    DW_TAG_member
+                  DW_AT_name	("3")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x0000000c)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("[~lib/tuple/SmallTuple,tests/dwarf/cases/TestClosure/Counter,i32,i32]")
+    DW_TAG_member
+                  DW_AT_name	("0")
+                  DW_AT_type	("~lib/tuple/SmallTuple")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("1")
+                  DW_AT_type	("tests/dwarf/cases/TestClosure/Counter")
+                  DW_AT_data_member_location	(0x00000004)
+    DW_TAG_member
+                  DW_AT_name	("2")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x00000008)
+    DW_TAG_member
+                  DW_AT_name	("3")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x0000000c)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("[~lib/tuple/SmallTuple]")
+    DW_TAG_member
+                  DW_AT_name	("0")
+                  DW_AT_type	("~lib/tuple/SmallTuple")
+                  DW_AT_data_member_location	(0x00000000)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("tests/dwarf/cases/TestClosure/Counter")
+                DW_AT_signature	(0x00000006)
+    DW_TAG_member
+                  DW_AT_name	("bias")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#get:bias")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestClosure/Counter")
+                    DW_AT_location	(0x00000000)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#set:bias")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestClosure/Counter")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_formal_parameter
+                    DW_AT_name	("bias")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000001)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#makeAdder")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestClosure/Counter")
+                    DW_AT_data_member_location	(0x00000004)
+      DW_TAG_formal_parameter
+                    DW_AT_name	("base")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000001)
+      DW_TAG_lexical_block
+                    scope start	TestClosure.ts:16
+                    scope end	TestClosure.ts:19
+        DW_TAG_variable
+                      DW_AT_name	("accumulator")
+                      DW_AT_type	("i32")
+                      DW_AT_data_member_location	(0x00000008)
+        DW_TAG_variable
+                      DW_AT_name	("biasSnapshot")
+                      DW_AT_type	("i32")
+                      DW_AT_data_member_location	(0x0000000c)
+        NULL
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#constructor")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestClosure/Counter")
+                    DW_AT_location	(0x00000000)
+      NULL
+    NULL
+  DW_TAG_class_type
                 DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
                 DW_AT_signature	(0x00000001)
     NULL
@@ -108,6 +209,20 @@ DW_TAG_compile_unit
                   DW_AT_name	("byteLength")
                   DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000008)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/function/Function<(i32)=>i32>")
+                DW_AT_signature	(0x00000005)
+    DW_TAG_member
+                  DW_AT_name	("_index")
+                  DW_AT_type	("u32")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("_env")
+                  DW_AT_type	("usize")
+                  DW_AT_data_member_location	(0x00000004)
+    DW_TAG_template_type_parameter
+                  DW_AT_type	("~lib/function/Function<(i32)=>i32>")
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/number/Bool")
@@ -245,11 +360,12 @@ DW_TAG_compile_unit
                 DW_AT_name	("~lib/string/String")
                 DW_AT_signature	(0x00000002)
     NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/tuple/SmallTuple")
+                DW_AT_signature	(0x00000004)
+    NULL
   DW_TAG_variable
                 DW_AT_name	("~lib/native/ASC_LOW_MEMORY_LIMIT")
-                DW_AT_type	("i32")
-  DW_TAG_variable
-                DW_AT_name	("~lib/native/ASC_SHRINK_LEVEL")
                 DW_AT_type	("i32")
   DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/AL_BITS")
@@ -417,56 +533,80 @@ DW_TAG_compile_unit
                 DW_AT_name	("~lib/util/math/SIGN_BIAS")
                 DW_AT_type	("i32")
   DW_TAG_variable
-                DW_AT_name	("~lib/util/number/DIGITS")
-                DW_AT_type	("usize")
-  DW_TAG_variable
-                DW_AT_name	("~lib/util/number/EXP_POWERS")
-                DW_AT_type	("usize")
-  DW_TAG_variable
-                DW_AT_name	("~lib/util/number/FRC_POWERS")
-                DW_AT_type	("usize")
-  DW_TAG_variable
                 DW_AT_name	("~lib/util/number/MAX_DOUBLE_LENGTH")
                 DW_AT_type	("i32")
-  DW_TAG_variable
-                DW_AT_name	("~lib/util/number/POWERS10")
-                DW_AT_type	("usize")
-  DW_TAG_variable
-                DW_AT_name	("~lib/util/number/_K")
-                DW_AT_type	("i32")
-  DW_TAG_variable
-                DW_AT_name	("~lib/util/number/_exp")
-                DW_AT_type	("i32")
-  DW_TAG_variable
-                DW_AT_name	("~lib/util/number/_exp_pow")
-                DW_AT_type	("i32")
-  DW_TAG_variable
-                DW_AT_name	("~lib/util/number/_frc_minus")
-                DW_AT_type	("u64")
-  DW_TAG_variable
-                DW_AT_name	("~lib/util/number/_frc_plus")
-                DW_AT_type	("u64")
-  DW_TAG_variable
-                DW_AT_name	("~lib/util/number/_frc_pow")
-                DW_AT_type	("u64")
-  DW_TAG_variable
-                DW_AT_name	("~lib/util/number/dtoa_buf")
-                DW_AT_type	("usize")
   DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestBaseTypeToString/start:tests/dwarf/cases/TestBaseTypeToString")
+                DW_AT_name	("tests/dwarf/cases/TestClosure/start:tests/dwarf/cases/TestClosure")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/dwarf/cases/TestBaseTypeToString")
+                DW_AT_name	("start:tests/dwarf/cases/TestClosure")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestBaseTypeToString/_start")
+                DW_AT_name	("tests/dwarf/cases/TestClosure/outer")
+    DW_TAG_formal_parameter
+                  DW_AT_name	("base")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000000)
+    DW_TAG_formal_parameter
+                  DW_AT_name	("scale")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x00000004)
     DW_TAG_lexical_block
-                  scope start	TestBaseTypeToString.ts:2
-                  scope end	TestBaseTypeToString.ts:3
+                  scope start	TestClosure.ts:2
+                  scope end	TestClosure.ts:5
       DW_TAG_variable
-                    DW_AT_name	("aaa")
-                    DW_AT_type	("f32")
-                    DW_AT_location	(0x00000000)
+                    DW_AT_name	("runningTotal")
+                    DW_AT_type	("i32")
+                    DW_AT_data_member_location	(0x00000008)
+      DW_TAG_variable
+                    DW_AT_name	("fixedOffset")
+                    DW_AT_type	("i32")
+                    DW_AT_data_member_location	(0x0000000c)
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestClosure/outer~anonymous|0")
+                DW_AT_static_link	(0x00000001)
+                DW_AT_description	("tests/dwarf/cases/TestClosure/outer")
+    DW_TAG_formal_parameter
+                  DW_AT_name	("delta")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000000)
+    DW_TAG_lexical_block
+                  scope start	TestClosure.ts:6
+                  scope end	TestClosure.ts:8
+      DW_TAG_variable
+                    DW_AT_name	("stepValue")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000002)
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestClosure/memberOuter")
+    DW_TAG_formal_parameter
+                  DW_AT_name	("base")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000000)
+    DW_TAG_lexical_block
+                  scope start	TestClosure.ts:28
+                  scope end	TestClosure.ts:28
+      NULL
+    NULL
+  DW_TAG_subprogram
+                DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#makeAdder~anonymous|0")
+                DW_AT_static_link	(0x00000001)
+                DW_AT_description	("tests/dwarf/cases/TestClosure/Counter#makeAdder")
+    DW_TAG_formal_parameter
+                  DW_AT_name	("delta")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000000)
+    DW_TAG_lexical_block
+                  scope start	TestClosure.ts:20
+                  scope end	TestClosure.ts:22
+      DW_TAG_variable
+                    DW_AT_name	("adjustedDelta")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000002)
       NULL
     NULL
 

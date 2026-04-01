@@ -49,7 +49,8 @@ public:
 
   SubProgramRegistry const &getSubProgramRegistry() const noexcept { return subProgramRegistry_; }
 
-  void addSubProgram(std::string subProgramName, std::string_view const belongClassName);
+  void addSubProgram(std::string subProgramName, std::string_view const belongClassName,
+                     std::string_view const outerFunctionName);
 
   void addParameter(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
                     uint32_t const index, bool const nullable);
@@ -59,6 +60,12 @@ public:
 
   void addLocal(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
                 uint32_t const index, uint32_t const scopeId, bool const nullable);
+
+  void addTupleLocal(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
+                     uint32_t const tupleFieldOffset, uint32_t const scopeId, bool const nullable);
+
+  void addTupleParameter(std::string_view const subProgramName, std::string variableName,
+                         std::string_view const typeName, uint32_t const tupleFieldOffset, bool const nullable);
 
   SubProgramLookupMap const &getSubProgramLookupMap() const noexcept { return subProgramLookupMap_; }
 

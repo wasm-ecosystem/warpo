@@ -298,6 +298,7 @@ INSTANTIATE_TEST_SUITE_P(DebugSymbolTests, TestDebugSymbol_P,
                          ::testing::ValuesIn({
                              "TestBaseTypeToString",
                              "TestClassMemberBasic",
+                             "TestClosure",
                              "TestFunctionAsField",
                              "TestFunctionParameter",
                              "TestGlobal",
