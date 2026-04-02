@@ -346,7 +346,7 @@ export namespace ExportNames {
 /** Functions to export if `--exportRuntime` is set. */
 export const runtimeFunctions = ["__new", "__pin", "__unpin", "__collect"];
 /** Globals to export if `--exportRuntime` is set. */
-export const runtimeGlobals = ["__rtti_base"];
+export const runtimeGlobals = ["__rtti_base", "__data_end", "__stack_pointer", "__heap_base"];
 
 class CompoundAssignmentCacheContext {
   target: Element;

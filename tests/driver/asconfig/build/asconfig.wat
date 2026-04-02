@@ -20,6 +20,9 @@
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 1616))
+ (global $~lib/memory/__data_end i32 (i32.const 1636))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 34404))
+ (global $~lib/memory/__heap_base i32 (i32.const 34404))
  (memory $0 1)
  (data $0 (i32.const 1036) ",")
  (data $0.1 (i32.const 1048) "\02\00\00\00\1c\00\00\00a\00s\00c\00o\00n\00f\00i\00g\00 \00r\00e\00a\00d\00y\00<")
@@ -42,6 +45,9 @@
  (export "__unpin" (func $~lib/rt/itcms/__unpin))
  (export "__collect" (func $~lib/rt/itcms/__collect))
  (export "__rtti_base" (global $~lib/rt/__rtti_base))
+ (export "__data_end" (global $~lib/memory/__data_end))
+ (export "__stack_pointer" (global $~lib/memory/__stack_pointer))
+ (export "__heap_base" (global $~lib/memory/__heap_base))
  (export "memory" (memory $0))
  (export "table" (table $0))
  (start $~start)
@@ -831,7 +837,7 @@
      i32.and
      i32.eq
      if
-      i32.const 34404
+      global.get $~lib/memory/__stack_pointer
       local.set $0
       loop $while-continue|013
        local.get $0
