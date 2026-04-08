@@ -2183,7 +2183,7 @@ export class Compiler extends DiagnosticEmitter {
 
     // Store in a temp local, write fields, and return the pointer
     let flow = this.currentFlow;
-    const localForEnv = assert(flow.targetFunction.heapLocalsStorage);
+    const localForEnv = flow.targetFunction.heapLocalsStorage;
 
     let savedType = this.currentType;
     const expr = this.makeNewFunction(
@@ -8922,13 +8922,13 @@ export class Compiler extends DiagnosticEmitter {
     return expr;
   }
 
-  private makeNewFunction(functionIndex: i32, envLocal: Local, rtid: u32, reportNode: Node): ExpressionRef {
+  private makeNewFunction(functionIndex: i32, envLocal: Local | null, rtid: u32, reportNode: Node): ExpressionRef {
     const program = this.program;
     const module = this.module;
-
+    const envExpr = envLocal ? module.local_get(envLocal.index, TypeRef.I32) : module.i32(0);
     const expr = this.makeCallDirect(
       program.newFunctionInstance,
-      [module.usize(functionIndex), module.local_get(envLocal.index, TypeRef.I32), module.i32(rtid)],
+      [module.usize(functionIndex), envExpr, module.i32(rtid)],
       reportNode
     );
     return expr;
