@@ -4,9 +4,9 @@
 
 #include <fstream>
 #include <iostream>
-#include <map>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 
 #include "CostModel.hpp"
 #include "ToString.hpp"
@@ -112,13 +112,13 @@ struct CostModel {
   float getPerformanceCostByOpcode(Opcode opcode) const;
 
 private:
-  std::map<Opcode, float> sizeCost_;
-  std::map<Opcode, float> performanceCost_;
+  std::unordered_map<Opcode, float> sizeCost_;
+  std::unordered_map<Opcode, float> performanceCost_;
   CostModel();
 };
 
-std::map<Opcode, float> createCostModelFromFile(std::string const &costModelPath) {
-  std::map<Opcode, float> costModel;
+std::unordered_map<Opcode, float> createCostModelFromFile(std::string const &costModelPath) {
+  std::unordered_map<Opcode, float> costModel;
   std::fstream costFile{costModelPath, std::ios::in};
   if (!costFile.is_open()) {
     throw std::runtime_error("Failed to open cost model file: " + costModelPath);

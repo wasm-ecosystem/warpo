@@ -2,7 +2,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-#include <set>
+#include <unordered_set>
 
 #include "BuildCallGraph.hpp"
 #include "support/name.h"
@@ -14,7 +14,7 @@ CallGraph CallGraphBuilder::createResults(wasm::Module &m) {
   CallGraph ret{};
   for (std::unique_ptr<wasm::Function> const &f : m.functions) {
     // we treat imported function as leaf function because in wasm-compiler, nest wasm call is not allowed.
-    ret.insert_or_assign(f->name, std::set<wasm::Name>{});
+    ret.insert_or_assign(f->name, std::unordered_set<wasm::Name>{});
   }
   return ret;
 }
@@ -23,7 +23,7 @@ void CallGraphBuilder::visitCall(wasm::Call *expr) { cg_.at(getFunction()->name)
 
 void CallGraphBuilder::visitCallIndirect(wasm::CallIndirect *expr) {
   wasm::Module *m = getModule();
-  std::set<wasm::Name> &call = cg_.at(getFunction()->name);
+  std::unordered_set<wasm::Name> &call = cg_.at(getFunction()->name);
   std::vector<wasm::Expression *> const &potentialTargets = m->getElementSegment(expr->table)->data;
   for (wasm::Expression *target : potentialTargets) {
     wasm::Name const refFunc = target->cast<wasm::RefFunc>()->func;

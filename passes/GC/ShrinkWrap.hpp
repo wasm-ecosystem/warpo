@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <fmt/base.h>
 #include <memory>
+#include <unordered_map>
 
 #include "ObjLivenessAnalyzer.hpp"
 #include "pass.h"
@@ -21,7 +22,7 @@ struct InsertPositionHint {
   wasm::Expression *epilogue = nullptr; ///< nullable
 };
 
-using InsertPositionHints = std::map<wasm::Function *, InsertPositionHint>;
+using InsertPositionHints = std::unordered_map<wasm::Function *, InsertPositionHint>;
 
 struct ShrinkWrapAnalysis : public wasm::Pass {
   static InsertPositionHints createResults(wasm::Module *m) {

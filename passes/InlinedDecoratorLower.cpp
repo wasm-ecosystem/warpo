@@ -40,9 +40,9 @@
 #include <ir/module-utils.h>
 #include <memory>
 #include <passes/pass-utils.h>
-#include <set>
 #include <sstream>
 #include <support/name.h>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 #include <wasm-traversal.h>
@@ -103,7 +103,7 @@ ChosenActions createChosenActions(wasm::Module &m) {
 class ChosenActionsSteps {
   ChosenActions actions_;
   // functions need to be processed
-  std::set<wasm::Name> pending_;
+  std::unordered_set<wasm::Name> pending_;
 
 public:
   std::vector<ChosenActions> actionSteps_;
@@ -130,7 +130,7 @@ public:
       if (support::isDebug(PASS_NAME))
         for (wasm::Name const &name : pending_)
           fmt::println("[" PASS_NAME "]   pending inline '{}'", name.str);
-      std::set<wasm::Name> currentStep;
+      std::unordered_set<wasm::Name> currentStep;
       for (auto &[callerSiteFuncName, actions] : actions_) {
         if (support::isDebug(PASS_NAME)) {
           fmt::println("[" PASS_NAME "]   check '{}' whether can be processed", callerSiteFuncName.str);

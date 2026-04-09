@@ -5,10 +5,10 @@
 #include <cassert>
 #include <concepts>
 #include <fmt/base.h>
-#include <map>
 #include <memory>
-#include <set>
 #include <stack>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "../helper/BinaryenExt.hpp"
 #include "../helper/Matcher.hpp"
@@ -35,10 +35,10 @@ namespace {
 struct ToStackReplacer : public wasm::WalkerPass<wasm::PostWalker<ToStackReplacer>> {
   std::shared_ptr<MaxShadowStackOffsets> maxShadowStackOffsets_;
   struct CallInfo {
-    std::set<uint32_t> slotsUsedByCall;
+    std::unordered_set<uint32_t> slotsUsedByCall;
   };
   std::stack<CallInfo> nestedCallInfos_;
-  std::map<wasm::Index, uint32_t> localMappedSlots_;
+  std::unordered_map<wasm::Index, uint32_t> localMappedSlots_;
   DynBitset currentAllocatedSlots_{0U};
 
   bool isFunctionParallel() override { return true; }

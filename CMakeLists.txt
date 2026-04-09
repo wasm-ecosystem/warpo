@@ -4,6 +4,7 @@ enable_testing()
 
 option(WARPO_RELEASE "build for release" OFF)
 option(WARPO_SANITIZE "enable address sanitizer" OFF)
+option(WARPO_ENABLE_PERF "enable frame pointer for perf profiling" OFF)
 option(ENABLE_CLANG_TIDY "Enable clang-tidy static analysis" OFF)
 option(ENABLE_WERROR "Enable warnings as errors" OFF)
 
@@ -79,6 +80,10 @@ if(MSVC)
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unknown-warning-option")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
+
+  if(WARPO_ENABLE_PERF)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-omit-frame-pointer")
+  endif()
 
   if(WARPO_SANITIZE)
     add_compile_options(-fsanitize=address)

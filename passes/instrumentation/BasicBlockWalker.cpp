@@ -8,7 +8,7 @@
 #include <iostream>
 #include <ir/module-utils.h>
 #include <memory>
-#include <set>
+#include <unordered_set>
 #include <utility>
 
 #include "BasicBlockWalker.hpp"
@@ -49,7 +49,7 @@ void BasicBlockWalker::doEndBlock(BasicBlockWalker *self, wasm::Expression **cur
 }
 
 static bool isBasicBlockContainUnreachable(BasicBlockWalker::BasicBlock &block,
-                                           std::set<BasicBlockWalker::BasicBlock *> unreachableBlocks) {
+                                           std::unordered_set<BasicBlockWalker::BasicBlock *> unreachableBlocks) {
   return (!block.contents.exprs.empty() &&
           std::any_of(block.contents.exprs.begin(), block.contents.exprs.end(),
                       [](wasm::Expression *expr) { return expr->is<wasm::Unreachable>(); })) ||
@@ -66,7 +66,7 @@ static void removeDuplicates(std::vector<BasicBlockWalker::BasicBlock *> &list) 
 
 void BasicBlockWalker::cleanBlock() noexcept {
   bool isModified = true;
-  std::set<BasicBlock *> unreachableBlocks{};
+  std::unordered_set<BasicBlock *> unreachableBlocks{};
   while (isModified) {
     isModified = false;
     for (auto &block : basicBlocks) {
@@ -75,14 +75,14 @@ void BasicBlockWalker::cleanBlock() noexcept {
       }
     }
   }
-  std::set<BasicBlock *> emptyBlocks{};
+  std::unordered_set<BasicBlock *> emptyBlocks{};
   for (auto &block : basicBlocks) {
     if (block->contents.exprs.empty() && block->out.size() == 1) {
       emptyBlocks.insert(block.get());
     }
   }
 
-  std::set<BasicBlock *> targetCleanBlocks{};
+  std::unordered_set<BasicBlock *> targetCleanBlocks{};
   targetCleanBlocks.insert(unreachableBlocks.begin(), unreachableBlocks.end());
   targetCleanBlocks.insert(emptyBlocks.begin(), emptyBlocks.end());
 
