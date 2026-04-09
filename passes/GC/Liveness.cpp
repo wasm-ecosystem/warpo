@@ -10,8 +10,8 @@
 #include <iostream>
 #include <optional>
 #include <queue>
-#include <set>
 #include <sstream>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -90,8 +90,8 @@ ConflictGraph ConflictGraph::create(LivenessMap const &livenessMap) {
   for (auto &[expr, line] : livenessMap.getExprMap()) {
     static_cast<void>(expr);
     Liveness const liveness = livenessMap.getLiveness(line);
-    std::set<size_t> visitedLivenessSSAsForBefore{};
-    std::set<size_t> visitedLivenessSSAsForAfter{};
+    std::unordered_set<size_t> visitedLivenessSSAsForBefore{};
+    std::unordered_set<size_t> visitedLivenessSSAsForAfter{};
     for (size_t const ssaIndex : Range{dim}) {
       if (liveness.before().get(ssaIndex)) {
         for (size_t const oldSSAIndex : visitedLivenessSSAsForBefore) {

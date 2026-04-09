@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <unordered_map>
 
 #include "ObjLivenessAnalyzer.hpp"
 #include "pass.h"
@@ -13,8 +14,8 @@
 
 namespace warpo::passes::gc {
 
-struct StackPosition : private std::map<wasm::Call *, uint32_t> {
-  using Super = std::map<wasm::Call *, uint32_t>;
+struct StackPosition : private std::unordered_map<wasm::Call *, uint32_t> {
+  using Super = std::unordered_map<wasm::Call *, uint32_t>;
   using Super::begin;
   using Super::contains;
   using Super::empty;
@@ -22,7 +23,7 @@ struct StackPosition : private std::map<wasm::Call *, uint32_t> {
   using Super::find;
   using Super::insert_or_assign;
 };
-using StackPositions = std::map<wasm::Function *, StackPosition>;
+using StackPositions = std::unordered_map<wasm::Function *, StackPosition>;
 
 struct StackAssigner : public wasm::Pass {
   enum class Mode { Vanilla, GreedyConflictGraph };

@@ -6,8 +6,8 @@
 #include <cstddef>
 #include <cstdlib>
 #include <fmt/base.h>
-#include <map>
 #include <optional>
+#include <unordered_map>
 
 #include "../helper/Matcher.hpp"
 #include "../helper/ToString.hpp"
@@ -38,7 +38,7 @@ struct GreedyAssigner final : public IAssigner {
 };
 
 struct VanillaAssigner final : public IAssigner {
-  std::map<size_t, size_t> map_;
+  std::unordered_map<size_t, size_t> map_;
   size_t getStackPosition(size_t ssaIndex) override {
     if (map_.contains(ssaIndex))
       return map_.at(ssaIndex) * ShadowStackElementSize;

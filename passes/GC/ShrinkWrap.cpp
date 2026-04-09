@@ -8,6 +8,8 @@
 #include <fmt/base.h>
 #include <functional>
 #include <memory>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "../helper/CFG.hpp"
 #include "../helper/DomTree.hpp"
@@ -147,9 +149,9 @@ namespace warpo::passes::gc::ut {
 
 struct ShrinkWrapTest : public ::testing::Test {
   CFGTestWrapper cfg;
-  std::set<wasm::Expression *> stackShouldActiveInHere;
+  std::unordered_set<wasm::Expression *> stackShouldActiveInHere;
   MixedArena arena;
-  std::map<size_t, std::array<wasm::Call *, 2U>> callMap;
+  std::unordered_map<size_t, std::array<wasm::Call *, 2U>> callMap;
 
   void applyWasmCallForEachBB() {
     for (size_t i = 0; i < cfg.raw_.size(); i++) {

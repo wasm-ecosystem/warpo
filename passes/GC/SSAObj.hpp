@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <map>
+#include <unordered_map>
 
 #include "warpo/support/DynBitSet.hpp"
 #include "warpo/support/IncMap.hpp"
@@ -82,7 +82,7 @@ struct SSAMap : public IncBiMap<SSAValue> {
   DynBitset getCallerManagedObject() const;
 };
 
-struct ModuleLevelSSAMap : public std::map<wasm::Function *, SSAMap> {
+struct ModuleLevelSSAMap : public std::unordered_map<wasm::Function *, SSAMap> {
   static ModuleLevelSSAMap create(wasm::Module *m) {
     ModuleLevelSSAMap ssaMapModule{};
     for (auto &func : m->functions) {

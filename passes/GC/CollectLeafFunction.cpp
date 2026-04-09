@@ -2,7 +2,8 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-#include <set>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "CollectLeafFunction.hpp"
 #include "GCInfo.hpp"
@@ -17,15 +18,15 @@ namespace warpo::passes::gc {
 
 static LeafFunc collectLeafFunctions(const CallGraph &cg) {
   LeafFunc leaf{};
-  std::map<wasm::Name, std::set<wasm::Name>> reservedCallGraph{};
+  std::unordered_map<wasm::Name, std::unordered_set<wasm::Name>> reservedCallGraph{};
 
   for (auto const &[caller, callees] : cg) {
     leaf.insert(caller);
     for (wasm::Name const &callee : callees) {
-      reservedCallGraph.try_emplace(callee, std::set<wasm::Name>{}).first->second.insert(caller);
+      reservedCallGraph.try_emplace(callee, std::unordered_set<wasm::Name>{}).first->second.insert(caller);
     }
   }
-  std::set<wasm::Name> workList{FnITCMSNew, FnITCMSCollect, FnTCMSNew, FnTCMSCollect};
+  std::unordered_set<wasm::Name> workList{FnITCMSNew, FnITCMSCollect, FnTCMSNew, FnTCMSCollect};
   while (!workList.empty()) {
     auto it = workList.begin();
     if (leaf.erase(*it) == 1) {
@@ -70,7 +71,7 @@ TEST(GCLeafFunctionTest, LeafFunction) {
   CG["parent_1"] = {"leaf"};
   CG["parent_poison"] = {"leaf", FnITCMSNew};
 
-  std::set<wasm::Name> const leaf = collectLeafFunctions(CG);
+  LeafFunc const leaf = collectLeafFunctions(CG);
 
   EXPECT_THAT(leaf, Contains("leaf"));
   EXPECT_THAT(leaf, Contains("parent_1"));

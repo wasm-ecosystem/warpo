@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <unordered_map>
 
 #include "Liveness.hpp"
 #include "SSAObj.hpp"
@@ -14,7 +15,7 @@
 
 namespace warpo::passes::gc {
 
-using ObjLivenessInfo = std::map<wasm::Function *, LivenessMap>;
+using ObjLivenessInfo = std::unordered_map<wasm::Function *, LivenessMap>;
 
 /// @brief analyze the liveness of SSAified GC objects in a function
 struct ObjLivenessAnalyzer : public wasm::Pass {

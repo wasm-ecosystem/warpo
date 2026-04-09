@@ -5,7 +5,7 @@
 #pragma once
 
 #include <memory>
-#include <set>
+#include <unordered_set>
 
 #include "../helper/BuildCallGraph.hpp"
 #include "pass.h"
@@ -14,7 +14,7 @@
 
 namespace warpo::passes::gc {
 
-struct LeafFunc : public std::set<wasm::Name> {};
+struct LeafFunc : public std::unordered_set<wasm::Name> {};
 /// @brief collect GC leaf functions, i.e., functions that do not call __new / __collect function.
 struct LeafFunctionCollector : public wasm::Pass {
   std::shared_ptr<CallGraph const> const cg_;

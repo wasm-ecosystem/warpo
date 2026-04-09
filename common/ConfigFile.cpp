@@ -1,15 +1,16 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <exception>
 #include <fmt/format.h>
-#include <map>
 #include <nlohmann/json.hpp>
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "ConfigFile.hpp"
@@ -24,7 +25,7 @@ namespace {
 struct FileConfigJson {
   std::vector<std::string> entries;
   FileConfigOptions options;
-  std::map<std::string, FileConfigOptions> targets;
+  std::unordered_map<std::string, FileConfigOptions> targets;
 };
 
 cli::Opt<std::string> configOption{
@@ -194,8 +195,13 @@ static FileConfigJson parseFileConfigJson(std::string const &configContent) {
 }
 
 [[noreturn]] static void throwMissingTarget(FileConfigJson const &fileConfigJson, std::string const &target) {
+  std::vector<std::string> targetNames;
+  targetNames.reserve(fileConfigJson.targets.size());
+  for (auto const &[targetName, _] : fileConfigJson.targets)
+    targetNames.push_back(targetName);
+  std::sort(targetNames.begin(), targetNames.end());
   std::string targetList;
-  for (auto const &[targetName, _] : fileConfigJson.targets) {
+  for (auto const &targetName : targetNames) {
     if (!targetList.empty())
       targetList.append(", ");
     targetList.append(targetName);

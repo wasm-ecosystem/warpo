@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include <map>
 #include <memory>
-#include <set>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "pass.h"
 #include "support/name.h"
@@ -14,7 +14,7 @@
 
 namespace warpo::passes {
 
-using CallGraph = std::map<wasm::Name, std::set<wasm::Name>>;
+using CallGraph = std::unordered_map<wasm::Name, std::unordered_set<wasm::Name>>;
 struct CallGraphBuilder : public wasm::WalkerPass<wasm::PostWalker<CallGraphBuilder>> {
   static CallGraph createResults(wasm::Module &m);
 

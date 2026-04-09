@@ -6,10 +6,10 @@
 
 #include <functional>
 #include <initializer_list>
-#include <map>
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <unordered_map>
 #include <utility>
 
 #include "support/index.h"
@@ -19,7 +19,7 @@
 namespace warpo::passes::matcher {
 
 struct Context {
-  std::map<std::string, wasm::Expression const *> bindings;
+  std::unordered_map<std::string, wasm::Expression const *> bindings;
   template <class T> T const *getBinding(std::string const &name) const {
     static_assert(std::is_base_of_v<wasm::Expression, T>, "bind only support subclass of wasm::Expression");
     auto it = bindings.find(name);

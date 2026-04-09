@@ -7,11 +7,11 @@
 #include <fmt/base.h>
 #include <fmt/ranges.h>
 #include <iostream>
-#include <map>
 #include <optional>
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "../helper/BinaryenExt.hpp"
@@ -37,7 +37,7 @@
 namespace warpo::passes::gc {
 namespace {
 
-struct LocalToSSALookupTable : private std::map<size_t, std::vector<size_t>> {
+struct LocalToSSALookupTable : private std::unordered_map<size_t, std::vector<size_t>> {
   static LocalToSSALookupTable create(SSAMap const &ssaMap) {
     LocalToSSALookupTable ret{};
     for (auto &[ssa, index] : ssaMap) {

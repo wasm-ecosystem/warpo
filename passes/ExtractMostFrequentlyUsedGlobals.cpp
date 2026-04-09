@@ -12,8 +12,8 @@
 #include <atomic>
 #include <cassert>
 #include <fmt/format.h>
-#include <map>
 #include <memory>
+#include <unordered_map>
 
 #include "ExtractMostFrequentlyUsedGlobals.hpp"
 #include "support/index.h"
@@ -28,7 +28,7 @@ namespace warpo::passes {
 
 namespace {
 
-using Counter = std::map<wasm::Name, std::atomic<wasm::Index>>;
+using Counter = std::unordered_map<wasm::Name, std::atomic<wasm::Index>>;
 struct Scanner : public wasm::WalkerPass<wasm::PostWalker<Scanner>> {
   explicit Scanner(Counter &counter) : counter_(counter) {}
 
@@ -72,17 +72,18 @@ static Counter createCounter(std::vector<std::unique_ptr<wasm::Global>> const &g
 }
 
 static wasm::Name findMostFrequentlyUsed(Counter const &counter) {
-  wasm::Name maxGlobalName;
-  wasm::Index maxCount = 0;
+  wasm::Name best;
+  wasm::Index bestCount = 0;
   for (auto const &[name, count] : counter) {
     if (support::isDebug(PASS_NAME))
       fmt::println("[" PASS_NAME "] '{}' used {} times", name.str, count.load());
-    if (count.load() >= maxCount) {
-      maxCount = count.load();
-      maxGlobalName = name;
+    wasm::Index const c = count.load();
+    if (c > bestCount || (c == bestCount && name > best)) {
+      bestCount = c;
+      best = name;
     }
   }
-  return maxGlobalName;
+  return best;
 }
 
 static void extractGlobal(wasm::Module &m, wasm::Name const name) {

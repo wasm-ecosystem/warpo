@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <cassert>
 #include <iterator>
-#include <map>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -191,7 +191,7 @@ DynBitset CFG::getBlockInsideLoop() const {
     DynBitset visited_;
     std::vector<BasicBlock const *> stack_;
     DynBitset insideLoop_;
-    std::map<BasicBlock const *, BasicBlock const *> insideLoopMappedLoopEntry_;
+    std::unordered_map<BasicBlock const *, BasicBlock const *> insideLoopMappedLoopEntry_;
 
     explicit BasicBlockDeepFirstVisitor(size_t size) : active_{size}, visited_{size}, insideLoop_{size} {}
     void visit(BasicBlock const *bb) {

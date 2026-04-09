@@ -4,8 +4,8 @@
 
 #include <cassert>
 #include <cstddef>
-#include <map>
 #include <optional>
+#include <unordered_map>
 
 #include "MergeSSA.hpp"
 #include "SSAObj.hpp"
@@ -16,7 +16,7 @@
 
 namespace warpo::passes::gc {
 
-class LocalIndexToSSA : private std::map<wasm::Index, DynBitset> {
+class LocalIndexToSSA : private std::unordered_map<wasm::Index, DynBitset> {
   size_t size_;
 
   void push(wasm::Index localIndex, size_t ssaIndex) {
@@ -42,7 +42,7 @@ public:
     return it->second;
   }
 
-  using std::map<wasm::Index, DynBitset>::contains;
+  using std::unordered_map<wasm::Index, DynBitset>::contains;
 };
 
 void MergeSSA::runOnFunction(wasm::Module *const m, wasm::Function *const func) {

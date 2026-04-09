@@ -7,9 +7,9 @@
 #include <cassert>
 #include <fmt/base.h>
 #include <fmt/format.h>
-#include <map>
 #include <memory>
 #include <optional>
+#include <unordered_map>
 
 #include "ShrinkWrap.hpp"
 #include "StackAssigner.hpp"
@@ -37,11 +37,11 @@ public:
   }
 };
 
-class MaxShadowStackOffsets : public IMaxShadowStackOffsets, std::map<wasm::Function *, uint32_t> {
-  uint32_t at(wasm::Function *func) const override { return std::map<wasm::Function *, uint32_t>::at(func); }
+class MaxShadowStackOffsets : public IMaxShadowStackOffsets, std::unordered_map<wasm::Function *, uint32_t> {
+  uint32_t at(wasm::Function *func) const override { return std::unordered_map<wasm::Function *, uint32_t>::at(func); }
 
 public:
-  using std::map<wasm::Function *, uint32_t>::operator[];
+  using std::unordered_map<wasm::Function *, uint32_t>::operator[];
 };
 
 class PrologEpilogInserter : public wasm::Pass {
