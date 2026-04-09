@@ -70,7 +70,7 @@ Config Config::getDefault() {
       .initialMemory = std::nullopt,
       .maximumMemory = std::nullopt,
       .lowMemoryLimit = std::nullopt,
-      .stackSize = 32768U,
+      .stackSize = DEFAULT_STACK_SIZE,
       .host = HostKind::None,
 
       .useColorfulDiagMessage = support::isTTY(),
