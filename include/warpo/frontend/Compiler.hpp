@@ -35,6 +35,8 @@ enum class HostKind : uint32_t {
   WasiSnapshotPreview1 = 1U,
 };
 
+constexpr const uint32_t DEFAULT_STACK_SIZE = 32768U; // 32KiB
+
 namespace RuntimeUtils {
 inline std::string toString(RuntimeKind runtime) {
   switch (runtime) {
@@ -87,7 +89,7 @@ struct Config {
   std::optional<uint32_t> initialMemory;
   std::optional<uint32_t> maximumMemory;
   std::optional<uint32_t> lowMemoryLimit;
-  uint32_t stackSize = 32768U;
+  uint32_t stackSize = DEFAULT_STACK_SIZE;
   HostKind host = HostKind::None;
 
   bool useColorfulDiagMessage = false;

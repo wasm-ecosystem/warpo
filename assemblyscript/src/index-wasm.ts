@@ -118,9 +118,6 @@ export function setExportRuntime(options: Options, exportRuntime: bool): void {
   options.exportRuntime = exportRuntime;
 }
 
-/** Default stack size. */
-export const DEFAULT_STACK_SIZE = 32768;
-
 /** Sets the `stackSize` option. */
 export function setStackSize(options: Options, stackSize: i32): void {
   options.stackSize = stackSize;

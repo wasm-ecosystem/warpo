@@ -1048,7 +1048,8 @@ export class Module {
 
   // memory
 
-  /** Unlimited memory constant. */
+  /** Default when no `maximumMemory` is configured (via asconfig.json or --maximumMemory CLI).
+   *  Then, linearMemory can grow without any AS-level limit, bounded only by the host environment. */
   static readonly UNLIMITED_MEMORY: Index = <Index>-1;
 
   setMemory(
