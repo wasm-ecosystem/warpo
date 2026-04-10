@@ -45,9 +45,6 @@ std::vector<Type> getLoggableTypes(const FeatureSet& features) {
       loggableTypes.push_back(Type(HeapType::func, Nullable));
       loggableTypes.push_back(Type(HeapType::ext, Nullable));
     }
-    if (features.hasStackSwitching()) {
-      loggableTypes.push_back(Type(HeapType::cont, Nullable));
-    }
     // Note: exnref traps on the JS boundary, so we cannot try to log it.
   }
 
@@ -577,6 +574,7 @@ void TranslateToFuzzReader::setupHeapTypes() {
         break;
       case HeapTypeKind::Cont:
         interestingHeapSubTypes[cont].push_back(type);
+        sigConts[type.getContinuation().type].push_back(type);
         break;
       case HeapTypeKind::Basic:
         WASM_UNREACHABLE("unexpected kind");
@@ -622,12 +620,17 @@ void TranslateToFuzzReader::setupTables() {
     if (wasm.features.hasMemory64() && oneIn(2)) {
       addressType = Type::i64;
     }
+    Expression* init = nullptr;
+    if (wasm.features.hasGC() && oneIn(2)) {
+      init = builder.makeConstantExpression(Literal::makeNull(HeapType::func));
+    }
     auto tablePtr =
       builder.makeTable(Names::getValidTableName(wasm, "fuzzing_table"),
                         funcref,
                         initial,
                         max,
-                        addressType);
+                        addressType,
+                        init);
     tablePtr->hasExplicitName = true;
     table = wasm.addTable(std::move(tablePtr));
   }
@@ -879,9 +882,10 @@ void TranslateToFuzzReader::finalizeMemory() {
     // annoying in the fuzzer).
     Address ONE_GB = 1024 * 1024 * 1024;
     if (maxOffset <= ONE_GB) {
-      memory->initial = std::max(
-        memory->initial,
-        Address((maxOffset + Memory::kPageSize - 1) / Memory::kPageSize));
+      memory->initial =
+        std::max(memory->initial,
+                 Address((maxOffset + (1 << memory->pageSizeLog2) - 1) /
+                         (1 << memory->pageSizeLog2)));
     }
   }
   memory->initial = std::max(memory->initial, fuzzParams->USABLE_MEMORY);
@@ -895,7 +899,7 @@ void TranslateToFuzzReader::finalizeMemory() {
     // maximum larger than the initial.
     // TODO: scan the wasm for grow instructions?
     memory->max =
-      std::min(Address(memory->initial + 1), Address(Memory::kMaxSize32));
+      std::min(Address(memory->initial + 1), Address(memory->maxSize32()));
   }
 
   if (!preserveImportsAndExports) {
@@ -930,6 +934,20 @@ void TranslateToFuzzReader::finalizeTable() {
         table->initial = std::max(table->initial, maxOffset);
       });
 
+    if (table->init) {
+      bool hasNonImported = false;
+      for (auto* get : FindAll<GlobalGet>(table->init).list) {
+        if (!wasm.getGlobal(get->name)->imported()) {
+          hasNonImported = true;
+          break;
+        }
+      }
+      if (hasNonImported) {
+        // Table initializers can't reference module-defined globals.
+        table->init = makeConst(table->type);
+      }
+    }
+
     // The code above raises table->initial to a size large enough to accomodate
     // all of its segments, with the intention of avoiding a trap during
     // startup. However a single segment of (say) size 4GB would have a table of
@@ -951,6 +969,9 @@ void TranslateToFuzzReader::finalizeTable() {
     if (!preserveImportsAndExports) {
       // Avoid an imported table (which the fuzz harness would need to handle).
       table->module = table->base = Name();
+      if (table->type.isNonNullable()) {
+        table->init = makeConst(table->type);
+      }
     }
   }
 }
@@ -1689,11 +1710,7 @@ Function* TranslateToFuzzReader::addFunction() {
 
   Index numVars = upToSquared(fuzzParams->MAX_VARS);
   for (Index i = 0; i < numVars; i++) {
-    auto type = getConcreteType();
-    if (!TypeUpdating::canHandleAsLocal(type)) {
-      type = Type::i32;
-    }
-    func->vars.push_back(type);
+    func->vars.push_back(getConcreteType());
   }
   // Generate the function creation context after we filled in locals, which it
   // will scan.
@@ -2230,7 +2247,7 @@ void TranslateToFuzzReader::fixAfterChanges(Function* func) {
       // Note all scope names, and fix up all uses.
       BranchUtils::operateOnScopeNameDefs(curr, [&](Name& name) {
         if (name.is()) {
-          if (seen.count(name)) {
+          if (seen.contains(name)) {
             replace();
           } else {
             seen.insert(name);
@@ -2572,15 +2589,31 @@ Expression* TranslateToFuzzReader::_makeConcrete(Type type) {
       options.add(FeatureSet::ReferenceTypes | FeatureSet::GC,
                   &Self::makeRefGetDesc);
     }
+    if (heapType.isContinuation()) {
+      options.add(FeatureSet::ReferenceTypes | FeatureSet::StackSwitching,
+                  &Self::makeContBind);
+    }
   }
   if (wasm.features.hasGC()) {
     if (typeStructFields.find(type) != typeStructFields.end()) {
       options.add(FeatureSet::ReferenceTypes | FeatureSet::GC,
                   &Self::makeStructGet);
+      options.add(FeatureSet::ReferenceTypes | FeatureSet::GC |
+                    FeatureSet::Atomics | FeatureSet::SharedEverything,
+                  &Self::makeStructRMW);
+      options.add(FeatureSet::ReferenceTypes | FeatureSet::GC |
+                    FeatureSet::Atomics | FeatureSet::SharedEverything,
+                  &Self::makeStructCmpxchg);
     }
     if (typeArrays.find(type) != typeArrays.end()) {
       options.add(FeatureSet::ReferenceTypes | FeatureSet::GC,
                   &Self::makeArrayGet);
+      options.add(FeatureSet::ReferenceTypes | FeatureSet::GC |
+                    FeatureSet::Atomics | FeatureSet::SharedEverything,
+                  &Self::makeArrayRMW);
+      options.add(FeatureSet::ReferenceTypes | FeatureSet::GC |
+                    FeatureSet::Atomics | FeatureSet::SharedEverything,
+                  &Self::makeArrayCmpxchg);
     }
   }
   return (this->*pick(options))(type);
@@ -2821,7 +2854,7 @@ Expression* TranslateToFuzzReader::makeTry(Type type) {
       addTag();
     }
     auto* tag = pick(exceptionTags);
-    if (usedTags.count(tag)) {
+    if (usedTags.contains(tag)) {
       continue;
     }
     usedTags.insert(tag);
@@ -3124,7 +3157,7 @@ Expression* TranslateToFuzzReader::makeLocalGet(Type type) {
   // the time), or emit a local.get of a new local, or emit a local.tee of a new
   // local.
   auto choice = upTo(3);
-  if (choice == 0 || !TypeUpdating::canHandleAsLocal(type)) {
+  if (choice == 0) {
     return makeConst(type);
   }
   // Otherwise, add a new local. If the type is not non-nullable then we may
@@ -5459,6 +5492,96 @@ Expression* TranslateToFuzzReader::makeBrOn(Type type) {
     builder.makeBrOn(op, targetName, make(refType), castType));
 }
 
+Expression* TranslateToFuzzReader::makeContBind(Type type) {
+  // We must output a signature that corresponds to the type we were given.
+  auto outputSigType = type.getHeapType().getContinuation().type;
+  auto outputSig = outputSigType.getSignature();
+  auto numOutputParams = outputSig.params.size();
+
+  // Look for a compatible signature. Don't always do this, however - we have a
+  // few other options below.
+  std::optional<HeapType> inputSigType;
+  if (!oneIn(4)) {
+    auto& funcTypes = interestingHeapSubTypes[HeapTypes::func];
+    // Filter out incompatible signatures.
+    std::vector<HeapType> relevantFuncTypes;
+    for (auto funcType : funcTypes) {
+      auto funcSig = funcType.getSignature();
+      if (funcSig.results != outputSig.results) {
+        // The results must match.
+        continue;
+      }
+
+      // The params must be compatible. For example, with output params [x,y,z]
+      // we'd want an input signature like [a,b,x,y,z] so that we can bind a and
+      // b.
+      auto numInputParams = funcSig.params.size();
+      if (numInputParams < numOutputParams) {
+        // Too short.
+        continue;
+      }
+      // Ignoring the input params at the start, compare the tails.
+      auto numAddedParams = numInputParams - numOutputParams;
+      bool bad = false;
+      for (Index i = 0; i < numOutputParams; i++) {
+        if (!Type::isSubType(outputSig.params[i],
+                             funcSig.params[numAddedParams + i])) {
+          bad = true;
+          break;
+        }
+      }
+      if (!bad) {
+        relevantFuncTypes.push_back(funcType);
+      }
+    }
+    if (!relevantFuncTypes.empty()) {
+      inputSigType = pick(relevantFuncTypes);
+    }
+  }
+
+  Index numAddedParams;
+  if (inputSigType) {
+    // We picked a signature, above.
+    numAddedParams =
+      inputSigType->getSignature().params.size() - numOutputParams;
+  } else {
+    // We failed to find a signature, either use the current one (binding no
+    // input params) or invent a input one, adding one param.
+    if (oneIn(2)) {
+      inputSigType = outputSigType;
+      numAddedParams = 0;
+    } else {
+      std::vector<Type> inputParams;
+      for (auto t : outputSig.params) {
+        inputParams.push_back(t);
+      }
+      auto inputParam = getSingleConcreteType();
+      inputParams.insert(inputParams.begin(), inputParam);
+      inputSigType = Signature(Type(inputParams), outputSig.results);
+      numAddedParams = 1;
+    }
+  }
+  auto inputSig = inputSigType->getSignature();
+
+  // Pick a continuation type for the signature. If existing continuations use
+  // it, usually pick one of them.
+  auto& inputSigConts = sigConts[*inputSigType];
+  HeapType inputCont;
+  if (!inputSigConts.empty() && !oneIn(5)) {
+    inputCont = pick(inputSigConts);
+  } else {
+    inputCont = Continuation(inputSig);
+  }
+  Type inputType = Type(inputCont, NonNullable, Exact);
+
+  // Generate the new args and the cont.bind.
+  std::vector<Expression*> newArgs;
+  for (Index i = 0; i < numAddedParams; i++) {
+    newArgs.push_back(make(inputSig.params[i]));
+  }
+  return builder.makeContBind(type.getHeapType(), newArgs, make(inputType));
+}
+
 bool TranslateToFuzzReader::maybeSignedGet(const Field& field) {
   if (field.isPacked()) {
     return oneIn(2);
@@ -5472,8 +5595,65 @@ Expression* TranslateToFuzzReader::makeStructGet(Type type) {
   auto [structType, fieldIndex] = pick(structFields);
   auto* ref = makeTrappingRefUse(structType);
   auto signed_ = maybeSignedGet(structType.getStruct().fields[fieldIndex]);
-  return builder.makeStructGet(
-    fieldIndex, ref, MemoryOrder::Unordered, type, signed_);
+  auto order = MemoryOrder::Unordered;
+  if (wasm.features.hasAtomics() && wasm.features.hasSharedEverything() &&
+      oneIn(2)) {
+    order = oneIn(2) ? MemoryOrder::SeqCst : MemoryOrder::AcqRel;
+  }
+  return builder.makeStructGet(fieldIndex, ref, order, type, signed_);
+}
+
+Expression* TranslateToFuzzReader::makeStructRMW(Type type) {
+  bool isAny =
+    type.isRef() &&
+    HeapType(type.getHeapType().getTop()).isMaybeShared(HeapType::any);
+  if (type != Type::i32 && type != Type::i64 && !isAny) {
+    // Not a valid field type for an RMW operation.
+    return makeStructGet(type);
+  }
+  auto& structFields = typeStructFields[type];
+  assert(!structFields.empty());
+  auto [structType, fieldIndex] = pick(structFields);
+  const auto& field = structType.getStruct().fields[fieldIndex];
+  if (field.isPacked() || field.mutable_ == Immutable) {
+    // Cannot RMW a packed or immutable field.
+    return makeStructGet(type);
+  }
+  AtomicRMWOp op = RMWXchg;
+  if (type == Type::i32 || type == Type::i64) {
+    op = pick(RMWAdd, RMWSub, RMWAnd, RMWOr, RMWXor, RMWXchg);
+  }
+  auto* ref = makeTrappingRefUse(structType);
+  auto* value = make(type);
+  auto order = oneIn(2) ? MemoryOrder::SeqCst : MemoryOrder::AcqRel;
+  return builder.makeStructRMW(op, fieldIndex, ref, value, order);
+}
+
+Expression* TranslateToFuzzReader::makeStructCmpxchg(Type type) {
+  bool isShared = type.isRef() && type.getHeapType().isShared();
+  Type eq(HeapTypes::eq.getBasic(isShared ? Shared : Unshared), Nullable);
+  bool isEq = Type::isSubType(type, eq);
+  if (type != Type::i32 && type != Type::i64 && !isEq) {
+    // Not a valid field type for a cmpxchg operation.
+    return makeStructGet(type);
+  }
+  auto& structFields = typeStructFields[type];
+  assert(!structFields.empty());
+  auto [structType, fieldIndex] = pick(structFields);
+  const auto& field = structType.getStruct().fields[fieldIndex];
+  if (field.isPacked() || field.mutable_ == Immutable) {
+    // Cannot RMW a packed or immutable field.
+    return makeStructGet(type);
+  }
+  auto* ref = makeTrappingRefUse(structType);
+  // For reference fields, expected can be a subtype of eq. Only do use the
+  // extra flexibility occasionally because it makes the expected value less
+  // likely to be equal to the actual value.
+  auto* expected = make(isEq && oneIn(4) ? eq : type);
+  auto* replacement = make(type);
+  auto order = oneIn(2) ? MemoryOrder::SeqCst : MemoryOrder::AcqRel;
+  return builder.makeStructCmpxchg(
+    fieldIndex, ref, expected, replacement, order);
 }
 
 Expression* TranslateToFuzzReader::makeStructSet(Type type) {
@@ -5485,7 +5665,12 @@ Expression* TranslateToFuzzReader::makeStructSet(Type type) {
   auto fieldType = structType.getStruct().fields[fieldIndex].type;
   auto* ref = makeTrappingRefUse(structType);
   auto* value = make(fieldType);
-  return builder.makeStructSet(fieldIndex, ref, value, MemoryOrder::Unordered);
+  auto order = MemoryOrder::Unordered;
+  if (wasm.features.hasAtomics() && wasm.features.hasSharedEverything() &&
+      oneIn(2)) {
+    order = oneIn(2) ? MemoryOrder::SeqCst : MemoryOrder::AcqRel;
+  }
+  return builder.makeStructSet(fieldIndex, ref, value, order);
 }
 
 // Make a bounds check for an array operation, given a ref + index. An optional
@@ -5547,19 +5732,23 @@ Expression* TranslateToFuzzReader::makeArrayGet(Type type) {
   auto* ref = makeTrappingRefUse(arrayType);
   auto* index = make(Type::i32);
   auto signed_ = maybeSignedGet(arrayType.getArray().element);
+  auto order = MemoryOrder::Unordered;
+  if (wasm.features.hasAtomics() && wasm.features.hasSharedEverything() &&
+      oneIn(2)) {
+    order = oneIn(2) ? MemoryOrder::SeqCst : MemoryOrder::AcqRel;
+  }
   // Only rarely emit a plain get which might trap. See related logic in
   // ::makePointer().
   if (allowOOB && oneIn(10)) {
-    return builder.makeArrayGet(
-      ref, index, MemoryOrder::Unordered, type, signed_);
+    return builder.makeArrayGet(ref, index, order, type, signed_);
   }
   // To avoid a trap, check the length dynamically using this pattern:
   //
   //   index < array.len ? array[index] : ..some fallback value..
   //
   auto check = makeArrayBoundsCheck(ref, index, funcContext->func, builder);
-  auto* get = builder.makeArrayGet(
-    check.getRef, check.getIndex, MemoryOrder::Unordered, type, signed_);
+  auto* get =
+    builder.makeArrayGet(check.getRef, check.getIndex, order, type, signed_);
   auto* fallback = makeTrivial(type);
   return builder.makeIf(check.condition, get, fallback);
 }
@@ -5574,19 +5763,94 @@ Expression* TranslateToFuzzReader::makeArraySet(Type type) {
   auto* index = make(Type::i32);
   auto* ref = makeTrappingRefUse(arrayType);
   auto* value = make(elementType);
+  auto order = MemoryOrder::Unordered;
+  if (wasm.features.hasAtomics() && wasm.features.hasSharedEverything() &&
+      oneIn(2)) {
+    order = oneIn(2) ? MemoryOrder::SeqCst : MemoryOrder::AcqRel;
+  }
   // Only rarely emit a plain get which might trap. See related logic in
   // ::makePointer().
   if (allowOOB && oneIn(10)) {
-    return builder.makeArraySet(ref, index, value, MemoryOrder::Unordered);
+    return builder.makeArraySet(ref, index, value, order);
   }
-  // To avoid a trap, check the length dynamically using this pattern:
-  //
-  //   if (index < array.len) array[index] = value;
-  //
+  // To avoid a trap, check the length dynamically.
   auto check = makeArrayBoundsCheck(ref, index, funcContext->func, builder);
-  auto* set = builder.makeArraySet(
-    check.getRef, check.getIndex, value, MemoryOrder::Unordered);
+  auto* set = builder.makeArraySet(check.getRef, check.getIndex, value, order);
   return builder.makeIf(check.condition, set);
+}
+
+Expression* TranslateToFuzzReader::makeArrayRMW(Type type) {
+  bool isAny =
+    type.isRef() &&
+    HeapType(type.getHeapType().getTop()).isMaybeShared(HeapType::any);
+  if (type != Type::i32 && type != Type::i64 && !isAny) {
+    // Not a valid element type for an RMW operation.
+    return makeArrayGet(type);
+  }
+  auto& arrays = typeArrays[type];
+  assert(!arrays.empty());
+  auto arrayType = pick(arrays);
+  const auto& element = arrayType.getArray().element;
+  if (element.isPacked() || element.mutable_ == Immutable) {
+    // Cannot RMW a packed or immutable field.
+    return makeArrayGet(type);
+  }
+  AtomicRMWOp op = RMWXchg;
+  if (type == Type::i32 || type == Type::i64) {
+    op = pick(RMWAdd, RMWSub, RMWAnd, RMWOr, RMWXor, RMWXchg);
+  }
+  auto* ref = makeTrappingRefUse(arrayType);
+  auto* index = make(Type::i32);
+  auto* value = make(type);
+  auto order = oneIn(2) ? MemoryOrder::SeqCst : MemoryOrder::AcqRel;
+  // Only rarely emit a plain operation which might trap. See related logic in
+  // ::makePointer().
+  if (allowOOB && oneIn(10)) {
+    return builder.makeArrayRMW(op, ref, index, value, order);
+  }
+  // To avoid a trap, check the length dynamically.
+  auto check = makeArrayBoundsCheck(ref, index, funcContext->func, builder);
+  auto* rmw =
+    builder.makeArrayRMW(op, check.getRef, check.getIndex, value, order);
+  auto* fallback = makeTrivial(type);
+  return builder.makeIf(check.condition, rmw, fallback);
+}
+
+Expression* TranslateToFuzzReader::makeArrayCmpxchg(Type type) {
+  bool isShared = type.isRef() && type.getHeapType().isShared();
+  Type eq(HeapTypes::eq.getBasic(isShared ? Shared : Unshared), Nullable);
+  bool isEq = Type::isSubType(type, eq);
+  if (type != Type::i32 && type != Type::i64 && !isEq) {
+    // Not a valid element type for a cmpxchg operation.
+    return makeArrayGet(type);
+  }
+  auto& arrays = typeArrays[type];
+  assert(!arrays.empty());
+  auto arrayType = pick(arrays);
+  const auto& element = arrayType.getArray().element;
+  if (element.isPacked() || element.mutable_ == Immutable) {
+    // Cannot RMW a packed or immutable field.
+    return makeArrayGet(type);
+  }
+  auto* ref = makeTrappingRefUse(arrayType);
+  auto* index = make(Type::i32);
+  // For reference fields, expected can be a subtype of eq. Only use the extra
+  // flexibility occasionally because it makes the expected value less likely to
+  // be equal to the actual value.
+  auto* expected = make(isEq && oneIn(4) ? eq : type);
+  auto* replacement = make(type);
+  auto order = oneIn(2) ? MemoryOrder::SeqCst : MemoryOrder::AcqRel;
+  // Only rarely emit a plain operation which might trap. See related logic in
+  // ::makePointer().
+  if (allowOOB && oneIn(10)) {
+    return builder.makeArrayCmpxchg(ref, index, expected, replacement, order);
+  }
+  // To avoid a trap, check the length dynamically.
+  auto check = makeArrayBoundsCheck(ref, index, funcContext->func, builder);
+  auto* cmpxchg = builder.makeArrayCmpxchg(
+    check.getRef, check.getIndex, expected, replacement, order);
+  auto* fallback = makeTrivial(type);
+  return builder.makeIf(check.condition, cmpxchg, fallback);
 }
 
 Expression* TranslateToFuzzReader::makeArrayBulkMemoryOp(Type type) {
