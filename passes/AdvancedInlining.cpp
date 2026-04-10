@@ -30,7 +30,6 @@
 #include "fmt/base.h"
 #include "helper/CostModel.hpp"
 #include "ir/module-utils.h"
-#include "ir/type-updating.h"
 #include "ir/utils.h"
 #include "pass.h"
 #include "passes/pass-utils.h"
@@ -122,17 +121,6 @@ struct FunctionInfo {
   }
 };
 
-bool canHandleParams(Function *const func) {
-  // We cannot inline a function if we cannot handle placing its params in a
-  // locals, as all params become locals.
-  for (auto param : func->getParams()) {
-    if (!TypeUpdating::canHandleAsLocal(param)) {
-      return false;
-    }
-  }
-  return true;
-}
-
 using NameInfoMap = std::unordered_map<Name, FunctionInfo>;
 
 struct FunctionInfoScanner : public WalkerPass<PostWalker<FunctionInfoScanner>> {
@@ -158,11 +146,6 @@ struct FunctionInfoScanner : public WalkerPass<PostWalker<FunctionInfoScanner>> 
 
   void visitFunction(Function *curr) {
     auto &info = infos[curr->name];
-
-    if (!canHandleParams(curr)) {
-      info.inliningMode = InliningMode::Uninlineble;
-    }
-
     float const bodyCost = measureSizeCost(getModule(), curr->body);
     info.functionCost = bodyCost + getFunctionSizeCost();
     info.inlinedCost = bodyCost;

@@ -639,7 +639,7 @@ uint64_t BinaryenAddTableForLink(uint64_t module, uint64_t name, uint32_t initia
                                  [[maybe_unused]] vb::WasmModule *ctx) {
   return reinterpret_cast<uint64_t>(BinaryenAddTable(reinterpret_cast<BinaryenModuleRef>(module),
                                                      reinterpret_cast<const char *>(name), initial, maximum,
-                                                     static_cast<BinaryenType>(type)));
+                                                     static_cast<BinaryenType>(type), nullptr));
 }
 void BinaryenTableSetInitialForLink(uint64_t table, uint32_t initial, [[maybe_unused]] vb::WasmModule *ctx) {
   BinaryenTableSetInitial(reinterpret_cast<BinaryenTableRef>(table), initial);

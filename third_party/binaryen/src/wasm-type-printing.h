@@ -58,7 +58,6 @@ private:
         static_cast<TypeNames (Self::*)(HeapType)>(&Subclass::getNames),
       "Derived class must implement getNames");
 #endif
-#endif
   }
 };
 
