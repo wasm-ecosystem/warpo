@@ -2355,6 +2355,13 @@ export class Program extends DiagnosticEmitter {
         }
         case NodeKind.MethodDeclaration: {
           let methodDeclaration = <MethodDeclaration>memberDeclaration;
+          if (methodDeclaration.is(CommonFlags.Abstract) && methodDeclaration.is(CommonFlags.Generic)) {
+            this.error(
+              DiagnosticCode.An_interface_or_abstract_method_0_cannot_have_type_parameters,
+              methodDeclaration.name.range,
+              methodDeclaration.name.getReadableName()
+            );
+          }
           if (memberDeclaration.isAny(CommonFlags.Get | CommonFlags.Set)) {
             this.defineProperty(methodDeclaration, element);
           } else {
@@ -2998,6 +3005,13 @@ export class Program extends DiagnosticEmitter {
         }
         case NodeKind.MethodDeclaration: {
           let methodDeclaration = <MethodDeclaration>memberDeclaration;
+          if (methodDeclaration.is(CommonFlags.Generic)) {
+            this.error(
+              DiagnosticCode.An_interface_or_abstract_method_0_cannot_have_type_parameters,
+              methodDeclaration.name.range,
+              methodDeclaration.name.getReadableName()
+            );
+          }
           if (memberDeclaration.isAny(CommonFlags.Get | CommonFlags.Set)) {
             this.defineProperty(methodDeclaration, element);
           } else {
