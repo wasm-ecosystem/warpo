@@ -8,7 +8,7 @@ class CC implements I {
   }
 }
 
-let c:I = new CC();
+let c: I = new CC();
 c.foo(1);
 
 interface J {
@@ -21,7 +21,7 @@ class DD implements J {
   }
 }
 
-let dd:DD = new DD();
+let dd: DD = new DD();
 dd.bar<i32>(1);
 
 interface I2 {
