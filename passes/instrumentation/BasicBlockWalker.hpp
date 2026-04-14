@@ -115,7 +115,7 @@ public:
   ///@brief Inherit from CFGWalker for expression visitor
   ///
   ///@param curr Current expression
-  void visitExpression(wasm::Expression *const curr) noexcept;
+  void visitExpression(wasm::Expression *const curr);
 
   static void doEndBlock(BasicBlockWalker *self, wasm::Expression **currp);
 

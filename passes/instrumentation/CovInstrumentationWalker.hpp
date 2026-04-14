@@ -19,9 +19,9 @@ public:
   CovInstrumentationWalker(wasm::Module *const m, BasicBlockWalker &_basicBlockWalker) noexcept
       : m(m), b(wasm::Builder(*m)), basicBlockWalker(_basicBlockWalker) {}
 
-  void visitFunction(wasm::Function *const curr) noexcept;
+  void visitFunction(wasm::Function *const curr);
 
-  void visitExpression(wasm::Expression *const curr) noexcept;
+  void visitExpression(wasm::Expression *const curr);
 
   void covWalk() noexcept;
 

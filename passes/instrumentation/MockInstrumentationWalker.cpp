@@ -14,7 +14,7 @@
 
 namespace warpo::passes::instrumentation {
 
-void MockInstrumentationWalker::visitCall(wasm::Call *const curr) noexcept {
+void MockInstrumentationWalker::visitCall(wasm::Call *const curr) {
   /* generate expect infos */
   if (std::any_of(this->expectTestFuncNames.begin(), this->expectTestFuncNames.end(),
                   [&curr](std::string_view str) noexcept {
@@ -55,7 +55,7 @@ void MockInstrumentationWalker::visitCall(wasm::Call *const curr) noexcept {
   }
 }
 
-void MockInstrumentationWalker::visitCallIndirect(wasm::CallIndirect *const curr) noexcept {
+void MockInstrumentationWalker::visitCallIndirect(wasm::CallIndirect *const curr) {
   if (funcRefs.size() == 0U) {
     return;
   }

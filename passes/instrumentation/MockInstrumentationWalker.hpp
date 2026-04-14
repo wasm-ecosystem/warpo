@@ -47,7 +47,7 @@ public:
 
   const std::unordered_map<uint32_t, std::string> &getExpectInfos() const noexcept { return expectInfos; }
 
-  void visitCall(wasm::Call *const curr) noexcept;
+  void visitCall(wasm::Call *const curr);
 
   static void doPreVisit(MockInstrumentationWalker *self, wasm::Expression **currp) {
     wasm::Expression *const curr = *currp;
@@ -96,7 +96,7 @@ public:
     return expressionStack[expressionStack.size() - 1];
   }
 
-  void visitCallIndirect(wasm::CallIndirect *const curr) noexcept;
+  void visitCallIndirect(wasm::CallIndirect *const curr);
   void mockWalk() noexcept;
 
 private:

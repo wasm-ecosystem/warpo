@@ -24,7 +24,7 @@ void BasicBlockWalker::basicBlockWalk() noexcept {
   });
 }
 
-void BasicBlockWalker::visitExpression(wasm::Expression *curr) noexcept {
+void BasicBlockWalker::visitExpression(wasm::Expression *curr) {
   if (currBasicBlock == nullptr || curr->is<wasm::Block>()) {
     return;
   }

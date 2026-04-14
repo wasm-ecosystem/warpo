@@ -10,7 +10,7 @@
 
 namespace warpo::passes::instrumentation {
 
-void CovInstrumentationWalker::visitFunction(wasm::Function *const curr) noexcept {
+void CovInstrumentationWalker::visitFunction(wasm::Function *const curr) {
   using Parent =
       wasm::PostWalker<CovInstrumentationWalker, wasm::UnifiedExpressionVisitor<CovInstrumentationWalker, void>>;
   Parent::visitFunction(curr);
@@ -30,7 +30,7 @@ void CovInstrumentationWalker::visitFunction(wasm::Function *const curr) noexcep
   }
 }
 
-void CovInstrumentationWalker::visitExpression(wasm::Expression *curr) noexcept {
+void CovInstrumentationWalker::visitExpression(wasm::Expression *curr) {
   BinaryenFunctionRef const func = getFunction();
   std::vector<InstrumentPosition> const *const positionIterator = basicBlockWalker.getCovInstrumentPosition(curr);
   if (positionIterator != nullptr) {
