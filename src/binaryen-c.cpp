@@ -502,6 +502,12 @@ BinaryenFeatures BinaryenFeatureCallIndirectOverlong(void) {
 BinaryenFeatures BinaryenFeatureRelaxedAtomics(void) {
   return static_cast<BinaryenFeatures>(FeatureSet::RelaxedAtomics);
 }
+BinaryenFeatures BinaryenFeatureMultibyte(void) {
+  return static_cast<BinaryenFeatures>(FeatureSet::Multibyte);
+}
+BinaryenFeatures BinaryenFeatureCustomPageSizes(void) {
+  return static_cast<BinaryenFeatures>(FeatureSet::CustomPageSizes);
+}
 BinaryenFeatures BinaryenFeatureAll(void) {
   return static_cast<BinaryenFeatures>(FeatureSet::All);
 }
@@ -1014,6 +1020,9 @@ BinaryenOp BinaryenDemoteZeroVecF64x2ToVecF32x4(void) {
 }
 BinaryenOp BinaryenPromoteLowVecF32x4ToVecF64x2(void) {
   return PromoteLowVecF32x4ToVecF64x2;
+}
+BinaryenOp BinaryenPromoteLowVecF16x8ToVecF32x4(void) {
+  return PromoteLowVecF16x8ToVecF32x4;
 }
 BinaryenOp BinaryenRelaxedTruncSVecF32x4ToVecI32x4(void) {
   return RelaxedTruncSVecF32x4ToVecI32x4;
@@ -5333,8 +5342,10 @@ BinaryenTableRef BinaryenAddTable(BinaryenModuleRef module,
                                   const char* name,
                                   BinaryenIndex initial,
                                   BinaryenIndex maximum,
-                                  BinaryenType tableType) {
+                                  BinaryenType tableType,
+                                  BinaryenExpressionRef init) {
   auto table = Builder::makeTable(name, Type(tableType), initial, maximum);
+  table->init = init;
   table->hasExplicitName = true;
   return ((Module*)module)->addTable(std::move(table));
 }
@@ -5481,16 +5492,27 @@ void BinaryenSetMemory(BinaryenModuleRef module,
 
 // Memory segments
 
-uint32_t BinaryenGetNumMemorySegments(BinaryenModuleRef module) {
+uint32_t BinaryenGetNumDataSegments(BinaryenModuleRef module) {
   return ((Module*)module)->dataSegments.size();
 }
-uint32_t BinaryenGetMemorySegmentByteOffset(BinaryenModuleRef module,
-                                            const char* segmentName) {
-  auto* wasm = (Module*)module;
-  const auto* segment = wasm->getDataSegmentOrNull(Name(segmentName));
-  if (segment == NULL) {
-    Fatal() << "invalid segment name.";
+BinaryenDataSegmentRef BinaryenGetDataSegment(BinaryenModuleRef module,
+                                              const char* segmentName) {
+  return ((Module*)module)->getDataSegmentOrNull(Name(segmentName));
+}
+BinaryenDataSegmentRef BinaryenGetDataSegmentByIndex(BinaryenModuleRef module,
+                                                     BinaryenIndex index) {
+  const auto& dataSegments = ((Module*)module)->dataSegments;
+  if (dataSegments.size() <= index) {
+    Fatal() << "invalid memory segment index.";
   }
+  return dataSegments[index].get();
+}
+const char* BinaryenDataSegmentGetName(BinaryenDataSegmentRef segment) {
+  return ((DataSegment*)segment)->name.str.data();
+}
+uint32_t BinaryenGetDataSegmentByteOffset(BinaryenModuleRef module,
+                                          BinaryenDataSegmentRef segment) {
+  auto* wasm = (Module*)module;
 
   auto globalOffset = [&](const Expression* const& expr,
                           int64_t& result) -> bool {
@@ -5502,10 +5524,10 @@ uint32_t BinaryenGetMemorySegmentByteOffset(BinaryenModuleRef module,
   };
 
   int64_t ret;
-  if (globalOffset(segment->offset, ret)) {
+  if (globalOffset(((DataSegment*)segment)->offset, ret)) {
     return ret;
   }
-  if (auto* get = segment->offset->dynCast<GlobalGet>()) {
+  if (auto* get = ((DataSegment*)segment)->offset->dynCast<GlobalGet>()) {
     Global* global = wasm->getGlobal(get->name);
     if (globalOffset(global->init, ret)) {
       return ret;
@@ -5606,33 +5628,16 @@ bool BinaryenMemoryIs64(BinaryenModuleRef module, const char* name) {
   }
   return memory->is64();
 }
-size_t BinaryenGetMemorySegmentByteLength(BinaryenModuleRef module,
-                                          const char* segmentName) {
-  auto* wasm = (Module*)module;
-  const auto* segment = wasm->getDataSegmentOrNull(Name(segmentName));
-  if (segment == NULL) {
-    Fatal() << "invalid segment name.";
-  }
-  return segment->data.size();
+size_t BinaryenGetDataSegmentByteLength(BinaryenDataSegmentRef segment) {
+  return ((DataSegment*)segment)->data.size();
 }
-bool BinaryenGetMemorySegmentPassive(BinaryenModuleRef module,
-                                     const char* segmentName) {
-  auto* wasm = (Module*)module;
-  const auto* segment = wasm->getDataSegmentOrNull(Name(segmentName));
-  if (segment == NULL) {
-    Fatal() << "invalid segment name.";
-  }
-  return segment->isPassive;
+bool BinaryenGetDataSegmentPassive(BinaryenDataSegmentRef segment) {
+  return ((DataSegment*)segment)->isPassive;
 }
-void BinaryenCopyMemorySegmentData(BinaryenModuleRef module,
-                                   const char* segmentName,
-                                   char* buffer) {
-  auto* wasm = (Module*)module;
-  const auto* segment = wasm->getDataSegmentOrNull(Name(segmentName));
-  if (segment == NULL) {
-    Fatal() << "invalid segment name.";
-  }
-  std::copy(segment->data.cbegin(), segment->data.cend(), buffer);
+void BinaryenCopyDataSegmentData(BinaryenDataSegmentRef segment, char* buffer) {
+  std::copy(((DataSegment*)segment)->data.cbegin(),
+            ((DataSegment*)segment)->data.cend(),
+            buffer);
 }
 void BinaryenAddDataSegment(BinaryenModuleRef module,
                             const char* segmentName,
@@ -5813,7 +5818,7 @@ void BinaryenClearPassArguments(void) { globalPassOptions.arguments.clear(); }
 
 bool BinaryenHasPassToSkip(const char* pass) {
   assert(pass);
-  return globalPassOptions.passesToSkip.count(pass);
+  return globalPassOptions.passesToSkip.contains(pass);
 }
 
 void BinaryenAddPassToSkip(const char* pass) {
@@ -5870,7 +5875,7 @@ void BinaryenModuleRunPasses(BinaryenModuleRef module,
   passRunner.options = globalPassOptions;
   for (BinaryenIndex i = 0; i < numPasses; i++) {
     passRunner.add(passes[i],
-                   globalPassOptions.arguments.count(passes[i]) > 0
+                   globalPassOptions.arguments.contains(passes[i])
                      ? globalPassOptions.arguments[passes[i]]
                      : std::optional<std::string>());
   }
@@ -6122,7 +6127,7 @@ void BinaryenFunctionRunPasses(BinaryenFunctionRef func,
   passRunner.options = globalPassOptions;
   for (BinaryenIndex i = 0; i < numPasses; i++) {
     passRunner.add(passes[i],
-                   globalPassOptions.arguments.count(passes[i]) > 0
+                   globalPassOptions.arguments.contains(passes[i])
                      ? globalPassOptions.arguments[passes[i]]
                      : std::optional<std::string>());
   }
@@ -6535,19 +6540,19 @@ ExpressionRunnerRunAndDispose(ExpressionRunnerRef runner,
 
 TypeBuilderErrorReason TypeBuilderErrorReasonSelfSupertype() {
   return static_cast<TypeBuilderErrorReason>(
-    TypeBuilder::ErrorReason::SelfSupertype);
+    TypeBuilder::ErrorReasonKind::SelfSupertype);
 }
 TypeBuilderErrorReason TypeBuilderErrorReasonInvalidSupertype() {
   return static_cast<TypeBuilderErrorReason>(
-    TypeBuilder::ErrorReason::InvalidSupertype);
+    TypeBuilder::ErrorReasonKind::InvalidSupertype);
 }
 TypeBuilderErrorReason TypeBuilderErrorReasonForwardSupertypeReference() {
   return static_cast<TypeBuilderErrorReason>(
-    TypeBuilder::ErrorReason::ForwardSupertypeReference);
+    TypeBuilder::ErrorReasonKind::ForwardSupertypeReference);
 }
 TypeBuilderErrorReason TypeBuilderErrorReasonForwardChildReference() {
   return static_cast<TypeBuilderErrorReason>(
-    TypeBuilder::ErrorReason::ForwardChildReference);
+    TypeBuilder::ErrorReasonKind::ForwardChildReference);
 }
 
 TypeBuilderRef TypeBuilderCreate(BinaryenIndex size) {
@@ -6646,7 +6651,7 @@ bool TypeBuilderBuildAndDispose(TypeBuilderRef builder,
       *errorIndex = err->index;
     }
     if (errorReason) {
-      *errorReason = static_cast<TypeBuilderErrorReason>(err->reason);
+      *errorReason = static_cast<TypeBuilderErrorReason>(err->reason.getKind());
     }
     delete B;
     return false;

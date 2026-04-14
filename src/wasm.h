@@ -27,7 +27,9 @@
 #include <algorithm>
 #include <array>
 #include <cassert>
+#include <limits>
 #include <map>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <unordered_map>
@@ -120,7 +122,7 @@ enum UnaryOp {
   TruncSFloat64ToInt64,
   TruncUFloat64ToInt32,
   TruncUFloat64ToInt64,
-  // reintepret bits to int
+  // reinterpret bits to int
   ReinterpretFloat32,
   ReinterpretFloat64,
   // int to float
@@ -141,7 +143,7 @@ enum UnaryOp {
   ReinterpretInt64,
 
   // Extend signed subword-sized integer. This differs from e.g. ExtendSInt32
-  // because the input integer is in an i64 value insetad of an i32 value.
+  // because the input integer is in an i64 value instead of an i32 value.
   ExtendS8Int32,
   ExtendS16Int32,
   ExtendS8Int64,
@@ -249,6 +251,7 @@ enum UnaryOp {
   TruncSatUVecF16x8ToVecI16x8,
   ConvertSVecI16x8ToVecF16x8,
   ConvertUVecI16x8ToVecF16x8,
+  PromoteLowVecF16x8ToVecF32x4,
 
   InvalidUnary
 };
@@ -585,8 +588,6 @@ enum SIMDTernaryOp {
   Bitselect,
 
   // Relaxed SIMD
-  RelaxedMaddVecF16x8,
-  RelaxedNmaddVecF16x8,
   RelaxedMaddVecF32x4,
   RelaxedNmaddVecF32x4,
   RelaxedMaddVecF64x2,
@@ -596,6 +597,9 @@ enum SIMDTernaryOp {
   LaneselectI32x4,
   LaneselectI64x2,
   DotI8x16I7x16AddSToVecI32x4,
+  // FP16
+  MaddVecF16x8,
+  NmaddVecF16x8,
 };
 
 enum RefAsOp {
@@ -736,6 +740,8 @@ public:
     ArrayNewFixedId,
     ArrayGetId,
     ArraySetId,
+    ArrayLoadId,
+    ArrayStoreId,
     ArrayLenId,
     ArrayCopyId,
     ArrayFillId,
@@ -1090,7 +1096,7 @@ public:
   AtomicFence() = default;
   AtomicFence(MixedArena& allocator) : AtomicFence() {}
 
-  // Current wasm threads only supports sequentialy consistent atomics, but
+  // Current wasm threads only supports sequentially consistent atomics, but
   // other orderings may be added in the future. This field is reserved for
   // that, and currently set to 0.
   uint8_t order = 0;
@@ -1868,6 +1874,32 @@ public:
   void finalize();
 };
 
+class ArrayLoad : public SpecificExpression<Expression::ArrayLoadId> {
+public:
+  ArrayLoad() = default;
+  ArrayLoad(MixedArena& allocator) {}
+
+  uint8_t bytes;
+  bool signed_ = false;
+  Expression* ref;
+  Expression* index;
+
+  void finalize();
+};
+
+class ArrayStore : public SpecificExpression<Expression::ArrayStoreId> {
+public:
+  ArrayStore() = default;
+  ArrayStore(MixedArena& allocator) {}
+
+  uint8_t bytes;
+  Expression* ref;
+  Expression* index;
+  Expression* value;
+
+  void finalize();
+};
+
 class ArrayLen : public SpecificExpression<Expression::ArrayLenId> {
 public:
   ArrayLen() = default;
@@ -2522,6 +2554,7 @@ public:
   Address max = kMaxSize;
   Type addressType = Type::i32;
   Type type = Type(HeapType::func, Nullable);
+  Expression* init = nullptr;
 
   bool hasMax() { return max != kUnlimitedSize; }
   bool is64() { return addressType == Type::i64; }
@@ -2542,28 +2575,35 @@ public:
 
 class Memory : public Importable {
 public:
-  static const Address::address32_t kPageSize = 64 * 1024;
   static const Address::address64_t kUnlimitedSize = Address::address64_t(-1);
-  // In wasm32, the maximum memory size is limited by a 32-bit pointer: 4GB
-  static const Address::address32_t kMaxSize32 =
-    (uint64_t(4) * 1024 * 1024 * 1024) / kPageSize;
-  // in wasm64, the maximum number of pages
-  static const Address::address64_t kMaxSize64 = 1ull << (64 - 16);
+
+  static const uint8_t kDefaultPageSizeLog2 = 16;
+
+  static const Address::address32_t kDefaultPageSize = 1
+                                                       << kDefaultPageSizeLog2;
+
+  static const Address::address32_t kDefaultMaxSize32 =
+    1 << (32 - kDefaultPageSizeLog2);
 
   Address initial = 0; // sizes are in pages
-  Address max = kMaxSize32;
+  Address max = kDefaultMaxSize32;
+
+  uint8_t pageSizeLog2 = kDefaultPageSizeLog2;
 
   bool shared = false;
   Type addressType = Type::i32;
 
   bool hasMax() { return max != kUnlimitedSize; }
   bool is64() { return addressType == Type::i64; }
-  void clear() {
-    name = "";
-    initial = 0;
-    max = kMaxSize32;
-    shared = false;
-    addressType = Type::i32;
+  Address::address64_t maxSize32() const { return 1ull << (32 - pageSizeLog2); }
+  Address::address64_t maxSize64() const {
+    if (pageSizeLog2 == 0) {
+      return std::numeric_limits<uint64_t>::max();
+    }
+    return 1ull << (64 - pageSizeLog2);
+  }
+  Address::address64_t pageSize() const {
+    return 1ull << static_cast<Address::address64_t>(pageSizeLog2);
   }
 };
 
@@ -2660,30 +2700,30 @@ private:
 public:
   Module() = default;
 
-  Export* getExport(Name name);
-  Function* getFunction(Name name);
-  Table* getTable(Name name);
-  ElementSegment* getElementSegment(Name name);
-  Memory* getMemory(Name name);
-  DataSegment* getDataSegment(Name name);
-  Global* getGlobal(Name name);
-  Tag* getTag(Name name);
+  Export* getExport(Name name) const;
+  Function* getFunction(Name name) const;
+  Table* getTable(Name name) const;
+  ElementSegment* getElementSegment(Name name) const;
+  Memory* getMemory(Name name) const;
+  DataSegment* getDataSegment(Name name) const;
+  Global* getGlobal(Name name) const;
+  Tag* getTag(Name name) const;
 
-  Export* getExportOrNull(Name name);
-  Table* getTableOrNull(Name name);
-  Memory* getMemoryOrNull(Name name);
-  ElementSegment* getElementSegmentOrNull(Name name);
-  DataSegment* getDataSegmentOrNull(Name name);
-  Function* getFunctionOrNull(Name name);
-  Global* getGlobalOrNull(Name name);
-  Tag* getTagOrNull(Name name);
+  Export* getExportOrNull(Name name) const;
+  Table* getTableOrNull(Name name) const;
+  Memory* getMemoryOrNull(Name name) const;
+  ElementSegment* getElementSegmentOrNull(Name name) const;
+  DataSegment* getDataSegmentOrNull(Name name) const;
+  Function* getFunctionOrNull(Name name) const;
+  Global* getGlobalOrNull(Name name) const;
+  Tag* getTagOrNull(Name name) const;
 
   // get* methods that are generic over the kind, that is, items are identified
   // by their kind and their name. Otherwise, they are similar to the above
   // get* methods. These return items that can be imports.
   // TODO: Add methods for things that cannot be imports (segments).
-  Importable* getImport(ModuleItemKind kind, Name name);
-  Importable* getImportOrNull(ModuleItemKind kind, Name name);
+  Importable* getImport(ModuleItemKind kind, Name name) const;
+  Importable* getImportOrNull(ModuleItemKind kind, Name name) const;
 
   Export* addExport(Export* curr);
   Function* addFunction(Function* curr);
@@ -2750,6 +2790,7 @@ std::ostream& operator<<(std::ostream& o, wasm::ModuleHeapType pair);
 std::ostream& operator<<(std::ostream& os, wasm::MemoryOrder mo);
 std::ostream& operator<<(std::ostream& o, const wasm::ImportNames& importNames);
 std::ostream& operator<<(std::ostream& o, const Table& table);
+std::ostream& operator<<(std::ostream& o, const wasm::Global& global);
 
 } // namespace wasm
 

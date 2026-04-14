@@ -251,6 +251,9 @@ public:
   Result<> makeArrayNewFixed(HeapType type, uint32_t arity);
   Result<> makeArrayGet(HeapType type, bool signed_, MemoryOrder order);
   Result<> makeArraySet(HeapType type, MemoryOrder order);
+  Result<>
+  makeArrayLoad(HeapType arrayType, unsigned bytes, bool signed_, Type type);
+  Result<> makeArrayStore(HeapType arrayType, unsigned bytes, Type type);
   Result<> makeArrayLen();
   Result<> makeArrayCopy(HeapType destType, HeapType srcType);
   Result<> makeArrayFill(HeapType type);
@@ -463,7 +466,7 @@ private:
     // When transitioning to a new scope for a delimiter like `else` or catch,
     // most of the scope context is preserved, but some parts need to be reset.
     // `keepInput` means that control flow parameters are available at the
-    // begninning of the scope after the delimiter.
+    // beginning of the scope after the delimiter.
     void resetForDelimiter(bool keepInput) {
       exprStack.clear();
       unreachable = false;

@@ -44,7 +44,7 @@ namespace wasm {
 
 namespace {
 
-// A subsection of an orginal memory segment. If `isZero` is true, memory.fill
+// A subsection of an original memory segment. If `isZero` is true, memory.fill
 // will be used instead of memory.init for this range.
 struct Range {
   bool isZero;
@@ -315,7 +315,7 @@ void MemoryPacking::calculateRanges(Module* module,
     // Check if we can rule out a trap by it being in bounds.
     if (auto* c = segment->offset->dynCast<Const>()) {
       auto* memory = module->getMemory(segment->memory);
-      auto memorySize = memory->initial * Memory::kPageSize;
+      auto memorySize = memory->initial << memory->pageSizeLog2;
       Index start = c->value.getUnsigned();
       Index size = segment->data.size();
       Index end;
@@ -651,7 +651,7 @@ void MemoryPacking::createSplitSegments(
     if (segment->name.is()) {
       // Name the first range after the original segment and all following
       // ranges get numbered accordingly.  This means that for segments that
-      // canot be split (segments that contains a single range) the input and
+      // cannot be split (segments that contains a single range) the input and
       // output segment have the same name.
       if (!segmentCount) {
         name = segment->name;

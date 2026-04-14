@@ -62,10 +62,19 @@ given_seed = None
 
 CLOSED_WORLD_FLAG = '--closed-world'
 
-# V8 does not support shared memories when running with
-# shared-everything enabled, so do not fuzz shared-everything
-# for now. The remaining features are not yet implemented in v8.
-DISALLOWED_FEATURES_IN_V8 = ['shared-everything', 'strings', 'stack-switching', 'relaxed-atomics']
+# V8 does not support shared memories when running with shared-everything
+# enabled, so do not fuzz shared-everything for now. The remaining features are
+# not yet implemented in v8.
+#
+# Keep this in sync with bundle_clusterfuzz.py.
+DISALLOWED_FEATURES_IN_V8 = [
+    'shared-everything',
+    'fp16',
+    'strings',
+    'stack-switching',
+    'relaxed-atomics',
+    'multibyte',
+]
 
 
 # utilities
@@ -147,11 +156,11 @@ def randomize_feature_opts():
                 FEATURE_OPTS.append(possible)
                 if possible in IMPLIED_FEATURE_OPTS:
                     FEATURE_OPTS.extend(IMPLIED_FEATURE_OPTS[possible])
-    elif random.random() < 0.9:
-        # 90% of the remaining (2/3 * 0.9) use them all (0.54 probability). This is useful to maximize
-        # coverage, as enabling more features enables more optimizations and
-        # code paths, and also allows all initial contents to run.
-
+    # Otherwise, use all the features. This is useful to maximize
+    # coverage, as enabling more features enables more optimizations and
+    # code paths, and also allows all initial contents to run. However,
+    # half the time disable the specific ones that are a problem in V8.
+    elif random.random() < 0.5:
         # Disable features not allowed in V8 to increase V8 fuzzing.
         FEATURE_OPTS.extend(f'--disable-{feature}' for feature in DISALLOWED_FEATURES_IN_V8)
         # Relaxed SIMD's nondeterminism disables much but not
@@ -423,8 +432,8 @@ TRAP_PREFIX = '[trap '
 # Host limits are reported as [host limit REASON]
 HOST_LIMIT_PREFIX = '[host limit '
 
-# --fuzz-exec reports calls as [fuzz-exec] calling foo
-FUZZ_EXEC_CALL_PREFIX = '[fuzz-exec] calling'
+# --fuzz-exec reports calls as [fuzz-exec] export foo
+FUZZ_EXEC_EXPORT_PREFIX = '[fuzz-exec] export'
 
 # --fuzz-exec reports a stack limit using this notation
 STACK_LIMIT = '[trap stack limit]'
@@ -440,11 +449,11 @@ V8_UNINITIALIZED_NONDEF_LOCAL = 'uninitialized non-defaultable local'
 EXCEPTION_PREFIX = 'exception thrown: '
 
 
-# given a call line that includes FUZZ_EXEC_CALL_PREFIX, return the export that
-# is called
-def get_export_from_call_line(call_line):
-    assert FUZZ_EXEC_CALL_PREFIX in call_line
-    return call_line.split(FUZZ_EXEC_CALL_PREFIX)[1].strip()
+# given an export line that includes FUZZ_EXEC_EXPORT_PREFIX, return the export
+# that is called
+def get_export_from_export_line(export_line):
+    assert FUZZ_EXEC_EXPORT_PREFIX in export_line
+    return export_line.split(FUZZ_EXEC_EXPORT_PREFIX)[1].strip()
 
 
 # compare two strings, strictly
@@ -597,7 +606,7 @@ def note_ignored_vm_run(reason, extra_text='', amount=1):
 
 
 # Run a VM command, and filter out known issues.
-def run_vm(cmd):
+def run_vm(cmd, checked=True):
     def filter_known_issues(output):
         known_issues = [
             # can be caused by flatten, ssa, etc. passes
@@ -640,7 +649,11 @@ def run_vm(cmd):
 
     try:
         # some known issues do not cause the entire process to fail
-        return filter_known_issues(run(cmd))
+        if checked:
+            ret = run(cmd)
+        else:
+            ret = run_unchecked(cmd)
+        return filter_known_issues(ret)
     except subprocess.CalledProcessError:
         # other known issues do make it fail, so re-run without checking for
         # success and see if we should ignore it
@@ -679,10 +692,15 @@ def get_v8_extra_flags():
     if random.random() < 0.5:
         flags += ['--wasm-assert-types']
 
+    # Some other options make sense to use sometimes.
+    if random.random() < 0.5:
+        flags += ['--no-wasm-generic-wrapper']
+
     return flags
 
 
 V8_LIFTOFF_ARGS = ['--liftoff']
+V8_NO_LIFTOFF_ARGS = ['--no-liftoff']
 
 
 # Default to running with liftoff enabled, because we need to pick either
@@ -773,180 +791,188 @@ class FuzzExec(TestCaseHandler):
     def handle_pair(self, input, before_wasm, after_wasm, opts):
         run([in_bin('wasm-opt'), before_wasm] + opts + ['--fuzz-exec'])
 
+# VMs
+
+
+class BinaryenInterpreter:
+    name = 'binaryen interpreter'
+
+    def run(self, wasm):
+        output = run_bynterp(wasm, ['--fuzz-exec-before'])
+        if output != IGNORE:
+            calls = output.count(FUZZ_EXEC_EXPORT_PREFIX)
+            errors = output.count(TRAP_PREFIX) + output.count(HOST_LIMIT_PREFIX)
+            if errors > calls / 2:
+                # A significant amount of execution on this testcase
+                # simply trapped, and was not very useful, so mark it
+                # as ignored. Ideally the fuzzer testcases would be
+                # improved to reduce this number.
+                #
+                # Note that we don't change output=IGNORE as there may
+                # still be useful testing here (up to 50%), so we only
+                # note that this is a mostly-ignored run, but we do not
+                # ignore the parts that are useful.
+                #
+                # Note that we set amount to 0.5 because we are run both
+                # on the before wasm and the after wasm. Those will be
+                # in sync (because the optimizer does not remove traps)
+                # and so by setting 0.5 we only increment by 1 for the
+                # entire iteration.
+                note_ignored_vm_run('too many errors vs calls',
+                                    extra_text=f' ({calls} calls, {errors} errors)',
+                                    amount=0.5)
+        return output
+
+    def can_run(self, wasm):
+        return True
+
+    def can_compare_to_self(self):
+        return True
+
+    def can_compare_to_other(self, other):
+        return True
+
+
+class D8:
+    name = 'd8'
+
+    extra_d8_flags = []
+
+    def run_js(self, js, wasm, checked=True):
+        return run_vm([shared.V8, js] + shared.V8_OPTS + get_v8_extra_flags() + self.extra_d8_flags + ['--', wasm], checked=checked)
+
+    def run(self, wasm):
+        return self.run_js(js=get_fuzz_shell_js(), wasm=wasm)
+
+    def can_run(self, wasm):
+        return all_disallowed(DISALLOWED_FEATURES_IN_V8)
+
+    def can_compare_to_self(self):
+        # With nans, VM differences can confuse us, so only very simple VMs
+        # can compare to themselves after opts in that case.
+        return not NANS
+
+    def can_compare_to_other(self, other):
+        # Relaxed SIMD allows different behavior between VMs, so only
+        # allow comparisons to other d8 variants if it is enabled.
+        if not all_disallowed(['relaxed-simd']) and not other.name.startswith('d8'):
+            return False
+
+        # If not legalized, the JS will fail immediately, so no point to
+        # compare to others.
+        return self.can_compare_to_self() and LEGALIZE
+
+
+class D8Liftoff(D8):
+    name = 'd8_liftoff'
+
+    extra_d8_flags = V8_LIFTOFF_ARGS
+
+
+class D8Turboshaft(D8):
+    name = 'd8_turboshaft'
+
+    extra_d8_flags = V8_NO_LIFTOFF_ARGS
+
+
+class Wasm2C:
+    name = 'wasm2c'
+
+    def __init__(self):
+        # look for wabt in the path. if it's not here, don't run wasm2c
+        try:
+            wabt_bin = shared.which('wasm2c')
+            wabt_root = os.path.dirname(os.path.dirname(wabt_bin))
+            self.wasm2c_dir = os.path.join(wabt_root, 'wasm2c')
+            if not os.path.isdir(self.wasm2c_dir):
+                print('wabt found, but not wasm2c support dir')
+                self.wasm2c_dir = None
+        except Exception as e:
+            print('warning: no wabt found:', e)
+            self.wasm2c_dir = None
+
+    def can_run(self, wasm):
+        if self.wasm2c_dir is None:
+            return False
+        # if we legalize for JS, the ABI is not what C wants
+        if LEGALIZE:
+            return False
+        # relatively slow, so run it less frequently
+        if random.random() < 0.5:
+            return False
+        # wasm2c doesn't support most features
+        return all_disallowed(['exception-handling', 'simd', 'threads', 'bulk-memory', 'nontrapping-float-to-int', 'tail-call', 'sign-ext', 'reference-types', 'multivalue', 'gc', 'custom-descriptors', 'relaxed-atomics'])
+
+    def run(self, wasm):
+        run([in_bin('wasm-opt'), wasm, '--emit-wasm2c-wrapper=main.c'] + FEATURE_OPTS)
+        run(['wasm2c', wasm, '-o', 'wasm.c'])
+        compile_cmd = ['clang', 'main.c', 'wasm.c', os.path.join(self.wasm2c_dir, 'wasm-rt-impl.c'), '-I' + self.wasm2c_dir, '-lm', '-Werror']
+        run(compile_cmd)
+        return run_vm(['./a.out'])
+
+    def can_compare_to_self(self):
+        # The binaryen optimizer changes NaNs in the ways that wasm
+        # expects, but that's not quite what C has
+        return not NANS
+
+    def can_compare_to_other(self, other):
+        # C won't trap on OOB, and NaNs can differ from wasm VMs
+        return not OOB and not NANS
+
+
+class Wasm2C2Wasm(Wasm2C):
+    name = 'wasm2c2wasm'
+
+    def __init__(self):
+        super().__init__()
+
+        self.has_emcc = shared.which('emcc') is not None
+
+    def run(self, wasm):
+        run([in_bin('wasm-opt'), wasm, '--emit-wasm2c-wrapper=main.c'] + FEATURE_OPTS)
+        run(['wasm2c', wasm, '-o', 'wasm.c'])
+        compile_cmd = ['emcc', 'main.c', 'wasm.c',
+                       os.path.join(self.wasm2c_dir, 'wasm-rt-impl.c'),
+                       '-I' + self.wasm2c_dir,
+                       '-lm',
+                       '-s', 'ENVIRONMENT=shell',
+                       '-s', 'ALLOW_MEMORY_GROWTH']
+        # disable the signal handler: emcc looks like unix, but wasm has
+        # no signals
+        compile_cmd += ['-DWASM_RT_MEMCHECK_SIGNAL_HANDLER=0']
+        if random.random() < 0.5:
+            compile_cmd += ['-O' + str(random.randint(1, 3))]
+        elif random.random() < 0.5:
+            if random.random() < 0.5:
+                compile_cmd += ['-Os']
+            else:
+                compile_cmd += ['-Oz']
+        # avoid pass-debug on the emcc invocation itself (which runs
+        # binaryen to optimize the wasm), as the wasm here can be very
+        # large and it isn't what we are focused on testing here
+        with no_pass_debug():
+            run(compile_cmd)
+        return run_d8_js(abspath('a.out.js'))
+
+    def can_run(self, wasm):
+        # quite slow (more steps), so run it less frequently
+        if random.random() < 0.8:
+            return False
+        # prefer not to run if the wasm is very large, as it can OOM
+        # the JS engine.
+        return super().can_run(wasm) and self.has_emcc and \
+            os.path.getsize(wasm) <= INPUT_SIZE_MEAN
+
+    def can_compare_to_other(self, other):
+        # NaNs can differ from wasm VMs
+        return not NANS
+
 
 class CompareVMs(TestCaseHandler):
     frequency = 1
 
     def __init__(self):
         super().__init__()
-
-        class BinaryenInterpreter:
-            name = 'binaryen interpreter'
-
-            def run(self, wasm):
-                output = run_bynterp(wasm, ['--fuzz-exec-before'])
-                if output != IGNORE:
-                    calls = output.count(FUZZ_EXEC_CALL_PREFIX)
-                    errors = output.count(TRAP_PREFIX) + output.count(HOST_LIMIT_PREFIX)
-                    if errors > calls / 2:
-                        # A significant amount of execution on this testcase
-                        # simply trapped, and was not very useful, so mark it
-                        # as ignored. Ideally the fuzzer testcases would be
-                        # improved to reduce this number.
-                        #
-                        # Note that we don't change output=IGNORE as there may
-                        # still be useful testing here (up to 50%), so we only
-                        # note that this is a mostly-ignored run, but we do not
-                        # ignore the parts that are useful.
-                        #
-                        # Note that we set amount to 0.5 because we are run both
-                        # on the before wasm and the after wasm. Those will be
-                        # in sync (because the optimizer does not remove traps)
-                        # and so by setting 0.5 we only increment by 1 for the
-                        # entire iteration.
-                        note_ignored_vm_run('too many errors vs calls',
-                                            extra_text=f' ({calls} calls, {errors} errors)',
-                                            amount=0.5)
-                return output
-
-            def can_run(self, wasm):
-                return True
-
-            def can_compare_to_self(self):
-                return True
-
-            def can_compare_to_other(self, other):
-                return True
-
-        class D8:
-            name = 'd8'
-
-            def run(self, wasm, extra_d8_flags=[]):
-                return run_vm([shared.V8, get_fuzz_shell_js()] + shared.V8_OPTS + get_v8_extra_flags() + extra_d8_flags + ['--', wasm])
-
-            def can_run(self, wasm):
-                return all_disallowed(DISALLOWED_FEATURES_IN_V8)
-
-            def can_compare_to_self(self):
-                # With nans, VM differences can confuse us, so only very simple VMs
-                # can compare to themselves after opts in that case.
-                return not NANS
-
-            def can_compare_to_other(self, other):
-                # Relaxed SIMD allows different behavior between VMs, so only
-                # allow comparisons to other d8 variants if it is enabled.
-                if not all_disallowed(['relaxed-simd']) and not other.name.startswith('d8'):
-                    return False
-
-                # If not legalized, the JS will fail immediately, so no point to
-                # compare to others.
-                return self.can_compare_to_self() and LEGALIZE
-
-        class D8Liftoff(D8):
-            name = 'd8_liftoff'
-
-            def run(self, wasm):
-                return super().run(wasm, extra_d8_flags=V8_LIFTOFF_ARGS)
-
-        class D8Turboshaft(D8):
-            name = 'd8_turboshaft'
-
-            def run(self, wasm):
-                flags = ['--no-liftoff']
-                if random.random() < 0.5:
-                    flags += ['--no-wasm-generic-wrapper']
-                return super().run(wasm, extra_d8_flags=flags)
-
-        class Wasm2C:
-            name = 'wasm2c'
-
-            def __init__(self):
-                # look for wabt in the path. if it's not here, don't run wasm2c
-                try:
-                    wabt_bin = shared.which('wasm2c')
-                    wabt_root = os.path.dirname(os.path.dirname(wabt_bin))
-                    self.wasm2c_dir = os.path.join(wabt_root, 'wasm2c')
-                    if not os.path.isdir(self.wasm2c_dir):
-                        print('wabt found, but not wasm2c support dir')
-                        self.wasm2c_dir = None
-                except Exception as e:
-                    print('warning: no wabt found:', e)
-                    self.wasm2c_dir = None
-
-            def can_run(self, wasm):
-                if self.wasm2c_dir is None:
-                    return False
-                # if we legalize for JS, the ABI is not what C wants
-                if LEGALIZE:
-                    return False
-                # relatively slow, so run it less frequently
-                if random.random() < 0.5:
-                    return False
-                # wasm2c doesn't support most features
-                return all_disallowed(['exception-handling', 'simd', 'threads', 'bulk-memory', 'nontrapping-float-to-int', 'tail-call', 'sign-ext', 'reference-types', 'multivalue', 'gc', 'custom-descriptors', 'relaxed-atomics'])
-
-            def run(self, wasm):
-                run([in_bin('wasm-opt'), wasm, '--emit-wasm2c-wrapper=main.c'] + FEATURE_OPTS)
-                run(['wasm2c', wasm, '-o', 'wasm.c'])
-                compile_cmd = ['clang', 'main.c', 'wasm.c', os.path.join(self.wasm2c_dir, 'wasm-rt-impl.c'), '-I' + self.wasm2c_dir, '-lm', '-Werror']
-                run(compile_cmd)
-                return run_vm(['./a.out'])
-
-            def can_compare_to_self(self):
-                # The binaryen optimizer changes NaNs in the ways that wasm
-                # expects, but that's not quite what C has
-                return not NANS
-
-            def can_compare_to_other(self, other):
-                # C won't trap on OOB, and NaNs can differ from wasm VMs
-                return not OOB and not NANS
-
-        class Wasm2C2Wasm(Wasm2C):
-            name = 'wasm2c2wasm'
-
-            def __init__(self):
-                super().__init__()
-
-                self.has_emcc = shared.which('emcc') is not None
-
-            def run(self, wasm):
-                run([in_bin('wasm-opt'), wasm, '--emit-wasm2c-wrapper=main.c'] + FEATURE_OPTS)
-                run(['wasm2c', wasm, '-o', 'wasm.c'])
-                compile_cmd = ['emcc', 'main.c', 'wasm.c',
-                               os.path.join(self.wasm2c_dir, 'wasm-rt-impl.c'),
-                               '-I' + self.wasm2c_dir,
-                               '-lm',
-                               '-s', 'ENVIRONMENT=shell',
-                               '-s', 'ALLOW_MEMORY_GROWTH']
-                # disable the signal handler: emcc looks like unix, but wasm has
-                # no signals
-                compile_cmd += ['-DWASM_RT_MEMCHECK_SIGNAL_HANDLER=0']
-                if random.random() < 0.5:
-                    compile_cmd += ['-O' + str(random.randint(1, 3))]
-                elif random.random() < 0.5:
-                    if random.random() < 0.5:
-                        compile_cmd += ['-Os']
-                    else:
-                        compile_cmd += ['-Oz']
-                # avoid pass-debug on the emcc invocation itself (which runs
-                # binaryen to optimize the wasm), as the wasm here can be very
-                # large and it isn't what we are focused on testing here
-                with no_pass_debug():
-                    run(compile_cmd)
-                return run_d8_js(abspath('a.out.js'))
-
-            def can_run(self, wasm):
-                # quite slow (more steps), so run it less frequently
-                if random.random() < 0.8:
-                    return False
-                # prefer not to run if the wasm is very large, as it can OOM
-                # the JS engine.
-                return super().can_run(wasm) and self.has_emcc and \
-                    os.path.getsize(wasm) <= INPUT_SIZE_MEAN
-
-            def can_compare_to_other(self, other):
-                # NaNs can differ from wasm VMs
-                return not NANS
 
         # the binaryen interpreter is specifically useful for various things
         self.bynterpreter = BinaryenInterpreter()
@@ -1131,14 +1157,14 @@ class Wasm2JS(TestCaseHandler):
             # we can't test this function, which the trap is in the middle of.
             # erase everything from this function's output and onward, so we
             # only compare the previous trap-free code
-            call_start = interpreter.rindex(FUZZ_EXEC_CALL_PREFIX, 0, trap_index)
+            call_start = interpreter.rindex(FUZZ_EXEC_EXPORT_PREFIX, 0, trap_index)
             call_end = interpreter.index('\n', call_start)
-            call_line = interpreter[call_start:call_end]
+            export_line = interpreter[call_start:call_end]
             # fix up the call line so it matches the JS
-            fixed_call_line = fix_output_for_js(call_line)
-            before = before[:before.index(fixed_call_line)]
-            after = after[:after.index(fixed_call_line)]
-            interpreter = interpreter[:interpreter.index(call_line)]
+            fixed_export_line = fix_output_for_js(export_line)
+            before = before[:before.index(fixed_export_line)]
+            after = after[:after.index(fixed_export_line)]
+            interpreter = interpreter[:interpreter.index(export_line)]
 
         if compare_before_to_after:
             compare_between_vms(before, after, 'Wasm2JS (before/after)')
@@ -1293,14 +1319,14 @@ class TrapsNeverHappen(TestCaseHandler):
             # finding the call line right before us. that is, the output looks
             # like this:
             #
-            #   [fuzz-exec] calling foo
+            #   [fuzz-exec] export foo
             #   .. stuff happening during foo ..
-            #   [fuzz-exec] calling bar
+            #   [fuzz-exec] export bar
             #   .. stuff happening during bar ..
             #
             # if the trap happened during bar, the relevant call line is
-            # "[fuzz-exec] calling bar".
-            call_start = before.rfind(FUZZ_EXEC_CALL_PREFIX, 0, trap_index)
+            # "[fuzz-exec] export bar".
+            call_start = before.rfind(FUZZ_EXEC_EXPORT_PREFIX, 0, trap_index)
             if call_start < 0:
                 # the trap happened before we called an export, so it occured
                 # during startup (the start function, or memory segment
@@ -1311,17 +1337,17 @@ class TrapsNeverHappen(TestCaseHandler):
             # be prefixes of each other
             call_end = before.index(os.linesep, call_start) + 1
             # we now know the contents of the call line after which the trap
-            # happens, which is something like "[fuzz-exec] calling bar", and
+            # happens, which is something like "[fuzz-exec] export bar", and
             # it is unique since it contains the function being called.
-            call_line = before[call_start:call_end]
-            trapping_export = get_export_from_call_line(call_line)
+            export_line = before[call_start:call_end]
+            trapping_export = get_export_from_export_line(export_line)
 
             # now that we know the trapping export, we can leave only the safe
             # ones that are before it
             safe_exports = []
             for line in before.splitlines():
-                if FUZZ_EXEC_CALL_PREFIX in line:
-                    export = get_export_from_call_line(line)
+                if FUZZ_EXEC_EXPORT_PREFIX in line:
+                    export = get_export_from_export_line(line)
                     if export == trapping_export:
                         break
                     safe_exports.append(export)
@@ -1370,18 +1396,27 @@ class CtorEval(TestCaseHandler):
     frequency = 0.1
 
     def handle(self, wasm):
-        # get the expected execution results.
-        wasm_exec = run_bynterp(wasm, ['--fuzz-exec-before'])
-
-        # get the list of func exports, so we can tell ctor-eval what to eval.
-        ctors = ','.join(get_exports(wasm, ['func']))
+        # Get the list of func exports, so we can tell ctor-eval what to eval.
+        func_exports = get_exports(wasm, ['func'])
+        # Avoid names that need escaping. Just allow simple names like func_256,
+        # which the fuzzer emits
+        # TODO: fix escaping in the tool and here
+        func_exports = [export for export in func_exports if re.fullmatch(r'^[0-9a-zA-Z_]+$', export)]
+        ctors = ','.join(func_exports)
         if not ctors:
             return
 
-        # Fix escaping of the names, as we will be passing them as commandline
-        # parameters below (e.g. we want --ctors=foo\28bar and not
-        # --ctors=foo\\28bar; that extra escaping \ would cause an error).
-        ctors = ctors.replace('\\\\', '\\')
+        # The fuzzer evaluates exports in the order they are given, so if there
+        # are global exports it may read them before the ctors are run - but
+        # the ctors are meant to run before anything else, and can modify
+        # those global values. Keep only function exports to avoid this
+        # confusion.
+        filtered = wasm + '.filtered.wasm'
+        filter_exports(wasm, filtered, func_exports)
+        wasm = filtered
+
+        # get the expected execution results.
+        wasm_exec = run_bynterp(wasm, ['--fuzz-exec-before'])
 
         # eval the wasm.
         # we can use --ignore-external-input because the fuzzer passes in 0 to
@@ -1427,10 +1462,10 @@ def traps_in_instantiation(output):
         trap_index = output.find('*exception*')
         if trap_index == -1:
             return False
-    call_index = output.find(FUZZ_EXEC_CALL_PREFIX)
-    if call_index == -1:
+    export_index = output.find(FUZZ_EXEC_EXPORT_PREFIX)
+    if export_index == -1:
         return True
-    return trap_index < call_index
+    return trap_index < export_index
 
 
 # Tests wasm-merge
@@ -1565,8 +1600,8 @@ class Split(TestCaseHandler):
         # primary module, but only the original ones.
         exports = []
         for line in output.splitlines():
-            if FUZZ_EXEC_CALL_PREFIX in line:
-                exports.append(get_export_from_call_line(line))
+            if FUZZ_EXEC_EXPORT_PREFIX in line:
+                exports.append(get_export_from_export_line(line))
 
         # pick which to split out, with a random rate of picking (biased towards
         # 0.5).
@@ -1760,7 +1795,7 @@ class ClusterFuzz(TestCaseHandler):
                  fuzz_file,
                  'extracted'])
             if get_exports('extracted.0.wasm', ['func']):
-                assert FUZZ_EXEC_CALL_PREFIX in output
+                assert FUZZ_EXEC_EXPORT_PREFIX in output
 
     def ensure(self):
         # The first time we actually run, set things up: make a bundle like the
@@ -1871,8 +1906,9 @@ class Two(TestCaseHandler):
 
         # Make sure that we actually executed all exports from both
         # wasm files.
-        exports = get_exports(wasm, ['func']) + get_exports(second_wasm, ['func'])
-        calls_in_output = output.count(FUZZ_EXEC_CALL_PREFIX)
+        exports = get_exports(wasm, ['func', 'global'])
+        exports += get_exports(second_wasm, ['func', 'global'])
+        calls_in_output = output.count(FUZZ_EXEC_EXPORT_PREFIX)
         if calls_in_output == 0:
             print(f'warning: no calls in output. output:\n{output}')
         assert calls_in_output == len(exports), exports
@@ -1989,11 +2025,11 @@ class Two(TestCaseHandler):
             b = merged_output_lines[i]
             if a == b:
                 continue
-            if a.startswith(FUZZ_EXEC_CALL_PREFIX):
+            if a.startswith(FUZZ_EXEC_EXPORT_PREFIX):
                 # Fix up
-                #   [fuzz-exec] calling foo/bar
+                #   [fuzz-exec] export foo/bar
                 # for different foo/bar. Just copy the original.
-                assert b.startswith(FUZZ_EXEC_CALL_PREFIX)
+                assert b.startswith(FUZZ_EXEC_EXPORT_PREFIX)
                 merged_output_lines[i] = output_lines[i]
             elif a.startswith(FUZZ_EXEC_NOTE_RESULT):
                 # Fix up
@@ -2252,7 +2288,7 @@ class BranchHintPreservation(TestCaseHandler):
         # any logging before the first call.)
         line_groups = [['before calls']]
         for line in out.splitlines():
-            if line.startswith(FUZZ_EXEC_CALL_PREFIX):
+            if line.startswith(FUZZ_EXEC_EXPORT_PREFIX):
                 line_groups.append([line])
             else:
                 line_groups[-1].append(line)
@@ -2282,7 +2318,7 @@ testcase_handlers = [
     TrapsNeverHappen(),
     CtorEval(),
     Merge(),
-    Split(),
+    # Split(), # https://github.com/WebAssembly/binaryen/issues/8510
     RoundtripText(),
     ClusterFuzz(),
     Two(),

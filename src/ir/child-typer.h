@@ -22,7 +22,7 @@
 
 namespace wasm {
 
-// CRTP visitor for determining constaints on the types of expression children.
+// CRTP visitor for determining constraints on the types of expression children.
 // For each child of the visited expression, calls a callback with the VarTypes
 // giving the constraint on the child:
 //
@@ -447,6 +447,7 @@ template<typename Subtype> struct ChildTyper : OverriddenVisitor<Subtype> {
       case TruncSatUVecF16x8ToVecI16x8:
       case ConvertSVecI16x8ToVecF16x8:
       case ConvertUVecI16x8ToVecF16x8:
+      case PromoteLowVecF16x8ToVecF32x4:
       case AnyTrueVec128:
       case AllTrueVecI8x16:
       case AllTrueVecI16x8:
@@ -1002,8 +1003,12 @@ template<typename Subtype> struct ChildTyper : OverriddenVisitor<Subtype> {
     assert(curr->index < fields.size());
     note(&curr->ref, Type(*ht, Nullable));
     auto type = fields[curr->index].type;
-    // TODO: (shared eq) as appropriate.
-    note(&curr->expected, type.isRef() ? Type(HeapType::eq, Nullable) : type);
+    auto expectedType = type;
+    if (expectedType.isRef()) {
+      expectedType =
+        Type(HeapTypes::eq.getBasic(type.getHeapType().getShared()), Nullable);
+    }
+    note(&curr->expected, expectedType);
     note(&curr->replacement, type);
   }
 
@@ -1094,6 +1099,39 @@ template<typename Subtype> struct ChildTyper : OverriddenVisitor<Subtype> {
     note(&curr->ref, Type(*ht, Nullable));
     note(&curr->index, Type::i32);
     note(&curr->value, type);
+  }
+
+  void visitArrayLoad(ArrayLoad* curr,
+                      std::optional<HeapType> ht = std::nullopt) {
+    if (!ht) {
+      if (!curr->ref->type.isRef()) {
+        self().noteUnknown();
+        return;
+      }
+      ht = curr->ref->type.getHeapType();
+    }
+    note(&curr->ref, Type(*ht, Nullable));
+    note(&curr->index, Type::i32);
+  }
+
+  void visitArrayStore(ArrayStore* curr,
+                       std::optional<HeapType> ht = std::nullopt,
+                       std::optional<Type> valueType = std::nullopt) {
+    if (!ht) {
+      if (!curr->ref->type.isRef()) {
+        self().noteUnknown();
+        return;
+      }
+      ht = curr->ref->type.getHeapType();
+    }
+    auto actualValueType = valueType ? *valueType : curr->value->type;
+    if (actualValueType == Type::unreachable) {
+      self().noteUnknown();
+      return;
+    }
+    note(&curr->ref, Type(*ht, Nullable));
+    note(&curr->index, Type::i32);
+    note(&curr->value, actualValueType);
   }
 
   void visitArrayLen(ArrayLen* curr) {

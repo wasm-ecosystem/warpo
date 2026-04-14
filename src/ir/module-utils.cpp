@@ -73,6 +73,7 @@ copyFunctionWithoutAdd(Function* func,
   ret->localIndices = func->localIndices;
   ret->body = ExpressionManipulator::copy(func->body, out);
   metadata::copyBetweenFunctions(func->body, ret->body, func, ret.get());
+  ret->funcAnnotations = func->funcAnnotations;
   ret->prologLocation = func->prologLocation;
   ret->epilogLocation = func->epilogLocation;
   // Update file indices if needed
@@ -173,6 +174,7 @@ Memory* copyMemory(const Memory* memory, Module& out) {
   ret->hasExplicitName = memory->hasExplicitName;
   ret->initial = memory->initial;
   ret->max = memory->max;
+  ret->pageSizeLog2 = memory->pageSizeLog2;
   ret->shared = memory->shared;
   ret->addressType = memory->addressType;
   ret->module = memory->module;
@@ -263,7 +265,7 @@ void copyModuleItems(const Module& in, Module& out) {
   }
 
   for (auto& [type, names] : in.typeNames) {
-    if (!out.typeNames.count(type)) {
+    if (!out.typeNames.contains(type)) {
       out.typeNames[type] = names;
     }
   }
@@ -361,8 +363,15 @@ struct TypeInfos {
     }
   }
   void note(Type type) {
-    for (HeapType ht : type.getHeapTypeChildren()) {
-      note(ht);
+    // Handle the common case of a ref directly, to avoid a scan of children.
+    if (type.isRef()) {
+      note(type.getHeapType());
+      return;
+    }
+    if (type.isTuple()) {
+      for (HeapType ht : type.getHeapTypeChildren()) {
+        note(ht);
+      }
     }
   }
   // Ensure a type is included without increasing its count.
@@ -372,8 +381,14 @@ struct TypeInfos {
     }
   }
   void include(Type type) {
-    for (HeapType ht : type.getHeapTypeChildren()) {
-      include(ht);
+    if (type.isRef()) {
+      include(type.getHeapType());
+      return;
+    }
+    if (type.isTuple()) {
+      for (HeapType ht : type.getHeapTypeChildren()) {
+        include(ht);
+      }
     }
   }
   void noteControlFlow(Signature sig) {
@@ -388,7 +403,7 @@ struct TypeInfos {
       note(sig.results);
     }
   }
-  bool contains(HeapType type) { return info.count(type); }
+  bool contains(HeapType type) { return info.contains(type); }
 };
 
 struct CodeScanner : PostWalker<CodeScanner> {
