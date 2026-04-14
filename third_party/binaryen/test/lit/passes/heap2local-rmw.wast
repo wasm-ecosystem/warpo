@@ -1355,6 +1355,73 @@
 )
 
 (module
+  ;; CHECK:      (type $struct (struct (field (mut (ref null $struct)))))
+  (type $struct (struct (field (mut (ref null $struct)))))
+
+  ;; CHECK:      (type $1 (func))
+
+  ;; CHECK:      (export "test" (func $cmpxchg-ref-and-expected))
+
+  ;; CHECK:      (func $cmpxchg-ref-and-expected (type $1)
+  ;; CHECK-NEXT:  (local $local (ref $struct))
+  ;; CHECK-NEXT:  (local $1 (ref null $struct))
+  ;; CHECK-NEXT:  (local $2 (ref null $struct))
+  ;; CHECK-NEXT:  (local $3 eqref)
+  ;; CHECK-NEXT:  (local $4 (ref null $struct))
+  ;; CHECK-NEXT:  (drop
+  ;; CHECK-NEXT:   (block (result (ref null $struct))
+  ;; CHECK-NEXT:    (drop
+  ;; CHECK-NEXT:     (block (result nullref)
+  ;; CHECK-NEXT:      (local.set $1
+  ;; CHECK-NEXT:       (ref.null none)
+  ;; CHECK-NEXT:      )
+  ;; CHECK-NEXT:      (ref.null none)
+  ;; CHECK-NEXT:     )
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (local.set $3
+  ;; CHECK-NEXT:     (ref.null none)
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (local.set $4
+  ;; CHECK-NEXT:     (ref.null none)
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (local.set $2
+  ;; CHECK-NEXT:     (local.get $1)
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (if
+  ;; CHECK-NEXT:     (ref.eq
+  ;; CHECK-NEXT:      (local.get $1)
+  ;; CHECK-NEXT:      (local.get $3)
+  ;; CHECK-NEXT:     )
+  ;; CHECK-NEXT:     (then
+  ;; CHECK-NEXT:      (local.set $1
+  ;; CHECK-NEXT:       (local.get $4)
+  ;; CHECK-NEXT:      )
+  ;; CHECK-NEXT:     )
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (local.get $2)
+  ;; CHECK-NEXT:   )
+  ;; CHECK-NEXT:  )
+  ;; CHECK-NEXT: )
+  (func $cmpxchg-ref-and-expected (export "test")
+    (local $local (ref $struct))
+    (drop
+      ;; The allocation flows to both `ref` and `expected` fields. We must
+      ;; prioritize the optimization for flows through `ref`. Otherwise, if we
+      ;; did the optimization for `expected` first, we would end up with a
+      ;; struct.get of the ref value, but the ref value would have been changed
+      ;; to a null and we would introduce a trap.
+      (struct.atomic.rmw.cmpxchg $struct 0
+        (local.tee $local
+          (struct.new_default $struct)
+        )
+        (local.get $local)
+        (ref.null none)
+      )
+    )
+  )
+)
+
+(module
   (type $array (shared (array i8)))
   ;; CHECK:      (type $struct (shared (struct (field (mut (ref null (shared array)))))))
   (type $struct (shared (struct (field (mut (ref null (shared array)))))))
@@ -1398,10 +1465,14 @@
   ;; CHECK:      (func $array-cmpxchg-expected (type $1) (param $array (ref $array))
   ;; CHECK-NEXT:  (local $1 eqref)
   ;; CHECK-NEXT:  (local $2 (ref null $array))
+  ;; CHECK-NEXT:  (local $3 i32)
   ;; CHECK-NEXT:  (drop
   ;; CHECK-NEXT:   (block (result eqref)
   ;; CHECK-NEXT:    (local.set $2
   ;; CHECK-NEXT:     (local.get $array)
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (local.set $3
+  ;; CHECK-NEXT:     (i32.const 0)
   ;; CHECK-NEXT:    )
   ;; CHECK-NEXT:    (drop
   ;; CHECK-NEXT:     (block (result nullref)
@@ -1416,7 +1487,7 @@
   ;; CHECK-NEXT:    )
   ;; CHECK-NEXT:    (array.atomic.get $array
   ;; CHECK-NEXT:     (local.get $2)
-  ;; CHECK-NEXT:     (i32.const 0)
+  ;; CHECK-NEXT:     (local.get $3)
   ;; CHECK-NEXT:    )
   ;; CHECK-NEXT:   )
   ;; CHECK-NEXT:  )
@@ -1433,6 +1504,107 @@
           (i32.const 1)
         )
         (ref.null none)
+      )
+    )
+  )
+)
+
+(module
+  ;; CHECK:      (type $array (array (mut eqref)))
+  (type $array (array (mut eqref)))
+  ;; CHECK:      (type $1 (func (param (ref $array))))
+
+  ;; CHECK:      (type $2 (func (result i32)))
+
+  ;; CHECK:      (type $3 (func (result eqref)))
+
+  ;; CHECK:      (import "" "" (func $effect-i32 (type $2) (result i32)))
+  (import "" "" (func $effect-i32 (result i32)))
+  ;; CHECK:      (import "" "" (func $effect-eq (type $3) (result eqref)))
+  (import "" "" (func $effect-eq (result eqref)))
+
+  ;; CHECK:      (func $array-cmpxchg-expected-index-effect (type $1) (param $array (ref $array))
+  ;; CHECK-NEXT:  (local $1 eqref)
+  ;; CHECK-NEXT:  (local $2 (ref null $array))
+  ;; CHECK-NEXT:  (local $3 i32)
+  ;; CHECK-NEXT:  (drop
+  ;; CHECK-NEXT:   (block (result eqref)
+  ;; CHECK-NEXT:    (local.set $2
+  ;; CHECK-NEXT:     (local.get $array)
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (local.set $3
+  ;; CHECK-NEXT:     (call $effect-i32)
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (drop
+  ;; CHECK-NEXT:     (block (result nullref)
+  ;; CHECK-NEXT:      (local.set $1
+  ;; CHECK-NEXT:       (ref.null none)
+  ;; CHECK-NEXT:      )
+  ;; CHECK-NEXT:      (ref.null none)
+  ;; CHECK-NEXT:     )
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (drop
+  ;; CHECK-NEXT:     (call $effect-eq)
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (array.atomic.get $array
+  ;; CHECK-NEXT:     (local.get $2)
+  ;; CHECK-NEXT:     (local.get $3)
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:   )
+  ;; CHECK-NEXT:  )
+  ;; CHECK-NEXT: )
+  (func $array-cmpxchg-expected-index-effect (param $array (ref $array))
+    (drop
+      ;; The index is non-constant, but we can still optimize the expected
+      ;; field. We must preserve the index and the order of its effects.
+      (array.atomic.rmw.cmpxchg $array
+        (local.get $array)
+        (call $effect-i32)
+        (array.new_default $array (i32.const 1))
+        (call $effect-eq)
+      )
+    )
+  )
+
+  ;; CHECK:      (func $array-cmpxchg-expected-index-oob (type $1) (param $array (ref $array))
+  ;; CHECK-NEXT:  (local $1 eqref)
+  ;; CHECK-NEXT:  (local $2 (ref null $array))
+  ;; CHECK-NEXT:  (local $3 i32)
+  ;; CHECK-NEXT:  (drop
+  ;; CHECK-NEXT:   (block (result eqref)
+  ;; CHECK-NEXT:    (local.set $2
+  ;; CHECK-NEXT:     (local.get $array)
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (local.set $3
+  ;; CHECK-NEXT:     (i32.const -1)
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (drop
+  ;; CHECK-NEXT:     (block (result nullref)
+  ;; CHECK-NEXT:      (local.set $1
+  ;; CHECK-NEXT:       (ref.null none)
+  ;; CHECK-NEXT:      )
+  ;; CHECK-NEXT:      (ref.null none)
+  ;; CHECK-NEXT:     )
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (drop
+  ;; CHECK-NEXT:     (call $effect-eq)
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:    (array.atomic.get $array
+  ;; CHECK-NEXT:     (local.get $2)
+  ;; CHECK-NEXT:     (local.get $3)
+  ;; CHECK-NEXT:    )
+  ;; CHECK-NEXT:   )
+  ;; CHECK-NEXT:  )
+  ;; CHECK-NEXT: )
+  (func $array-cmpxchg-expected-index-oob (param $array (ref $array))
+    (drop
+      ;; Now the index is constant but surely out-of-bounds. We still optimize
+      ;; the same, way leaving the array.atomic.get to trap.
+      (array.atomic.rmw.cmpxchg $array
+        (local.get $array)
+        (i32.const -1)
+        (array.new_default $array (i32.const 1))
+        (call $effect-eq)
       )
     )
   )

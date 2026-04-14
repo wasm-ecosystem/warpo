@@ -881,6 +881,7 @@ struct InfoCollector
               info.links.push_back({SignatureResultLocation{subType, i},
                                     ResultLocation{getFunction(), i}});
             }
+            return true;
           });
       }
     }
@@ -3136,28 +3137,30 @@ void Flower::filterPackedDataReads(PossibleContents& contents,
   Expression* ref;
   Index index;
   unsigned bytes = 0;
-  Type resultType = Type::none;
   if (auto* get = expr->dynCast<StructGet>()) {
     signed_ = get->signed_;
     ref = get->ref;
     index = get->index;
-    resultType = get->type;
   } else if (auto* get = expr->dynCast<ArrayGet>()) {
     signed_ = get->signed_;
     ref = get->ref;
     // Arrays are treated as having a single field.
     index = 0;
-    resultType = get->type;
   } else if (auto* load = expr->dynCast<ArrayLoad>()) {
     signed_ = load->signed_;
     ref = load->ref;
     index = 0;
     bytes = load->bytes;
-    resultType = load->type;
   } else {
     WASM_UNREACHABLE("bad packed read");
   }
   if (!signed_) {
+    return;
+  }
+
+  Type resultType = expr->type;
+  if (resultType == Type::unreachable) {
+    // This read never executes.
     return;
   }
 
@@ -3280,6 +3283,7 @@ void Flower::readFromData(Type declaredType,
                            [&](HeapType type, Index depth) {
                              connectDuringFlow(DataLocation{type, fieldIndex},
                                                coneReadLocation);
+                             return true;
                            });
 
     // TODO: we can end up with redundant links here if we see one cone first
@@ -3349,6 +3353,7 @@ void Flower::writeToData(Expression* ref,
     cone.type.getHeapType(), normalizedDepth, [&](HeapType type, Index depth) {
       auto heapLoc = DataLocation{type, fieldIndex};
       updateContents(heapLoc, valueContents);
+      return true;
     });
 }
 

@@ -188,7 +188,7 @@ struct ExnData {
 //
 // The key idea in this approach to suspending and resuming is that to suspend
 // you want to unwind the stack - you "jump" back to some outer scope - and to
-// reume, we want to rewind the stack - to get everything back exactly the way
+// resume, we want to rewind the stack - to get everything back exactly the way
 // it was, so we can pick things back up. And, to achieve that, we really just
 // need two things:
 //    * To rewind the call stack. If we called foo() and then bar(), we want to
@@ -1164,6 +1164,8 @@ public:
         return value.convertSToF16x8();
       case ConvertUVecI16x8ToVecF16x8:
         return value.convertUToF16x8();
+      case PromoteLowVecF16x8ToVecF32x4:
+        return value.promoteLowF16x8ToF32x4();
       case InvalidUnary:
         WASM_UNREACHABLE("invalid unary op");
     }
@@ -1958,7 +1960,7 @@ public:
   Flow visitTryTable(TryTable* curr) { WASM_UNREACHABLE("unimp"); }
   Flow visitThrow(Throw* curr) {
     // Single-module implementation. This is used from Precompute, for example.
-    // It is overriden in ModuleRunner to add logic for finding the proper
+    // It is overridden in ModuleRunner to add logic for finding the proper
     // imported tag (which single-module cases don't care about).
     Literals arguments;
     VISIT_ARGUMENTS(flow, curr->operands, arguments);

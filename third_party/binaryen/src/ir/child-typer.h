@@ -22,7 +22,7 @@
 
 namespace wasm {
 
-// CRTP visitor for determining constaints on the types of expression children.
+// CRTP visitor for determining constraints on the types of expression children.
 // For each child of the visited expression, calls a callback with the VarTypes
 // giving the constraint on the child:
 //
@@ -447,6 +447,7 @@ template<typename Subtype> struct ChildTyper : OverriddenVisitor<Subtype> {
       case TruncSatUVecF16x8ToVecI16x8:
       case ConvertSVecI16x8ToVecF16x8:
       case ConvertUVecI16x8ToVecF16x8:
+      case PromoteLowVecF16x8ToVecF32x4:
       case AnyTrueVec128:
       case AllTrueVecI8x16:
       case AllTrueVecI16x8:

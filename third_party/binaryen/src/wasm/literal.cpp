@@ -1142,9 +1142,9 @@ Literal Literal::trunc() const {
 Literal Literal::nearbyint() const {
   switch (type.getBasic()) {
     case Type::f32:
-      return Literal(std::nearbyint(getf32()));
+      return standardizeNaN(Literal(std::nearbyint(getf32())));
     case Type::f64:
-      return Literal(std::nearbyint(getf64()));
+      return standardizeNaN(Literal(std::nearbyint(getf64())));
     default:
       WASM_UNREACHABLE("unexpected type");
   }
@@ -2914,6 +2914,14 @@ Literal Literal::demoteZeroToF32x4() const {
 }
 Literal Literal::promoteLowToF64x2() const {
   return extendF32<LaneOrder::Low>(*this);
+}
+Literal Literal::promoteLowF16x8ToF32x4() const {
+  auto lanes = getLanesF16x8();
+  LaneArray<4> result;
+  for (size_t i = 0; i < 4; ++i) {
+    result[i] = lanes[i];
+  }
+  return Literal(result);
 }
 
 Literal Literal::swizzleI8x16(const Literal& other) const {
