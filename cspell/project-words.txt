@@ -153,6 +153,7 @@ STATICARRAY
 STREQUAL
 STRINGREF
 stringview
+strp
 strtob
 strtod
 strtol
