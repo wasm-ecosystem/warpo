@@ -20,6 +20,7 @@
     "test:debug_symbol": "cross-env-shell ./build/tests/dwarf/TestDebugSymbol",
     "test:debug_symbol:update": "cross-env-shell build/tests/dwarf/TestDebugSymbol --update-fixtures",
     "test:debug_server": "node --import tsx --test tools/debug_server/tests/**/*.test.ts",
+    "test:heap_analyzer": "cd tools/heap_analyzer && npm test",
     "test:driver": "node tests/driver/index.mjs",
     "test": "npm run test:as:ut && npm run test:cpp:ut && npm run test:as:snapshot && npm run test:opt:snapshot && npm run test:driver && npm run test:debug_symbol",
     "test:all": "npm run test && npm run test:bootstrap:debug && npm run test:bootstrap:release",
@@ -53,6 +54,7 @@
   "devDependencies": {
     "@eslint/js": "^9.0.0",
     "@types/fs-extra": "^11.0.4",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.15.21",
     "@types/vscode": "^1.80.0",
     "@vscode/debugadapter-testsupport": "^1.65.0",
@@ -71,8 +73,10 @@
     "eslint-plugin-unicorn": "^63.0.0",
     "eslint-plugin-unused-imports": "^4.4.1",
     "expect": "^30.2.0",
+    "jest": "^30.3.0",
     "mermaid": "^11.13.0",
     "prettier": "^3.8.1",
+    "ts-jest": "^29.4.9",
     "tsx": "^4.0.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.55.0",
@@ -87,6 +91,7 @@
     "fs-extra": "^11.3.3",
     "glob": "^13.0.0",
     "ignore": "^7.0.5",
-    "source-map": "^0.7.6"
+    "source-map": "^0.7.6",
+    "wasmparser": "^5.11.1"
   }
 }

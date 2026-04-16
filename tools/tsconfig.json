@@ -8,5 +8,6 @@
     "types": ["node"],
     "sourceMap": true
   },
-  "include": ["./**/*.ts"]
+  "include": ["./**/*.ts"],
+  "exclude": ["./heap_analyzer/**"]
 }
