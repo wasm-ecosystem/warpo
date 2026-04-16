@@ -10,14 +10,7 @@ export default {
       "ts-jest",
       {
         useESM: true,
-        tsconfig: {
-          module: "nodenext",
-          moduleResolution: "nodenext",
-          target: "esnext",
-          isolatedModules: true,
-          rootDir: ".",
-          types: ["node", "jest"],
-        },
+        tsconfig: "../tsconfig.json",
       },
     ],
   },
