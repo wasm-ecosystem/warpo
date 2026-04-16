@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf dist coverage"
+    "clean": "rm -rf dist coverage",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -25,7 +26,11 @@
     "profiler",
     "wasm"
   ],
-  "devDependencies": {},
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.9"
+  },
   "dependencies": {
     "commander": "^14.0.3",
     "wasmparser": "^5.11.1"
