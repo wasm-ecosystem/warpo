@@ -19,7 +19,7 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
-        project: ["./tools/tsconfig.json", "./debugger/tsconfig.json"],
+        project: ["./tools/tsconfig.json", "./tools/heap_analyzer/tsconfig.json", "./debugger/tsconfig.json"],
         tsconfigRootDir: import.meta.dirname,
       },
     },

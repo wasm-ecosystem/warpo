@@ -22,7 +22,9 @@ function encodeLEB128(value: number): number[] {
   do {
     let byte = value & 0x7f;
     value >>>= 7;
-    if (value !== 0) byte |= 0x80;
+    if (value !== 0) {
+      byte |= 0x80;
+    }
     bytes.push(byte);
   } while (value !== 0);
   return bytes;
@@ -120,9 +122,7 @@ function buildInfoSection(): Uint8Array {
 /**
  * Build a minimal valid wasm binary with custom sections.
  */
-function buildWasmWithCustomSections(
-  sections: { name: string; payload: Uint8Array }[]
-): Uint8Array {
+function buildWasmWithCustomSections(sections: { name: string; payload: Uint8Array }[]): Uint8Array {
   const parts: number[] = [
     // Wasm magic + version
     0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
@@ -133,9 +133,7 @@ function buildWasmWithCustomSections(
     const nameWithLen = [...encodeLEB128(nameBytes.length), ...nameBytes];
     const sectionPayload = [...nameWithLen, ...section.payload];
     // Custom section: id=0, then LEB128 length, then payload
-    parts.push(0); // section id = 0 (custom)
-    parts.push(...encodeLEB128(sectionPayload.length));
-    parts.push(...sectionPayload);
+    parts.push(0, ...encodeLEB128(sectionPayload.length), ...sectionPayload);
   }
 
   return new Uint8Array(parts);
@@ -150,13 +148,13 @@ describe("parseAbbrevTable", () => {
 
     expect(table.size).toBe(2);
 
-    const entry1 = table.get(1)!;
+    const entry1 = table.get(1);
     expect(entry1.tag).toBe(DW_TAG.compile_unit);
     expect(entry1.hasChildren).toBe(true);
     expect(entry1.attributes).toHaveLength(1);
     expect(entry1.attributes[0]).toEqual({ name: DW_AT.producer, form: DW_FORM.strp });
 
-    const entry2 = table.get(2)!;
+    const entry2 = table.get(2);
     expect(entry2.tag).toBe(DW_TAG.base_type);
     expect(entry2.hasChildren).toBe(false);
     expect(entry2.attributes).toHaveLength(1);
@@ -187,14 +185,14 @@ describe("parseDebugInfo", () => {
 
     const producerAttr = root.attributes.find((a) => a.name === DW_AT.producer);
     expect(producerAttr).toBeDefined();
-    expect(producerAttr!.value).toBe("warpo");
+    expect(producerAttr?.value).toBe("warpo");
 
     expect(root.children).toHaveLength(1);
     const baseType = root.children[0];
     expect(baseType.tag).toBe(DW_TAG.base_type);
     const nameAttr = baseType.attributes.find((a) => a.name === DW_AT.name);
     expect(nameAttr).toBeDefined();
-    expect(nameAttr!.value).toBe("i32");
+    expect(nameAttr?.value).toBe("i32");
   });
 
   it("converts DW_FORM_ref4 values to absolute offsets within debug_info", () => {
@@ -208,7 +206,8 @@ describe("parseDebugInfo", () => {
       1,
       ...encodeLEB128(DW_AT.producer),
       ...encodeLEB128(DW_FORM.strp),
-      0, 0,
+      0,
+      0,
 
       ...encodeLEB128(2),
       ...encodeLEB128(DW_TAG.variable),
@@ -217,14 +216,16 @@ describe("parseDebugInfo", () => {
       ...encodeLEB128(DW_FORM.string),
       ...encodeLEB128(DW_AT.type),
       ...encodeLEB128(DW_FORM.ref4),
-      0, 0,
+      0,
+      0,
 
       ...encodeLEB128(3),
       ...encodeLEB128(DW_TAG.base_type),
       0,
       ...encodeLEB128(DW_AT.name),
       ...encodeLEB128(DW_FORM.string),
-      0, 0,
+      0,
+      0,
 
       0,
     ];
@@ -265,13 +266,7 @@ describe("parseDebugInfo", () => {
     ];
 
     const unitLength = 7 + dieBytes.length; // 7 = header bytes after length field
-    const info = new Uint8Array([
-      ...uint32LE(unitLength),
-      ...uint16LE(4),
-      ...uint32LE(0),
-      4,
-      ...dieBytes,
-    ]);
+    const info = new Uint8Array([...uint32LE(unitLength), ...uint16LE(4), ...uint32LE(0), 4, ...dieBytes]);
 
     const units = parseDebugInfo(info, abbrevTable, stringTable);
     expect(units).toHaveLength(1);
@@ -287,7 +282,7 @@ describe("parseDebugInfo", () => {
     // The ref4 value (16) should be converted to absolute offset: cuOffset(0) + 16 = 16
     // And that should match the base_type DIE's offset
     const baseTypeDie = root.children[0];
-    expect(typeAttr!.value).toBe(baseTypeDie.offset);
+    expect(typeAttr?.value).toBe(baseTypeDie.offset);
   });
 });
 
@@ -299,7 +294,7 @@ describe("extractCustomSections", () => {
 
     const debugInfo = sections.find((s) => s.name === "debug_info");
     expect(debugInfo).toBeDefined();
-    expect([...debugInfo!.payload]).toEqual([1, 2, 3]);
+    expect(debugInfo ? [...debugInfo.payload] : []).toEqual([1, 2, 3]);
   });
 
   it("extracts multiple custom sections", () => {
@@ -341,16 +336,12 @@ describe("parseDwarf", () => {
   });
 
   it("throws when debug_abbrev is missing", () => {
-    const wasm = buildWasmWithCustomSections([
-      { name: "debug_info", payload: buildInfoSection() },
-    ]);
+    const wasm = buildWasmWithCustomSections([{ name: "debug_info", payload: buildInfoSection() }]);
     expect(() => parseDwarf(wasm)).toThrow("Missing .debug_abbrev section");
   });
 
   it("throws when debug_info is missing", () => {
-    const wasm = buildWasmWithCustomSections([
-      { name: "debug_abbrev", payload: buildAbbrevSection() },
-    ]);
+    const wasm = buildWasmWithCustomSections([{ name: "debug_abbrev", payload: buildAbbrevSection() }]);
     expect(() => parseDwarf(wasm)).toThrow("Missing .debug_info section");
   });
 
@@ -367,7 +358,6 @@ describe("parseDwarf", () => {
       0,
     ];
     const abbrev = new Uint8Array(abbrevBytes);
-    const abbrevTable = parseAbbrevTable(abbrev);
 
     // Build info section
     const dieBytes: number[] = [...encodeLEB128(1), ...encodeString("test")];
@@ -420,7 +410,7 @@ describe("getAttr", () => {
   it("returns attribute when present", () => {
     const attr = getAttr(die, DW_AT.name);
     expect(attr).toBeDefined();
-    expect(attr!.value).toBe("i32");
+    expect(attr?.value).toBe("i32");
   });
 
   it("returns undefined when not present", () => {

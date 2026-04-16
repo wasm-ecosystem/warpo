@@ -27,5 +27,7 @@
     "wasm"
   ],
   "devDependencies": {},
-  "dependencies": {}
+  "dependencies": {
+    "wasmparser": "^5.11.1"
+  }
 }

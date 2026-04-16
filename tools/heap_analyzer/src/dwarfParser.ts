@@ -286,16 +286,7 @@ export function parseDebugInfo(
     const unitEnd = unitStart + 4 + unitLength; // unitLength doesn't include the 4-byte length field
 
     // Parse DIEs recursively
-    const { die } = parseDIETree(
-      infoData,
-      view,
-      offset,
-      unitEnd,
-      abbrevTable,
-      addressSize,
-      stringTable,
-      unitStart
-    );
+    const { die } = parseDIETree(infoData, view, offset, unitEnd, abbrevTable, addressSize, stringTable, unitStart);
 
     if (die) {
       units.push({
