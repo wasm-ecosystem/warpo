@@ -196,6 +196,99 @@ describe("parseDebugInfo", () => {
     expect(nameAttr).toBeDefined();
     expect(nameAttr!.value).toBe("i32");
   });
+
+  it("converts DW_FORM_ref4 values to absolute offsets within debug_info", () => {
+    // Abbrev table:
+    //   [1] compile_unit, children=yes, DW_AT_producer DW_FORM_strp
+    //   [2] variable, children=no, DW_AT_name DW_FORM_string, DW_AT_type DW_FORM_ref4
+    //   [3] base_type, children=no, DW_AT_name DW_FORM_string
+    const abbrevBytes: number[] = [
+      ...encodeLEB128(1),
+      ...encodeLEB128(DW_TAG.compile_unit),
+      1,
+      ...encodeLEB128(DW_AT.producer),
+      ...encodeLEB128(DW_FORM.strp),
+      0, 0,
+
+      ...encodeLEB128(2),
+      ...encodeLEB128(DW_TAG.variable),
+      0,
+      ...encodeLEB128(DW_AT.name),
+      ...encodeLEB128(DW_FORM.string),
+      ...encodeLEB128(DW_AT.type),
+      ...encodeLEB128(DW_FORM.ref4),
+      0, 0,
+
+      ...encodeLEB128(3),
+      ...encodeLEB128(DW_TAG.base_type),
+      0,
+      ...encodeLEB128(DW_AT.name),
+      ...encodeLEB128(DW_FORM.string),
+      0, 0,
+
+      0,
+    ];
+    const abbrevTable = parseAbbrevTable(new Uint8Array(abbrevBytes));
+    const stringTable = buildStrSection();
+
+    // Build info: CU header (11 bytes) + DIEs
+    // The base_type DIE starts at some offset after the header.
+    // We'll record where it is and verify ref4 points to it.
+    const dieBytes: number[] = [
+      // root: compile_unit (code 1)
+      ...encodeLEB128(1),
+      ...uint32LE(0), // DW_AT_producer -> "warpo"
+
+      // child: base_type (code 3) — note its CU-relative offset
+      ...encodeLEB128(3),
+      ...encodeString("i32"),
+
+      // child: variable (code 2) with ref4 pointing to base_type
+      ...encodeLEB128(2),
+      ...encodeString("x"),
+      // DW_AT_type = ref4 pointing to base_type's CU-relative offset
+      // base_type starts at: 1 (CU abbrev code) + 4 (strp) = 5 bytes after header
+      // CU-relative offset = header_content_size_offset + 5 = 11 + 5 - 4 = 12
+      // Actually CU-relative means relative to the start of the CU header (unitStart)
+      // unitStart = 0, header is 11 bytes, first DIE at offset 11
+      // base_type DIE starts at 11 (header) + 1 (compile_unit code) + 4 (strp) = 16
+      // CU-relative offset of base_type = 16 - 0 = 16... wait, ref4 is relative to CU start
+      // which includes the 4-byte length field.
+      // So the CU-relative offset is the absolute offset within .debug_info.
+      // No: DWARF4 7.5.4 says "offset from the beginning of the compilation unit header"
+      // unitStart = 0, so CU-relative = absolute for the first CU.
+      // base_type is at offset: 4(len) + 2(ver) + 4(abbr_off) + 1(addr_sz) + 1(CU code) + 4(strp) = 16
+      ...uint32LE(16),
+
+      // null: end children
+      0,
+    ];
+
+    const unitLength = 7 + dieBytes.length; // 7 = header bytes after length field
+    const info = new Uint8Array([
+      ...uint32LE(unitLength),
+      ...uint16LE(4),
+      ...uint32LE(0),
+      4,
+      ...dieBytes,
+    ]);
+
+    const units = parseDebugInfo(info, abbrevTable, stringTable);
+    expect(units).toHaveLength(1);
+
+    const root = units[0].rootDIE;
+    // base_type is first child, variable is second child
+    expect(root.children).toHaveLength(2);
+
+    const variable = root.children[1];
+    expect(variable.tag).toBe(DW_TAG.variable);
+    const typeAttr = variable.attributes.find((a) => a.name === DW_AT.type);
+    expect(typeAttr).toBeDefined();
+    // The ref4 value (16) should be converted to absolute offset: cuOffset(0) + 16 = 16
+    // And that should match the base_type DIE's offset
+    const baseTypeDie = root.children[0];
+    expect(typeAttr!.value).toBe(baseTypeDie.offset);
+  });
 });
 
 describe("extractCustomSections", () => {

@@ -229,7 +229,8 @@ function readAttributeValue(
   offset: number,
   form: number,
   addressSize: number,
-  stringTable: Uint8Array
+  stringTable: Uint8Array,
+  cuOffset: number
 ): { value: string | number; size: number } {
   switch (form) {
     case DW_FORM.string: {
@@ -244,7 +245,7 @@ function readAttributeValue(
       return { value: str.value, size: 4 };
     }
     case DW_FORM.ref4: {
-      return { value: view.getUint32(offset, true), size: 4 };
+      return { value: cuOffset + view.getUint32(offset, true), size: 4 };
     }
     case DW_FORM.addr: {
       if (addressSize === 4) {
@@ -290,10 +291,10 @@ export function parseDebugInfo(
       view,
       offset,
       unitEnd,
-      unitStart + 4 + 2 + 4 + 1, // header size is 11 bytes, first DIE offset relative to unit start
       abbrevTable,
       addressSize,
-      stringTable
+      stringTable,
+      unitStart
     );
 
     if (die) {
@@ -327,7 +328,8 @@ function parseChildren(
   unitEnd: number,
   abbrevTable: AbbrevTable,
   addressSize: number,
-  stringTable: Uint8Array
+  stringTable: Uint8Array,
+  cuOffset: number
 ): { children: DwarfDIE[]; nextOffset: number } {
   const children: DwarfDIE[] = [];
 
@@ -343,7 +345,7 @@ function parseChildren(
       throw new Error(`Unknown abbreviation code ${code.value} at offset ${pos}`);
     }
 
-    const childResult = parseSingleDIE(data, view, pos, abbrevTable, addressSize, stringTable);
+    const childResult = parseSingleDIE(data, view, pos, abbrevTable, addressSize, stringTable, cuOffset);
     if (!childResult.die) {
       pos = childResult.nextOffset;
       continue;
@@ -353,7 +355,7 @@ function parseChildren(
     pos = childResult.nextOffset;
 
     if (childAbbrev.hasChildren) {
-      const nested = parseChildren(data, view, pos, unitEnd, abbrevTable, addressSize, stringTable);
+      const nested = parseChildren(data, view, pos, unitEnd, abbrevTable, addressSize, stringTable, cuOffset);
       childDie.children = nested.children;
       pos = nested.nextOffset;
     }
@@ -369,12 +371,12 @@ function parseDIETree(
   view: DataView,
   offset: number,
   unitEnd: number,
-  _headerEnd: number,
   abbrevTable: AbbrevTable,
   addressSize: number,
-  stringTable: Uint8Array
+  stringTable: Uint8Array,
+  cuOffset: number
 ): ParseResult & { siblings: DwarfDIE[] } {
-  const firstResult = parseSingleDIE(data, view, offset, abbrevTable, addressSize, stringTable);
+  const firstResult = parseSingleDIE(data, view, offset, abbrevTable, addressSize, stringTable, cuOffset);
   if (!firstResult.die) {
     return { die: null, nextOffset: firstResult.nextOffset, siblings: [] };
   }
@@ -384,7 +386,7 @@ function parseDIETree(
 
   const abbrev = abbrevTable.get(readULEB128(data, offset).value);
   if (abbrev?.hasChildren) {
-    const result = parseChildren(data, view, pos, unitEnd, abbrevTable, addressSize, stringTable);
+    const result = parseChildren(data, view, pos, unitEnd, abbrevTable, addressSize, stringTable, cuOffset);
     rootDie.children = result.children;
     pos = result.nextOffset;
   }
@@ -401,7 +403,8 @@ function parseSingleDIE(
   offset: number,
   abbrevTable: AbbrevTable,
   addressSize: number,
-  stringTable: Uint8Array
+  stringTable: Uint8Array,
+  cuOffset: number
 ): ParseResult {
   const dieOffset = offset;
   const code = readULEB128(data, offset);
@@ -418,7 +421,7 @@ function parseSingleDIE(
 
   const attributes: DwarfAttributeValue[] = [];
   for (const attr of abbrev.attributes) {
-    const val = readAttributeValue(data, view, offset, attr.form, addressSize, stringTable);
+    const val = readAttributeValue(data, view, offset, attr.form, addressSize, stringTable, cuOffset);
     attributes.push({ name: attr.name, form: attr.form, value: val.value });
     offset += val.size;
   }
