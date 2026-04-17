@@ -92,31 +92,76 @@ export interface DwarfInfo {
   compilationUnits: CompilationUnit[];
 }
 
+class BufferReader {
+  readonly view: DataView;
+  offset: number;
+
+  constructor(data: DataView | Uint8Array, offset: number = 0) {
+    this.view = data instanceof Uint8Array ? new DataView(data.buffer, data.byteOffset, data.byteLength) : data;
+    this.offset = offset;
+  }
+
+  get length(): number {
+    return this.view.byteLength;
+  }
+
+  readUint8(): number {
+    return this.view.getUint8(this.offset++);
+  }
+
+  readUint16LE(): number {
+    const val = this.view.getUint16(this.offset, true);
+    this.offset += 2;
+    return val;
+  }
+
+  readUint32LE(): number {
+    const val = this.view.getUint32(this.offset, true);
+    this.offset += 4;
+    return val;
+  }
+
+  readULEB128(): number {
+    let result = 0;
+    let shift = 0;
+    let byte: number;
+    const start = this.offset;
+    do {
+      if (this.offset >= this.view.byteLength) {
+        throw new Error(`ULEB128 read past end of buffer at offset ${start}`);
+      }
+      byte = this.view.getUint8(this.offset++);
+      result |= (byte & 0x7f) << shift;
+      shift += 7;
+    } while (byte & 0x80);
+    return result >>> 0;
+  }
+
+  readString(): string {
+    let end = this.offset;
+    while (end < this.view.byteLength && this.view.getUint8(end) !== 0) {
+      end++;
+    }
+    const bytes = new Uint8Array(this.view.buffer, this.view.byteOffset + this.offset, end - this.offset);
+    const value = new TextDecoder().decode(bytes);
+    this.offset = end + 1; // skip null terminator
+    return value;
+  }
+
+  static readStringAt(data: Uint8Array, offset: number): string {
+    let end = offset;
+    while (end < data.length && data[end] !== 0) {
+      end++;
+    }
+    return new TextDecoder().decode(data.subarray(offset, end));
+  }
+}
+
 // ── Raw section extraction ───────────────────────────────────────────────────
 
 interface CustomSection {
   name: string;
   payload: Uint8Array;
-}
-
-/**
- * Read an unsigned LEB128 value from a buffer.
- * @returns The decoded value and number of bytes consumed.
- */
-function readULEB128(buf: Uint8Array, offset: number): { value: number; size: number } {
-  let result = 0;
-  let shift = 0;
-  let i = offset;
-  let byte: number;
-  do {
-    if (i >= buf.length) {
-      throw new Error(`ULEB128 read past end of buffer at offset ${offset}`);
-    }
-    byte = buf[i++];
-    result |= (byte & 0x7f) << shift;
-    shift += 7;
-  } while (byte & 0x80);
-  return { value: result >>> 0, size: i - offset };
 }
 
 /**
@@ -169,38 +214,28 @@ export function extractCustomSections(wasmBinary: Uint8Array): CustomSection[] {
  */
 export function parseAbbrevTable(data: Uint8Array): AbbrevTable {
   const table: AbbrevTable = new Map();
-  let pos = 0;
+  const reader = new BufferReader(data);
 
-  while (pos < data.length) {
-    const code = readULEB128(data, pos);
-    pos += code.size;
-    if (code.value === 0) {
+  while (reader.offset < reader.length) {
+    const code = reader.readULEB128();
+    if (code === 0) {
       break;
-    } // end of table
+    }
 
-    const tag = readULEB128(data, pos);
-    pos += tag.size;
-
-    const hasChildren = data[pos++] === 1;
+    const tag = reader.readULEB128();
+    const hasChildren = reader.readUint8() === 1;
 
     const attributes: AbbrevAttribute[] = [];
     for (;;) {
-      const attrName = readULEB128(data, pos);
-      pos += attrName.size;
-      const attrForm = readULEB128(data, pos);
-      pos += attrForm.size;
-      if (attrName.value === 0 && attrForm.value === 0) {
+      const name = reader.readULEB128();
+      const form = reader.readULEB128();
+      if (name === 0 && form === 0) {
         break;
       }
-      attributes.push({ name: attrName.value, form: attrForm.value });
+      attributes.push({ name, form });
     }
 
-    table.set(code.value, {
-      code: code.value,
-      tag: tag.value,
-      hasChildren,
-      attributes,
-    });
+    table.set(code, { code, tag, hasChildren, attributes });
   }
 
   return table;
@@ -208,48 +243,31 @@ export function parseAbbrevTable(data: Uint8Array): AbbrevTable {
 
 // ── debug_info parsing ───────────────────────────────────────────────────────
 
-/**
- * Read a null-terminated UTF-8 string from a buffer.
- */
-function readString(buf: Uint8Array, offset: number): { value: string; size: number } {
-  let end = offset;
-  while (end < buf.length && buf[end] !== 0) {
-    end++;
-  }
-  const value = new TextDecoder().decode(buf.subarray(offset, end));
-  return { value, size: end - offset + 1 }; // +1 for the null terminator
-}
-
-/**
- * Read an attribute value according to its DW_FORM encoding.
- */
+// eslint-disable-next-line sonarjs/function-return-type
 function readAttributeValue(
-  data: Uint8Array,
-  view: DataView,
-  offset: number,
+  reader: BufferReader,
   form: number,
   addressSize: number,
   stringTable: Uint8Array,
   cuOffset: number
-): { value: string | number; size: number } {
+): string | number {
   switch (form) {
     case DW_FORM.string: {
-      return readString(data, offset);
+      return reader.readString();
     }
     case DW_FORM.data4: {
-      return { value: view.getUint32(offset, true), size: 4 };
+      return reader.readUint32LE();
     }
     case DW_FORM.strp: {
-      const strOffset = view.getUint32(offset, true);
-      const str = readString(stringTable, strOffset);
-      return { value: str.value, size: 4 };
+      const strOffset = reader.readUint32LE();
+      return BufferReader.readStringAt(stringTable, strOffset);
     }
     case DW_FORM.ref4: {
-      return { value: cuOffset + view.getUint32(offset, true), size: 4 };
+      return cuOffset + reader.readUint32LE();
     }
     case DW_FORM.addr: {
       if (addressSize === 4) {
-        return { value: view.getUint32(offset, true), size: 4 };
+        return reader.readUint32LE();
       }
       throw new Error(`Unsupported address size: ${addressSize}`);
     }
@@ -268,25 +286,19 @@ export function parseDebugInfo(
   stringTable: Uint8Array
 ): CompilationUnit[] {
   const units: CompilationUnit[] = [];
-  const view = new DataView(infoData.buffer, infoData.byteOffset, infoData.byteLength);
-  let offset = 0;
+  const reader = new BufferReader(infoData);
 
-  while (offset < infoData.length) {
-    const unitStart = offset;
+  while (reader.offset < reader.length) {
+    const unitStart = reader.offset;
 
-    // Compilation unit header
-    const unitLength = view.getUint32(offset, true);
-    offset += 4;
-    const version = view.getUint16(offset, true);
-    offset += 2;
-    const abbrevOffset = view.getUint32(offset, true);
-    offset += 4;
-    const addressSize = infoData[offset++];
+    const unitLength = reader.readUint32LE();
+    const version = reader.readUint16LE();
+    const abbrevOffset = reader.readUint32LE();
+    const addressSize = reader.readUint8();
 
-    const unitEnd = unitStart + 4 + unitLength; // unitLength doesn't include the 4-byte length field
+    const unitEnd = unitStart + 4 + unitLength;
 
-    // Parse DIEs recursively
-    const { die } = parseDIETree(infoData, view, offset, unitEnd, abbrevTable, addressSize, stringTable, unitStart);
+    const die = parseDIETree(reader, unitEnd, abbrevTable, addressSize, stringTable, unitStart);
 
     if (die) {
       units.push({
@@ -298,134 +310,92 @@ export function parseDebugInfo(
       });
     }
 
-    offset = unitEnd;
+    reader.offset = unitEnd;
   }
 
   return units;
 }
 
-interface ParseResult {
-  die: DwarfDIE | null;
-  nextOffset: number;
+interface ParsedDIE {
+  die: DwarfDIE;
+  hasChildren: boolean;
 }
 
-/**
- * Parse a DIE and its children from debug_info.
- */
-function parseChildren(
-  data: Uint8Array,
-  view: DataView,
-  pos: number,
-  unitEnd: number,
-  abbrevTable: AbbrevTable,
-  addressSize: number,
-  stringTable: Uint8Array,
-  cuOffset: number
-): { children: DwarfDIE[]; nextOffset: number } {
-  const children: DwarfDIE[] = [];
-
-  while (pos < unitEnd) {
-    const code = readULEB128(data, pos);
-    if (code.value === 0) {
-      pos += code.size;
-      break;
-    }
-
-    const childAbbrev = abbrevTable.get(code.value);
-    if (!childAbbrev) {
-      throw new Error(`Unknown abbreviation code ${code.value} at offset ${pos}`);
-    }
-
-    const childResult = parseSingleDIE(data, view, pos, abbrevTable, addressSize, stringTable, cuOffset);
-    if (!childResult.die) {
-      pos = childResult.nextOffset;
-      continue;
-    }
-
-    const childDie = childResult.die;
-    pos = childResult.nextOffset;
-
-    if (childAbbrev.hasChildren) {
-      const nested = parseChildren(data, view, pos, unitEnd, abbrevTable, addressSize, stringTable, cuOffset);
-      childDie.children = nested.children;
-      pos = nested.nextOffset;
-    }
-
-    children.push(childDie);
-  }
-
-  return { children, nextOffset: pos };
-}
-
-function parseDIETree(
-  data: Uint8Array,
-  view: DataView,
-  offset: number,
-  unitEnd: number,
-  abbrevTable: AbbrevTable,
-  addressSize: number,
-  stringTable: Uint8Array,
-  cuOffset: number
-): ParseResult & { siblings: DwarfDIE[] } {
-  const firstResult = parseSingleDIE(data, view, offset, abbrevTable, addressSize, stringTable, cuOffset);
-  if (!firstResult.die) {
-    return { die: null, nextOffset: firstResult.nextOffset, siblings: [] };
-  }
-
-  const rootDie = firstResult.die;
-  let pos = firstResult.nextOffset;
-
-  const abbrev = abbrevTable.get(readULEB128(data, offset).value);
-  if (abbrev?.hasChildren) {
-    const result = parseChildren(data, view, pos, unitEnd, abbrevTable, addressSize, stringTable, cuOffset);
-    rootDie.children = result.children;
-    pos = result.nextOffset;
-  }
-
-  return { die: rootDie, nextOffset: pos, siblings: [] };
-}
-
-/**
- * Parse a single DIE (no children) and return it with the next offset.
- */
 function parseSingleDIE(
-  data: Uint8Array,
-  view: DataView,
-  offset: number,
+  reader: BufferReader,
   abbrevTable: AbbrevTable,
   addressSize: number,
   stringTable: Uint8Array,
   cuOffset: number
-): ParseResult {
-  const dieOffset = offset;
-  const code = readULEB128(data, offset);
-  offset += code.size;
+): ParsedDIE | null {
+  const dieOffset = reader.offset;
+  const code = reader.readULEB128();
 
-  if (code.value === 0) {
-    return { die: null, nextOffset: offset };
+  if (code === 0) {
+    return null;
   }
 
-  const abbrev = abbrevTable.get(code.value);
+  const abbrev = abbrevTable.get(code);
   if (!abbrev) {
-    throw new Error(`Unknown abbreviation code ${code.value} at offset ${dieOffset}`);
+    throw new Error(`Unknown abbreviation code ${code} at offset ${dieOffset}`);
   }
 
   const attributes: DwarfAttributeValue[] = [];
   for (const attr of abbrev.attributes) {
-    const val = readAttributeValue(data, view, offset, attr.form, addressSize, stringTable, cuOffset);
-    attributes.push({ name: attr.name, form: attr.form, value: val.value });
-    offset += val.size;
+    const value = readAttributeValue(reader, attr.form, addressSize, stringTable, cuOffset);
+    attributes.push({ name: attr.name, form: attr.form, value });
   }
 
   return {
-    die: {
-      offset: dieOffset,
-      tag: abbrev.tag,
-      attributes,
-      children: [],
-    },
-    nextOffset: offset,
+    die: { offset: dieOffset, tag: abbrev.tag, attributes, children: [] },
+    hasChildren: abbrev.hasChildren,
   };
+}
+
+function parseChildren(
+  reader: BufferReader,
+  unitEnd: number,
+  abbrevTable: AbbrevTable,
+  addressSize: number,
+  stringTable: Uint8Array,
+  cuOffset: number
+): DwarfDIE[] {
+  const children: DwarfDIE[] = [];
+
+  while (reader.offset < unitEnd) {
+    const result = parseSingleDIE(reader, abbrevTable, addressSize, stringTable, cuOffset);
+    if (!result) {
+      break;
+    }
+
+    if (result.hasChildren) {
+      result.die.children = parseChildren(reader, unitEnd, abbrevTable, addressSize, stringTable, cuOffset);
+    }
+
+    children.push(result.die);
+  }
+
+  return children;
+}
+
+function parseDIETree(
+  reader: BufferReader,
+  unitEnd: number,
+  abbrevTable: AbbrevTable,
+  addressSize: number,
+  stringTable: Uint8Array,
+  cuOffset: number
+): DwarfDIE | null {
+  const result = parseSingleDIE(reader, abbrevTable, addressSize, stringTable, cuOffset);
+  if (!result) {
+    return null;
+  }
+
+  if (result.hasChildren) {
+    result.die.children = parseChildren(reader, unitEnd, abbrevTable, addressSize, stringTable, cuOffset);
+  }
+
+  return result.die;
 }
 
 // ── High-level API ───────────────────────────────────────────────────────────
@@ -437,21 +407,6 @@ function parseSingleDIE(
  * @returns Parsed DWARF info including compilation units, abbreviations, and string table.
  * @throws If required DWARF sections are missing or malformed.
  *
- * @example
- * ```ts
- * import { readFileSync } from "fs";
- * import { parseDwarf } from "./dwarf-parser.js";
- *
- * const wasm = readFileSync("module.wasm");
- * const dwarf = parseDwarf(new Uint8Array(wasm));
- *
- * for (const unit of dwarf.compilationUnits) {
- *   console.log("Compilation unit version:", unit.version);
- *   for (const child of unit.rootDIE.children) {
- *     console.log("  DIE tag:", child.tag);
- *   }
- * }
- * ```
  */
 export function parseDwarf(wasmBinary: Uint8Array | ArrayBuffer): DwarfInfo {
   const binary = wasmBinary instanceof Uint8Array ? wasmBinary : new Uint8Array(wasmBinary);

@@ -12,7 +12,7 @@ import unused_imports from "eslint-plugin-unused-imports";
 
 export default tseslint.config(
   {
-    ignores: ["**/*.mjs", "node_modules/**"],
+    ignores: ["**/*.mjs", "node_modules/**", "tools/heap_analyzer/tests/fixture/**"],
   },
   eslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
