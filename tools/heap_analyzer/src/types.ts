@@ -6,14 +6,14 @@ export interface ObjectHeader {
   gcColor: number; // nextWithColor & COLOR_MASK
 }
 
-export interface DumpMetadata {
+export interface RuntimeGlobals {
   dataEnd: number;
   heapBase: number;
   stackPointer: number;
 }
 
-export interface ParsedDump {
-  metadata: DumpMetadata;
+export interface DumpedMemory {
+  rtGlobals: RuntimeGlobals;
   memory: DataView;
 }
 
@@ -41,11 +41,6 @@ export interface ClassDef {
   elementIsReference?: boolean;
   /** For Set/Map: describes the layout of entries inside the backing ArrayBuffer. */
   entryLayout?: EntryLayout;
-}
-
-export interface DebugInfo {
-  version: number;
-  classes: ClassDef[];
 }
 
 export type RootType = "global" | "local" | "pinned" | "unknown";

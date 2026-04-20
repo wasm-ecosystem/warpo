@@ -20,9 +20,9 @@ describe("parseDumpFile", () => {
 
   it("parses metadata from real dump", () => {
     const result = parseDumpFile(buffer);
-    expect(result.metadata.dataEnd).toBe(3464);
-    expect(result.metadata.heapBase).toBe(36232);
-    expect(result.metadata.stackPointer).toBe(36144);
+    expect(result.rtGlobals.dataEnd).toBe(3464);
+    expect(result.rtGlobals.heapBase).toBe(36232);
+    expect(result.rtGlobals.stackPointer).toBe(36144);
   });
 
   it("returns a DataView over the memory region", () => {

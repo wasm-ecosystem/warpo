@@ -3,6 +3,9 @@
 // Compile with:  ./build/warpo/warpo_asc tools/heap_analyzer/tests/fixture/dwarfFixture.ts -o /tmp/warpo_test/dwarfFixture.wasm --debug
 // =============================================================================
 
+@external("MemoryDump", "dumpMemoryRegion")
+export declare function dumpMemoryRegion(filePathOffset: i32, filePathSize: i32): void;
+
 class Vector2 {
   x: f32;
   y: f32;

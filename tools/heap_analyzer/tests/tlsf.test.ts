@@ -4,23 +4,23 @@ import { fileURLToPath } from "node:url";
 import { parseDumpFile } from "../src/dumpReader.js";
 import { walkBlocks } from "../src/tlsf.js";
 import { FREE, TAGS_MASK, TOTAL_OVERHEAD, BLOCK_OVERHEAD, AL_MASK, ROOT_SIZE, COLOR_MASK } from "../src/constants.js";
-import type { ObjectHeader, ParsedDump } from "../src/types.js";
+import type { ObjectHeader, DumpedMemory } from "../src/types.js";
 
 const FIXTURE_PATH = resolve(dirname(fileURLToPath(import.meta.url)), "fixture/memory.dump");
 
-function loadFixture(): ParsedDump {
+function loadFixture(): DumpedMemory {
   const buf = readFileSync(FIXTURE_PATH);
   const buffer = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
   return parseDumpFile(buffer);
 }
 
 describe("walkBlocks", () => {
-  let dump: ParsedDump;
+  let dump: DumpedMemory;
   let blocks: ObjectHeader[];
 
   beforeAll(() => {
     dump = loadFixture();
-    blocks = walkBlocks(dump.memory, dump.metadata.heapBase);
+    blocks = walkBlocks(dump.memory, dump.rtGlobals.heapBase);
   });
 
   it("returns 110 used blocks from the fixture", () => {
@@ -59,7 +59,7 @@ describe("walkBlocks", () => {
   });
 
   it("first block payloadPtr matches computed firstBlock + TOTAL_OVERHEAD", () => {
-    const heapBase = dump.metadata.heapBase;
+    const heapBase = dump.rtGlobals.heapBase;
     const tlsfRoot = (heapBase + AL_MASK) & ~AL_MASK;
     const afterRoot = (tlsfRoot + ROOT_SIZE + AL_MASK) & ~AL_MASK;
     const firstBlock = ((afterRoot + BLOCK_OVERHEAD + AL_MASK) & ~AL_MASK) - BLOCK_OVERHEAD;
@@ -72,7 +72,7 @@ describe("object header parsing", () => {
 
   beforeAll(() => {
     const dump = loadFixture();
-    blocks = walkBlocks(dump.memory, dump.metadata.heapBase);
+    blocks = walkBlocks(dump.memory, dump.rtGlobals.heapBase);
   });
 
   it("contains expected rtId values", () => {

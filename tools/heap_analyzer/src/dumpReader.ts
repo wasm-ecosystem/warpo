@@ -1,7 +1,7 @@
 import { DUMP_MAGIC, DUMP_VERSION, DUMP_HEADER_SIZE } from "./constants.js";
-import { ParsedDump } from "./types.js";
+import { DumpedMemory } from "./types.js";
 
-export function parseDumpFile(buffer: ArrayBuffer): ParsedDump {
+export function parseDumpFile(buffer: ArrayBuffer): DumpedMemory {
   if (buffer.byteLength < DUMP_HEADER_SIZE) {
     throw new Error(`Dump file too small: expected at least ${DUMP_HEADER_SIZE} bytes, got ${buffer.byteLength}`);
   }
@@ -25,7 +25,7 @@ export function parseDumpFile(buffer: ArrayBuffer): ParsedDump {
   const stackPointer = view.getUint32(16, true);
 
   return {
-    metadata: { dataEnd, heapBase, stackPointer },
+    rtGlobals: { dataEnd, heapBase, stackPointer },
     memory: new DataView(buffer, DUMP_HEADER_SIZE),
   };
 }
