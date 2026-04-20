@@ -1,28 +1,25 @@
-import { readFileSync } from "node:fs";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import { parseDumpFile } from "../src/dumpReader.js";
 import { DUMP_HEADER_SIZE } from "../src/constants.js";
+import { compileFixture, describeIntegration, generateFixtureDump, loadFixtureDumpBuffer } from "./testHelper.js";
 
-const FIXTURE_PATH = resolve(dirname(fileURLToPath(import.meta.url)), "fixture/memory.dump");
-
-function loadFixture(): ArrayBuffer {
-  const buf = readFileSync(FIXTURE_PATH);
-  return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
-}
-
-describe("parseDumpFile", () => {
+describeIntegration("parseDumpFile", () => {
   let buffer: ArrayBuffer;
 
   beforeAll(() => {
-    buffer = loadFixture();
+    compileFixture();
+    generateFixtureDump();
+    buffer = loadFixtureDumpBuffer();
   });
 
-  it("parses metadata from real dump", () => {
+  it("parses metadata from generated dump", () => {
     const result = parseDumpFile(buffer);
-    expect(result.rtGlobals.dataEnd).toBe(3464);
-    expect(result.rtGlobals.heapBase).toBe(36232);
-    expect(result.rtGlobals.stackPointer).toBe(36144);
+    const header = new DataView(buffer);
+    expect(result.rtGlobals.dataEnd).toBe(header.getUint32(8, true));
+    expect(result.rtGlobals.heapBase).toBe(header.getUint32(12, true));
+    expect(result.rtGlobals.stackPointer).toBe(header.getUint32(16, true));
+    expect(result.rtGlobals.dataEnd).toBeGreaterThan(0);
+    expect(result.rtGlobals.heapBase).toBeGreaterThan(result.rtGlobals.dataEnd);
+    expect(result.rtGlobals.stackPointer).toBeLessThanOrEqual(result.rtGlobals.heapBase);
   });
 
   it("returns a DataView over the memory region", () => {

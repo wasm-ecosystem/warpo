@@ -1,8 +1,3 @@
-import { readFileSync, existsSync, mkdirSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
-import { execSync } from "node:child_process";
 import {
   DW_AT,
   DW_FORM,
@@ -19,33 +14,9 @@ import {
   type DwarfDIE,
   type DwarfInfo,
 } from "../src/dwarfParser.js";
+import { CLASS_PREFIX, compileFixture, describeIntegration, loadFixtureWasm } from "./testHelper.js";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-
-const PROJECT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
-const WARPO_ASC = resolve(PROJECT_ROOT, "build/warpo/warpo_asc");
-const FIXTURE_SRC = resolve(PROJECT_ROOT, "tools/heap_analyzer/tests/fixture/dwarfFixture.ts");
-const OUTPUT_DIR = resolve(tmpdir(), "warpo_test");
-const FIXTURE_WASM = resolve(OUTPUT_DIR, "dwarfFixture.wasm");
-const CLASS_PREFIX = "tools/heap_analyzer/tests/fixture/dwarfFixture/";
-
-function compileFixture(): void {
-  if (!existsSync(OUTPUT_DIR)) {
-    mkdirSync(OUTPUT_DIR, { recursive: true });
-  }
-  // eslint-disable-next-line sonarjs/os-command
-  execSync(`${WARPO_ASC} ${FIXTURE_SRC} -o ${FIXTURE_WASM} --debug`, {
-    cwd: PROJECT_ROOT,
-    stdio: "pipe",
-  });
-}
-
-function loadFixtureWasm(): Uint8Array {
-  return new Uint8Array(readFileSync(FIXTURE_WASM));
-}
-
-const canRunIntegration = existsSync(WARPO_ASC);
-const describeIntegration = canRunIntegration ? describe : describe.skip;
 
 // ── Tests ────────────────────────────────────────────────────────────────────
 

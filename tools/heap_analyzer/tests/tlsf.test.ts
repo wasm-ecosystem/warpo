@@ -1,24 +1,20 @@
-import { readFileSync } from "node:fs";
-import { resolve, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import { parseDumpFile } from "../src/dumpReader.js";
 import { walkBlocks } from "../src/tlsf.js";
 import { FREE, TAGS_MASK, TOTAL_OVERHEAD, BLOCK_OVERHEAD, AL_MASK, ROOT_SIZE, COLOR_MASK } from "../src/constants.js";
 import type { ObjectHeader, DumpedMemory } from "../src/types.js";
-
-const FIXTURE_PATH = resolve(dirname(fileURLToPath(import.meta.url)), "fixture/memory.dump");
+import { compileFixture, describeIntegration, generateFixtureDump, loadFixtureDumpBuffer } from "./testHelper.js";
 
 function loadFixture(): DumpedMemory {
-  const buf = readFileSync(FIXTURE_PATH);
-  const buffer = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
-  return parseDumpFile(buffer);
+  return parseDumpFile(loadFixtureDumpBuffer());
 }
 
-describe("walkBlocks", () => {
+describeIntegration("walkBlocks", () => {
   let dump: DumpedMemory;
   let blocks: ObjectHeader[];
 
   beforeAll(() => {
+    compileFixture();
+    generateFixtureDump();
     dump = loadFixture();
     blocks = walkBlocks(dump.memory, dump.rtGlobals.heapBase);
   });
@@ -67,10 +63,12 @@ describe("walkBlocks", () => {
   });
 });
 
-describe("object header parsing", () => {
+describeIntegration("object header parsing", () => {
   let blocks: ObjectHeader[];
 
   beforeAll(() => {
+    compileFixture();
+    generateFixtureDump();
     const dump = loadFixture();
     blocks = walkBlocks(dump.memory, dump.rtGlobals.heapBase);
   });

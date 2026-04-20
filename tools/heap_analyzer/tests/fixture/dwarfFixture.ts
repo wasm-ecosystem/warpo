@@ -249,6 +249,11 @@ export function _start(): void {
   entityPositions.set(npc2, new Vector2(30.0, 40.0));
   entityPositions.set(npc3, new Vector2(50.0, 60.0));
 
+  // -- Dump memory to file via host import --
+  const dumpPath = "./tools/heap_analyzer/tests/fixture/build/example.dump";
+  const encodedPath = String.UTF8.encode(dumpPath);
+  dumpMemoryRegion(changetype<i32>(encodedPath), String.UTF8.byteLength(dumpPath));
+
   // -- Key-value pairs --
   const kvPairs = new Array<KVPair>();
   kvPairs.push(new KVPair("name", "HeapAnalyzer"));
@@ -309,9 +314,9 @@ export function _start(): void {
   assert(matrix.length == 4);
   assert(GLOBAL_STRING.length > 0);
   assert(GLOBAL_ARRAY.length == 5);
-  assert(primeSet.has(7));
+  assert(primeSet.size == 3);
   assert(itemSet.size == 3);
-  assert(scoreMap.get(1) == 4200);
-  assert(playerMap.has("Alice"));
+  assert(scoreMap.size == 3);
+  assert(playerMap.size == 2);
   assert(entityPositions.size == 3);
 }
