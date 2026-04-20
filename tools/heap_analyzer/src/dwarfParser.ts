@@ -84,8 +84,8 @@ export interface CompilationUnit {
 }
 
 export interface DwarfInfo {
-  /** Parsed .debug_str string table. */
-  stringTable: Uint8Array;
+  /** Parsed .debug_str string table (offset → string). */
+  stringTable: Map<number, string>;
   /** Parsed abbreviation tables. */
   abbreviations: AbbrevTable;
   /** All compilation units in .debug_info. */
@@ -146,14 +146,6 @@ class BufferReader {
     const value = new TextDecoder().decode(bytes);
     this.offset = end + 1; // skip null terminator
     return value;
-  }
-
-  static readStringAt(data: Uint8Array, offset: number): string {
-    let end = offset;
-    while (end < data.length && data[end] !== 0) {
-      end++;
-    }
-    return new TextDecoder().decode(data.subarray(offset, end));
   }
 }
 
@@ -241,6 +233,23 @@ export function parseAbbrevTable(data: Uint8Array): AbbrevTable {
   return table;
 }
 
+// ── String table parsing ─────────────────────────────────────────────────────
+
+function parseStringTable(data: Uint8Array): Map<number, string> {
+  const table = new Map<number, string>();
+  const decoder = new TextDecoder();
+  let offset = 0;
+  while (offset < data.length) {
+    let end = offset;
+    while (end < data.length && data[end] !== 0) {
+      end++;
+    }
+    table.set(offset, decoder.decode(data.subarray(offset, end)));
+    offset = end + 1;
+  }
+  return table;
+}
+
 // ── debug_info parsing ───────────────────────────────────────────────────────
 
 // eslint-disable-next-line sonarjs/function-return-type
@@ -248,7 +257,7 @@ function readAttributeValue(
   reader: BufferReader,
   form: number,
   addressSize: number,
-  stringTable: Uint8Array,
+  stringTable: Map<number, string>,
   cuOffset: number
 ): string | number {
   switch (form) {
@@ -260,7 +269,11 @@ function readAttributeValue(
     }
     case DW_FORM.strp: {
       const strOffset = reader.readUint32LE();
-      return BufferReader.readStringAt(stringTable, strOffset);
+      const str = stringTable.get(strOffset);
+      if (str === undefined) {
+        throw new Error(`String not found at offset ${strOffset} in .debug_str`);
+      }
+      return str;
     }
     case DW_FORM.ref4: {
       return cuOffset + reader.readUint32LE();
@@ -283,7 +296,7 @@ function readAttributeValue(
 export function parseDebugInfo(
   infoData: Uint8Array,
   abbrevTable: AbbrevTable,
-  stringTable: Uint8Array
+  stringTable: Map<number, string>
 ): CompilationUnit[] {
   const units: CompilationUnit[] = [];
   const reader = new BufferReader(infoData);
@@ -325,7 +338,7 @@ function parseSingleDIE(
   reader: BufferReader,
   abbrevTable: AbbrevTable,
   addressSize: number,
-  stringTable: Uint8Array,
+  stringTable: Map<number, string>,
   cuOffset: number
 ): ParsedDIE | null {
   const dieOffset = reader.offset;
@@ -357,7 +370,7 @@ function parseChildren(
   unitEnd: number,
   abbrevTable: AbbrevTable,
   addressSize: number,
-  stringTable: Uint8Array,
+  stringTable: Map<number, string>,
   cuOffset: number
 ): DwarfDIE[] {
   const children: DwarfDIE[] = [];
@@ -383,7 +396,7 @@ function parseDIETree(
   unitEnd: number,
   abbrevTable: AbbrevTable,
   addressSize: number,
-  stringTable: Uint8Array,
+  stringTable: Map<number, string>,
   cuOffset: number
 ): DwarfDIE | null {
   const result = parseSingleDIE(reader, abbrevTable, addressSize, stringTable, cuOffset);
@@ -424,7 +437,7 @@ export function parseDwarf(wasmBinary: Uint8Array | ArrayBuffer): DwarfInfo {
     throw new Error("Missing .debug_info section in wasm binary");
   }
 
-  const stringTable = debugStr?.payload ?? new Uint8Array(0);
+  const stringTable = parseStringTable(debugStr?.payload ?? new Uint8Array(0));
   const abbreviations = parseAbbrevTable(debugAbbrev.payload);
   const compilationUnits = parseDebugInfo(debugInfo.payload, abbreviations, stringTable);
 

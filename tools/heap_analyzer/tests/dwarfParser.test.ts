@@ -149,6 +149,33 @@ describeIntegration("dwarfParser", () => {
     });
   });
 
+  describe("stringTable", () => {
+    it("is a non-empty Map", () => {
+      expect(dwarf.stringTable).toBeInstanceOf(Map);
+      expect(dwarf.stringTable.size).toBeGreaterThan(0);
+    });
+
+    it("contains producer string 'warpo'", () => {
+      const values = [...dwarf.stringTable.values()];
+      expect(values).toContain("warpo");
+    });
+
+    it("all values are non-empty strings", () => {
+      for (const str of dwarf.stringTable.values()) {
+        expect(typeof str).toBe("string");
+        expect(str.length).toBeGreaterThan(0);
+      }
+    });
+
+    it("strp attributes resolve to strings in the table", () => {
+      const producer = getAttr(root, DW_AT.producer);
+      expect(producer).toBeDefined();
+      expect(producer.form).toBe(DW_FORM.strp);
+      expect(typeof producer.value).toBe("string");
+      expect(dwarf.stringTable.get(0)).toBe(producer.value);
+    });
+  });
+
   describe("tagName", () => {
     it("returns known tag names from real DIEs", () => {
       expect(tagName(root.tag)).toBe("DW_TAG_compile_unit");
