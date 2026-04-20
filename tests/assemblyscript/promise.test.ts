@@ -183,7 +183,7 @@ describe("test promise", () => {
           log.push("then: " + (value as string));
           return null;
         })
-        .catch((reason: Object | null): Object | null => {
+        .catch<Object>((reason: Object | null): Object | null => {
           log.push("catch: " + (reason as string));
           return null;
         });
@@ -272,28 +272,28 @@ describe("test promise", () => {
     expect(log[1]).equal("after: chained");
   });
 
-  //   test("onFulfill null passes value through", () => {
-  //     let log = new Array<string>();
-  //     function testBody(): void {
-  //       new Promise<string>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
-  //         asyncAPI(() => {
-  //           resolve("passthrough");
-  //         });
-  //       })
-  //         .catch((reason: Object | null): Object | null => {
-  //           log.push("catch");
-  //           return null;
-  //         })
-  //         .then<Object>((value: string | null) => {
-  //           log.push("then: " + (value as string));
-  //           return null;
-  //         });
-  //     }
-  //     taskQueue.addTask(testBody);
-  //     taskQueue.run();
-  //     expect(log.length).equal(1);
-  //     expect(log[0]).equal("then: passthrough");
-  //   });
+  test("onFulfill null passes value through", () => {
+    let log = new Array<string>();
+    function testBody(): void {
+      new Promise<string>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
+        asyncAPI(() => {
+          resolve("passthrough");
+        });
+      })
+        .catch<string>((reason: Object | null): Object | null => {
+          log.push("catch");
+          return null;
+        })
+        .then<Object>((value: string | null) => {
+          log.push("then: " + (value as string));
+          return null;
+        });
+    }
+    taskQueue.addTask(testBody);
+    taskQueue.run();
+    expect(log.length).equal(1);
+    expect(log[0]).equal("then: passthrough");
+  });
 
   test("onFulfill returns promise that rejects", () => {
     let log = new Array<string>();
@@ -317,7 +317,7 @@ describe("test promise", () => {
           log.push("then2: " + (value as string));
           return null;
         })
-        .catch((reason: Object | null): Object | null => {
+        .catch<Object>((reason: Object | null): Object | null => {
           log.push("catch: " + (reason as string));
           return null;
         });
@@ -387,7 +387,7 @@ describe("test promise", () => {
           log.push("then");
           return null;
         })
-        .catch((reason: Object | null): Object | null => {
+        .catch<Object>((reason: Object | null): Object | null => {
           log.push("catch: " + (reason as string));
           return null;
         });
@@ -427,38 +427,38 @@ describe("test promise", () => {
   //     expect(log[0]).equal("catch: sync error");
   //   });
 
-  //   test("then catch then recovery chain", () => {
-  //     let log = new Array<string>();
-  //     function testBody(): void {
-  //       new Promise<string>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
-  //         asyncAPI(() => {
-  //           resolve("start");
-  //         });
-  //       })
-  //         .then<string>((value: string | null) => {
-  //           log.push("then1: " + (value as string));
-  //           return new Promise<string>(
-  //             (resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
-  //               asyncAPI(() => {
-  //                 reject("fail");
-  //               });
-  //             }
-  //           );
-  //         })
-  //         .catch((reason: Object | null): Object | null => {
-  //           log.push("catch: " + (reason as string));
-  //           return "recovered";
-  //         })
-  //         .then<Object>((value: string | null) => {
-  //           log.push("then2: " + (value as string));
-  //           return null;
-  //         });
-  //     }
-  //     taskQueue.addTask(testBody);
-  //     taskQueue.run();
-  //     expect(log.length).equal(3);
-  //     expect(log[0]).equal("then1: start");
-  //     expect(log[1]).equal("catch: fail");
-  //     expect(log[2]).equal("then2: recovered");
-  //   });
+  test("then catch then recovery chain", () => {
+    let log = new Array<string>();
+    function testBody(): void {
+      new Promise<string>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
+        asyncAPI(() => {
+          resolve("start");
+        });
+      })
+        .then<string>((value: string | null) => {
+          log.push("then1: " + (value as string));
+          return new Promise<string>(
+            (resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
+              asyncAPI(() => {
+                reject("fail");
+              });
+            }
+          );
+        })
+        .catch<string>((reason: Object | null): Object | null => {
+          log.push("catch: " + (reason as string));
+          return "recovered";
+        })
+        .then<Object>((value: string | null) => {
+          log.push("then2: " + (value as string));
+          return null;
+        });
+    }
+    taskQueue.addTask(testBody);
+    taskQueue.run();
+    expect(log.length).equal(3);
+    expect(log[0]).equal("then1: start");
+    expect(log[1]).equal("catch: fail");
+    expect(log[2]).equal("then2: recovered");
+  });
 });

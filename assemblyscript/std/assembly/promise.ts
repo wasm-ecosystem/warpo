@@ -87,19 +87,15 @@ export class _AsPromiseBase {
       }
     });
   }
-
-  catch(onRejected: (reason: Object | null) => Object | null): _AsPromiseBase {
-    return this.thenBase(null, onRejected);
-  }
 }
 
 export class Promise<T> extends _AsPromiseBase {
   then<U>(
-    onFulfilled: (value: T | null) => Object | null,
+    onFulfilled: ((value: T | null) => Object | null) | null,
     onRejected: ((reason: Object | null) => Object | null) | null = null
   ): Promise<U> {
     let onFulfilledWrapper = (value: Object | null): Object | null => {
-      return onFulfilled(value as T | null);
+      return onFulfilled ? onFulfilled(value as T | null) : value;
     };
     let p: _AsPromiseBase = super.thenBase(onFulfilledWrapper, onRejected);
     return new Promise<U>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
@@ -114,6 +110,10 @@ export class Promise<T> extends _AsPromiseBase {
         }
       );
     });
+  }
+
+  catch<U>(onRejected: (reason: Object | null) => Object | null): Promise<U> {
+    return this.then<U>(null, onRejected);
   }
 
   static all(promiseArr: _AsPromiseBase[]): Promise<(Object | null)[]> {
