@@ -3,21 +3,10 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseDumpFile } from "../src/dumpReader.js";
 import { walkBlocks } from "../src/tlsf.js";
-import {
-  FREE,
-  TAGS_MASK,
-  TOTAL_OVERHEAD,
-  BLOCK_OVERHEAD,
-  AL_MASK,
-  ROOT_SIZE,
-  COLOR_MASK,
-} from "../src/constants.js";
+import { FREE, TAGS_MASK, TOTAL_OVERHEAD, BLOCK_OVERHEAD, AL_MASK, ROOT_SIZE, COLOR_MASK } from "../src/constants.js";
 import type { ObjectHeader, ParsedDump } from "../src/types.js";
 
-const FIXTURE_PATH = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  "fixture/memory.dump",
-);
+const FIXTURE_PATH = resolve(dirname(fileURLToPath(import.meta.url)), "fixture/memory.dump");
 
 function loadFixture(): ParsedDump {
   const buf = readFileSync(FIXTURE_PATH);

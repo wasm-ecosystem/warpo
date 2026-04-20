@@ -4,10 +4,7 @@ import { fileURLToPath } from "node:url";
 import { parseDumpFile } from "../src/dumpReader.js";
 import { DUMP_HEADER_SIZE } from "../src/constants.js";
 
-const FIXTURE_PATH = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  "fixture/memory.dump",
-);
+const FIXTURE_PATH = resolve(dirname(fileURLToPath(import.meta.url)), "fixture/memory.dump");
 
 function loadFixture(): ArrayBuffer {
   const buf = readFileSync(FIXTURE_PATH);

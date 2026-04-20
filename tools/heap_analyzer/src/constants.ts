@@ -15,7 +15,7 @@ export const ROOT_SIZE = 1572; // TLSF root structure size
 
 // Block flags (in mmInfo)
 export const FREE = 1;
-export const LEFTFREE = 2;
+export const LEFT_FREE = 2;
 export const TAGS_MASK = 3;
 
 // GC Color (in nextWithColor & 3)
@@ -26,7 +26,7 @@ export const GC_COLOR_GRAY = 2;
 export const GC_COLOR_TRANSPARENT = 3; // pinned, always reachable
 
 // Dump file
-export const DUMP_MAGIC = 0x44485341; // "ASHD" in LE
+export const DUMP_MAGIC = 0x44485341; // "A S H D" in LE
 export const DUMP_MAGIC_BYTES = new Uint8Array([0x41, 0x53, 0x48, 0x44]); // A, S, H, D
 export const DUMP_VERSION = 1;
 export const DUMP_HEADER_SIZE = 24;

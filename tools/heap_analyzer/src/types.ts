@@ -1,31 +1,3 @@
-export enum TypeinfoFlags {
-  NONE = 0,
-  ARRAYBUFFERVIEW = 1 << 0,
-  ARRAY = 1 << 1,
-  STATICARRAY = 1 << 2,
-  SET = 1 << 3,
-  MAP = 1 << 4,
-  POINTERFREE = 1 << 10,
-  VALUE_ALIGN_0 = 1 << 11,
-  VALUE_ALIGN_1 = 1 << 12,
-  VALUE_ALIGN_2 = 1 << 13,
-  VALUE_ALIGN_3 = 1 << 14,
-  VALUE_ALIGN_4 = 1 << 15,
-  VALUE_SIGNED = 1 << 16,
-  VALUE_FLOAT = 1 << 17,
-  VALUE_MANAGED = 1 << 18,
-  VALUE_NULLABLE = 1 << 19,
-  KEY_ALIGN_0 = 1 << 20,
-  KEY_ALIGN_1 = 1 << 21,
-  KEY_ALIGN_2 = 1 << 22,
-  KEY_ALIGN_3 = 1 << 23,
-  KEY_ALIGN_4 = 1 << 24,
-  KEY_SIGNED = 1 << 25,
-  KEY_FLOAT = 1 << 26,
-  KEY_MANAGED = 1 << 27,
-  KEY_NULLABLE = 1 << 28,
-}
-
 export interface ObjectHeader {
   mmInfo: number;
   rtId: number;

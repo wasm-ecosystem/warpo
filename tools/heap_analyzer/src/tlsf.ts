@@ -34,7 +34,9 @@ export function walkBlocks(memory: DataView, heapBase: number): ObjectHeader[] {
     const blockSize = mmInfo & ~TAGS_MASK;
 
     // Tail sentinel: size portion is 0
-    if (blockSize === 0) break;
+    if (blockSize === 0) {
+      break;
+    }
 
     const isFree = (mmInfo & FREE) !== 0;
     if (!isFree) {

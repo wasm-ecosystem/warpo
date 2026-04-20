@@ -3,9 +3,7 @@ import { ParsedDump } from "./types.js";
 
 export function parseDumpFile(buffer: ArrayBuffer): ParsedDump {
   if (buffer.byteLength < DUMP_HEADER_SIZE) {
-    throw new Error(
-      `Dump file too small: expected at least ${DUMP_HEADER_SIZE} bytes, got ${buffer.byteLength}`,
-    );
+    throw new Error(`Dump file too small: expected at least ${DUMP_HEADER_SIZE} bytes, got ${buffer.byteLength}`);
   }
 
   const view = new DataView(buffer);
@@ -13,7 +11,7 @@ export function parseDumpFile(buffer: ArrayBuffer): ParsedDump {
   const magic = view.getUint32(0, true);
   if (magic !== DUMP_MAGIC) {
     throw new Error(
-      `Invalid dump magic: expected 0x${DUMP_MAGIC.toString(16).toUpperCase()}, got 0x${magic.toString(16).toUpperCase()}`,
+      `Invalid dump magic: expected 0x${DUMP_MAGIC.toString(16).toUpperCase()}, got 0x${magic.toString(16).toUpperCase()}`
     );
   }
 
