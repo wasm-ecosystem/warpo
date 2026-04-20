@@ -52,6 +52,7 @@ jobs:
       - run: npm run test:as:snapshot
       - run: npm run test:debug_symbol
       - run: npm run test:driver
+      - run: npm run test:heap_analyzer
 
   bootstrap:
     strategy:

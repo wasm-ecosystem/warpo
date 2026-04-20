@@ -1,0 +1,33 @@
+{
+  "name": "as-heap-analyzer",
+  "version": "0.0.0",
+  "description": "Analyze heap memory dumps from AssemblyScript programs (incremental runtime). Reports live objects, shallow/retained sizes, root types, and class-level summaries.",
+  "type": "module",
+  "bin": {
+    "as-heap-analyzer": "bin/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist coverage",
+    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT",
+  "keywords": [
+    "assemblyscript",
+    "heap",
+    "memory",
+    "analyzer",
+    "profiler",
+    "wasm"
+  ],
+  "devDependencies": {},
+  "dependencies": {
+    "wasmparser": "^5.11.1"
+  }
+}

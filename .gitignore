@@ -6,6 +6,7 @@
 /dist
 
 /node_modules
+/tools/heap_analyzer/node_modules
 
 /docs/.vitepress/dist
 /docs/.vitepress/cache

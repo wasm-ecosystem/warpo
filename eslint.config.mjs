@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import eslint from "@eslint/js";
-import path from "node:path";
 import tseslint from "typescript-eslint";
 import node_check from "eslint-plugin-n";
 import { flatConfigs as eslint_import } from "eslint-plugin-import";
@@ -13,15 +12,15 @@ import unused_imports from "eslint-plugin-unused-imports";
 
 export default tseslint.config(
   {
-    ignores: ["**/*.mjs", "node_modules/**"],
+    ignores: ["**/*.mjs", "node_modules/**", "tools/heap_analyzer/tests/fixture/**"],
   },
   eslint.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
   {
     languageOptions: {
       parserOptions: {
-        project: ["./debugger/tsconfig.json"],
-        tsconfigRootDir: path.resolve(import.meta.dirname, ".."),
+        project: ["./tools/tsconfig.json", "./debugger/tsconfig.json"],
+        tsconfigRootDir: import.meta.dirname,
       },
     },
   },
@@ -53,6 +52,7 @@ export default tseslint.config(
       "unicorn/no-new-array": "off",
       "unicorn/filename-case": ["error", { case: "camelCase" }],
       "unicorn/no-null": "off",
+      "unicorn/number-literal-case": "off",
       "unicorn/no-array-reduce": "off",
       "unicorn/import-style": "off",
       "unicorn/numeric-separators-style": "off",
@@ -64,8 +64,8 @@ export default tseslint.config(
       "unicorn/consistent-assert": "off",
       eqeqeq: "error",
       "prefer-spread": "error",
-      "dot-notation": "off",
-      "@typescript-eslint/dot-notation": "error",
+      "dot-notation": "error",
+      "@typescript-eslint/dot-notation": "off",
       "import/no-unresolved": "error",
       "@typescript-eslint/no-unused-vars": [
         "error",
@@ -91,6 +91,12 @@ export default tseslint.config(
           version: ">=22.0.0",
         },
       ],
+    },
+  },
+  {
+    files: ["tests/tools/debug_server/**/*.ts"],
+    rules: {
+      "n/no-extraneous-import": "off",
     },
   },
   {
