@@ -399,33 +399,33 @@ describe("test promise", () => {
     expect(log[1]).equal("catch: second error");
   });
 
-  //   test("sync resolve then", () => {
-  //     let log = new Array<string>();
-  //     function testBody(): void {
-  //       Promise.resolve<string>("sync value").then<Object>((value: string | null) => {
-  //         log.push("then: " + (value as string));
-  //         return null;
-  //       });
-  //     }
-  //     taskQueue.addTask(testBody);
-  //     taskQueue.run();
-  //     expect(log.length).equal(1);
-  //     expect(log[0]).equal("then: sync value");
-  //   });
+  test("sync resolve then", () => {
+    let log = new Array<string>();
+    function testBody(): void {
+      Promise.resolve<string>("sync value").then<Object>((value: string | null) => {
+        log.push("then: " + (value as string));
+        return null;
+      });
+    }
+    taskQueue.addTask(testBody);
+    taskQueue.run();
+    expect(log.length).equal(1);
+    expect(log[0]).equal("then: sync value");
+  });
 
-  //   test("sync reject catch", () => {
-  //     let log = new Array<string>();
-  //     function testBody(): void {
-  //       Promise.reject<string>("sync error").catch((reason: Object | null): Object | null => {
-  //         log.push("catch: " + (reason as string));
-  //         return null;
-  //       });
-  //     }
-  //     taskQueue.addTask(testBody);
-  //     taskQueue.run();
-  //     expect(log.length).equal(1);
-  //     expect(log[0]).equal("catch: sync error");
-  //   });
+  test("sync reject catch", () => {
+    let log = new Array<string>();
+    function testBody(): void {
+      Promise.reject<string>("sync error").catch<Object>((reason: Object | null): Object | null => {
+        log.push("catch: " + (reason as string));
+        return null;
+      });
+    }
+    taskQueue.addTask(testBody);
+    taskQueue.run();
+    expect(log.length).equal(1);
+    expect(log[0]).equal("catch: sync error");
+  });
 
   test("then catch then recovery chain", () => {
     let log = new Array<string>();
