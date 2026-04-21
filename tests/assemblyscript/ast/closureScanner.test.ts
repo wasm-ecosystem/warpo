@@ -749,4 +749,27 @@ describe("closureScanner", () => {
       expect(info.capturesThis).equal(false);
     }
   });
+
+  test("function type param name should not shadow captured variable", () => {
+    const scanner = makeScanner(`
+      function run(cb: (fn: (value: Object) => void) => void): void {
+        cb((v: Object): void => {});
+      }
+      function make<U>(value: U): void {
+        run((fn: (value: Object) => void) => { fn(value); });
+      }
+    `);
+    // make should be a closure function because the arrow captures `value`
+    let found = false;
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const info = scanner.closureFunctions.get(func);
+      const name = getDeclarationName(func);
+      if (name === "make") {
+        expect(info.closureVariables.size).equal(1);
+        found = true;
+      }
+    }
+    expect(found).equal(true);
+  });
 });
