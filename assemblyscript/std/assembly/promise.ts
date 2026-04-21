@@ -140,11 +140,15 @@ export class Promise<T> extends _AsPromiseBase {
   }
 
   static any(promiseArr: _AsPromiseBase[]): Promise<Object | null> {
+    let resolved = false;
     return new Promise<Object | null>(
       (resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
         for (let i = 0; i < promiseArr.length; i++) {
           promiseArr[i].thenBase((value: Object | null): Object | null => {
-            resolve(value);
+            if (!resolved) {
+              resolved = true;
+              resolve(value);
+            }
             return null;
           });
         }

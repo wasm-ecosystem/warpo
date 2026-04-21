@@ -171,24 +171,6 @@ describe("test promise", () => {
     expect(log[0]).equal("all done: api1 api2 api3");
   });
 
-  test("promise any", () => {
-    let log = new Array<string>();
-    function testBody(): void {
-      const p1 = api3("api1");
-      const p2 = api3("api2");
-      const p3 = api3("api3");
-
-      Promise.any([p1, p2, p3]).then<Object>((value: (Object | null) | null): Object | null => {
-        log.push("any done: " + (value as string));
-        return null;
-      });
-    }
-    taskQueue.addTask(testBody);
-    taskQueue.run();
-    expect(log.length).equal(1);
-    expect(log[0]).equal("any done: api1");
-  });
-
   test("promise catch", () => {
     let log = new Array<string>();
     function testBody(): void {
@@ -478,5 +460,23 @@ describe("test promise", () => {
     expect(log[0]).equal("then1: start");
     expect(log[1]).equal("catch: fail");
     expect(log[2]).equal("then2: recovered");
+  });
+
+  test("promise any", () => {
+    let log = new Array<string>();
+    function testBody(): void {
+      const p1 = api3("api1");
+      const p2 = api3("api2");
+      const p3 = api3("api3");
+
+      Promise.any([p1, p2, p3]).then<Object>((value: (Object | null) | null): Object | null => {
+        log.push("any done: " + (value as string));
+        return null;
+      });
+    }
+    taskQueue.addTask(testBody);
+    taskQueue.run();
+    expect(log.length).equal(1);
+    expect(log[0]).equal("any done: api1");
   });
 });
