@@ -271,8 +271,8 @@ describe("closureScanner", () => {
     `);
     // chain: outer(0) -> <for>(1) -> inner(2)
     // i is declared in the for loop scope; inner crosses a function boundary to access it
-    // outer is NOT a closure (no function boundary crossed from its perspective)
-    expect(scanner.closureFunctions.size).equal(2);
+    // outer is also a closure because its loop's variable is captured
+    expect(scanner.closureFunctions.size).equal(3);
     for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
       const func = keys[j];
       const info = scanner.closureFunctions.get(func);
@@ -283,6 +283,9 @@ describe("closureScanner", () => {
       } else if (name === "<for>") {
         expect(info.closureVariables.size).equal(1);
         expect(info.nestedLevel).equal(1);
+      } else if (name === "outer") {
+        expect(info.closureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(0);
       } else {
         assert(false, `Unexpected closure function: ${name}`);
       }
@@ -303,7 +306,7 @@ describe("closureScanner", () => {
     `);
     // chain: outer(0) -> <for>(1) -> inner(2)
     // x is in for's block scope; inner crosses function boundary
-    expect(scanner.closureFunctions.size).equal(2);
+    expect(scanner.closureFunctions.size).equal(3);
     for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
       const func = keys[j];
       const info = scanner.closureFunctions.get(func);
@@ -314,6 +317,9 @@ describe("closureScanner", () => {
       } else if (name === "<for>") {
         expect(info.closureVariables.size).equal(1);
         expect(info.nestedLevel).equal(1);
+      } else if (name === "outer") {
+        expect(info.closureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(0);
       } else {
         assert(false, `Unexpected closure function: ${name}`);
       }
@@ -369,7 +375,7 @@ describe("closureScanner", () => {
     `);
     // chain: outer(0) -> <do>(1) -> inner(2)
     // x is in the do scope; inner crosses function boundary
-    expect(scanner.closureFunctions.size).equal(2);
+    expect(scanner.closureFunctions.size).equal(3);
     for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
       const func = keys[j];
       const info = scanner.closureFunctions.get(func);
@@ -380,6 +386,9 @@ describe("closureScanner", () => {
       } else if (name === "<do>") {
         expect(info.closureVariables.size).equal(1);
         expect(info.nestedLevel).equal(1);
+      } else if (name === "outer") {
+        expect(info.closureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(0);
       } else {
         assert(false, `Unexpected closure function: ${name}`);
       }
@@ -399,7 +408,7 @@ describe("closureScanner", () => {
     `);
     // chain: outer(0) -> <for-of>(1) -> inner(2)
     // v is in the for-of scope; inner crosses function boundary
-    expect(scanner.closureFunctions.size).equal(2);
+    expect(scanner.closureFunctions.size).equal(3);
     for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
       const func = keys[j];
       const info = scanner.closureFunctions.get(func);
@@ -410,6 +419,9 @@ describe("closureScanner", () => {
       } else if (name === "<for-of>") {
         expect(info.closureVariables.size).equal(1);
         expect(info.nestedLevel).equal(1);
+      } else if (name === "outer") {
+        expect(info.closureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(0);
       } else {
         assert(false, `Unexpected closure function: ${name}`);
       }

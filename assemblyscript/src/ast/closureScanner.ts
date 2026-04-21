@@ -242,7 +242,14 @@ class BlockScopeChain {
         }
         if (crossedFunction) {
           variable.markCaptured();
-          this.markRangeAsClosure(i);
+          let enclosingFunctionIndex = i;
+          for (let j = i; j >= 0; j--) {
+            if (this.blockScopes_[j].isFunction) {
+              enclosingFunctionIndex = j;
+              break;
+            }
+          }
+          this.markRangeAsClosure(enclosingFunctionIndex);
         }
         return crossedFunction;
       }
