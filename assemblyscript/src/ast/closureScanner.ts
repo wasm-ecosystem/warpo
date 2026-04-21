@@ -314,7 +314,11 @@ export class ClosureScanner extends BaseVisitor {
 
   visitParameterNode(node: ParameterNode): void {
     this.functionScopeChain_.addParameterDeclaration(node);
-    super.visitParameterNode(node);
+    this.visitNode(node.name);
+    // Skip node.type: when the type is a FunctionTypeNode (e.g. `(value: Object) => void`),
+    // visiting it would trigger visitParameterNode for its parameters, incorrectly
+    // registering type-annotation parameter names as variable declarations in the scope.
+    this.visitNode(node.initializer);
   }
 
   visitBlockStatement(node: BlockStatement): void {
