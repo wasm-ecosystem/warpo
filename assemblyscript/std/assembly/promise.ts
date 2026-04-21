@@ -12,18 +12,22 @@ export class _AsPromiseBase {
   private rejectedReason: Object | null = null;
   constructor(executor: (resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => void) {
     let handleResolve = (value: Object | null): void => {
-      this.state = _AsPromiseState.Fulfilled;
-      this.fulfilledValue = value;
-      if (this.onThen) {
-        this.onThen(value);
+      if (this.state == _AsPromiseState.Pending) {
+        this.state = _AsPromiseState.Fulfilled;
+        this.fulfilledValue = value;
+        if (this.onThen) {
+          this.onThen(value);
+        }
       }
     };
 
     let handleReject = (reason: Object | null): void => {
-      this.state = _AsPromiseState.Rejected;
-      this.rejectedReason = reason;
-      if (this.onCatch) {
-        this.onCatch(reason);
+      if (this.state == _AsPromiseState.Pending) {
+        this.state = _AsPromiseState.Rejected;
+        this.rejectedReason = reason;
+        if (this.onCatch) {
+          this.onCatch(reason);
+        }
       }
     };
 
@@ -128,6 +132,19 @@ export class Promise<T> extends _AsPromiseBase {
             if (counter == promiseArr.length) {
               resolve(values);
             }
+            return null;
+          });
+        }
+      }
+    );
+  }
+
+  static any(promiseArr: _AsPromiseBase[]): Promise<Object | null> {
+    return new Promise<Object | null>(
+      (resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
+        for (let i = 0; i < promiseArr.length; i++) {
+          promiseArr[i].thenBase((value: Object | null): Object | null => {
+            resolve(value);
             return null;
           });
         }
