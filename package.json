@@ -9,7 +9,7 @@
   "scripts": {
     "update": "cmake -S . -B build && cmake --build build --parallel --target warpo_binaryen_enums_gen && ./build/bin/warpo_binaryen_enums_gen",
     "build:ts": "tsc -p tools/tsconfig.json",
-    "build:cpp": "cmake -S . -B build && cmake --build build --parallel",
+    "build:cpp": "cmake -S . -B build && cmake --build build --parallel 4",
     "build": "npm run build:ts && npm run build:cpp",
     "test:as:ut": "node dist/warpo.js test",
     "test:cpp:ut": "cd build && ctest --output-on-failure",
