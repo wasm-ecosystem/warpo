@@ -2,12 +2,15 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { platform } from "node:os";
 import { executeFixture } from "./wasmExecutor.js";
 
 const TESTS_DIR = dirname(fileURLToPath(import.meta.url));
 
 export const PROJECT_ROOT = resolve(TESTS_DIR, "../../..");
-export const WARPO_ASC = resolve(PROJECT_ROOT, "build/warpo/warpo_asc");
+
+const WARPO_ASC_NAME = platform() === "win32" ? "warpo_asc.exe" : "warpo_asc";
+export const WARPO_ASC = resolve(PROJECT_ROOT, "build/warpo", WARPO_ASC_NAME);
 export const FIXTURE_SRC = resolve(TESTS_DIR, "fixture/dwarfFixture.ts");
 export const FIXTURE_BUILD_DIR = resolve(TESTS_DIR, "fixture/build");
 export const FIXTURE_WASM = resolve(FIXTURE_BUILD_DIR, "dwarfFixture.wasm");
