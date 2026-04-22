@@ -11,7 +11,7 @@ export class _AsPromiseBase {
   private fulfilledValue: Object | null = null;
   private rejectedReason: Object | null = null;
   constructor(executor: (resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => void) {
-    let handleResolve = (value: Object | null): void => {
+    const handleResolve = (value: Object | null): void => {
       if (this.state == _AsPromiseState.Pending) {
         this.state = _AsPromiseState.Fulfilled;
         this.fulfilledValue = value;
@@ -21,7 +21,7 @@ export class _AsPromiseBase {
       }
     };
 
-    let handleReject = (reason: Object | null): void => {
+    const handleReject = (reason: Object | null): void => {
       if (this.state == _AsPromiseState.Pending) {
         this.state = _AsPromiseState.Rejected;
         this.rejectedReason = reason;
@@ -98,10 +98,10 @@ export class Promise<T> extends _AsPromiseBase {
     onFulfilled: ((value: T | null) => Object | null) | null,
     onRejected: ((reason: Object | null) => Object | null) | null = null
   ): Promise<U> {
-    let onFulfilledWrapper = (value: Object | null): Object | null => {
+    const onFulfilledWrapper = (value: Object | null): Object | null => {
       return onFulfilled ? onFulfilled(value as T | null) : value;
     };
-    let p: _AsPromiseBase = super.thenBase(onFulfilledWrapper, onRejected);
+    const p: _AsPromiseBase = super.thenBase(onFulfilledWrapper, onRejected);
     return new Promise<U>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
       p.thenBase(
         (value: Object | null): Object | null => {
@@ -124,7 +124,7 @@ export class Promise<T> extends _AsPromiseBase {
     return new Promise<(Object | null)[]>(
       (resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
         let counter = 0;
-        let values: (Object | null)[] = new Array<Object | null>();
+        const values: (Object | null)[] = new Array<Object | null>();
         for (let i = 0; i < promiseArr.length; i++) {
           promiseArr[i].thenBase((value: Object | null): Object | null => {
             values.push(value);

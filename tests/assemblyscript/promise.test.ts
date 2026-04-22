@@ -12,13 +12,13 @@ class TaskQueue {
   private queue: Task[] = new Array<Task>();
 
   addTask(func: () => void): void {
-    let task = new Task(func);
+    const task = new Task(func);
     this.queue.push(task);
   }
 
   run(): void {
     while (this.queue.length > 0) {
-      let task = this.queue.shift();
+      const task = this.queue.shift();
       if (task) {
         task.func();
       }
@@ -26,7 +26,7 @@ class TaskQueue {
   }
 }
 
-let taskQueue = new TaskQueue();
+const taskQueue = new TaskQueue();
 
 function asyncAPI(func: () => void): void {
   taskQueue.addTask(func);
@@ -47,7 +47,7 @@ function api1(ms: i32): Promise<string> {
 function api2(): Promise<C4> {
   return new Promise<C4>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
     asyncAPI(() => {
-      let c4 = new C4();
+      const c4 = new C4();
       c4.a = "abc";
       resolve(c4);
     });
@@ -79,7 +79,7 @@ function awaiter(fnc: (value: Object | null) => _AsPromiseBase | null): _AsPromi
 
 describe("test promise", () => {
   test("promise then", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       new Promise<string>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
         asyncAPI(() => {
@@ -90,7 +90,7 @@ describe("test promise", () => {
           log.push("then1: " + (value as string));
           return new Promise<C4>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
             asyncAPI(() => {
-              let c4 = new C4();
+              const c4 = new C4();
               c4.a = "c4";
               resolve(c4);
             });
@@ -109,7 +109,7 @@ describe("test promise", () => {
   });
 
   test("promise recursive", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       let label: i32 = 0;
       let c4: C4;
@@ -150,7 +150,7 @@ describe("test promise", () => {
   });
 
   test("promise all", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       const p1 = api3("api1");
       const p2 = api3("api2");
@@ -172,7 +172,7 @@ describe("test promise", () => {
   });
 
   test("promise catch", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       new Promise<string>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
         asyncAPI(() => {
@@ -195,7 +195,7 @@ describe("test promise", () => {
   });
 
   test("promise then onReject returns promise", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       new Promise<string>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
         asyncAPI(() => {
@@ -237,7 +237,7 @@ describe("test promise", () => {
   });
 
   test("promise then onFulfill returns promise", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       new Promise<string>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
         asyncAPI(() => {
@@ -273,7 +273,7 @@ describe("test promise", () => {
   });
 
   test("onFulfill null passes value through", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       new Promise<string>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
         asyncAPI(() => {
@@ -296,7 +296,7 @@ describe("test promise", () => {
   });
 
   test("onFulfill returns promise that rejects", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       new Promise<string>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
         asyncAPI(() => {
@@ -330,7 +330,7 @@ describe("test promise", () => {
   });
 
   test("onReject returns plain value", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       new Promise<string>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
         asyncAPI(() => {
@@ -360,7 +360,7 @@ describe("test promise", () => {
   });
 
   test("onReject returns promise that rejects", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       new Promise<string>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
         asyncAPI(() => {
@@ -400,7 +400,7 @@ describe("test promise", () => {
   });
 
   test("sync resolve then", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       Promise.resolve<string>("sync value").then<Object>((value: string | null) => {
         log.push("then: " + (value as string));
@@ -414,7 +414,7 @@ describe("test promise", () => {
   });
 
   test("sync reject catch", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       Promise.reject<string>("sync error").catch<Object>((reason: Object | null): Object | null => {
         log.push("catch: " + (reason as string));
@@ -428,7 +428,7 @@ describe("test promise", () => {
   });
 
   test("then catch then recovery chain", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       new Promise<string>((resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
         asyncAPI(() => {
@@ -463,7 +463,7 @@ describe("test promise", () => {
   });
 
   test("promise any", () => {
-    let log = new Array<string>();
+    const log = new Array<string>();
     function testBody(): void {
       const p1 = api3("api1");
       const p2 = api3("api2");
