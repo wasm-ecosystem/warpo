@@ -10,11 +10,13 @@ import {
   IfStatement,
   MethodDeclaration,
   Node,
+  NodeKind,
   ParameterNode,
   SwitchCase,
   ThisExpression,
   TypeDeclaration,
   VariableDeclaration,
+  VariableStatement,
   WhileStatement,
 } from "../ast";
 
@@ -152,6 +154,7 @@ class BlockScope {
 
 export class ClosureFunctionInfo {
   closureVariables: Set<Node> = new Set();
+  forInitClosureVariables: Set<Node> = new Set();
   capturesThis: bool = false;
   nestedLevel: i32 = 0;
 }
@@ -159,10 +162,12 @@ export class ClosureFunctionInfo {
 class BlockScopeChain {
   private blockScopes_: BlockScope[];
   private closureScopes_: Map<Node, ClosureFunctionInfo>;
+  private pendingClosureInfos_: ClosureFunctionInfo[];
 
   constructor(closureScopes: Map<Node, ClosureFunctionInfo>) {
     this.closureScopes_ = closureScopes;
     this.blockScopes_ = new Array();
+    this.pendingClosureInfos_ = new Array();
   }
 
   enterFunction(node: DeclarationStatement): void {
@@ -180,8 +185,12 @@ class BlockScopeChain {
       info.capturesThis = last.capturesThis;
       info.nestedLevel = this.blockScopes_.length - 1;
       this.closureScopes_.set(last.node, info);
+      this.pendingClosureInfos_.push(info);
     }
     this.blockScopes_.pop();
+    if (this.blockScopes_.length == 0) {
+      this.assignNestedLevels();
+    }
   }
 
   enterLoop(node: Node): void {
@@ -193,14 +202,44 @@ class BlockScopeChain {
     const last = this.blockScopes_[this.blockScopes_.length - 1];
     assert(!last.isFunction, "leaveLoop called on function block scope");
     last.popScope();
-    if (last.isClosure) {
+    if (last.isClosure && last.closureVariables.size > 0) {
       const info = new ClosureFunctionInfo();
       info.closureVariables = last.closureVariables;
       info.capturesThis = last.capturesThis;
       info.nestedLevel = this.blockScopes_.length - 1;
+      const loopNode = last.node;
+      if (loopNode.kind == NodeKind.For) {
+        const initializer = (<ForStatement>loopNode).initializer;
+        if (initializer && initializer.kind == NodeKind.Variable) {
+          const decls = (<VariableStatement>initializer).declarations;
+          for (let d = 0; d < decls.length; d++) {
+            if (info.closureVariables.has(decls[d])) info.forInitClosureVariables.add(decls[d]);
+          }
+        }
+      }
       this.closureScopes_.set(last.node, info);
+      this.pendingClosureInfos_.push(info);
     }
     this.blockScopes_.pop();
+  }
+
+  private assignNestedLevels(): void {
+    let pending = this.pendingClosureInfos_;
+    if (pending.length == 0) return;
+    let depths = new Array<i32>();
+    for (let i = 0; i < pending.length; i++) {
+      let d = pending[i].nestedLevel;
+      if (depths.indexOf(d) < 0) depths.push(d);
+    }
+    depths.sort();
+    let depthMap = new Map<i32, i32>();
+    for (let i = 0; i < depths.length; i++) {
+      depthMap.set(depths[i], i);
+    }
+    for (let i = 0; i < pending.length; i++) {
+      pending[i].nestedLevel = depthMap.get(pending[i].nestedLevel);
+    }
+    this.pendingClosureInfos_ = new Array();
   }
 
   enterScope(): void {

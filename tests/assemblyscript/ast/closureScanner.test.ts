@@ -326,6 +326,40 @@ describe("closureScanner", () => {
     }
   });
 
+  test("for-loop control variable belongs to for block, not function block", () => {
+    const scanner = makeScanner(`
+      export function outer(): void {
+          for (let iii = 0; iii < 2; iii++) {
+              let x = iii;
+              function inner(): i32 {
+                  return iii + x;
+              }
+              inner();
+          }
+      }
+    `);
+    // chain: outer(0) -> <for>(1) -> inner(2)
+    // Both iii (control variable) and x (body variable) belong to the for block
+    expect(scanner.closureFunctions.size).equal(3);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const info = scanner.closureFunctions.get(func);
+      const name = getNodeName(func);
+      if (name === "inner") {
+        expect(info.closureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(2);
+      } else if (name === "<for>") {
+        expect(info.closureVariables.size).equal(2);
+        expect(info.nestedLevel).equal(1);
+      } else if (name === "outer") {
+        expect(info.closureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(0);
+      } else {
+        assert(false, `Unexpected closure function: ${name}`);
+      }
+    }
+  });
+
   test("closure inside while loop", () => {
     const scanner = makeScanner(`
       export function outer(): void {
@@ -340,16 +374,15 @@ describe("closureScanner", () => {
       }
     `);
     // chain: outer(0) -> <while>(1) -> inner(2)
-    // i is declared in outer, not in the while scope
-    expect(scanner.closureFunctions.size).equal(3);
+    // i is declared in outer, not in the while scope;
+    // the while loop has no captured variables of its own, so it is not registered.
+    // inner's nested level is compressed from raw 2 to 1.
+    expect(scanner.closureFunctions.size).equal(2);
     for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
       const func = keys[j];
       const info = scanner.closureFunctions.get(func);
       const name = getNodeName(func);
       if (name === "inner") {
-        expect(info.closureVariables.size).equal(0);
-        expect(info.nestedLevel).equal(2);
-      } else if (name === "<while>") {
         expect(info.closureVariables.size).equal(0);
         expect(info.nestedLevel).equal(1);
       } else if (name === "outer") {
@@ -842,6 +875,35 @@ describe("closureScanner", () => {
       const func = keys[j];
       const info = scanner.closureFunctions.get(func);
       expect(info.capturesThis).equal(false);
+    }
+  });
+
+  test("no loop closure vars: for-loop in closure has no captured variables of its own", () => {
+    const scanner = makeScanner(`
+      export function outer(): i32 {
+          let x = 1;
+          function inner(): i32 {
+              for (let i = 0; i < 3; i++) {
+                  if (x) return x;
+              }
+              return 0;
+          }
+          return inner();
+      }
+    `);
+    // The for-loop has no captured variables of its own, so it is not registered.
+    // inner's nestedLevel should be 1, not 2 (the empty for-loop doesn't count).
+    expect(scanner.closureFunctions.size).equal(2);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const name = getNodeName(func);
+      const info = scanner.closureFunctions.get(func);
+      assert(name !== "<for>", "for-loop with no captured variables should not be registered");
+      if (name === "inner") {
+        expect(info.nestedLevel).equal(1);
+      } else if (name === "outer") {
+        expect(info.nestedLevel).equal(0);
+      }
     }
   });
 
