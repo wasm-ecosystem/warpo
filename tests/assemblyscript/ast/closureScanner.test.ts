@@ -461,6 +461,38 @@ describe("closureScanner", () => {
     }
   });
 
+  test("for loop using outer control variable keeps capture in outer scope", () => {
+    const scanner = makeScanner(`
+      export function outer(): void {
+          let i = 0;
+          for (i = 0; i < 10; i++) {
+              function inner(): i32 {
+                  return i;
+              }
+              inner();
+          }
+      }
+    `);
+    // i belongs to outer, not the for block, so the for-loop should not be registered.
+    // inner's nested level is compressed from raw 2 to 1.
+    expect(scanner.closureFunctions.size).equal(2);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const info = scanner.closureFunctions.get(func);
+      const name = getNodeName(func);
+      assert(name !== "<for>", "for-loop should not own captures for outer control variables");
+      if (name === "inner") {
+        expect(info.closureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(1);
+      } else if (name === "outer") {
+        expect(info.closureVariables.size).equal(1);
+        expect(info.nestedLevel).equal(0);
+      } else {
+        assert(false, `Unexpected closure function: ${name}`);
+      }
+    }
+  });
+
   test("closure captures function parameter", () => {
     const scanner = makeScanner(`
       export function outer(a: i32): i32 {
