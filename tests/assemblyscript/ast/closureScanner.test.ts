@@ -961,4 +961,48 @@ describe("closureScanner", () => {
     }
     expect(found).equal(true);
   });
+
+  test("for-loop with outer var vs for-loop with own var have different levels", () => {
+    const scanner = makeScanner(`
+      export function outer(): void {
+          let x: i32 = 0;
+          for (let i = 0; i < 10; i++) {
+              function innerA(): i32 {
+                  return x;
+              }
+              innerA();
+          }
+          for (let j = 0; j < 10; j++) {
+              let y: i32 = j;
+              function innerB(): i32 {
+                  return y;
+              }
+              innerB();
+          }
+      }
+    `);
+    // First for-loop: x belongs to outer, for-loop is not registered → innerA level = 1
+    // Second for-loop: y belongs to the for scope → outer(0) -> <for>(1) -> innerB(2)
+    expect(scanner.closureFunctions.size).equal(4);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const info = scanner.closureFunctions.get(func);
+      const name = getNodeName(func);
+      if (name === "outer") {
+        expect(info.nestedLevel).equal(0);
+        expect(info.closureVariables.size).equal(1);
+      } else if (name === "innerA") {
+        expect(info.nestedLevel).equal(1);
+        expect(info.closureVariables.size).equal(0);
+      } else if (name === "<for>") {
+        expect(info.nestedLevel).equal(1);
+        expect(info.closureVariables.size).equal(1);
+      } else if (name === "innerB") {
+        expect(info.nestedLevel).equal(2);
+        expect(info.closureVariables.size).equal(0);
+      } else {
+        assert(false, `Unexpected closure function: ${name}`);
+      }
+    }
+  });
 });

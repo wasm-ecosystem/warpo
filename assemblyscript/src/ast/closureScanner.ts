@@ -1,13 +1,11 @@
 import { BaseVisitor } from "./visitor";
 import {
   BlockStatement,
-  DeclarationStatement,
   DoStatement,
   ForOfStatement,
   ForStatement,
   FunctionDeclaration,
   IdentifierExpression,
-  IfStatement,
   MethodDeclaration,
   Node,
   NodeKind,
@@ -20,318 +18,72 @@ import {
   WhileStatement,
 } from "../ast";
 
-class VariableMark {
-  get node(): Node {
-    return this.node_;
-  }
-  get isCaptured(): bool {
-    return this.isCaptured_;
-  }
-  constructor(node: Node) {
-    this.node_ = node;
-    this.isCaptured_ = false;
-  }
-  private node_: Node;
-  private isCaptured_: bool;
-
-  markCaptured(): void {
-    this.isCaptured_ = true;
-  }
-}
-
-class Scope {
-  private variables_: Map<string, VariableMark> = new Map();
-
-  get variables(): Map<string, VariableMark> {
-    return this.variables_;
-  }
-
-  addVariable(name: string, node: Node): void {
-    this.variables_.set(name, new VariableMark(node));
-  }
-
-  findVariable(name: string): VariableMark | null {
-    if (this.variables_.has(name)) {
-      return this.variables_.get(name);
-    } else {
-      return null;
-    }
-  }
-}
-
-class BlockScope {
-  private node_: Node;
-  private isFunction_: bool;
-  private isClosure_: bool;
-  private closureVariables_: Set<Node>;
-  private hasThis_: bool;
-  private capturesThis_: bool;
-  get node(): Node {
-    return this.node_;
-  }
-  get isFunction(): bool {
-    return this.isFunction_;
-  }
-  get isClosure(): bool {
-    return this.isClosure_;
-  }
-  get closureVariables(): Set<Node> {
-    return this.closureVariables_;
-  }
-  get hasThis(): bool {
-    return this.hasThis_;
-  }
-  get capturesThis(): bool {
-    return this.capturesThis_;
-  }
-  constructor(node: Node, isFunction: bool) {
-    this.node_ = node;
-    this.isFunction_ = isFunction;
-    this.isClosure_ = false;
-    this.closureVariables_ = new Set();
-    this.hasThis_ = isFunction && node instanceof MethodDeclaration;
-    this.capturesThis_ = false;
-    this.scopeStack_ = new Array();
-    this.scopeStack_.push(new Scope());
-  }
-  private scopeStack_: Scope[];
-
-  pushScope(): void {
-    this.scopeStack_.push(new Scope());
-  }
-
-  popScope(): void {
-    assert(this.scopeStack_.length > 0, "popScope called on empty scope stack");
-    const scope = this.scopeStack_[this.scopeStack_.length - 1];
-    for (let keys = scope.variables.keys(), j = 0, k = keys.length; j < k; j++) {
-      const variableMark = assert(scope.variables.get(keys[j]));
-      if (variableMark.isCaptured) {
-        this.closureVariables_.add(variableMark.node);
-      }
-    }
-    this.scopeStack_.pop();
-  }
-
-  addVariableDeclaration(node: VariableDeclaration): void {
-    assert(this.scopeStack_.length > 0, "addVariableDeclaration should be called within a scope");
-    this.scopeStack_[this.scopeStack_.length - 1].addVariable(node.name.text, node);
-  }
-
-  addParameter(node: ParameterNode): void {
-    assert(this.scopeStack_.length > 0, "addParameter should be called within a scope");
-    this.scopeStack_[0].addVariable(node.name.text, node);
-  }
-
-  findVariable(name: string): VariableMark | null {
-    for (let i = this.scopeStack_.length - 1; i >= 0; i--) {
-      const scope = this.scopeStack_[i];
-      const variableMark = scope.findVariable(name);
-      if (variableMark) {
-        return variableMark;
-      }
-    }
-    return null;
-  }
-
-  markVariableCapturedIfExists(name: string): bool {
-    const variableDeclaration = this.findVariable(name);
-    if (variableDeclaration == null) {
-      return false;
-    } else {
-      variableDeclaration.markCaptured();
-      return true;
-    }
-  }
-
-  markAsClosure(): void {
-    this.isClosure_ = true;
-  }
-
-  markCapturesThis(): void {
-    this.capturesThis_ = true;
-  }
-}
-
 export class ClosureFunctionInfo {
   closureVariables: Set<Node> = new Set();
-  forInitClosureVariables: Set<Node> = new Set();
+  forInitClosureVariables: Set<VariableDeclaration> = new Set();
   capturesThis: bool = false;
   nestedLevel: i32 = 0;
 }
 
-class BlockScopeChain {
-  private blockScopes_: BlockScope[];
-  private closureScopes_: Map<Node, ClosureFunctionInfo>;
-  private pendingClosureInfos_: ClosureFunctionInfo[];
+const enum ScopeNodeKind {
+  Function,
+  Loop,
+  Block,
+}
 
-  constructor(closureScopes: Map<Node, ClosureFunctionInfo>) {
-    this.closureScopes_ = closureScopes;
-    this.blockScopes_ = new Array();
-    this.pendingClosureInfos_ = new Array();
-  }
-
-  enterFunction(node: DeclarationStatement): void {
-    this.blockScopes_.push(new BlockScope(node, true));
-  }
-
-  leaveFunction(): void {
-    assert(this.blockScopes_.length > 0, "leaveFunction should be called within a block scope");
-    const last = this.blockScopes_[this.blockScopes_.length - 1];
-    assert(last.isFunction, "leaveFunction called on non-function block scope");
-    last.popScope();
-    if (last.isClosure) {
-      const info = new ClosureFunctionInfo();
-      info.closureVariables = last.closureVariables;
-      info.capturesThis = last.capturesThis;
-      info.nestedLevel = this.blockScopes_.length - 1;
-      this.closureScopes_.set(last.node, info);
-      this.pendingClosureInfos_.push(info);
+class ScopeTreeNode {
+  children: ScopeTreeNode[] = [];
+  // All variables and parameters declared in this scope.
+  locals: Map<string, Node> = new Map();
+  // Variables from this scope that are captured by an inner function.
+  // Populated on Function/Loop scopes only (Block captures are promoted to the nearest ancestor).
+  capturedLocals: Map<string, Node> = new Map();
+  // Subset of capturedLocals that are for-loop initializer declarations (e.g. `let i` in `for (let i = ...)`).
+  forInitClosureLocals: Set<VariableDeclaration> = new Set();
+  info: ClosureFunctionInfo | null = null;
+  kind: ScopeNodeKind;
+  astNode: Node;
+  belongingFunction: ScopeTreeNode | null;
+  isClosure: bool = false;
+  nestedLevel: i32 = -1;
+  constructor(
+    public parent: ScopeTreeNode | null,
+    kind: ScopeNodeKind,
+    astNode: Node
+  ) {
+    this.kind = kind;
+    this.astNode = astNode;
+    if (kind == ScopeNodeKind.Function) {
+      this.belongingFunction = null;
+    } else {
+      this.belongingFunction =
+        assert(parent).kind == ScopeNodeKind.Function ? parent : assert(parent).belongingFunction;
     }
-    this.blockScopes_.pop();
-    if (this.blockScopes_.length == 0) {
-      this.assignNestedLevels();
+    if (parent) parent.children.push(this);
+  }
+
+  addLocal(name: string, node: Node): void {
+    this.locals.set(name, node);
+  }
+
+  addParameter(name: string, node: Node): void {
+    assert(this.kind == ScopeNodeKind.Function);
+    this.locals.set(name, node);
+  }
+
+  findDeclaration(name: string): ScopeTreeNode | null {
+    let cur: ScopeTreeNode | null = this;
+    while (cur) {
+      if (cur.locals.has(name)) return cur;
+      cur = cur.parent;
     }
-  }
-
-  enterLoop(node: Node): void {
-    this.blockScopes_.push(new BlockScope(node, false));
-  }
-
-  leaveLoop(): void {
-    assert(this.blockScopes_.length > 0, "leaveLoop should be called within a block scope");
-    const last = this.blockScopes_[this.blockScopes_.length - 1];
-    assert(!last.isFunction, "leaveLoop called on function block scope");
-    last.popScope();
-    if (last.isClosure && last.closureVariables.size > 0) {
-      const info = new ClosureFunctionInfo();
-      info.closureVariables = last.closureVariables;
-      info.capturesThis = last.capturesThis;
-      info.nestedLevel = this.blockScopes_.length - 1;
-      const loopNode = last.node;
-      if (loopNode.kind == NodeKind.For) {
-        const initializer = (<ForStatement>loopNode).initializer;
-        if (initializer && initializer.kind == NodeKind.Variable) {
-          const decls = (<VariableStatement>initializer).declarations;
-          for (let d = 0; d < decls.length; d++) {
-            if (info.closureVariables.has(decls[d])) info.forInitClosureVariables.add(decls[d]);
-          }
-        }
-      }
-      this.closureScopes_.set(last.node, info);
-      this.pendingClosureInfos_.push(info);
-    }
-    this.blockScopes_.pop();
-  }
-
-  private assignNestedLevels(): void {
-    let pending = this.pendingClosureInfos_;
-    if (pending.length == 0) return;
-    let depths = new Array<i32>();
-    for (let i = 0; i < pending.length; i++) {
-      let d = pending[i].nestedLevel;
-      if (depths.indexOf(d) < 0) depths.push(d);
-    }
-    depths.sort();
-    let depthMap = new Map<i32, i32>();
-    for (let i = 0; i < depths.length; i++) {
-      depthMap.set(depths[i], i);
-    }
-    for (let i = 0; i < pending.length; i++) {
-      pending[i].nestedLevel = depthMap.get(pending[i].nestedLevel);
-    }
-    this.pendingClosureInfos_ = new Array();
-  }
-
-  enterScope(): void {
-    if (this.blockScopes_.length === 0) return;
-    this.blockScopes_[this.blockScopes_.length - 1].pushScope();
-  }
-
-  leaveScope(): void {
-    if (this.blockScopes_.length === 0) return;
-    this.blockScopes_[this.blockScopes_.length - 1].popScope();
-  }
-
-  addVariableDeclaration(node: VariableDeclaration): void {
-    if (this.blockScopes_.length === 0) return;
-    this.blockScopes_[this.blockScopes_.length - 1].addVariableDeclaration(node);
-  }
-
-  addParameterDeclaration(node: ParameterNode): void {
-    if (this.blockScopes_.length === 0) return;
-    this.blockScopes_[this.blockScopes_.length - 1].addParameter(node);
-  }
-
-  checkAndMarkClosureVariable(name: string): bool {
-    if (this.blockScopes_.length === 0) return false;
-    const current = this.blockScopes_[this.blockScopes_.length - 1];
-    if (current.findVariable(name) !== null) return false;
-
-    if (this.blockScopes_.length < 2) return false;
-    for (let i = this.blockScopes_.length - 2; i >= 0; i--) {
-      const scope = this.blockScopes_[i];
-      const variable = scope.findVariable(name);
-      if (variable !== null) {
-        let crossedFunction = false;
-        for (let j = i + 1; j < this.blockScopes_.length; j++) {
-          if (this.blockScopes_[j].isFunction) {
-            crossedFunction = true;
-            break;
-          }
-        }
-        if (crossedFunction) {
-          variable.markCaptured();
-          let enclosingFunctionIndex = i;
-          for (let j = i; j >= 0; j--) {
-            if (this.blockScopes_[j].isFunction) {
-              enclosingFunctionIndex = j;
-              break;
-            }
-          }
-          this.markRangeAsClosure(enclosingFunctionIndex);
-        }
-        return crossedFunction;
-      }
-    }
-    return false;
-  }
-
-  checkAndMarkCapturedThis(): bool {
-    if (this.blockScopes_.length === 0) return false;
-    const current = this.blockScopes_[this.blockScopes_.length - 1];
-    if (current.hasThis) return false;
-
-    if (this.blockScopes_.length < 2) return false;
-    for (let i = this.blockScopes_.length - 2; i >= 0; i--) {
-      const scope = this.blockScopes_[i];
-      if (scope.hasThis) {
-        let crossedFunction = false;
-        for (let j = i + 1; j < this.blockScopes_.length; j++) {
-          if (this.blockScopes_[j].isFunction) {
-            crossedFunction = true;
-            break;
-          }
-        }
-        if (crossedFunction) {
-          scope.markCapturesThis();
-          this.markRangeAsClosure(i);
-        }
-        return crossedFunction;
-      }
-    }
-    return false;
-  }
-
-  private markRangeAsClosure(start: i32): void {
-    for (let i = start; i < this.blockScopes_.length; i++) {
-      this.blockScopes_[i].markAsClosure();
-    }
+    return null;
   }
 }
 
 export class ClosureScanner extends BaseVisitor {
-  private closureScopes_: Map<Node, ClosureFunctionInfo>;
-  private blockScopeChain_: BlockScopeChain;
+  private closureScopes_: Map<Node, ClosureFunctionInfo> = new Map();
+  private currentTreeNode_: ScopeTreeNode | null = null;
 
   get closureFunctions(): Map<Node, ClosureFunctionInfo> {
     return this.closureScopes_;
@@ -339,17 +91,11 @@ export class ClosureScanner extends BaseVisitor {
 
   constructor() {
     super();
-    const closureScopes = new Map<Node, ClosureFunctionInfo>();
-    this.closureScopes_ = closureScopes;
-    this.blockScopeChain_ = new BlockScopeChain(closureScopes);
   }
 
   getClosureFunctionInfo(node: Node): ClosureFunctionInfo | null {
-    if (this.closureScopes_.has(node)) {
-      return this.closureScopes_.get(node);
-    } else {
-      return null;
-    }
+    if (this.closureScopes_.has(node)) return this.closureScopes_.get(node);
+    return null;
   }
 
   getCapturedVariablesOfFunction(node: Node): Set<Node> | null {
@@ -357,79 +103,139 @@ export class ClosureScanner extends BaseVisitor {
     return info ? info.closureVariables : null;
   }
 
-  private visitNodeInScope(node: Node | null): void {
-    if (!node) return;
-    this.blockScopeChain_.enterScope();
-    this.visitNode(node);
-    this.blockScopeChain_.leaveScope();
+  private enterTreeNode(kind: ScopeNodeKind, astNode: Node): void {
+    this.currentTreeNode_ = new ScopeTreeNode(this.currentTreeNode_, kind, astNode);
+  }
+
+  private leaveTreeNode(): void {
+    let node = assert(this.currentTreeNode_);
+    this.currentTreeNode_ = node.parent;
+    if (!node.parent) this.assignNestedLevels(node);
+  }
+
+  private assignNestedLevels(root: ScopeTreeNode): void {
+    root.nestedLevel = root.isClosure ? 0 : -1;
+    let stack: ScopeTreeNode[] = [];
+    for (let i = root.children.length - 1; i >= 0; i--) {
+      stack.push(root.children[i]);
+    }
+    while (stack.length > 0) {
+      let node = stack[stack.length - 1];
+      stack.pop();
+      let parentLevel = assert(node.parent).nestedLevel;
+      if (node.kind == ScopeNodeKind.Function) {
+        if (parentLevel != -1 || node.isClosure) {
+          // parentLevel != -1 means there must be a closure function in parent chain
+          // by design, if a function is within a closure function, it is also a closure function, even if it doesn't capture any variable itself.
+          node.nestedLevel = parentLevel + 1;
+        } else {
+          node.nestedLevel = -1;
+        }
+      } else {
+        node.nestedLevel = node.isClosure ? parentLevel + 1 : parentLevel;
+      }
+      for (let i = node.children.length - 1; i >= 0; i--) {
+        stack.push(node.children[i]);
+      }
+    }
+    this.buildClosureInfos(root);
+  }
+
+  private buildClosureInfos(root: ScopeTreeNode): void {
+    let stack: ScopeTreeNode[] = [root];
+    while (stack.length > 0) {
+      let node = stack[stack.length - 1];
+      stack.pop();
+      if (node.isClosure) {
+        assert(node.kind != ScopeNodeKind.Block);
+        let info = new ClosureFunctionInfo();
+        info.nestedLevel = node.nestedLevel;
+        let keys = node.capturedLocals.keys();
+        let values = node.capturedLocals.values();
+        for (let j = 0; j < keys.length; j++) {
+          let name = keys[j];
+          if (name == "this") {
+            info.capturesThis = true;
+          } else {
+            info.closureVariables.add(values[j]);
+          }
+        }
+        info.forInitClosureVariables = node.forInitClosureLocals;
+        node.info = info;
+        this.closureScopes_.set(node.astNode, info);
+      }
+      for (let i = node.children.length - 1; i >= 0; i--) {
+        stack.push(node.children[i]);
+      }
+    }
   }
 
   visitFunctionDeclaration(node: FunctionDeclaration): void {
-    this.blockScopeChain_.enterFunction(node);
+    this.enterTreeNode(ScopeNodeKind.Function, node);
     super.visitFunctionDeclaration(node);
-    this.blockScopeChain_.leaveFunction();
+    this.leaveTreeNode();
   }
 
   visitMethodDeclaration(node: MethodDeclaration): void {
-    this.blockScopeChain_.enterFunction(node);
+    this.enterTreeNode(ScopeNodeKind.Function, node);
+    assert(this.currentTreeNode_).addLocal("this", node);
     super.visitMethodDeclaration(node);
-    this.blockScopeChain_.leaveFunction();
-  }
-
-  visitVariableDeclaration(node: VariableDeclaration): void {
-    this.blockScopeChain_.addVariableDeclaration(node);
-    super.visitVariableDeclaration(node);
-  }
-
-  visitParameterNode(node: ParameterNode): void {
-    this.blockScopeChain_.addParameterDeclaration(node);
-    this.visitNode(node.name);
-    // Skip node.type: when the type is a FunctionTypeNode (e.g. `(value: Object) => void`),
-    // visiting it would trigger visitParameterNode for its parameters, incorrectly
-    // registering type-annotation parameter names as variable declarations in the scope.
-    this.visitNode(node.initializer);
+    this.leaveTreeNode();
   }
 
   visitBlockStatement(node: BlockStatement): void {
-    this.blockScopeChain_.enterScope();
+    if (!this.currentTreeNode_) return;
+    this.enterTreeNode(ScopeNodeKind.Block, node);
     super.visitBlockStatement(node);
-    this.blockScopeChain_.leaveScope();
-  }
-
-  visitIfStatement(node: IfStatement): void {
-    this.visitNode(node.condition);
-    this.visitNodeInScope(node.ifTrue);
-    this.visitNodeInScope(node.ifFalse);
+    this.leaveTreeNode();
   }
 
   visitForStatement(node: ForStatement): void {
-    this.blockScopeChain_.enterLoop(node);
+    if (!this.currentTreeNode_) return;
+    this.enterTreeNode(ScopeNodeKind.Loop, node);
     super.visitForStatement(node);
-    this.blockScopeChain_.leaveLoop();
+    let treeNode = assert(this.currentTreeNode_);
+    let initializer = node.initializer;
+    if (initializer && initializer.kind == NodeKind.Variable) {
+      let decls = (<VariableStatement>initializer).declarations;
+      for (let d = 0; d < decls.length; d++) {
+        if (treeNode.capturedLocals.has(decls[d].name.text)) treeNode.forInitClosureLocals.add(decls[d]);
+      }
+    }
+    this.leaveTreeNode();
   }
 
   visitForOfStatement(node: ForOfStatement): void {
-    this.blockScopeChain_.enterLoop(node);
+    if (!this.currentTreeNode_) return;
+    this.enterTreeNode(ScopeNodeKind.Loop, node);
     super.visitForOfStatement(node);
-    this.blockScopeChain_.leaveLoop();
+    this.leaveTreeNode();
   }
 
   visitWhileStatement(node: WhileStatement): void {
-    this.blockScopeChain_.enterLoop(node);
+    if (!this.currentTreeNode_) return;
+    this.enterTreeNode(ScopeNodeKind.Loop, node);
     super.visitWhileStatement(node);
-    this.blockScopeChain_.leaveLoop();
+    this.leaveTreeNode();
   }
 
   visitDoStatement(node: DoStatement): void {
-    this.blockScopeChain_.enterLoop(node);
+    if (!this.currentTreeNode_) return;
+    this.enterTreeNode(ScopeNodeKind.Loop, node);
     super.visitDoStatement(node);
-    this.blockScopeChain_.leaveLoop();
+    this.leaveTreeNode();
   }
 
   visitSwitchCase(node: SwitchCase): void {
-    this.blockScopeChain_.enterScope();
+    if (!this.currentTreeNode_) return;
+    this.enterTreeNode(ScopeNodeKind.Block, node);
     super.visitSwitchCase(node);
-    this.blockScopeChain_.leaveScope();
+    this.leaveTreeNode();
+  }
+
+  visitVariableDeclaration(node: VariableDeclaration): void {
+    if (this.currentTreeNode_) this.currentTreeNode_!.addLocal(node.name.text, node);
+    super.visitVariableDeclaration(node);
   }
 
   visitTypeDeclaration(node: TypeDeclaration): void {
@@ -438,11 +244,44 @@ export class ClosureScanner extends BaseVisitor {
     this.visitNode(node.type);
   }
 
+  visitParameterNode(node: ParameterNode): void {
+    if (!this.currentTreeNode_ || this.currentTreeNode_!.kind != ScopeNodeKind.Function) return;
+    this.currentTreeNode_!.addParameter(node.name.text, node);
+    this.visitNode(node.name);
+    this.visitNode(node.initializer);
+  }
+
+  private checkCapture(name: string): void {
+    if (!this.currentTreeNode_) return;
+    let current = assert(this.currentTreeNode_);
+    const declaredScope = current.findDeclaration(name);
+    if (!declaredScope) return;
+    const currentFunction = current.kind == ScopeNodeKind.Function ? current : assert(current.belongingFunction);
+    const declaredFunction =
+      declaredScope.kind == ScopeNodeKind.Function ? declaredScope : declaredScope.belongingFunction;
+    if (currentFunction === declaredFunction) return;
+    currentFunction.isClosure = true;
+    let owningScope: ScopeTreeNode = declaredScope;
+    if (declaredScope.kind == ScopeNodeKind.Block) {
+      let walk: ScopeTreeNode | null = declaredScope.parent;
+      while (walk && walk.kind == ScopeNodeKind.Block) walk = walk.parent;
+      owningScope = assert(walk);
+    }
+    owningScope.isClosure = true;
+    owningScope.capturedLocals.set(name, assert(declaredScope.locals.get(name)));
+    assert(declaredFunction).isClosure = true;
+    let cur: ScopeTreeNode | null = currentFunction.parent;
+    while (cur && cur !== owningScope) {
+      if (cur.kind == ScopeNodeKind.Function) cur.isClosure = true;
+      cur = cur.parent;
+    }
+  }
+
   visitIdentifierExpression(node: IdentifierExpression): void {
-    this.blockScopeChain_.checkAndMarkClosureVariable(node.text);
+    this.checkCapture(node.text);
   }
 
   visitThisExpression(node: ThisExpression): void {
-    this.blockScopeChain_.checkAndMarkCapturedThis();
+    this.checkCapture("this");
   }
 }
