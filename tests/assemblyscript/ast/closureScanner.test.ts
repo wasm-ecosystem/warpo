@@ -483,6 +483,7 @@ describe("closureScanner", () => {
         expect(info.nestedLevel).equal(2);
       } else if (name === "<for-of>") {
         expect(info.closureVariables.size).equal(1);
+        expect(info.forInitClosureVariables.size).equal(1);
         expect(info.nestedLevel).equal(1);
       } else if (name === "outer") {
         expect(info.closureVariables.size).equal(0);
