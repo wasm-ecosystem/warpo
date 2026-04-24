@@ -360,6 +360,38 @@ describe("closureScanner", () => {
     }
   });
 
+  test("double variable declared in for initializer", () => {
+    const scanner = makeScanner(`
+      export function outer(): void {
+          for (let i = 0, j = 10; i < j; i++) {
+              function inner(): i32 {
+                  return i + j;
+              }
+              inner();
+          }
+      }
+    `);
+    expect(scanner.closureFunctions.size).equal(3);
+    for (let keys = scanner.closureFunctions.keys(), j = 0, k = keys.length; j < k; j++) {
+      const func = keys[j];
+      const info = scanner.closureFunctions.get(func);
+      const name = getNodeName(func);
+      if (name === "inner") {
+        expect(info.closureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(2);
+      } else if (name === "<for>") {
+        expect(info.closureVariables.size).equal(2);
+        expect(info.forInitClosureVariables.size).equal(2);
+        expect(info.nestedLevel).equal(1);
+      } else if (name === "outer") {
+        expect(info.closureVariables.size).equal(0);
+        expect(info.nestedLevel).equal(0);
+      } else {
+        assert(false, `Unexpected closure function: ${name}`);
+      }
+    }
+  });
+
   test("closure inside while loop", () => {
     const scanner = makeScanner(`
       export function outer(): void {

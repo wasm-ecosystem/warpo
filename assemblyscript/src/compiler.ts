@@ -77,6 +77,7 @@ import {
   TypeDefinition,
   CompiledNameNode,
   TupleIndexSignature,
+  ForInitClosureLocals,
 } from "./program";
 
 import { FlowFlags, Flow, LocalFlags, FieldFlags, ConditionKind } from "./flow";
@@ -407,6 +408,13 @@ class AssignmentAccessContext {
     this.indexExpr = compiler.compileExpression(indexExpression, targetType, Constraints.ConvImplicit);
     return this.indexExpr;
   }
+}
+
+class LoopClosureTupleInfo {
+  constructor(
+    public tupleInfo: SmallTupleTypeInfo,
+    public loopHeapLocalsStorage: Local
+  ) {}
 }
 
 /** Compiler interface. */
@@ -1678,9 +1686,7 @@ export class Compiler extends DiagnosticEmitter {
       let flow = instance.flow;
       this.currentFlow = flow;
       let stmts = new Array<ExpressionRef>();
-      const heapLocalsStorage = flow.getTempLocal(Type.i32);
-      mir.addHeapVariableStorageLocalIndex(instance, heapLocalsStorage.index);
-      instance.heapLocalsStorage = heapLocalsStorage;
+      const heapLocalsStorage = instance.currentHeapLocalsStorage;
 
       if (!this.compileFunctionBody(instance, stmts)) {
         stmts.push(module.unreachable());
@@ -1760,6 +1766,49 @@ export class Compiler extends DiagnosticEmitter {
     this.currentType = previousType;
     pendingElements.delete(instance);
     return true;
+  }
+
+  private finalizeLoopClosureType(instance: Function, statement: Node): LoopClosureTupleInfo | null {
+    let heapLocalsTypeBuilder = instance.heapLocalsTypeBuilder;
+    let loopHeapLocalsStorage = instance.currentHeapLocalsStorage;
+    let heapLocalsTupleType = heapLocalsTypeBuilder.finalize(statement.range, ReportMode.Report);
+    if (!heapLocalsTupleType) {
+      this.error(
+        DiagnosticCode.Not_implemented_0,
+        statement.range,
+        "loop closure captures too much data; reduce the number or size of captured variables"
+      );
+      return null;
+    }
+    let tupleInfo = assert(heapLocalsTupleType.tupleInfo);
+    return new LoopClosureTupleInfo(tupleInfo, loopHeapLocalsStorage);
+  }
+
+  private makeLoopClosureTupleStmts(
+    info: LoopClosureTupleInfo,
+    parentStorage: Local,
+    statement: Node
+  ): ExpressionRef[] {
+    let module = this.module;
+    let tupleInfo = info.tupleInfo;
+    let loopHeapLocalsStorage = info.loopHeapLocalsStorage;
+    let heapLocalsTuple = this.makeNewTuple(tupleInfo.getElementsAreaByteSize(), tupleInfo.getBitmap(), statement);
+    let parentEnvElementInfo = tupleInfo.elements[0];
+    let parentEnvSetter = assert(this.program.smallTupleInstance.getMethod("__set", [parentEnvElementInfo.type]));
+    let stmts = new Array<ExpressionRef>();
+    stmts.push(module.local_set(loopHeapLocalsStorage.index, heapLocalsTuple, true));
+    stmts.push(
+      this.makeCallDirect(
+        parentEnvSetter,
+        [
+          module.local_get(loopHeapLocalsStorage.index, this.program.smallTupleInstance.type.toRef()),
+          module.usize(parentEnvElementInfo.offset),
+          module.local_get(parentStorage.index, Type.i32.toRef()),
+        ],
+        statement
+      )
+    );
+    return stmts;
   }
 
   /** Compiles the body of a function within the specified flow. */
@@ -2182,8 +2231,9 @@ export class Compiler extends DiagnosticEmitter {
     let rtInstance = assert(this.resolver.resolveClass(program.functionPrototype, [instance.type]));
 
     // Store in a temp local, write fields, and return the pointer
-    let flow = this.currentFlow;
-    const localForEnv = flow.targetFunction.heapLocalsStorage;
+    const flow = this.currentFlow;
+    const targetFn = flow.targetFunction;
+    const localForEnv = targetFn.heapLocalsStorageStackSize > 0 ? targetFn.currentHeapLocalsStorage : null;
 
     let savedType = this.currentType;
     const expr = this.makeNewFunction(
@@ -2636,10 +2686,27 @@ export class Compiler extends DiagnosticEmitter {
     let flow = outerFlow.fork();
     this.currentFlow = flow;
     let stmts = new Array<ExpressionRef>();
+    let targetFunction = outerFlow.targetFunction;
+    let loopClosureInfo = this.program.closureScanner.getClosureFunctionInfo(statement);
+    let loopStorage: Local | null = null;
+    if (loopClosureInfo) {
+      loopStorage = flow.getTempLocal(Type.i32);
+      targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
+      targetFunction.pendingInitClosureLocals = new ForInitClosureLocals();
+    }
     let initializer = statement.initializer;
     if (initializer) {
       assert(initializer.kind == NodeKind.Expression || initializer.kind == NodeKind.Variable);
       stmts.push(this.compileStatement(initializer));
+    }
+    let initClosureLocals = targetFunction.pendingInitClosureLocals;
+    targetFunction.pendingInitClosureLocals = null;
+    if (initClosureLocals) {
+      initClosureLocals.setActiveStorageToTuple();
+    }
+    let loopClosureTupleInfo: LoopClosureTupleInfo | null = null;
+    if (loopClosureInfo) {
+      loopClosureTupleInfo = this.finalizeLoopClosureType(targetFunction, statement);
     }
 
     // Precompute the condition if present, or default to `true`
@@ -2712,8 +2779,37 @@ export class Compiler extends DiagnosticEmitter {
     if (possiblyLoops) {
       let incrementor = statement.incrementor;
       if (incrementor) {
+        // Copy tuple -> local before incrementor (body may have modified incrementor variable via tuple)
+        if (initClosureLocals) {
+          let tupleClass = this.program.smallTupleInstance;
+          let locals = initClosureLocals.getLocals();
+          for (let k = 0; k < locals.length; k++) {
+            let initLocal = locals[k];
+            let elementInfo = initLocal.getTupleElementInfo();
+            let getter = assert(tupleClass.getMethod("__get", [elementInfo.type]));
+            bodyStmts.push(
+              module.local_set(
+                initLocal.index,
+                this.makeCallDirect(
+                  getter,
+                  [
+                    module.local_get(assert(loopStorage).index, tupleClass.type.toRef()),
+                    module.usize(elementInfo.offset),
+                  ],
+                  statement
+                ),
+                initLocal.type.isManaged
+              )
+            );
+          }
+          initClosureLocals.setActiveStorageToLocal();
+        }
+        // Switch forInitClosureVars to use local for the incrementor
         this.currentFlow = flow;
         bodyStmts.push(this.compileExpression(incrementor, Type.void, Constraints.ConvImplicit | Constraints.WillDrop));
+        if (initClosureLocals) {
+          initClosureLocals.setActiveStorageToTuple();
+        }
       }
       bodyStmts.push(module.br(loopLabel));
 
@@ -2733,6 +2829,36 @@ export class Compiler extends DiagnosticEmitter {
       bodyFlow.addLocalsToBlockWithStartEndStmt(bodyStmts[0], bodyEnd);
     }
     let expr = module.if(condExprTrueish, module.flatten(bodyStmts));
+
+    // Insert loop top stmts: tuple creation + copy temp->tuple before condition
+    if (loopClosureTupleInfo) {
+      targetFunction.popClosureScope();
+      let parentStorage = targetFunction.currentHeapLocalsStorage;
+      let loopTopStmts = this.makeLoopClosureTupleStmts(loopClosureTupleInfo, parentStorage, statement);
+      if (initClosureLocals && initClosureLocals.length > 0) {
+        let tupleClass = this.program.smallTupleInstance;
+        let locals = initClosureLocals.getLocals();
+        for (let k = 0; k < locals.length; k++) {
+          let initLocal = locals[k];
+          let elementInfo = initLocal.getTupleElementInfo();
+          let setter = assert(tupleClass.getMethod("__set", [elementInfo.type]));
+          loopTopStmts.push(
+            this.makeCallDirect(
+              setter,
+              [
+                module.local_get(assert(loopStorage).index, tupleClass.type.toRef()),
+                module.usize(elementInfo.offset),
+                module.local_get(initLocal.index, initLocal.type.toRef()),
+              ],
+              statement
+            )
+          );
+        }
+      }
+      loopTopStmts.push(expr);
+      expr = module.flatten(loopTopStmts);
+    }
+
     if (possiblyLoops) {
       expr = module.loop(loopLabel, expr);
     }
@@ -6740,7 +6866,7 @@ export class Compiler extends DiagnosticEmitter {
     } else {
       this.currentType = Type.void;
     }
-    if (!local.isClosureVariable()) {
+    if (local.shouldUseLocalStorage()) {
       if (tee) {
         return module.local_tee(localIndex, valueExpr, type.isManaged);
       } else {
@@ -8258,7 +8384,7 @@ export class Compiler extends DiagnosticEmitter {
 
   private makeLocalGet(local: Local): ExpressionRef {
     const module = this.module;
-    if (!local.isClosureVariable()) {
+    if (local.shouldUseLocalStorage()) {
       const expr = module.local_get(local.index, local.type.toRef());
       return expr;
     } else {
@@ -8276,18 +8402,23 @@ export class Compiler extends DiagnosticEmitter {
   }
 
   private getClosureVariableNestedLevel(local: Local): i32 {
-    const localDeclaredFunction = local.getBelongingFunction();
     const currentFunction = this.currentFlow.targetFunction;
-    return (
-      assert(currentFunction.prototype.closureInfo).nestedLevel -
-      assert(localDeclaredFunction.prototype.closureInfo).nestedLevel
-    );
+    const currentLevel = currentFunction.closureBaseLevel + currentFunction.heapLocalsStorageStackSize - 1;
+    const localLevel = local.closureScopeLevel;
+    return currentLevel - localLevel;
   }
 
   private makeGetHeapLocalTuple(local: Local): ExpressionRef {
+    const module = this.module;
+    const currentFunction = this.currentFlow.targetFunction;
     const nestedLevel = this.getClosureVariableNestedLevel(local);
-    const envTupleExpr = this.getClosureEnvByLevel(nestedLevel);
-    return envTupleExpr;
+    const stackSize = currentFunction.heapLocalsStorageStackSize;
+    if (nestedLevel < stackSize) {
+      const storageLocal = currentFunction.getHeapLocalsStorageByIndex(stackSize - 1 - nestedLevel);
+      return module.local_get(storageLocal.index, Type.i32.toRef());
+    } else {
+      return this.getClosureEnvByLevel(nestedLevel - stackSize + 1);
+    }
   }
 
   private compileIdentifierExpressionBuiltin(

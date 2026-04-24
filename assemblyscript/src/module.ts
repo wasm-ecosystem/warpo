@@ -470,7 +470,7 @@ export class Module {
   }
 
   get_closure_env_by_level(level: i32): ExpressionRef {
-    assert(level >= 0);
+    assert(level > 0);
     return this.call(BuiltinNames.getClosureEnvByLevel, [this.i32(level)], TypeRef.I32);
   }
 

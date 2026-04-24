@@ -1,10 +1,10 @@
 (module
  (type $0 (func (param i32) (result i32)))
  (type $1 (func (param i32 i32)))
- (type $2 (func (result i32)))
- (type $3 (func (param i32)))
- (type $4 (func (param i32 i32 i32)))
- (type $5 (func (param i32 i32) (result i32)))
+ (type $2 (func (param i32)))
+ (type $3 (func (param i32 i32 i32)))
+ (type $4 (func (param i32 i32) (result i32)))
+ (type $5 (func (result i32)))
  (type $6 (func))
  (type $7 (func (param i32 i32 i32 i32)))
  (type $8 (func (param i32 i32 i32) (result i32)))
@@ -43,14 +43,29 @@
  (data $5 (i32.const 268) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $8 (i32.const 412) "L\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00<\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00u\00s\00e\00-\00b\00e\00f\00o\00r\00e\00-\00a\00s\00s\00i\00g\00n\00e\00d\00.\00t\00s\00")
+ (data $8 (i32.const 412) "L\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00<\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00c\00a\00p\00t\00u\00r\00e\00-\00b\00l\00o\00c\00k\00-\00s\00c\00o\00p\00e\00.\00t\00s\00")
  (data $9 (i32.const 496) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (table $0 3 3 funcref)
- (elem $0 (i32.const 1) $closure-use-before-assigned/readAfterAssign~inner $closure-use-before-assigned/readBeforeAssign~inner)
- (export "readAfterAssign" (func $closure-use-before-assigned/readAfterAssign))
- (export "readBeforeAssign" (func $closure-use-before-assigned/readBeforeAssign))
+ (table $0 2 2 funcref)
+ (elem $0 (i32.const 1) $closure-capture-block-scope/outer~innerA)
+ (export "outer" (func $closure-capture-block-scope/outer))
  (export "memory" (memory $0))
  (start $~start)
+ (func $~lib/tuple/SmallTuple#__set<i32> (param $this i32) (param $offset i32) (param $value i32)
+  (local $elementPtr i32)
+  (local.set $elementPtr
+   (i32.add
+    (local.get $this)
+    (local.get $offset)
+   )
+  )
+  (i32.store
+   (local.get $elementPtr)
+   (local.get $value)
+  )
+  (drop
+   (i32.const 0)
+  )
+ )
  (func $~lib/tuple/SmallTuple#__get<i32> (param $this i32) (param $offset i32) (result i32)
   (local $elementPtr i32)
   (local.set $elementPtr
@@ -3080,7 +3095,7 @@
    (i32.const 0)
   )
  )
- (func $closure-use-before-assigned/readAfterAssign~inner (result i32)
+ (func $closure-capture-block-scope/outer~innerA (result i32)
   (local $0 i32)
   (local.set $0
    (call $~lib/rt/__localtostack
@@ -3133,26 +3148,11 @@
    (local.get $ptr)
   )
  )
- (func $~lib/tuple/SmallTuple#__set<i32> (param $this i32) (param $offset i32) (param $value i32)
-  (local $elementPtr i32)
-  (local.set $elementPtr
-   (i32.add
-    (local.get $this)
-    (local.get $offset)
-   )
-  )
-  (i32.store
-   (local.get $elementPtr)
-   (local.get $value)
-  )
-  (drop
-   (i32.const 0)
-  )
- )
- (func $closure-use-before-assigned/readAfterAssign (result i32)
+ (func $closure-capture-block-scope/outer (result i32)
   (local $0 i32)
-  (local $value i32)
-  (local $inner i32)
+  (local $x i32)
+  (local $x|2 i32)
+  (local $innerA i32)
   (local.set $0
    (call $~lib/rt/__localtostack
     (call $~lib/rt/__newTuple
@@ -3170,8 +3170,18 @@
     (call $~lib/rt/closure/getClosureEnv)
    )
   )
+  (local.set $x
+   (i32.const 0)
+  )
+  (call $~lib/tuple/SmallTuple#__set<i32>
+   (call $~lib/rt/__tmptostack
+    (local.get $0)
+   )
+   (i32.const 4)
+   (i32.const 42)
+  )
   (drop
-   (local.tee $inner
+   (local.tee $innerA
     (call $~lib/rt/__localtostack
      (call $~lib/rt/__newFunction
       (i32.const 1)
@@ -3181,158 +3191,12 @@
     )
    )
   )
-  (call $~lib/tuple/SmallTuple#__set<i32>
-   (call $~lib/rt/__tmptostack
-    (local.get $0)
-   )
-   (i32.const 4)
-   (i32.const 1)
-  )
   (return
-   (call_indirect (type $2)
-    (block (result i32)
-     (call $~lib/rt/closure/setClosureEnv
-      (i32.load offset=4
-       (local.get $inner)
-      )
-     )
-     (global.set $~argumentsLength
-      (i32.const 0)
-     )
-     (i32.load
-      (local.get $inner)
-     )
-    )
-   )
+   (local.get $innerA)
   )
  )
- (func $closure-use-before-assigned/readBeforeAssign~inner (result i32)
+ (func $start:closure-capture-block-scope
   (local $0 i32)
-  (local.set $0
-   (call $~lib/rt/__localtostack
-    (call $~lib/rt/__newTuple
-     (i32.const 4)
-     (i64.const 1)
-    )
-   )
-  )
-  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
-   (call $~lib/rt/__tmptostack
-    (local.get $0)
-   )
-   (i32.const 0)
-   (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnv)
-   )
-  )
-  (return
-   (call $~lib/tuple/SmallTuple#__get<i32>
-    (call $~lib/rt/__tmptostack
-     (call $~lib/rt/closure/getClosureEnvByLevel
-      (i32.const 1)
-     )
-    )
-    (i32.const 4)
-   )
-  )
- )
- (func $closure-use-before-assigned/readBeforeAssign (result i32)
-  (local $0 i32)
-  (local $value i32)
-  (local $inner i32)
-  (local $before i32)
-  (local $after i32)
-  (local.set $0
-   (call $~lib/rt/__localtostack
-    (call $~lib/rt/__newTuple
-     (i32.const 8)
-     (i64.const 1)
-    )
-   )
-  )
-  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
-   (call $~lib/rt/__tmptostack
-    (local.get $0)
-   )
-   (i32.const 0)
-   (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnv)
-   )
-  )
-  (drop
-   (local.tee $inner
-    (call $~lib/rt/__localtostack
-     (call $~lib/rt/__newFunction
-      (i32.const 2)
-      (local.get $0)
-      (i32.const 5)
-     )
-    )
-   )
-  )
-  (local.set $before
-   (call_indirect (type $2)
-    (block (result i32)
-     (call $~lib/rt/closure/setClosureEnv
-      (i32.load offset=4
-       (local.get $inner)
-      )
-     )
-     (global.set $~argumentsLength
-      (i32.const 0)
-     )
-     (i32.load
-      (local.get $inner)
-     )
-    )
-   )
-  )
-  (call $~lib/tuple/SmallTuple#__set<i32>
-   (call $~lib/rt/__tmptostack
-    (local.get $0)
-   )
-   (i32.const 4)
-   (i32.const 1)
-  )
-  (local.set $after
-   (call_indirect (type $2)
-    (block (result i32)
-     (call $~lib/rt/closure/setClosureEnv
-      (i32.load offset=4
-       (local.get $inner)
-      )
-     )
-     (global.set $~argumentsLength
-      (i32.const 0)
-     )
-     (i32.load
-      (local.get $inner)
-     )
-    )
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (local.get $after)
-     (i32.const 1)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 432)
-     (i32.const 22)
-     (i32.const 3)
-    )
-    (unreachable)
-   )
-  )
-  (return
-   (local.get $before)
-  )
- )
- (func $start:closure-use-before-assigned
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -3364,41 +3228,38 @@
    (i32.eqz
     (i32.eq
      (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.const 0)
+      (local.set $0
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.const 0)
+        )
+        (call $closure-capture-block-scope/outer)
+       )
       )
-      (call $closure-use-before-assigned/readAfterAssign)
+      (call_indirect (type $5)
+       (block (result i32)
+        (call $~lib/rt/closure/setClosureEnv
+         (i32.load offset=4
+          (local.get $0)
+         )
+        )
+        (global.set $~argumentsLength
+         (i32.const 0)
+        )
+        (i32.load
+         (local.get $0)
+        )
+       )
+      )
      )
-     (i32.const 1)
+     (i32.const 42)
     )
    )
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 26)
-     (i32.const 1)
-    )
-    (unreachable)
-   )
-  )
-  (if
-   (i32.eqz
-    (i32.eq
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.const 0)
-      )
-      (call $closure-use-before-assigned/readBeforeAssign)
-     )
-     (i32.const 0)
-    )
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 432)
-     (i32.const 27)
+     (i32.const 14)
      (i32.const 1)
     )
     (unreachable)
@@ -3601,6 +3462,6 @@
   (unreachable)
  )
  (func $~start
-  (call $start:closure-use-before-assigned)
+  (call $start:closure-capture-block-scope)
  )
 )

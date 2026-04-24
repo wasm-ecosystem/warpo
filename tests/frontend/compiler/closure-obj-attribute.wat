@@ -3257,9 +3257,7 @@
   )
   (call $~lib/tuple/SmallTuple#__set<closure-obj-attribute/Point>
    (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnvByLevel
-     (i32.const 0)
-    )
+    (local.get $0)
    )
    (i32.const 4)
    (call $~lib/rt/__tmptostack
@@ -3277,9 +3275,7 @@
    (call $~lib/rt/__tmptostack
     (call $~lib/tuple/SmallTuple#__get<closure-obj-attribute/Point>
      (call $~lib/rt/__tmptostack
-      (call $~lib/rt/closure/getClosureEnvByLevel
-       (i32.const 0)
-      )
+      (local.get $0)
      )
      (i32.const 4)
     )
@@ -3290,9 +3286,7 @@
    (call $~lib/rt/__tmptostack
     (call $~lib/tuple/SmallTuple#__get<closure-obj-attribute/Point>
      (call $~lib/rt/__tmptostack
-      (call $~lib/rt/closure/getClosureEnvByLevel
-       (i32.const 0)
-      )
+      (local.get $0)
      )
      (i32.const 4)
     )
@@ -3331,9 +3325,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/tuple/SmallTuple#__get<closure-obj-attribute/Point>
        (call $~lib/rt/__tmptostack
-        (call $~lib/rt/closure/getClosureEnvByLevel
-         (i32.const 0)
-        )
+        (local.get $0)
        )
        (i32.const 4)
       )
@@ -3343,9 +3335,7 @@
      (call $~lib/rt/__tmptostack
       (call $~lib/tuple/SmallTuple#__get<closure-obj-attribute/Point>
        (call $~lib/rt/__tmptostack
-        (call $~lib/rt/closure/getClosureEnvByLevel
-         (i32.const 0)
-        )
+        (local.get $0)
        )
        (i32.const 4)
       )
