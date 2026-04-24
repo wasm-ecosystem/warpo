@@ -11,7 +11,9 @@ class ClassLayoutResolver {
     this.baseTypeNames = new Set<string>();
     for (const die of findDIEsByTag(root, DW_TAG.base_type)) {
       const name = getAttr(die, DW_AT.name)?.value as string | undefined;
-      if (name) this.baseTypeNames.add(name);
+      if (name) {
+        this.baseTypeNames.add(name);
+      }
     }
   }
 
@@ -19,18 +21,22 @@ class ClassLayoutResolver {
     const layouts: ClassLayout[] = [];
     for (const classDie of findDIEsByTag(root, DW_TAG.class_type)) {
       const layout = this.resolveClassLayout(classDie);
-      if (layout) layouts.push(layout);
+      if (layout) {
+        layouts.push(layout);
+      }
     }
     return layouts;
   }
 
   private resolveTypeInfo(typeRef: number): { name?: string; size: number; isReference: boolean } {
     const typeDie = this.offsetMap.get(typeRef);
-    if (!typeDie) return { size: 4, isReference: false };
+    if (!typeDie) {
+      return { size: 4, isReference: false };
+    }
     const name = getAttr(typeDie, DW_AT.name)?.value as string | undefined;
-    const isReference = name !== undefined ? !this.baseTypeNames.has(name) : false;
+    const isReference = name === undefined ? false : !this.baseTypeNames.has(name);
     const byteSize = getAttr(typeDie, DW_AT.byte_size);
-    const size = byteSize !== undefined ? (byteSize.value as number) : 4;
+    const size = byteSize === undefined ? 4 : (byteSize.value as number);
     return { name, size, isReference };
   }
 
@@ -38,7 +44,9 @@ class ClassLayoutResolver {
     const nameAttr = getAttr(memberDie, DW_AT.name);
     const offsetAttr = getAttr(memberDie, DW_AT.data_member_location);
     const typeAttr = getAttr(memberDie, DW_AT.type);
-    if (!nameAttr || offsetAttr === undefined || !typeAttr) return null;
+    if (!nameAttr || offsetAttr === undefined || !typeAttr) {
+      return null;
+    }
 
     const { size, isReference } = this.resolveTypeInfo(typeAttr.value as number);
     return {
@@ -51,26 +59,36 @@ class ClassLayoutResolver {
 
   private resolveTemplateType(classDie: DwarfDIE): string | undefined {
     const templateParam = classDie.children.find((c) => c.tag === DW_TAG.template_type_parameter);
-    if (!templateParam) return undefined;
+    if (!templateParam) {
+      return undefined;
+    }
 
     const typeAttr = getAttr(templateParam, DW_AT.type);
-    if (!typeAttr) return undefined;
+    if (!typeAttr) {
+      return undefined;
+    }
 
     return this.resolveTypeInfo(typeAttr.value as number).name;
   }
 
   private resolveClassLayout(classDie: DwarfDIE): ClassLayout | null {
     const nameAttr = getAttr(classDie, DW_AT.name);
-    if (!nameAttr) return null;
+    if (!nameAttr) {
+      return null;
+    }
 
     const sigAttr = getAttr(classDie, DW_AT.signature);
-    if (sigAttr === undefined) return null;
+    if (sigAttr === undefined) {
+      return null;
+    }
 
     const members = classDie.children.filter((c) => c.tag === DW_TAG.member);
     const fields: ClassField[] = [];
     for (const member of members) {
       const field = this.resolveField(member);
-      if (field) fields.push(field);
+      if (field) {
+        fields.push(field);
+      }
     }
 
     const layout: ClassLayout = {
