@@ -175,6 +175,7 @@ uget
 ulog
 umul
 unittests
+uset
 usize
 utoa
 Varargs
