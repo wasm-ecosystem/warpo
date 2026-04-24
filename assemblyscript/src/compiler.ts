@@ -8831,19 +8831,13 @@ export class Compiler extends DiagnosticEmitter {
       // Pin the static array so its children are visible to GC during the __uset and join.
       let pinInstance = this.program.pinInstance;
       this.compileFunction(pinInstance);
-      stmts[stmtIndex++] = module.drop(
-        module.call(pinInstance.internalName, [arrayOffsetExpr], Type.usize32.toRef())
-      );
+      stmts[stmtIndex++] = module.drop(module.call(pinInstance.internalName, [arrayOffsetExpr], Type.usize32.toRef()));
 
       // Populate the static array slots with the temp locals
       for (let i = 0; i < numExpressions; ++i) {
         stmts[stmtIndex++] = this.makeCallDirect(
           indexedSetInstance,
-          [
-            arrayOffsetExpr,
-            module.i32(expressionPositions[i]),
-            module.local_get(temps[i].index, stringType.toRef()),
-          ],
+          [arrayOffsetExpr, module.i32(expressionPositions[i]), module.local_get(temps[i].index, stringType.toRef())],
           expression
         );
       }

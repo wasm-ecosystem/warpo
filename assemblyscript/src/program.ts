@@ -4848,13 +4848,13 @@ export class Property extends VariableLikeElement {
     const declaration = prototype.isField
       ? <VariableLikeDeclarationStatement>assert(prototype.fieldDeclaration)
       : Node.createVariableDeclaration(
-        prototype.identifierNode,
-        null,
-        prototype.flags & CommonFlags.Instance,
-        null,
-        null,
-        prototype.nameRange
-      );
+          prototype.identifierNode,
+          null,
+          prototype.flags & CommonFlags.Instance,
+          null,
+          null,
+          prototype.nameRange
+        );
     super(
       ElementKind.Property,
       prototype.name,
