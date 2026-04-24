@@ -787,6 +787,22 @@ export class Program extends DiagnosticEmitter {
   }
   private _linkInstance: Function | null = null;
 
+  /** Gets the runtime `__pin(ptr: usize): usize` instance. */
+  get pinInstance(): Function {
+    let cached = this._pinInstance;
+    if (!cached) this._pinInstance = cached = this.requireFunction(CommonNames.pin);
+    return cached;
+  }
+  private _pinInstance: Function | null = null;
+
+  /** Gets the runtime `__unpin(ptr: usize): void` instance. */
+  get unpinInstance(): Function {
+    let cached = this._unpinInstance;
+    if (!cached) this._unpinInstance = cached = this.requireFunction(CommonNames.unpin);
+    return cached;
+  }
+  private _unpinInstance: Function | null = null;
+
   /** Gets the runtime `__collect(): void` instance. */
   get collectInstance(): Function {
     let cached = this._collectInstance;
@@ -4832,13 +4848,13 @@ export class Property extends VariableLikeElement {
     const declaration = prototype.isField
       ? <VariableLikeDeclarationStatement>assert(prototype.fieldDeclaration)
       : Node.createVariableDeclaration(
-          prototype.identifierNode,
-          null,
-          prototype.flags & CommonFlags.Instance,
-          null,
-          null,
-          prototype.nameRange
-        );
+        prototype.identifierNode,
+        null,
+        prototype.flags & CommonFlags.Instance,
+        null,
+        null,
+        prototype.nameRange
+      );
     super(
       ElementKind.Property,
       prototype.name,

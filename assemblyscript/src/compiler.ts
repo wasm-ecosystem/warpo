@@ -8797,43 +8797,73 @@ export class Compiler extends DiagnosticEmitter {
       }
       let arrayInstance = assert(this.resolver.resolveClass(this.program.staticArrayPrototype, [stringType]));
       let segment = this.addStaticBuffer(stringType, values, arrayInstance.id);
-      this.program.OBJECTInstance.writeField("gcInfo", 3, segment.buffer, 0); // use transparent gcinfo
-      let offset = i64_add(segment.offset, i64_new(this.program.totalOverhead));
+      let arrayOffset = i64_add(segment.offset, i64_new(this.program.totalOverhead));
       let joinInstance = assert(arrayInstance.getMethod("join"));
       let indexedSetInstance = assert(arrayInstance.lookupOverload(OperatorKind.IndexedSet, true));
-      let stmts = new Array<ExpressionRef>(2 * numExpressions + 1);
-      // Use one local per toString'ed sub expression, since otherwise recursion on the same
-      // static array would overwrite already prepared parts. Avoids a temporary array.
-      let temps = new Array<Local>(numExpressions);
       let flow = this.currentFlow;
+      let arrayOffsetExpr = module.usize(arrayOffset);
+
+      // Layout of stmts:
+      //   [0 .. N-1]  evaluate each expression into a temp local
+      //   [N]         __pin(arrayOffset) — link static array into pinSpace
+      //   [N+1 .. 2N] __uset calls to populate the static array
+      //   [2N+1]      save join("") result to a temp local
+      //   [2N+2]      __unpin(arrayOffset) — unlink static array from pinSpace
+      //   [2N+3]      load the saved join result as the block's return value
+      let stmts = new Array<ExpressionRef>(2 * numExpressions + 4);
+      let stmtIndex = 0;
+
+      // Evaluate each expression into a temp local.
+      // One local per expression prevents recursion on the same static array
+      // from overwriting already prepared parts.
+      let temps = new Array<Local>(numExpressions);
       for (let i = 0; i < numExpressions; ++i) {
-        let expression = expressions[i];
+        let subExpression = expressions[i];
         let temp = flow.getTempLocal(stringType);
         temps[i] = temp;
-        stmts[i] = module.local_set(
+        stmts[stmtIndex++] = module.local_set(
           temp.index,
-          this.makeToString(this.compileExpression(expression, stringType), this.currentType, expression),
+          this.makeToString(this.compileExpression(subExpression, stringType), this.currentType, subExpression),
           true
         );
       }
-      // Populate the static array with the toString'ed subexpressions and call .join("")
+
+      // Pin the static array so its children are visible to GC during the __uset and join.
+      let pinInstance = this.program.pinInstance;
+      this.compileFunction(pinInstance);
+      stmts[stmtIndex++] = module.drop(
+        module.call(pinInstance.internalName, [arrayOffsetExpr], Type.usize32.toRef())
+      );
+
+      // Populate the static array slots with the temp locals
       for (let i = 0; i < numExpressions; ++i) {
-        stmts[numExpressions + i] = this.makeCallDirect(
+        stmts[stmtIndex++] = this.makeCallDirect(
           indexedSetInstance,
           [
-            module.usize(offset),
+            arrayOffsetExpr,
             module.i32(expressionPositions[i]),
             module.local_get(temps[i].index, stringType.toRef()),
           ],
           expression
         );
       }
-      stmts[2 * numExpressions] = this.makeCallDirect(
-        joinInstance,
-        [module.usize(offset), this.ensureStaticString("")],
-        expression
+
+      // Call join(""), save result, unpin, then return the saved result.
+      // In Binaryen Normal IR, only the last block child can produce the
+      // block's value, so we must save the join result to a temp local
+      // before emitting the void __unpin call.
+      let joinResultLocal = flow.getTempLocal(stringType);
+      stmts[stmtIndex++] = module.local_set(
+        joinResultLocal.index,
+        this.makeCallDirect(joinInstance, [arrayOffsetExpr, this.ensureStaticString("")], expression),
+        true
       );
-      return module.flatten(stmts, stringType.toRef());
+      let unpinInstance = this.program.unpinInstance;
+      this.compileFunction(unpinInstance);
+      stmts[stmtIndex++] = module.call(unpinInstance.internalName, [arrayOffsetExpr], TypeRef.None);
+      stmts[stmtIndex++] = module.local_get(joinResultLocal.index, stringType.toRef());
+      assert(stmtIndex == stmts.length);
+      return module.block(null, stmts, stringType.toRef());
     }
 
     // Try to find out whether the template function takes a full-blown TemplateStringsArray or if
