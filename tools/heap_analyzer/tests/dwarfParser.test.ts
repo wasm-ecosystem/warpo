@@ -335,6 +335,18 @@ describeIntegration("dwarfParser", (ctx) => {
       assert.notStrictEqual(sig, undefined);
       assert.strictEqual(typeof sig.value, "number");
     });
+
+    it("Character has DW_TAG_inheritance child pointing to Entity", () => {
+      const character = findDIEsByTag(root, DW_TAG.class_type).find(
+        (c) => getAttr(c, DW_AT.name)?.value === CLASS_PREFIX + "Character"
+      );
+      const inheritance = character.children.find((c) => c.tag === DW_TAG.inheritance);
+      assert.notStrictEqual(inheritance, undefined);
+
+      const typeRef = getAttr(inheritance, DW_AT.type)?.value as number;
+      const parentDie = buildOffsetMap(root).get(typeRef);
+      assert.strictEqual(getAttr(parentDie, DW_AT.name)?.value, CLASS_PREFIX + "Entity");
+    });
   });
 
   describe("subprograms", () => {

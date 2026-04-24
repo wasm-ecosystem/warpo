@@ -55,11 +55,15 @@ describeIntegration("class-resolver", (ctx) => {
   });
 
   describe("Character layout", () => {
-    it("has own fields (DWARF does not emit inherited fields)", () => {
+    it("has inherited fields from Entity and own fields", () => {
       const character = classMap.get(CLASS_PREFIX + "Character");
-      const fieldNames = new Set(character.fields.map((f) => f.name));
-      assert.ok(fieldNames.has("name"));
-      assert.ok(fieldNames.has("hp"));
+      const fieldNames = character.fields.map((f) => f.name);
+      assert.deepStrictEqual(fieldNames, ["id", "position", "name", "hp"]);
+    });
+
+    it("has base set to Entity", () => {
+      const character = classMap.get(CLASS_PREFIX + "Character");
+      assert.strictEqual(character.base, CLASS_PREFIX + "Entity");
     });
 
     it("name field is a reference", () => {
@@ -72,6 +76,29 @@ describeIntegration("class-resolver", (ctx) => {
       const character = classMap.get(CLASS_PREFIX + "Character");
       const hp = character.fields.find((f) => f.name === "hp");
       assert.strictEqual(hp.isReference, false);
+    });
+  });
+
+  describe("Player layout (deep inheritance)", () => {
+    it("has all inherited fields from Entity→Character plus own fields", () => {
+      const player = classMap.get(CLASS_PREFIX + "Player");
+      const fieldNames = player.fields.map((f) => f.name);
+      assert.deepStrictEqual(fieldNames, ["id", "position", "name", "hp", "inventory", "score"]);
+    });
+
+    it("has base set to Character", () => {
+      const player = classMap.get(CLASS_PREFIX + "Player");
+      assert.strictEqual(player.base, CLASS_PREFIX + "Character");
+    });
+
+    it("inherited fields have correct offsets", () => {
+      const player = classMap.get(CLASS_PREFIX + "Player");
+      assert.strictEqual(player.fields.find((f) => f.name === "id").offset, 0);
+      assert.strictEqual(player.fields.find((f) => f.name === "position").offset, 4);
+      assert.strictEqual(player.fields.find((f) => f.name === "name").offset, 8);
+      assert.strictEqual(player.fields.find((f) => f.name === "hp").offset, 12);
+      assert.strictEqual(player.fields.find((f) => f.name === "inventory").offset, 16);
+      assert.strictEqual(player.fields.find((f) => f.name === "score").offset, 20);
     });
   });
 

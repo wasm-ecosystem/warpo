@@ -71,6 +71,25 @@ class ClassLayoutResolver {
     return this.resolveTypeInfo(typeAttr.value as number).name;
   }
 
+  private resolveBaseName(classDie: DwarfDIE): string | null {
+    const inheritanceDie = classDie.children.find((c) => c.tag === DW_TAG.inheritance);
+    if (!inheritanceDie) {
+      return null;
+    }
+
+    const typeAttr = getAttr(inheritanceDie, DW_AT.type);
+    if (!typeAttr) {
+      return null;
+    }
+
+    const parentDie = this.offsetMap.get(typeAttr.value as number);
+    if (!parentDie) {
+      return null;
+    }
+
+    return (getAttr(parentDie, DW_AT.name)?.value as string) ?? null;
+  }
+
   private resolveClassLayout(classDie: DwarfDIE): ClassLayout | null {
     const nameAttr = getAttr(classDie, DW_AT.name);
     if (!nameAttr) {
@@ -94,7 +113,7 @@ class ClassLayoutResolver {
     const layout: ClassLayout = {
       rtid: sigAttr.value as number,
       name: nameAttr.value as string,
-      base: null,
+      base: this.resolveBaseName(classDie),
       fields,
     };
 
@@ -122,5 +141,35 @@ export function resolveClassLayouts(wasmBinary: Uint8Array | ArrayBuffer): Class
     classes.push(...resolver.resolve(unit.rootDIE));
   }
 
+  flattenInheritedFields(classes);
+
   return classes;
+}
+
+function flattenInheritedFields(classes: ClassLayout[]): void {
+  const byName = new Map(classes.map((c) => [c.name, c]));
+  const flattened = new Set<string>();
+
+  function flatten(cls: ClassLayout): void {
+    if (flattened.has(cls.name)) {
+      return;
+    }
+    flattened.add(cls.name);
+
+    if (!cls.base) {
+      return;
+    }
+
+    const parent = byName.get(cls.base);
+    if (!parent) {
+      return;
+    }
+
+    flatten(parent);
+    cls.fields = [...parent.fields, ...cls.fields];
+  }
+
+  for (const cls of classes) {
+    flatten(cls);
+  }
 }
