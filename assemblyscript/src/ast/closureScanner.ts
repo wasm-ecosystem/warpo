@@ -120,8 +120,7 @@ export class ClosureScanner extends BaseVisitor {
       stack.push(root.children[i]);
     }
     while (stack.length > 0) {
-      let node = stack[stack.length - 1];
-      stack.pop();
+      let node = stack.pop();
       let parentLevel = assert(node.parent).nestedLevel;
       if (node.kind == ScopeNodeKind.Function) {
         if (parentLevel != -1 || node.isClosure) {
@@ -144,8 +143,7 @@ export class ClosureScanner extends BaseVisitor {
   private buildClosureInfos(root: ScopeTreeNode): void {
     let stack: ScopeTreeNode[] = [root];
     while (stack.length > 0) {
-      let node = stack[stack.length - 1];
-      stack.pop();
+      let node = stack.pop();
       if (node.isClosure) {
         assert(node.kind != ScopeNodeKind.Block);
         let info = new ClosureFunctionInfo();
