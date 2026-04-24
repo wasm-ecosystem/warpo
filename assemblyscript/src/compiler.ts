@@ -8810,8 +8810,7 @@ export class Compiler extends DiagnosticEmitter {
       //   [2N+1]      save join("") result to a temp local
       //   [2N+2]      __unpin(arrayOffset) — unlink static array from pinSpace
       //   [2N+3]      load the saved join result as the block's return value
-      let stmts = new Array<ExpressionRef>(2 * numExpressions + 4);
-      let stmtIndex = 0;
+      let stmts = new Array<ExpressionRef>();
 
       // Evaluate each expression into a temp local.
       // One local per expression prevents recursion on the same static array
@@ -8821,24 +8820,28 @@ export class Compiler extends DiagnosticEmitter {
         let subExpression = expressions[i];
         let temp = flow.getTempLocal(stringType);
         temps[i] = temp;
-        stmts[stmtIndex++] = module.local_set(
-          temp.index,
-          this.makeToString(this.compileExpression(subExpression, stringType), this.currentType, subExpression),
-          true
+        stmts.push(
+          module.local_set(
+            temp.index,
+            this.makeToString(this.compileExpression(subExpression, stringType), this.currentType, subExpression),
+            true
+          )
         );
       }
 
       // Pin the static array so its children are visible to GC during the __uset and join.
       let pinInstance = this.program.pinInstance;
       this.compileFunction(pinInstance);
-      stmts[stmtIndex++] = module.drop(module.call(pinInstance.internalName, [arrayOffsetExpr], Type.usize32.toRef()));
+      stmts.push(module.drop(module.call(pinInstance.internalName, [arrayOffsetExpr], Type.usize32.toRef())));
 
       // Populate the static array slots with the temp locals
       for (let i = 0; i < numExpressions; ++i) {
-        stmts[stmtIndex++] = this.makeCallDirect(
-          indexedSetInstance,
-          [arrayOffsetExpr, module.i32(expressionPositions[i]), module.local_get(temps[i].index, stringType.toRef())],
-          expression
+        stmts.push(
+          this.makeCallDirect(
+            indexedSetInstance,
+            [arrayOffsetExpr, module.i32(expressionPositions[i]), module.local_get(temps[i].index, stringType.toRef())],
+            expression
+          )
         );
       }
 
@@ -8847,16 +8850,18 @@ export class Compiler extends DiagnosticEmitter {
       // block's value, so we must save the join result to a temp local
       // before emitting the void __unpin call.
       let joinResultLocal = flow.getTempLocal(stringType);
-      stmts[stmtIndex++] = module.local_set(
-        joinResultLocal.index,
-        this.makeCallDirect(joinInstance, [arrayOffsetExpr, this.ensureStaticString("")], expression),
-        true
+      stmts.push(
+        module.local_set(
+          joinResultLocal.index,
+          this.makeCallDirect(joinInstance, [arrayOffsetExpr, this.ensureStaticString("")], expression),
+          true
+        )
       );
       let unpinInstance = this.program.unpinInstance;
       this.compileFunction(unpinInstance);
-      stmts[stmtIndex++] = module.call(unpinInstance.internalName, [arrayOffsetExpr], TypeRef.None);
-      stmts[stmtIndex++] = module.local_get(joinResultLocal.index, stringType.toRef());
-      assert(stmtIndex == stmts.length);
+      stmts.push(module.call(unpinInstance.internalName, [arrayOffsetExpr], TypeRef.None));
+      stmts.push(module.local_get(joinResultLocal.index, stringType.toRef()));
+      assert(stmts.length == 2 * numExpressions + 4);
       return module.block(null, stmts, stringType.toRef());
     }
 
