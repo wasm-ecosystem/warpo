@@ -2934,7 +2934,8 @@ export class Resolver extends DiagnosticEmitter {
                 // Cannot mix generic and non-generic functions in an override chain
                 this.errorRelated(
                   DiagnosticCode.Cannot_override_generic_method_0_with_a_non_generic_method_or_vice_versa,
-                  instance.identifierAndSignatureRange, baseMember.nameRange,
+                  instance.identifierAndSignatureRange,
+                  baseMember.nameRange,
                   methodOrPropertyName
                 );
                 incompatibleOverride = false; // already reported

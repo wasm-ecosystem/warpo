@@ -7,7 +7,7 @@ class B extends A {
   foo(x: i32): void {}
 }
 
-let a:A = new B();
+let a: A = new B();
 a.foo<i32>(1);
 
 // Generic method overriding non-generic method
@@ -19,7 +19,7 @@ class D extends C {
   bar<T>(x: T): void {}
 }
 
-let c:C = new D();
+let c: C = new D();
 c.bar(1);
 
 ERROR("EOF");

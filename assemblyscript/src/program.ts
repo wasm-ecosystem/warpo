@@ -1817,7 +1817,8 @@ export class Program extends DiagnosticEmitter {
       if (thisIsGeneric != baseIsGeneric) {
         this.errorRelated(
           DiagnosticCode.Cannot_override_generic_method_0_with_a_non_generic_method_or_vice_versa,
-          thisMethod.nameRange, baseMethod.nameRange,
+          thisMethod.nameRange,
+          baseMethod.nameRange,
           thisMethod.name
         );
         return;
