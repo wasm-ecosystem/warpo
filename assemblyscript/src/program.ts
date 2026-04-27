@@ -1828,6 +1828,17 @@ export class Program extends DiagnosticEmitter {
     if (thisMember.kind == ElementKind.FunctionPrototype && baseMember.kind == ElementKind.FunctionPrototype) {
       let thisMethod = <FunctionPrototype>thisMember;
       let baseMethod = <FunctionPrototype>baseMember;
+      let thisIsGeneric = thisMethod.is(CommonFlags.Generic);
+      let baseIsGeneric = baseMethod.is(CommonFlags.Generic);
+      if (thisIsGeneric != baseIsGeneric) {
+        this.errorRelated(
+          DiagnosticCode.Cannot_override_generic_method_0_with_a_non_generic_method_or_vice_versa,
+          thisMethod.nameRange,
+          baseMethod.nameRange,
+          thisMethod.name
+        );
+        return;
+      }
       if (!thisMethod.visibilityEquals(baseMethod)) {
         this.errorRelated(
           DiagnosticCode.Overload_signatures_must_all_be_public_private_or_protected,
