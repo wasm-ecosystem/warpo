@@ -3289,9 +3289,7 @@
   )
   (call $~lib/tuple/SmallTuple#__set<i32>
    (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnvByLevel
-     (i32.const 0)
-    )
+    (local.get $0)
    )
    (i32.const 4)
    (i32.add
@@ -3308,9 +3306,7 @@
   )
   (call $~lib/tuple/SmallTuple#__set<i32>
    (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnvByLevel
-     (i32.const 0)
-    )
+    (local.get $0)
    )
    (i32.const 8)
    (i32.add
@@ -3408,18 +3404,14 @@
   )
   (call $~lib/tuple/SmallTuple#__set<i32>
    (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnvByLevel
-     (i32.const 0)
-    )
+    (local.get $4)
    )
    (i32.const 8)
    (local.get $a)
   )
   (call $~lib/tuple/SmallTuple#__set<i32>
    (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnvByLevel
-     (i32.const 0)
-    )
+    (local.get $4)
    )
    (i32.const 12)
    (local.get $b)
