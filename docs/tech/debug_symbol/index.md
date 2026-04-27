@@ -73,6 +73,7 @@ Currently debug symbols has two parts:
 - `DW_AT_name` -> `DW_FORM_string`
 - `DW_AT_type` -> `DW_FORM_ref4` (reference to type DIE)
 - `DW_AT_data_member_location` -> `DW_FORM_data4` (offset inside closure environment tuple)
+- `DW_AT_location` -> `DW_FORM_data4` (Wasm local index of the tuple storage)
 
 ### tag: DW_TAG_formal_parameter
 
@@ -81,6 +82,15 @@ Currently debug symbols has two parts:
 - `DW_AT_name` -> `DW_FORM_string`
 - `DW_AT_type` -> `DW_FORM_ref4` (reference to type DIE)
 - `DW_AT_location` -> `DW_FORM_data4` (Wasm location index)
+
+### tag: DW_TAG_formal_parameter (closure-captured)
+
+**hasChildren:** false
+
+- `DW_AT_name` -> `DW_FORM_string`
+- `DW_AT_type` -> `DW_FORM_ref4` (reference to type DIE)
+- `DW_AT_data_member_location` -> `DW_FORM_data4` (offset inside closure environment tuple)
+- `DW_AT_location` -> `DW_FORM_data4` (Wasm local index of the tuple storage)
 
 ### tag: DW_TAG_subprogram
 
@@ -176,7 +186,7 @@ The layout shows:
 Closure debug symbols use two different local-variable encodings:
 
 - Ordinary locals and parameters still use `DW_AT_location` with a Wasm local index.
-- Captured locals use `DW_AT_data_member_location` with the byte offset inside the heap closure environment tuple.
+- Captured locals use `DW_AT_data_member_location` with the byte offset inside the heap closure environment tuple, and `DW_AT_location` with the Wasm local index of the tuple storage.
 
 Closure functions also use a dedicated subprogram form:
 
@@ -227,9 +237,11 @@ DW_TAG_subprogram
     DW_TAG_variable
       DW_AT_name ("runningTotal")
       DW_AT_data_member_location (0x00000004)
+      DW_AT_location (0x00000002)
     DW_TAG_variable
       DW_AT_name ("fixedOffset")
       DW_AT_data_member_location (0x00000008)
+      DW_AT_location (0x00000002)
 
 DW_TAG_subprogram
   DW_AT_name ("tests/dwarf/cases/TestClosure/outer~anonymous|0")

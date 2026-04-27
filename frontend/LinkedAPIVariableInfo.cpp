@@ -106,24 +106,25 @@ uint32_t addScope(uint32_t const subProgramNamePtr, uint64_t const startExprPtr,
 }
 
 void addTupleLocal(uint32_t const subProgramNamePtr, uint32_t const variableNamePtr, uint32_t const typeNamePtr,
-                   uint32_t const tupleFieldOffset, uint32_t const scopeIndex, uint32_t const nullable,
-                   vb::WasmModule const *const ctx) {
+                   uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex, uint32_t const scopeIndex,
+                   uint32_t const nullable, vb::WasmModule const *const ctx) {
   std::string const subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
   std::string variableName = WarpRunner::getString(ctx, variableNamePtr);
   std::string const typeName = WarpRunner::getString(ctx, typeNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   pCompiler->asModule_.variableInfo_.addTupleLocal(subProgramName, std::move(variableName), typeName, tupleFieldOffset,
-                                                   scopeIndex, nullable != 0);
+                                                   storageLocalIndex, scopeIndex, nullable != 0);
 }
 
 void addTupleParameter(uint32_t const subProgramNamePtr, uint32_t const variableNamePtr, uint32_t const typeNamePtr,
-                       uint32_t const tupleFieldOffset, uint32_t const nullable, vb::WasmModule const *const ctx) {
+                       uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex, uint32_t const nullable,
+                       vb::WasmModule const *const ctx) {
   std::string const subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
   std::string variableName = WarpRunner::getString(ctx, variableNamePtr);
   std::string const typeName = WarpRunner::getString(ctx, typeNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   pCompiler->asModule_.variableInfo_.addTupleParameter(subProgramName, std::move(variableName), typeName,
-                                                       tupleFieldOffset, nullable != 0);
+                                                       tupleFieldOffset, storageLocalIndex, nullable != 0);
 }
 
 void addHeapVariableStorageLocalIndex(uint32_t const subProgramNamePtr, uint32_t const index,

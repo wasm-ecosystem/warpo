@@ -27,3 +27,13 @@ class Counter {
 export function memberOuter(base: i32): (delta: i32) => i32 {
   return new Counter().makeAdder(base);
 }
+
+export function loopCapture(n: i32): i32 {
+  let sum = 0;
+  const fns = new Array<(v: i32) => i32>(n);
+  for (let i = 0; i < n; i++) {
+    let offset = i * 2;
+    fns[i] = (v: i32): i32 => v + i + offset + sum;
+  }
+  return fns[0](1);
+}

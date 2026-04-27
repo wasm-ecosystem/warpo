@@ -101,22 +101,24 @@ void VariableInfo::addLocal(std::string_view const subProgramName, std::string v
 
 void VariableInfo::addTupleLocal(std::string_view const subProgramName, std::string variableName,
                                  std::string_view const typeName, uint32_t const tupleFieldOffset,
-                                 uint32_t const scopeId, bool const nullable) {
+                                 uint32_t const storageLocalIndex, uint32_t const scopeId, bool const nullable) {
   SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
   assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
-  it->second.addTupleLocal(std::move(variableName), internedTypeName, tupleFieldOffset, scopeId, nullable);
+  it->second.addTupleLocal(std::move(variableName), internedTypeName, tupleFieldOffset, storageLocalIndex, scopeId,
+                           nullable);
 }
 
 void VariableInfo::addTupleParameter(std::string_view const subProgramName, std::string variableName,
                                      std::string_view const typeName, uint32_t const tupleFieldOffset,
-                                     bool const nullable) {
+                                     uint32_t const storageLocalIndex, bool const nullable) {
   SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
   assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
-  it->second.addTupleParameter(std::move(variableName), internedTypeName, tupleFieldOffset, nullable);
+  it->second.addTupleParameter(std::move(variableName), internedTypeName, tupleFieldOffset, storageLocalIndex,
+                               nullable);
 }
 
 void VariableInfo::addHeapVariableStorageLocalIndex(std::string_view const subProgramName, uint32_t const index) {

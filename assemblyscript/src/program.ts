@@ -4188,11 +4188,14 @@ export class Local extends VariableLikeElement {
     this.setType(type);
     if (tupleIndex >= 0) {
       this.closureScopeLevel = parent.currentClosureScope.closureInfo.nestedLevel;
+      let storage = parent.currentClosureScope.storage;
+      if (storage) this.tupleAddressLocalIndex = storage.index;
     }
     this.forInitClosureStorage = forInitClosureVar ? ForInitClosureStorage.Local : ForInitClosureStorage.Tuple;
   }
 
   closureScopeLevel: i32 = -1;
+  tupleAddressLocalIndex: i32 = -1;
   forInitClosureStorage: ForInitClosureStorage = ForInitClosureStorage.Tuple;
 
   shouldUseLocalStorage(): bool {
@@ -4538,7 +4541,6 @@ export class Function extends TypedElement {
         scopedLocals.set(CommonNames.this_, local);
         this.localsByIndex[local.index] = local;
         flow.setLocalFlag(local.index, LocalFlags.Initialized);
-        mir.addParameter(this, local);
       }
       let parameterTypes = signature.parameterTypes;
       const paramsNodeList = prototype.functionTypeNode.parameters;
@@ -4570,7 +4572,6 @@ export class Function extends TypedElement {
         scopedLocals.set(parameterName, local);
         this.localsByIndex[local.index] = local;
         flow.setLocalFlag(local.index, LocalFlags.Initialized);
-        mir.addParameter(this, local);
       }
 
       if (isClosureFunction) {
@@ -4578,6 +4579,16 @@ export class Function extends TypedElement {
         this.currentClosureScope.storage = storage;
         this.heapLocalsStorage = storage;
         mir.addHeapVariableStorageLocalIndex(this, storage.index);
+        for (let i = 0; i < localIndex; ++i) {
+          let local = this.localsByIndex[i];
+          if (local.isClosureVariable()) {
+            local.tupleAddressLocalIndex = storage.index;
+          }
+        }
+      }
+
+      for (let i = 0; i < localIndex; ++i) {
+        mir.addParameter(this, this.localsByIndex[i]);
       }
     }
     if (program.instancesByName.has(this.internalName)) {

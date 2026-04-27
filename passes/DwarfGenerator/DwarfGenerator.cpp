@@ -239,6 +239,8 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
   tupleFieldOffsetAttr.Value = 0U;
   tupleFieldLocalVariableAbbrev.Attributes.push_back(tupleFieldOffsetAttr);
 
+  tupleFieldLocalVariableAbbrev.Attributes.push_back(localVarLocationAttr);
+
   abbrevDecls.push_back(tupleFieldLocalVariableAbbrev);
 
   llvm::DWARFYAML::Abbrev formalParameterAbbrev =
@@ -274,6 +276,8 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
   tupleFieldFormalParamOffsetAttr.Form = llvm::dwarf::DW_FORM_data4;
   tupleFieldFormalParamOffsetAttr.Value = 0U;
   tupleFieldFormalParameterAbbrev.Attributes.push_back(tupleFieldFormalParamOffsetAttr);
+
+  tupleFieldFormalParameterAbbrev.Attributes.push_back(formalParamLocationAttr);
 
   abbrevDecls.push_back(tupleFieldFormalParameterAbbrev);
 
@@ -587,11 +591,17 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
 
     llvm::DWARFYAML::FormValue paramLocationValue;
     if (isTupleField) {
-      paramLocationValue.Value = std::get<TupleFieldLocation>(paramLocation).offset;
+      TupleFieldLocation const &tupleField = std::get<TupleFieldLocation>(paramLocation);
+      paramLocationValue.Value = tupleField.offset;
+      paramEntry.Values.push_back(paramLocationValue);
+
+      llvm::DWARFYAML::FormValue tupleLocalIndexValue;
+      tupleLocalIndexValue.Value = tupleField.localIndex;
+      paramEntry.Values.push_back(tupleLocalIndexValue);
     } else {
       paramLocationValue.Value = std::get<LocalIndexLocation>(paramLocation).index;
+      paramEntry.Values.push_back(paramLocationValue);
     }
-    paramEntry.Values.push_back(paramLocationValue);
 
     size_t const paramIndex = rootUnit.Entries.size();
     typeRefFixups.push_back({paramIndex, 1U, param.getType()});
@@ -660,9 +670,14 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
             localEntry.Values.push_back(localTypeValue);
 
             if (isTupleField) {
+              TupleFieldLocation const &tupleField = std::get<TupleFieldLocation>(location);
               llvm::DWARFYAML::FormValue tupleFieldOffsetValue;
-              tupleFieldOffsetValue.Value = std::get<TupleFieldLocation>(location).offset;
+              tupleFieldOffsetValue.Value = tupleField.offset;
               localEntry.Values.push_back(tupleFieldOffsetValue);
+
+              llvm::DWARFYAML::FormValue tupleLocalIndexValue;
+              tupleLocalIndexValue.Value = tupleField.localIndex;
+              localEntry.Values.push_back(tupleLocalIndexValue);
             } else {
               llvm::DWARFYAML::FormValue localLocationValue;
               localLocationValue.Value = std::get<LocalIndexLocation>(location).index;

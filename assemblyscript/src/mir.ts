@@ -72,6 +72,7 @@ export function addParameter(subprogram: Function, variable: Local): void {
       variable.name,
       decodeURIComponent(typeToMIRName(variable.type)),
       variable.getTupleElementInfo().offset,
+      variable.tupleAddressLocalIndex,
       variable.type.is(TypeFlags.Nullable)
     );
   } else {
@@ -91,6 +92,7 @@ export function addLocal(subProgram: Function, variable: Local, scopeId: u32): v
       variable.name,
       decodeURIComponent(typeToMIRName(variable.type)),
       variable.getTupleElementInfo().offset,
+      variable.tupleAddressLocalIndex,
       scopeId,
       variable.type.is(TypeFlags.Nullable)
     );
@@ -111,6 +113,7 @@ export function addTupleLocal(
   variableName: string,
   variableType: Type,
   tupleFieldOffset: u32,
+  storageLocalIndex: u32,
   scopeId: u32
 ): void {
   _WarpoAddTupleLocal(
@@ -118,6 +121,7 @@ export function addTupleLocal(
     variableName,
     decodeURIComponent(typeToMIRName(variableType)),
     tupleFieldOffset,
+    storageLocalIndex,
     scopeId,
     variableType.is(TypeFlags.Nullable)
   );

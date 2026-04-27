@@ -46,6 +46,7 @@ export declare function _WarpoAddTupleLocal(
   variableName: string,
   typeName: string,
   tupleFieldOffset: u32,
+  storageLocalIndex: u32,
   scopeId: u32,
   nullable: bool
 ): void;
@@ -54,6 +55,7 @@ export declare function _WarpoAddTupleParameter(
   variableName: string,
   typeName: string,
   tupleFieldOffset: u32,
+  storageLocalIndex: u32,
   nullable: bool
 ): void;
 export declare function _WarpoAddScope(
