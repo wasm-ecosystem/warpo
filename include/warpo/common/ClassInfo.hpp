@@ -30,6 +30,7 @@ public:
 
   void addTemplateType(std::string_view const typeName) noexcept { templateTypes_.push_back(typeName); }
   void addBaseClass(std::string_view const parentName) noexcept { parentName_ = parentName; }
+  std::string_view getParentName() const noexcept { return parentName_; }
 
   std::vector<std::string_view> const &getTemplateTypes() const noexcept { return templateTypes_; }
 

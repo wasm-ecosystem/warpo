@@ -297,6 +297,7 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
 INSTANTIATE_TEST_SUITE_P(DebugSymbolTests, TestDebugSymbol_P,
                          ::testing::ValuesIn({
                              "TestBaseTypeToString",
+                             "TestClassInheritance",
                              "TestClassMemberBasic",
                              "TestClosure",
                              "TestFunctionAsField",

@@ -177,6 +177,17 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
 
   abbrevDecls.push_back(templateTypeParamAbbrev);
 
+  llvm::DWARFYAML::Abbrev inheritanceAbbrev =
+      abbrevFactory.create(llvm::dwarf::DW_TAG_inheritance, llvm::dwarf::DW_CHILDREN_no);
+
+  llvm::DWARFYAML::AttributeAbbrev inheritanceTypeAttr{};
+  inheritanceTypeAttr.Attribute = llvm::dwarf::DW_AT_type;
+  inheritanceTypeAttr.Form = llvm::dwarf::DW_FORM_ref4;
+  inheritanceTypeAttr.Value = 0U;
+  inheritanceAbbrev.Attributes.push_back(inheritanceTypeAttr);
+
+  abbrevDecls.push_back(inheritanceAbbrev);
+
   llvm::DWARFYAML::Abbrev variableAbbrev =
       abbrevFactory.create(llvm::dwarf::DW_TAG_variable, llvm::dwarf::DW_CHILDREN_no);
 
@@ -381,6 +392,22 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
     }
 
     rootUnit.Entries.push_back(classEntry);
+
+    // Add inheritance (base class) reference
+    std::string_view const parentName = classInfo.getParentName();
+    if (!parentName.empty()) {
+      llvm::DWARFYAML::Entry inheritanceEntry;
+      inheritanceEntry.AbbrCode = inheritanceAbbrev.Code;
+
+      llvm::DWARFYAML::FormValue inheritanceTypeValue;
+      inheritanceTypeValue.Value = 0xDEADBEEFU;
+      inheritanceEntry.Values.push_back(inheritanceTypeValue);
+
+      size_t const inheritanceIndex = rootUnit.Entries.size();
+      typeRefFixups.push_back({inheritanceIndex, 0U, parentName});
+
+      rootUnit.Entries.push_back(inheritanceEntry);
+    }
 
     // Add member fields
     std::vector<FieldInfo> const &fields = classInfo.getFields();

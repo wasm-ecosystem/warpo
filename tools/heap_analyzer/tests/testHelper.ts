@@ -3,6 +3,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { platform } from "node:os";
+import { before, after, describe } from "node:test";
 import { executeFixture } from "./wasmExecutor.js";
 
 const TESTS_DIR = dirname(fileURLToPath(import.meta.url));
@@ -12,57 +13,74 @@ export const PROJECT_ROOT = resolve(TESTS_DIR, "../../..");
 const WARPO_ASC_NAME = platform() === "win32" ? "warpo_asc.exe" : "warpo_asc";
 export const WARPO_ASC = resolve(PROJECT_ROOT, "build/warpo", WARPO_ASC_NAME);
 export const FIXTURE_SRC = resolve(TESTS_DIR, "fixture/dwarfFixture.ts");
-export const FIXTURE_BUILD_DIR = resolve(TESTS_DIR, "fixture/build");
-export const FIXTURE_WASM = resolve(FIXTURE_BUILD_DIR, "dwarfFixture.wasm");
-export const FIXTURE_DUMP = resolve(FIXTURE_BUILD_DIR, "example.dump");
 export const CLASS_PREFIX = "tools/heap_analyzer/tests/fixture/dwarfFixture/";
 
 export const canRunIntegration = existsSync(WARPO_ASC);
 
+export interface FixtureContext {
+  compileFixture(): void;
+  loadFixtureWasm(): Uint8Array;
+  generateFixtureDump(): void;
+  loadFixtureDumpBuffer(): ArrayBuffer;
+}
+
+// The fixture wasm hardcodes the dump output path as
+// "./tools/heap_analyzer/tests/fixture/build/example.dump" (relative to PROJECT_ROOT).
+// All suites share this path because the dump content is deterministic.
+const SHARED_DUMP_PATH = resolve(TESTS_DIR, "fixture/build/example.dump");
+
+function createFixtureContext(suiteName: string): FixtureContext {
+  const buildDir = resolve(TESTS_DIR, `fixture/build-${suiteName}`);
+  const wasmPath = resolve(buildDir, "dwarfFixture.wasm");
+
+  function ensureBuildDir(): void {
+    if (!existsSync(buildDir)) {
+      mkdirSync(buildDir, { recursive: true });
+    }
+  }
+
+  return {
+    compileFixture() {
+      ensureBuildDir();
+      execFileSync(WARPO_ASC, [FIXTURE_SRC, "-o", wasmPath, "--debug", "--exportRuntime"], {
+        cwd: PROJECT_ROOT,
+        stdio: "pipe",
+      });
+    },
+    loadFixtureWasm() {
+      return new Uint8Array(readFileSync(wasmPath));
+    },
+    generateFixtureDump() {
+      executeFixture(wasmPath, PROJECT_ROOT);
+    },
+    loadFixtureDumpBuffer() {
+      const buf = readFileSync(SHARED_DUMP_PATH);
+      return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
+    },
+  };
+}
+
 /**
  * Always registers the test suite. If warpo_asc is missing, the suite
  * fails immediately instead of being silently skipped.
+ *
+ * Each suite gets its own build directory to allow parallel execution.
  */
-export function describeIntegration(name: string, fn: () => void): void {
+export function describeIntegration(name: string, fn: (ctx: FixtureContext) => void): void {
+  const buildDir = resolve(TESTS_DIR, `fixture/build-${name}`);
+  const ctx = createFixtureContext(name);
+
   describe(name, () => {
-    beforeAll(() => {
+    before(() => {
       if (!canRunIntegration) {
         throw new Error(
           `Integration test "${name}" requires warpo_asc at ${WARPO_ASC}. ` + `Please build with: npm run build:cpp`
         );
       }
     });
-    afterAll(() => {
-      rmSync(FIXTURE_BUILD_DIR, { recursive: true, force: true });
+    after(() => {
+      rmSync(buildDir, { recursive: true, force: true });
     });
-    fn();
+    fn(ctx);
   });
-}
-
-function ensureBuildDir(): void {
-  if (!existsSync(FIXTURE_BUILD_DIR)) {
-    mkdirSync(FIXTURE_BUILD_DIR, { recursive: true });
-  }
-}
-
-export function compileFixture(): void {
-  ensureBuildDir();
-  execFileSync(WARPO_ASC, [FIXTURE_SRC, "-o", FIXTURE_WASM, "--debug", "--exportRuntime"], {
-    cwd: PROJECT_ROOT,
-    stdio: "pipe",
-  });
-}
-
-export function loadFixtureWasm(): Uint8Array {
-  return new Uint8Array(readFileSync(FIXTURE_WASM));
-}
-
-export function generateFixtureDump(): void {
-  ensureBuildDir();
-  executeFixture(FIXTURE_WASM, PROJECT_ROOT);
-}
-
-export function loadFixtureDumpBuffer(): ArrayBuffer {
-  const buf = readFileSync(FIXTURE_DUMP);
-  return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
 }
