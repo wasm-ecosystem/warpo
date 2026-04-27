@@ -2867,7 +2867,11 @@ export class Compiler extends DiagnosticEmitter {
     let expr: ExpressionRef;
     if (loopClosureTupleInfo) {
       let tupleStmts = this.emitLoopClosureTuple(
-        targetFunction, loopClosureTupleInfo, loopStorage, initClosureLocals, statement
+        targetFunction,
+        loopClosureTupleInfo,
+        loopStorage,
+        initClosureLocals,
+        statement
       );
       tupleStmts.push(ifExpr);
       expr = module.flatten(tupleStmts);
@@ -3061,7 +3065,11 @@ export class Compiler extends DiagnosticEmitter {
     let expr: ExpressionRef;
     if (loopClosureTupleInfo) {
       let tupleStmts = this.emitLoopClosureTuple(
-        targetFunction, loopClosureTupleInfo, loopStorage, initClosureLocals, statement
+        targetFunction,
+        loopClosureTupleInfo,
+        loopStorage,
+        initClosureLocals,
+        statement
       );
       tupleStmts.push(ifExpr);
       expr = module.flatten(tupleStmts);
