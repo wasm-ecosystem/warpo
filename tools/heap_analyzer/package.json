@@ -12,7 +12,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist coverage",
-    "test": "cross-env NODE_OPTIONS=--experimental-vm-modules npx jest"
+    "test": "node --import tsx --test tests/*.test.ts"
   },
   "engines": {
     "node": ">=18.0.0"

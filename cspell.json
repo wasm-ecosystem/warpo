@@ -38,6 +38,7 @@
     "warpo_extension/std/wasi_snapshot_preview1/bindings/wasi_snapshot_preview1.ts",
     "debugger/node_modules/**",
     "debugger/out/**",
-    "dist/**"
+    "dist/**",
+    "tools/heap_analyzer/node_modules/**"
   ]
 }

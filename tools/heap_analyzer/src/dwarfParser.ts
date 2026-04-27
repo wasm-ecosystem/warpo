@@ -15,6 +15,7 @@ import { BinaryReader, BinaryReaderState, ISectionInformation, SectionCode } fro
 export const DW_TAG = {
   compile_unit: 0x11,
   class_type: 0x02,
+  inheritance: 0x1c,
   member: 0x0d,
   base_type: 0x24,
   template_type_parameter: 0x2f,

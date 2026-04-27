@@ -32,7 +32,7 @@ export interface EntryLayout {
   referenceOffsets: number[];
 }
 
-export interface ClassDef {
+export interface ClassLayout {
   rtid: number;
   name: string;
   base: string | null;

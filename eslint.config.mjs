@@ -104,5 +104,11 @@ export default tseslint.config(
     rules: {
       curly: ["error", "all"],
     },
+  },
+  {
+    files: ["**/tests/**/*.test.ts", "**/tests/testHelper.ts"],
+    rules: {
+      "@typescript-eslint/no-floating-promises": "off",
+    },
   }
 );

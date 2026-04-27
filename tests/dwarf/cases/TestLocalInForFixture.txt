@@ -22,38 +22,41 @@ Abbrev table for offset: 0x00000000
 [6] DW_TAG_template_type_parameter	DW_CHILDREN_no
 	DW_AT_type	DW_FORM_ref4
 
-[7] DW_TAG_variable	DW_CHILDREN_no
-	DW_AT_name	DW_FORM_string
+[7] DW_TAG_inheritance	DW_CHILDREN_no
 	DW_AT_type	DW_FORM_ref4
 
 [8] DW_TAG_variable	DW_CHILDREN_no
 	DW_AT_name	DW_FORM_string
 	DW_AT_type	DW_FORM_ref4
-	DW_AT_location	DW_FORM_data4
 
 [9] DW_TAG_variable	DW_CHILDREN_no
 	DW_AT_name	DW_FORM_string
 	DW_AT_type	DW_FORM_ref4
-	DW_AT_data_member_location	DW_FORM_data4
+	DW_AT_location	DW_FORM_data4
 
-[10] DW_TAG_formal_parameter	DW_CHILDREN_no
+[10] DW_TAG_variable	DW_CHILDREN_no
 	DW_AT_name	DW_FORM_string
 	DW_AT_type	DW_FORM_ref4
-	DW_AT_location	DW_FORM_data4
+	DW_AT_data_member_location	DW_FORM_data4
 
 [11] DW_TAG_formal_parameter	DW_CHILDREN_no
 	DW_AT_name	DW_FORM_string
 	DW_AT_type	DW_FORM_ref4
+	DW_AT_location	DW_FORM_data4
+
+[12] DW_TAG_formal_parameter	DW_CHILDREN_no
+	DW_AT_name	DW_FORM_string
+	DW_AT_type	DW_FORM_ref4
 	DW_AT_data_member_location	DW_FORM_data4
 
-[12] DW_TAG_lexical_block	DW_CHILDREN_yes
+[13] DW_TAG_lexical_block	DW_CHILDREN_yes
 	DW_AT_low_pc	DW_FORM_addr
 	DW_AT_high_pc	DW_FORM_addr
 
-[13] DW_TAG_subprogram	DW_CHILDREN_yes
+[14] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
 
-[14] DW_TAG_subprogram	DW_CHILDREN_yes
+[15] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
 	DW_AT_static_link	DW_FORM_data4
 	DW_AT_description	DW_FORM_string
@@ -92,10 +95,14 @@ DW_TAG_compile_unit
   DW_TAG_class_type
                 DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
                 DW_AT_signature	(0x00000001)
+    DW_TAG_inheritance
+                  DW_AT_type	("~lib/object/Object")
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/arraybuffer/ArrayBufferView")
                 DW_AT_signature	(0x00000003)
+    DW_TAG_inheritance
+                  DW_AT_type	("~lib/object/Object")
     DW_TAG_member
                   DW_AT_name	("buffer")
                   DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
@@ -168,6 +175,8 @@ DW_TAG_compile_unit
   DW_TAG_class_type
                 DW_AT_name	("~lib/string/String")
                 DW_AT_signature	(0x00000002)
+    DW_TAG_inheritance
+                  DW_AT_type	("~lib/object/Object")
     NULL
   DW_TAG_variable
                 DW_AT_name	("tests/dwarf/cases/TestLocalInFor/aaa")
