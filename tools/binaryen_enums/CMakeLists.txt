@@ -11,4 +11,5 @@ endif()
 
 set_target_properties(warpo_binaryen_enums_gen PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    ENABLE_EXPORTS ON
 )
