@@ -8801,16 +8801,12 @@ export class Compiler extends DiagnosticEmitter {
       let joinInstance = assert(arrayInstance.getMethod("join"));
       let indexedSetInstance = assert(arrayInstance.lookupOverload(OperatorKind.IndexedSet, true));
       let flow = this.currentFlow;
-      let arrayOffsetExpr = module.usize(arrayOffset);
 
-      // Layout of stmts:
-      //   [0 .. N-1]  evaluate each expression into a temp local
-      //   [N]         __pin(arrayOffset) — link static array into pinSpace
-      //   [N+1 .. 2N] __uset calls to populate the static array
-      //   [2N+1]      save join("") result to a temp local
-      //   [2N+2]      __unpin(arrayOffset) — unlink static array from pinSpace
-      //   [2N+3]      load the saved join result as the block's return value
+      // Store the static array address in a tmp local so the shadow stack
+      // keeps it reachable. GC will visit it and all dynamic children.
+      let arrayLocal = flow.getTempLocal(stringType);
       let stmts = new Array<ExpressionRef>();
+      stmts.push(module.local_set(arrayLocal.index, module.usize(arrayOffset), true));
 
       // Evaluate each expression into a temp local.
       // One local per expression prevents recursion on the same static array
@@ -8829,39 +8825,29 @@ export class Compiler extends DiagnosticEmitter {
         );
       }
 
-      // Pin the static array so its children are visible to GC during the __uset and join.
-      let pinInstance = this.program.pinInstance;
-      this.compileFunction(pinInstance);
-      stmts.push(module.drop(module.call(pinInstance.internalName, [arrayOffsetExpr], Type.usize32.toRef())));
-
       // Populate the static array slots with the temp locals
       for (let i = 0; i < numExpressions; ++i) {
         stmts.push(
           this.makeCallDirect(
             indexedSetInstance,
-            [arrayOffsetExpr, module.i32(expressionPositions[i]), module.local_get(temps[i].index, stringType.toRef())],
+            [
+              module.local_get(arrayLocal.index, stringType.toRef()),
+              module.i32(expressionPositions[i]),
+              module.local_get(temps[i].index, stringType.toRef()),
+            ],
             expression
           )
         );
       }
 
-      // Call join(""), save result, unpin, then return the saved result.
-      // In Binaryen Normal IR, only the last block child can produce the
-      // block's value, so we must save the join result to a temp local
-      // before emitting the void __unpin call.
-      let joinResultLocal = flow.getTempLocal(stringType);
+      // Call join("") and return the result
       stmts.push(
-        module.local_set(
-          joinResultLocal.index,
-          this.makeCallDirect(joinInstance, [arrayOffsetExpr, this.ensureStaticString("")], expression),
-          true
+        this.makeCallDirect(
+          joinInstance,
+          [module.local_get(arrayLocal.index, stringType.toRef()), this.ensureStaticString("")],
+          expression
         )
       );
-      let unpinInstance = this.program.unpinInstance;
-      this.compileFunction(unpinInstance);
-      stmts.push(module.call(unpinInstance.internalName, [arrayOffsetExpr], TypeRef.None));
-      stmts.push(module.local_get(joinResultLocal.index, stringType.toRef()));
-      assert(stmts.length == 2 * numExpressions + 4);
       return module.block(null, stmts, stringType.toRef());
     }
 

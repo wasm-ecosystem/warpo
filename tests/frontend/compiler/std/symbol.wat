@@ -2,8 +2,8 @@
  (type $0 (func (param i32) (result i32)))
  (type $1 (func (param i32 i32)))
  (type $2 (func (param i32 i32) (result i32)))
- (type $3 (func (param i32)))
- (type $4 (func (param i32 i32 i32) (result i32)))
+ (type $3 (func (param i32 i32 i32) (result i32)))
+ (type $4 (func (param i32)))
  (type $5 (func (result i32)))
  (type $6 (func (param i32 i32 i32)))
  (type $7 (func))
@@ -41,10 +41,10 @@
  (global $std/symbol/key4 (mut i32) (i32.const 0))
  (global $~lib/symbol/Symbol.iterator (mut i32) (i32.const 0))
  (global $std/symbol/iterator (mut i32) (i32.const 0))
- (global $~lib/rt/__rtti_base i32 (i32.const 1328))
- (global $~lib/memory/__data_end i32 (i32.const 1380))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 34148))
- (global $~lib/memory/__heap_base i32 (i32.const 34148))
+ (global $~lib/rt/__rtti_base i32 (i32.const 1200))
+ (global $~lib/memory/__data_end i32 (i32.const 1252))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 34020))
+ (global $~lib/memory/__heap_base i32 (i32.const 34020))
  (global $~started (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\06\00\00\001\002\003\00\00\00\00\00\00\00")
@@ -66,13 +66,11 @@
  (data $16 (i32.const 892) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\0e\00\00\00S\00y\00m\00b\00o\00l\00(\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $17 (i32.const 940) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\02\00\00\00)\00\00\00\00\00\00\00\00\00\00\00")
  (data $18 (i32.const 972) "\1c\00\00\00\00\00\00\00\00\00\00\00\0b\00\00\00\0c\00\00\00\90\03\00\00\00\00\00\00\c0\03\00\00")
- (data $19 (i32.const 1004) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00*\00\00\00O\00b\00j\00e\00c\00t\00 \00a\00l\00r\00e\00a\00d\00y\00 \00p\00i\00n\00n\00e\00d\00\00\00")
- (data $20 (i32.const 1068) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $21 (i32.const 1100) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00O\00b\00j\00e\00c\00t\00 \00i\00s\00 \00n\00o\00t\00 \00p\00i\00n\00n\00e\00d\00\00\00\00\00")
- (data $22 (i32.const 1164) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\16\00\00\00S\00y\00m\00b\00o\00l\00(\001\002\003\00)\00\00\00\00\00\00\00")
- (data $23 (i32.const 1212) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\10\00\00\00i\00t\00e\00r\00a\00t\00o\00r\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $24 (i32.const 1260) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00S\00y\00m\00b\00o\00l\00(\00i\00t\00e\00r\00a\00t\00o\00r\00)\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $25 (i32.const 1328) "\0c\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10a\02\00\00\00\00\00 \00\00\00\10\01\82\00 \00\00\00\10A\02\00 \00\00\00\04A\00\00")
+ (data $19 (i32.const 1004) "\1c\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $20 (i32.const 1036) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\16\00\00\00S\00y\00m\00b\00o\00l\00(\001\002\003\00)\00\00\00\00\00\00\00")
+ (data $21 (i32.const 1084) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\10\00\00\00i\00t\00e\00r\00a\00t\00o\00r\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $22 (i32.const 1132) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00S\00y\00m\00b\00o\00l\00(\00i\00t\00e\00r\00a\00t\00o\00r\00)\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $23 (i32.const 1200) "\0c\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\10a\02\00\00\00\00\00 \00\00\00\10\01\82\00 \00\00\00\10A\02\00 \00\00\00\04A\00\00")
  (table $0 1 1 funcref)
  (elem $0 (i32.const 1))
  (export "memory" (memory $0))
@@ -6105,48 +6103,6 @@
    )
   )
  )
- (func $~lib/rt/itcms/__pin (param $ptr i32) (result i32)
-  (local $obj i32)
-  (if
-   (local.get $ptr)
-   (then
-    (local.set $obj
-     (i32.sub
-      (local.get $ptr)
-      (i32.const 20)
-     )
-    )
-    (if
-     (i32.eq
-      (call $~lib/rt/itcms/Object#get:color
-       (local.get $obj)
-      )
-      (i32.const 3)
-     )
-     (then
-      (call $~lib/builtins/abort
-       (i32.const 1024)
-       (i32.const 240)
-       (i32.const 338)
-       (i32.const 7)
-      )
-      (unreachable)
-     )
-    )
-    (call $~lib/rt/itcms/Object#unlink
-     (local.get $obj)
-    )
-    (call $~lib/rt/itcms/Object#linkTo
-     (local.get $obj)
-     (global.get $~lib/rt/itcms/pinSpace)
-     (i32.const 3)
-    )
-   )
-  )
-  (return
-   (local.get $ptr)
-  )
- )
  (func $~lib/staticarray/StaticArray<~lib/string/String>#__uset (param $this i32) (param $index i32) (param $value i32)
   (i32.store
    (i32.add
@@ -6204,7 +6160,7 @@
    )
    (then
     (return
-     (i32.const 1088)
+     (i32.const 1024)
     )
    )
   )
@@ -6226,7 +6182,7 @@
        (local.get $4)
       )
       (else
-       (i32.const 1088)
+       (i32.const 1024)
       )
      )
     )
@@ -6484,61 +6440,6 @@
    )
   )
  )
- (func $~lib/rt/itcms/__unpin (param $ptr i32)
-  (local $obj i32)
-  (if
-   (i32.eqz
-    (local.get $ptr)
-   )
-   (then
-    (return)
-   )
-  )
-  (local.set $obj
-   (i32.sub
-    (local.get $ptr)
-    (i32.const 20)
-   )
-  )
-  (if
-   (i32.ne
-    (call $~lib/rt/itcms/Object#get:color
-     (local.get $obj)
-    )
-    (i32.const 3)
-   )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 1120)
-     (i32.const 240)
-     (i32.const 352)
-     (i32.const 5)
-    )
-    (unreachable)
-   )
-  )
-  (if
-   (i32.eq
-    (global.get $~lib/rt/itcms/state)
-    (i32.const 1)
-   )
-   (then
-    (call $~lib/rt/itcms/Object#makeGray
-     (local.get $obj)
-    )
-   )
-   (else
-    (call $~lib/rt/itcms/Object#unlink
-     (local.get $obj)
-    )
-    (call $~lib/rt/itcms/Object#linkTo
-     (local.get $obj)
-     (global.get $~lib/rt/itcms/fromSpace)
-     (global.get $~lib/rt/itcms/white)
-    )
-   )
-  )
- )
  (func $~lib/symbol/symbol#toString (param $this i32) (result i32)
   (local $id i32)
   (local $str i32)
@@ -6592,37 +6493,29 @@
    (block (result i32)
     (local.set $3
      (call $~lib/rt/__localtostack
-      (local.get $str)
-     )
-    )
-    (drop
-     (call $~lib/rt/itcms/__pin
       (i32.const 992)
-     )
-    )
-    (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-     (call $~lib/rt/__tmptostack
-      (i32.const 992)
-     )
-     (i32.const 1)
-     (call $~lib/rt/__tmptostack
-      (local.get $3)
      )
     )
     (local.set $4
      (call $~lib/rt/__localtostack
-      (call $~lib/staticarray/StaticArray<~lib/string/String>#join
-       (call $~lib/rt/__tmptostack
-        (i32.const 992)
-       )
-       (i32.const 1088)
-      )
+      (local.get $str)
      )
     )
-    (call $~lib/rt/itcms/__unpin
-     (i32.const 992)
+    (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
+     (call $~lib/rt/__tmptostack
+      (local.get $3)
+     )
+     (i32.const 1)
+     (call $~lib/rt/__tmptostack
+      (local.get $4)
+     )
     )
-    (local.get $4)
+    (call $~lib/staticarray/StaticArray<~lib/string/String>#join
+     (call $~lib/rt/__tmptostack
+      (local.get $3)
+     )
+     (i32.const 1024)
+    )
    )
   )
  )
@@ -6905,7 +6798,7 @@
        (global.get $std/symbol/sym3)
       )
      )
-     (i32.const 1184)
+     (i32.const 1056)
     )
    )
    (then
@@ -6921,7 +6814,7 @@
   (global.set $~lib/symbol/Symbol.iterator
    (call $~lib/symbol/ensureToMap
     (i32.const 1)
-    (i32.const 1232)
+    (i32.const 1104)
    )
   )
   (global.set $std/symbol/iterator
@@ -6935,7 +6828,7 @@
        (global.get $std/symbol/iterator)
       )
      )
-     (i32.const 1280)
+     (i32.const 1152)
     )
    )
    (then
