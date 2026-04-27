@@ -8804,7 +8804,7 @@ export class Compiler extends DiagnosticEmitter {
 
       // Store the static array address in a tmp local so the shadow stack
       // keeps it reachable. GC will visit it and all dynamic children.
-      let arrayLocal = flow.getTempLocal(stringType);
+      let arrayLocal = flow.getTempLocal(arrayInstance.type);
       let stmts = new Array<ExpressionRef>();
       stmts.push(module.local_set(arrayLocal.index, module.usize(arrayOffset), true));
 

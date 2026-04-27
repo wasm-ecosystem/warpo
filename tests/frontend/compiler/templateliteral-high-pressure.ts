@@ -9,9 +9,8 @@ function test_staticarray_pressure(): void {
   // Will trap before the fix https://github.com/wasm-ecosystem/warpo/pull/466
   // String.join will crash due to rtsize dirty-written of the last itos32 object which is unpinned.
   // Execution trapped due to Linear memory access out of bounds. sstr broken
-  if (sstr != "[Test]1-1-1-1") {
-    unreachable();
-  }
+  const res: bool = (sstr == "[Test]1-1-1-1");
+  assert(res);
 }
 
 test_staticarray_pressure();
