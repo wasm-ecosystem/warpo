@@ -4167,8 +4167,7 @@ export class Local extends VariableLikeElement {
     declarationBase: DeclarationBase,
 
     public readonly tupleIndex: i32 = -1,
-
-    public readonly tupleTypeBuilder: TupleTypeBuilder | null = null,
+    public readonly tupleElementInfo: TupleElementInfo | null = null,
 
     public readonly forInitClosureVar: bool = false
   ) {
@@ -4177,8 +4176,7 @@ export class Local extends VariableLikeElement {
     assert(type != Type.void);
     this.setType(type);
     if (tupleIndex >= 0) {
-      let stackSize = parent.heapLocalsStorageStackSize;
-      this.closureScopeLevel = parent.closureBaseLevel + (stackSize > 0 ? stackSize - 1 : 0);
+      this.closureScopeLevel = parent.currentClosureScope.closureInfo.nestedLevel;
     }
     this.forInitClosureStorage = forInitClosureVar ? ForInitClosureStorage.Local : ForInitClosureStorage.Tuple;
   }
@@ -4213,10 +4211,7 @@ export class Local extends VariableLikeElement {
   }
 
   getTupleElementInfo(): TupleElementInfo {
-    const tupleIndex = this.tupleIndex;
-    assert(tupleIndex >= 0);
-    const elementInfo = assert(this.tupleTypeBuilder).getTupleElementInfo(tupleIndex);
-    return elementInfo;
+    return assert(this.tupleElementInfo);
   }
 }
 
@@ -4418,11 +4413,6 @@ export class Function extends TypedElement {
   heapLocalsStorage: Local | null = null;
   pendingInitClosureLocals: ForInitClosureLocals | null = null;
 
-  get closureBaseLevel(): i32 {
-    let info = this.prototype.closureInfo;
-    return info ? info.nestedLevel : 0;
-  }
-
   private closureScopeStack_: ClosureScopeFrame[] = [];
 
   get currentClosureScope(): ClosureScopeFrame {
@@ -4530,7 +4520,7 @@ export class Function extends TypedElement {
           new VariableLikeBase(Node.createIdentifierExpression(CommonNames.this_, Source.native.range), null, null),
           thisDeclareBase,
           tupleIndex,
-          tupleIndex >= 0 ? this.heapLocalsTypeBuilder : null
+          tupleIndex >= 0 ? this.heapLocalsTypeBuilder.getTupleElementInfo(tupleIndex) : null
         );
         let scopedLocals = this.flow.scopedLocals;
         if (!scopedLocals) this.flow.scopedLocals = scopedLocals = new Map();
@@ -4562,7 +4552,7 @@ export class Function extends TypedElement {
           new VariableLikeBase(Node.createIdentifierExpression(parameterName, Source.native.range), null, null),
           new DeclarationBase(null, CommonFlags.None, Source.native.range, null),
           tupleIndex,
-          tupleIndex >= 0 ? this.heapLocalsTypeBuilder : null
+          tupleIndex >= 0 ? this.heapLocalsTypeBuilder.getTupleElementInfo(tupleIndex) : null
         );
         let scopedLocals = this.flow.scopedLocals;
         if (!scopedLocals) this.flow.scopedLocals = scopedLocals = new Map();
@@ -4640,7 +4630,7 @@ export class Function extends TypedElement {
     let variableLikeBase: VariableLikeBase;
     let declarationBase: DeclarationBase;
     let tupleIndex = -1;
-    let tupleTypeBuilder: TupleTypeBuilder | null = null;
+    let tupleElementInfo: TupleElementInfo | null = null;
     let isForInitClosureVar = false;
     if (declaration) {
       variableLikeBase = declaration.toVariableLikeBase();
@@ -4652,7 +4642,7 @@ export class Function extends TypedElement {
           const heapLocalsTypeBuilder = sourceFunction.heapLocalsTypeBuilder;
           tupleIndex = heapLocalsTypeBuilder.size;
           heapLocalsTypeBuilder.push(type, declarationBase.nameRange, ReportMode.Report);
-          tupleTypeBuilder = heapLocalsTypeBuilder;
+          tupleElementInfo = heapLocalsTypeBuilder.getTupleElementInfo(tupleIndex);
           if (closureInfo.forInitClosureVariables.has(declaration)) isForInitClosureVar = true;
         }
       }
@@ -4672,7 +4662,7 @@ export class Function extends TypedElement {
       variableLikeBase,
       declarationBase,
       tupleIndex,
-      tupleTypeBuilder,
+      tupleElementInfo,
       isForInitClosureVar
     );
     if (isForInitClosureVar) assert(this.pendingInitClosureLocals).add(local);

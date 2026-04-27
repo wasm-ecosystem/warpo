@@ -1729,13 +1729,12 @@ export class Compiler extends DiagnosticEmitter {
       );
 
       functionClosurePrepareStmts.push(saveParentEnvStmt);
-      const heapLocalsTypeBuilder = instance.heapLocalsTypeBuilder;
 
       const thisCount = signature.thisType ? 1 : 0;
       for (let i = 0; i < thisCount + numParameters; i++) {
         const paramLocal = instance.localsByIndex[i];
         if (paramLocal.isClosureVariable()) {
-          const tupleElementInfo = heapLocalsTypeBuilder.getTupleElementInfo(paramLocal.tupleIndex);
+          const tupleElementInfo = paramLocal.getTupleElementInfo();
           const paramSetter = assert(this.program.smallTupleInstance.getMethod("__set", [tupleElementInfo.type]));
           const saveClosureParamStmt = this.makeCallDirect(
             paramSetter,
@@ -8403,7 +8402,7 @@ export class Compiler extends DiagnosticEmitter {
 
   private getClosureVariableNestedLevel(local: Local): i32 {
     const currentFunction = this.currentFlow.targetFunction;
-    const currentLevel = currentFunction.closureBaseLevel + currentFunction.heapLocalsStorageStackSize - 1;
+    const currentLevel = currentFunction.currentClosureScope.closureInfo.nestedLevel;
     const localLevel = local.closureScopeLevel;
     return currentLevel - localLevel;
   }
