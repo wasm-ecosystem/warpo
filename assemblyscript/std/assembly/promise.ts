@@ -124,12 +124,14 @@ export class Promise<T> extends _AsPromiseBase {
     return new Promise<(Object | null)[]>(
       (resolve: (value: Object | null) => void, reject: (reason: Object | null) => void) => {
         let counter = 0;
-        const values: (Object | null)[] = new Array<Object | null>();
-        for (let i = 0; i < promiseArr.length; i++) {
+        const length = promiseArr.length;
+        const values: (Object | null)[] = new Array<Object | null>(length);
+        for (let i = 0; i < length; i++) {
+          const index = i;
           promiseArr[i].thenBase((value: Object | null): Object | null => {
-            values.push(value);
+            values[index] = value;
             counter++;
-            if (counter == promiseArr.length) {
+            if (counter == length) {
               resolve(values);
             }
             return null;
