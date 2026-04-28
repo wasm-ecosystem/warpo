@@ -5676,6 +5676,7 @@
   (local $16 i32)
   (local $17 i32)
   (local $18 i32)
+  (local $19 i32)
   (local.set $yr
    (call $~lib/date/Date#get:year
     (call $~lib/rt/__tmptostack
@@ -5823,105 +5824,110 @@
    (block (result i32)
     (local.set $12
      (call $~lib/rt/__localtostack
-      (local.get $year)
+      (i32.const 2592)
      )
     )
     (local.set $13
      (call $~lib/rt/__localtostack
-      (local.get $month)
+      (local.get $year)
      )
     )
     (local.set $14
      (call $~lib/rt/__localtostack
-      (local.get $day)
+      (local.get $month)
      )
     )
     (local.set $15
      (call $~lib/rt/__localtostack
-      (local.get $hours)
+      (local.get $day)
      )
     )
     (local.set $16
      (call $~lib/rt/__localtostack
-      (local.get $mins)
+      (local.get $hours)
      )
     )
     (local.set $17
      (call $~lib/rt/__localtostack
-      (local.get $secs)
+      (local.get $mins)
      )
     )
     (local.set $18
+     (call $~lib/rt/__localtostack
+      (local.get $secs)
+     )
+    )
+    (local.set $19
      (call $~lib/rt/__localtostack
       (local.get $ms)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 2592)
-     )
-     (i32.const 0)
-     (call $~lib/rt/__tmptostack
       (local.get $12)
      )
-    )
-    (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-     (call $~lib/rt/__tmptostack
-      (i32.const 2592)
-     )
-     (i32.const 2)
+     (i32.const 0)
      (call $~lib/rt/__tmptostack
       (local.get $13)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 2592)
+      (local.get $12)
      )
-     (i32.const 4)
+     (i32.const 2)
      (call $~lib/rt/__tmptostack
       (local.get $14)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 2592)
+      (local.get $12)
      )
-     (i32.const 6)
+     (i32.const 4)
      (call $~lib/rt/__tmptostack
       (local.get $15)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 2592)
+      (local.get $12)
      )
-     (i32.const 8)
+     (i32.const 6)
      (call $~lib/rt/__tmptostack
       (local.get $16)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 2592)
+      (local.get $12)
      )
-     (i32.const 10)
+     (i32.const 8)
      (call $~lib/rt/__tmptostack
       (local.get $17)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 2592)
+      (local.get $12)
      )
-     (i32.const 12)
+     (i32.const 10)
      (call $~lib/rt/__tmptostack
       (local.get $18)
      )
     )
+    (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
+     (call $~lib/rt/__tmptostack
+      (local.get $12)
+     )
+     (i32.const 12)
+     (call $~lib/rt/__tmptostack
+      (local.get $19)
+     )
+    )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#join
      (call $~lib/rt/__tmptostack
-      (i32.const 2592)
+      (local.get $12)
      )
      (i32.const 2432)
     )
@@ -6214,6 +6220,7 @@
   (local $17 i32)
   (local $18 i32)
   (local $19 i32)
+  (local $20 i32)
   (local.set $weeks
    (call $~lib/rt/__localtostack
     (call $~lib/rt/__newBuffer
@@ -6316,20 +6323,25 @@
    (block (result i32)
     (local.set $15
      (call $~lib/rt/__localtostack
-      (local.get $week)
+      (i32.const 4128)
      )
     )
     (local.set $16
      (call $~lib/rt/__localtostack
-      (local.get $month)
+      (local.get $week)
      )
     )
     (local.set $17
      (call $~lib/rt/__localtostack
-      (local.get $day)
+      (local.get $month)
      )
     )
     (local.set $18
+     (call $~lib/rt/__localtostack
+      (local.get $day)
+     )
+    )
+    (local.set $19
      (call $~lib/rt/__localtostack
       (if (result i32)
        (i32.lt_s
@@ -6345,59 +6357,59 @@
       )
      )
     )
-    (local.set $19
+    (local.set $20
      (call $~lib/rt/__localtostack
       (local.get $year)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 4128)
-     )
-     (i32.const 0)
-     (call $~lib/rt/__tmptostack
       (local.get $15)
      )
-    )
-    (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-     (call $~lib/rt/__tmptostack
-      (i32.const 4128)
-     )
-     (i32.const 1)
+     (i32.const 0)
      (call $~lib/rt/__tmptostack
       (local.get $16)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 4128)
+      (local.get $15)
      )
-     (i32.const 2)
+     (i32.const 1)
      (call $~lib/rt/__tmptostack
       (local.get $17)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 4128)
+      (local.get $15)
      )
-     (i32.const 3)
+     (i32.const 2)
      (call $~lib/rt/__tmptostack
       (local.get $18)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 4128)
+      (local.get $15)
      )
-     (i32.const 4)
+     (i32.const 3)
      (call $~lib/rt/__tmptostack
       (local.get $19)
      )
     )
+    (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
+     (call $~lib/rt/__tmptostack
+      (local.get $15)
+     )
+     (i32.const 4)
+     (call $~lib/rt/__tmptostack
+      (local.get $20)
+     )
+    )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#join
      (call $~lib/rt/__tmptostack
-      (i32.const 4128)
+      (local.get $15)
      )
      (i32.const 2432)
     )
@@ -6411,6 +6423,7 @@
   (local $4 i32)
   (local $5 i32)
   (local $6 i32)
+  (local $7 i32)
   (local.set $hours
    (call $~lib/rt/__localtostack
     (call $~lib/date/stringify
@@ -6451,49 +6464,54 @@
    (block (result i32)
     (local.set $4
      (call $~lib/rt/__localtostack
-      (local.get $hours)
+      (i32.const 4432)
      )
     )
     (local.set $5
      (call $~lib/rt/__localtostack
-      (local.get $mins)
+      (local.get $hours)
      )
     )
     (local.set $6
+     (call $~lib/rt/__localtostack
+      (local.get $mins)
+     )
+    )
+    (local.set $7
      (call $~lib/rt/__localtostack
       (local.get $secs)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 4432)
-     )
-     (i32.const 0)
-     (call $~lib/rt/__tmptostack
       (local.get $4)
      )
-    )
-    (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-     (call $~lib/rt/__tmptostack
-      (i32.const 4432)
-     )
-     (i32.const 2)
+     (i32.const 0)
      (call $~lib/rt/__tmptostack
       (local.get $5)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 4432)
+      (local.get $4)
      )
-     (i32.const 4)
+     (i32.const 2)
      (call $~lib/rt/__tmptostack
       (local.get $6)
      )
     )
+    (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
+     (call $~lib/rt/__tmptostack
+      (local.get $4)
+     )
+     (i32.const 4)
+     (call $~lib/rt/__tmptostack
+      (local.get $7)
+     )
+    )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#join
      (call $~lib/rt/__tmptostack
-      (i32.const 4432)
+      (local.get $4)
      )
      (i32.const 2432)
     )
@@ -6526,6 +6544,7 @@
   (local $23 i32)
   (local $24 i32)
   (local $25 i32)
+  (local $26 i32)
   (local.set $weeks
    (call $~lib/rt/__localtostack
     (call $~lib/rt/__newBuffer
@@ -6664,20 +6683,25 @@
    (block (result i32)
     (local.set $18
      (call $~lib/rt/__localtostack
-      (local.get $week)
+      (i32.const 5344)
      )
     )
     (local.set $19
      (call $~lib/rt/__localtostack
-      (local.get $day)
+      (local.get $week)
      )
     )
     (local.set $20
      (call $~lib/rt/__localtostack
-      (local.get $month)
+      (local.get $day)
      )
     )
     (local.set $21
+     (call $~lib/rt/__localtostack
+      (local.get $month)
+     )
+    )
+    (local.set $22
      (call $~lib/rt/__localtostack
       (if (result i32)
        (i32.lt_s
@@ -6693,101 +6717,101 @@
       )
      )
     )
-    (local.set $22
+    (local.set $23
      (call $~lib/rt/__localtostack
       (local.get $year)
      )
     )
-    (local.set $23
+    (local.set $24
      (call $~lib/rt/__localtostack
       (local.get $hours)
      )
     )
-    (local.set $24
+    (local.set $25
      (call $~lib/rt/__localtostack
       (local.get $mins)
      )
     )
-    (local.set $25
+    (local.set $26
      (call $~lib/rt/__localtostack
       (local.get $secs)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 5344)
-     )
-     (i32.const 0)
-     (call $~lib/rt/__tmptostack
       (local.get $18)
      )
-    )
-    (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-     (call $~lib/rt/__tmptostack
-      (i32.const 5344)
-     )
-     (i32.const 1)
+     (i32.const 0)
      (call $~lib/rt/__tmptostack
       (local.get $19)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 5344)
+      (local.get $18)
      )
-     (i32.const 2)
+     (i32.const 1)
      (call $~lib/rt/__tmptostack
       (local.get $20)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 5344)
+      (local.get $18)
      )
-     (i32.const 3)
+     (i32.const 2)
      (call $~lib/rt/__tmptostack
       (local.get $21)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 5344)
+      (local.get $18)
      )
-     (i32.const 4)
+     (i32.const 3)
      (call $~lib/rt/__tmptostack
       (local.get $22)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 5344)
+      (local.get $18)
      )
-     (i32.const 6)
+     (i32.const 4)
      (call $~lib/rt/__tmptostack
       (local.get $23)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 5344)
+      (local.get $18)
      )
-     (i32.const 8)
+     (i32.const 6)
      (call $~lib/rt/__tmptostack
       (local.get $24)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 5344)
+      (local.get $18)
      )
-     (i32.const 10)
+     (i32.const 8)
      (call $~lib/rt/__tmptostack
       (local.get $25)
      )
     )
+    (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
+     (call $~lib/rt/__tmptostack
+      (local.get $18)
+     )
+     (i32.const 10)
+     (call $~lib/rt/__tmptostack
+      (local.get $26)
+     )
+    )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#join
      (call $~lib/rt/__tmptostack
-      (i32.const 5344)
+      (local.get $18)
      )
      (i32.const 2432)
     )
