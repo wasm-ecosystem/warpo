@@ -108,25 +108,6 @@ export function addLocal(subProgram: Function, variable: Local, scopeId: u32): v
   }
 }
 
-export function addTupleLocal(
-  subProgram: Function,
-  variableName: string,
-  variableType: Type,
-  tupleFieldOffset: u32,
-  storageLocalIndex: u32,
-  scopeId: u32
-): void {
-  _WarpoAddTupleLocal(
-    subProgram.internalName,
-    variableName,
-    decodeURIComponent(typeToMIRName(variableType)),
-    tupleFieldOffset,
-    storageLocalIndex,
-    scopeId,
-    variableType.is(TypeFlags.Nullable)
-  );
-}
-
 export function createBaseType(type: Type): void {
   _WarpoCreateBaseType(typeToMIRName(type));
 }
