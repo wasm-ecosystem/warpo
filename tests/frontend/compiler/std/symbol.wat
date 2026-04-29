@@ -6444,6 +6444,7 @@
   (local $id i32)
   (local $str i32)
   (local $3 i32)
+  (local $4 i32)
   (local.set $id
    (local.get $this)
   )
@@ -6492,21 +6493,26 @@
    (block (result i32)
     (local.set $3
      (call $~lib/rt/__localtostack
+      (i32.const 992)
+     )
+    )
+    (local.set $4
+     (call $~lib/rt/__localtostack
       (local.get $str)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 992)
+      (local.get $3)
      )
      (i32.const 1)
      (call $~lib/rt/__tmptostack
-      (local.get $3)
+      (local.get $4)
      )
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#join
      (call $~lib/rt/__tmptostack
-      (i32.const 992)
+      (local.get $3)
      )
      (i32.const 1024)
     )

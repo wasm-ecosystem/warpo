@@ -3126,13 +3126,13 @@
  )
  (func $templateliteral/RecursiveObject#toString (param $0 i32) (result i32)
   (local $1 i32)
-  i32.const 8
+  i32.const 12
   call $~lib/rt/__decrease_sp
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.load offset=4
   local.tee $1
-  i32.store offset=4 align=1
+  i32.store offset=8 align=1
   local.get $1
   i32.eqz
   if
@@ -3140,12 +3140,15 @@
    i32.load
    local.set $0
    global.get $~lib/memory/__stack_pointer
-   i32.const 8
+   i32.const 12
    i32.add
    global.set $~lib/memory/__stack_pointer
    local.get $0
    return
   end
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4800
+  i32.store offset=4 align=1
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.load
@@ -3162,14 +3165,11 @@
   i32.const 2
   local.get $1
   call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4800
-  i32.store align=1
   i32.const 4800
   call $~lib/staticarray/StaticArray<~lib/string/String>#join
   local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 12
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
@@ -3274,14 +3274,14 @@
    i32.store
    i32.const 480
    global.set $~lib/rt/itcms/fromSpace
-   i32.const 8
+   i32.const 12
    call $~lib/rt/__decrease_sp
    global.get $~lib/memory/__stack_pointer
    i32.const 32
-   i32.store offset=4 align=1
+   i32.store offset=8 align=1
    global.get $~lib/memory/__stack_pointer
    i32.const 64
-   i32.store align=1
+   i32.store offset=4 align=1
    i32.const 32
    i32.const 32
    call $~lib/string/String.__eq
@@ -3308,6 +3308,9 @@
     call $~lib/builtins/abort
     unreachable
    end
+   global.get $~lib/memory/__stack_pointer
+   i32.const 720
+   i32.store align=1
    i32.const 720
    i32.const 1
    i32.const 32
@@ -3316,9 +3319,6 @@
    i32.const 3
    i32.const 64
    call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-   global.get $~lib/memory/__stack_pointer
-   i32.const 720
-   i32.store align=1
    i32.const 720
    call $~lib/staticarray/StaticArray<~lib/string/String>#join
    i32.const 768
@@ -3333,7 +3333,7 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   i32.const 8
+   i32.const 12
    i32.add
    global.set $~lib/memory/__stack_pointer
    i32.const 1
@@ -3377,6 +3377,9 @@
     call $~lib/builtins/abort
     unreachable
    end
+   global.get $~lib/memory/__stack_pointer
+   i32.const 2656
+   i32.store offset=4 align=1
    i32.const 1
    call $~lib/number/I32#toString
    local.set $0
@@ -3394,9 +3397,6 @@
    i32.const 3
    local.get $1
    call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-   global.get $~lib/memory/__stack_pointer
-   i32.const 2656
-   i32.store align=1
    i32.const 2656
    call $~lib/staticarray/StaticArray<~lib/string/String>#join
    i32.const 2704
@@ -3457,6 +3457,9 @@
     call $~lib/builtins/abort
     unreachable
    end
+   global.get $~lib/memory/__stack_pointer
+   i32.const 3952
+   i32.store offset=4 align=1
    f64.const 1
    call $~lib/number/F64#toString
    local.set $0
@@ -3474,9 +3477,6 @@
    i32.const 3
    local.get $1
    call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-   global.get $~lib/memory/__stack_pointer
-   i32.const 3952
-   i32.store align=1
    i32.const 3952
    call $~lib/staticarray/StaticArray<~lib/string/String>#join
    i32.const 4000
@@ -3628,7 +3628,7 @@
    i32.store
    global.get $~lib/memory/__stack_pointer
    local.get $0
-   i32.store offset=12 align=1
+   i32.store offset=4 align=1
    i32.const 4
    i32.const 5
    call $~lib/rt/itcms/__new
@@ -3656,14 +3656,14 @@
    local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $2
-   i32.store offset=8 align=1
+   i32.store offset=12 align=1
    local.get $2
    local.get $1
    call $templateliteral/Ref#toString
    local.set $2
    global.get $~lib/memory/__stack_pointer
    local.get $2
-   i32.store offset=4 align=1
+   i32.store offset=8 align=1
    local.get $2
    call $~lib/string/String#concat
    i32.const 4368
@@ -3677,6 +3677,9 @@
     call $~lib/builtins/abort
     unreachable
    end
+   global.get $~lib/memory/__stack_pointer
+   i32.const 4416
+   i32.store offset=8 align=1
    local.get $0
    call $templateliteral/Ref#toString
    local.set $0
@@ -3694,9 +3697,6 @@
    i32.const 3
    local.get $1
    call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4416
-   i32.store align=1
    i32.const 4416
    call $~lib/staticarray/StaticArray<~lib/string/String>#join
    i32.const 4464
@@ -3714,7 +3714,7 @@
    i32.const 16
    i32.add
    global.set $~lib/memory/__stack_pointer
-   i32.const 8
+   i32.const 12
    call $~lib/rt/__decrease_sp
    i32.const 4
    i32.const 5
@@ -3724,19 +3724,22 @@
    i32.store
    global.get $~lib/memory/__stack_pointer
    local.get $0
-   i32.store align=1
+   i32.store offset=4 align=1
    global.get $~lib/memory/__stack_pointer
    i32.const 0
-   i32.store offset=4 align=1
+   i32.store offset=8 align=1
+   global.get $~lib/memory/__stack_pointer
+   i32.const 4592
+   i32.store align=1
    local.get $0
    call $templateliteral/Ref#toString
    local.set $0
    global.get $~lib/memory/__stack_pointer
    local.get $0
-   i32.store align=1
+   i32.store offset=4 align=1
    global.get $~lib/memory/__stack_pointer
    i32.const 0
-   i32.store offset=4 align=1
+   i32.store offset=8 align=1
    i32.const 4592
    i32.const 1
    local.get $0
@@ -3745,9 +3748,6 @@
    i32.const 3
    i32.const 4640
    call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4592
-   i32.store align=1
    i32.const 4592
    call $~lib/staticarray/StaticArray<~lib/string/String>#join
    i32.const 4672
@@ -3762,7 +3762,7 @@
     unreachable
    end
    global.get $~lib/memory/__stack_pointer
-   i32.const 8
+   i32.const 12
    i32.add
    global.set $~lib/memory/__stack_pointer
    i32.const 4

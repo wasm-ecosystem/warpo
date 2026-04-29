@@ -1783,14 +1783,18 @@ export class Compiler extends DiagnosticEmitter {
     return new LoopClosureTupleInfo(tupleInfo, loopHeapLocalsStorage);
   }
 
-  private makeLoopClosureTupleStmts(
-    info: LoopClosureTupleInfo,
-    parentStorage: Local,
+  private emitLoopClosureTuple(
+    targetFunction: Function,
+    loopClosureTupleInfo: LoopClosureTupleInfo,
+    loopStorage: Local | null,
+    initClosureLocals: ForInitClosureLocals | null,
     statement: Node
   ): ExpressionRef[] {
     let module = this.module;
-    let tupleInfo = info.tupleInfo;
-    let loopHeapLocalsStorage = info.loopHeapLocalsStorage;
+    targetFunction.popClosureScope();
+    let parentStorage = targetFunction.currentHeapLocalsStorage;
+    let tupleInfo = loopClosureTupleInfo.tupleInfo;
+    let loopHeapLocalsStorage = loopClosureTupleInfo.loopHeapLocalsStorage;
     let heapLocalsTuple = this.makeNewTuple(tupleInfo.getElementsAreaByteSize(), tupleInfo.getBitmap(), statement);
     let parentEnvElementInfo = tupleInfo.elements[0];
     let parentEnvSetter = assert(this.program.smallTupleInstance.getMethod("__set", [parentEnvElementInfo.type]));
@@ -1807,6 +1811,26 @@ export class Compiler extends DiagnosticEmitter {
         statement
       )
     );
+    if (initClosureLocals && initClosureLocals.length > 0) {
+      let tupleClass = this.program.smallTupleInstance;
+      let locals = initClosureLocals.getLocals();
+      for (let k = 0; k < locals.length; k++) {
+        let initLocal = locals[k];
+        let elementInfo = initLocal.getTupleElementInfo();
+        let setter = assert(tupleClass.getMethod("__set", [elementInfo.type]));
+        stmts.push(
+          this.makeCallDirect(
+            setter,
+            [
+              module.local_get(assert(loopStorage).index, tupleClass.type.toRef()),
+              module.usize(elementInfo.offset),
+              module.local_get(initLocal.index, initLocal.type.toRef()),
+            ],
+            statement
+          )
+        );
+      }
+    }
     return stmts;
   }
 
@@ -2577,6 +2601,14 @@ export class Compiler extends DiagnosticEmitter {
     flow.continueLabel = continueLabel;
     let loopLabel = `do-loop|${label}`;
     this.currentFlow = flow;
+    let targetFunction = outerFlow.targetFunction;
+    let loopClosureInfo = this.program.closureScanner.getClosureFunctionInfo(statement);
+    let loopClosureTupleInfo: LoopClosureTupleInfo | null = null;
+    if (loopClosureInfo) {
+      let loopStorage = flow.getTempLocal(Type.i32);
+      targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
+      loopClosureTupleInfo = this.finalizeLoopClosureType(targetFunction, statement);
+    }
     let bodyStmts = new Array<ExpressionRef>();
     let body = statement.body;
     if (body.kind == NodeKind.Block) {
@@ -2632,6 +2664,10 @@ export class Compiler extends DiagnosticEmitter {
     // Finalize and leave everything else to the optimizer
     this.currentFlow = outerFlow;
     flow.addLocalsToBlock(bodyStmts);
+    if (loopClosureTupleInfo) {
+      let tupleStmts = this.emitLoopClosureTuple(targetFunction, loopClosureTupleInfo, null, null, statement);
+      bodyStmts = tupleStmts.concat(bodyStmts);
+    }
     let expr = module.loop(loopLabel, module.flatten(bodyStmts));
     if (possiblyBreaks) {
       expr = module.block(breakLabel, [expr]);
@@ -2827,35 +2863,20 @@ export class Compiler extends DiagnosticEmitter {
     if (bodyEnd != 0) {
       bodyFlow.addLocalsToBlockWithStartEndStmt(bodyStmts[0], bodyEnd);
     }
-    let expr = module.if(condExprTrueish, module.flatten(bodyStmts));
-
-    // Insert loop top stmts: tuple creation + copy temp->tuple before condition
+    let ifExpr = module.if(condExprTrueish, module.flatten(bodyStmts));
+    let expr: ExpressionRef;
     if (loopClosureTupleInfo) {
-      targetFunction.popClosureScope();
-      let parentStorage = targetFunction.currentHeapLocalsStorage;
-      let loopTopStmts = this.makeLoopClosureTupleStmts(loopClosureTupleInfo, parentStorage, statement);
-      if (initClosureLocals && initClosureLocals.length > 0) {
-        let tupleClass = this.program.smallTupleInstance;
-        let locals = initClosureLocals.getLocals();
-        for (let k = 0; k < locals.length; k++) {
-          let initLocal = locals[k];
-          let elementInfo = initLocal.getTupleElementInfo();
-          let setter = assert(tupleClass.getMethod("__set", [elementInfo.type]));
-          loopTopStmts.push(
-            this.makeCallDirect(
-              setter,
-              [
-                module.local_get(assert(loopStorage).index, tupleClass.type.toRef()),
-                module.usize(elementInfo.offset),
-                module.local_get(initLocal.index, initLocal.type.toRef()),
-              ],
-              statement
-            )
-          );
-        }
-      }
-      loopTopStmts.push(expr);
-      expr = module.flatten(loopTopStmts);
+      let tupleStmts = this.emitLoopClosureTuple(
+        targetFunction,
+        loopClosureTupleInfo,
+        loopStorage,
+        initClosureLocals,
+        statement
+      );
+      tupleStmts.push(ifExpr);
+      expr = module.flatten(tupleStmts);
+    } else {
+      expr = ifExpr;
     }
 
     if (possiblyLoops) {
@@ -2898,6 +2919,14 @@ export class Compiler extends DiagnosticEmitter {
     const outerFlow = this.currentFlow;
     const flow = outerFlow.fork();
     this.currentFlow = flow;
+    const targetFunction = outerFlow.targetFunction;
+    const loopClosureInfo = program.closureScanner.getClosureFunctionInfo(statement);
+    let loopStorage: Local | null = null;
+    if (loopClosureInfo) {
+      loopStorage = flow.getTempLocal(Type.i32);
+      targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
+      targetFunction.pendingInitClosureLocals = new ForInitClosureLocals();
+    }
 
     // put iterableExpr to local to ensure lifetime
     const iterableLocal = outerFlow.getTempLocal(iterableType);
@@ -2979,6 +3008,15 @@ export class Compiler extends DiagnosticEmitter {
     // body flow is new created, there are definitely no duplicate identifier.
     const variableLocal = bodyFlow.addScopedLocal(variable.name.text, variableType, variable);
     if (variable.is(CommonFlags.Const)) bodyFlow.setLocalFlag(variableLocal.index, LocalFlags.Constant);
+    let initClosureLocals = targetFunction.pendingInitClosureLocals;
+    targetFunction.pendingInitClosureLocals = null;
+    if (initClosureLocals) {
+      initClosureLocals.setActiveStorageToTuple();
+    }
+    let loopClosureTupleInfo: LoopClosureTupleInfo | null = null;
+    if (loopClosureInfo) {
+      loopClosureTupleInfo = this.finalizeLoopClosureType(targetFunction, statement);
+    }
     bodyStmts.push(this.makeLocalAssignment(variableLocal, variableExpr, variableType, false));
     if (body.kind == NodeKind.Block) {
       this.compileStatements((<BlockStatement>body).statements, bodyStmts);
@@ -3023,7 +3061,21 @@ export class Compiler extends DiagnosticEmitter {
     if (bodyEnd != 0) {
       bodyFlow.addLocalsToBlockWithStartEndStmt(bodyStmts[0], bodyEnd);
     }
-    let expr = module.if(isNotDoneExpr, module.flatten(bodyStmts));
+    let ifExpr = module.if(isNotDoneExpr, module.flatten(bodyStmts));
+    let expr: ExpressionRef;
+    if (loopClosureTupleInfo) {
+      let tupleStmts = this.emitLoopClosureTuple(
+        targetFunction,
+        loopClosureTupleInfo,
+        loopStorage,
+        initClosureLocals,
+        statement
+      );
+      tupleStmts.push(ifExpr);
+      expr = module.flatten(tupleStmts);
+    } else {
+      expr = ifExpr;
+    }
     if (possiblyLoops) {
       expr = module.loop(loopLabel, expr);
     }
@@ -3536,6 +3588,14 @@ export class Compiler extends DiagnosticEmitter {
     let continueLabel = `while-continue|${label}`;
     thenFlow.continueLabel = continueLabel;
     this.currentFlow = thenFlow;
+    let targetFunction = outerFlow.targetFunction;
+    let loopClosureInfo = this.program.closureScanner.getClosureFunctionInfo(statement);
+    let loopClosureTupleInfo: LoopClosureTupleInfo | null = null;
+    if (loopClosureInfo) {
+      let loopStorage = thenFlow.getTempLocal(Type.i32);
+      targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
+      loopClosureTupleInfo = this.finalizeLoopClosureType(targetFunction, statement);
+    }
     let bodyStmts = new Array<ExpressionRef>();
     let body = statement.body;
     if (body.kind == NodeKind.Block) {
@@ -3586,7 +3646,16 @@ export class Compiler extends DiagnosticEmitter {
     // Finalize and leave everything else to the optimizer
     this.currentFlow = outerFlow;
     thenFlow.addLocalsToBlock(bodyStmts);
-    let stmts: ExpressionRef[] = [module.loop(continueLabel, module.if(condExprTrueish, module.flatten(bodyStmts)))];
+    let ifExpr = module.if(condExprTrueish, module.flatten(bodyStmts));
+    let loopExpr: ExpressionRef;
+    if (loopClosureTupleInfo) {
+      let tupleStmts = this.emitLoopClosureTuple(targetFunction, loopClosureTupleInfo, null, null, statement);
+      tupleStmts.push(ifExpr);
+      loopExpr = module.flatten(tupleStmts);
+    } else {
+      loopExpr = ifExpr;
+    }
+    let stmts: ExpressionRef[] = [module.loop(continueLabel, loopExpr)];
     if (alwaysTerminates) stmts.push(module.unreachable());
     return module.block(breakLabel, stmts);
   }
@@ -8928,42 +8997,58 @@ export class Compiler extends DiagnosticEmitter {
       let arrayInstance = assert(this.resolver.resolveClass(this.program.staticArrayPrototype, [stringType]));
       let segment = this.addStaticBuffer(stringType, values, arrayInstance.id);
       this.program.OBJECTInstance.writeField("gcInfo", 3, segment.buffer, 0); // use transparent gcinfo
-      let offset = i64_add(segment.offset, i64_new(this.program.totalOverhead));
+      let arrayOffset = i64_add(segment.offset, i64_new(this.program.totalOverhead));
       let joinInstance = assert(arrayInstance.getMethod("join"));
       let indexedSetInstance = assert(arrayInstance.lookupOverload(OperatorKind.IndexedSet, true));
-      let stmts = new Array<ExpressionRef>(2 * numExpressions + 1);
-      // Use one local per toString'ed sub expression, since otherwise recursion on the same
-      // static array would overwrite already prepared parts. Avoids a temporary array.
-      let temps = new Array<Local>(numExpressions);
       let flow = this.currentFlow;
+
+      // Store the static array address in a tmp local so the shadow stack
+      // keeps it reachable. GC will visit it and all dynamic children.
+      let arrayLocal = flow.getTempLocal(arrayInstance.type);
+      let stmts = new Array<ExpressionRef>();
+      stmts.push(module.local_set(arrayLocal.index, module.usize(arrayOffset), true));
+
+      // Evaluate each expression into a temp local.
+      // One local per expression prevents recursion on the same static array
+      // from overwriting already prepared parts.
+      let temps = new Array<Local>(numExpressions);
       for (let i = 0; i < numExpressions; ++i) {
-        let expression = expressions[i];
+        let subExpression = expressions[i];
         let temp = flow.getTempLocal(stringType);
         temps[i] = temp;
-        stmts[i] = module.local_set(
-          temp.index,
-          this.makeToString(this.compileExpression(expression, stringType), this.currentType, expression),
-          true
+        stmts.push(
+          module.local_set(
+            temp.index,
+            this.makeToString(this.compileExpression(subExpression, stringType), this.currentType, subExpression),
+            true
+          )
         );
       }
-      // Populate the static array with the toString'ed subexpressions and call .join("")
+
+      // Populate the static array slots with the temp locals
       for (let i = 0; i < numExpressions; ++i) {
-        stmts[numExpressions + i] = this.makeCallDirect(
-          indexedSetInstance,
-          [
-            module.usize(offset),
-            module.i32(expressionPositions[i]),
-            module.local_get(temps[i].index, stringType.toRef()),
-          ],
-          expression
+        stmts.push(
+          this.makeCallDirect(
+            indexedSetInstance,
+            [
+              module.local_get(arrayLocal.index, stringType.toRef()),
+              module.i32(expressionPositions[i]),
+              module.local_get(temps[i].index, stringType.toRef()),
+            ],
+            expression
+          )
         );
       }
-      stmts[2 * numExpressions] = this.makeCallDirect(
-        joinInstance,
-        [module.usize(offset), this.ensureStaticString("")],
-        expression
+
+      // Call join("") and return the result
+      stmts.push(
+        this.makeCallDirect(
+          joinInstance,
+          [module.local_get(arrayLocal.index, stringType.toRef()), this.ensureStaticString("")],
+          expression
+        )
       );
-      return module.flatten(stmts, stringType.toRef());
+      return module.block(null, stmts, stringType.toRef());
     }
 
     // Try to find out whether the template function takes a full-blown TemplateStringsArray or if

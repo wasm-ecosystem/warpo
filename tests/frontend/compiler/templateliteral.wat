@@ -3743,6 +3743,7 @@
   (local $b i32)
   (local $2 i32)
   (local $3 i32)
+  (local $4 i32)
   (local.set $a
    (call $~lib/rt/__localtostack
     (i32.const 32)
@@ -3805,35 +3806,40 @@
       (block (result i32)
        (local.set $2
         (call $~lib/rt/__localtostack
-         (local.get $a)
+         (i32.const 720)
         )
        )
        (local.set $3
+        (call $~lib/rt/__localtostack
+         (local.get $a)
+        )
+       )
+       (local.set $4
         (call $~lib/rt/__localtostack
          (local.get $b)
         )
        )
        (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
         (call $~lib/rt/__tmptostack
-         (i32.const 720)
-        )
-        (i32.const 1)
-        (call $~lib/rt/__tmptostack
          (local.get $2)
         )
-       )
-       (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-        (call $~lib/rt/__tmptostack
-         (i32.const 720)
-        )
-        (i32.const 3)
+        (i32.const 1)
         (call $~lib/rt/__tmptostack
          (local.get $3)
         )
        )
+       (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
+        (call $~lib/rt/__tmptostack
+         (local.get $2)
+        )
+        (i32.const 3)
+        (call $~lib/rt/__tmptostack
+         (local.get $4)
+        )
+       )
        (call $~lib/staticarray/StaticArray<~lib/string/String>#join
         (call $~lib/rt/__tmptostack
-         (i32.const 720)
+         (local.get $2)
         )
         (i32.const 160)
        )
@@ -4698,6 +4704,7 @@
   (local $b i32)
   (local $2 i32)
   (local $3 i32)
+  (local $4 i32)
   (local.set $a
    (i32.const 1)
   )
@@ -4765,13 +4772,18 @@
       (block (result i32)
        (local.set $2
         (call $~lib/rt/__localtostack
+         (i32.const 2656)
+        )
+       )
+       (local.set $3
+        (call $~lib/rt/__localtostack
          (call $~lib/number/I32#toString
           (local.get $a)
           (i32.const 10)
          )
         )
        )
-       (local.set $3
+       (local.set $4
         (call $~lib/rt/__localtostack
          (call $~lib/number/I32#toString
           (local.get $b)
@@ -4781,25 +4793,25 @@
        )
        (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
         (call $~lib/rt/__tmptostack
-         (i32.const 2656)
-        )
-        (i32.const 1)
-        (call $~lib/rt/__tmptostack
          (local.get $2)
         )
-       )
-       (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-        (call $~lib/rt/__tmptostack
-         (i32.const 2656)
-        )
-        (i32.const 3)
+        (i32.const 1)
         (call $~lib/rt/__tmptostack
          (local.get $3)
         )
        )
+       (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
+        (call $~lib/rt/__tmptostack
+         (local.get $2)
+        )
+        (i32.const 3)
+        (call $~lib/rt/__tmptostack
+         (local.get $4)
+        )
+       )
        (call $~lib/staticarray/StaticArray<~lib/string/String>#join
         (call $~lib/rt/__tmptostack
-         (i32.const 2656)
+         (local.get $2)
         )
         (i32.const 160)
        )
@@ -6481,6 +6493,7 @@
   (local $b f64)
   (local $2 i32)
   (local $3 i32)
+  (local $4 i32)
   (local.set $a
    (f64.const 1)
   )
@@ -6548,13 +6561,18 @@
       (block (result i32)
        (local.set $2
         (call $~lib/rt/__localtostack
+         (i32.const 3952)
+        )
+       )
+       (local.set $3
+        (call $~lib/rt/__localtostack
          (call $~lib/number/F64#toString
           (local.get $a)
           (i32.const 0)
          )
         )
        )
-       (local.set $3
+       (local.set $4
         (call $~lib/rt/__localtostack
          (call $~lib/number/F64#toString
           (local.get $b)
@@ -6564,25 +6582,25 @@
        )
        (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
         (call $~lib/rt/__tmptostack
-         (i32.const 3952)
-        )
-        (i32.const 1)
-        (call $~lib/rt/__tmptostack
          (local.get $2)
         )
-       )
-       (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-        (call $~lib/rt/__tmptostack
-         (i32.const 3952)
-        )
-        (i32.const 3)
+        (i32.const 1)
         (call $~lib/rt/__tmptostack
          (local.get $3)
         )
        )
+       (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
+        (call $~lib/rt/__tmptostack
+         (local.get $2)
+        )
+        (i32.const 3)
+        (call $~lib/rt/__tmptostack
+         (local.get $4)
+        )
+       )
        (call $~lib/staticarray/StaticArray<~lib/string/String>#join
         (call $~lib/rt/__tmptostack
-         (i32.const 3952)
+         (local.get $2)
         )
         (i32.const 160)
        )
@@ -6840,6 +6858,7 @@
   (local $b i32)
   (local $2 i32)
   (local $3 i32)
+  (local $4 i32)
   (local.set $a
    (call $~lib/rt/__localtostack
     (call $templateliteral/Ref#constructor
@@ -6930,6 +6949,11 @@
       (block (result i32)
        (local.set $2
         (call $~lib/rt/__localtostack
+         (i32.const 4416)
+        )
+       )
+       (local.set $3
+        (call $~lib/rt/__localtostack
          (call $templateliteral/Ref#toString
           (call $~lib/rt/__tmptostack
            (local.get $a)
@@ -6937,7 +6961,7 @@
          )
         )
        )
-       (local.set $3
+       (local.set $4
         (call $~lib/rt/__localtostack
          (call $templateliteral/Ref#toString
           (call $~lib/rt/__tmptostack
@@ -6948,25 +6972,25 @@
        )
        (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
         (call $~lib/rt/__tmptostack
-         (i32.const 4416)
-        )
-        (i32.const 1)
-        (call $~lib/rt/__tmptostack
          (local.get $2)
         )
-       )
-       (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-        (call $~lib/rt/__tmptostack
-         (i32.const 4416)
-        )
-        (i32.const 3)
+        (i32.const 1)
         (call $~lib/rt/__tmptostack
          (local.get $3)
         )
        )
+       (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
+        (call $~lib/rt/__tmptostack
+         (local.get $2)
+        )
+        (i32.const 3)
+        (call $~lib/rt/__tmptostack
+         (local.get $4)
+        )
+       )
        (call $~lib/staticarray/StaticArray<~lib/string/String>#join
         (call $~lib/rt/__tmptostack
-         (i32.const 4416)
+         (local.get $2)
         )
         (i32.const 160)
        )
@@ -6992,6 +7016,7 @@
   (local $2 i32)
   (local $3 i32)
   (local $4 i32)
+  (local $5 i32)
   (local.set $c
    (call $~lib/rt/__localtostack
     (call $templateliteral/Ref#constructor
@@ -7017,6 +7042,11 @@
       (block (result i32)
        (local.set $2
         (call $~lib/rt/__localtostack
+         (i32.const 4592)
+        )
+       )
+       (local.set $3
+        (call $~lib/rt/__localtostack
          (call $templateliteral/Ref#toString
           (call $~lib/rt/__tmptostack
            (local.get $c)
@@ -7024,10 +7054,10 @@
          )
         )
        )
-       (local.set $3
+       (local.set $4
         (call $~lib/rt/__localtostack
          (if (result i32)
-          (local.tee $4
+          (local.tee $5
            (call $~lib/rt/__localtostack
             (local.get $d)
            )
@@ -7035,7 +7065,7 @@
           (then
            (call $templateliteral/Ref#toString
             (call $~lib/rt/__tmptostack
-             (local.get $4)
+             (local.get $5)
             )
            )
           )
@@ -7047,25 +7077,25 @@
        )
        (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
         (call $~lib/rt/__tmptostack
-         (i32.const 4592)
-        )
-        (i32.const 1)
-        (call $~lib/rt/__tmptostack
          (local.get $2)
         )
-       )
-       (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-        (call $~lib/rt/__tmptostack
-         (i32.const 4592)
-        )
-        (i32.const 3)
+        (i32.const 1)
         (call $~lib/rt/__tmptostack
          (local.get $3)
         )
        )
+       (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
+        (call $~lib/rt/__tmptostack
+         (local.get $2)
+        )
+        (i32.const 3)
+        (call $~lib/rt/__tmptostack
+         (local.get $4)
+        )
+       )
        (call $~lib/staticarray/StaticArray<~lib/string/String>#join
         (call $~lib/rt/__tmptostack
-         (i32.const 4592)
+         (local.get $2)
         )
         (i32.const 160)
        )
@@ -7142,6 +7172,7 @@
   (local $val i32)
   (local $2 i32)
   (local $3 i32)
+  (local $4 i32)
   (local.set $val
    (call $~lib/rt/__localtostack
     (call $templateliteral/RecursiveObject#get:val
@@ -7169,6 +7200,11 @@
    (block (result i32)
     (local.set $2
      (call $~lib/rt/__localtostack
+      (i32.const 4800)
+     )
+    )
+    (local.set $3
+     (call $~lib/rt/__localtostack
       (call $templateliteral/RecursiveObject#get:key
        (call $~lib/rt/__tmptostack
         (local.get $this)
@@ -7176,7 +7212,7 @@
       )
      )
     )
-    (local.set $3
+    (local.set $4
      (call $~lib/rt/__localtostack
       (call $templateliteral/RecursiveObject#toString
        (call $~lib/rt/__tmptostack
@@ -7187,25 +7223,25 @@
     )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
      (call $~lib/rt/__tmptostack
-      (i32.const 4800)
-     )
-     (i32.const 0)
-     (call $~lib/rt/__tmptostack
       (local.get $2)
      )
-    )
-    (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
-     (call $~lib/rt/__tmptostack
-      (i32.const 4800)
-     )
-     (i32.const 2)
+     (i32.const 0)
      (call $~lib/rt/__tmptostack
       (local.get $3)
      )
     )
+    (call $~lib/staticarray/StaticArray<~lib/string/String>#__uset
+     (call $~lib/rt/__tmptostack
+      (local.get $2)
+     )
+     (i32.const 2)
+     (call $~lib/rt/__tmptostack
+      (local.get $4)
+     )
+    )
     (call $~lib/staticarray/StaticArray<~lib/string/String>#join
      (call $~lib/rt/__tmptostack
-      (i32.const 4800)
+      (local.get $2)
      )
      (i32.const 160)
     )

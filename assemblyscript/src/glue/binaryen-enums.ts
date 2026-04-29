@@ -77,26 +77,26 @@ export const enum ExpressionId {
   ArrayNewFixed = 76 /* _BinaryenArrayNewFixedId */,
   ArrayGet = 77 /* _BinaryenArrayGetId */,
   ArraySet = 78 /* _BinaryenArraySetId */,
-  ArrayLen = 79 /* _BinaryenArrayLenId */,
-  ArrayCopy = 80 /* _BinaryenArrayCopyId */,
-  ArrayFill = 81 /* _BinaryenArrayFillId */,
-  ArrayInitData = 82 /* _BinaryenArrayInitDataId */,
-  ArrayInitElem = 83 /* _BinaryenArrayInitElemId */,
-  RefAs = 86 /* _BinaryenRefAsId */,
-  StringNew = 87 /* _BinaryenStringNewId */,
-  StringConst = 88 /* _BinaryenStringConstId */,
-  StringMeasure = 89 /* _BinaryenStringMeasureId */,
-  StringEncode = 90 /* _BinaryenStringEncodeId */,
-  StringConcat = 91 /* _BinaryenStringConcatId */,
-  StringEq = 92 /* _BinaryenStringEqId */,
-  StringWTF16Get = 94 /* _BinaryenStringWTF16GetId */,
-  StringSliceWTF = 95 /* _BinaryenStringSliceWTFId */,
-  ContNew = 96 /* _BinaryenContNewId */,
-  ContBind = 97 /* _BinaryenContBindId */,
-  Suspend = 98 /* _BinaryenSuspendId */,
-  Resume = 99 /* _BinaryenResumeId */,
-  ResumeThrow = 100 /* _BinaryenResumeThrowId */,
-  StackSwitch = 101 /* _BinaryenStackSwitchId */,
+  ArrayLen = 81 /* _BinaryenArrayLenId */,
+  ArrayCopy = 82 /* _BinaryenArrayCopyId */,
+  ArrayFill = 83 /* _BinaryenArrayFillId */,
+  ArrayInitData = 84 /* _BinaryenArrayInitDataId */,
+  ArrayInitElem = 85 /* _BinaryenArrayInitElemId */,
+  RefAs = 88 /* _BinaryenRefAsId */,
+  StringNew = 89 /* _BinaryenStringNewId */,
+  StringConst = 90 /* _BinaryenStringConstId */,
+  StringMeasure = 91 /* _BinaryenStringMeasureId */,
+  StringEncode = 92 /* _BinaryenStringEncodeId */,
+  StringConcat = 93 /* _BinaryenStringConcatId */,
+  StringEq = 94 /* _BinaryenStringEqId */,
+  StringWTF16Get = 96 /* _BinaryenStringWTF16GetId */,
+  StringSliceWTF = 97 /* _BinaryenStringSliceWTFId */,
+  ContNew = 98 /* _BinaryenContNewId */,
+  ContBind = 99 /* _BinaryenContBindId */,
+  Suspend = 100 /* _BinaryenSuspendId */,
+  Resume = 101 /* _BinaryenResumeId */,
+  ResumeThrow = 102 /* _BinaryenResumeThrowId */,
+  StackSwitch = 103 /* _BinaryenStackSwitchId */,
 }
 
 /** Binaryen external kind constants. */
@@ -976,23 +976,23 @@ export const enum SIMDTernaryOp {
   Bitselect = 0 /* _BinaryenBitselectVec128 */,
 
   /** f32x4.relaxed_madd */
-  RelaxedMaddF32x4 = 3 /* _BinaryenRelaxedMaddVecF32x4 */,
+  RelaxedMaddF32x4 = 1 /* _BinaryenRelaxedMaddVecF32x4 */,
   /** f32x4.relaxed_nmadd */
-  RelaxedNmaddF32x4 = 4 /* _BinaryenRelaxedNmaddVecF32x4 */,
+  RelaxedNmaddF32x4 = 2 /* _BinaryenRelaxedNmaddVecF32x4 */,
   /** f64x2.relaxed_madd */
-  RelaxedMaddF64x2 = 5 /* _BinaryenRelaxedMaddVecF64x2 */,
+  RelaxedMaddF64x2 = 3 /* _BinaryenRelaxedMaddVecF64x2 */,
   /** f64x2.relaxed_nmadd */
-  RelaxedNmaddF64x2 = 6 /* _BinaryenRelaxedNmaddVecF64x2 */,
+  RelaxedNmaddF64x2 = 4 /* _BinaryenRelaxedNmaddVecF64x2 */,
   /** i8x16.relaxed_laneselect */
-  RelaxedLaneselectI8x16 = 7 /* _BinaryenLaneselectI8x16 */,
+  RelaxedLaneselectI8x16 = 5 /* _BinaryenLaneselectI8x16 */,
   /** i16x8.relaxed_laneselect */
-  RelaxedLaneselectI16x8 = 8 /* _BinaryenLaneselectI16x8 */,
+  RelaxedLaneselectI16x8 = 6 /* _BinaryenLaneselectI16x8 */,
   /** i32x4.relaxed_laneselect */
-  RelaxedLaneselectI32x4 = 9 /* _BinaryenLaneselectI32x4 */,
+  RelaxedLaneselectI32x4 = 7 /* _BinaryenLaneselectI32x4 */,
   /** i64x2.relaxed_laneselect */
-  RelaxedLaneselectI64x2 = 10 /* _BinaryenLaneselectI64x2 */,
+  RelaxedLaneselectI64x2 = 8 /* _BinaryenLaneselectI64x2 */,
   /** i32x4.relaxed_dot_i8x16_i7x16_add_s */
-  RelaxedDotI8x16I7x16AddToI32x4 = 11 /* _BinaryenDotI8x16I7x16AddSToVecI32x4 */,
+  RelaxedDotI8x16I7x16AddToI32x4 = 9 /* _BinaryenDotI8x16I7x16AddSToVecI32x4 */,
 }
 
 /** Binaryen RefAs operation constants. */

@@ -2788,6 +2788,9 @@
   end
   i32.const 4
   call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 992
+  i32.store align=1
   i32.const 996
   local.get $0
   i32.store
@@ -2795,9 +2798,6 @@
   local.get $0
   i32.const 1
   call $~lib/rt/itcms/__link
-  global.get $~lib/memory/__stack_pointer
-  i32.const 992
-  i32.store align=1
   i32.const 0
   local.set $0
   block $__inlined_func$~lib/util/string/joinStringArray$145 (result i32)
