@@ -1783,14 +1783,18 @@ export class Compiler extends DiagnosticEmitter {
     return new LoopClosureTupleInfo(tupleInfo, loopHeapLocalsStorage);
   }
 
-  private makeLoopClosureTupleStmts(
-    info: LoopClosureTupleInfo,
-    parentStorage: Local,
+  private emitLoopClosureTuple(
+    targetFunction: Function,
+    loopClosureTupleInfo: LoopClosureTupleInfo,
+    loopStorage: Local | null,
+    initClosureLocals: ForInitClosureLocals | null,
     statement: Node
   ): ExpressionRef[] {
     let module = this.module;
-    let tupleInfo = info.tupleInfo;
-    let loopHeapLocalsStorage = info.loopHeapLocalsStorage;
+    targetFunction.popClosureScope();
+    let parentStorage = targetFunction.currentHeapLocalsStorage;
+    let tupleInfo = loopClosureTupleInfo.tupleInfo;
+    let loopHeapLocalsStorage = loopClosureTupleInfo.loopHeapLocalsStorage;
     let heapLocalsTuple = this.makeNewTuple(tupleInfo.getElementsAreaByteSize(), tupleInfo.getBitmap(), statement);
     let parentEnvElementInfo = tupleInfo.elements[0];
     let parentEnvSetter = assert(this.program.smallTupleInstance.getMethod("__set", [parentEnvElementInfo.type]));
@@ -1807,6 +1811,26 @@ export class Compiler extends DiagnosticEmitter {
         statement
       )
     );
+    if (initClosureLocals && initClosureLocals.length > 0) {
+      let tupleClass = this.program.smallTupleInstance;
+      let locals = initClosureLocals.getLocals();
+      for (let k = 0; k < locals.length; k++) {
+        let initLocal = locals[k];
+        let elementInfo = initLocal.getTupleElementInfo();
+        let setter = assert(tupleClass.getMethod("__set", [elementInfo.type]));
+        stmts.push(
+          this.makeCallDirect(
+            setter,
+            [
+              module.local_get(assert(loopStorage).index, tupleClass.type.toRef()),
+              module.usize(elementInfo.offset),
+              module.local_get(initLocal.index, initLocal.type.toRef()),
+            ],
+            statement
+          )
+        );
+      }
+    }
     return stmts;
   }
 
@@ -2577,6 +2601,14 @@ export class Compiler extends DiagnosticEmitter {
     flow.continueLabel = continueLabel;
     let loopLabel = `do-loop|${label}`;
     this.currentFlow = flow;
+    let targetFunction = outerFlow.targetFunction;
+    let loopClosureInfo = this.program.closureScanner.getClosureFunctionInfo(statement);
+    let loopClosureTupleInfo: LoopClosureTupleInfo | null = null;
+    if (loopClosureInfo) {
+      let loopStorage = flow.getTempLocal(Type.i32);
+      targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
+      loopClosureTupleInfo = this.finalizeLoopClosureType(targetFunction, statement);
+    }
     let bodyStmts = new Array<ExpressionRef>();
     let body = statement.body;
     if (body.kind == NodeKind.Block) {
@@ -2632,6 +2664,10 @@ export class Compiler extends DiagnosticEmitter {
     // Finalize and leave everything else to the optimizer
     this.currentFlow = outerFlow;
     flow.addLocalsToBlock(bodyStmts);
+    if (loopClosureTupleInfo) {
+      let tupleStmts = this.emitLoopClosureTuple(targetFunction, loopClosureTupleInfo, null, null, statement);
+      bodyStmts = tupleStmts.concat(bodyStmts);
+    }
     let expr = module.loop(loopLabel, module.flatten(bodyStmts));
     if (possiblyBreaks) {
       expr = module.block(breakLabel, [expr]);
@@ -2827,35 +2863,20 @@ export class Compiler extends DiagnosticEmitter {
     if (bodyEnd != 0) {
       bodyFlow.addLocalsToBlockWithStartEndStmt(bodyStmts[0], bodyEnd);
     }
-    let expr = module.if(condExprTrueish, module.flatten(bodyStmts));
-
-    // Insert loop top stmts: tuple creation + copy temp->tuple before condition
+    let ifExpr = module.if(condExprTrueish, module.flatten(bodyStmts));
+    let expr: ExpressionRef;
     if (loopClosureTupleInfo) {
-      targetFunction.popClosureScope();
-      let parentStorage = targetFunction.currentHeapLocalsStorage;
-      let loopTopStmts = this.makeLoopClosureTupleStmts(loopClosureTupleInfo, parentStorage, statement);
-      if (initClosureLocals && initClosureLocals.length > 0) {
-        let tupleClass = this.program.smallTupleInstance;
-        let locals = initClosureLocals.getLocals();
-        for (let k = 0; k < locals.length; k++) {
-          let initLocal = locals[k];
-          let elementInfo = initLocal.getTupleElementInfo();
-          let setter = assert(tupleClass.getMethod("__set", [elementInfo.type]));
-          loopTopStmts.push(
-            this.makeCallDirect(
-              setter,
-              [
-                module.local_get(assert(loopStorage).index, tupleClass.type.toRef()),
-                module.usize(elementInfo.offset),
-                module.local_get(initLocal.index, initLocal.type.toRef()),
-              ],
-              statement
-            )
-          );
-        }
-      }
-      loopTopStmts.push(expr);
-      expr = module.flatten(loopTopStmts);
+      let tupleStmts = this.emitLoopClosureTuple(
+        targetFunction,
+        loopClosureTupleInfo,
+        loopStorage,
+        initClosureLocals,
+        statement
+      );
+      tupleStmts.push(ifExpr);
+      expr = module.flatten(tupleStmts);
+    } else {
+      expr = ifExpr;
     }
 
     if (possiblyLoops) {
@@ -2898,6 +2919,14 @@ export class Compiler extends DiagnosticEmitter {
     const outerFlow = this.currentFlow;
     const flow = outerFlow.fork();
     this.currentFlow = flow;
+    const targetFunction = outerFlow.targetFunction;
+    const loopClosureInfo = program.closureScanner.getClosureFunctionInfo(statement);
+    let loopStorage: Local | null = null;
+    if (loopClosureInfo) {
+      loopStorage = flow.getTempLocal(Type.i32);
+      targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
+      targetFunction.pendingInitClosureLocals = new ForInitClosureLocals();
+    }
 
     // put iterableExpr to local to ensure lifetime
     const iterableLocal = outerFlow.getTempLocal(iterableType);
@@ -2979,6 +3008,15 @@ export class Compiler extends DiagnosticEmitter {
     // body flow is new created, there are definitely no duplicate identifier.
     const variableLocal = bodyFlow.addScopedLocal(variable.name.text, variableType, variable);
     if (variable.is(CommonFlags.Const)) bodyFlow.setLocalFlag(variableLocal.index, LocalFlags.Constant);
+    let initClosureLocals = targetFunction.pendingInitClosureLocals;
+    targetFunction.pendingInitClosureLocals = null;
+    if (initClosureLocals) {
+      initClosureLocals.setActiveStorageToTuple();
+    }
+    let loopClosureTupleInfo: LoopClosureTupleInfo | null = null;
+    if (loopClosureInfo) {
+      loopClosureTupleInfo = this.finalizeLoopClosureType(targetFunction, statement);
+    }
     bodyStmts.push(this.makeLocalAssignment(variableLocal, variableExpr, variableType, false));
     if (body.kind == NodeKind.Block) {
       this.compileStatements((<BlockStatement>body).statements, bodyStmts);
@@ -3023,7 +3061,21 @@ export class Compiler extends DiagnosticEmitter {
     if (bodyEnd != 0) {
       bodyFlow.addLocalsToBlockWithStartEndStmt(bodyStmts[0], bodyEnd);
     }
-    let expr = module.if(isNotDoneExpr, module.flatten(bodyStmts));
+    let ifExpr = module.if(isNotDoneExpr, module.flatten(bodyStmts));
+    let expr: ExpressionRef;
+    if (loopClosureTupleInfo) {
+      let tupleStmts = this.emitLoopClosureTuple(
+        targetFunction,
+        loopClosureTupleInfo,
+        loopStorage,
+        initClosureLocals,
+        statement
+      );
+      tupleStmts.push(ifExpr);
+      expr = module.flatten(tupleStmts);
+    } else {
+      expr = ifExpr;
+    }
     if (possiblyLoops) {
       expr = module.loop(loopLabel, expr);
     }
@@ -3536,6 +3588,14 @@ export class Compiler extends DiagnosticEmitter {
     let continueLabel = `while-continue|${label}`;
     thenFlow.continueLabel = continueLabel;
     this.currentFlow = thenFlow;
+    let targetFunction = outerFlow.targetFunction;
+    let loopClosureInfo = this.program.closureScanner.getClosureFunctionInfo(statement);
+    let loopClosureTupleInfo: LoopClosureTupleInfo | null = null;
+    if (loopClosureInfo) {
+      let loopStorage = thenFlow.getTempLocal(Type.i32);
+      targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
+      loopClosureTupleInfo = this.finalizeLoopClosureType(targetFunction, statement);
+    }
     let bodyStmts = new Array<ExpressionRef>();
     let body = statement.body;
     if (body.kind == NodeKind.Block) {
@@ -3586,7 +3646,16 @@ export class Compiler extends DiagnosticEmitter {
     // Finalize and leave everything else to the optimizer
     this.currentFlow = outerFlow;
     thenFlow.addLocalsToBlock(bodyStmts);
-    let stmts: ExpressionRef[] = [module.loop(continueLabel, module.if(condExprTrueish, module.flatten(bodyStmts)))];
+    let ifExpr = module.if(condExprTrueish, module.flatten(bodyStmts));
+    let loopExpr: ExpressionRef;
+    if (loopClosureTupleInfo) {
+      let tupleStmts = this.emitLoopClosureTuple(targetFunction, loopClosureTupleInfo, null, null, statement);
+      tupleStmts.push(ifExpr);
+      loopExpr = module.flatten(tupleStmts);
+    } else {
+      loopExpr = ifExpr;
+    }
+    let stmts: ExpressionRef[] = [module.loop(continueLabel, loopExpr)];
     if (alwaysTerminates) stmts.push(module.unreachable());
     return module.block(breakLabel, stmts);
   }
