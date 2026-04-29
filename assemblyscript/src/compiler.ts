@@ -1795,6 +1795,7 @@ export class Compiler extends DiagnosticEmitter {
     let parentStorage = targetFunction.currentHeapLocalsStorage;
     let tupleInfo = loopClosureTupleInfo.tupleInfo;
     let loopHeapLocalsStorage = loopClosureTupleInfo.loopHeapLocalsStorage;
+    //  allocate tuple for captured variables
     let heapLocalsTuple = this.makeNewTuple(tupleInfo.getElementsAreaByteSize(), tupleInfo.getBitmap(), statement);
     let parentEnvElementInfo = tupleInfo.elements[0];
     let parentEnvSetter = assert(this.program.smallTupleInstance.getMethod("__set", [parentEnvElementInfo.type]));
@@ -1814,6 +1815,8 @@ export class Compiler extends DiagnosticEmitter {
     if (initClosureLocals && initClosureLocals.length > 0) {
       let tupleClass = this.program.smallTupleInstance;
       let locals = initClosureLocals.getLocals();
+      // copy loop closure variables from local to tuple after the tuple has been created,
+      // then when the values are accessed in the loop body, the tuple value is referred
       for (let k = 0; k < locals.length; k++) {
         let initLocal = locals[k];
         let elementInfo = initLocal.getTupleElementInfo();
@@ -2725,8 +2728,10 @@ export class Compiler extends DiagnosticEmitter {
     let loopClosureInfo = this.program.closureScanner.getClosureFunctionInfo(statement);
     let loopStorage: Local | null = null;
     if (loopClosureInfo) {
+      // If a variables of this loop scope are captured in a closure, a new scope need to be created
       loopStorage = flow.getTempLocal(Type.i32);
       targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
+      // renew pendingInitClosureLocals to later initialize compile
       targetFunction.pendingInitClosureLocals = new ForInitClosureLocals();
     }
     let initializer = statement.initializer;
@@ -2737,6 +2742,7 @@ export class Compiler extends DiagnosticEmitter {
     let initClosureLocals = targetFunction.pendingInitClosureLocals;
     targetFunction.pendingInitClosureLocals = null;
     if (initClosureLocals) {
+      // After compiled the initializer, switch initClosureLocals to use tuple for the loop body
       initClosureLocals.setActiveStorageToTuple();
     }
     let loopClosureTupleInfo: LoopClosureTupleInfo | null = null;
@@ -2818,6 +2824,8 @@ export class Compiler extends DiagnosticEmitter {
         if (initClosureLocals) {
           let tupleClass = this.program.smallTupleInstance;
           let locals = initClosureLocals.getLocals();
+          // copy loop closure variables from tuple to local before incrementor,
+          // then incrementor can calculate the value for next iteration in local
           for (let k = 0; k < locals.length; k++) {
             let initLocal = locals[k];
             let elementInfo = initLocal.getTupleElementInfo();
@@ -3071,6 +3079,7 @@ export class Compiler extends DiagnosticEmitter {
         initClosureLocals,
         statement
       );
+      // tuple creation and value copying need to be inserted at beginning of loop body
       tupleStmts.push(ifExpr);
       expr = module.flatten(tupleStmts);
     } else {
@@ -8482,9 +8491,11 @@ export class Compiler extends DiagnosticEmitter {
     const nestedLevel = this.getClosureVariableNestedLevel(local);
     const stackSize = currentFunction.heapLocalsStorageStackSize;
     if (nestedLevel < stackSize) {
+      /** For locals defined in current function, the address of tuple can be read from local*/
       const storageLocal = currentFunction.getHeapLocalsStorageByIndex(stackSize - 1 - nestedLevel);
       return module.local_get(storageLocal.index, Type.i32.toRef());
     } else {
+      /** For locals defined in outer functions, the address need to be read from the scope chain */
       return this.getClosureEnvByLevel(nestedLevel - stackSize + 1);
     }
   }
