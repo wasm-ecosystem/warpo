@@ -27,7 +27,6 @@
 
 namespace warpo::passes::closure {
 
-static constexpr const char *const kGetClosureEnv = "~lib/rt/closure/getClosureEnv";
 static constexpr const char *const kSetClosureEnv = "~lib/rt/closure/setClosureEnv";
 static constexpr const char *const kGetClosureEnvByLevel = "~lib/rt/closure/getClosureEnvByLevel";
 
@@ -35,8 +34,7 @@ static constexpr const char *const kSetFFIClosureEnv = "~lib/warpo/ffi/ffi.set_f
 
 static constexpr const char *const kClosureEnvGlobal = "~lib/rt/closure/env";
 
-static std::array<const char *const, 3> kClosureImportBases = {
-    kGetClosureEnv,
+static std::array<const char *const, 2> kClosureImportBases = {
     kSetClosureEnv,
     kGetClosureEnvByLevel,
 };
@@ -64,40 +62,33 @@ struct ClosureCallSummary final {
 
 class ClosureCallScanner : public wasm::WalkerPass<wasm::PostWalker<ClosureCallScanner>> {
 public:
-  ClosureCallScanner(std::atomic<bool> &hasGet, std::atomic<bool> &hasSet, std::atomic<bool> &hasFFISet)
-      : hasGet(hasGet), hasSet(hasSet), hasFFISet(hasFFISet) {}
+  ClosureCallScanner(std::atomic<bool> &hasSet, std::atomic<bool> &hasFFISet) : hasSet(hasSet), hasFFISet(hasFFISet) {}
 
   bool isFunctionParallel() override { return true; }
-  std::unique_ptr<wasm::Pass> create() override {
-    return std::make_unique<ClosureCallScanner>(hasGet, hasSet, hasFFISet);
-  }
+  std::unique_ptr<wasm::Pass> create() override { return std::make_unique<ClosureCallScanner>(hasSet, hasFFISet); }
 
   void visitCall(wasm::Call *curr) {
-    if ((curr->target == kGetClosureEnv) || (curr->target == kGetClosureEnvByLevel))
-      hasGet.store(true, std::memory_order_relaxed);
-    else if (curr->target == kSetClosureEnv)
+    if (curr->target == kSetClosureEnv)
       hasSet.store(true, std::memory_order_relaxed);
     else if (curr->target == kSetFFIClosureEnv)
       hasFFISet.store(true, std::memory_order_relaxed);
   }
 
 private:
-  std::atomic<bool> &hasGet;
   std::atomic<bool> &hasSet;
   std::atomic<bool> &hasFFISet;
 };
 
-ClosureCallSummary scanClosureCalls(wasm::PassRunner *const parentRunner) {
-  std::atomic<bool> hasGet{false};
+ClosureCallSummary scanClosureCalls(wasm::Module *const m, wasm::PassRunner *const parentRunner) {
   std::atomic<bool> hasSet{false};
   std::atomic<bool> hasFFISet{false};
   {
     wasm::PassRunner runner{parentRunner};
-    runner.add(std::make_unique<ClosureCallScanner>(hasGet, hasSet, hasFFISet));
+    runner.add(std::make_unique<ClosureCallScanner>(hasSet, hasFFISet));
     runner.run();
   }
   return {
-      hasGet.load(std::memory_order_relaxed),
+      m->getGlobalOrNull(kClosureEnvGlobal) != nullptr,
       hasSet.load(std::memory_order_relaxed),
       hasFFISet.load(std::memory_order_relaxed),
   };
@@ -108,13 +99,6 @@ void removeClosureImports(wasm::Module *const m) {
     m->removeFunction(name);
   if (m->getFunctionOrNull(kSetFFIClosureEnv) != nullptr)
     m->removeFunction(kSetFFIClosureEnv);
-}
-
-void ensureClosureEnvGlobal(wasm::Module *const m) {
-  if (m->getGlobalOrNull(kClosureEnvGlobal) != nullptr)
-    return;
-  wasm::Builder b{*m};
-  m->addGlobal(wasm::Builder::makeGlobal(kClosureEnvGlobal, wasm::Type::i32, b.makeConst(0), wasm::Builder::Mutable));
 }
 
 class SetClosureEnvRemover : public wasm::WalkerPass<wasm::PostWalker<SetClosureEnvRemover>> {
@@ -177,9 +161,7 @@ public:
 
   void visitCall(wasm::Call *const curr) {
     wasm::Builder b{*getModule()};
-    if (curr->target == kGetClosureEnv) {
-      replaceCurrent(b.makeGlobalGet(kClosureEnvGlobal, wasm::Type::i32));
-    } else if (curr->target == kSetClosureEnv) {
+    if (curr->target == kSetClosureEnv) {
       replaceCurrent(b.makeGlobalSet(kClosureEnvGlobal, curr->operands[0]));
     } else if (curr->target == kSetFFIClosureEnv) {
       replaceCurrent(lowerSetFFIClosureEnv(curr, getModule(), getFunction(), variableInfo_));
@@ -550,10 +532,9 @@ private:
 
 void FastLower::run(wasm::Module *m) {
   wasm::PassRunner *const parentRunner = getPassRunner();
-  ClosureCallSummary const summary = scanClosureCalls(parentRunner);
+  ClosureCallSummary const summary = scanClosureCalls(m, parentRunner);
 
   if (summary.needsLowering()) {
-    ensureClosureEnvGlobal(m);
     wasm::PassRunner passRunner{parentRunner};
     passRunner.add(std::make_unique<ClosureEnvCommonLower>(variableInfo_));
     passRunner.add(std::make_unique<FastGetClosureEnvByLevelLower>(variableInfo_));
@@ -567,10 +548,9 @@ void FastLower::run(wasm::Module *m) {
 
 void OptLower::run(wasm::Module *m) {
   wasm::PassRunner *const parentRunner = getPassRunner();
-  ClosureCallSummary const summary = scanClosureCalls(parentRunner);
+  ClosureCallSummary const summary = scanClosureCalls(m, parentRunner);
 
   if (summary.needsLowering()) {
-    ensureClosureEnvGlobal(m);
     {
       wasm::PassRunner passRunner{parentRunner};
       passRunner.add(std::make_unique<ClosureEnvCommonLower>(variableInfo_));
@@ -613,7 +593,6 @@ namespace {
 TEST(ClosureLower, SetOnlyRemovesCallsAndFunctions) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
       (memory 1)
@@ -627,7 +606,6 @@ TEST(ClosureLower, SetOnlyRemovesCallsAndFunctions) {
   runner.add(std::unique_ptr<wasm::Pass>{new closure::FastLower(nullptr)});
   runner.run();
 
-  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnv"), nullptr);
   EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/setClosureEnv"), nullptr);
   EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnvByLevel"), nullptr);
 
@@ -639,7 +617,6 @@ TEST(ClosureLower, SetOnlyRemovesCallsAndFunctions) {
 TEST(ClosureLower, NoClosureCallsKeepsFunctions) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
       (func $caller
@@ -652,7 +629,6 @@ TEST(ClosureLower, NoClosureCallsKeepsFunctions) {
   runner.add(std::unique_ptr<wasm::Pass>{new closure::FastLower(nullptr)});
   runner.run();
 
-  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnv"), nullptr);
   EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/setClosureEnv"), nullptr);
   EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnvByLevel"), nullptr);
 }
@@ -660,15 +636,15 @@ TEST(ClosureLower, NoClosureCallsKeepsFunctions) {
 TEST(ClosureLower, BothGetAndSetLowersToGlobalAndLocal) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $setter
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
       )
       (func $getter (result i32)
-        (call $~lib/rt/closure/getClosureEnv)
+        (global.get $~lib/rt/closure/env)
       )
       (func $levelGetter (result i32) (local i32)
         (call $~lib/rt/closure/getClosureEnvByLevel (i32.const 0))
@@ -684,7 +660,6 @@ TEST(ClosureLower, BothGetAndSetLowersToGlobalAndLocal) {
   runner.add(std::unique_ptr<wasm::Pass>{new closure::FastLower(&variableInfo)});
   runner.run();
 
-  EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnv"), nullptr);
   EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/setClosureEnv"), nullptr);
   EXPECT_EQ(m->getFunctionOrNull("~lib/rt/closure/getClosureEnvByLevel"), nullptr);
 
@@ -706,9 +681,9 @@ TEST(ClosureLower, BothGetAndSetLowersToGlobalAndLocal) {
 TEST(ClosureLower, GetClosureEnvByLevelWithChainedLoads) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $setter
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -750,7 +725,6 @@ TEST(ClosureLower, GetClosureEnvByLevelWithChainedLoads) {
 TEST(ClosureLower, FFISetClosureEnvLowersToStore) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
       (import "as-builtin-fn" "set_ffi_closure_env" (func $~lib/warpo/ffi/ffi.set_ffi_closure_env (param i32)))
@@ -785,9 +759,9 @@ TEST(ClosureLower, FFISetClosureEnvLowersToStore) {
 TEST(ClosureLower, OptLowerCachesFromClosestDef) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -833,9 +807,9 @@ TEST(ClosureLower, OptLowerCachesFromClosestDef) {
 TEST(ClosureLower, OptLowerNoCachingWhenSingleUse) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -868,9 +842,9 @@ TEST(ClosureLower, OptLowerNoCachingWhenSingleUse) {
 TEST(ClosureLower, OptLowerSingleLevelRepeated) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -921,9 +895,9 @@ TEST(ClosureLower, OptLowerSingleLevelRepeated) {
 TEST(ClosureLower, OptLowerReusesDominatingDefAcrossBasicBlocks) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (param i32) (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -983,9 +957,9 @@ TEST(ClosureLower, OptLowerReusesDominatingDefAcrossBasicBlocks) {
 TEST(ClosureLower, OptLowerReusesExactDominatingDefAcrossBasicBlocks) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (param i32) (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -1045,9 +1019,9 @@ TEST(ClosureLower, OptLowerReusesExactDominatingDefAcrossBasicBlocks) {
 TEST(ClosureLower, OptLowerCreatesChildDefFromDominatingParentCache) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (param i32) (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -1122,9 +1096,9 @@ TEST(ClosureLower, OptLowerCreatesChildDefFromDominatingParentCache) {
 TEST(ClosureLower, OptLowerHoistsDefToTopMostReusableDominator) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (param i32) (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -1208,9 +1182,9 @@ TEST(ClosureLower, OptLowerHoistsDefToTopMostReusableDominator) {
 TEST(ClosureLower, OptLowerStopsHoistingAtNonReusableAncestor) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (param i32 i32) (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -1310,9 +1284,9 @@ TEST(ClosureLower, OptLowerStopsHoistingAtNonReusableAncestor) {
 TEST(ClosureLower, OptLowerThreeLevelsChaining) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -1383,9 +1357,9 @@ TEST(ClosureLower, OptLowerThreeLevelsChaining) {
 TEST(ClosureLower, OptLowerLevelZeroNoCaching) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -1421,9 +1395,9 @@ TEST(ClosureLower, OptLowerLevelZeroNoCaching) {
 TEST(ClosureLower, OptLowerCachesIndependentlyInIfElseBranches) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (param i32) (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -1523,9 +1497,9 @@ TEST(ClosureLower, OptLowerCachesIndependentlyInIfElseBranches) {
 TEST(ClosureLower, OptLowerCachesSingleMaxLevelWhenCountExceedsOne) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -1583,9 +1557,9 @@ TEST(ClosureLower, OptLowerCachesSingleMaxLevelWhenCountExceedsOne) {
 TEST(ClosureLower, OptLowerHoistsPastIntermediateDomWithoutClosureCalls) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (param i32 i32) (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -1681,9 +1655,9 @@ TEST(ClosureLower, OptLowerHoistsPastIntermediateDomWithoutClosureCalls) {
 TEST(ClosureLower, OptLowerHoistsOutOfLoop) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (param i32) (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -1739,9 +1713,9 @@ TEST(ClosureLower, OptLowerHoistsOutOfLoop) {
 TEST(ClosureLower, OptLowerHoistsOutOfNestedLoop) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (param i32 i32) (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -1802,9 +1776,9 @@ TEST(ClosureLower, OptLowerHoistsOutOfNestedLoop) {
 TEST(ClosureLower, OptLowerSkipsHoistWhenLoopBlockExits) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (param i32) (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))
@@ -1851,9 +1825,9 @@ TEST(ClosureLower, OptLowerSkipsHoistWhenLoopBlockExits) {
 TEST(ClosureLower, OptLowerHoistsLoopDefToBlockWithClosureCall) {
   auto m = loadWat(R"(
     (module
-      (import "env" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
       (import "env" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
       (import "env" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+      (global $~lib/rt/closure/env (mut i32) (i32.const 0))
       (memory 1)
       (func $levelGetter (param i32) (result i32) (local i32)
         (call $~lib/rt/closure/setClosureEnv (i32.const 42))

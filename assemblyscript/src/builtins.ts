@@ -666,7 +666,7 @@ export namespace BuiltinNames {
   // std/object.ts
   export const Object = "~lib/object/Object";
 
-  export const getClosureEnv = "~lib/rt/closure/getClosureEnv";
+  export const closureEnv = "~lib/rt/closure/env";
   export const setClosureEnv = "~lib/rt/closure/setClosureEnv";
   export const getClosureEnvByLevel = "~lib/rt/closure/getClosureEnvByLevel";
 }
@@ -9641,6 +9641,27 @@ export function compileVisitGlobals(compiler: Compiler): void {
         );
       }
     }
+  }
+
+  // compiler generated global is not within elementsByName, it need to be handled individually
+  if (module.getGlobal(BuiltinNames.closureEnv)) {
+    exprs.push(
+      module.if(
+        module.local_tee(
+          1,
+          module.global_get(BuiltinNames.closureEnv, sizeTypeRef),
+          false // internal
+        ),
+        module.call(
+          visitInstance.internalName,
+          [
+            module.local_get(1, sizeTypeRef), // tempRef != null
+            module.local_get(0, TypeRef.I32), // cookie
+          ],
+          TypeRef.None
+        )
+      )
+    );
   }
   module.addFunction(
     BuiltinNames.visit_globals,

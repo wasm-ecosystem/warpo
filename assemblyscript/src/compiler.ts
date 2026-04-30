@@ -477,7 +477,6 @@ export class Compiler extends DiagnosticEmitter {
   /** Elements, that are module exports, already processed */
   doneModuleExports: Set<Element> = new Set();
 
-  private getClosureEnvImported: boolean = false;
   private setClosureEnvImported: boolean = false;
   private getClosureEnvByLevelImported: boolean = false;
 
@@ -720,17 +719,11 @@ export class Compiler extends DiagnosticEmitter {
   }
 
   getClosureEnv(): ExpressionRef {
-    if (!this.getClosureEnvImported) {
-      this.getClosureEnvImported = true;
-      this.module.addFunctionImport(
-        BuiltinNames.getClosureEnv,
-        BuiltinNames.externalFuncName,
-        BuiltinNames.getClosureEnv,
-        TypeRef.None,
-        TypeRef.I32
-      );
+    const type = this.program.smallTupleInstance.type.asNullable();
+    if (!this.module.getGlobal(BuiltinNames.closureEnv)) {
+      this.module.addGlobal(BuiltinNames.closureEnv, type.toRef(), true, this.makeZero(type));
     }
-    return this.module.get_closure_env();
+    return this.module.global_get(BuiltinNames.closureEnv, type.toRef());
   }
 
   setClosureEnv(value: ExpressionRef): ExpressionRef {
