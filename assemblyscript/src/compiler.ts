@@ -7823,7 +7823,7 @@ export class Compiler extends DiagnosticEmitter {
   /** Creates an indirect call to a first-class function. */
   makeCallIndirect(
     signature: Signature,
-    functionArg: ExpressionRef,
+    functionArg: ExpressionRef, // address expr of the function
     reportNode: Node,
     operands: ExpressionRef[] | null = null,
     immediatelyDropped: bool = false
@@ -7870,12 +7870,25 @@ export class Compiler extends DiagnosticEmitter {
       }
     }
     let functionAddrExprForIndex: ExpressionRef;
+    // if the function address expr has side effects, it must be evaluated before parameters.
+    // such as if a memory load l1 is in functionArg sub tree, and other memory load l2 is in parameter sub tree
+    // then the l1 must be evaluated before l2
+    // The key challenge is here can't follow wasm nature order
+    // param
+    // functionArg
+    // call_indirect
+    // If the nature order is followed, then the functionArg will be evaluated after parameters, which can cause side effect order issue
+    // To solve this, we need to evaluate functionArg before parameters, and store the function address in a temp local if it is not trivial
+    // But if all parameters and functionArg are trivial, then we can just evaluate functionArg in place in call_indirect,
+    // which can save one local and one local.set
     if (allTrivial) {
       functionAddrExprForIndex = functionArg;
     } else {
       const tempFunctionAddrLocal = this.currentFlow.getTempLocal(Type.i32);
       const setExpr = module.local_set(tempFunctionAddrLocal.index, functionArg, false);
+      // setExpr is emitted before parameters, so it can guarantee the side effect order of functionArg and parameters, but it will cause extra local.set and local.get if functionArg is trivial, which is common in wasm, so we only emit setExpr when functionArg or parameters are not trivial
       stmts.push(setExpr);
+      // blow instructions are emitted after parameters
       functionAddrExprForEnv = module.local_get(tempFunctionAddrLocal.index, TypeRef.I32);
       functionAddrExprForIndex = module.local_get(tempFunctionAddrLocal.index, TypeRef.I32);
     }
