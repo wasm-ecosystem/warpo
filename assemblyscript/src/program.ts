@@ -4189,7 +4189,7 @@ export class Local extends VariableLikeElement {
     if (tupleIndex >= 0) {
       this.closureScopeLevel = parent.currentClosureScope.closureInfo.nestedLevel;
       let storage = parent.currentClosureScope.storage;
-      // for parameters, the local for holding tuple is not created yet, 
+      // for parameters, the local for holding tuple is not created yet,
       // because parameters must be created in advanced due to abi.
       // they need to be patched later.
       if (storage) this.tupleAddressLocalIndex = storage.index;
