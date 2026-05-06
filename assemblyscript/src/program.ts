@@ -4134,6 +4134,11 @@ const enum ForInitClosureStorage {
   Local,
 }
 
+/** This class manages the initialization of closure locals for `for` loops.
+ * The reason is closure initializer variables of for loops has double storage both in tuple and local
+ * During initialization and incrementor, they are stored in local for crossing loop iterations
+ * During loop body, they are stored in tuple for closure capture
+ */
 export class ForInitClosureLocals {
   private locals_: Local[] = [];
 
@@ -4202,6 +4207,11 @@ export class Local extends VariableLikeElement {
   forInitClosureStorage: ForInitClosureStorage = ForInitClosureStorage.Tuple;
 
   shouldUseLocalStorage(): bool {
+    /** If a variable is not a closure variable, use local always
+     * If a variable is a closure variable and not in loop initializer, use tuple always
+     * If a variable is a closure variable and in loop initializer, use local during initialization and incrementor,
+     * then switch to tuple for the loop body
+     */
     return !this.isClosureVariable() || this.forInitClosureStorage == ForInitClosureStorage.Local;
   }
 
@@ -4387,9 +4397,9 @@ export class FunctionPrototype extends DeclaredElement {
 
 class ClosureScopeFrame {
   constructor(
-    public typeBuilder: TupleTypeBuilder,
-    public closureInfo: ClosureFunctionInfo,
-    public storage: Local | null = null
+    public typeBuilder: TupleTypeBuilder, // used for building the tuple type of closure variables in this scope
+    public closureInfo: ClosureFunctionInfo, // closure info come from the closureScanner
+    public storage: Local | null = null // local to save the address of tuple which contains the heap allocated closure variables in this scope, null if no heap allocated closure variable
   ) {}
 }
 
@@ -4427,7 +4437,9 @@ export class Function extends TypedElement {
   /** Counting id of anonymous inner functions. */
   nextAnonymousId: i32 = 0;
 
+  /** Local to save the address of tuple which contains the heap allocated locals. */
   heapLocalsStorage: Local | null = null;
+  /** Pending initialization of closure locals for `for` loops. */
   pendingInitClosureLocals: ForInitClosureLocals | null = null;
 
   private closureScopeStack_: ClosureScopeFrame[] = [];
@@ -4459,6 +4471,7 @@ export class Function extends TypedElement {
     return stack[stack.length - 1].closureInfo;
   }
 
+  /** Pushes a new closure scope onto the stack. */
   pushClosureScope(closureInfo: ClosureFunctionInfo, storage: Local | null = null): void {
     let program = this.prototype.program;
     let builder = new TupleTypeBuilder(program, program.registeredTupleTypes);
