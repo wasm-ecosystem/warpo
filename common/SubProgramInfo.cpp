@@ -41,24 +41,26 @@ void SubProgramInfo::addLocal(std::string variableName, std::string_view const t
 }
 
 void SubProgramInfo::addTupleLocal(std::string variableName, std::string_view const typeName,
-                                   uint32_t const tupleFieldOffset, ScopeId const scopeId, bool const nullable) {
+                                   uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex,
+                                   ScopeId const scopeId, bool const nullable) {
 
   addLocal(LocalInfo{
       std::move(variableName),
       typeName,
-      TupleFieldLocation{tupleFieldOffset},
+      TupleFieldLocation{tupleFieldOffset, storageLocalIndex},
       scopeId,
       nullable,
   });
 }
 
 void SubProgramInfo::addTupleParameter(std::string variableName, std::string_view const typeName,
-                                       uint32_t const tupleFieldOffset, bool const nullable) {
+                                       uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex,
+                                       bool const nullable) {
 
   addParameter(ParameterInfo{
       std::move(variableName),
       typeName,
-      TupleFieldLocation{tupleFieldOffset},
+      TupleFieldLocation{tupleFieldOffset, storageLocalIndex},
       nullable,
   });
 }

@@ -48,10 +48,10 @@ public:
                 bool const nullable);
 
   void addTupleLocal(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
-                     ScopeId const scopeId, bool const nullable);
+                     uint32_t const storageLocalIndex, ScopeId const scopeId, bool const nullable);
 
   void addTupleParameter(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
-                         bool const nullable);
+                         uint32_t const storageLocalIndex, bool const nullable);
 
   uint32_t addScope(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr);
 

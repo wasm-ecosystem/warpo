@@ -16,6 +16,7 @@ struct LocalIndexLocation final {
 
 struct TupleFieldLocation final {
   uint32_t offset;
+  uint32_t localIndex;
 };
 
 using VariableLocation = std::variant<LocalIndexLocation, TupleFieldLocation>;
