@@ -754,6 +754,10 @@ export class Compiler extends DiagnosticEmitter {
     return this.module.get_closure_env_by_level(level);
   }
 
+  clearClosureEnv(): ExpressionRef {
+    return this.module.global_set(BuiltinNames.closureEnv, this.makeZero(Type.usize32));
+  }
+
   private initDefaultMemory(memoryOffset: i64): void {
     this.memoryOffset = memoryOffset;
 
@@ -1709,7 +1713,8 @@ export class Compiler extends DiagnosticEmitter {
       const heapLocalsStmt = module.local_set(heapLocalsStorage.index, heapLocalsTuple, true);
       functionClosurePrepareStmts.push(heapLocalsStmt);
       const parentEnvElementInfo = tupleInfo.elements[0];
-      const getClosureEnvStmt = this.getClosureEnv();
+      const nestedLevel = instance.prototype.nestedLevel;
+      const getClosureEnvStmt = nestedLevel > 0 ? this.getClosureEnv() : this.makeZero(Type.usize32);
       const parentEnvSetter = assert(this.program.smallTupleInstance.getMethod("__set", [parentEnvElementInfo.type]));
       const saveParentEnvStmt = this.makeCallDirect(
         parentEnvSetter,
@@ -1722,6 +1727,9 @@ export class Compiler extends DiagnosticEmitter {
       );
 
       functionClosurePrepareStmts.push(saveParentEnvStmt);
+      if (nestedLevel > 0) {
+        functionClosurePrepareStmts.push(this.clearClosureEnv());
+      }
 
       const thisCount = signature.thisType ? 1 : 0;
       for (let i = 0; i < thisCount + numParameters; i++) {
@@ -9157,7 +9165,7 @@ export class Compiler extends DiagnosticEmitter {
   private makeNewFunction(functionIndex: i32, envLocal: Local | null, rtid: u32, reportNode: Node): ExpressionRef {
     const program = this.program;
     const module = this.module;
-    const envExpr = envLocal ? module.local_get(envLocal.index, TypeRef.I32) : module.i32(0);
+    const envExpr = envLocal ? module.local_get(envLocal.index, TypeRef.I32) : this.makeZero(Type.usize32);
     const expr = this.makeCallDirect(
       program.newFunctionInstance,
       [module.usize(functionIndex), envExpr, module.i32(rtid)],

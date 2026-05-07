@@ -9,17 +9,17 @@
  (type $7 (func (param i32 i32 i32)))
  (type $8 (func (param i32 i32 i64)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
+ (global $~lib/rt/closure/env (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
+ (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
- (global $~lib/rt/closure/env (mut i32) (i32.const 0))
  (memory $0 1)
  (data $0 (i32.const 12) "<")
  (data $0.1 (i32.const 24) "\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00<")
@@ -1529,7 +1529,7 @@
   i64.store
   local.get $1
  )
- (func $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple> (param $0 i32) (param $1 i32)
+ (func $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null> (param $0 i32) (param $1 i32)
   local.get $0
   local.get $1
   i32.store
@@ -1593,7 +1593,9 @@
   call $~lib/rt/__newTuple
   local.tee $0
   global.get $~lib/rt/closure/env
-  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
+  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
+  i32.const 0
+  global.set $~lib/rt/closure/env
   local.get $0
   i32.load
   local.set $0
@@ -1659,8 +1661,8 @@
   i32.const 16
   call $~lib/rt/__newTuple
   local.tee $2
-  global.get $~lib/rt/closure/env
-  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
+  i32.const 0
+  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
   local.get $2
   i32.const 4
   i32.add
@@ -1699,7 +1701,9 @@
   call $~lib/rt/__newTuple
   local.tee $0
   global.get $~lib/rt/closure/env
-  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
+  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
+  i32.const 0
+  global.set $~lib/rt/closure/env
   local.get $0
   i32.load
   local.tee $0
@@ -1735,7 +1739,9 @@
   call $~lib/rt/__newTuple
   local.tee $0
   global.get $~lib/rt/closure/env
-  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
+  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
+  i32.const 0
+  global.set $~lib/rt/closure/env
   local.get $0
   i32.const 4
   i32.add
@@ -1762,8 +1768,8 @@
   i32.const 8
   call $~lib/rt/__newTuple
   local.tee $1
-  global.get $~lib/rt/closure/env
-  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
+  i32.const 0
+  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
   local.get $1
   i32.const 4
   i32.add

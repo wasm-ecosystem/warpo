@@ -1515,7 +1515,7 @@
   memory.fill
   local.get $1
  )
- (func $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple> (param $0 i32) (param $1 i32)
+ (func $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null> (param $0 i32) (param $1 i32)
   local.get $0
   local.get $1
   i32.store
@@ -1583,7 +1583,9 @@
   i64.store
   local.get $0
   global.get $~lib/rt/closure/env
-  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
+  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
+  i32.const 0
+  global.set $~lib/rt/closure/env
   local.get $0
   i32.load
   local.tee $0
@@ -1659,7 +1661,9 @@
   i64.store
   local.get $0
   global.get $~lib/rt/closure/env
-  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
+  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
+  i32.const 0
+  global.set $~lib/rt/closure/env
   local.get $0
   i32.const 4
   i32.add
@@ -1711,8 +1715,8 @@
   i64.const 1
   i64.store
   local.get $4
-  global.get $~lib/rt/closure/env
-  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
+  i32.const 0
+  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
   local.get $4
   i32.const 4
   i32.add

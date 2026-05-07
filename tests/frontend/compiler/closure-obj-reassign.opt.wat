@@ -1604,6 +1604,8 @@
   i32.const 0
   global.get $~lib/rt/closure/env
   call $~lib/tuple/SmallTuple#__set<closure-obj-reassign/Box>
+  i32.const 0
+  global.set $~lib/rt/closure/env
   i32.const 4
   i32.const 5
   call $~lib/rt/itcms/__new
@@ -1649,7 +1651,7 @@
   i32.store align=1
   local.get $0
   i32.const 0
-  global.get $~lib/rt/closure/env
+  i32.const 0
   call $~lib/tuple/SmallTuple#__set<closure-obj-reassign/Box>
   local.get $0
   i32.const 4
