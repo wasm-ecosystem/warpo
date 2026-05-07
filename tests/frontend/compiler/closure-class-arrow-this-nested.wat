@@ -3,8 +3,8 @@
  (type $1 (func (param i32 i32)))
  (type $2 (func (param i32)))
  (type $3 (func (param i32 i32 i32)))
- (type $4 (func (result i32)))
- (type $5 (func (param i32 i32) (result i32)))
+ (type $4 (func (param i32 i32) (result i32)))
+ (type $5 (func (result i32)))
  (type $6 (func))
  (type $7 (func (param i32 i32 i32 i32)))
  (type $8 (func (param i32 i32 i32) (result i32)))
@@ -12,7 +12,6 @@
  (type $10 (func (param i32 i64) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
- (import "as-builtin-fn" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
  (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -30,6 +29,7 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $closure-class-arrow-this-nested/m (mut i32) (i32.const 0))
+ (global $~lib/rt/closure/env (mut i32) (i32.const 0))
  (global $~argumentsLength (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 512))
  (global $~lib/memory/__data_end i32 (i32.const 544))
@@ -3121,7 +3121,7 @@
    )
    (i32.const 0)
    (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnv)
+    (global.get $~lib/rt/closure/env)
    )
   )
   (return
@@ -3179,7 +3179,7 @@
    )
    (i32.const 0)
    (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnv)
+    (global.get $~lib/rt/closure/env)
    )
   )
   (local.set $inner
@@ -3192,7 +3192,7 @@
    )
   )
   (return
-   (call_indirect (type $4)
+   (call_indirect (type $5)
     (block (result i32)
      (call $~lib/rt/closure/setClosureEnv
       (i32.load offset=4
@@ -3247,7 +3247,7 @@
    )
    (i32.const 0)
    (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnv)
+    (global.get $~lib/rt/closure/env)
    )
   )
   (call $~lib/tuple/SmallTuple#__set<closure-class-arrow-this-nested/MultiLevel>
@@ -3269,7 +3269,7 @@
    )
   )
   (return
-   (call_indirect (type $4)
+   (call_indirect (type $5)
     (block (result i32)
      (call $~lib/rt/closure/setClosureEnv
       (i32.load offset=4
@@ -3362,6 +3362,17 @@
   (if
    (local.tee $1
     (global.get $closure-class-arrow-this-nested/m)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $~lib/rt/closure/env)
    )
    (then
     (call $~lib/rt/itcms/__visit

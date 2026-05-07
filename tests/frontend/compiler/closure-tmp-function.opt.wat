@@ -1,5 +1,5 @@
 (module
- (type $0 (func (result f64)))
+ (type $0 (func (result i32)))
  (type $1 (func))
  (type $2 (func (param i32)))
  (type $3 (func (param i32 i32)))
@@ -7,18 +7,14 @@
  (type $5 (func (param i32 i32 i32 i32)))
  (type $6 (func (param i32 i32 i32)))
  (type $7 (func (param i32 i32 i64)))
- (type $8 (func (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33436))
- (global $closure-nested-function-loop/result1 (mut i32) (i32.const 0))
- (global $closure-nested-function-loop/result2 (mut i32) (i32.const 0))
+ (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/visitCount (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/pinSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
- (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
@@ -33,13 +29,13 @@
  (data $5.1 (i32.const 280) "\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s")
  (data $7 (i32.const 348) "<")
  (data $7.1 (i32.const 360) "\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s")
- (data $8 (i32.const 412) "\\")
- (data $8.1 (i32.const 424) "\02\00\00\00>\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00n\00e\00s\00t\00e\00d\00-\00f\00u\00n\00c\00t\00i\00o\00n\00-\00l\00o\00o\00p\00.\00t\00s")
- (data $9 (i32.const 508) "|")
- (data $9.1 (i32.const 520) "\02\00\00\00^\00\00\00U\00n\00e\00x\00p\00e\00c\00t\00e\00d\00 \00\'\00n\00u\00l\00l\00\'\00 \00(\00n\00o\00t\00 \00a\00s\00s\00i\00g\00n\00e\00d\00 \00o\00r\00 \00f\00a\00i\00l\00e\00d\00 \00c\00a\00s\00t\00)")
- (data $10 (i32.const 640) "\06\00\00\00 \00\00\00 \00\00\00 ")
- (table $0 3 3 funcref)
- (elem $0 (i32.const 1) $closure-nested-function-loop/outer~middle~inner $closure-nested-function-loop/outer~middle)
+ (data $8 (i32.const 412) "L")
+ (data $8.1 (i32.const 424) "\02\00\00\00.\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00t\00m\00p\00-\00f\00u\00n\00c\00t\00i\00o\00n\00.\00t\00s")
+ (data $9 (i32.const 496) "\06\00\00\00 \00\00\00 \00\00\00 ")
+ (table $0 2 2 funcref)
+ (elem $0 (i32.const 1) $closure-tmp-function/getFunction~anonymous|0)
+ (export "getFunction" (func $closure-tmp-function/getFunction))
+ (export "foo" (func $closure-tmp-function/foo))
  (export "memory" (memory $0))
  (start $~start)
  (func $~lib/rt/itcms/visitRoots
@@ -136,7 +132,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$79
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$82
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -148,7 +144,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 33436
+    i32.const 33292
     i32.lt_u
     i32.and
     i32.eqz
@@ -160,7 +156,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$79
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$82
    end
    local.get $0
    i32.load offset=8
@@ -197,7 +193,7 @@
    i32.const 1
   else
    local.get $0
-   i32.const 640
+   i32.const 496
    i32.load
    i32.gt_u
    if
@@ -211,7 +207,7 @@
    local.get $0
    i32.const 2
    i32.shl
-   i32.const 644
+   i32.const 500
    i32.add
    i32.load
    i32.const 32
@@ -778,10 +774,10 @@
   if
    unreachable
   end
-  i32.const 33440
+  i32.const 33296
   i32.const 0
   i32.store
-  i32.const 35008
+  i32.const 34864
   i32.const 0
   i32.store
   i32.const 0
@@ -794,7 +790,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 33440
+    i32.const 33296
     i32.add
     i32.const 0
     i32.store offset=4
@@ -812,7 +808,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 33440
+      i32.const 33296
       i32.add
       i32.const 0
       i32.store offset=96
@@ -830,14 +826,14 @@
     br $for-loop|0
    end
   end
-  i32.const 33440
-  i32.const 35012
+  i32.const 33296
+  i32.const 34868
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 33440
+  i32.const 33296
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/tlsf/searchBlock (param $0 i32) (param $1 i32) (result i32)
@@ -995,7 +991,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$84 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$87 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1011,7 +1007,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$84
+         br $__inlined_func$~lib/rt/itcms/step$87
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1050,7 +1046,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$84
+           br $__inlined_func$~lib/rt/itcms/step$87
           end
           local.get $2
           i32.load offset=4
@@ -1070,11 +1066,11 @@
         i32.and
         i32.eq
         if
-         global.get $~lib/memory/__stack_pointer
+         i32.const 33292
          local.set $2
          loop $while-continue|0
           local.get $2
-          i32.const 33436
+          i32.const 33292
           i32.lt_u
           if
            local.get $2
@@ -1142,7 +1138,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$84
+        br $__inlined_func$~lib/rt/itcms/step$87
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1170,7 +1166,7 @@
          unreachable
         end
         local.get $3
-        i32.const 33436
+        i32.const 33292
         i32.lt_u
         if
          local.get $3
@@ -1193,7 +1189,7 @@
          i32.const 4
          i32.add
          local.tee $2
-         i32.const 33436
+         i32.const 33292
          i32.ge_u
          if
           global.get $~lib/rt/tlsf/ROOT
@@ -1241,7 +1237,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$84
+        br $__inlined_func$~lib/rt/itcms/step$87
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1519,20 +1515,6 @@
   memory.fill
   local.get $1
  )
- (func $~lib/rt/__newTuple (param $0 i32) (result i32)
-  (local $1 i32)
-  local.get $0
-  local.get $0
-  i32.const 8
-  i32.add
-  i32.const 4
-  call $~lib/rt/itcms/__new
-  local.tee $1
-  i32.add
-  i64.const 1
-  i64.store
-  local.get $1
- )
  (func $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple> (param $0 i32) (param $1 i32)
   local.get $0
   local.get $1
@@ -1588,158 +1570,77 @@
    end
   end
  )
- (func $closure-nested-function-loop/outer~middle~inner (result f64)
+ (func $closure-tmp-function/getFunction~anonymous|0 (result i32)
   (local $0 i32)
-  (local $1 i32)
-  (local $2 i32)
+  i32.const 12
   i32.const 4
-  call $~lib/rt/__newTuple
+  call $~lib/rt/itcms/__new
   local.tee $0
+  i32.const 4
+  i32.add
+  i64.const 1
+  i64.store
+  local.get $0
   global.get $~lib/rt/closure/env
   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
   local.get $0
   i32.load
-  local.tee $0
-  i32.load
-  local.tee $1
-  i32.load
-  local.tee $2
-  i32.load
   i32.const 4
   i32.add
   i32.load
-  local.get $2
+  i32.const 1
+  i32.add
+ )
+ (func $closure-tmp-function/getFunction (result i32)
+  (local $0 i32)
+  (local $1 i32)
+  i32.const 16
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.tee $0
   i32.const 8
   i32.add
-  i32.load
+  i64.const 1
+  i64.store
+  local.get $0
+  global.get $~lib/rt/closure/env
+  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
+  local.get $0
+  i32.const 4
   i32.add
+  i32.const 5
+  i32.store
+  i32.const 8
+  i32.const 5
+  call $~lib/rt/itcms/__new
+  local.tee $1
+  i32.const 1
+  i32.store
   local.get $1
   i32.const 4
   i32.add
-  i32.load
-  i32.add
   local.get $0
-  i32.const 4
-  i32.add
-  i32.load
-  i32.add
-  f64.convert_i32_s
- )
- (func $closure-nested-function-loop/outer~middle (result f64)
-  (local $0 i32)
-  (local $1 i32)
-  (local $2 i32)
-  (local $3 i32)
-  (local $4 i32)
-  (local $5 f64)
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i32.const 0
-  i32.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 668
-  i32.lt_s
-  if
-   unreachable
-  end
-  i32.const 8
-  call $~lib/rt/__newTuple
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  global.get $~lib/rt/closure/env
-  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
-  local.get $0
-  i32.const 4
-  i32.add
-  local.get $0
-  i32.load
-  local.tee $4
-  i32.const 8
-  i32.add
-  i32.load
-  i32.const 100
-  i32.add
   i32.store
-  loop $for-loop|0
-   i32.const 8
-   call $~lib/rt/__newTuple
-   local.tee $1
-   local.get $0
-   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
-   local.get $2
-   i32.const 2
-   i32.lt_s
-   if
-    local.get $1
-    i32.const 4
-    i32.add
-    local.get $2
-    local.get $0
-    i32.const 4
-    i32.add
-    i32.load
-    i32.add
-    i32.store
-    i32.const 8
-    i32.const 5
-    call $~lib/rt/itcms/__new
-    local.tee $3
-    i32.const 1
-    i32.store
-    local.get $3
-    i32.const 4
-    i32.add
-    local.get $1
-    i32.store
-    local.get $3
-    local.set $1
-    local.get $2
-    i32.const 1
-    i32.eq
-    if
-     local.get $4
-     i32.const 4
-     i32.add
-     i32.load
-     if
-      local.get $1
-      global.set $closure-nested-function-loop/result2
-     else
-      local.get $1
-      global.set $closure-nested-function-loop/result1
-     end
-    end
-    local.get $2
-    i32.const 1
-    i32.add
-    local.set $2
-    br $for-loop|0
-   end
-  end
+  local.get $1
+ )
+ (func $closure-tmp-function/foo (result i32)
+  (local $0 i32)
+  i32.const 0
+  global.set $~lib/rt/closure/env
+  call $closure-tmp-function/getFunction
+  local.tee $0
+  i32.load offset=4
+  global.set $~lib/rt/closure/env
   local.get $0
-  i32.const 4
-  i32.add
   i32.load
-  f64.convert_i32_s
-  local.set $5
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $5
+  call_indirect (type $0)
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   (local $1 i32)
   (local $2 i32)
   (local $3 i64)
   block $invalid
-   block $~lib/function/Function<%28%29=>f64>
+   block $~lib/function/Function<%28%29=>i32>
     block $~lib/tuple/SmallTuple
      block $~lib/arraybuffer/ArrayBufferView
       block $~lib/string/String
@@ -1747,7 +1648,7 @@
        i32.const 8
        i32.sub
        i32.load
-       br_table $~lib/string/String $~lib/string/String $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/tuple/SmallTuple $~lib/function/Function<%28%29=>f64> $invalid
+       br_table $~lib/string/String $~lib/string/String $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/tuple/SmallTuple $~lib/function/Function<%28%29=>i32> $invalid
       end
       return
      end
@@ -1814,15 +1715,10 @@
   unreachable
  )
  (func $~start
-  (local $0 i32)
-  (local $1 i32)
-  (local $2 i32)
-  (local $3 i32)
-  (local $4 f64)
   memory.size
   i32.const 16
   i32.shl
-  i32.const 33436
+  i32.const 33292
   i32.sub
   i32.const 1
   i32.shr_u
@@ -1851,188 +1747,13 @@
   i32.store
   i32.const 320
   global.set $~lib/rt/itcms/fromSpace
-  i32.const 0
-  global.set $~lib/rt/closure/env
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.sub
-  global.set $~lib/memory/__stack_pointer
-  global.get $~lib/memory/__stack_pointer
-  i64.const 0
-  i64.store align=1
-  global.get $~lib/memory/__stack_pointer
-  i32.const 668
-  i32.lt_s
+  call $closure-tmp-function/foo
+  i32.const 6
+  i32.ne
   if
-   unreachable
-  end
-  i32.const 8
-  call $~lib/rt/__newTuple
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=4 align=1
-  local.get $2
-  global.get $~lib/rt/closure/env
-  call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
-  local.get $2
-  i32.const 4
-  i32.add
-  i32.const 1
-  i32.store
-  loop $for-loop|0
+   i32.const 0
+   i32.const 432
    i32.const 12
-   call $~lib/rt/__newTuple
-   local.set $0
-   global.get $~lib/memory/__stack_pointer
-   local.get $0
-   i32.store align=1
-   local.get $0
-   local.get $2
-   call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
-   local.get $0
-   i32.const 4
-   i32.add
-   local.tee $3
-   local.get $1
-   i32.store
-   local.get $3
-   i32.load
-   local.tee $1
-   i32.const 2
-   i32.lt_s
-   if
-    local.get $0
-    i32.const 8
-    i32.add
-    local.get $2
-    i32.const 4
-    i32.add
-    i32.load
-    local.get $1
-    i32.const 10
-    i32.mul
-    i32.add
-    i32.store
-    i32.const 8
-    i32.const 5
-    call $~lib/rt/itcms/__new
-    local.tee $1
-    i32.const 2
-    i32.store
-    local.get $1
-    i32.const 4
-    i32.add
-    local.get $0
-    i32.store
-    local.get $1
-    i32.load offset=4
-    global.set $~lib/rt/closure/env
-    local.get $1
-    i32.load
-    call_indirect (type $0)
-    drop
-    local.get $0
-    i32.const 4
-    i32.add
-    i32.load
-    i32.const 1
-    i32.add
-    local.set $1
-    br $for-loop|0
-   end
-  end
-  local.get $2
-  i32.const 4
-  i32.add
-  i32.load
-  f64.convert_i32_s
-  local.set $4
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $4
-  f64.const 1
-  f64.ne
-  if
-   i32.const 0
-   i32.const 432
-   i32.const 32
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  global.get $closure-nested-function-loop/result1
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 432
-   i32.const 33
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  global.get $closure-nested-function-loop/result2
-  i32.eqz
-  if
-   i32.const 0
-   i32.const 432
-   i32.const 34
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  global.get $closure-nested-function-loop/result1
-  local.tee $0
-  if (result i32)
-   local.get $0
-  else
-   i32.const 528
-   i32.const 432
-   i32.const 35
-   i32.const 8
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.load offset=4
-  global.set $~lib/rt/closure/env
-  local.get $0
-  i32.load
-  call_indirect (type $0)
-  f64.const 205
-  f64.ne
-  if
-   i32.const 0
-   i32.const 432
-   i32.const 35
-   i32.const 1
-   call $~lib/builtins/abort
-   unreachable
-  end
-  global.get $closure-nested-function-loop/result2
-  local.tee $0
-  if (result i32)
-   local.get $0
-  else
-   i32.const 528
-   i32.const 432
-   i32.const 36
-   i32.const 8
-   call $~lib/builtins/abort
-   unreachable
-  end
-  i32.load offset=4
-  global.set $~lib/rt/closure/env
-  local.get $0
-  i32.load
-  call_indirect (type $0)
-  f64.const 235
-  f64.ne
-  if
-   i32.const 0
-   i32.const 432
-   i32.const 36
    i32.const 1
    call $~lib/builtins/abort
    unreachable

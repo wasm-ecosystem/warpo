@@ -59,6 +59,12 @@
    local.get $0
    call $~lib/rt/itcms/__visit
   end
+  global.get $~lib/rt/closure/env
+  local.tee $0
+  if
+   local.get $0
+   call $~lib/rt/itcms/__visit
+  end
   global.get $~lib/rt/itcms/pinSpace
   local.tee $1
   i32.load offset=4

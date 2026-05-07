@@ -4,17 +4,19 @@
  (type $2 (func (param i32)))
  (type $3 (func (param i32 i32 i32)))
  (type $4 (func (param i32 i32) (result i32)))
- (type $5 (func))
- (type $6 (func (result i32)))
+ (type $5 (func (result i32)))
+ (type $6 (func))
  (type $7 (func (param i32 i32 i32 i32)))
  (type $8 (func (param i32 i32 i32) (result i32)))
  (type $9 (func (param i32 i32 i64) (result i32)))
  (type $10 (func (param i32 i64) (result i32)))
- (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
+ (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
+ (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
+ (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/threshold (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/state (mut i32) (i32.const 0))
@@ -23,18 +25,15 @@
  (global $~lib/rt/itcms/iter (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/toSpace (mut i32) (i32.const 0))
  (global $~lib/rt/itcms/white (mut i32) (i32.const 0))
- (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
- (global $~lib/shared/runtime/Runtime.Incremental i32 (i32.const 2))
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $closure-class-arrow-this-method/m (mut i32) (i32.const 0))
  (global $~lib/rt/closure/env (mut i32) (i32.const 0))
  (global $~argumentsLength (mut i32) (i32.const 0))
- (global $~lib/rt/__rtti_base i32 (i32.const 512))
- (global $~lib/memory/__data_end i32 (i32.const 544))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33312))
- (global $~lib/memory/__heap_base i32 (i32.const 33312))
+ (global $~lib/rt/__rtti_base i32 (i32.const 496))
+ (global $~lib/memory/__data_end i32 (i32.const 524))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33292))
+ (global $~lib/memory/__heap_base i32 (i32.const 33292))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -44,26 +43,43 @@
  (data $5 (i32.const 268) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $8 (i32.const 412) "\\\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00D\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00c\00l\00a\00s\00s\00-\00a\00r\00r\00o\00w\00-\00t\00h\00i\00s\00-\00m\00e\00t\00h\00o\00d\00.\00t\00s\00\00\00\00\00\00\00\00\00")
- (data $9 (i32.const 512) "\07\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00\00\00\00\00\00\00\00\00")
+ (data $8 (i32.const 412) "L\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00.\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00t\00m\00p\00-\00f\00u\00n\00c\00t\00i\00o\00n\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
+ (data $9 (i32.const 496) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $closure-class-arrow-this-method/FromMethod#run~anonymous|0)
+ (elem $0 (i32.const 1) $closure-tmp-function/getFunction~anonymous|0)
+ (export "getFunction" (func $closure-tmp-function/getFunction))
+ (export "foo" (func $closure-tmp-function/foo))
  (export "memory" (memory $0))
  (start $~start)
- (func $~lib/object/Object#constructor (param $this i32) (result i32)
-  (local.get $this)
- )
- (func $closure-class-arrow-this-method/FromMethod#constructor (param $this i32) (result i32)
-  (local.set $this
-   (call $~lib/rt/__localtostack
-    (call $~lib/object/Object#constructor
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
-     )
-    )
+ (func $~lib/tuple/SmallTuple#__set<i32> (param $this i32) (param $offset i32) (param $value i32)
+  (local $elementPtr i32)
+  (local.set $elementPtr
+   (i32.add
+    (local.get $this)
+    (local.get $offset)
    )
   )
-  (local.get $this)
+  (i32.store
+   (local.get $elementPtr)
+   (local.get $value)
+  )
+  (drop
+   (i32.const 0)
+  )
+ )
+ (func $~lib/tuple/SmallTuple#__get<i32> (param $this i32) (param $offset i32) (result i32)
+  (local $elementPtr i32)
+  (local.set $elementPtr
+   (i32.add
+    (local.get $this)
+    (local.get $offset)
+   )
+  )
+  (return
+   (i32.load
+    (local.get $elementPtr)
+   )
+  )
  )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
@@ -2929,31 +2945,6 @@
    (local.get $ptr)
   )
  )
- (func $closure-class-arrow-this-method/FromMethod#set:value (param $this i32) (param $value i32)
-  (i32.store
-   (local.get $this)
-   (local.get $value)
-  )
- )
- (func $~lib/tuple/SmallTuple#__get<closure-class-arrow-this-method/FromMethod> (param $this i32) (param $offset i32) (result i32)
-  (local $elementPtr i32)
-  (local.set $elementPtr
-   (i32.add
-    (local.get $this)
-    (local.get $offset)
-   )
-  )
-  (return
-   (i32.load
-    (local.get $elementPtr)
-   )
-  )
- )
- (func $closure-class-arrow-this-method/FromMethod#get:value (param $this i32) (result i32)
-  (i32.load
-   (local.get $this)
-  )
- )
  (func $~lib/rt/__newTuple (param $elementSize i32) (param $bitmap i64) (result i32)
   (local $totalSize i32)
   (local $ptr i32)
@@ -2966,7 +2957,7 @@
   (local.set $ptr
    (call $~lib/rt/itcms/__new
     (local.get $totalSize)
-    (i32.const 5)
+    (i32.const 4)
    )
   )
   (i64.store
@@ -3105,7 +3096,7 @@
    (i32.const 0)
   )
  )
- (func $closure-class-arrow-this-method/FromMethod#run~anonymous|0 (result i32)
+ (func $closure-tmp-function/getFunction~anonymous|0 (result i32)
   (local $0 i32)
   (local.set $0
    (call $~lib/rt/__localtostack
@@ -3125,17 +3116,16 @@
    )
   )
   (return
-   (call $closure-class-arrow-this-method/FromMethod#get:value
-    (call $~lib/rt/__tmptostack
-     (call $~lib/tuple/SmallTuple#__get<closure-class-arrow-this-method/FromMethod>
-      (call $~lib/rt/__tmptostack
-       (call $~lib/rt/closure/getClosureEnvByLevel
-        (i32.const 1)
-       )
+   (i32.add
+    (call $~lib/tuple/SmallTuple#__get<i32>
+     (call $~lib/rt/__tmptostack
+      (call $~lib/rt/closure/getClosureEnvByLevel
+       (i32.const 1)
       )
-      (i32.const 4)
      )
+     (i32.const 4)
     )
+    (i32.const 1)
    )
   )
  )
@@ -3162,91 +3152,72 @@
    (local.get $ptr)
   )
  )
- (func $~lib/tuple/SmallTuple#__set<closure-class-arrow-this-method/FromMethod> (param $this i32) (param $offset i32) (param $value i32)
-  (local $elementPtr i32)
-  (local.set $elementPtr
-   (i32.add
-    (local.get $this)
-    (local.get $offset)
-   )
-  )
-  (i32.store
-   (local.get $elementPtr)
-   (local.get $value)
-  )
-  (drop
-   (i32.const 1)
-  )
-  (call $~lib/rt/itcms/__link
-   (local.get $this)
-   (local.get $value)
-   (i32.const 0)
-  )
- )
- (func $closure-class-arrow-this-method/FromMethod#run (param $this i32) (result i32)
-  (local $1 i32)
-  (local $getValue i32)
-  (local.set $1
+ (func $closure-tmp-function/getFunction (result i32)
+  (local $0 i32)
+  (local $aaa i32)
+  (local.set $0
    (call $~lib/rt/__localtostack
     (call $~lib/rt/__newTuple
      (i32.const 8)
-     (i64.const 3)
+     (i64.const 1)
     )
    )
   )
   (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
    (call $~lib/rt/__tmptostack
-    (local.get $1)
+    (local.get $0)
    )
    (i32.const 0)
    (call $~lib/rt/__tmptostack
     (global.get $~lib/rt/closure/env)
    )
   )
-  (call $~lib/tuple/SmallTuple#__set<closure-class-arrow-this-method/FromMethod>
+  (call $~lib/tuple/SmallTuple#__set<i32>
    (call $~lib/rt/__tmptostack
-    (local.get $1)
+    (local.get $0)
    )
    (i32.const 4)
-   (call $~lib/rt/__tmptostack
-    (local.get $this)
-   )
-  )
-  (local.set $getValue
-   (call $~lib/rt/__localtostack
-    (call $~lib/rt/__newFunction
-     (i32.const 1)
-     (local.get $1)
-     (i32.const 6)
-    )
-   )
+   (i32.const 5)
   )
   (return
-   (i32.add
-    (call_indirect (type $6)
+   (call $~lib/rt/__newFunction
+    (i32.const 1)
+    (local.get $0)
+    (i32.const 5)
+   )
+  )
+ )
+ (func $closure-tmp-function/foo (result i32)
+  (local $0 i32)
+  (return
+   (block (result i32)
+    (local.set $0
+     (block (result i32)
+      (call $~lib/rt/closure/setClosureEnv
+       (i32.const 0)
+      )
+      (call $closure-tmp-function/getFunction)
+     )
+    )
+    (call_indirect (type $5)
      (block (result i32)
       (call $~lib/rt/closure/setClosureEnv
        (i32.load offset=4
-        (local.get $getValue)
+        (local.get $0)
        )
       )
       (global.set $~argumentsLength
        (i32.const 0)
       )
       (i32.load
-       (local.get $getValue)
+       (local.get $0)
       )
-     )
-    )
-    (call $closure-class-arrow-this-method/FromMethod#get:value
-     (call $~lib/rt/__tmptostack
-      (local.get $this)
      )
     )
    )
   )
  )
- (func $start:closure-class-arrow-this-method
+ (func $start:closure-tmp-function
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -3274,43 +3245,18 @@
     (i32.const 320)
    )
   )
-  (global.set $closure-class-arrow-this-method/m
-   (call $closure-class-arrow-this-method/FromMethod#constructor
-    (call $~lib/rt/__tmptostack
-     (call $~lib/rt/itcms/__new
-      (i32.const 4)
-      (i32.const 4)
-     )
-    )
-   )
-  )
-  (call $closure-class-arrow-this-method/FromMethod#set:value
-   (call $~lib/rt/__tmptostack
-    (global.get $closure-class-arrow-this-method/m)
-   )
-   (i32.const 10)
-  )
   (if
    (i32.eqz
     (i32.eq
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.const 0)
-      )
-      (call $closure-class-arrow-this-method/FromMethod#run
-       (call $~lib/rt/__tmptostack
-        (global.get $closure-class-arrow-this-method/m)
-       )
-      )
-     )
-     (i32.const 20)
+     (call $closure-tmp-function/foo)
+     (i32.const 6)
     )
    )
    (then
     (call $~lib/builtins/abort
      (i32.const 0)
      (i32.const 432)
-     (i32.const 14)
+     (i32.const 12)
      (i32.const 1)
     )
     (unreachable)
@@ -3319,17 +3265,6 @@
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
-  (if
-   (local.tee $1
-    (global.get $closure-class-arrow-this-method/m)
-   )
-   (then
-    (call $~lib/rt/itcms/__visit
-     (local.get $1)
-     (local.get $0)
-    )
-   )
-  )
   (if
    (local.tee $1
     (global.get $~lib/rt/closure/env)
@@ -3488,35 +3423,32 @@
   (block $invalid
    (block $~lib/function/Function<%28%29=>i32>
     (block $~lib/tuple/SmallTuple
-     (block $closure-class-arrow-this-method/FromMethod
-      (block $~lib/arraybuffer/ArrayBufferView
-       (block $~lib/string/String
-        (block $~lib/arraybuffer/ArrayBuffer
-         (block $~lib/object/Object
-          (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $closure-class-arrow-this-method/FromMethod $~lib/tuple/SmallTuple $~lib/function/Function<%28%29=>i32> $invalid
-           (i32.load
-            (i32.sub
-             (local.get $0)
-             (i32.const 8)
-            )
+     (block $~lib/arraybuffer/ArrayBufferView
+      (block $~lib/string/String
+       (block $~lib/arraybuffer/ArrayBuffer
+        (block $~lib/object/Object
+         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/tuple/SmallTuple $~lib/function/Function<%28%29=>i32> $invalid
+          (i32.load
+           (i32.sub
+            (local.get $0)
+            (i32.const 8)
            )
           )
          )
-         (return)
         )
         (return)
        )
        (return)
       )
-      (block
-       (call $~lib/arraybuffer/ArrayBufferView~visit
-        (local.get $0)
-        (local.get $1)
-       )
-       (return)
-      )
+      (return)
      )
-     (return)
+     (block
+      (call $~lib/arraybuffer/ArrayBufferView~visit
+       (local.get $0)
+       (local.get $1)
+      )
+      (return)
+     )
     )
     (block
      (call $~lib/tuple/SmallTuple~visit
@@ -3537,6 +3469,6 @@
   (unreachable)
  )
  (func $~start
-  (call $start:closure-class-arrow-this-method)
+  (call $start:closure-tmp-function)
  )
 )

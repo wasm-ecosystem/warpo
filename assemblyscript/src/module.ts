@@ -459,10 +459,6 @@ export class Module {
     return value;
   }
 
-  get_closure_env(): ExpressionRef {
-    return this.call(BuiltinNames.getClosureEnv, null, TypeRef.I32);
-  }
-
   set_closure_env(value: ExpressionRef): ExpressionRef {
     let type = binaryen._BinaryenExpressionGetType(value);
     assert(type == TypeRef.I32 || type == TypeRef.Unreachable);

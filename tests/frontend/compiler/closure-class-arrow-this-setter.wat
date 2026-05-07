@@ -7,12 +7,11 @@
  (type $5 (func))
  (type $6 (func (param i32 i32 i32 i32)))
  (type $7 (func (param i32 i32 i32) (result i32)))
- (type $8 (func (result i32)))
- (type $9 (func (param i32 i32 i64) (result i32)))
+ (type $8 (func (param i32 i32 i64) (result i32)))
+ (type $9 (func (result i32)))
  (type $10 (func (param i32 i64) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (import "as-builtin-fn" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
- (import "as-builtin-fn" "~lib/rt/closure/getClosureEnv" (func $~lib/rt/closure/getClosureEnv (result i32)))
  (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
@@ -30,6 +29,7 @@
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
  (global $closure-class-arrow-this-setter/s (mut i32) (i32.const 0))
+ (global $~lib/rt/closure/env (mut i32) (i32.const 0))
  (global $~argumentsLength (mut i32) (i32.const 0))
  (global $~lib/rt/__rtti_base i32 (i32.const 512))
  (global $~lib/memory/__data_end i32 (i32.const 544))
@@ -3141,7 +3141,7 @@
    )
    (i32.const 0)
    (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnv)
+    (global.get $~lib/rt/closure/env)
    )
   )
   (call $closure-class-arrow-this-setter/FromSetter#set:stored
@@ -3256,7 +3256,7 @@
    )
    (i32.const 0)
    (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnv)
+    (global.get $~lib/rt/closure/env)
    )
   )
   (call $~lib/tuple/SmallTuple#__set<closure-class-arrow-this-setter/FromSetter>
@@ -3387,6 +3387,17 @@
   (if
    (local.tee $1
     (global.get $closure-class-arrow-this-setter/s)
+   )
+   (then
+    (call $~lib/rt/itcms/__visit
+     (local.get $1)
+     (local.get $0)
+    )
+   )
+  )
+  (if
+   (local.tee $1
+    (global.get $~lib/rt/closure/env)
    )
    (then
     (call $~lib/rt/itcms/__visit
