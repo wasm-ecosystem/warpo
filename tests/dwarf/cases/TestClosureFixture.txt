@@ -95,62 +95,6 @@ DW_TAG_compile_unit
   DW_TAG_base_type
                 DW_AT_name	("usize")
   DW_TAG_class_type
-                DW_AT_name	("[~lib/tuple/SmallTuple,i32,i32,i32]")
-    DW_TAG_member
-                  DW_AT_name	("0")
-                  DW_AT_type	("~lib/tuple/SmallTuple")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("1")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("2")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000008)
-    DW_TAG_member
-                  DW_AT_name	("3")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x0000000c)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("[~lib/tuple/SmallTuple,i32]")
-    DW_TAG_member
-                  DW_AT_name	("0")
-                  DW_AT_type	("~lib/tuple/SmallTuple")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("1")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000004)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("[~lib/tuple/SmallTuple,tests/dwarf/cases/TestClosure/Counter,i32,i32]")
-    DW_TAG_member
-                  DW_AT_name	("0")
-                  DW_AT_type	("~lib/tuple/SmallTuple")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("1")
-                  DW_AT_type	("tests/dwarf/cases/TestClosure/Counter")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("2")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000008)
-    DW_TAG_member
-                  DW_AT_name	("3")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x0000000c)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("[~lib/tuple/SmallTuple]")
-    DW_TAG_member
-                  DW_AT_name	("0")
-                  DW_AT_type	("~lib/tuple/SmallTuple")
-                  DW_AT_data_member_location	(0x00000000)
-    NULL
-  DW_TAG_class_type
                 DW_AT_name	("tests/dwarf/cases/TestClosure/Counter")
                 DW_AT_signature	(0x00000006)
     DW_TAG_inheritance
@@ -274,64 +218,6 @@ DW_TAG_compile_unit
                   DW_AT_data_member_location	(0x00000004)
     DW_TAG_template_type_parameter
                   DW_AT_type	("~lib/function/Function<(i32)=>i32>")
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/iterator/Iterable<(i32)=>i32>")
-                DW_AT_signature	(0x00000008)
-    DW_TAG_template_type_parameter
-                  DW_AT_type	("~lib/function/Function<(i32)=>i32>")
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/Bool")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/F32")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/F64")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/I16")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/I32")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/I64")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/I8")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/Isize")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/U16")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/U32")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/U64")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/U8")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/Usize")
-                DW_AT_signature	(0x00000000)
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/object/Object")

@@ -38,7 +38,6 @@ Abbrev table for offset: 0x00000000
 	DW_AT_name	DW_FORM_string
 	DW_AT_type	DW_FORM_ref4
 	DW_AT_data_member_location	DW_FORM_data4
-	DW_AT_location	DW_FORM_data4
 
 [11] DW_TAG_formal_parameter	DW_CHILDREN_no
 	DW_AT_name	DW_FORM_string
@@ -49,7 +48,6 @@ Abbrev table for offset: 0x00000000
 	DW_AT_name	DW_FORM_string
 	DW_AT_type	DW_FORM_ref4
 	DW_AT_data_member_location	DW_FORM_data4
-	DW_AT_location	DW_FORM_data4
 
 [13] DW_TAG_lexical_block	DW_CHILDREN_yes
 	DW_AT_low_pc	DW_FORM_addr
@@ -95,41 +93,6 @@ DW_TAG_compile_unit
   DW_TAG_base_type
                 DW_AT_name	("usize")
   DW_TAG_class_type
-                DW_AT_name	("tests/dwarf/cases/TestGlobal/C1")
-                DW_AT_signature	(0x00000004)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    DW_TAG_member
-                  DW_AT_name	("aaa")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestGlobal/C1#get:aaa")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestGlobal/C1")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestGlobal/C1#set:aaa")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestGlobal/C1")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("aaa")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000001)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestGlobal/C1#constructor")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestGlobal/C1")
-                    DW_AT_location	(0x00000000)
-      NULL
-    NULL
-  DW_TAG_class_type
                 DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
                 DW_AT_signature	(0x00000001)
     DW_TAG_inheritance
@@ -152,6 +115,60 @@ DW_TAG_compile_unit
                   DW_AT_name	("byteLength")
                   DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000008)
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/map/Map<i32,~lib/string/String>")
+                DW_AT_signature	(0x00000004)
+    DW_TAG_inheritance
+                  DW_AT_type	("~lib/object/Object")
+    DW_TAG_member
+                  DW_AT_name	("buckets")
+                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("bucketsMask")
+                  DW_AT_type	("u32")
+                  DW_AT_data_member_location	(0x00000004)
+    DW_TAG_member
+                  DW_AT_name	("entries")
+                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
+                  DW_AT_data_member_location	(0x00000008)
+    DW_TAG_member
+                  DW_AT_name	("entriesCapacity")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x0000000c)
+    DW_TAG_member
+                  DW_AT_name	("entriesOffset")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x00000010)
+    DW_TAG_member
+                  DW_AT_name	("entriesCount")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x00000014)
+    DW_TAG_template_type_parameter
+                  DW_AT_type	("i32")
+    DW_TAG_template_type_parameter
+                  DW_AT_type	("~lib/string/String")
+    NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/map/MapEntry<i32,~lib/string/String>")
+                DW_AT_signature	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("key")
+                  DW_AT_type	("i32")
+                  DW_AT_data_member_location	(0x00000000)
+    DW_TAG_member
+                  DW_AT_name	("value")
+                  DW_AT_type	("~lib/string/String")
+                  DW_AT_data_member_location	(0x00000004)
+    DW_TAG_member
+                  DW_AT_name	("taggedNext")
+                  DW_AT_type	("usize")
+                  DW_AT_data_member_location	(0x00000008)
+    DW_TAG_template_type_parameter
+                  DW_AT_type	("i32")
+    DW_TAG_template_type_parameter
+                  DW_AT_type	("~lib/string/String")
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/object/Object")
@@ -245,14 +262,38 @@ DW_TAG_compile_unit
     DW_TAG_inheritance
                   DW_AT_type	("~lib/object/Object")
     NULL
+  DW_TAG_class_type
+                DW_AT_name	("~lib/tuple/SmallTuple")
+                DW_AT_signature	(0x00000005)
+    DW_TAG_inheritance
+                  DW_AT_type	("~lib/object/Object")
+    NULL
   DW_TAG_variable
-                DW_AT_name	("tests/dwarf/cases/TestGlobal/bbb")
+                DW_AT_name	("~lib/map/BUCKET_SIZE")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/map/EMPTY")
+                DW_AT_type	("usize")
+  DW_TAG_variable
+                DW_AT_name	("~lib/map/FILL_FACTOR_D")
                 DW_AT_type	("i32")
   DW_TAG_variable
-                DW_AT_name	("tests/dwarf/cases/TestGlobal/c1")
-                DW_AT_type	("tests/dwarf/cases/TestGlobal/C1")
+                DW_AT_name	("~lib/map/FILL_FACTOR_N")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/map/FREE_FACTOR_D")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/map/FREE_FACTOR_N")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/map/INITIAL_CAPACITY")
+                DW_AT_type	("i32")
   DW_TAG_variable
                 DW_AT_name	("~lib/native/ASC_LOW_MEMORY_LIMIT")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/native/ASC_SHRINK_LEVEL")
                 DW_AT_type	("i32")
   DW_TAG_variable
                 DW_AT_name	("~lib/rt/common/AL_BITS")
@@ -396,6 +437,30 @@ DW_TAG_compile_unit
                 DW_AT_name	("~lib/util/error/E_INDEXOUTOFRANGE")
                 DW_AT_type	("~lib/string/String")
   DW_TAG_variable
+                DW_AT_name	("~lib/util/error/E_INVALIDLENGTH")
+                DW_AT_type	("~lib/string/String")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/error/E_KEYNOTFOUND")
+                DW_AT_type	("~lib/string/String")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/hash/XXH32_P1")
+                DW_AT_type	("u32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/hash/XXH32_P2")
+                DW_AT_type	("u32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/hash/XXH32_P3")
+                DW_AT_type	("u32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/hash/XXH32_P4")
+                DW_AT_type	("u32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/hash/XXH32_P5")
+                DW_AT_type	("u32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/hash/XXH32_SEED")
+                DW_AT_type	("u32")
+  DW_TAG_variable
                 DW_AT_name	("~lib/util/math/EXP2F_TABLE_BITS")
                 DW_AT_type	("i32")
   DW_TAG_variable
@@ -422,14 +487,28 @@ DW_TAG_compile_unit
   DW_TAG_variable
                 DW_AT_name	("~lib/util/number/MAX_DOUBLE_LENGTH")
                 DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/sort/INSERTION_SORT_THRESHOLD")
+                DW_AT_type	("i32")
+  DW_TAG_variable
+                DW_AT_name	("~lib/util/sort/MIN_RUN_LENGTH")
+                DW_AT_type	("i32")
   DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestGlobal/start:tests/dwarf/cases/TestGlobal")
+                DW_AT_name	("tests/dwarf/cases/TestMapNoIterator/start:tests/dwarf/cases/TestMapNoIterator")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/dwarf/cases/TestGlobal")
+                DW_AT_name	("start:tests/dwarf/cases/TestMapNoIterator")
     NULL
   DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestGlobal/test")
+                DW_AT_name	("tests/dwarf/cases/TestMapNoIterator/test")
+    DW_TAG_lexical_block
+                  scope start	TestMapNoIterator.ts:2
+                  scope end	TestMapNoIterator.ts:6
+      DW_TAG_variable
+                    DW_AT_name	("m")
+                    DW_AT_type	("~lib/map/Map<i32,~lib/string/String>")
+                    DW_AT_location	(0x00000000)
+      NULL
     NULL
 
 .debug_str contents:
