@@ -121,14 +121,14 @@ static std::unordered_set<std::string_view> collectReachableTypes(VariableInfo c
   }
 
   // BFS: transitively collect types referenced by reachable classes
-  std::queue<std::string_view> worklist;
+  std::vector<std::string_view> worklist;
   for (std::string_view const typeName : reachableTypes) {
-    worklist.push(typeName);
+    worklist.push_back(typeName);
   }
 
   while (!worklist.empty()) {
-    std::string_view const current = worklist.front();
-    worklist.pop();
+    std::string_view const current = worklist.back();
+    worklist.pop_back();
 
     auto const it = classRegistry.find(current);
     if (it == classRegistry.end())
@@ -138,18 +138,18 @@ static std::unordered_set<std::string_view> collectReachableTypes(VariableInfo c
 
     std::string_view const parentName = classInfo.getParentName();
     if (!parentName.empty() && reachableTypes.insert(parentName).second) {
-      worklist.push(parentName);
+      worklist.push_back(parentName);
     }
 
     for (FieldInfo const &field : classInfo.getFields()) {
       if (reachableTypes.insert(field.getType()).second) {
-        worklist.push(field.getType());
+        worklist.push_back(field.getType());
       }
     }
 
     for (std::string_view const templateType : classInfo.getTemplateTypes()) {
       if (reachableTypes.insert(templateType).second) {
-        worklist.push(templateType);
+        worklist.push_back(templateType);
       }
     }
   }
