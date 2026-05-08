@@ -3077,7 +3077,7 @@
    )
   )
  )
- (func $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple> (param $this i32) (param $offset i32) (param $value i32)
+ (func $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null> (param $this i32) (param $offset i32) (param $value i32)
   (local $elementPtr i32)
   (local.set $elementPtr
    (i32.add
@@ -3108,7 +3108,7 @@
     )
    )
   )
-  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
+  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
    (call $~lib/rt/__tmptostack
     (local.get $0)
    )
@@ -3116,6 +3116,9 @@
    (call $~lib/rt/__tmptostack
     (global.get $~lib/rt/closure/env)
    )
+  )
+  (global.set $~lib/rt/closure/env
+   (i32.const 0)
   )
   (call $~lib/tuple/SmallTuple#__set<i32>
    (call $~lib/rt/__tmptostack
@@ -3250,7 +3253,7 @@
     )
    )
   )
-  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
+  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
    (call $~lib/rt/__tmptostack
     (local.get $1)
    )
@@ -3258,6 +3261,9 @@
    (call $~lib/rt/__tmptostack
     (global.get $~lib/rt/closure/env)
    )
+  )
+  (global.set $~lib/rt/closure/env
+   (i32.const 0)
   )
   (call $~lib/warpo/ffi/ffi.set_ffi_closure_env
    (local.get $userData)
@@ -3383,14 +3389,12 @@
     )
    )
   )
-  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
+  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
    (call $~lib/rt/__tmptostack
     (local.get $1)
    )
    (i32.const 0)
-   (call $~lib/rt/__tmptostack
-    (global.get $~lib/rt/closure/env)
-   )
+   (i32.const 0)
   )
   (call $~lib/tuple/SmallTuple#__set<%28%29=>i32>
    (call $~lib/rt/__tmptostack
@@ -3446,14 +3450,12 @@
     )
    )
   )
-  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple>
+  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
    (call $~lib/rt/__tmptostack
     (local.get $0)
    )
    (i32.const 0)
-   (call $~lib/rt/__tmptostack
-    (global.get $~lib/rt/closure/env)
-   )
+   (i32.const 0)
   )
   (call $~lib/tuple/SmallTuple#__set<i32>
    (call $~lib/rt/__tmptostack

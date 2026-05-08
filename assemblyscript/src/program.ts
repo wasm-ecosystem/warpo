@@ -4475,7 +4475,11 @@ export class Function extends TypedElement {
   pushClosureScope(closureInfo: ClosureFunctionInfo, storage: Local | null = null): void {
     let program = this.prototype.program;
     let builder = new TupleTypeBuilder(program, program.registeredTupleTypes);
-    builder.push(program.smallTupleInstance.type, this.prototype.declarationBase.nameRange, ReportMode.Report);
+    builder.push(
+      program.smallTupleInstance.type.asNullable(),
+      this.prototype.declarationBase.nameRange,
+      ReportMode.Report
+    );
     this.closureScopeStack_.push(new ClosureScopeFrame(builder, closureInfo, storage));
   }
 

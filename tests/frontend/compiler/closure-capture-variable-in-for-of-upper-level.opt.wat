@@ -1630,6 +1630,8 @@
   local.get $0
   local.get $1
   call $~lib/rt/itcms/__link
+  i32.const 0
+  global.set $~lib/rt/closure/env
   local.get $0
   i32.load
   local.tee $0
@@ -1675,11 +1677,10 @@
   local.get $1
   i32.store align=1
   local.get $1
-  global.get $~lib/rt/closure/env
-  local.tee $0
+  i32.const 0
   i32.store
   local.get $1
-  local.get $0
+  i32.const 0
   call $~lib/rt/itcms/__link
   local.get $1
   i32.const 4

@@ -1587,6 +1587,8 @@
   i32.const 0
   global.get $~lib/rt/closure/env
   call $~lib/tuple/SmallTuple#__set<closure-obj-attribute/Point>
+  i32.const 0
+  global.set $~lib/rt/closure/env
   local.get $0
   i32.load
   local.tee $0
@@ -1643,7 +1645,7 @@
   i32.store align=1
   local.get $0
   i32.const 0
-  global.get $~lib/rt/closure/env
+  i32.const 0
   call $~lib/tuple/SmallTuple#__set<closure-obj-attribute/Point>
   local.get $0
   i32.const 4

@@ -120,6 +120,11 @@ function getThemeConfig(language: "en" | "zh-CN"): DefaultTheme.Config {
             items: listItems("tech/infra"),
           },
           {
+            text: "GC",
+            link: "/tech/gc/debugging_gc_bugs",
+            items: listItems("tech/gc"),
+          },
+          {
             text: "For Developers",
             items: [
               {
