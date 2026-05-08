@@ -313,6 +313,8 @@ INSTANTIATE_TEST_SUITE_P(DebugSymbolTests, TestDebugSymbol_P,
                              "TestLocalInSwitch",
                              "TestIssue328Crash",
                              "TestTuple",
+                             "TestMapNoIterator",
+                             "TestMapWithIterator",
                          }));
 
 int main(int argc, char **argv) {

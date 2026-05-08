@@ -119,58 +119,6 @@ DW_TAG_compile_unit
                   DW_AT_data_member_location	(0x00000008)
     NULL
   DW_TAG_class_type
-                DW_AT_name	("~lib/number/Bool")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/F32")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/F64")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/I16")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/I32")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/I64")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/I8")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/Isize")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/U16")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/U32")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/U64")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/U8")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/number/Usize")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
                 DW_AT_name	("~lib/object/Object")
                 DW_AT_signature	(0x00000000)
     NULL

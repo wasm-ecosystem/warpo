@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <fmt/base.h>
+#include <queue>
+#include <unordered_set>
 
 #include "../helper/BinaryenExt.hpp"
 #include "AbbrevFactory.hpp"
@@ -84,6 +86,76 @@ private:
   void onValue(llvm::StringRef const String) override { currentOffset_ += String.size() + 1U; }
   void onValue(llvm::MemoryBufferRef const MBR) override { currentOffset_ += MBR.getBufferSize(); }
 };
+
+static void collectTypesFromSubPrograms(std::deque<SubProgramInfo> const &subPrograms,
+                                        std::unordered_set<std::string_view> &reachableTypes) {
+  for (SubProgramInfo const &subProgram : subPrograms) {
+    for (ParameterInfo const &param : subProgram.getParameters()) {
+      reachableTypes.insert(param.getType());
+    }
+    for (auto const &[scopeId, locals] : subProgram.getLocals()) {
+      for (LocalInfo const &local : locals) {
+        reachableTypes.insert(local.getType());
+      }
+    }
+  }
+}
+
+static std::unordered_set<std::string_view> collectReachableTypes(VariableInfo const &variableInfo) {
+  VariableInfo::ClassRegistry const &classRegistry = variableInfo.getClassRegistry();
+  VariableInfo::GlobalTypes const &globalTypes = variableInfo.getGlobalTypes();
+
+  std::unordered_set<std::string_view> reachableTypes;
+
+  // Seed from global variables
+  for (auto const &[name, info] : globalTypes) {
+    reachableTypes.insert(info.typeName);
+  }
+
+  // Seed from global functions' params and locals
+  collectTypesFromSubPrograms(variableInfo.getSubProgramRegistry().getList(), reachableTypes);
+
+  // Seed from class member functions' params and locals
+  for (auto const &[className, classInfo] : classRegistry) {
+    collectTypesFromSubPrograms(classInfo.getSubProgramRegistry().getList(), reachableTypes);
+  }
+
+  // BFS: transitively collect types referenced by reachable classes
+  std::vector<std::string_view> worklist;
+  for (std::string_view const typeName : reachableTypes) {
+    worklist.push_back(typeName);
+  }
+
+  while (!worklist.empty()) {
+    std::string_view const current = worklist.back();
+    worklist.pop_back();
+
+    auto const it = classRegistry.find(current);
+    if (it == classRegistry.end())
+      continue;
+
+    ClassInfo const &classInfo = it->second;
+
+    std::string_view const parentName = classInfo.getParentName();
+    if (!parentName.empty() && reachableTypes.insert(parentName).second) {
+      worklist.push_back(parentName);
+    }
+
+    for (FieldInfo const &field : classInfo.getFields()) {
+      if (reachableTypes.insert(field.getType()).second) {
+        worklist.push_back(field.getType());
+      }
+    }
+
+    for (std::string_view const templateType : classInfo.getTemplateTypes()) {
+      if (reachableTypes.insert(templateType).second) {
+        worklist.push_back(templateType);
+      }
+    }
+  }
+
+  return reachableTypes;
+}
 
 llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
 
@@ -378,7 +450,12 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
       tupleFieldLocalVariableAbbrev.Code,
   };
 
+  std::unordered_set<std::string_view> const reachableTypes = collectReachableTypes(variableInfo);
+
   for (auto const &[className, classInfo] : classRegistry) {
+    if (reachableTypes.find(className) == reachableTypes.end())
+      continue;
+
     std::optional<uint32_t> const rtid = classInfo.getRtid();
 
     llvm::DWARFYAML::Entry classEntry;
