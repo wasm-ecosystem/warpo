@@ -10,12 +10,16 @@ set(unittest_SOURCES
   cast-check.cpp
   cfg.cpp
   dataflow.cpp
+  delta_debugging.cpp
   dfa_minimization.cpp
   disjoint_sets.cpp
+  graph.cpp
+  int128.cpp
   leaves.cpp
   glbs.cpp
   interpreter.cpp
   intervals.cpp
+  istring.cpp
   json.cpp
   lattices.cpp
   local-graph.cpp

@@ -63,6 +63,7 @@
 #include "ir/effects.h"
 #include "ir/eh-utils.h"
 #include "ir/find_all.h"
+#include "ir/iteration.h"
 #include "ir/label-utils.h"
 #include "ir/utils.h"
 #include "pass.h"
@@ -299,6 +300,7 @@ struct CodeFolding
       returnTails.clear();
       unoptimizables.clear();
       modifieds.clear();
+      exitingBranchCache.clear();
       if (needEHFixups) {
         EHUtils::handleBlockNestedPops(func, *getModule());
       }
@@ -306,11 +308,104 @@ struct CodeFolding
   }
 
 private:
+  // Cache of exiting branch names, populated on demand. Only queried roots
+  // are stored. An empty set means no exiting branches.
+  std::unordered_map<Expression*, std::unordered_set<Name>> exitingBranchCache;
+
+  bool hasExitingBranches(Expression* expr) {
+    auto it = exitingBranchCache.find(expr);
+    if (it != exitingBranchCache.end()) {
+      return !it->second.empty();
+    }
+    return !populateExitingBranchCache(expr).empty();
+  }
+
+  // Walk |root| bottom-up computing exiting branches. Name sets are kept
+  // transiently (moved from children, erased after merge). Only the root's
+  // name set is persisted. Already-cached subtrees are skipped via scan(),
+  // and their cached names are merged in precisely.
+  // Returns a reference to the root's cached set (which may be empty).
+  const std::unordered_set<Name>& populateExitingBranchCache(Expression* root) {
+    struct CachePopulator
+      : public PostWalker<CachePopulator,
+                          UnifiedExpressionVisitor<CachePopulator>> {
+      std::unordered_map<Expression*, std::unordered_set<Name>>& resultCache;
+      std::unordered_map<Expression*, std::unordered_set<Name>> nameSets;
+
+      CachePopulator(
+        std::unordered_map<Expression*, std::unordered_set<Name>>& resultCache)
+        : resultCache(resultCache) {}
+
+      static void scan(CachePopulator* self, Expression** currp) {
+        auto* curr = *currp;
+        if (self->resultCache.count(curr)) {
+          return;
+        }
+        PostWalker<CachePopulator,
+                   UnifiedExpressionVisitor<CachePopulator>>::scan(self, currp);
+      }
+
+      void visitExpression(Expression* curr) {
+        std::unordered_set<Name> targets;
+
+        ChildIterator children(curr);
+        for (auto* child : children) {
+          auto it = nameSets.find(child);
+          if (it != nameSets.end()) {
+            if (targets.empty()) {
+              targets = std::move(it->second);
+            } else {
+              targets.merge(it->second);
+            }
+            nameSets.erase(it);
+          } else {
+            // Child was skipped by scan() — merge its cached names.
+            auto cacheIt = resultCache.find(child);
+            if (cacheIt != resultCache.end() && !cacheIt->second.empty()) {
+              if (targets.empty()) {
+                targets = cacheIt->second;
+              } else {
+                targets.insert(cacheIt->second.begin(), cacheIt->second.end());
+              }
+            }
+          }
+        }
+
+        BranchUtils::operateOnScopeNameUses(
+          curr, [&](Name& name) { targets.insert(name); });
+
+        BranchUtils::operateOnScopeNameDefs(curr, [&](Name& name) {
+          if (name.is()) {
+            targets.erase(name);
+          }
+        });
+
+        if (!targets.empty()) {
+          nameSets[curr] = std::move(targets);
+        }
+      }
+    };
+    CachePopulator populator(exitingBranchCache);
+    populator.walk(root);
+    auto it = populator.nameSets.find(root);
+    if (it != populator.nameSets.end()) {
+      return exitingBranchCache[root] = std::move(it->second);
+    }
+    return exitingBranchCache[root] = {};
+  }
+
   // check if we can move a list of items out of another item. we can't do so
   // if one of the items has a branch to something inside outOf that is not
   // inside that item
   bool canMove(const std::vector<Expression*>& items, Expression* outOf) {
-    auto allTargets = BranchUtils::getBranchTargets(outOf);
+    return canMove(items, outOf, BranchUtils::getBranchTargets(outOf));
+  }
+
+  // Overload that accepts pre-computed branch targets to avoid redundant
+  // O(N) getBranchTargets calls.
+  bool canMove(const std::vector<Expression*>& items,
+               Expression* outOf,
+               const BranchUtils::NameSet& allTargets) {
     for (auto* item : items) {
       auto exiting = BranchUtils::getExitingBranches(item);
       std::vector<Name> intersection;
@@ -544,11 +639,18 @@ private:
   // we are just starting; num > 0 means that tails is guaranteed to be
   // equal in the last num items, so we can merge there, but we look for
   // deeper merges first.
+  // bodyTargets is lazily computed on first need and then passed to recursive
+  // calls to avoid repeated O(N) getBranchTargets walks over the function body.
   // returns whether we optimized something.
-  bool optimizeTerminatingTails(std::vector<Tail>& tails, Index num = 0) {
+  bool optimizeTerminatingTails(std::vector<Tail>& tails,
+                                Index num = 0,
+                                BranchUtils::NameSet* bodyTargets = nullptr) {
     if (tails.size() < 2) {
       return false;
     }
+    // Storage for body branch targets, declared here so it outlives the
+    // pointer stored in bodyTargets.
+    BranchUtils::NameSet localBodyTargets;
     // remove things that are untoward and cannot be optimized
     tails.erase(
       std::remove_if(tails.begin(),
@@ -609,9 +711,11 @@ private:
       // can be removed, though
       cost += WORTH_ADDING_BLOCK_TO_REMOVE_THIS_MUCH;
       // if we cannot merge to the end, then we definitely need 2 blocks,
-      // and a branch
-      // TODO: efficiency, entire body
-      if (!canMove(items, getFunction()->body)) {
+      // and a branch. Use the pre-computed bodyTargets to avoid repeated
+      // O(N) getBranchTargets calls.
+      assert(bodyTargets);
+      bool canMoveItems = canMove(items, getFunction()->body, *bodyTargets);
+      if (!canMoveItems) {
         cost += 1 + WORTH_ADDING_BLOCK_TO_REMOVE_THIS_MUCH;
         // TODO: to do this, we need to maintain a map of element=>parent,
         //       so that we can insert the new blocks in the right place
@@ -637,9 +741,7 @@ private:
                                 // TODO: this should not be a problem in
                                 //       *non*-terminating tails, but
                                 //       double-verify that
-                                if (EffectAnalyzer(
-                                      getPassOptions(), *getModule(), newItem)
-                                      .hasExternalBreakTargets()) {
+                                if (hasExitingBranches(newItem)) {
                                   return true;
                                 }
                                 return false;
@@ -709,7 +811,14 @@ private:
             // as the changes may influence us. we leave further opts to further
             // passes (as this is rare in practice, it's generally not a perf
             // issue, but TODO optimize)
-            if (optimizeTerminatingTails(explore, num + 1)) {
+            // Compute body branch targets once and share across recursive
+            // calls to avoid repeated O(N) tree walks.
+            if (!bodyTargets) {
+              localBodyTargets =
+                BranchUtils::getBranchTargets(getFunction()->body);
+              bodyTargets = &localBodyTargets;
+            }
+            if (optimizeTerminatingTails(explore, num + 1, bodyTargets)) {
               return true;
             }
           }

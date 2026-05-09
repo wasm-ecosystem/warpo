@@ -180,6 +180,9 @@ public:
             }
           }
           std::cout << "]\n";
+          if (import->base == "log-branch") {
+            return arguments[0];
+          }
           return {};
         } else if (import->base == "throw") {
           // Throw something, depending on the value of the argument. 0 means
@@ -409,7 +412,7 @@ class FuzzerImportResolver
     // fuzz_shell.js.
     Index payload = 0;
     for (auto name : {name.module, name.name}) {
-      for (auto c : name.str) {
+      for (auto c : name.view()) {
         payload = (payload + static_cast<Index>(c)) % 251;
       }
     }

@@ -38,50 +38,6 @@ namespace wasm {
 
 namespace {
 
-using RecGroupInfo = std::vector<HeapType>;
-
-struct HeapTypeInfo {
-  using type_t = HeapType;
-  // Used in assertions to ensure that temporary types don't leak into the
-  // global store.
-  bool isTemp = false;
-  bool isOpen = false;
-  Shareability share = Unshared;
-  // The supertype of this HeapType, if it exists.
-  HeapTypeInfo* supertype = nullptr;
-  // The descriptor of this HeapType, if it exists.
-  HeapTypeInfo* descriptor = nullptr;
-  // The HeapType described by this one, if it exists.
-  HeapTypeInfo* described = nullptr;
-  // The recursion group of this type or null if the recursion group is trivial
-  // (i.e. contains only this type).
-  RecGroupInfo* recGroup = nullptr;
-  size_t recGroupIndex = 0;
-  HeapTypeKind kind;
-  union {
-    Signature signature;
-    Continuation continuation;
-    Struct struct_;
-    Array array;
-  };
-
-  HeapTypeInfo(Signature sig) : kind(HeapTypeKind::Func), signature(sig) {}
-  HeapTypeInfo(Continuation continuation)
-    : kind(HeapTypeKind::Cont), continuation(continuation) {}
-  HeapTypeInfo(const Struct& struct_)
-    : kind(HeapTypeKind::Struct), struct_(struct_) {}
-  HeapTypeInfo(Struct&& struct_)
-    : kind(HeapTypeKind::Struct), struct_(std::move(struct_)) {}
-  HeapTypeInfo(Array array) : kind(HeapTypeKind::Array), array(array) {}
-  ~HeapTypeInfo();
-
-  constexpr bool isSignature() const { return kind == HeapTypeKind::Func; }
-  constexpr bool isContinuation() const { return kind == HeapTypeKind::Cont; }
-  constexpr bool isStruct() const { return kind == HeapTypeKind::Struct; }
-  constexpr bool isArray() const { return kind == HeapTypeKind::Array; }
-  constexpr bool isData() const { return isStruct() || isArray(); }
-};
-
 // Helper for finding the equirecursive least upper bound of two types.
 // Helper for printing types.
 struct TypePrinter {
@@ -209,11 +165,6 @@ public:
 
 namespace wasm {
 namespace {
-
-HeapTypeInfo* getHeapTypeInfo(HeapType ht) {
-  assert(!ht.isBasic());
-  return (HeapTypeInfo*)ht.getID();
-}
 
 HeapType asHeapType(std::unique_ptr<HeapTypeInfo>& info) {
   return HeapType(uintptr_t(info.get()));
@@ -881,29 +832,6 @@ HeapType::HeapType(Array array) {
     HeapType(globalRecGroupStore.insert(std::make_unique<HeapTypeInfo>(array)));
 }
 
-HeapTypeKind HeapType::getKind() const {
-  if (isBasic()) {
-    return HeapTypeKind::Basic;
-  }
-  return getHeapTypeInfo(*this)->kind;
-}
-
-bool HeapType::isOpen() const {
-  if (isBasic()) {
-    return false;
-  } else {
-    return getHeapTypeInfo(*this)->isOpen;
-  }
-}
-
-Shareability HeapType::getShared() const {
-  if (isBasic()) {
-    return (id & SharedMask) != 0 ? Shared : Unshared;
-  } else {
-    return getHeapTypeInfo(*this)->share;
-  }
-}
-
 bool HeapType::isCastable() {
   return !isContinuation() && !isMaybeShared(HeapType::cont) &&
          !isMaybeShared(HeapType::nocont);
@@ -1528,6 +1456,8 @@ std::ostream& operator<<(std::ostream& os,
       return os << "Describes clause on a non-struct type";
     case TypeBuilder::ErrorReasonKind::ForwardDescribesReference:
       return os << "Describes clause is a forward reference";
+    case TypeBuilder::ErrorReasonKind::ForwardDescriptorReference:
+      return os << "Descriptor clause is a forward reference";
     case TypeBuilder::ErrorReasonKind::MismatchedDescribes:
       return os << "Described type is not a matching descriptor";
     case TypeBuilder::ErrorReasonKind::NonStructDescriptor:
@@ -2509,7 +2439,6 @@ validateTypeInfo(HeapTypeInfo& info,
     if (info.kind != HeapTypeKind::Struct) {
       return TypeBuilder::ErrorReasonKind::NonStructDescribes;
     }
-    assert(desc->isTemp && "unexpected canonical described type");
     if (!seenTypes.contains(HeapType(uintptr_t(desc)))) {
       return TypeBuilder::ErrorReasonKind::ForwardDescribesReference;
     }
@@ -2654,6 +2583,14 @@ buildRecGroup(std::unique_ptr<RecGroupInfo>&& groupInfo,
           i, TypeBuilder::ErrorReasonKind::ForwardChildReference}};
       }
     }
+    if (auto desc = type.getDescriptorType()) {
+      if (isTemp(*desc) && !seenTypes.contains(*desc)) {
+        return {TypeBuilder::Error{
+          i, TypeBuilder::ErrorReasonKind::ForwardDescriptorReference}};
+      }
+    }
+    // Describes clauses were already checked as we validated each type in the
+    // group.
   }
 
   // The rec group is valid, so we can try to move the group into the global rec
@@ -2825,9 +2762,7 @@ std::unordered_set<HeapType> getIgnorablePublicTypes() {
   return set;
 }
 
-} // namespace wasm
-
-namespace wasm::HeapTypes {
+namespace HeapTypes {
 
 HeapType getMutI8Array() {
   static HeapType i8Array = Array(Field(Field::i8, Mutable));
@@ -2839,7 +2774,18 @@ HeapType getMutI16Array() {
   return i16Array;
 }
 
-} // namespace wasm::HeapTypes
+} // namespace HeapTypes
+
+namespace Types {
+
+Type getI64Pair() {
+  static Type i64Pair({Type::i64, Type::i64});
+  return i64Pair;
+}
+
+} // namespace Types
+
+} // namespace wasm
 
 namespace std {
 

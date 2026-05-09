@@ -22,7 +22,8 @@
 #include "ir/effects.h"
 #include "ir/module-utils.h"
 #include "pass.h"
-#include "support/unique_deferring_queue.h"
+#include "support/graph_traversal.h"
+#include "support/strongly_connected_components.h"
 #include "wasm.h"
 
 namespace wasm {
@@ -39,6 +40,9 @@ struct FuncInfo {
 
   // Directly-called functions from this function.
   std::unordered_set<Name> calledFunctions;
+
+  // Types that are targets of indirect calls.
+  std::unordered_set<HeapType> indirectCalledTypes;
 };
 
 std::map<Function*, FuncInfo> analyzeFuncs(Module& module,
@@ -83,11 +87,22 @@ std::map<Function*, FuncInfo> analyzeFuncs(Module& module,
             if (auto* call = curr->dynCast<Call>()) {
               // Note the direct call.
               funcInfo.calledFunctions.insert(call->target);
+            } else if (effects.calls && options.closedWorld) {
+              HeapType type;
+              if (auto* callRef = curr->dynCast<CallRef>()) {
+                // call_ref on unreachable does not have a call effect,
+                // so this must be a HeapType.
+                type = callRef->target->type.getHeapType();
+              } else if (auto* callIndirect = curr->dynCast<CallIndirect>()) {
+                type = callIndirect->heapType;
+              } else {
+                funcInfo.effects = UnknownEffects;
+                return;
+              }
+
+              funcInfo.indirectCalledTypes.insert(type);
             } else if (effects.calls) {
-              // This is an indirect call of some sort, so we must assume the
-              // worst. To do so, clear the effects, which indicates nothing
-              // is known (so anything is possible).
-              // TODO: We could group effects by function type etc.
+              assert(!options.closedWorld);
               funcInfo.effects = UnknownEffects;
             } else {
               // No call here, but update throwing if we see it. (Only do so,
@@ -107,61 +122,219 @@ std::map<Function*, FuncInfo> analyzeFuncs(Module& module,
   return std::move(analysis.map);
 }
 
-// Propagate effects from callees to callers transitively
-// e.g. if A -> B -> C (A calls B which calls C)
-// Then B inherits effects from C and A inherits effects from both B and C.
-void propagateEffects(
-  const Module& module,
-  const std::unordered_map<Name, std::unordered_set<Name>>& reverseCallGraph,
-  std::map<Function*, FuncInfo>& funcInfos) {
+using CallGraphNode = std::variant<Function*, HeapType>;
 
-  UniqueNonrepeatingDeferredQueue<std::pair<Name, Name>> work;
+// Call graph for indirect and direct calls.
+//
+// key (caller) -> value (callee)
+// Function  -> Function : direct call
+// Function  -> HeapType : indirect call to the given HeapType
+// HeapType  -> Function : The function `callee` has the type `caller`. The
+//                         HeapType may essentially 'call' any of its
+//                         potential implementations.
+// HeapType  -> HeapType : `callee` is a subtype of `caller`. A call_ref
+//                         could target any subtype of the ref, so we need to
+//                         aggregate effects of subtypes of the target type.
+//
+// If we're running in an open world, we only include Function -> Function
+// edges, and don't compute effects for indirect calls, conservatively assuming
+// the worst.
+using CallGraph =
+  std::unordered_map<CallGraphNode, std::unordered_set<CallGraphNode>>;
 
-  for (const auto& [callee, callers] : reverseCallGraph) {
-    for (const auto& caller : callers) {
-      work.push(std::pair(callee, caller));
-    }
-  }
+CallGraph buildCallGraph(const Module& module,
+                         const std::map<Function*, FuncInfo>& funcInfos,
+                         bool closedWorld) {
+  CallGraph callGraph;
+  if (!closedWorld) {
+    for (const auto& [caller, callerInfo] : funcInfos) {
+      auto& callees = callGraph[caller];
 
-  auto propagate = [&](Name callee, Name caller) {
-    auto& callerEffects = funcInfos.at(module.getFunction(caller)).effects;
-    const auto& calleeEffects =
-      funcInfos.at(module.getFunction(callee)).effects;
-    if (!callerEffects) {
-      return;
-    }
-
-    if (!calleeEffects) {
-      callerEffects = UnknownEffects;
-      return;
-    }
-
-    callerEffects->mergeIn(*calleeEffects);
-  };
-
-  while (!work.empty()) {
-    auto [callee, caller] = work.pop();
-
-    if (callee == caller) {
-      auto& callerEffects = funcInfos.at(module.getFunction(caller)).effects;
-      if (callerEffects) {
-        callerEffects->trap = true;
+      // Function -> Function
+      for (Name calleeFunction : callerInfo.calledFunctions) {
+        callees.insert(module.getFunction(calleeFunction));
       }
     }
 
-    // Even if nothing changed, we still need to keep traversing the callers
-    // to look for a potential cycle which adds a trap affect on the above
-    // lines.
-    propagate(callee, caller);
+    return callGraph;
+  }
 
-    const auto& callerCallers = reverseCallGraph.find(caller);
-    if (callerCallers == reverseCallGraph.end()) {
+  std::unordered_set<HeapType> allFunctionTypes;
+  for (const auto& [caller, callerInfo] : funcInfos) {
+    auto& callees = callGraph[caller];
+
+    // Function -> Function
+    for (Name calleeFunction : callerInfo.calledFunctions) {
+      callees.insert(module.getFunction(calleeFunction));
+    }
+
+    // Function -> Type
+    allFunctionTypes.insert(caller->type.getHeapType());
+    for (HeapType calleeType : callerInfo.indirectCalledTypes) {
+      callees.insert(calleeType);
+
+      // Add the key to ensure the lookup doesn't fail for indirect calls to
+      // uninhabited types.
+      callGraph[calleeType];
+    }
+
+    // Type -> Function
+    callGraph[caller->type.getHeapType()].insert(caller);
+  }
+
+  // Type -> Type
+  // Do a DFS up the type heirarchy for all function implementations.
+  // We are essentially walking up each supertype chain and adding edges from
+  // super -> subtype, but doing it via DFS to avoid repeated work.
+  Graph superTypeGraph(allFunctionTypes.begin(),
+                       allFunctionTypes.end(),
+                       [&callGraph](auto&& push, HeapType t) {
+                         // Not needed except that during lookup we expect the
+                         // key to exist.
+                         callGraph[t];
+
+                         if (auto super = t.getDeclaredSuperType()) {
+                           callGraph[*super].insert(t);
+                           push(*super);
+                         }
+                       });
+  (void)superTypeGraph.traverseDepthFirst();
+
+  return callGraph;
+}
+
+void mergeMaybeEffects(std::optional<EffectAnalyzer>& dest,
+                       const std::optional<EffectAnalyzer>& src) {
+  if (dest == UnknownEffects) {
+    return;
+  }
+  if (src == UnknownEffects) {
+    dest = UnknownEffects;
+    return;
+  }
+
+  dest->mergeIn(*src);
+}
+
+// Propagate effects from callees to callers transitively
+// e.g. if A -> B -> C (A calls B which calls C)
+// Then B inherits effects from C and A inherits effects from both B and C.
+//
+// Generate SCC for the call graph, then traverse it in reverse topological
+// order processing each callee before its callers. When traversing:
+// - Merge all of the effects of functions within the CC
+// - Also merge the (already computed) effects of each callee CC
+// - Add trap effects for potentially recursive call chains
+void propagateEffects(const Module& module,
+                      const PassOptions& passOptions,
+                      std::map<Function*, FuncInfo>& funcInfos,
+                      const CallGraph& callGraph) {
+  // We only care about Functions that are roots, not types.
+  // A type would be a root if a function exists with that type, but no-one
+  // indirect calls the type.
+  std::vector<CallGraphNode> funcNodes;
+  for (const auto& [node, _] : callGraph) {
+    if (std::holds_alternative<Function*>(node)) {
+      funcNodes.push_back(node);
+    }
+  }
+
+  struct CallGraphSCCs
+    : SCCs<std::vector<CallGraphNode>::iterator, CallGraphSCCs> {
+
+    const std::map<Function*, FuncInfo>& funcInfos;
+    const CallGraph& callGraph;
+    const Module& module;
+
+    CallGraphSCCs(std::vector<CallGraphNode>& nodes,
+                  const std::map<Function*, FuncInfo>& funcInfos,
+                  const CallGraph& callGraph,
+                  const Module& module)
+      : SCCs<std::vector<CallGraphNode>::iterator, CallGraphSCCs>(nodes.begin(),
+                                                                  nodes.end()),
+        funcInfos(funcInfos), callGraph(callGraph), module(module) {}
+
+    void pushChildren(CallGraphNode node) {
+      for (CallGraphNode callee : callGraph.at(node)) {
+        push(callee);
+      }
+    }
+  };
+  CallGraphSCCs sccs(funcNodes, funcInfos, callGraph, module);
+
+  std::vector<std::optional<EffectAnalyzer>> componentEffects;
+  // Points to an index in componentEffects
+  std::unordered_map<CallGraphNode, Index> nodeComponents;
+
+  for (auto ccIterator : sccs) {
+    std::optional<EffectAnalyzer>& ccEffects =
+      componentEffects.emplace_back(std::in_place, passOptions, module);
+    std::vector<CallGraphNode> cc(ccIterator.begin(), ccIterator.end());
+
+    std::vector<Function*> ccFuncs;
+    for (CallGraphNode node : cc) {
+      nodeComponents.emplace(node, componentEffects.size() - 1);
+      if (auto** func = std::get_if<Function*>(&node)) {
+        ccFuncs.push_back(*func);
+      }
+    }
+
+    std::unordered_set<int> calleeSccs;
+    for (CallGraphNode caller : cc) {
+      for (CallGraphNode callee : callGraph.at(caller)) {
+        calleeSccs.insert(nodeComponents.at(callee));
+      }
+    }
+
+    // Merge in effects from callees
+    for (int calleeScc : calleeSccs) {
+      const auto& calleeComponentEffects = componentEffects.at(calleeScc);
+      mergeMaybeEffects(ccEffects, calleeComponentEffects);
+    }
+
+    // Add trap effects for potential cycles.
+    if (cc.size() > 1) {
+      if (ccEffects != UnknownEffects) {
+        ccEffects->trap = true;
+      }
+    } else if (ccFuncs.size() == 1) {
+      // It's possible for a CC to only contain 1 type, but that is not a
+      // cycle in the call graph.
+      auto* func = ccFuncs[0];
+      if (funcInfos.at(func).calledFunctions.contains(func->name)) {
+        if (ccEffects != UnknownEffects) {
+          ccEffects->trap = true;
+        }
+      }
+    }
+
+    // Aggregate effects within this CC
+    if (ccEffects) {
+      for (Function* f : ccFuncs) {
+        const auto& effects = funcInfos.at(f).effects;
+        mergeMaybeEffects(ccEffects, effects);
+      }
+    }
+
+    // Assign each function's effects to its CC effects.
+    for (Function* f : ccFuncs) {
+      if (!ccEffects) {
+        funcInfos.at(f).effects = UnknownEffects;
+      } else {
+        funcInfos.at(f).effects.emplace(*ccEffects);
+      }
+    }
+  }
+}
+
+void copyEffectsToFunctions(const std::map<Function*, FuncInfo>& funcInfos) {
+  for (auto& [func, info] : funcInfos) {
+    func->effects.reset();
+    if (!info.effects) {
       continue;
     }
 
-    for (const Name& callerCaller : callerCallers->second) {
-      work.push(std::pair(callee, callerCaller));
-    }
+    func->effects = std::make_shared<EffectAnalyzer>(*info.effects);
   }
 }
 
@@ -170,26 +343,12 @@ struct GenerateGlobalEffects : public Pass {
     std::map<Function*, FuncInfo> funcInfos =
       analyzeFuncs(*module, getPassOptions());
 
-    // callee : caller
-    std::unordered_map<Name, std::unordered_set<Name>> callers;
-    for (const auto& [func, info] : funcInfos) {
-      for (const auto& callee : info.calledFunctions) {
-        callers[callee].insert(func->name);
-      }
-    }
+    auto callGraph =
+      buildCallGraph(*module, funcInfos, getPassOptions().closedWorld);
 
-    propagateEffects(*module, callers, funcInfos);
+    propagateEffects(*module, getPassOptions(), funcInfos, callGraph);
 
-    // Generate the final data, starting from a blank slate where nothing is
-    // known.
-    for (auto& [func, info] : funcInfos) {
-      func->effects.reset();
-      if (!info.effects) {
-        continue;
-      }
-
-      func->effects = std::make_shared<EffectAnalyzer>(*info.effects);
-    }
+    copyEffectsToFunctions(funcInfos);
   }
 };
 

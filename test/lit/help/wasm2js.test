@@ -347,6 +347,8 @@
 ;; CHECK-NEXT:   --propagate-globals-globally                  propagate global values to other
 ;; CHECK-NEXT:                                                 globals (useful for tests)
 ;; CHECK-NEXT:
+;; CHECK-NEXT:   --remove-exports                              removes exports using a wildcard
+;; CHECK-NEXT:
 ;; CHECK-NEXT:   --remove-imports                              removes imports and replaces
 ;; CHECK-NEXT:                                                 them with nops
 ;; CHECK-NEXT:
@@ -777,6 +779,10 @@
 ;; CHECK-NEXT:   --enable-custom-page-sizes                    Enable custom page sizes
 ;; CHECK-NEXT:
 ;; CHECK-NEXT:   --disable-custom-page-sizes                   Disable custom page sizes
+;; CHECK-NEXT:
+;; CHECK-NEXT:   --enable-wide-arithmetic                      Enable wide arithmetic
+;; CHECK-NEXT:
+;; CHECK-NEXT:   --disable-wide-arithmetic                     Disable wide arithmetic
 ;; CHECK-NEXT:
 ;; CHECK-NEXT:   --enable-typed-function-references            Deprecated compatibility flag
 ;; CHECK-NEXT:

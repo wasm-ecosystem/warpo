@@ -2,11 +2,9 @@
  (type $0 (func (param i32 i32) (result i32)))
  (type $1 (func))
  (type $2 (func (result i32)))
- (type $3 (func (param i32)))
- (type $4 (func (param i32 i32)))
+ (type $3 (func (param i32 i32)))
  (import "env" "printf" (func $printf (param i32 i32) (result i32)))
- (import "env" "__handle_stack_overflow" (func $__handle_stack_overflow (param i32)))
- (global $global$0 (mut i32) (i32.const 66128))
+ (global $__stack_pointer (mut i32) (i32.const 66128))
  (global $global$1 i32 (i32.const 66128))
  (global $global$2 i32 (i32.const 587))
  (global $__stack_base (mut i32) (i32.const 0))
@@ -33,7 +31,7 @@
       (local.tee $3
        (local.tee $2
         (i32.sub
-         (global.get $global$0)
+         (global.get $__stack_pointer)
          (i32.const 16)
         )
        )
@@ -46,12 +44,10 @@
      )
     )
     (then
-     (call $__handle_stack_overflow
-      (local.get $3)
-     )
+     (unreachable)
     )
    )
-   (global.set $global$0
+   (global.set $__stack_pointer
     (local.get $3)
    )
   )
@@ -87,12 +83,10 @@
      )
     )
     (then
-     (call $__handle_stack_overflow
-      (local.get $4)
-     )
+     (unreachable)
     )
    )
-   (global.set $global$0
+   (global.set $__stack_pointer
     (local.get $4)
    )
   )
@@ -112,7 +106,7 @@
       (local.tee $1
        (local.tee $0
         (i32.sub
-         (global.get $global$0)
+         (global.get $__stack_pointer)
          (i32.const 16)
         )
        )
@@ -125,12 +119,10 @@
      )
     )
     (then
-     (call $__handle_stack_overflow
-      (local.get $1)
-     )
+     (unreachable)
     )
    )
-   (global.set $global$0
+   (global.set $__stack_pointer
     (local.get $1)
    )
   )
@@ -165,12 +157,10 @@
      )
     )
     (then
-     (call $__handle_stack_overflow
-      (local.get $2)
-     )
+     (unreachable)
     )
    )
-   (global.set $global$0
+   (global.set $__stack_pointer
     (local.get $2)
    )
   )
