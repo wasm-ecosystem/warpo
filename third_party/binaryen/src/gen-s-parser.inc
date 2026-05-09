@@ -5,7 +5,7 @@
 // NOLINTBEGIN
 
 auto op = *keyword;
-char buf[33] = {};
+char buf[36] = {};
 // Ensure we do not copy more than the buffer can hold
 if (op.size() >= sizeof(buf)) {
   goto parse_error;
@@ -505,12 +505,34 @@ switch (buf[0]) {
               default: goto parse_error;
             }
           }
-          case 'd':
-            if (op == "f16x8.div"sv) {
-              CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::DivVecF16x8));
-              return Ok{};
+          case 'd': {
+            switch (buf[7]) {
+              case 'e': {
+                switch (buf[14]) {
+                  case '3':
+                    if (op == "f16x8.demote_f32x4_zero"sv) {
+                      CHECK_ERR(makeUnary(ctx, pos, annotations, UnaryOp::DemoteZeroVecF32x4ToVecF16x8));
+                      return Ok{};
+                    }
+                    goto parse_error;
+                  case '6':
+                    if (op == "f16x8.demote_f64x2_zero"sv) {
+                      CHECK_ERR(makeUnary(ctx, pos, annotations, UnaryOp::DemoteZeroVecF64x2ToVecF16x8));
+                      return Ok{};
+                    }
+                    goto parse_error;
+                  default: goto parse_error;
+                }
+              }
+              case 'i':
+                if (op == "f16x8.div"sv) {
+                  CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::DivVecF16x8));
+                  return Ok{};
+                }
+                goto parse_error;
+              default: goto parse_error;
             }
-            goto parse_error;
+          }
           case 'e': {
             switch (buf[7]) {
               case 'q':
@@ -1830,12 +1852,6 @@ switch (buf[0]) {
               return Ok{};
             }
             goto parse_error;
-          case 'd':
-            if (op == "i16x8.dot_i8x16_i7x16_s"sv) {
-              CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::DotI8x16I7x16SToVecI16x8));
-              return Ok{};
-            }
-            goto parse_error;
           case 'e': {
             switch (buf[7]) {
               case 'q':
@@ -2005,12 +2021,6 @@ switch (buf[0]) {
           }
           case 'l': {
             switch (buf[7]) {
-              case 'a':
-                if (op == "i16x8.laneselect"sv) {
-                  CHECK_ERR(makeSIMDTernary(ctx, pos, annotations, SIMDTernaryOp::LaneselectI16x8));
-                  return Ok{};
-                }
-                goto parse_error;
               case 'e': {
                 switch (buf[9]) {
                   case 's':
@@ -2140,12 +2150,29 @@ switch (buf[0]) {
             goto parse_error;
           case 'r': {
             switch (buf[8]) {
-              case 'l':
-                if (op == "i16x8.relaxed_q15mulr_s"sv) {
-                  CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::RelaxedQ15MulrSVecI16x8));
-                  return Ok{};
+              case 'l': {
+                switch (buf[14]) {
+                  case 'd':
+                    if (op == "i16x8.relaxed_dot_i8x16_i7x16_s"sv) {
+                      CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::RelaxedDotI8x16I7x16SToVecI16x8));
+                      return Ok{};
+                    }
+                    goto parse_error;
+                  case 'l':
+                    if (op == "i16x8.relaxed_laneselect"sv) {
+                      CHECK_ERR(makeSIMDTernary(ctx, pos, annotations, SIMDTernaryOp::RelaxedLaneselectI16x8));
+                      return Ok{};
+                    }
+                    goto parse_error;
+                  case 'q':
+                    if (op == "i16x8.relaxed_q15mulr_s"sv) {
+                      CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::RelaxedQ15MulrSVecI16x8));
+                      return Ok{};
+                    }
+                    goto parse_error;
+                  default: goto parse_error;
                 }
-                goto parse_error;
+              }
               case 'p':
                 if (op == "i16x8.replace_lane"sv) {
                   CHECK_ERR(makeSIMDReplace(ctx, pos, annotations, SIMDReplaceOp::ReplaceLaneVecI16x8, 8));
@@ -2976,23 +3003,12 @@ switch (buf[0]) {
                       return Ok{};
                     }
                     goto parse_error;
-                  case 'd': {
-                    switch (buf[11]) {
-                      case '1':
-                        if (op == "i32x4.dot_i16x8_s"sv) {
-                          CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::DotSVecI16x8ToVecI32x4));
-                          return Ok{};
-                        }
-                        goto parse_error;
-                      case '8':
-                        if (op == "i32x4.dot_i8x16_i7x16_add_s"sv) {
-                          CHECK_ERR(makeSIMDTernary(ctx, pos, annotations, SIMDTernaryOp::DotI8x16I7x16AddSToVecI32x4));
-                          return Ok{};
-                        }
-                        goto parse_error;
-                      default: goto parse_error;
+                  case 'd':
+                    if (op == "i32x4.dot_i16x8_s"sv) {
+                      CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::DotSVecI16x8ToVecI32x4));
+                      return Ok{};
                     }
-                  }
+                    goto parse_error;
                   case 'e': {
                     switch (buf[7]) {
                       case 'q':
@@ -3151,12 +3167,6 @@ switch (buf[0]) {
                   }
                   case 'l': {
                     switch (buf[7]) {
-                      case 'a':
-                        if (op == "i32x4.laneselect"sv) {
-                          CHECK_ERR(makeSIMDTernary(ctx, pos, annotations, SIMDTernaryOp::LaneselectI32x4));
-                          return Ok{};
-                        }
-                        goto parse_error;
                       case 'e': {
                         switch (buf[9]) {
                           case 's':
@@ -3259,38 +3269,55 @@ switch (buf[0]) {
                   case 'r': {
                     switch (buf[8]) {
                       case 'l': {
-                        switch (buf[21]) {
-                          case '3': {
-                            switch (buf[26]) {
-                              case 's':
-                                if (op == "i32x4.relaxed_trunc_f32x4_s"sv) {
-                                  CHECK_ERR(makeUnary(ctx, pos, annotations, UnaryOp::RelaxedTruncSVecF32x4ToVecI32x4));
-                                  return Ok{};
-                                }
-                                goto parse_error;
-                              case 'u':
-                                if (op == "i32x4.relaxed_trunc_f32x4_u"sv) {
-                                  CHECK_ERR(makeUnary(ctx, pos, annotations, UnaryOp::RelaxedTruncUVecF32x4ToVecI32x4));
-                                  return Ok{};
-                                }
-                                goto parse_error;
-                              default: goto parse_error;
+                        switch (buf[14]) {
+                          case 'd':
+                            if (op == "i32x4.relaxed_dot_i8x16_i7x16_add_s"sv) {
+                              CHECK_ERR(makeSIMDTernary(ctx, pos, annotations, SIMDTernaryOp::RelaxedDotI8x16I7x16AddSToVecI32x4));
+                              return Ok{};
                             }
-                          }
-                          case '6': {
-                            switch (buf[26]) {
-                              case 's':
-                                if (op == "i32x4.relaxed_trunc_f64x2_s_zero"sv) {
-                                  CHECK_ERR(makeUnary(ctx, pos, annotations, UnaryOp::RelaxedTruncZeroSVecF64x2ToVecI32x4));
-                                  return Ok{};
+                            goto parse_error;
+                          case 'l':
+                            if (op == "i32x4.relaxed_laneselect"sv) {
+                              CHECK_ERR(makeSIMDTernary(ctx, pos, annotations, SIMDTernaryOp::RelaxedLaneselectI32x4));
+                              return Ok{};
+                            }
+                            goto parse_error;
+                          case 't': {
+                            switch (buf[21]) {
+                              case '3': {
+                                switch (buf[26]) {
+                                  case 's':
+                                    if (op == "i32x4.relaxed_trunc_f32x4_s"sv) {
+                                      CHECK_ERR(makeUnary(ctx, pos, annotations, UnaryOp::RelaxedTruncSVecF32x4ToVecI32x4));
+                                      return Ok{};
+                                    }
+                                    goto parse_error;
+                                  case 'u':
+                                    if (op == "i32x4.relaxed_trunc_f32x4_u"sv) {
+                                      CHECK_ERR(makeUnary(ctx, pos, annotations, UnaryOp::RelaxedTruncUVecF32x4ToVecI32x4));
+                                      return Ok{};
+                                    }
+                                    goto parse_error;
+                                  default: goto parse_error;
                                 }
-                                goto parse_error;
-                              case 'u':
-                                if (op == "i32x4.relaxed_trunc_f64x2_u_zero"sv) {
-                                  CHECK_ERR(makeUnary(ctx, pos, annotations, UnaryOp::RelaxedTruncZeroUVecF64x2ToVecI32x4));
-                                  return Ok{};
+                              }
+                              case '6': {
+                                switch (buf[26]) {
+                                  case 's':
+                                    if (op == "i32x4.relaxed_trunc_f64x2_s_zero"sv) {
+                                      CHECK_ERR(makeUnary(ctx, pos, annotations, UnaryOp::RelaxedTruncZeroSVecF64x2ToVecI32x4));
+                                      return Ok{};
+                                    }
+                                    goto parse_error;
+                                  case 'u':
+                                    if (op == "i32x4.relaxed_trunc_f64x2_u_zero"sv) {
+                                      CHECK_ERR(makeUnary(ctx, pos, annotations, UnaryOp::RelaxedTruncZeroUVecF64x2ToVecI32x4));
+                                      return Ok{};
+                                    }
+                                    goto parse_error;
+                                  default: goto parse_error;
                                 }
-                                goto parse_error;
+                              }
                               default: goto parse_error;
                             }
                           }
@@ -3405,12 +3432,23 @@ switch (buf[0]) {
             switch (buf[4]) {
               case 'a': {
                 switch (buf[5]) {
-                  case 'd':
-                    if (op == "i64.add"sv) {
-                      CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::AddInt64));
-                      return Ok{};
+                  case 'd': {
+                    switch (buf[7]) {
+                      case '\0':
+                        if (op == "i64.add"sv) {
+                          CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::AddInt64));
+                          return Ok{};
+                        }
+                        goto parse_error;
+                      case '1':
+                        if (op == "i64.add128"sv) {
+                          CHECK_ERR(makeWideIntAddSub(ctx, pos, annotations, WideIntAddSubOp::AddInt128));
+                          return Ok{};
+                        }
+                        goto parse_error;
+                      default: goto parse_error;
                     }
-                    goto parse_error;
+                  }
                   case 'n':
                     if (op == "i64.and"sv) {
                       CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::AndInt64));
@@ -3958,12 +3996,34 @@ switch (buf[0]) {
                   default: goto parse_error;
                 }
               }
-              case 'm':
-                if (op == "i64.mul"sv) {
-                  CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::MulInt64));
-                  return Ok{};
+              case 'm': {
+                switch (buf[7]) {
+                  case '\0':
+                    if (op == "i64.mul"sv) {
+                      CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::MulInt64));
+                      return Ok{};
+                    }
+                    goto parse_error;
+                  case '_': {
+                    switch (buf[13]) {
+                      case 's':
+                        if (op == "i64.mul_wide_s"sv) {
+                          CHECK_ERR(makeWideIntMul(ctx, pos, annotations, WideIntMulOp::MulWideSInt64));
+                          return Ok{};
+                        }
+                        goto parse_error;
+                      case 'u':
+                        if (op == "i64.mul_wide_u"sv) {
+                          CHECK_ERR(makeWideIntMul(ctx, pos, annotations, WideIntMulOp::MulWideUInt64));
+                          return Ok{};
+                        }
+                        goto parse_error;
+                      default: goto parse_error;
+                    }
+                  }
+                  default: goto parse_error;
                 }
-                goto parse_error;
+              }
               case 'n':
                 if (op == "i64.ne"sv) {
                   CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::NeInt64));
@@ -4091,12 +4151,23 @@ switch (buf[0]) {
                       default: goto parse_error;
                     }
                   }
-                  case 'u':
-                    if (op == "i64.sub"sv) {
-                      CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::SubInt64));
-                      return Ok{};
+                  case 'u': {
+                    switch (buf[7]) {
+                      case '\0':
+                        if (op == "i64.sub"sv) {
+                          CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::SubInt64));
+                          return Ok{};
+                        }
+                        goto parse_error;
+                      case '1':
+                        if (op == "i64.sub128"sv) {
+                          CHECK_ERR(makeWideIntAddSub(ctx, pos, annotations, WideIntAddSubOp::SubInt128));
+                          return Ok{};
+                        }
+                        goto parse_error;
+                      default: goto parse_error;
                     }
-                    goto parse_error;
+                  }
                   default: goto parse_error;
                 }
               }
@@ -4342,12 +4413,6 @@ switch (buf[0]) {
               }
               case 'l': {
                 switch (buf[7]) {
-                  case 'a':
-                    if (op == "i64x2.laneselect"sv) {
-                      CHECK_ERR(makeSIMDTernary(ctx, pos, annotations, SIMDTernaryOp::LaneselectI64x2));
-                      return Ok{};
-                    }
-                    goto parse_error;
                   case 'e':
                     if (op == "i64x2.le_s"sv) {
                       CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::LeSVecI64x2));
@@ -4386,12 +4451,23 @@ switch (buf[0]) {
                   default: goto parse_error;
                 }
               }
-              case 'r':
-                if (op == "i64x2.replace_lane"sv) {
-                  CHECK_ERR(makeSIMDReplace(ctx, pos, annotations, SIMDReplaceOp::ReplaceLaneVecI64x2, 2));
-                  return Ok{};
+              case 'r': {
+                switch (buf[8]) {
+                  case 'l':
+                    if (op == "i64x2.relaxed_laneselect"sv) {
+                      CHECK_ERR(makeSIMDTernary(ctx, pos, annotations, SIMDTernaryOp::RelaxedLaneselectI64x2));
+                      return Ok{};
+                    }
+                    goto parse_error;
+                  case 'p':
+                    if (op == "i64x2.replace_lane"sv) {
+                      CHECK_ERR(makeSIMDReplace(ctx, pos, annotations, SIMDReplaceOp::ReplaceLaneVecI64x2, 2));
+                      return Ok{};
+                    }
+                    goto parse_error;
+                  default: goto parse_error;
                 }
-                goto parse_error;
+              }
               case 's': {
                 switch (buf[7]) {
                   case 'h': {
@@ -4571,12 +4647,6 @@ switch (buf[0]) {
           }
           case 'l': {
             switch (buf[7]) {
-              case 'a':
-                if (op == "i8x16.laneselect"sv) {
-                  CHECK_ERR(makeSIMDTernary(ctx, pos, annotations, SIMDTernaryOp::LaneselectI8x16));
-                  return Ok{};
-                }
-                goto parse_error;
               case 'e': {
                 switch (buf[9]) {
                   case 's':
@@ -4700,12 +4770,23 @@ switch (buf[0]) {
             goto parse_error;
           case 'r': {
             switch (buf[8]) {
-              case 'l':
-                if (op == "i8x16.relaxed_swizzle"sv) {
-                  CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::RelaxedSwizzleVecI8x16));
-                  return Ok{};
+              case 'l': {
+                switch (buf[14]) {
+                  case 'l':
+                    if (op == "i8x16.relaxed_laneselect"sv) {
+                      CHECK_ERR(makeSIMDTernary(ctx, pos, annotations, SIMDTernaryOp::RelaxedLaneselectI8x16));
+                      return Ok{};
+                    }
+                    goto parse_error;
+                  case 's':
+                    if (op == "i8x16.relaxed_swizzle"sv) {
+                      CHECK_ERR(makeBinary(ctx, pos, annotations, BinaryOp::RelaxedSwizzleVecI8x16));
+                      return Ok{};
+                    }
+                    goto parse_error;
+                  default: goto parse_error;
                 }
-                goto parse_error;
+              }
               case 'p':
                 if (op == "i8x16.replace_lane"sv) {
                   CHECK_ERR(makeSIMDReplace(ctx, pos, annotations, SIMDReplaceOp::ReplaceLaneVecI8x16, 16));

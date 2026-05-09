@@ -15,6 +15,7 @@
 import os
 
 from . import shared, support
+from .shared import print_heading
 
 
 def args_for_finalize(filename):
@@ -46,16 +47,16 @@ def run_test(input_path):
 
 
 def test_wasm_emscripten_finalize():
-    print('\n[ checking wasm-emscripten-finalize testcases... ]\n')
+    print_heading('checking wasm-emscripten-finalize testcases...')
 
-    for input_path in shared.get_tests(shared.get_test_dir('lld'), ['.wat', '.wasm']):
+    for input_path in shared.get_tests(shared.get_test_dir('finalize'), ['.wat', '.wasm']):
         run_test(input_path)
 
 
-def update_lld_tests():
-    print('\n[ updating wasm-emscripten-finalize testcases... ]\n')
+def update_finalize_tests():
+    print_heading('updating wasm-emscripten-finalize testcases...')
 
-    for input_path in shared.get_tests(shared.get_test_dir('lld'), ['.wat', '.wasm']):
+    for input_path in shared.get_tests(shared.get_test_dir('finalize'), ['.wat', '.wasm']):
         print('..', input_path)
         extension_arg_map = {
             '.out': [],

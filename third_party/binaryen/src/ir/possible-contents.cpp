@@ -634,6 +634,8 @@ struct InfoCollector
     addRoot(curr);
   }
   void visitBinary(Binary* curr) { addRoot(curr); }
+  void visitWideIntAddSub(WideIntAddSub* curr) { addRoot(curr); }
+  void visitWideIntMul(WideIntMul* curr) { addRoot(curr); }
   void visitSelect(Select* curr) {
     receiveChildValue(curr->ifTrue, curr);
     receiveChildValue(curr->ifFalse, curr);
@@ -1209,8 +1211,7 @@ struct InfoCollector
     addRoot(curr, PossibleContents::exactType(curr->type));
   }
   void visitStringConst(StringConst* curr) {
-    addRoot(curr,
-            PossibleContents::literal(Literal(std::string(curr->string.str))));
+    addRoot(curr, PossibleContents::literal(Literal(curr->string.view())));
   }
   void visitStringMeasure(StringMeasure* curr) {
     // TODO: optimize when possible

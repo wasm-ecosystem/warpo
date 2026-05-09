@@ -715,16 +715,16 @@ void BinaryInstWriter::visitSIMDTernary(SIMDTernary* curr) {
     case Bitselect:
       o << U32LEB(BinaryConsts::V128Bitselect);
       break;
-    case LaneselectI8x16:
+    case RelaxedLaneselectI8x16:
       o << U32LEB(BinaryConsts::I8x16Laneselect);
       break;
-    case LaneselectI16x8:
+    case RelaxedLaneselectI16x8:
       o << U32LEB(BinaryConsts::I16x8Laneselect);
       break;
-    case LaneselectI32x4:
+    case RelaxedLaneselectI32x4:
       o << U32LEB(BinaryConsts::I32x4Laneselect);
       break;
-    case LaneselectI64x2:
+    case RelaxedLaneselectI64x2:
       o << U32LEB(BinaryConsts::I64x2Laneselect);
       break;
     case MaddVecF16x8:
@@ -745,7 +745,7 @@ void BinaryInstWriter::visitSIMDTernary(SIMDTernary* curr) {
     case RelaxedNmaddVecF64x2:
       o << U32LEB(BinaryConsts::F64x2RelaxedNmadd);
       break;
-    case DotI8x16I7x16AddSToVecI32x4:
+    case RelaxedDotI8x16I7x16AddSToVecI32x4:
       o << U32LEB(BinaryConsts::I32x4DotI8x16I7x16AddS);
       break;
   }
@@ -1456,6 +1456,14 @@ void BinaryInstWriter::visitUnary(Unary* curr) {
     case ConvertUVecI16x8ToVecF16x8:
       o << static_cast<int8_t>(BinaryConsts::SIMDPrefix)
         << U32LEB(BinaryConsts::F16x8ConvertI16x8U);
+      break;
+    case DemoteZeroVecF32x4ToVecF16x8:
+      o << static_cast<int8_t>(BinaryConsts::SIMDPrefix)
+        << U32LEB(BinaryConsts::F16x8DemoteF32x4Zero);
+      break;
+    case DemoteZeroVecF64x2ToVecF16x8:
+      o << static_cast<int8_t>(BinaryConsts::SIMDPrefix)
+        << U32LEB(BinaryConsts::F16x8DemoteF64x2Zero);
       break;
     case PromoteLowVecF16x8ToVecF32x4:
       o << static_cast<int8_t>(BinaryConsts::SIMDPrefix)
@@ -2264,7 +2272,7 @@ void BinaryInstWriter::visitBinary(Binary* curr) {
       o << static_cast<int8_t>(BinaryConsts::SIMDPrefix)
         << U32LEB(BinaryConsts::I16x8RelaxedQ15MulrS);
       break;
-    case DotI8x16I7x16SToVecI16x8:
+    case RelaxedDotI8x16I7x16SToVecI16x8:
       o << static_cast<int8_t>(BinaryConsts::SIMDPrefix)
         << U32LEB(BinaryConsts::I16x8DotI8x16I7x16S);
       break;
@@ -2284,6 +2292,34 @@ void BinaryInstWriter::visitSelect(Select* curr) {
     }
   } else {
     o << static_cast<int8_t>(BinaryConsts::Select);
+  }
+}
+
+void BinaryInstWriter::visitWideIntAddSub(WideIntAddSub* curr) {
+  o << static_cast<int8_t>(BinaryConsts::MiscPrefix);
+  switch (curr->op) {
+    case AddInt128: {
+      o << U32LEB(BinaryConsts::I64Add128);
+      break;
+    }
+    case SubInt128: {
+      o << U32LEB(BinaryConsts::I64Sub128);
+      break;
+    }
+  }
+}
+
+void BinaryInstWriter::visitWideIntMul(WideIntMul* curr) {
+  o << static_cast<int8_t>(BinaryConsts::MiscPrefix);
+  switch (curr->op) {
+    case MulWideSInt64: {
+      o << U32LEB(BinaryConsts::I64MulWideS);
+      break;
+    }
+    case MulWideUInt64: {
+      o << U32LEB(BinaryConsts::I64MulWideU);
+      break;
+    }
   }
 }
 

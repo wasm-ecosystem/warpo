@@ -448,6 +448,8 @@ template<typename Subtype> struct ChildTyper : OverriddenVisitor<Subtype> {
       case ConvertSVecI16x8ToVecF16x8:
       case ConvertUVecI16x8ToVecF16x8:
       case PromoteLowVecF16x8ToVecF32x4:
+      case DemoteZeroVecF32x4ToVecF16x8:
+      case DemoteZeroVecF64x2ToVecF16x8:
       case AnyTrueVec128:
       case AllTrueVecI8x16:
       case AllTrueVecI16x8:
@@ -694,13 +696,25 @@ template<typename Subtype> struct ChildTyper : OverriddenVisitor<Subtype> {
       case SwizzleVecI8x16:
       case RelaxedSwizzleVecI8x16:
       case RelaxedQ15MulrSVecI16x8:
-      case DotI8x16I7x16SToVecI16x8:
+      case RelaxedDotI8x16I7x16SToVecI16x8:
         note(&curr->left, Type::v128);
         note(&curr->right, Type::v128);
         break;
       case InvalidBinary:
         WASM_UNREACHABLE("invalid binary op");
     }
+  }
+
+  void visitWideIntAddSub(WideIntAddSub* curr) {
+    note(&curr->leftLow, Type::i64);
+    note(&curr->leftHigh, Type::i64);
+    note(&curr->rightLow, Type::i64);
+    note(&curr->rightHigh, Type::i64);
+  }
+
+  void visitWideIntMul(WideIntMul* curr) {
+    note(&curr->left, Type::i64);
+    note(&curr->right, Type::i64);
   }
 
   void visitSelect(Select* curr, std::optional<Type> type = std::nullopt) {

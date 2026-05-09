@@ -45,6 +45,7 @@
 #include "ir/runtime-table.h"
 #include "ir/table-utils.h"
 #include "support/bits.h"
+#include "support/int128.h"
 #include "support/safe_integer.h"
 #include "support/stdckdint.h"
 #include "support/string.h"
@@ -120,7 +121,7 @@ public:
   }
 
   friend std::ostream& operator<<(std::ostream& o, const Flow& flow) {
-    o << "(flow " << (flow.breakTo.is() ? flow.breakTo.str : "-") << " : {";
+    o << "(flow " << (flow.breakTo.is() ? flow.breakTo.view() : "-") << " : {";
     for (size_t i = 0; i < flow.values.size(); ++i) {
       if (i > 0) {
         o << ", ";
@@ -1166,6 +1167,10 @@ public:
         return value.convertUToF16x8();
       case PromoteLowVecF16x8ToVecF32x4:
         return value.promoteLowF16x8ToF32x4();
+      case DemoteZeroVecF32x4ToVecF16x8:
+        return value.demoteZeroF32x4ToF16x8();
+      case DemoteZeroVecF64x2ToVecF16x8:
+        return value.demoteZeroF64x2ToF16x8();
       case InvalidUnary:
         WASM_UNREACHABLE("invalid unary op");
     }
@@ -1648,7 +1653,7 @@ public:
       case SwizzleVecI8x16:
         return left.swizzleI8x16(right);
 
-      case DotI8x16I7x16SToVecI16x8:
+      case RelaxedDotI8x16I7x16SToVecI16x8:
         return left.dotSI8x16toI16x8(right);
 
       case InvalidBinary:
@@ -1720,10 +1725,10 @@ public:
     Literal c = flow.getSingleValue();
     switch (curr->op) {
       case Bitselect:
-      case LaneselectI8x16:
-      case LaneselectI16x8:
-      case LaneselectI32x4:
-      case LaneselectI64x2:
+      case RelaxedLaneselectI8x16:
+      case RelaxedLaneselectI16x8:
+      case RelaxedLaneselectI32x4:
+      case RelaxedLaneselectI64x2:
         return c.bitselectV128(a, b);
 
       case MaddVecF16x8:
@@ -1750,7 +1755,7 @@ public:
           return NONCONSTANT_FLOW;
         }
         return a.relaxedNmaddF64x2(b, c);
-      case DotI8x16I7x16AddSToVecI32x4:
+      case RelaxedDotI8x16I7x16AddSToVecI32x4:
         if (relaxedBehavior == RelaxedBehavior::NonConstant) {
           return NONCONSTANT_FLOW;
         }
@@ -1796,6 +1801,61 @@ public:
     VISIT(ifFalse, curr->ifFalse)
     VISIT(condition, curr->condition)
     return condition.getSingleValue().geti32() ? ifTrue : ifFalse; // ;-)
+  }
+  Flow visitWideIntAddSub(WideIntAddSub* curr) {
+    VISIT(leftLow, curr->leftLow);
+    VISIT(leftHigh, curr->leftHigh);
+    VISIT(rightLow, curr->rightLow);
+    VISIT(rightHigh, curr->rightHigh);
+
+    uint64_t lowLHS = leftLow.getSingleValue().geti64();
+    uint64_t highLHS = leftHigh.getSingleValue().geti64();
+    uint64_t lowRHS = rightLow.getSingleValue().geti64();
+    uint64_t highRHS = rightHigh.getSingleValue().geti64();
+
+    uint64_t lowResult = 0;
+    uint64_t highResult = 0;
+
+    switch (curr->op) {
+      case AddInt128: {
+        bool overflowed = std::ckd_add(&lowResult, lowLHS, lowRHS);
+        highResult = highLHS + highRHS + overflowed;
+        break;
+      }
+      case SubInt128: {
+        bool overflowed = std::ckd_sub(&lowResult, lowLHS, lowRHS);
+        highResult = highLHS - highRHS - overflowed;
+        break;
+      }
+    }
+
+    Literals results;
+    results.push_back(Literal(lowResult));
+    results.push_back(Literal(highResult));
+    return results;
+  }
+  Flow visitWideIntMul(WideIntMul* curr) {
+    VISIT(left, curr->left);
+    VISIT(right, curr->right);
+    uint64_t lhs = left.getSingleValue().geti64();
+    uint64_t rhs = right.getSingleValue().geti64();
+
+    Int128 result;
+    switch (curr->op) {
+      case MulWideSInt64: {
+        result = mul_wide_s(lhs, rhs);
+        break;
+      }
+      case MulWideUInt64: {
+        result = mul_wide_u(lhs, rhs);
+        break;
+      }
+    }
+
+    Literals results;
+    results.push_back(Literal(result.low));
+    results.push_back(Literal(result.high));
+    return results;
   }
   Flow visitDrop(Drop* curr) {
     VISIT(value, curr->value)
@@ -2667,7 +2727,9 @@ public:
         return Flow(NONCONSTANT_FLOW);
     }
   }
-  Flow visitStringConst(StringConst* curr) { return Literal(curr->string.str); }
+  Flow visitStringConst(StringConst* curr) {
+    return Literal(curr->string.view());
+  }
 
   Flow visitStringMeasure(StringMeasure* curr) {
     // For now we only support JS-style strings.

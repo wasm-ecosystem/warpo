@@ -320,63 +320,6 @@ struct PrintSExpression : public UnifiedExpressionVisitor<PrintSExpression> {
   void visitTryTable(TryTable* curr);
 
   void printUnreachableReplacement(Expression* curr);
-  bool maybePrintUnreachableReplacement(Expression* curr, Type type);
-  void visitRefCast(RefCast* curr) {
-    if ((curr->desc && curr->desc->type != Type::unreachable) ||
-        !maybePrintUnreachableReplacement(curr, curr->type)) {
-      visitExpression(curr);
-    }
-  }
-  void visitStructNew(StructNew* curr) {
-    if (!maybePrintUnreachableReplacement(curr, curr->type)) {
-      visitExpression(curr);
-    }
-  }
-  void visitArrayNew(ArrayNew* curr) {
-    if (!maybePrintUnreachableReplacement(curr, curr->type)) {
-      visitExpression(curr);
-    }
-  }
-  void visitArrayNewData(ArrayNewData* curr) {
-    if (!maybePrintUnreachableReplacement(curr, curr->type)) {
-      visitExpression(curr);
-    }
-  }
-  void visitArrayNewElem(ArrayNewElem* curr) {
-    if (!maybePrintUnreachableReplacement(curr, curr->type)) {
-      visitExpression(curr);
-    }
-  }
-  void visitArrayNewFixed(ArrayNewFixed* curr) {
-    if (!maybePrintUnreachableReplacement(curr, curr->type)) {
-      visitExpression(curr);
-    }
-  }
-  void visitContNew(ContNew* curr) {
-    if (!maybePrintUnreachableReplacement(curr, curr->type)) {
-      visitExpression(curr);
-    }
-  }
-  void visitContBind(ContBind* curr) {
-    if (!maybePrintUnreachableReplacement(curr, curr->type)) {
-      visitExpression(curr);
-    }
-  }
-  void visitResume(Resume* curr) {
-    if (!maybePrintUnreachableReplacement(curr, curr->type)) {
-      visitExpression(curr);
-    }
-  }
-  void visitResumeThrow(ResumeThrow* curr) {
-    if (!maybePrintUnreachableReplacement(curr, curr->type)) {
-      visitExpression(curr);
-    }
-  }
-  void visitStackSwitch(StackSwitch* curr) {
-    if (!maybePrintUnreachableReplacement(curr, curr->type)) {
-      visitExpression(curr);
-    }
-  }
 
   // Module-level visitors
   void handleSignature(Function* curr, bool printImplicitNames = false);
@@ -779,17 +722,17 @@ struct PrintExpressionContents
       case Bitselect:
         o << "v128.bitselect";
         break;
-      case LaneselectI8x16:
-        o << "i8x16.laneselect";
+      case RelaxedLaneselectI8x16:
+        o << "i8x16.relaxed_laneselect";
         break;
-      case LaneselectI16x8:
-        o << "i16x8.laneselect";
+      case RelaxedLaneselectI16x8:
+        o << "i16x8.relaxed_laneselect";
         break;
-      case LaneselectI32x4:
-        o << "i32x4.laneselect";
+      case RelaxedLaneselectI32x4:
+        o << "i32x4.relaxed_laneselect";
         break;
-      case LaneselectI64x2:
-        o << "i64x2.laneselect";
+      case RelaxedLaneselectI64x2:
+        o << "i64x2.relaxed_laneselect";
         break;
       case MaddVecF16x8:
         o << "f16x8.madd";
@@ -809,8 +752,8 @@ struct PrintExpressionContents
       case RelaxedNmaddVecF64x2:
         o << "f64x2.relaxed_nmadd";
         break;
-      case DotI8x16I7x16AddSToVecI32x4:
-        o << "i32x4.dot_i8x16_i7x16_add_s";
+      case RelaxedDotI8x16I7x16AddSToVecI32x4:
+        o << "i32x4.relaxed_dot_i8x16_i7x16_add_s";
         break;
     }
     restoreNormalColor(o);
@@ -1403,6 +1346,12 @@ struct PrintExpressionContents
         break;
       case PromoteLowVecF16x8ToVecF32x4:
         o << "f32x4.promote_low_f16x8";
+        break;
+      case DemoteZeroVecF32x4ToVecF16x8:
+        o << "f16x8.demote_f32x4_zero";
+        break;
+      case DemoteZeroVecF64x2ToVecF16x8:
+        o << "f16x8.demote_f64x2_zero";
         break;
       case InvalidUnary:
         WASM_UNREACHABLE("unvalid unary operator");
@@ -2073,12 +2022,40 @@ struct PrintExpressionContents
       case RelaxedQ15MulrSVecI16x8:
         o << "i16x8.relaxed_q15mulr_s";
         break;
-      case DotI8x16I7x16SToVecI16x8:
-        o << "i16x8.dot_i8x16_i7x16_s";
+      case RelaxedDotI8x16I7x16SToVecI16x8:
+        o << "i16x8.relaxed_dot_i8x16_i7x16_s";
         break;
 
       case InvalidBinary:
         WASM_UNREACHABLE("unvalid binary operator");
+    }
+    restoreNormalColor(o);
+  }
+  void visitWideIntAddSub(WideIntAddSub* curr) {
+    prepareColor(o);
+    switch (curr->op) {
+      case AddInt128: {
+        o << "i64.add128";
+        break;
+      }
+      case SubInt128: {
+        o << "i64.sub128";
+        break;
+      }
+    }
+    restoreNormalColor(o);
+  }
+  void visitWideIntMul(WideIntMul* curr) {
+    prepareColor(o);
+    switch (curr->op) {
+      case MulWideSInt64: {
+        o << "i64.mul_wide_s";
+        break;
+      }
+      case MulWideUInt64: {
+        o << "i64.mul_wide_u";
+        break;
+      }
     }
     restoreNormalColor(o);
   }
@@ -2589,7 +2566,7 @@ struct PrintExpressionContents
     // Re-encode from WTF-16 to WTF-8.
     std::stringstream wtf8;
     [[maybe_unused]] bool valid =
-      String::convertWTF16ToWTF8(wtf8, curr->string.str);
+      String::convertWTF16ToWTF8(wtf8, curr->string.view());
     assert(valid);
     // TODO: Use wtf8.view() once we have C++20.
     String::printEscaped(o, wtf8.str());
@@ -3143,19 +3120,6 @@ void PrintSExpression::printUnreachableReplacement(Expression* curr) {
   decIndent();
 }
 
-bool PrintSExpression::maybePrintUnreachableReplacement(Expression* curr,
-                                                        Type type) {
-  // When we cannot print an instruction because the child from which it's
-  // supposed to get a type immediate is unreachable, then we print a
-  // semantically-equivalent block that drops each of the children and ends in
-  // an unreachable.
-  if (type == Type::unreachable) {
-    printUnreachableReplacement(curr);
-    return true;
-  }
-  return false;
-}
-
 static bool requiresExplicitFuncType(HeapType type) {
   // When the `(type $f)` in a function's typeuse is omitted, the typeuse
   // matches or declares an MVP function type. When the intended type is not an
@@ -3226,7 +3190,7 @@ void PrintSExpression::visitExport(Export* curr) {
   o << '(';
   printMedium(o, "export ");
   std::stringstream escaped;
-  String::printEscaped(escaped, curr->name.str);
+  String::printEscaped(escaped, curr->name.view());
   printText(o, escaped.str(), false) << " (";
   switch (curr->kind) {
     case ExternalKind::Function:
@@ -3255,8 +3219,8 @@ void PrintSExpression::visitExport(Export* curr) {
 void PrintSExpression::emitImportHeader(Importable* curr) {
   printMedium(o, "import ");
   std::stringstream escapedModule, escapedBase;
-  String::printEscaped(escapedModule, curr->module.str);
-  String::printEscaped(escapedBase, curr->base.str);
+  String::printEscaped(escapedModule, curr->module.view());
+  String::printEscaped(escapedBase, curr->base.view());
   printText(o, escapedModule.str(), false) << ' ';
   printText(o, escapedBase.str(), false) << ' ';
 }
@@ -4009,6 +3973,10 @@ std::ostream& operator<<(std::ostream& o, wasm::ModuleExpression pair) {
 }
 
 std::ostream& operator<<(std::ostream& o, wasm::ShallowExpression expression) {
+  if (Properties::hasUnwritableTypeImmediate(expression.expr)) {
+    o << "(; unreachable " << getExpressionName(expression.expr) << " ;)";
+    return o;
+  }
   wasm::PrintSExpression printer(o);
   printer.setModule(expression.module);
   wasm::PrintExpressionContents(printer).visit(expression.expr);

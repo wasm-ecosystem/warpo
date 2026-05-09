@@ -252,6 +252,8 @@ enum UnaryOp {
   ConvertSVecI16x8ToVecF16x8,
   ConvertUVecI16x8ToVecF16x8,
   PromoteLowVecF16x8ToVecF32x4,
+  DemoteZeroVecF32x4ToVecF16x8,
+  DemoteZeroVecF64x2ToVecF16x8,
 
   InvalidUnary
 };
@@ -514,7 +516,7 @@ enum BinaryOp {
   RelaxedMinVecF64x2,
   RelaxedMaxVecF64x2,
   RelaxedQ15MulrSVecI16x8,
-  DotI8x16I7x16SToVecI16x8,
+  RelaxedDotI8x16I7x16SToVecI16x8,
 
   InvalidBinary
 };
@@ -592,11 +594,11 @@ enum SIMDTernaryOp {
   RelaxedNmaddVecF32x4,
   RelaxedMaddVecF64x2,
   RelaxedNmaddVecF64x2,
-  LaneselectI8x16,
-  LaneselectI16x8,
-  LaneselectI32x4,
-  LaneselectI64x2,
-  DotI8x16I7x16AddSToVecI32x4,
+  RelaxedLaneselectI8x16,
+  RelaxedLaneselectI16x8,
+  RelaxedLaneselectI32x4,
+  RelaxedLaneselectI64x2,
+  RelaxedDotI8x16I7x16AddSToVecI32x4,
   // FP16
   MaddVecF16x8,
   NmaddVecF16x8,
@@ -636,6 +638,16 @@ enum StringEncodeOp {
 enum StringEqOp {
   StringEqEqual,
   StringEqCompare,
+};
+
+enum WideIntAddSubOp {
+  AddInt128,
+  SubInt128,
+};
+
+enum WideIntMulOp {
+  MulWideSInt64,
+  MulWideUInt64,
 };
 
 //
@@ -767,6 +779,8 @@ public:
     StackSwitchId,
     StructWaitId,
     StructNotifyId,
+    WideIntAddSubId,
+    WideIntMulId,
     NumExpressionIds
   };
   Id _id;
@@ -1294,6 +1308,32 @@ public:
   // except for relationals
 
   bool isRelational();
+
+  void finalize();
+};
+
+class WideIntAddSub : public SpecificExpression<Expression::WideIntAddSubId> {
+public:
+  WideIntAddSub() = default;
+  WideIntAddSub(MixedArena& allocator) {}
+
+  WideIntAddSubOp op;
+  Expression* leftLow;
+  Expression* leftHigh;
+  Expression* rightLow;
+  Expression* rightHigh;
+
+  void finalize();
+};
+
+class WideIntMul : public SpecificExpression<Expression::WideIntMulId> {
+public:
+  WideIntMul() = default;
+  WideIntMul(MixedArena& allocator) {}
+
+  WideIntMulOp op;
+  Expression* left;
+  Expression* right;
 
   void finalize();
 };
