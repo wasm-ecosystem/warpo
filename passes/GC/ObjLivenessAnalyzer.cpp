@@ -302,7 +302,7 @@ void updateLivenessInfo(wasm::Function *const func, LivenessMap &livenessMap, Lo
   DynBitset const forwardBitSet = std::move(livenessMap.storage_);
   livenessMap.storage_ = DynBitset{forwardBitSet.size()};
 
-  if (support::isDebug(PASS_NAME, func->name.str)) {
+  if (support::isDebug(PASS_NAME, func->name.view())) {
     std::cout << "forwardBitSet " << forwardBitSet << "\n";
   }
   SSALivenessBackwardTFn backwardFn{ssaMap, localUses, tmpUses, livenessMap};
@@ -311,7 +311,7 @@ void updateLivenessInfo(wasm::Function *const func, LivenessMap &livenessMap, Lo
   backwardAnalyzer.evaluateFunctionExit(func);
   backwardAnalyzer.evaluateAndCollectResults();
 
-  if (support::isDebug(PASS_NAME, func->name.str)) {
+  if (support::isDebug(PASS_NAME, func->name.view())) {
     std::cout << "backwardBitSet " << livenessMap.storage_ << "\n";
   }
   livenessMap.storage_ &= forwardBitSet; // overlap of forward and backward is the real liveness
@@ -385,7 +385,7 @@ void ObjLivenessAnalyzer::runOnFunction(wasm::Module *m, wasm::Function *func) {
 
   updateLivenessInfo(func, livenessMap, localsUses, tmpUses, ssaMap, cfg);
 
-  if (support::isDebug(PASS_NAME, func->name.str)) {
+  if (support::isDebug(PASS_NAME, func->name.view())) {
     std::cout << "================== " << func->name << " liveness analysis ===============\n";
     dumpInfo(m, func, localsUses, tmpUses, ssaMap);
     std::cout << "\n============\n";

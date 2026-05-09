@@ -116,10 +116,10 @@ struct ConditionalReturnOptimizer : public wasm::Pass {
     scanner.walk(func->body);
 
     if (!scanner.targetIfs_.empty()) {
-      if (support::isDebug(PASS_NAME, func->name.str)) {
+      if (support::isDebug(PASS_NAME, func->name.view())) {
         fmt::println("[" PASS_NAME
                      "] fn '{}' has {} (if (cond) (return)) patterns which can be converted to (br_if (cond))",
-                     func->name.str, scanner.targetIfs_.size());
+                     func->name.view(), scanner.targetIfs_.size());
       }
       wasm::Builder b{*m};
       wasm::Name const targetName = getValidBlockName(func);

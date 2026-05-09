@@ -44,7 +44,7 @@ bool ExprInserter::canInsertBefore(wasm::Expression *insertPosition) {
     if (canInsertAfter(unary->value))
       return true;
   }
-  fmt::println("[" PASS_NAME "] fn '{}', failed to insert before {}", func_->name.str, toString(insertPosition));
+  fmt::println("[" PASS_NAME "] fn '{}', failed to insert before {}", func_->name.view(), toString(insertPosition));
   return false;
 }
 
@@ -93,7 +93,7 @@ bool ExprInserter::canInsertAfter(wasm::Expression *insertPosition) {
     return true;
   if (insertPosition->type != wasm::Type::unreachable)
     return true;
-  fmt::println("[" PASS_NAME "] fn '{}', failed to insert after {}", func_->name.str, toString(insertPosition));
+  fmt::println("[" PASS_NAME "] fn '{}', failed to insert after {}", func_->name.view(), toString(insertPosition));
   return false;
 }
 

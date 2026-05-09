@@ -86,7 +86,7 @@ struct ImmutableLoadEliminating : public wasm::WalkerPass<wasm::PostWalker<Immut
     if (immutableDataRanges_->contains(static_cast<uint32_t>(start), static_cast<uint32_t>(loadSize))) {
       wasm::Literal const loadResult =
           getLoadResult(static_cast<uint32_t>(start), expr->type, static_cast<uint32_t>(loadSize), expr->signed_);
-      std::string_view const functionName = getFunction()->name.str;
+      std::string_view const functionName = getFunction()->name.view();
       if (support::isDebug(PASS_NAME, functionName)) {
         if (expr->type.isFloat())
           fmt::println("[" PASS_NAME "] fn '{}' replaced load at {} (size {}) with const {}", functionName, start,

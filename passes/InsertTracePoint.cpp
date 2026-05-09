@@ -92,7 +92,7 @@ struct TracingInserter : public wasm::Pass {
               getCurrentPointer());
         } else {
           fmt::println("[" PASS_NAME "] failed to insert trace point for call import to function '{}'",
-                       targetFunc->name.str);
+                       targetFunc->name.view());
         }
       }
     };

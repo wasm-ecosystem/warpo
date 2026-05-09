@@ -18,9 +18,9 @@ void MockInstrumentationWalker::visitCall(wasm::Call *const curr) {
   /* generate expect infos */
   if (std::any_of(this->expectTestFuncNames.begin(), this->expectTestFuncNames.end(),
                   [&curr](std::string_view str) noexcept {
-                    auto lastIndex = curr->target.str.find_last_of(">");
+                    auto lastIndex = curr->target.view().find_last_of(">");
                     if (lastIndex != std::string_view::npos) {
-                      return curr->target.str.substr(lastIndex + 1) == str;
+                      return curr->target.view().substr(lastIndex + 1) == str;
                     }
                     return false;
                   })) {
@@ -38,7 +38,7 @@ void MockInstrumentationWalker::visitCall(wasm::Call *const curr) {
   }
 
   /* Function Call Mock */
-  const auto functionRefsIterator = funcRefs.find(curr->target.str);
+  const auto functionRefsIterator = funcRefs.find(curr->target.view());
   if (functionRefsIterator != funcRefs.end()) {
     const wasm::Index localIdx = wasm::Builder::addVar(getFunction(), wasm::Type::i32);
     const auto &[tableName, originFuncIdx] = functionRefsIterator->second;

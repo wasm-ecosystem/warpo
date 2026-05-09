@@ -15,7 +15,7 @@ void CovInstrumentationWalker::visitFunction(wasm::Function *const curr) {
       wasm::PostWalker<CovInstrumentationWalker, wasm::UnifiedExpressionVisitor<CovInstrumentationWalker, void>>;
   Parent::visitFunction(curr);
 
-  const wasm::Index functionIndex = basicBlockWalker.getFunctionIndexByName(curr->name.str);
+  const wasm::Index functionIndex = basicBlockWalker.getFunctionIndexByName(curr->name.view());
   // function in instruction
   if (functionIndex != static_cast<wasm::Index>(-1)) {
     const std::array<BinaryenExpressionRef, 3U> callInReportArgs = {
@@ -36,7 +36,7 @@ void CovInstrumentationWalker::visitExpression(wasm::Expression *curr) {
   if (positionIterator != nullptr) {
     for (const InstrumentPosition &position : *positionIterator) {
       wasm::Block *replacement = b.makeBlock();
-      const wasm::Index functionIndex = basicBlockWalker.getFunctionIndexByName(func->name.str);
+      const wasm::Index functionIndex = basicBlockWalker.getFunctionIndexByName(func->name.view());
       const std::array<BinaryenExpressionRef, 3U> reportArgs = {b.makeConst(functionIndex),
                                                                 b.makeConst(position.basicBlockIndex), b.makeConst(0U)};
       wasm::Expression *const report = b.makeCall(traceInternalFunctionName, reportArgs, wasm::Type::none);
@@ -56,7 +56,7 @@ void CovInstrumentationWalker::visitExpression(wasm::Expression *curr) {
   if (curr->is<wasm::Call>()) {
     // function out instrumentation
     wasm::Call *const call = curr->cast<wasm::Call>();
-    const wasm::Index targetFunctionIndex = basicBlockWalker.getFunctionIndexByName(call->target.str);
+    const wasm::Index targetFunctionIndex = basicBlockWalker.getFunctionIndexByName(call->target.view());
     if (targetFunctionIndex != static_cast<wasm::Index>(-1)) {
       wasm::Block *const replacement = b.makeBlock();
       std::array<BinaryenExpressionRef, 3U> const callOutReportArgs = {
@@ -80,7 +80,7 @@ void CovInstrumentationWalker::covWalk() noexcept {
                               wasm::Type::none);
   }
   wasm::ModuleUtils::iterDefinedFunctions(*m, [this](const BinaryenFunctionRef &func) noexcept {
-    if (basicBlockWalker.getBasicBlockAnalysis().shouldIncludeFile(func->name.str)) {
+    if (basicBlockWalker.getBasicBlockAnalysis().shouldIncludeFile(func->name.view())) {
       walkFunctionInModule(func, this->m);
     }
   });

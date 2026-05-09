@@ -76,7 +76,7 @@ static wasm::Name findMostFrequentlyUsed(Counter const &counter) {
   wasm::Index bestCount = 0;
   for (auto const &[name, count] : counter) {
     if (support::isDebug(PASS_NAME))
-      fmt::println("[" PASS_NAME "] '{}' used {} times", name.str, count.load());
+      fmt::println("[" PASS_NAME "] '{}' used {} times", name.view(), count.load());
     wasm::Index const c = count.load();
     if (c > bestCount || (c == bestCount && name > best)) {
       bestCount = c;
@@ -93,7 +93,7 @@ static void extractGlobal(wasm::Module &m, wasm::Name const name) {
   assert(eraseIt != m.globals.end());
   if (eraseIt != m.globals.begin()) {
     if (support::isDebug(PASS_NAME))
-      fmt::println("[" PASS_NAME "] move frequently used global '{}' to index 0", name.str);
+      fmt::println("[" PASS_NAME "] move frequently used global '{}' to index 0", name.view());
     std::unique_ptr<wasm::Global> mostFrequentlyUsedGlobal = std::move(*eraseIt);
     m.globals.erase(eraseIt);
     // we don't need to consider imported global, binaryen will ignore imported global during emitting.
@@ -103,7 +103,7 @@ static void extractGlobal(wasm::Module &m, wasm::Name const name) {
     m.updateMaps();
   } else {
     if (support::isDebug(PASS_NAME)) {
-      fmt::println("[" PASS_NAME "] most frequently used global '{}' is already at index 0", name.str);
+      fmt::println("[" PASS_NAME "] most frequently used global '{}' is already at index 0", name.view());
     }
   }
 }

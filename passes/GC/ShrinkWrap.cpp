@@ -134,7 +134,7 @@ void ShrinkWrapAnalysis::runOnFunction(wasm::Module *const m, wasm::Function *co
       return false;
     return true;
   };
-  InsertPositionHint const stackInsertPoint = getShadowStackInsertPoint(func->name.str, shouldStackActive, cfg);
+  InsertPositionHint const stackInsertPoint = getShadowStackInsertPoint(func->name.view(), shouldStackActive, cfg);
   insertPositionHints_->insert_or_assign(func, stackInsertPoint);
 }
 

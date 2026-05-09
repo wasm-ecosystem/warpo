@@ -137,7 +137,7 @@ void runSetClosureEnvRemoval(wasm::PassRunner *const parentRunner) {
 
 wasm::Index getHeapLocalIndex(VariableInfo const *variableInfo, wasm::Function *func) {
   VariableInfo::SubProgramLookupMap const &lookupMap = variableInfo->getSubProgramLookupMap();
-  VariableInfo::SubProgramLookupMap::const_iterator const it = lookupMap.find(func->name.str);
+  VariableInfo::SubProgramLookupMap::const_iterator const it = lookupMap.find(func->name.view());
   assert(it != lookupMap.end() && "function not found in SubProgramLookupMap");
   std::optional<uint32_t> heapIdx = it->second.getHeapVariableStorageLocalIndex();
   assert(heapIdx.has_value() && "function has no heapVariableStorageLocalIndex");
@@ -379,7 +379,7 @@ public:
 
   void doWalkFunction(wasm::Function *func) {
     VariableInfo::SubProgramLookupMap const &lookupMap = variableInfo_->getSubProgramLookupMap();
-    VariableInfo::SubProgramLookupMap::const_iterator const spIt = lookupMap.find(func->name.str);
+    VariableInfo::SubProgramLookupMap::const_iterator const spIt = lookupMap.find(func->name.view());
     if (spIt == lookupMap.end() || !spIt->second.getHeapVariableStorageLocalIndex().has_value())
       return;
     wasm::Index const heapIdx = *spIt->second.getHeapVariableStorageLocalIndex();

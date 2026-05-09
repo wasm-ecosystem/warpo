@@ -129,17 +129,17 @@ public:
         fmt::println("[" PASS_NAME "] start new loop");
       if (support::isDebug(PASS_NAME))
         for (wasm::Name const &name : pending_)
-          fmt::println("[" PASS_NAME "]   pending inline '{}'", name.str);
+          fmt::println("[" PASS_NAME "]   pending inline '{}'", name.view());
       std::unordered_set<wasm::Name> currentStep;
       for (auto &[callerSiteFuncName, actions] : actions_) {
         if (support::isDebug(PASS_NAME)) {
-          fmt::println("[" PASS_NAME "]   check '{}' whether can be processed", callerSiteFuncName.str);
+          fmt::println("[" PASS_NAME "]   check '{}' whether can be processed", callerSiteFuncName.view());
         }
         bool const canBeInlined = all_of(actions, [&](InliningAction const &action) -> bool {
           // no deps
           bool const has = pending_.contains(action.contents->name);
           if (support::isDebug(PASS_NAME)) {
-            fmt::println("[" PASS_NAME "]     sub fn '{}' {} processed", action.contents->name.str,
+            fmt::println("[" PASS_NAME "]     sub fn '{}' {} processed", action.contents->name.view(),
                          has ? "didn't" : "did");
           }
           return !has;
@@ -164,9 +164,9 @@ public:
         currentActionStep.insert_or_assign(callerSiteFuncName, std::move(actions_.at(callerSiteFuncName)));
         actions_.erase(callerSiteFuncName);
         if (support::isDebug(PASS_NAME)) {
-          fmt::println("[" PASS_NAME "]   process inline in fn '{}'", callerSiteFuncName.str);
+          fmt::println("[" PASS_NAME "]   process inline in fn '{}'", callerSiteFuncName.view());
           for (auto action : currentActionStep.at(callerSiteFuncName))
-            fmt::println("[" PASS_NAME "]     will inline fn '{}'", action.contents->name.str);
+            fmt::println("[" PASS_NAME "]     will inline fn '{}'", action.contents->name.view());
         }
       }
       actionSteps_.push_back(std::move(currentActionStep));

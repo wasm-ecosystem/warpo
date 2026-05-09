@@ -113,9 +113,9 @@ struct FunctionInfo {
     // TODO: handle recursive calls?
 
     bool const shouldInline = budget >= 0.0F;
-    if (support::isDebug(PASS_NAME, funcName.str)) {
+    if (support::isDebug(PASS_NAME, funcName.view())) {
       fmt::println("[" PASS_NAME "] {} '{}', func_cost={}, delta={}, refs={}, budget={}",
-                   shouldInline ? "inline" : "not inline", funcName.str, functionCost, delta, refs.load(), budget);
+                   shouldInline ? "inline" : "not inline", funcName.view(), functionCost, delta, refs.load(), budget);
     }
     return shouldInline;
   }

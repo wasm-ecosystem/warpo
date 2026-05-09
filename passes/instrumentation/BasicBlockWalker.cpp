@@ -18,7 +18,7 @@ namespace warpo::passes::instrumentation {
 void BasicBlockWalker::basicBlockWalk() noexcept {
   // Iterate DefinedFunctions, generate coverage infos
   wasm::ModuleUtils::iterDefinedFunctions(*module, [this](wasm::Function *const func) noexcept {
-    if ((!func->debugLocations.empty()) && basicBlockAnalysis.shouldIncludeFile(func->name.str)) {
+    if ((!func->debugLocations.empty()) && basicBlockAnalysis.shouldIncludeFile(func->name.view())) {
       walkFunctionInModule(func, module);
     }
   });
@@ -166,7 +166,7 @@ void BasicBlockWalker::doWalkFunction(wasm::Function *const func) noexcept {
       setCovInstrumentPosition(expr, {currBasicBlockIndex, pre});
     }
   }
-  this->results[func->name.str] = std::move(analysisResult);
+  this->results[func->name.view()] = std::move(analysisResult);
 }
 
 wasm::Index BasicBlockWalker::getFunctionIndexByName(const std::string_view &funcName) const noexcept {

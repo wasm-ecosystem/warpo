@@ -17,7 +17,7 @@ namespace warpo::passes::gc {
 
 static bool isGlobalImmutable(VariableInfo const &variableInfo, wasm::Name const &globalName) {
   VariableInfo::GlobalTypes const &globalTypes = variableInfo.getGlobalTypes();
-  auto it = globalTypes.find(std::string{globalName.str});
+  auto it = globalTypes.find(std::string{globalName.view()});
   // when the global variable is not found, consider it mutable
   if (it == globalTypes.end())
     return false;
@@ -44,9 +44,9 @@ struct CallReplacer : public wasm::PostWalker<CallReplacer> {
     assert(globalGet != nullptr);
     if (!isGlobalImmutable(variableInfo_, globalGet->name))
       return;
-    if (support::isDebug(PASS_NAME, getFunction()->name.str))
-      fmt::println("[" PASS_NAME "] in fn '{}' remove call ${} for global.get ${}", getFunction()->name.str,
-                   FnTmpToStack, globalGet->name.str);
+    if (support::isDebug(PASS_NAME, getFunction()->name.view()))
+      fmt::println("[" PASS_NAME "] in fn '{}' remove call ${} for global.get ${}", getFunction()->name.view(),
+                   FnTmpToStack, globalGet->name.view());
     replaceCurrent(expr->operands[0]);
   }
 };

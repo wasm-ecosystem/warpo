@@ -63,22 +63,22 @@ void PrologEpilogInserter::runOnFunction(wasm::Module *m, wasm::Function *func) 
   }
   switch (optState) {
   case OptInsertState::None:
-    if (support::isDebug(PASS_NAME, func->name.str)) {
-      fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}, epilogue in {}", func->name.str, "entry", "exit");
+    if (support::isDebug(PASS_NAME, func->name.view())) {
+      fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}, epilogue in {}", func->name.view(), "entry", "exit");
     }
     replaceReturnExprWithEpilogue(m, func, maxShadowStackOffset, scratchReturnValueLocalIndex);
     insertDefaultPrologueAndEpilogue(m, func, maxShadowStackOffset, scratchReturnValueLocalIndex);
     break;
   case OptInsertState::PrologueOnly:
-    if (support::isDebug(PASS_NAME, func->name.str)) {
-      fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}, epilogue in {}", func->name.str, "opt", "exit");
+    if (support::isDebug(PASS_NAME, func->name.view())) {
+      fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}, epilogue in {}", func->name.view(), "opt", "exit");
     }
     replaceReturnExprWithEpilogue(m, func, maxShadowStackOffset, scratchReturnValueLocalIndex);
     insertDefaultEpilogue(m, func, maxShadowStackOffset, scratchReturnValueLocalIndex);
     break;
   case OptInsertState::PrologueAndEpilogue:
-    if (support::isDebug(PASS_NAME, func->name.str)) {
-      fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}, epilogue in {}", func->name.str, "opt", "opt");
+    if (support::isDebug(PASS_NAME, func->name.view())) {
+      fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}, epilogue in {}", func->name.view(), "opt", "opt");
     }
     break;
   }
@@ -149,10 +149,10 @@ bool PrologEpilogInserter::tryInsertPrologueAndEpilogue(wasm::Module *m, wasm::F
     wasm::Expression **const epiloguePtr = findExprPointer(epilogue, func);
     assert(prologuePtr != nullptr);
     assert(epiloguePtr != nullptr);
-    if (support::isDebug(PASS_NAME, func->name.str))
-      fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}", func->name.str, toString(prologue));
-    if (support::isDebug(PASS_NAME, func->name.str))
-      fmt::println("[" PASS_NAME "] fn '{}' insert epilogue in {}", func->name.str, toString(epilogue));
+    if (support::isDebug(PASS_NAME, func->name.view()))
+      fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}", func->name.view(), toString(prologue));
+    if (support::isDebug(PASS_NAME, func->name.view()))
+      fmt::println("[" PASS_NAME "] fn '{}' insert epilogue in {}", func->name.view(), toString(epilogue));
     inserter.insertBefore(
         b, b.makeCall(FnDecreaseSP, {b.makeConst(wasm::Literal(maxShadowStackOffset))}, wasm::Type::none), prologuePtr);
     inserter.insertAtEndOfBB(
@@ -171,8 +171,8 @@ bool PrologEpilogInserter::tryInsertPrologue(wasm::Module *m, wasm::Function *fu
   if (isInsertedPrologue) {
     wasm::Expression **const prologuePtr = findExprPointer(prologue, func);
     assert(prologuePtr != nullptr);
-    if (support::isDebug(PASS_NAME, func->name.str))
-      fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}", func->name.str, toString(prologue));
+    if (support::isDebug(PASS_NAME, func->name.view()))
+      fmt::println("[" PASS_NAME "] fn '{}' insert prologue in {}", func->name.view(), toString(prologue));
     inserter.insertBefore(
         b, b.makeCall(FnDecreaseSP, {b.makeConst(wasm::Literal(maxShadowStackOffset))}, wasm::Type::none), prologuePtr);
   }

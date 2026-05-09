@@ -33,7 +33,7 @@ public:
         const size_t dataSize = data.size();
         for (std::size_t i = 0; i < dataSize; ++i) {
           const wasm::RefFunc *const funcRef = data[i]->cast<wasm::RefFunc>();
-          std::string_view functionName = funcRef->func.str;
+          std::string_view functionName = funcRef->func.view();
           const std::string_view nameSuffix = "@varargs";
           if (functionName.size() >= nameSuffix.size() &&
               std::equal(nameSuffix.begin(), nameSuffix.end(), functionName.end() - nameSuffix.size())) {

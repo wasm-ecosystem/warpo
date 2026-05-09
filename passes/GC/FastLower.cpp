@@ -99,9 +99,9 @@ struct ToStackReplacer : public wasm::WalkerPass<wasm::PostWalker<ToStackReplace
         callInfo.slotsUsedByCall.insert(slot);
       }
     }
-    if (support::isDebug(PASS_NAME, f->name.str))
+    if (support::isDebug(PASS_NAME, f->name.view()))
       for (uint32_t const slot : callInfo.slotsUsedByCall)
-        fmt::println("[" PASS_NAME "] in fn '{}' alloc {}", f->name.str, slot);
+        fmt::println("[" PASS_NAME "] in fn '{}' alloc {}", f->name.view(), slot);
     nestedCallInfos_.push(callInfo);
   }
   void leave() {
@@ -109,9 +109,9 @@ struct ToStackReplacer : public wasm::WalkerPass<wasm::PostWalker<ToStackReplace
     for (uint32_t const slot : callInfo.slotsUsedByCall)
       freeSlot(slot);
     wasm::Function *const f = getFunction();
-    if (support::isDebug(PASS_NAME, f->name.str))
+    if (support::isDebug(PASS_NAME, f->name.view()))
       for (uint32_t const slot : callInfo.slotsUsedByCall)
-        fmt::println("[" PASS_NAME "] in fn '{}' free {}", f->name.str, slot);
+        fmt::println("[" PASS_NAME "] in fn '{}' free {}", f->name.view(), slot);
     nestedCallInfos_.pop();
   }
 
@@ -132,8 +132,8 @@ private:
     uint32_t const slot = allocSlot();
     localMappedSlots_[localIndex] = slot;
     wasm::Function *const f = getFunction();
-    if (support::isDebug(PASS_NAME, f->name.str))
-      fmt::println("[" PASS_NAME "] in fn '{}' local idx {} -> {}", f->name.str, localIndex, slot);
+    if (support::isDebug(PASS_NAME, f->name.view()))
+      fmt::println("[" PASS_NAME "] in fn '{}' local idx {} -> {}", f->name.view(), localIndex, slot);
     return slot;
   }
   void freeSlot(uint32_t slot) {

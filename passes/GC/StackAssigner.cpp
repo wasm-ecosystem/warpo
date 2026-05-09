@@ -68,13 +68,13 @@ struct Process : public wasm::PostWalker<Process, wasm::UnifiedExpressionVisitor
     if (auto call = expr->dynCast<wasm::Call>()) {
       // tmptostack
       if (call->target != FnTmpToStack && call->target != FnLocalToStack) {
-        fmt::println("in '{}', unknown {}: {} -> {}", func_.name.str, toString(expr), l.before().toString(),
+        fmt::println("in '{}', unknown {}: {} -> {}", func_.name.view(), toString(expr), l.before().toString(),
                      l.after().toString());
         std::abort();
       }
       return succeed(call);
     }
-    fmt::println("in '{}', unknown {}: {} -> {}", func_.name.str, toString(expr), l.before().toString(),
+    fmt::println("in '{}', unknown {}: {} -> {}", func_.name.view(), toString(expr), l.before().toString(),
                  l.after().toString());
     std::abort();
   };
@@ -108,9 +108,9 @@ static void calStackPositionWithGreedyConflictGraphAlgorithm(wasm::Function *fun
                                                              LivenessMap const &livenessMap) {
   ConflictGraph const conflictGraph = ConflictGraph::create(livenessMap);
   ColorVec const color = conflictGraph.color();
-  if (support::isDebug(PASS_NAME, func->name.str)) {
+  if (support::isDebug(PASS_NAME, func->name.view())) {
     fmt::println("=========ConflictGraph=========");
-    fmt::println("{}", func->name.str);
+    fmt::println("{}", func->name.view());
     conflictGraph.dump();
     color.dump();
     fmt::println("===============================");
