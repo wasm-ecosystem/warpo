@@ -1433,12 +1433,11 @@ export class Flow {
     if (this.scopedLocals) {
       let scopedLocals = this.scopedLocals as Map<string, Local>;
       let keys = Map_keys(scopedLocals);
-      let scopeId = mir.addScope(this.targetFunction, startStmt, endStmt);
       for (let i = 0; i < keys.length; ++i) {
         let key = unchecked(keys[i]);
         let local = scopedLocals.get(key) as Local;
         if (!local.isParameter()) {
-          mir.addLocal(this.targetFunction, local, scopeId);
+          mir.addLocal(this.targetFunction, local);
         }
       }
     }

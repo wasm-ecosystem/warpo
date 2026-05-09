@@ -8,7 +8,6 @@
 #include "../helper/BinaryenExt.hpp"
 #include "AbbrevFactory.hpp"
 #include "DebugStringManager.hpp"
-#include "IntervalTree.hpp"
 #include "binaryen/third_party/llvm-project/DWARFVisitor.h"
 #include "llvm/BinaryFormat/Dwarf.h"
 #include "llvm/DebugInfo/DWARF/DWARFContext.h"
@@ -87,16 +86,25 @@ private:
   void onValue(llvm::MemoryBufferRef const MBR) override { currentOffset_ += MBR.getBufferSize(); }
 };
 
+static void collectTypesFromBlock(BlockInfo const &blockInfo, std::unordered_set<std::string_view> &reachableTypes) {
+  for (LocalInfo const &local : blockInfo.getLocals()) {
+    reachableTypes.insert(local.getType());
+  }
+
+  for (std::unique_ptr<BlockInfo> const &child : blockInfo.getChildren()) {
+    collectTypesFromBlock(*child, reachableTypes);
+  }
+}
+
 static void collectTypesFromSubPrograms(std::deque<SubProgramInfo> const &subPrograms,
                                         std::unordered_set<std::string_view> &reachableTypes) {
   for (SubProgramInfo const &subProgram : subPrograms) {
     for (ParameterInfo const &param : subProgram.getParameters()) {
       reachableTypes.insert(param.getType());
     }
-    for (auto const &[scopeId, locals] : subProgram.getLocals()) {
-      for (LocalInfo const &local : locals) {
-        reachableTypes.insert(local.getType());
-      }
+    BlockInfo const *const rootBlockInfo = subProgram.getRootBlockInfo();
+    if (rootBlockInfo != nullptr) {
+      collectTypesFromBlock(*rootBlockInfo, reachableTypes);
     }
   }
 }
@@ -157,9 +165,79 @@ static std::unordered_set<std::string_view> collectReachableTypes(VariableInfo c
   return reachableTypes;
 }
 
+static void emitLocalVariableEntry(LocalInfo const &local, llvm::DWARFYAML::Unit &rootUnit,
+                                   uint32_t const localVariableAbbrevCode,
+                                   uint32_t const tupleFieldLocalVariableAbbrevCode,
+                                   std::vector<TypeRefFixup> &typeRefFixups) {
+  llvm::DWARFYAML::Entry localEntry;
+  VariableLocation const &location = local.getLocation();
+  bool const isTupleField = std::holds_alternative<TupleFieldLocation>(location);
+  localEntry.AbbrCode = isTupleField ? tupleFieldLocalVariableAbbrevCode : localVariableAbbrevCode;
+
+  llvm::DWARFYAML::FormValue localNameValue;
+  localNameValue.Value = 0;
+  std::string_view const localName = local.getName();
+  localNameValue.CStr = llvm::StringRef(localName.data(), localName.size());
+  localEntry.Values.push_back(localNameValue);
+
+  llvm::DWARFYAML::FormValue localTypeValue;
+  localTypeValue.Value = 0xDEADBEEFU;
+  localEntry.Values.push_back(localTypeValue);
+
+  if (isTupleField) {
+    TupleFieldLocation const &tupleField = std::get<TupleFieldLocation>(location);
+    llvm::DWARFYAML::FormValue tupleFieldOffsetValue;
+    tupleFieldOffsetValue.Value = tupleField.offset;
+    localEntry.Values.push_back(tupleFieldOffsetValue);
+
+    llvm::DWARFYAML::FormValue tupleLocalIndexValue;
+    tupleLocalIndexValue.Value = tupleField.localIndex;
+    localEntry.Values.push_back(tupleLocalIndexValue);
+  } else {
+    llvm::DWARFYAML::FormValue localLocationValue;
+    localLocationValue.Value = std::get<LocalIndexLocation>(location).index;
+    localEntry.Values.push_back(localLocationValue);
+  }
+
+  size_t const localIndex = rootUnit.Entries.size();
+  typeRefFixups.push_back({localIndex, 1U, local.getType()});
+  rootUnit.Entries.push_back(localEntry);
+}
+
+static void emitScopeEntry(BlockInfo const &blockInfo, llvm::DWARFYAML::Unit &rootUnit,
+                           uint32_t const lexicalBlockAbbrevCode, uint32_t const localVariableAbbrevCode,
+                           uint32_t const tupleFieldLocalVariableAbbrevCode, std::vector<TypeRefFixup> &typeRefFixups) {
+  llvm::DWARFYAML::Entry blockEntry;
+  blockEntry.AbbrCode = lexicalBlockAbbrevCode;
+
+  llvm::DWARFYAML::FormValue blockLowPcValue;
+  blockLowPcValue.Value = blockInfo.getStartLine();
+  blockEntry.Values.push_back(blockLowPcValue);
+
+  llvm::DWARFYAML::FormValue blockHighPcValue;
+  blockHighPcValue.Value = blockInfo.getEndLine();
+  blockEntry.Values.push_back(blockHighPcValue);
+
+  rootUnit.Entries.push_back(blockEntry);
+
+  for (LocalInfo const &local : blockInfo.getLocals())
+    emitLocalVariableEntry(local, rootUnit, localVariableAbbrevCode, tupleFieldLocalVariableAbbrevCode, typeRefFixups);
+
+  for (std::unique_ptr<BlockInfo> const &child : blockInfo.getChildren()) {
+    emitScopeEntry(*child, rootUnit, lexicalBlockAbbrevCode, localVariableAbbrevCode, tupleFieldLocalVariableAbbrevCode,
+                   typeRefFixups);
+  }
+}
+
+static void emitScopeTerminator(llvm::DWARFYAML::Unit &rootUnit) {
+  llvm::DWARFYAML::Entry blockTerminator;
+  blockTerminator.AbbrCode = 0U;
+  rootUnit.Entries.push_back(blockTerminator);
+}
+
 llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
 
-DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::BinaryLocations const &binaryLocations) {
+DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
   VariableInfo::ClassRegistry const &classRegistry = variableInfo.getClassRegistry();
   VariableInfo::GlobalTypes const &globalTypes = variableInfo.getGlobalTypes();
   VariableInfo::BaseTypeRegistry const &baseTypeRegistry = variableInfo.getBaseTypeRegistry();
@@ -536,7 +614,7 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
     SubProgramRegistry const &memberFunctions = classInfo.getSubProgramRegistry();
     std::deque<SubProgramInfo> const &memberFunctionList = memberFunctions.getList();
     for (SubProgramInfo const &subProgram : memberFunctionList) {
-      addSubProgramWithParameters(subProgram, rootUnit, abbrevCodes, binaryLocations, typeRefFixups);
+      addSubProgramWithParameters(subProgram, rootUnit, abbrevCodes, typeRefFixups);
     }
 
     // Add terminator for class children
@@ -572,7 +650,7 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, wasm::Bi
   SubProgramRegistry const &globalFunctions = variableInfo.getSubProgramRegistry();
   std::deque<SubProgramInfo> const &globalFunctionList = globalFunctions.getList();
   for (SubProgramInfo const &subProgram : globalFunctionList) {
-    addSubProgramWithParameters(subProgram, rootUnit, abbrevCodes, binaryLocations, typeRefFixups);
+    addSubProgramWithParameters(subProgram, rootUnit, abbrevCodes, typeRefFixups);
   }
 
   compileUnits.push_back(rootUnit);
@@ -620,7 +698,6 @@ std::string DwarfGenerator::dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::Memo
 
 void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
                                                  DwarfGenerator::AbbrevCodes const &abbrevCodes,
-                                                 wasm::BinaryLocations const &binaryLocations,
                                                  std::vector<TypeRefFixup> &typeRefFixups) {
   llvm::DWARFYAML::Entry subprogramEntry;
   std::optional<uint32_t> const heapStorageLocalIndex = subProgram.getHeapVariableStorageLocalIndex();
@@ -686,108 +763,11 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
     rootUnit.Entries.push_back(paramEntry);
   }
 
-  SubProgramInfo::LocalsMap const &localsMap = subProgram.getLocals();
-  SubProgramInfo::ScopeInfoMap const &scopeInfoMap = subProgram.getScopeInfoMap();
-
-  // Use visitor pattern to build DWARF tree directly from intervals
-  if (!scopeInfoMap.empty()) {
-    std::vector<std::pair<wasm::BinaryLocations::Span, SubProgramInfo::ScopeId>> intervals;
-    intervals.reserve(scopeInfoMap.size());
-
-    for (std::pair<SubProgramInfo::ScopeId const, ScopeInfo> const &scopeEntry : scopeInfoMap) {
-      SubProgramInfo::ScopeId const scopeId = scopeEntry.first;
-      ScopeInfo const &scopeInfo = scopeEntry.second;
-      wasm::BinaryLocations::Span const span = getRangeOfScope(scopeInfo, binaryLocations);
-      intervals.emplace_back(span, scopeId);
-    }
-
-    // Visitor that builds DWARF entries directly
-    class DwarfScopeVisitor : public IntervalVisitor<SubProgramInfo::ScopeId> {
-    public:
-      DwarfScopeVisitor(llvm::DWARFYAML::Unit &unit, uint32_t blockAbbrevCode, uint32_t localVarAbbrevCode,
-                        uint32_t tupleFieldLocalVarAbbrevCode, SubProgramInfo::LocalsMap const &locals,
-                        std::vector<TypeRefFixup> &fixups)
-          : rootUnit_(unit), lexicalBlockAbbrevCode_(blockAbbrevCode), localVariableAbbrevCode_(localVarAbbrevCode),
-            tupleFieldLocalVariableAbbrevCode_(tupleFieldLocalVarAbbrevCode), localsMap_(locals),
-            typeRefFixups_(fixups) {}
-
-      void onEnterScope(std::pair<wasm::BinaryLocations::Span, SubProgramInfo::ScopeId> const &interval) override {
-        // Add lexical block entry
-        llvm::DWARFYAML::Entry blockEntry;
-        blockEntry.AbbrCode = lexicalBlockAbbrevCode_;
-
-        llvm::DWARFYAML::FormValue blockLowPcValue;
-        blockLowPcValue.Value = interval.first.start;
-        blockEntry.Values.push_back(blockLowPcValue);
-
-        llvm::DWARFYAML::FormValue blockHighPcValue;
-        blockHighPcValue.Value = interval.first.end;
-        blockEntry.Values.push_back(blockHighPcValue);
-
-        rootUnit_.Entries.push_back(blockEntry);
-
-        // Add local variables for this scope
-        SubProgramInfo::LocalsMap::const_iterator const localsIt = localsMap_.find(interval.second);
-        if (localsIt != localsMap_.end()) {
-          std::vector<LocalInfo> const &locals = localsIt->second;
-          for (LocalInfo const &local : locals) {
-            llvm::DWARFYAML::Entry localEntry;
-            VariableLocation const &location = local.getLocation();
-            bool const isTupleField = std::holds_alternative<TupleFieldLocation>(location);
-            localEntry.AbbrCode = isTupleField ? tupleFieldLocalVariableAbbrevCode_ : localVariableAbbrevCode_;
-
-            llvm::DWARFYAML::FormValue localNameValue;
-            localNameValue.Value = 0;
-            std::string_view const localName = local.getName();
-            localNameValue.CStr = llvm::StringRef(localName.data(), localName.size());
-            localEntry.Values.push_back(localNameValue);
-
-            llvm::DWARFYAML::FormValue localTypeValue;
-            localTypeValue.Value = 0xDEADBEEFU;
-            localEntry.Values.push_back(localTypeValue);
-
-            if (isTupleField) {
-              TupleFieldLocation const &tupleField = std::get<TupleFieldLocation>(location);
-              llvm::DWARFYAML::FormValue tupleFieldOffsetValue;
-              tupleFieldOffsetValue.Value = tupleField.offset;
-              localEntry.Values.push_back(tupleFieldOffsetValue);
-
-              llvm::DWARFYAML::FormValue tupleLocalIndexValue;
-              tupleLocalIndexValue.Value = tupleField.localIndex;
-              localEntry.Values.push_back(tupleLocalIndexValue);
-            } else {
-              llvm::DWARFYAML::FormValue localLocationValue;
-              localLocationValue.Value = std::get<LocalIndexLocation>(location).index;
-              localEntry.Values.push_back(localLocationValue);
-            }
-
-            size_t const localIndex = rootUnit_.Entries.size();
-            typeRefFixups_.push_back({localIndex, 1U, local.getType()});
-
-            rootUnit_.Entries.push_back(localEntry);
-          }
-        }
-      }
-
-      void onExitScope([[maybe_unused]] std::pair<wasm::BinaryLocations::Span, uint32_t> const &scope) override {
-        // Add terminator for lexical block children
-        llvm::DWARFYAML::Entry blockTerminator;
-        blockTerminator.AbbrCode = 0U;
-        rootUnit_.Entries.push_back(blockTerminator);
-      }
-
-    private:
-      llvm::DWARFYAML::Unit &rootUnit_;
-      uint32_t lexicalBlockAbbrevCode_;
-      uint32_t localVariableAbbrevCode_;
-      uint32_t tupleFieldLocalVariableAbbrevCode_;
-      SubProgramInfo::LocalsMap const &localsMap_;
-      std::vector<TypeRefFixup> &typeRefFixups_;
-    };
-
-    DwarfScopeVisitor visitor(rootUnit, abbrevCodes.lexicalBlock, abbrevCodes.localVariable,
-                              abbrevCodes.tupleFieldLocalVariable, localsMap, typeRefFixups);
-    IntervalTreeBuilder<uint32_t>::process(std::move(intervals), visitor);
+  BlockInfo const *const rootBlockInfo = subProgram.getRootBlockInfo();
+  if (rootBlockInfo != nullptr) {
+    emitScopeEntry(*rootBlockInfo, rootUnit, abbrevCodes.lexicalBlock, abbrevCodes.localVariable,
+                   abbrevCodes.tupleFieldLocalVariable, typeRefFixups);
+    emitScopeTerminator(rootUnit);
   }
 
   // Add terminator for subprogram children

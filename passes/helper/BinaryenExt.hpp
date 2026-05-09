@@ -9,10 +9,6 @@
 
 #include "wasm.h"
 
-namespace warpo {
-class ScopeInfo;
-}
-
 namespace warpo::passes {
 
 template <class... Ts> bool isOneOf(wasm::Expression *expr) { return ((expr->is<Ts>()) || ...); }
@@ -31,9 +27,5 @@ wasm::Expression *findFirstInstruction(wasm::Expression *expr) noexcept;
 
 ///@brief Find the last instruction in an expression subtree, skipping blocks
 wasm::Expression *findLastInstruction(wasm::Expression *expr) noexcept;
-
-///@brief Get bytecode range for a scope (first instruction start to last instruction end)
-wasm::BinaryLocations::Span getRangeOfScope(ScopeInfo const &scopeInfo,
-                                            wasm::BinaryLocations const &binaryLocations) noexcept;
 
 } // namespace warpo::passes

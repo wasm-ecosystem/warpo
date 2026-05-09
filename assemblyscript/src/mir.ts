@@ -10,7 +10,6 @@ import {
   _WarpoAddTupleLocal,
   _WarpoAddTupleParameter,
   _WarpoAddParameter,
-  _WarpoAddScope,
   _WarpoAddSubProgram,
   _WarpoAddTemplateType,
   _WarpoCreateBaseType,
@@ -52,10 +51,6 @@ function classToMIRName(clazz: Class): string {
   return typeToMIRName(clazz.type);
 }
 
-export function addScope(subprogram: Function, startExpression: ExpressionRef, endExpression: ExpressionRef): u32 {
-  return _WarpoAddScope(subprogram.internalName, startExpression, endExpression);
-}
-
 export function addGlobal(variable: Global, type: Type): void {
   _WarpoAddGlobal(
     variable.internalName,
@@ -85,7 +80,7 @@ export function addParameter(subprogram: Function, variable: Local): void {
     );
   }
 }
-export function addLocal(subProgram: Function, variable: Local, scopeId: u32): void {
+export function addLocal(subProgram: Function, variable: Local): void {
   if (variable.isClosureVariable()) {
     _WarpoAddTupleLocal(
       subProgram.internalName,
@@ -93,7 +88,6 @@ export function addLocal(subProgram: Function, variable: Local, scopeId: u32): v
       decodeURIComponent(typeToMIRName(variable.type)),
       variable.getTupleElementInfo().offset,
       variable.tupleAddressLocalIndex,
-      scopeId,
       variable.type.is(TypeFlags.Nullable)
     );
   } else {
@@ -102,7 +96,6 @@ export function addLocal(subProgram: Function, variable: Local, scopeId: u32): v
       variable.name,
       decodeURIComponent(typeToMIRName(variable.type)),
       variable.index,
-      scopeId,
       variable.type.is(TypeFlags.Nullable)
     );
   }
