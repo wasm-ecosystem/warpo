@@ -2878,6 +2878,7 @@ export class Compiler extends DiagnosticEmitter {
       // may be necessary multiple times where locals depend on each other.
       if (outerFlow.resetIfNeedsRecompile(bodyFlow.forkThen(condExpr), numLocalsBefore)) {
         this.currentFlow = outerFlow;
+        mir.leaveScope();
         return this.doCompileForStatement(statement);
       }
     }
