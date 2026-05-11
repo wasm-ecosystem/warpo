@@ -104,8 +104,8 @@ void VariableInfo::addTupleLocal(std::string variableName, std::string_view cons
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
   assert(!subProgramStack_.empty() && "Current subprogram is not set");
-  subProgramStack_.back()->addTupleLocal(std::move(variableName), internedTypeName, tupleFieldOffset,
-                                         storageLocalIndex, nullable);
+  subProgramStack_.back()->addTupleLocal(std::move(variableName), internedTypeName, tupleFieldOffset, storageLocalIndex,
+                                         nullable);
 }
 
 void VariableInfo::addTupleParameter(std::string variableName, std::string_view const typeName,

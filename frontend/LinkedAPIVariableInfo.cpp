@@ -83,8 +83,8 @@ void addParameter(uint32_t const variableNamePtr, uint32_t const typeNamePtr, ui
   pCompiler->asModule_.variableInfo_.addParameter(std::move(variableName), typeName, index, nullable != 0);
 }
 
-void addLocal(uint32_t const variableNamePtr, uint32_t const typeNamePtr, uint32_t const index,
-              uint32_t const nullable, vb::WasmModule const *const ctx) {
+void addLocal(uint32_t const variableNamePtr, uint32_t const typeNamePtr, uint32_t const index, uint32_t const nullable,
+              vb::WasmModule const *const ctx) {
   std::string variableName = WarpRunner::getString(ctx, variableNamePtr);
   std::string const typeName = WarpRunner::getString(ctx, typeNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
@@ -101,8 +101,7 @@ void addTupleLocal(uint32_t const variableNamePtr, uint32_t const typeNamePtr, u
 }
 
 void addTupleParameter(uint32_t const variableNamePtr, uint32_t const typeNamePtr, uint32_t const tupleFieldOffset,
-                       uint32_t const storageLocalIndex, uint32_t const nullable,
-                       vb::WasmModule const *const ctx) {
+                       uint32_t const storageLocalIndex, uint32_t const nullable, vb::WasmModule const *const ctx) {
   std::string variableName = WarpRunner::getString(ctx, variableNamePtr);
   std::string const typeName = WarpRunner::getString(ctx, typeNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
