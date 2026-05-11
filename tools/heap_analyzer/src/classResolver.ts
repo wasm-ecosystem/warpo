@@ -42,19 +42,25 @@ export class ClassResolver {
 
   isPointerfree(classId: number): boolean {
     const layout = this.layoutMap.get(classId);
-    if (!layout) return false;
+    if (!layout) {
+      return false;
+    }
     return this.getReferenceFields(classId).length === 0 && !this.hasReferenceElements(classId);
   }
 
   getReferenceFields(classId: number): ClassField[] {
     const layout = this.layoutMap.get(classId);
-    if (!layout) return [];
+    if (!layout) {
+      return [];
+    }
     return layout.fields.filter((f) => f.isReference);
   }
 
   hasReferenceElements(classId: number): boolean {
     const layout = this.layoutMap.get(classId);
-    if (!layout) return false;
+    if (!layout) {
+      return false;
+    }
     return layout.elementIsReference === true;
   }
 }
