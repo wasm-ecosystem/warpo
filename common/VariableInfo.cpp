@@ -109,8 +109,8 @@ void VariableInfo::addTupleLocal(std::string variableName, std::string_view cons
 }
 
 void VariableInfo::addTupleParameter(std::string variableName, std::string_view const typeName,
-                                     uint32_t const tupleFieldOffset,
-                                     uint32_t const storageLocalIndex, bool const nullable) {
+                                     uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex,
+                                     bool const nullable) {
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
   assert(currentWorkingSubProgram_ != nullptr && "Current subprogram is not set");
@@ -122,6 +122,18 @@ void VariableInfo::addHeapVariableStorageLocalIndex(std::string_view const subPr
   SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
   assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
   it->second.setHeapVariableStorageLocalIndex(index);
+}
+
+void VariableInfo::enterScope(uint32_t const startLine, uint32_t const endLine) {
+  if (currentWorkingSubProgram_ == nullptr)
+    return;
+  currentWorkingSubProgram_->enterBlock(startLine, endLine);
+}
+
+void VariableInfo::leaveScope() {
+  if (currentWorkingSubProgram_ == nullptr)
+    return;
+  currentWorkingSubProgram_->leaveBlock();
 }
 
 } // namespace warpo

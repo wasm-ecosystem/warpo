@@ -1882,8 +1882,6 @@ export class Compiler extends DiagnosticEmitter {
         flow.set(FlowFlags.Returns | FlowFlags.Terminates);
       }
     }
-    flow.addLocalsToBlock(stmts);
-
     // Make constructors return their instance pointer, and prepend a conditional
     // allocation if any code path accesses `this`.
     if (instance.is(CommonFlags.Constructor)) {
@@ -2507,7 +2505,6 @@ export class Compiler extends DiagnosticEmitter {
     this.currentFlow = innerFlow;
 
     let stmts = this.compileStatements(statements);
-    innerFlow.addLocalsToBlock(stmts);
     outerFlow.inherit(innerFlow);
     this.currentFlow = outerFlow;
     return this.module.flatten(stmts);
@@ -2667,7 +2664,6 @@ export class Compiler extends DiagnosticEmitter {
 
     // Finalize and leave everything else to the optimizer
     this.currentFlow = outerFlow;
-    flow.addLocalsToBlock(bodyStmts);
     if (loopClosureTupleInfo) {
       let tupleStmts = this.emitLoopClosureTuple(targetFunction, loopClosureTupleInfo, null, null, statement);
       bodyStmts = tupleStmts.concat(bodyStmts);
@@ -2869,9 +2865,6 @@ export class Compiler extends DiagnosticEmitter {
     // Finalize
     outerFlow.inherit(flow);
     this.currentFlow = outerFlow;
-    if (bodyEnd != 0) {
-      bodyFlow.addLocalsToBlockWithStartEndStmt(bodyStmts[0], bodyEnd);
-    }
     let ifExpr = module.if(condExprTrueish, module.flatten(bodyStmts));
     let expr: ExpressionRef;
     if (loopClosureTupleInfo) {
@@ -2897,12 +2890,6 @@ export class Compiler extends DiagnosticEmitter {
     stmts.push(expr);
     if (outerFlow.is(FlowFlags.Terminates)) {
       stmts.push(module.unreachable());
-    }
-
-    if (bodyEnd != 0) {
-      flow.addLocalsToBlockWithStartEndStmt(stmts[0], bodyEnd);
-    } else {
-      flow.addLocalsToBlock(stmts);
     }
 
     return module.flatten(stmts);
@@ -3067,9 +3054,6 @@ export class Compiler extends DiagnosticEmitter {
     // finalize
     outerFlow.inherit(flow);
     this.currentFlow = outerFlow;
-    if (bodyEnd != 0) {
-      bodyFlow.addLocalsToBlockWithStartEndStmt(bodyStmts[0], bodyEnd);
-    }
     let ifExpr = module.if(isNotDoneExpr, module.flatten(bodyStmts));
     let expr: ExpressionRef;
     if (loopClosureTupleInfo) {
@@ -3095,11 +3079,6 @@ export class Compiler extends DiagnosticEmitter {
     stmts.push(expr);
     if (outerFlow.is(FlowFlags.Terminates)) {
       stmts.push(module.unreachable());
-    }
-    if (bodyEnd != 0) {
-      flow.addLocalsToBlockWithStartEndStmt(stmts[0], bodyEnd);
-    } else {
-      flow.addLocalsToBlock(stmts);
     }
     return module.flatten(stmts);
   }
@@ -3162,8 +3141,6 @@ export class Compiler extends DiagnosticEmitter {
         elseStmts.push(this.compileStatement(ifFalse));
       }
       flow.inheritAlternatives(thenFlow, elseFlow); // terminates if both do
-      thenFlow.addLocalsToBlock(thenStmts);
-      elseFlow.addLocalsToBlock(elseStmts);
       this.currentFlow = flow;
       return module.if(condExprTrueish, module.flatten(thenStmts), module.flatten(elseStmts));
     } else {
@@ -3176,7 +3153,6 @@ export class Compiler extends DiagnosticEmitter {
         flow.inheritAlternatives(thenFlow, elseFlow);
       }
       this.currentFlow = flow;
-      thenFlow.addLocalsToBlock(thenStmts);
       return module.if(condExprTrueish, module.flatten(thenStmts));
     }
   }
@@ -3304,7 +3280,6 @@ export class Compiler extends DiagnosticEmitter {
           break;
         }
       }
-      this.currentFlow.addLocalsToBlock(stmts.slice(1)); // need to slice off the container block
       stmts.length = count;
       fallThroughFlow = possiblyFallsThrough ? innerFlow : null;
       let possiblyBreaks = innerFlow.isAny(FlowFlags.Breaks | FlowFlags.ConditionallyBreaks);
@@ -3655,7 +3630,6 @@ export class Compiler extends DiagnosticEmitter {
 
     // Finalize and leave everything else to the optimizer
     this.currentFlow = outerFlow;
-    thenFlow.addLocalsToBlock(bodyStmts);
     let ifExpr = module.if(condExprTrueish, module.flatten(bodyStmts));
     let loopExpr: ExpressionRef;
     if (loopClosureTupleInfo) {

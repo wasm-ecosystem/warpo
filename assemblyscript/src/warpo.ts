@@ -54,6 +54,8 @@ export declare function _WarpoAddTupleParameter(
 ): void;
 
 export declare function _WarpoAddHeapVariableStorageLocalIndex(subProgramName: string, index: u32): void;
+export declare function _WarpoEnterScope(startLine: u32, endLine: u32): void;
+export declare function _WarpoLeaveScope(): void;
 
 export function markDataElementImmutable(begin: i64, size: i32): void {
   _WarpoMarkDataElementImmutable(i64_low(begin), <u32>size);

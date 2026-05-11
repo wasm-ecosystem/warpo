@@ -117,6 +117,16 @@ void addHeapVariableStorageLocalIndex(uint32_t const subProgramNamePtr, uint32_t
   pCompiler->asModule_.variableInfo_.addHeapVariableStorageLocalIndex(subProgramName, index);
 }
 
+void enterScope(uint32_t const startLine, uint32_t const endLine, vb::WasmModule const *const ctx) {
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.enterScope(startLine, endLine);
+}
+
+void leaveScope(vb::WasmModule const *const ctx) {
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.leaveScope();
+}
+
 } // namespace
 
 std::vector<vb::NativeSymbol> createVariableInfoAPI() {
@@ -134,6 +144,8 @@ std::vector<vb::NativeSymbol> createVariableInfoAPI() {
       STATIC_LINK("warpo", "_WarpoAddTupleLocal", addTupleLocal),
       STATIC_LINK("warpo", "_WarpoAddTupleParameter", addTupleParameter),
       STATIC_LINK("warpo", "_WarpoAddHeapVariableStorageLocalIndex", addHeapVariableStorageLocalIndex),
+      STATIC_LINK("warpo", "_WarpoEnterScope", enterScope),
+      STATIC_LINK("warpo", "_WarpoLeaveScope", leaveScope),
   };
 }
 

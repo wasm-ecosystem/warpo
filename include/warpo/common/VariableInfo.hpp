@@ -55,14 +55,17 @@ public:
   void addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
                     bool const nullable);
 
-  void addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
-                bool const nullable);
+  void addLocal(std::string variableName, std::string_view const typeName, uint32_t const index, bool const nullable);
 
   void addTupleLocal(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
                      uint32_t const storageLocalIndex, bool const nullable);
 
   void addTupleParameter(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
                          uint32_t const storageLocalIndex, bool const nullable);
+
+  void enterScope(uint32_t const startLine, uint32_t const endLine);
+
+  void leaveScope();
 
   SubProgramLookupMap const &getSubProgramLookupMap() const noexcept { return subProgramLookupMap_; }
 

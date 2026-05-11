@@ -402,6 +402,7 @@ export class Flow {
     else assert(!scopedLocals.has(name));
     scopedLocal.set(CommonFlags.Scoped);
     scopedLocals.set(name, scopedLocal);
+    mir.addLocal(this.targetFunction, scopedLocal);
     return scopedLocal;
   }
 
@@ -1422,26 +1423,6 @@ export class Flow {
     return `Flow(${this.targetFunction})[${levels}] ${sb.join(" ")}`;
   }
 
-  addLocalsToBlock(stmts: ExpressionRef[]): void {
-    if (stmts.length > 0) {
-      this.addLocalsToBlockWithStartEndStmt(stmts[0], stmts[stmts.length - 1]);
-    }
-  }
-
-  addLocalsToBlockWithStartEndStmt(startStmt: ExpressionRef, endStmt: ExpressionRef): void {
-    assert(startStmt && endStmt);
-    if (this.scopedLocals) {
-      let scopedLocals = this.scopedLocals as Map<string, Local>;
-      let keys = Map_keys(scopedLocals);
-      for (let i = 0; i < keys.length; ++i) {
-        let key = unchecked(keys[i]);
-        let local = scopedLocals.get(key) as Local;
-        if (!local.isParameter()) {
-          mir.addLocal(this.targetFunction, local);
-        }
-      }
-    }
-  }
 }
 
 /** Tests if a conversion from one type to another can technically overflow. */

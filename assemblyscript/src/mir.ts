@@ -6,6 +6,8 @@ import {
   _WarpoAddBaseClass,
   _WarpoAddField,
   _WarpoAddGlobal,
+  _WarpoEnterScope,
+  _WarpoLeaveScope,
   _WarpoAddLocal,
   _WarpoAddTupleLocal,
   _WarpoAddTupleParameter,
@@ -115,6 +117,14 @@ export function addSubProgram(
 
 export function addHeapVariableStorageLocalIndex(subprogram: Function, index: u32): void {
   _WarpoAddHeapVariableStorageLocalIndex(subprogram.internalName, index);
+}
+
+export function enterScope(startLine: u32, endLine: u32): void {
+  _WarpoEnterScope(startLine, endLine);
+}
+
+export function leaveScope(): void {
+  _WarpoLeaveScope();
 }
 
 export function createClass(clazz: Class): void {
