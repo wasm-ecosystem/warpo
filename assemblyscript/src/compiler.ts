@@ -1024,6 +1024,7 @@ export class Compiler extends DiagnosticEmitter {
     for (let statements = file.source.statements, i = 0, k = statements.length; i < k; ++i) {
       this.compileTopLevelStatement(statements[i], startFunctionBody);
     }
+    mir.leaveFunction();
     this.ctxElement = ctxElement;
     // no need to insert unreachable since last statement should have done that
     this.currentFlow = previousFlow;
@@ -1620,6 +1621,7 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     instance.finalize(module, funcRef);
+    mir.leaveFunction();
     this.currentType = previousType;
     pendingElements.delete(instance);
     return true;
@@ -1763,6 +1765,7 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     instance.finalize(module, funcRef);
+    mir.leaveFunction();
     this.currentType = previousType;
     pendingElements.delete(instance);
     return true;
@@ -2504,7 +2507,11 @@ export class Compiler extends DiagnosticEmitter {
     let innerFlow = outerFlow.fork();
     this.currentFlow = innerFlow;
 
+    let source = statement.range.source;
+    mir.enterScope(source.lineAt(statement.range.start), source.lineAt(statement.range.end));
+
     let stmts = this.compileStatements(statements);
+    mir.leaveScope();
     outerFlow.inherit(innerFlow);
     this.currentFlow = outerFlow;
     return this.module.flatten(stmts);

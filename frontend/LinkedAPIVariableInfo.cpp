@@ -127,6 +127,11 @@ void leaveScope(vb::WasmModule const *const ctx) {
   pCompiler->asModule_.variableInfo_.leaveScope();
 }
 
+void leaveFunction(vb::WasmModule const *const ctx) {
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.leaveFunction();
+}
+
 } // namespace
 
 std::vector<vb::NativeSymbol> createVariableInfoAPI() {
@@ -146,6 +151,7 @@ std::vector<vb::NativeSymbol> createVariableInfoAPI() {
       STATIC_LINK("warpo", "_WarpoAddHeapVariableStorageLocalIndex", addHeapVariableStorageLocalIndex),
       STATIC_LINK("warpo", "_WarpoEnterScope", enterScope),
       STATIC_LINK("warpo", "_WarpoLeaveScope", leaveScope),
+      STATIC_LINK("warpo", "_WarpoLeaveFunction", leaveFunction),
   };
 }
 

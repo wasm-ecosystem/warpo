@@ -136,6 +136,13 @@ void VariableInfo::leaveScope() {
   currentWorkingSubProgram_->leaveBlock();
 }
 
+void VariableInfo::leaveFunction() {
+  if (currentWorkingSubProgram_ == nullptr)
+    return;
+  currentWorkingSubProgram_->leaveFunction();
+  currentWorkingSubProgram_ = nullptr;
+}
+
 } // namespace warpo
 
 #ifdef WARPO_ENABLE_UNIT_TESTS

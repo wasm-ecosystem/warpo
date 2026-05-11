@@ -76,4 +76,11 @@ void SubProgramInfo::leaveBlock() {
     blockInfoStack_.back()->pushChild(std::move(last));
   }
 }
+
+void SubProgramInfo::leaveFunction() {
+  if (rootBlockInfo_ != nullptr)
+    return;
+  assert(blockInfoStack_.size() == 1U);
+  leaveBlock();
+}
 } // namespace warpo

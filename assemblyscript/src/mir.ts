@@ -18,6 +18,7 @@ import {
   _WarpoCreateClass,
   _WarpoCreateClassWithoutRtid,
   _WarpoAddHeapVariableStorageLocalIndex,
+  _WarpoLeaveFunction,
 } from "./warpo";
 
 function typeToMIRName(type: Type): string {
@@ -125,6 +126,10 @@ export function enterScope(startLine: u32, endLine: u32): void {
 
 export function leaveScope(): void {
   _WarpoLeaveScope();
+}
+
+export function leaveFunction(): void {
+  _WarpoLeaveFunction();
 }
 
 export function createClass(clazz: Class): void {

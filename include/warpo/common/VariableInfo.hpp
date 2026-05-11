@@ -67,6 +67,8 @@ public:
 
   void leaveScope();
 
+  void leaveFunction();
+
   SubProgramLookupMap const &getSubProgramLookupMap() const noexcept { return subProgramLookupMap_; }
 
   void addHeapVariableStorageLocalIndex(std::string_view const subProgramName, uint32_t const index);

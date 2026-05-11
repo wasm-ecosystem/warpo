@@ -19,8 +19,6 @@ void BinaryWriter::write() {
       wasm::Function *const func = m_.get()->getFunctionOrNull(name);
       if (func == nullptr)
         continue;
-      if (subprogram.getRootBlockInfo() == nullptr)
-        continue;
       // FIXME: it is a hack, binaryen will handle expression locations iff expressionLocations not empty.
       func->expressionLocations.insert_or_assign(func->body, wasm::BinaryLocations::Span{});
     }

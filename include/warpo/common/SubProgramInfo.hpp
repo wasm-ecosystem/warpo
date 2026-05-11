@@ -75,6 +75,8 @@ public:
 
   void leaveBlock();
 
+  void leaveFunction();
+
   inline BlockInfo const *getRootBlockInfo() const noexcept {
     // LCOV_EXCL_START
     assert(rootBlockInfo_ != nullptr);
