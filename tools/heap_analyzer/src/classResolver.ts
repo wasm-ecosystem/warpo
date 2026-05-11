@@ -1,7 +1,65 @@
 import { DW_AT, DW_TAG, buildOffsetMap, findDIEsByTag, getAttr, parseDwarf, type DwarfDIE } from "./dwarfParser.js";
 import type { ClassField, ClassLayout } from "./types.js";
 
-class ClassLayoutResolver {
+/**
+ * Resolves class layouts from DWARF debug information embedded in a
+ * WebAssembly binary and provides helper queries for reference scanning.
+ *
+ * Only classes with a runtime ID (`DW_AT_signature`) are included.
+ */
+export class ClassResolver {
+  private readonly layoutMap: Map<number, ClassLayout>;
+
+  private constructor(layouts: ClassLayout[]) {
+    this.layoutMap = new Map(layouts.map((l) => [l.rtid, l]));
+  }
+
+  static fromWasm(wasmBinary: Uint8Array | ArrayBuffer): ClassResolver {
+    const dwarf = parseDwarf(wasmBinary);
+    const classes: ClassLayout[] = [];
+
+    for (const unit of dwarf.compilationUnits) {
+      const resolver = new CompilationUnitResolver(unit.rootDIE);
+      classes.push(...resolver.resolve(unit.rootDIE));
+    }
+
+    flattenInheritedFields(classes);
+    return new ClassResolver(classes);
+  }
+
+  getLayouts(): ClassLayout[] {
+    return [...this.layoutMap.values()];
+  }
+
+  getClassName(classId: number): string {
+    const layout = this.layoutMap.get(classId);
+    return layout ? layout.name : `Class#${classId}`;
+  }
+
+  getClassDef(classId: number): ClassLayout | undefined {
+    return this.layoutMap.get(classId);
+  }
+
+  isPointerfree(classId: number): boolean {
+    const layout = this.layoutMap.get(classId);
+    if (!layout) return false;
+    return this.getReferenceFields(classId).length === 0 && !this.hasReferenceElements(classId);
+  }
+
+  getReferenceFields(classId: number): ClassField[] {
+    const layout = this.layoutMap.get(classId);
+    if (!layout) return [];
+    return layout.fields.filter((f) => f.isReference);
+  }
+
+  hasReferenceElements(classId: number): boolean {
+    const layout = this.layoutMap.get(classId);
+    if (!layout) return false;
+    return layout.elementIsReference === true;
+  }
+}
+
+class CompilationUnitResolver {
   private readonly offsetMap: Map<number, DwarfDIE>;
   private readonly baseTypeNames: Set<string>;
 
@@ -133,17 +191,7 @@ class ClassLayoutResolver {
  * Only classes with a runtime ID (`DW_AT_signature`) are included.
  */
 export function resolveClassLayouts(wasmBinary: Uint8Array | ArrayBuffer): ClassLayout[] {
-  const dwarf = parseDwarf(wasmBinary);
-  const classes: ClassLayout[] = [];
-
-  for (const unit of dwarf.compilationUnits) {
-    const resolver = new ClassLayoutResolver(unit.rootDIE);
-    classes.push(...resolver.resolve(unit.rootDIE));
-  }
-
-  flattenInheritedFields(classes);
-
-  return classes;
+  return ClassResolver.fromWasm(wasmBinary).getLayouts();
 }
 
 function flattenInheritedFields(classes: ClassLayout[]): void {
