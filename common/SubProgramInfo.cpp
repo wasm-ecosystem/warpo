@@ -28,15 +28,7 @@ void SubProgramInfo::addParameter(std::string variableName, std::string_view con
   });
 }
 
-void SubProgramInfo::addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
-                              bool const nullable) {
-
-  LocalInfo local{
-      std::move(variableName),
-      typeName,
-      LocalIndexLocation{index},
-      nullable,
-  };
+void SubProgramInfo::addLocal(LocalInfo local) {
   if (blockInfoStack_.empty()) {
     locals_.push_back(std::move(local));
   } else {
@@ -44,21 +36,25 @@ void SubProgramInfo::addLocal(std::string variableName, std::string_view const t
   }
 }
 
+void SubProgramInfo::addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
+                              bool const nullable) {
+  addLocal(LocalInfo{
+      std::move(variableName),
+      typeName,
+      LocalIndexLocation{index},
+      nullable,
+  });
+}
+
 void SubProgramInfo::addTupleLocal(std::string variableName, std::string_view const typeName,
                                    uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex,
                                    bool const nullable) {
-
-  LocalInfo local{
+  addLocal(LocalInfo{
       std::move(variableName),
       typeName,
       TupleFieldLocation{tupleFieldOffset, storageLocalIndex},
       nullable,
-  };
-  if (blockInfoStack_.empty()) {
-    locals_.push_back(std::move(local));
-  } else {
-    blockInfoStack_.back()->addLocal(std::move(local));
-  }
+  });
 }
 
 void SubProgramInfo::addTupleParameter(std::string variableName, std::string_view const typeName,

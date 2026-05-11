@@ -77,6 +77,8 @@ public:
   inline std::vector<std::unique_ptr<BlockInfo>> const &getBlocks() const noexcept { return blocks_; }
 
 private:
+  void addLocal(LocalInfo local);
+
   std::string_view name_;
   std::optional<std::string_view> outerFunction_;
   std::vector<ParameterInfo> parameters_;
