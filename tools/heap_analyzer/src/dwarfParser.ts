@@ -480,7 +480,7 @@ export function getAttr(die: DwarfDIE, attrId: number): DwarfAttributeValue | un
 export function* walkDIEs(root: DwarfDIE): Generator<DwarfDIE> {
   const stack: DwarfDIE[] = [root];
   while (stack.length > 0) {
-    const die = stack.pop();
+    const die = stack.pop()!;
     yield die;
     for (let i = die.children.length - 1; i >= 0; i--) {
       stack.push(die.children[i]);
