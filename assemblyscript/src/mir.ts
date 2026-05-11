@@ -63,7 +63,6 @@ export function addGlobal(variable: Global, type: Type): void {
 export function addParameter(subprogram: Function, variable: Local): void {
   if (variable.isClosureVariable()) {
     _WarpoAddTupleParameter(
-      subprogram.internalName,
       variable.name,
       decodeURIComponent(typeToMIRName(variable.type)),
       variable.getTupleElementInfo().offset,
@@ -72,7 +71,6 @@ export function addParameter(subprogram: Function, variable: Local): void {
     );
   } else {
     _WarpoAddParameter(
-      subprogram.internalName,
       variable.name,
       decodeURIComponent(typeToMIRName(variable.type)),
       variable.index,
@@ -83,7 +81,6 @@ export function addParameter(subprogram: Function, variable: Local): void {
 export function addLocal(subProgram: Function, variable: Local): void {
   if (variable.isClosureVariable()) {
     _WarpoAddTupleLocal(
-      subProgram.internalName,
       variable.name,
       decodeURIComponent(typeToMIRName(variable.type)),
       variable.getTupleElementInfo().offset,
@@ -92,7 +89,6 @@ export function addLocal(subProgram: Function, variable: Local): void {
     );
   } else {
     _WarpoAddLocal(
-      subProgram.internalName,
       variable.name,
       decodeURIComponent(typeToMIRName(variable.type)),
       variable.index,

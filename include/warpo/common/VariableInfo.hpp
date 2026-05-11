@@ -52,17 +52,16 @@ public:
   void addSubProgram(std::string subProgramName, std::string_view const belongClassName,
                      std::string_view const outerFunctionName);
 
-  void addParameter(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
-                    uint32_t const index, bool const nullable);
+  void addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
+                    bool const nullable);
 
-  void addLocal(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
-                uint32_t const index, bool const nullable);
+  void addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
+                bool const nullable);
 
-  void addTupleLocal(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
-                     uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex, bool const nullable);
+  void addTupleLocal(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
+                     uint32_t const storageLocalIndex, bool const nullable);
 
-  void addTupleParameter(std::string_view const subProgramName, std::string variableName,
-                         std::string_view const typeName, uint32_t const tupleFieldOffset,
+  void addTupleParameter(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
                          uint32_t const storageLocalIndex, bool const nullable);
 
   SubProgramLookupMap const &getSubProgramLookupMap() const noexcept { return subProgramLookupMap_; }
@@ -76,6 +75,7 @@ private:
   StringPool stringPool_;
   SubProgramRegistry subProgramRegistry_;
   SubProgramLookupMap subProgramLookupMap_;
+  SubProgramInfo *currentWorkingSubProgram_{nullptr};
 };
 
 } // namespace warpo

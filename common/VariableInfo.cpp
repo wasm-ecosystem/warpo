@@ -73,50 +73,49 @@ void VariableInfo::addSubProgram(std::string subProgramName, std::string_view co
     // NOLINTNEXTLINE(misc-const-correctness)
     SubProgramInfo &subProgramInfo = classIt->second.addSubProgram(std::move(subProgramName), outerFunction);
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
+    currentWorkingSubProgram_ = &subProgramInfo;
   } else {
     // NOLINTNEXTLINE(misc-const-correctness)
     SubProgramInfo &subProgramInfo = subProgramRegistry_.addSubProgram(std::move(subProgramName), outerFunction);
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
+    currentWorkingSubProgram_ = &subProgramInfo;
   }
 }
 
-void VariableInfo::addParameter(std::string_view const subProgramName, std::string variableName,
-                                std::string_view const typeName, uint32_t const index, bool const nullable) {
-  SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
+void VariableInfo::addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
+                                bool const nullable) {
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
-  it->second.addParameter(std::move(variableName), internedTypeName, index, nullable);
+  assert(currentWorkingSubProgram_ != nullptr && "Current subprogram is not set");
+  currentWorkingSubProgram_->addParameter(std::move(variableName), internedTypeName, index, nullable);
 }
 
-void VariableInfo::addLocal(std::string_view const subProgramName, std::string variableName,
-                            std::string_view const typeName, uint32_t const index, bool const nullable) {
-  SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
+void VariableInfo::addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
+                            bool const nullable) {
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
-  it->second.addLocal(std::move(variableName), internedTypeName, index, nullable);
+  assert(currentWorkingSubProgram_ != nullptr && "Current subprogram is not set");
+  currentWorkingSubProgram_->addLocal(std::move(variableName), internedTypeName, index, nullable);
 }
 
-void VariableInfo::addTupleLocal(std::string_view const subProgramName, std::string variableName,
-                                 std::string_view const typeName, uint32_t const tupleFieldOffset,
-                                 uint32_t const storageLocalIndex, bool const nullable) {
-  SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
+void VariableInfo::addTupleLocal(std::string variableName, std::string_view const typeName,
+                                 uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex,
+                                 bool const nullable) {
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
-  it->second.addTupleLocal(std::move(variableName), internedTypeName, tupleFieldOffset, storageLocalIndex, nullable);
+  assert(currentWorkingSubProgram_ != nullptr && "Current subprogram is not set");
+  currentWorkingSubProgram_->addTupleLocal(std::move(variableName), internedTypeName, tupleFieldOffset,
+                                           storageLocalIndex, nullable);
 }
 
-void VariableInfo::addTupleParameter(std::string_view const subProgramName, std::string variableName,
-                                     std::string_view const typeName, uint32_t const tupleFieldOffset,
+void VariableInfo::addTupleParameter(std::string variableName, std::string_view const typeName,
+                                     uint32_t const tupleFieldOffset,
                                      uint32_t const storageLocalIndex, bool const nullable) {
-  SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
-  it->second.addTupleParameter(std::move(variableName), internedTypeName, tupleFieldOffset, storageLocalIndex,
-                               nullable);
+  assert(currentWorkingSubProgram_ != nullptr && "Current subprogram is not set");
+  currentWorkingSubProgram_->addTupleParameter(std::move(variableName), internedTypeName, tupleFieldOffset,
+                                               storageLocalIndex, nullable);
 }
 
 void VariableInfo::addHeapVariableStorageLocalIndex(std::string_view const subProgramName, uint32_t const index) {
@@ -290,8 +289,8 @@ TEST(TestVariableInfo, TestAddParameter) {
 
   // Test adding parameters to global function
   variableInfo.addSubProgram("calculateSum", "", "");
-  variableInfo.addParameter("calculateSum", "a", "i32", 0, false);
-  variableInfo.addParameter("calculateSum", "b", "i32", 1, false);
+  variableInfo.addParameter("a", "i32", 0, false);
+  variableInfo.addParameter("b", "i32", 1, false);
 
   // Verify global function parameters
   const SubProgramRegistry &subProgramRegistry = variableInfo.getSubProgramRegistry();
@@ -316,8 +315,8 @@ TEST(TestVariableInfo, TestAddParameter) {
   variableInfo.createClass("Math", 200);
   variableInfo.addBaseClass("Math", "Object");
   variableInfo.addSubProgram("multiply", "Math", "");
-  variableInfo.addParameter("multiply", "x", "i32", 0, false);
-  variableInfo.addParameter("multiply", "y", "i32", 1, false);
+  variableInfo.addParameter("x", "i32", 0, false);
+  variableInfo.addParameter("y", "i32", 1, false);
 
   // Verify class member function parameters
   const VariableInfo::ClassRegistry &classRegistry = variableInfo.getClassRegistry();
@@ -346,7 +345,7 @@ TEST(TestVariableInfo, TestAddParameter) {
 TEST(TestVariableInfo, TestAddLocal) {
   VariableInfo variableInfo;
   variableInfo.addSubProgram("processData", "", "");
-  variableInfo.addLocal("processData", "result", "i32", 1, false);
+  variableInfo.addLocal("result", "i32", 1, false);
 
   const SubProgramRegistry &subProgramRegistry = variableInfo.getSubProgramRegistry();
   const std::deque<SubProgramInfo> &globalFunctions = subProgramRegistry.getList();
@@ -367,7 +366,7 @@ TEST(TestVariableInfo, TestAddLocalToClassMemberFunction) {
   variableInfo.createClass("Math", 300);
   variableInfo.addBaseClass("Math", "Object");
   variableInfo.addSubProgram("compute", "Math", "");
-  variableInfo.addLocal("compute", "temp", "i32", 1, false);
+  variableInfo.addLocal("temp", "i32", 1, false);
 
   const VariableInfo::ClassRegistry &classRegistry = variableInfo.getClassRegistry();
   VariableInfo::ClassRegistry::const_iterator const mathIt = classRegistry.find("Math");

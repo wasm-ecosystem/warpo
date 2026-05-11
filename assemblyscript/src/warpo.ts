@@ -27,21 +27,18 @@ export declare function _WarpoAddSubProgram(
   outerFunctionName: string | null
 ): void;
 export declare function _WarpoAddParameter(
-  subProgramName: string,
   variableName: string,
   typeName: string,
   index: u32,
   nullable: bool
 ): void;
 export declare function _WarpoAddLocal(
-  subProgramName: string,
   variableName: string,
   typeName: string,
   index: u32,
   nullable: bool
 ): void;
 export declare function _WarpoAddTupleLocal(
-  subProgramName: string,
   variableName: string,
   typeName: string,
   tupleFieldOffset: u32,
@@ -49,7 +46,6 @@ export declare function _WarpoAddTupleLocal(
   nullable: bool
 ): void;
 export declare function _WarpoAddTupleParameter(
-  subProgramName: string,
   variableName: string,
   typeName: string,
   tupleFieldOffset: u32,
