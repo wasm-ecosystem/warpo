@@ -73,12 +73,12 @@ void VariableInfo::addSubProgram(std::string subProgramName, std::string_view co
     // NOLINTNEXTLINE(misc-const-correctness)
     SubProgramInfo &subProgramInfo = classIt->second.addSubProgram(std::move(subProgramName), outerFunction);
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
-    currentWorkingSubProgram_ = &subProgramInfo;
+    subProgramStack_.push_back(&subProgramInfo);
   } else {
     // NOLINTNEXTLINE(misc-const-correctness)
     SubProgramInfo &subProgramInfo = subProgramRegistry_.addSubProgram(std::move(subProgramName), outerFunction);
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
-    currentWorkingSubProgram_ = &subProgramInfo;
+    subProgramStack_.push_back(&subProgramInfo);
   }
 }
 
@@ -86,16 +86,16 @@ void VariableInfo::addParameter(std::string variableName, std::string_view const
                                 bool const nullable) {
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(currentWorkingSubProgram_ != nullptr && "Current subprogram is not set");
-  currentWorkingSubProgram_->addParameter(std::move(variableName), internedTypeName, index, nullable);
+  assert(!subProgramStack_.empty() && "Current subprogram is not set");
+  subProgramStack_.back()->addParameter(std::move(variableName), internedTypeName, index, nullable);
 }
 
 void VariableInfo::addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
                             bool const nullable) {
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(currentWorkingSubProgram_ != nullptr && "Current subprogram is not set");
-  currentWorkingSubProgram_->addLocal(std::move(variableName), internedTypeName, index, nullable);
+  assert(!subProgramStack_.empty() && "Current subprogram is not set");
+  subProgramStack_.back()->addLocal(std::move(variableName), internedTypeName, index, nullable);
 }
 
 void VariableInfo::addTupleLocal(std::string variableName, std::string_view const typeName,
@@ -103,9 +103,9 @@ void VariableInfo::addTupleLocal(std::string variableName, std::string_view cons
                                  bool const nullable) {
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(currentWorkingSubProgram_ != nullptr && "Current subprogram is not set");
-  currentWorkingSubProgram_->addTupleLocal(std::move(variableName), internedTypeName, tupleFieldOffset,
-                                           storageLocalIndex, nullable);
+  assert(!subProgramStack_.empty() && "Current subprogram is not set");
+  subProgramStack_.back()->addTupleLocal(std::move(variableName), internedTypeName, tupleFieldOffset,
+                                         storageLocalIndex, nullable);
 }
 
 void VariableInfo::addTupleParameter(std::string variableName, std::string_view const typeName,
@@ -113,9 +113,9 @@ void VariableInfo::addTupleParameter(std::string variableName, std::string_view 
                                      bool const nullable) {
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(currentWorkingSubProgram_ != nullptr && "Current subprogram is not set");
-  currentWorkingSubProgram_->addTupleParameter(std::move(variableName), internedTypeName, tupleFieldOffset,
-                                               storageLocalIndex, nullable);
+  assert(!subProgramStack_.empty() && "Current subprogram is not set");
+  subProgramStack_.back()->addTupleParameter(std::move(variableName), internedTypeName, tupleFieldOffset,
+                                             storageLocalIndex, nullable);
 }
 
 void VariableInfo::addHeapVariableStorageLocalIndex(std::string_view const subProgramName, uint32_t const index) {
@@ -125,22 +125,22 @@ void VariableInfo::addHeapVariableStorageLocalIndex(std::string_view const subPr
 }
 
 void VariableInfo::enterScope(uint32_t const startLine, uint32_t const endLine) {
-  if (currentWorkingSubProgram_ == nullptr)
+  if (subProgramStack_.empty())
     return;
-  currentWorkingSubProgram_->enterBlock(startLine, endLine);
+  subProgramStack_.back()->enterBlock(startLine, endLine);
 }
 
 void VariableInfo::leaveScope() {
-  if (currentWorkingSubProgram_ == nullptr)
+  if (subProgramStack_.empty())
     return;
-  currentWorkingSubProgram_->leaveBlock();
+  subProgramStack_.back()->leaveBlock();
 }
 
 void VariableInfo::leaveFunction() {
-  if (currentWorkingSubProgram_ == nullptr)
+  if (subProgramStack_.empty())
     return;
-  currentWorkingSubProgram_->leaveFunction();
-  currentWorkingSubProgram_ = nullptr;
+  subProgramStack_.back()->leaveFunction();
+  subProgramStack_.pop_back();
 }
 
 } // namespace warpo
@@ -370,9 +370,7 @@ TEST(TestVariableInfo, TestAddLocal) {
   const std::deque<SubProgramInfo> &globalFunctions = subProgramRegistry.getList();
   ASSERT_EQ(globalFunctions.size(), 1);
 
-  const BlockInfo *const rootBlockInfo = globalFunctions[0].getRootBlockInfo();
-  ASSERT_NE(rootBlockInfo, nullptr);
-  const std::vector<LocalInfo> &locals = rootBlockInfo->getLocals();
+  const std::vector<LocalInfo> &locals = globalFunctions[0].getLocals();
   ASSERT_EQ(locals.size(), 1);
   EXPECT_EQ(locals[0].getName(), "result");
   EXPECT_EQ(std::get<LocalIndexLocation>(locals[0].getLocation()).index, 1U);
@@ -394,9 +392,7 @@ TEST(TestVariableInfo, TestAddLocalToClassMemberFunction) {
   const std::deque<SubProgramInfo> &memberFunctions = mathIt->second.getSubProgramRegistry().getList();
   ASSERT_EQ(memberFunctions.size(), 1);
 
-  const BlockInfo *const rootBlockInfo = memberFunctions[0].getRootBlockInfo();
-  ASSERT_NE(rootBlockInfo, nullptr);
-  const std::vector<LocalInfo> &computeLocals = rootBlockInfo->getLocals();
+  const std::vector<LocalInfo> &computeLocals = memberFunctions[0].getLocals();
   ASSERT_EQ(computeLocals.size(), 1);
   EXPECT_EQ(computeLocals[0].getName(), "temp");
   EXPECT_EQ(std::get<LocalIndexLocation>(computeLocals[0].getLocation()).index, 1U);

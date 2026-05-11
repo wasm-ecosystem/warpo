@@ -1507,6 +1507,8 @@ export class Compiler extends DiagnosticEmitter {
     let pendingElements = this.pendingElements;
     pendingElements.add(instance);
 
+    instance.emitSubProgramInfo();
+
     let previousType = this.currentType;
     let module = this.module;
     let signature = instance.signature;
@@ -1621,7 +1623,7 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     instance.finalize(module, funcRef);
-    mir.leaveFunction();
+    if (!instance.prototype.is(CommonFlags.Ambient)) mir.leaveFunction();
     this.currentType = previousType;
     pendingElements.delete(instance);
     return true;
@@ -1652,6 +1654,8 @@ export class Compiler extends DiagnosticEmitter {
     instance.set(CommonFlags.Compiled);
     let pendingElements = this.pendingElements;
     pendingElements.add(instance);
+
+    instance.emitSubProgramInfo();
 
     let previousType = this.currentType;
     let module = this.module;
@@ -1704,6 +1708,7 @@ export class Compiler extends DiagnosticEmitter {
           "closure captures too much data; reduce the number or size of captured variables"
         );
         instance.set(CommonFlags.Errored);
+        mir.leaveFunction();
         this.currentType = previousType;
         pendingElements.delete(instance);
         return false;
@@ -9852,6 +9857,8 @@ export class Compiler extends DiagnosticEmitter {
       if (!members) classInstance.members = members = new Map();
       members.set(CommonNames.constructor, instance.prototype);
 
+      instance.emitSubProgramInfo();
+
       let previousFlow = this.currentFlow;
       let flow = instance.flow;
       this.currentFlow = flow;
@@ -9904,6 +9911,7 @@ export class Compiler extends DiagnosticEmitter {
         module.flatten(stmts, sizeTypeRef)
       );
       instance.finalize(module, funcRef);
+      mir.leaveFunction();
     }
 
     return instance;

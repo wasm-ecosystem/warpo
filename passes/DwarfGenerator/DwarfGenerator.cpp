@@ -102,9 +102,11 @@ static void collectTypesFromSubPrograms(std::deque<SubProgramInfo> const &subPro
     for (ParameterInfo const &param : subProgram.getParameters()) {
       reachableTypes.insert(param.getType());
     }
-    BlockInfo const *const rootBlockInfo = subProgram.getRootBlockInfo();
-    if (rootBlockInfo != nullptr) {
-      collectTypesFromBlock(*rootBlockInfo, reachableTypes);
+    for (LocalInfo const &local : subProgram.getLocals()) {
+      reachableTypes.insert(local.getType());
+    }
+    for (std::unique_ptr<BlockInfo> const &block : subProgram.getBlocks()) {
+      collectTypesFromBlock(*block, reachableTypes);
     }
   }
 }
@@ -763,9 +765,12 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
     rootUnit.Entries.push_back(paramEntry);
   }
 
-  BlockInfo const *const rootBlockInfo = subProgram.getRootBlockInfo();
-  if (rootBlockInfo != nullptr) {
-    emitScopeEntry(*rootBlockInfo, rootUnit, abbrevCodes.lexicalBlock, abbrevCodes.localVariable,
+  for (LocalInfo const &local : subProgram.getLocals())
+    emitLocalVariableEntry(local, rootUnit, abbrevCodes.localVariable, abbrevCodes.tupleFieldLocalVariable,
+                           typeRefFixups);
+
+  for (std::unique_ptr<BlockInfo> const &block : subProgram.getBlocks()) {
+    emitScopeEntry(*block, rootUnit, abbrevCodes.lexicalBlock, abbrevCodes.localVariable,
                    abbrevCodes.tupleFieldLocalVariable, typeRefFixups);
     emitScopeTerminator(rootUnit);
   }

@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 #include "ClassInfo.hpp"
 #include "SubProgramInfo.hpp"
@@ -80,7 +81,7 @@ private:
   StringPool stringPool_;
   SubProgramRegistry subProgramRegistry_;
   SubProgramLookupMap subProgramLookupMap_;
-  SubProgramInfo *currentWorkingSubProgram_{nullptr};
+  std::vector<SubProgramInfo *> subProgramStack_;
 };
 
 } // namespace warpo

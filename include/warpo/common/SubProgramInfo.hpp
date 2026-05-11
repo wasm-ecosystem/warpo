@@ -41,12 +41,8 @@ private:
 class SubProgramInfo final {
 public:
   explicit inline SubProgramInfo(std::string_view const name,
-                                 std::optional<std::string_view> const outerFunction = std::nullopt,
-                                 uint32_t const startLine = 0, uint32_t const endLine = 0) noexcept
-      : name_(name), outerFunction_(outerFunction), heapVariableStorageLocalIndex_{std::nullopt},
-        rootBlockInfo_{nullptr} {
-    blockInfoStack_.push_back(std::make_unique<BlockInfo>(startLine, endLine));
-  }
+                                 std::optional<std::string_view> const outerFunction = std::nullopt) noexcept
+      : name_(name), outerFunction_(outerFunction), heapVariableStorageLocalIndex_{std::nullopt} {}
 
   inline std::string_view getName() const noexcept { return name_; }
   inline std::optional<std::string_view> getOuterFunction() const noexcept { return outerFunction_; }
@@ -75,21 +71,18 @@ public:
 
   void leaveBlock();
 
-  void leaveFunction();
+  inline void leaveFunction() noexcept { assert(blockInfoStack_.empty()); }
 
-  inline BlockInfo const *getRootBlockInfo() const noexcept {
-    // LCOV_EXCL_START
-    assert(rootBlockInfo_ != nullptr);
-    // LCOV_EXCL_STOP
-    return rootBlockInfo_.get();
-  }
+  inline std::vector<LocalInfo> const &getLocals() const noexcept { return locals_; }
+  inline std::vector<std::unique_ptr<BlockInfo>> const &getBlocks() const noexcept { return blocks_; }
 
 private:
   std::string_view name_;
   std::optional<std::string_view> outerFunction_;
   std::vector<ParameterInfo> parameters_;
+  std::vector<LocalInfo> locals_;
   std::optional<uint32_t> heapVariableStorageLocalIndex_;
-  std::unique_ptr<BlockInfo> rootBlockInfo_;
+  std::vector<std::unique_ptr<BlockInfo>> blocks_;
   std::vector<std::unique_ptr<BlockInfo>> blockInfoStack_;
 };
 

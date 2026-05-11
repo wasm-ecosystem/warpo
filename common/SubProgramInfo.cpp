@@ -31,24 +31,34 @@ void SubProgramInfo::addParameter(std::string variableName, std::string_view con
 void SubProgramInfo::addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
                               bool const nullable) {
 
-  blockInfoStack_.back()->addLocal(LocalInfo{
+  LocalInfo local{
       std::move(variableName),
       typeName,
       LocalIndexLocation{index},
       nullable,
-  });
+  };
+  if (blockInfoStack_.empty()) {
+    locals_.push_back(std::move(local));
+  } else {
+    blockInfoStack_.back()->addLocal(std::move(local));
+  }
 }
 
 void SubProgramInfo::addTupleLocal(std::string variableName, std::string_view const typeName,
                                    uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex,
                                    bool const nullable) {
 
-  blockInfoStack_.back()->addLocal(LocalInfo{
+  LocalInfo local{
       std::move(variableName),
       typeName,
       TupleFieldLocation{tupleFieldOffset, storageLocalIndex},
       nullable,
-  });
+  };
+  if (blockInfoStack_.empty()) {
+    locals_.push_back(std::move(local));
+  } else {
+    blockInfoStack_.back()->addLocal(std::move(local));
+  }
 }
 
 void SubProgramInfo::addTupleParameter(std::string variableName, std::string_view const typeName,
@@ -71,16 +81,9 @@ void SubProgramInfo::leaveBlock() {
   std::unique_ptr<BlockInfo> last = std::move(blockInfoStack_.back());
   blockInfoStack_.pop_back();
   if (blockInfoStack_.empty()) {
-    rootBlockInfo_ = std::move(last);
+    blocks_.push_back(std::move(last));
   } else {
     blockInfoStack_.back()->pushChild(std::move(last));
   }
-}
-
-void SubProgramInfo::leaveFunction() {
-  if (rootBlockInfo_ != nullptr)
-    return;
-  assert(blockInfoStack_.size() == 1U);
-  leaveBlock();
 }
 } // namespace warpo
