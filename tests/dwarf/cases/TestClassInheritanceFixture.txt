@@ -108,42 +108,6 @@ DW_TAG_compile_unit
                   DW_AT_type	("~lib/string/String")
                   DW_AT_data_member_location	(0x00000004)
     DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Base#get:id")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Base")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Base#set:id")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Base")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("id")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000001)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Base#get:name")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Base")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Base#set:name")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Base")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("name")
-                    DW_AT_type	("~lib/string/String")
-                    DW_AT_location	(0x00000001)
-      NULL
-    DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Base#constructor")
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
@@ -157,10 +121,42 @@ DW_TAG_compile_unit
                     DW_AT_name	("name")
                     DW_AT_type	("~lib/string/String")
                     DW_AT_location	(0x00000002)
-      DW_TAG_lexical_block
-                    scope start	TestClassInheritance.ts:6
-                    scope end	TestClassInheritance.ts:7
-        NULL
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Base#set:id")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Base")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_formal_parameter
+                    DW_AT_name	("id")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000001)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Base#set:name")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Base")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_formal_parameter
+                    DW_AT_name	("name")
+                    DW_AT_type	("~lib/string/String")
+                    DW_AT_location	(0x00000001)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Base#get:id")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Base")
+                    DW_AT_location	(0x00000000)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Base#get:name")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Base")
+                    DW_AT_location	(0x00000000)
       NULL
     NULL
   DW_TAG_class_type
@@ -172,24 +168,6 @@ DW_TAG_compile_unit
                   DW_AT_name	("value")
                   DW_AT_type	("f32")
                   DW_AT_data_member_location	(0x00000008)
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Derived#get:value")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Derived")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Derived#set:value")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Derived")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("value")
-                    DW_AT_type	("f32")
-                    DW_AT_location	(0x00000001)
-      NULL
     DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Derived#constructor")
       DW_TAG_formal_parameter
@@ -208,35 +186,25 @@ DW_TAG_compile_unit
                     DW_AT_name	("value")
                     DW_AT_type	("f32")
                     DW_AT_location	(0x00000003)
-      DW_TAG_lexical_block
-                    scope start	TestClassInheritance.ts:15
-                    scope end	TestClassInheritance.ts:16
-        NULL
       NULL
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
-                DW_AT_signature	(0x00000001)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBufferView")
-                DW_AT_signature	(0x00000003)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    DW_TAG_member
-                  DW_AT_name	("buffer")
-                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("dataStart")
-                  DW_AT_type	("usize")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("byteLength")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000008)
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Derived#set:value")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Derived")
+                    DW_AT_location	(0x00000000)
+      DW_TAG_formal_parameter
+                    DW_AT_name	("value")
+                    DW_AT_type	("f32")
+                    DW_AT_location	(0x00000001)
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestClassInheritance/Derived#get:value")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Derived")
+                    DW_AT_location	(0x00000000)
+      NULL
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/object/Object")
@@ -508,21 +476,14 @@ DW_TAG_compile_unit
                 DW_AT_name	("~lib/util/sort/MIN_RUN_LENGTH")
                 DW_AT_type	("i32")
   DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestClassInheritance/start:tests/dwarf/cases/TestClassInheritance")
-    NULL
-  DW_TAG_subprogram
                 DW_AT_name	("start:tests/dwarf/cases/TestClassInheritance")
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestClassInheritance/test")
-    DW_TAG_lexical_block
-                  scope start	TestClassInheritance.ts:21
-                  scope end	TestClassInheritance.ts:22
-      DW_TAG_variable
-                    DW_AT_name	("d")
-                    DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Derived")
-                    DW_AT_location	(0x00000000)
-      NULL
+    DW_TAG_variable
+                  DW_AT_name	("d")
+                  DW_AT_type	("tests/dwarf/cases/TestClassInheritance/Derived")
+                  DW_AT_location	(0x00000000)
     NULL
 
 .debug_str contents:

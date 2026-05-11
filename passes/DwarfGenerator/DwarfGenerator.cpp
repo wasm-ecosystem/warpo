@@ -206,6 +206,12 @@ static void emitLocalVariableEntry(LocalInfo const &local, llvm::DWARFYAML::Unit
   rootUnit.Entries.push_back(localEntry);
 }
 
+static void emitScopeTerminator(llvm::DWARFYAML::Unit &rootUnit) {
+  llvm::DWARFYAML::Entry blockTerminator;
+  blockTerminator.AbbrCode = 0U;
+  rootUnit.Entries.push_back(blockTerminator);
+}
+
 static void emitScopeEntry(BlockInfo const &blockInfo, llvm::DWARFYAML::Unit &rootUnit,
                            uint32_t const lexicalBlockAbbrevCode, uint32_t const localVariableAbbrevCode,
                            uint32_t const tupleFieldLocalVariableAbbrevCode, std::vector<TypeRefFixup> &typeRefFixups) {
@@ -228,13 +234,8 @@ static void emitScopeEntry(BlockInfo const &blockInfo, llvm::DWARFYAML::Unit &ro
   for (std::unique_ptr<BlockInfo> const &child : blockInfo.getChildren()) {
     emitScopeEntry(*child, rootUnit, lexicalBlockAbbrevCode, localVariableAbbrevCode, tupleFieldLocalVariableAbbrevCode,
                    typeRefFixups);
+    emitScopeTerminator(rootUnit);
   }
-}
-
-static void emitScopeTerminator(llvm::DWARFYAML::Unit &rootUnit) {
-  llvm::DWARFYAML::Entry blockTerminator;
-  blockTerminator.AbbrCode = 0U;
-  rootUnit.Entries.push_back(blockTerminator);
 }
 
 llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
