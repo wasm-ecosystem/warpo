@@ -1422,7 +1422,6 @@ export class Flow {
     if (this.is(FlowFlags.MayReturnNonThis)) sb.push("MAY_RETURN_NONTHIS");
     return `Flow(${this.targetFunction})[${levels}] ${sb.join(" ")}`;
   }
-
 }
 
 /** Tests if a conversion from one type to another can technically overflow. */

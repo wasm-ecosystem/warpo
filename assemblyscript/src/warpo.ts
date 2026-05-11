@@ -26,18 +26,8 @@ export declare function _WarpoAddSubProgram(
   belongClassName: string | null,
   outerFunctionName: string | null
 ): void;
-export declare function _WarpoAddParameter(
-  variableName: string,
-  typeName: string,
-  index: u32,
-  nullable: bool
-): void;
-export declare function _WarpoAddLocal(
-  variableName: string,
-  typeName: string,
-  index: u32,
-  nullable: bool
-): void;
+export declare function _WarpoAddParameter(variableName: string, typeName: string, index: u32, nullable: bool): void;
+export declare function _WarpoAddLocal(variableName: string, typeName: string, index: u32, nullable: bool): void;
 export declare function _WarpoAddTupleLocal(
   variableName: string,
   typeName: string,
