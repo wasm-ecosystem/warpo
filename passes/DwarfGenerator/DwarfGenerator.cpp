@@ -86,29 +86,35 @@ private:
   void onValue(llvm::MemoryBufferRef const MBR) override { currentOffset_ += MBR.getBufferSize(); }
 };
 
-static void collectTypesFromBlock(BlockInfo const &blockInfo, std::unordered_set<std::string_view> &reachableTypes) {
-  for (LocalInfo const &local : blockInfo.getLocals()) {
-    reachableTypes.insert(local.getType());
-  }
+static void collectTypesFromSubProgram(SubProgramInfo const &subProgram,
+                                       std::unordered_set<std::string_view> &reachableTypes);
 
-  for (std::unique_ptr<BlockInfo> const &child : blockInfo.getChildren()) {
-    collectTypesFromBlock(*child, reachableTypes);
+static void collectTypesFromScopeChildren(std::vector<std::unique_ptr<ScopeInfo>> const &children,
+                                          std::unordered_set<std::string_view> &reachableTypes) {
+  for (std::unique_ptr<ScopeInfo> const &child : children) {
+    if (child->getKind() == ScopeInfo::Kind::Block) {
+      for (LocalInfo const &local : child->getLocals())
+        reachableTypes.insert(local.getType());
+      collectTypesFromScopeChildren(child->getChildren(), reachableTypes);
+    } else {
+      collectTypesFromSubProgram(static_cast<SubProgramInfo const &>(*child), reachableTypes);
+    }
   }
+}
+
+static void collectTypesFromSubProgram(SubProgramInfo const &subProgram,
+                                       std::unordered_set<std::string_view> &reachableTypes) {
+  for (ParameterInfo const &param : subProgram.getParameters())
+    reachableTypes.insert(param.getType());
+  for (LocalInfo const &local : subProgram.getLocals())
+    reachableTypes.insert(local.getType());
+  collectTypesFromScopeChildren(subProgram.getChildren(), reachableTypes);
 }
 
 static void collectTypesFromSubPrograms(std::deque<SubProgramInfo> const &subPrograms,
                                         std::unordered_set<std::string_view> &reachableTypes) {
-  for (SubProgramInfo const &subProgram : subPrograms) {
-    for (ParameterInfo const &param : subProgram.getParameters()) {
-      reachableTypes.insert(param.getType());
-    }
-    for (LocalInfo const &local : subProgram.getLocals()) {
-      reachableTypes.insert(local.getType());
-    }
-    for (std::unique_ptr<BlockInfo> const &block : subProgram.getBlocks()) {
-      collectTypesFromBlock(*block, reachableTypes);
-    }
-  }
+  for (SubProgramInfo const &subProgram : subPrograms)
+    collectTypesFromSubProgram(subProgram, reachableTypes);
 }
 
 static std::unordered_set<std::string_view> collectReachableTypes(VariableInfo const &variableInfo) {
@@ -123,11 +129,11 @@ static std::unordered_set<std::string_view> collectReachableTypes(VariableInfo c
   }
 
   // Seed from global functions' params and locals
-  collectTypesFromSubPrograms(variableInfo.getSubProgramRegistry().getList(), reachableTypes);
+  collectTypesFromSubPrograms(variableInfo.getTopLevelSubPrograms(), reachableTypes);
 
   // Seed from class member functions' params and locals
   for (auto const &[className, classInfo] : classRegistry) {
-    collectTypesFromSubPrograms(classInfo.getSubProgramRegistry().getList(), reachableTypes);
+    collectTypesFromSubPrograms(classInfo.getSubPrograms(), reachableTypes);
   }
 
   // BFS: transitively collect types referenced by reachable classes
@@ -212,29 +218,37 @@ static void emitScopeTerminator(llvm::DWARFYAML::Unit &rootUnit) {
   rootUnit.Entries.push_back(blockTerminator);
 }
 
-static void emitScopeEntry(BlockInfo const &blockInfo, llvm::DWARFYAML::Unit &rootUnit,
-                           uint32_t const lexicalBlockAbbrevCode, uint32_t const localVariableAbbrevCode,
-                           uint32_t const tupleFieldLocalVariableAbbrevCode, std::vector<TypeRefFixup> &typeRefFixups) {
-  llvm::DWARFYAML::Entry blockEntry;
-  blockEntry.AbbrCode = lexicalBlockAbbrevCode;
+static void emitSubProgram(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
+                           DwarfGenerator::AbbrevCodes const &abbrevCodes, std::vector<TypeRefFixup> &typeRefFixups);
 
-  llvm::DWARFYAML::FormValue blockLowPcValue;
-  blockLowPcValue.Value = blockInfo.getStartLine();
-  blockEntry.Values.push_back(blockLowPcValue);
+static void emitScopeChildren(std::vector<std::unique_ptr<ScopeInfo>> const &children, llvm::DWARFYAML::Unit &rootUnit,
+                              DwarfGenerator::AbbrevCodes const &abbrevCodes,
+                              std::vector<TypeRefFixup> &typeRefFixups) {
+  for (std::unique_ptr<ScopeInfo> const &child : children) {
+    if (child->getKind() == ScopeInfo::Kind::Block) {
+      BlockInfo const *block = static_cast<BlockInfo const *>(child.get());
+      llvm::DWARFYAML::Entry blockEntry;
+      blockEntry.AbbrCode = abbrevCodes.lexicalBlock;
 
-  llvm::DWARFYAML::FormValue blockHighPcValue;
-  blockHighPcValue.Value = blockInfo.getEndLine();
-  blockEntry.Values.push_back(blockHighPcValue);
+      llvm::DWARFYAML::FormValue blockLowPcValue;
+      blockLowPcValue.Value = block->getStartLine();
+      blockEntry.Values.push_back(blockLowPcValue);
 
-  rootUnit.Entries.push_back(blockEntry);
+      llvm::DWARFYAML::FormValue blockHighPcValue;
+      blockHighPcValue.Value = block->getEndLine();
+      blockEntry.Values.push_back(blockHighPcValue);
 
-  for (LocalInfo const &local : blockInfo.getLocals())
-    emitLocalVariableEntry(local, rootUnit, localVariableAbbrevCode, tupleFieldLocalVariableAbbrevCode, typeRefFixups);
+      rootUnit.Entries.push_back(blockEntry);
 
-  for (std::unique_ptr<BlockInfo> const &child : blockInfo.getChildren()) {
-    emitScopeEntry(*child, rootUnit, lexicalBlockAbbrevCode, localVariableAbbrevCode, tupleFieldLocalVariableAbbrevCode,
-                   typeRefFixups);
-    emitScopeTerminator(rootUnit);
+      for (LocalInfo const &local : block->getLocals())
+        emitLocalVariableEntry(local, rootUnit, abbrevCodes.localVariable, abbrevCodes.tupleFieldLocalVariable,
+                               typeRefFixups);
+
+      emitScopeChildren(block->getChildren(), rootUnit, abbrevCodes, typeRefFixups);
+      emitScopeTerminator(rootUnit);
+    } else {
+      emitSubProgram(static_cast<SubProgramInfo const &>(*child), rootUnit, abbrevCodes, typeRefFixups);
+    }
   }
 }
 
@@ -614,10 +628,9 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
     }
 
     // Add class member functions
-    SubProgramRegistry const &memberFunctions = classInfo.getSubProgramRegistry();
-    std::deque<SubProgramInfo> const &memberFunctionList = memberFunctions.getList();
+    std::deque<SubProgramInfo> const &memberFunctionList = classInfo.getSubPrograms();
     for (SubProgramInfo const &subProgram : memberFunctionList) {
-      addSubProgramWithParameters(subProgram, rootUnit, abbrevCodes, typeRefFixups);
+      emitSubProgram(subProgram, rootUnit, abbrevCodes, typeRefFixups);
     }
 
     // Add terminator for class children
@@ -650,10 +663,9 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
   }
 
   // Add global functions
-  SubProgramRegistry const &globalFunctions = variableInfo.getSubProgramRegistry();
-  std::deque<SubProgramInfo> const &globalFunctionList = globalFunctions.getList();
+  std::deque<SubProgramInfo> const &globalFunctionList = variableInfo.getTopLevelSubPrograms();
   for (SubProgramInfo const &subProgram : globalFunctionList) {
-    addSubProgramWithParameters(subProgram, rootUnit, abbrevCodes, typeRefFixups);
+    emitSubProgram(subProgram, rootUnit, abbrevCodes, typeRefFixups);
   }
 
   compileUnits.push_back(rootUnit);
@@ -699,9 +711,8 @@ std::string DwarfGenerator::dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::Memo
   return dumpOutput;
 }
 
-void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
-                                                 DwarfGenerator::AbbrevCodes const &abbrevCodes,
-                                                 std::vector<TypeRefFixup> &typeRefFixups) {
+static void emitSubProgram(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
+                           DwarfGenerator::AbbrevCodes const &abbrevCodes, std::vector<TypeRefFixup> &typeRefFixups) {
   llvm::DWARFYAML::Entry subprogramEntry;
   std::optional<uint32_t> const heapStorageLocalIndex = subProgram.getHeapVariableStorageLocalIndex();
   std::optional<std::string_view> const outerFunction = subProgram.getOuterFunction();
@@ -770,11 +781,7 @@ void DwarfGenerator::addSubProgramWithParameters(SubProgramInfo const &subProgra
     emitLocalVariableEntry(local, rootUnit, abbrevCodes.localVariable, abbrevCodes.tupleFieldLocalVariable,
                            typeRefFixups);
 
-  for (std::unique_ptr<BlockInfo> const &block : subProgram.getBlocks()) {
-    emitScopeEntry(*block, rootUnit, abbrevCodes.lexicalBlock, abbrevCodes.localVariable,
-                   abbrevCodes.tupleFieldLocalVariable, typeRefFixups);
-    emitScopeTerminator(rootUnit);
-  }
+  emitScopeChildren(subProgram.getChildren(), rootUnit, abbrevCodes, typeRefFixups);
 
   // Add terminator for subprogram children
   llvm::DWARFYAML::Entry subProgramTerminator;

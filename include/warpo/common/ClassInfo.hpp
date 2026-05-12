@@ -3,12 +3,13 @@
 #pragma once
 
 #include <cstdint>
+#include <deque>
 #include <optional>
 #include <string_view>
 #include <vector>
 
 #include "FieldInfo.hpp"
-#include "SubProgramRegistry.hpp"
+#include "SubProgramInfo.hpp"
 
 namespace warpo {
 
@@ -34,12 +35,12 @@ public:
 
   std::vector<std::string_view> const &getTemplateTypes() const noexcept { return templateTypes_; }
 
-  SubProgramInfo &addSubProgram(std::string subProgramName,
+  SubProgramInfo &addSubProgram(std::string_view const subProgramName,
                                 std::optional<std::string_view> const outerFunction = std::nullopt) {
-    return classMemberFunctionRegistry_.addSubProgram(std::move(subProgramName), outerFunction);
+    return memberFunctions_.emplace_back(subProgramName, outerFunction);
   }
 
-  SubProgramRegistry const &getSubProgramRegistry() const noexcept { return classMemberFunctionRegistry_; }
+  std::deque<SubProgramInfo> const &getSubPrograms() const noexcept { return memberFunctions_; }
 
 private:
   std::string_view name_;
@@ -49,7 +50,7 @@ private:
   std::vector<FieldInfo> fields_;
   std::vector<InterfaceInfo> interfaces_;
   std::vector<std::string_view> templateTypes_;
-  SubProgramRegistry classMemberFunctionRegistry_;
+  std::deque<SubProgramInfo> memberFunctions_;
 };
 
 } // namespace warpo
