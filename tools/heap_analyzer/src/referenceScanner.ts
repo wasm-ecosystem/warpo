@@ -1,4 +1,4 @@
-import type { ClassLayout, ObjectHeader } from "./types.js";
+import type { ClassLayout, EntryLayout, ObjectHeader } from "./types.js";
 import type { ClassResolver } from "./classResolver.js";
 
 function readValidPtr(memory: DataView, addr: number, validPtrs: Set<number>): number | null {
@@ -21,6 +21,7 @@ function scanReferenceFields(
 ): void {
   for (const field of classResolver.getReferenceFields(obj.rtId)) {
     if (field.offset + field.size > obj.rtSize) {
+      // Skip fields that don't fit within the object's size (could be a broken dumped memory or stale debug info)
       continue;
     }
     const ptr = readValidPtr(memory, obj.payloadPtr + field.offset, validPtrs);
@@ -57,15 +58,18 @@ function scanStaticArrayElements(memory: DataView, obj: ObjectHeader, validPtrs:
 function scanSetMapEntries(
   memory: DataView,
   obj: ObjectHeader,
-  classLayout: ClassLayout,
+  entryLayout: EntryLayout,
   validPtrs: Set<number>,
   edges: number[]
 ): void {
-  const entryLayout = classLayout.entryLayout;
-  if (!entryLayout || entryLayout.referenceOffsets.length === 0) {
+  if (entryLayout.referenceOffsets.length === 0) {
+    // No reference fields in entries, so we can skip scanning them entirely
     return;
   }
   if (obj.rtSize < 20) {
+    // Set/Map objects should have at least 5 u32 fields in their payload.
+    // Hitting this means the dump is truncated/corrupted, debug info is stale,
+    // or the runtime layout no longer matches the hard-coded offsets below.
     return;
   }
 
@@ -74,11 +78,12 @@ function scanSetMapEntries(
   if (entriesPtr === 0 || !validPtrs.has(entriesPtr)) {
     return;
   }
+  const lastReadableU32Addr = memory.byteLength - 4;
 
   for (let i = 0; i < entriesOffset; i++) {
     const entryBase = entriesPtr + i * entryLayout.size;
     const taggedNextAddr = entryBase + entryLayout.size - 4;
-    if (taggedNextAddr + 4 > memory.byteLength) {
+    if (taggedNextAddr > lastReadableU32Addr) {
       break;
     }
     const taggedNext = memory.getUint32(taggedNextAddr, true);
@@ -98,15 +103,16 @@ function scanSetMapEntries(
 function scanSmallTupleElements(memory: DataView, obj: ObjectHeader, validPtrs: Set<number>, edges: number[]): void {
   const bitmapSize = 8;
   if (obj.rtSize <= bitmapSize) {
+    // An empty SmallTuple has no element slots, only the trailing bitmap.
+    // This also safely handles malformed dumps that are too small to contain elements.
     return;
   }
   const elementCount = (obj.rtSize - bitmapSize) >>> 2;
   const bitmapAddr = obj.payloadPtr + obj.rtSize - bitmapSize;
-  const bitmapLo = memory.getUint32(bitmapAddr, true);
-  const bitmapHi = memory.getUint32(bitmapAddr + 4, true);
+  const bitmap = memory.getBigUint64(bitmapAddr, true);
 
   for (let i = 0; i < elementCount; i++) {
-    const isRef = i < 32 ? (bitmapLo >>> i) & 1 : (bitmapHi >>> (i - 32)) & 1;
+    const isRef = (bitmap & (1n << BigInt(i))) !== 0n;
     if (!isRef) {
       continue;
     }
@@ -121,24 +127,29 @@ function scanContainerElements(
   memory: DataView,
   obj: ObjectHeader,
   classLayout: ClassLayout,
-  classResolver: ClassResolver,
   validPtrs: Set<number>,
   edges: number[]
 ): void {
-  if (classResolver.hasReferenceElements(obj.rtId)) {
-    const name = classLayout.name;
-    if (name.startsWith("~lib/array/Array<")) {
-      scanArrayElements(memory, obj, validPtrs, edges);
-    } else if (name.startsWith("~lib/staticarray/StaticArray<")) {
-      scanStaticArrayElements(memory, obj, validPtrs, edges);
-    }
+  const name = classLayout.name;
+
+  if (name.startsWith("~lib/array/Array<")) {
+    scanArrayElements(memory, obj, validPtrs, edges);
+    return;
   }
 
-  if (classLayout.name === "~lib/tuple/SmallTuple") {
+  if (name.startsWith("~lib/staticarray/StaticArray<")) {
+    scanStaticArrayElements(memory, obj, validPtrs, edges);
+    return;
+  }
+
+  if (name === "~lib/tuple/SmallTuple") {
     scanSmallTupleElements(memory, obj, validPtrs, edges);
+    return;
   }
 
-  scanSetMapEntries(memory, obj, classLayout, validPtrs, edges);
+  if (classLayout.entryLayout) {
+    scanSetMapEntries(memory, obj, classLayout.entryLayout, validPtrs, edges);
+  }
 }
 
 /**
@@ -163,7 +174,7 @@ export function scanReferences(
     const classLayout = classResolver.getClassDef(obj.rtId);
     if (classLayout && !classResolver.isPointerfree(obj.rtId)) {
       scanReferenceFields(memory, obj, classResolver, validPtrs, edges);
-      scanContainerElements(memory, obj, classLayout, classResolver, validPtrs, edges);
+      scanContainerElements(memory, obj, classLayout, validPtrs, edges);
     }
 
     graph.set(obj.payloadPtr, edges);

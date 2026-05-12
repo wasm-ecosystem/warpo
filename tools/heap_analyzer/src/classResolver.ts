@@ -20,7 +20,9 @@ export class ClassResolver {
 
     for (const unit of dwarf.compilationUnits) {
       const resolver = new CompilationUnitResolver(unit.rootDIE);
-      classes.push(...resolver.resolve(unit.rootDIE));
+      for (const layout of resolver.resolve(unit.rootDIE)) {
+        classes.push(layout);
+      }
     }
 
     flattenInheritedFields(classes);
@@ -28,7 +30,7 @@ export class ClassResolver {
   }
 
   getLayouts(): ClassLayout[] {
-    return [...this.layoutMap.values()];
+    return Array.from(this.layoutMap.values());
   }
 
   /** Returns class name, or "Class#<id>" if not found in debug info */
@@ -51,7 +53,18 @@ export class ClassResolver {
     if (!layout) {
       return false;
     }
-    return this.getReferenceFields(classId).length === 0 && !this.hasReferenceElements(classId);
+
+    if (layout.elementIsReference === true) {
+      return false;
+    }
+
+    for (const field of layout.fields) {
+      if (field.isReference) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**
@@ -64,15 +77,6 @@ export class ClassResolver {
       return [];
     }
     return layout.fields.filter((f) => f.isReference);
-  }
-
-  /** Returns elementIsReference for container types */
-  hasReferenceElements(classId: number): boolean {
-    const layout = this.layoutMap.get(classId);
-    if (!layout) {
-      return false;
-    }
-    return layout.elementIsReference === true;
   }
 }
 
