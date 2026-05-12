@@ -31,15 +31,21 @@ export class ClassResolver {
     return [...this.layoutMap.values()];
   }
 
+  /** Returns class name, or "Class#<id>" if not found in debug info */
   getClassName(classId: number): string {
     const layout = this.layoutMap.get(classId);
     return layout ? layout.name : `Class#${classId}`;
   }
 
+  /** Returns ClassDef or undefined */
   getClassDef(classId: number): ClassLayout | undefined {
     return this.layoutMap.get(classId);
   }
 
+  /**
+   * Check if a type has no managed references (no reference fields, no reference elements).
+   * Derived from field layout and elementIsReference rather than flags.
+   */
   isPointerfree(classId: number): boolean {
     const layout = this.layoutMap.get(classId);
     if (!layout) {
@@ -48,6 +54,10 @@ export class ClassResolver {
     return this.getReferenceFields(classId).length === 0 && !this.hasReferenceElements(classId);
   }
 
+  /**
+   * Returns all reference fields (isReference == true) for this class,
+   * walking the full inheritance chain via base.
+   */
   getReferenceFields(classId: number): ClassField[] {
     const layout = this.layoutMap.get(classId);
     if (!layout) {
@@ -56,6 +66,7 @@ export class ClassResolver {
     return layout.fields.filter((f) => f.isReference);
   }
 
+  /** Returns elementIsReference for container types */
   hasReferenceElements(classId: number): boolean {
     const layout = this.layoutMap.get(classId);
     if (!layout) {
