@@ -77,7 +77,7 @@ void VariableInfo::addSubProgram(std::string subProgramName, std::string_view co
     scopeStack_.push_back(&subProgramInfo);
   } else if (outerFunction.has_value() && !scopeStack_.empty()) {
     std::unique_ptr<SubProgramInfo> child = std::make_unique<SubProgramInfo>(internedName, outerFunction);
-    // NOLINTNEXTLINE(misc-const-correctness)
+    // NOLINTNEXTLINE(misc-const-correctness, cppcoreguidelines-pro-type-static-cast-downcast)
     SubProgramInfo &subProgramInfo = static_cast<SubProgramInfo &>(scopeStack_.back()->addChild(std::move(child)));
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
     scopeStack_.push_back(&subProgramInfo);
@@ -92,6 +92,7 @@ void VariableInfo::addSubProgram(std::string subProgramName, std::string_view co
 SubProgramInfo *VariableInfo::findCurrentSubProgram() const noexcept {
   for (size_t i = scopeStack_.size(); i > 0; --i) {
     if (scopeStack_[i - 1]->getKind() == ScopeInfo::Kind::SubProgram)
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
       return static_cast<SubProgramInfo *>(scopeStack_[i - 1]);
   }
   return nullptr;
@@ -141,7 +142,7 @@ void VariableInfo::enterScope(uint32_t const startLine, uint32_t const endLine) 
   if (scopeStack_.empty())
     return;
   std::unique_ptr<BlockInfo> block = std::make_unique<BlockInfo>(startLine, endLine);
-  ScopeInfo *ptr = block.get();
+  ScopeInfo *const ptr = block.get();
   scopeStack_.back()->addChild(std::move(block));
   scopeStack_.push_back(ptr);
 }
@@ -430,6 +431,7 @@ TEST(TestVariableInfo, TestAddSubProgramWithOuterFunction) {
   std::vector<std::unique_ptr<ScopeInfo>> const &outerChildren = globalFunctions[0].getChildren();
   ASSERT_EQ(outerChildren.size(), 1);
   ASSERT_EQ(outerChildren[0]->getKind(), ScopeInfo::Kind::SubProgram);
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
   SubProgramInfo const &inner = static_cast<SubProgramInfo const &>(*outerChildren[0]);
   ASSERT_TRUE(inner.getOuterFunction().has_value());
   EXPECT_EQ(*inner.getOuterFunction(), "outer");

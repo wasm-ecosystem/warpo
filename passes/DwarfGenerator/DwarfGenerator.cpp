@@ -97,6 +97,7 @@ static void collectTypesFromScopeChildren(std::vector<std::unique_ptr<ScopeInfo>
         reachableTypes.insert(local.getType());
       collectTypesFromScopeChildren(child->getChildren(), reachableTypes);
     } else {
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
       collectTypesFromSubProgram(static_cast<SubProgramInfo const &>(*child), reachableTypes);
     }
   }
@@ -226,7 +227,8 @@ static void emitScopeChildren(std::vector<std::unique_ptr<ScopeInfo>> const &chi
                               std::vector<TypeRefFixup> &typeRefFixups) {
   for (std::unique_ptr<ScopeInfo> const &child : children) {
     if (child->getKind() == ScopeInfo::Kind::Block) {
-      BlockInfo const *block = static_cast<BlockInfo const *>(child.get());
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+      BlockInfo const *const block = static_cast<BlockInfo const *>(child.get());
       llvm::DWARFYAML::Entry blockEntry;
       blockEntry.AbbrCode = abbrevCodes.lexicalBlock;
 
@@ -247,6 +249,7 @@ static void emitScopeChildren(std::vector<std::unique_ptr<ScopeInfo>> const &chi
       emitScopeChildren(block->getChildren(), rootUnit, abbrevCodes, typeRefFixups);
       emitScopeTerminator(rootUnit);
     } else {
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
       emitSubProgram(static_cast<SubProgramInfo const &>(*child), rootUnit, abbrevCodes, typeRefFixups);
     }
   }
