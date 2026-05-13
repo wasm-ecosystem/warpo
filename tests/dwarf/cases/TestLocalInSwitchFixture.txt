@@ -94,43 +94,6 @@ DW_TAG_compile_unit
                 DW_AT_name	("u8")
   DW_TAG_base_type
                 DW_AT_name	("usize")
-  DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
-                DW_AT_signature	(0x00000001)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBufferView")
-                DW_AT_signature	(0x00000003)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    DW_TAG_member
-                  DW_AT_name	("buffer")
-                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("dataStart")
-                  DW_AT_type	("usize")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("byteLength")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000008)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/object/Object")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/string/String")
-                DW_AT_signature	(0x00000002)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    NULL
-  DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestLocalInSwitch/start:tests/dwarf/cases/TestLocalInSwitch")
-    NULL
   DW_TAG_subprogram
                 DW_AT_name	("start:tests/dwarf/cases/TestLocalInSwitch")
     NULL
@@ -140,32 +103,32 @@ DW_TAG_compile_unit
                   DW_AT_name	("x")
                   DW_AT_type	("i32")
                   DW_AT_location	(0x00000000)
+    DW_TAG_variable
+                  DW_AT_name	("result")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000001)
     DW_TAG_lexical_block
-                  scope start	TestLocalInSwitch.ts:2
-                  scope end	TestLocalInSwitch.ts:22
-      DW_TAG_variable
-                    DW_AT_name	("result")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000001)
+                  scope start	TestLocalInSwitch.ts:4
+                  scope end	TestLocalInSwitch.ts:20
       DW_TAG_lexical_block
-                    scope start	TestLocalInSwitch.ts:6
-                    scope end	TestLocalInSwitch.ts:8
+                    scope start	TestLocalInSwitch.ts:5
+                    scope end	TestLocalInSwitch.ts:9
         DW_TAG_variable
                       DW_AT_name	("aaa")
                       DW_AT_type	("i32")
                       DW_AT_location	(0x00000003)
         NULL
       DW_TAG_lexical_block
-                    scope start	TestLocalInSwitch.ts:11
-                    scope end	TestLocalInSwitch.ts:13
+                    scope start	TestLocalInSwitch.ts:10
+                    scope end	TestLocalInSwitch.ts:14
         DW_TAG_variable
                       DW_AT_name	("bbb")
                       DW_AT_type	("i32")
                       DW_AT_location	(0x00000004)
         NULL
       DW_TAG_lexical_block
-                    scope start	TestLocalInSwitch.ts:16
-                    scope end	TestLocalInSwitch.ts:18
+                    scope start	TestLocalInSwitch.ts:15
+                    scope end	TestLocalInSwitch.ts:19
         DW_TAG_variable
                       DW_AT_name	("ccc")
                       DW_AT_type	("i32")
@@ -179,36 +142,28 @@ DW_TAG_compile_unit
                   DW_AT_name	("x")
                   DW_AT_type	("i32")
                   DW_AT_location	(0x00000000)
+    DW_TAG_variable
+                  DW_AT_name	("rg1")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000001)
     DW_TAG_lexical_block
-                  scope start	TestLocalInSwitch.ts:26
-                  scope end	TestLocalInSwitch.ts:44
+                  scope start	TestLocalInSwitch.ts:28
+                  scope end	TestLocalInSwitch.ts:42
       DW_TAG_variable
-                    DW_AT_name	("rg1")
+                    DW_AT_name	("a1")
                     DW_AT_type	("i32")
-                    DW_AT_location	(0x00000001)
+                    DW_AT_location	(0x00000003)
+      DW_TAG_variable
+                    DW_AT_name	("c1")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000005)
       DW_TAG_lexical_block
-                    scope start	TestLocalInSwitch.ts:30
-                    scope end	TestLocalInSwitch.ts:32
-        DW_TAG_variable
-                      DW_AT_name	("a1")
-                      DW_AT_type	("i32")
-                      DW_AT_location	(0x00000003)
-        NULL
-      DW_TAG_lexical_block
-                    scope start	TestLocalInSwitch.ts:34
-                    scope end	TestLocalInSwitch.ts:36
+                    scope start	TestLocalInSwitch.ts:33
+                    scope end	TestLocalInSwitch.ts:37
         DW_TAG_variable
                       DW_AT_name	("b1")
                       DW_AT_type	("i32")
                       DW_AT_location	(0x00000004)
-        NULL
-      DW_TAG_lexical_block
-                    scope start	TestLocalInSwitch.ts:39
-                    scope end	TestLocalInSwitch.ts:41
-        DW_TAG_variable
-                      DW_AT_name	("c1")
-                      DW_AT_type	("i32")
-                      DW_AT_location	(0x00000005)
         NULL
       NULL
     NULL

@@ -19,8 +19,7 @@ struct TypeRefFixup final {
 
 class DwarfGenerator final {
 public:
-  static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
-  generateDebugSections(VariableInfo const &variableInfo, wasm::BinaryLocations const &binaryLocations);
+  static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> generateDebugSections(VariableInfo const &variableInfo);
   static std::string dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const &debugSections);
 
 private:
@@ -35,8 +34,7 @@ private:
   };
 
   static void addSubProgramWithParameters(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
-                                          AbbrevCodes const &abbrevCodes, wasm::BinaryLocations const &binaryLocations,
-                                          std::vector<TypeRefFixup> &typeRefFixups);
+                                          AbbrevCodes const &abbrevCodes, std::vector<TypeRefFixup> &typeRefFixups);
 };
 
 } // namespace warpo::passes

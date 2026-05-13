@@ -94,54 +94,17 @@ DW_TAG_compile_unit
                 DW_AT_name	("u8")
   DW_TAG_base_type
                 DW_AT_name	("usize")
-  DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
-                DW_AT_signature	(0x00000001)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBufferView")
-                DW_AT_signature	(0x00000003)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    DW_TAG_member
-                  DW_AT_name	("buffer")
-                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("dataStart")
-                  DW_AT_type	("usize")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("byteLength")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000008)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/object/Object")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/string/String")
-                DW_AT_signature	(0x00000002)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    NULL
   DW_TAG_variable
                 DW_AT_name	("tests/dwarf/cases/TestLocalInWhile/g1")
                 DW_AT_type	("i32")
-  DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestLocalInWhile/start:tests/dwarf/cases/TestLocalInWhile")
-    NULL
   DW_TAG_subprogram
                 DW_AT_name	("start:tests/dwarf/cases/TestLocalInWhile")
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestLocalInWhile/foo")
     DW_TAG_lexical_block
-                  scope start	TestLocalInWhile.ts:4
-                  scope end	TestLocalInWhile.ts:5
+                  scope start	TestLocalInWhile.ts:3
+                  scope end	TestLocalInWhile.ts:6
       DW_TAG_variable
                     DW_AT_name	("aaa")
                     DW_AT_type	("i32")
@@ -151,8 +114,8 @@ DW_TAG_compile_unit
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestLocalInWhile/goo")
     DW_TAG_lexical_block
-                  scope start	TestLocalInWhile.ts:12
-                  scope end	TestLocalInWhile.ts:13
+                  scope start	TestLocalInWhile.ts:11
+                  scope end	TestLocalInWhile.ts:14
       DW_TAG_variable
                     DW_AT_name	("bbb")
                     DW_AT_type	("i32")

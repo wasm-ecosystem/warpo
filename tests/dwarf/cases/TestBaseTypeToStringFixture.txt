@@ -95,30 +95,6 @@ DW_TAG_compile_unit
   DW_TAG_base_type
                 DW_AT_name	("usize")
   DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
-                DW_AT_signature	(0x00000001)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBufferView")
-                DW_AT_signature	(0x00000003)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    DW_TAG_member
-                  DW_AT_name	("buffer")
-                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("dataStart")
-                  DW_AT_type	("usize")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("byteLength")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000008)
-    NULL
-  DW_TAG_class_type
                 DW_AT_name	("~lib/object/Object")
                 DW_AT_signature	(0x00000000)
     NULL
@@ -129,28 +105,6 @@ DW_TAG_compile_unit
                   DW_AT_name	("mmInfo")
                   DW_AT_type	("usize")
                   DW_AT_data_member_location	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/rt/common/OBJECT")
-                DW_AT_signature	(0x00000000)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/rt/common/BLOCK")
-    DW_TAG_member
-                  DW_AT_name	("gcInfo")
-                  DW_AT_type	("u32")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("gcInfo2")
-                  DW_AT_type	("u32")
-                  DW_AT_data_member_location	(0x00000008)
-    DW_TAG_member
-                  DW_AT_name	("rtId")
-                  DW_AT_type	("u32")
-                  DW_AT_data_member_location	(0x0000000c)
-    DW_TAG_member
-                  DW_AT_name	("rtSize")
-                  DW_AT_type	("u32")
-                  DW_AT_data_member_location	(0x00000010)
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/rt/itcms/Object")
@@ -418,21 +372,14 @@ DW_TAG_compile_unit
                 DW_AT_name	("~lib/util/number/dtoa_buf")
                 DW_AT_type	("usize")
   DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestBaseTypeToString/start:tests/dwarf/cases/TestBaseTypeToString")
-    NULL
-  DW_TAG_subprogram
                 DW_AT_name	("start:tests/dwarf/cases/TestBaseTypeToString")
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestBaseTypeToString/_start")
-    DW_TAG_lexical_block
-                  scope start	TestBaseTypeToString.ts:2
-                  scope end	TestBaseTypeToString.ts:3
-      DW_TAG_variable
-                    DW_AT_name	("aaa")
-                    DW_AT_type	("f32")
-                    DW_AT_location	(0x00000000)
-      NULL
+    DW_TAG_variable
+                  DW_AT_name	("aaa")
+                  DW_AT_type	("f32")
+                  DW_AT_location	(0x00000000)
     NULL
 
 .debug_str contents:

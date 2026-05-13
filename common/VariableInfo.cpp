@@ -73,52 +73,49 @@ void VariableInfo::addSubProgram(std::string subProgramName, std::string_view co
     // NOLINTNEXTLINE(misc-const-correctness)
     SubProgramInfo &subProgramInfo = classIt->second.addSubProgram(std::move(subProgramName), outerFunction);
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
+    subProgramStack_.push_back(&subProgramInfo);
   } else {
     // NOLINTNEXTLINE(misc-const-correctness)
     SubProgramInfo &subProgramInfo = subProgramRegistry_.addSubProgram(std::move(subProgramName), outerFunction);
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
+    subProgramStack_.push_back(&subProgramInfo);
   }
 }
 
-void VariableInfo::addParameter(std::string_view const subProgramName, std::string variableName,
-                                std::string_view const typeName, uint32_t const index, bool const nullable) {
-  SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
+void VariableInfo::addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
+                                bool const nullable) {
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
-  it->second.addParameter(std::move(variableName), internedTypeName, index, nullable);
+  assert(!subProgramStack_.empty() && "Current subprogram is not set");
+  subProgramStack_.back()->addParameter(std::move(variableName), internedTypeName, index, nullable);
 }
 
-void VariableInfo::addLocal(std::string_view const subProgramName, std::string variableName,
-                            std::string_view const typeName, uint32_t const index, uint32_t const scopeId,
+void VariableInfo::addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
                             bool const nullable) {
-  SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
-  it->second.addLocal(std::move(variableName), internedTypeName, index, scopeId, nullable);
+  assert(!subProgramStack_.empty() && "Current subprogram is not set");
+  subProgramStack_.back()->addLocal(std::move(variableName), internedTypeName, index, nullable);
 }
 
-void VariableInfo::addTupleLocal(std::string_view const subProgramName, std::string variableName,
-                                 std::string_view const typeName, uint32_t const tupleFieldOffset,
-                                 uint32_t const storageLocalIndex, uint32_t const scopeId, bool const nullable) {
-  SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
+void VariableInfo::addTupleLocal(std::string variableName, std::string_view const typeName,
+                                 uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex,
+                                 bool const nullable) {
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
-  it->second.addTupleLocal(std::move(variableName), internedTypeName, tupleFieldOffset, storageLocalIndex, scopeId,
-                           nullable);
+  assert(!subProgramStack_.empty() && "Current subprogram is not set");
+  subProgramStack_.back()->addTupleLocal(std::move(variableName), internedTypeName, tupleFieldOffset, storageLocalIndex,
+                                         nullable);
 }
 
-void VariableInfo::addTupleParameter(std::string_view const subProgramName, std::string variableName,
-                                     std::string_view const typeName, uint32_t const tupleFieldOffset,
-                                     uint32_t const storageLocalIndex, bool const nullable) {
-  SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
+void VariableInfo::addTupleParameter(std::string variableName, std::string_view const typeName,
+                                     uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex,
+                                     bool const nullable) {
   std::string_view const normalizedTypeName = typeName;
   std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
-  it->second.addTupleParameter(std::move(variableName), internedTypeName, tupleFieldOffset, storageLocalIndex,
-                               nullable);
+  assert(!subProgramStack_.empty() && "Current subprogram is not set");
+  subProgramStack_.back()->addTupleParameter(std::move(variableName), internedTypeName, tupleFieldOffset,
+                                             storageLocalIndex, nullable);
 }
 
 void VariableInfo::addHeapVariableStorageLocalIndex(std::string_view const subProgramName, uint32_t const index) {
@@ -127,12 +124,25 @@ void VariableInfo::addHeapVariableStorageLocalIndex(std::string_view const subPr
   it->second.setHeapVariableStorageLocalIndex(index);
 }
 
-uint32_t VariableInfo::addScope(std::string_view const subProgramName, BinaryenExpressionRef const startExpr,
-                                BinaryenExpressionRef const endExpr) {
-  SubProgramLookupMap::iterator const it = subProgramLookupMap_.find(subProgramName);
-  assert(it != subProgramLookupMap_.end() && "SubProgram not found in registry");
-  return it->second.addScope(startExpr, endExpr);
+void VariableInfo::enterScope(uint32_t const startLine, uint32_t const endLine) {
+  if (subProgramStack_.empty())
+    return;
+  subProgramStack_.back()->enterBlock(startLine, endLine);
 }
+
+void VariableInfo::leaveScope() {
+  if (subProgramStack_.empty())
+    return;
+  subProgramStack_.back()->leaveBlock();
+}
+
+void VariableInfo::leaveFunction() {
+  if (subProgramStack_.empty())
+    return;
+  subProgramStack_.back()->leaveFunction();
+  subProgramStack_.pop_back();
+}
+
 } // namespace warpo
 
 #ifdef WARPO_ENABLE_UNIT_TESTS
@@ -298,8 +308,8 @@ TEST(TestVariableInfo, TestAddParameter) {
 
   // Test adding parameters to global function
   variableInfo.addSubProgram("calculateSum", "", "");
-  variableInfo.addParameter("calculateSum", "a", "i32", 0, false);
-  variableInfo.addParameter("calculateSum", "b", "i32", 1, false);
+  variableInfo.addParameter("a", "i32", 0, false);
+  variableInfo.addParameter("b", "i32", 1, false);
 
   // Verify global function parameters
   const SubProgramRegistry &subProgramRegistry = variableInfo.getSubProgramRegistry();
@@ -324,8 +334,8 @@ TEST(TestVariableInfo, TestAddParameter) {
   variableInfo.createClass("Math", 200);
   variableInfo.addBaseClass("Math", "Object");
   variableInfo.addSubProgram("multiply", "Math", "");
-  variableInfo.addParameter("multiply", "x", "i32", 0, false);
-  variableInfo.addParameter("multiply", "y", "i32", 1, false);
+  variableInfo.addParameter("x", "i32", 0, false);
+  variableInfo.addParameter("y", "i32", 1, false);
 
   // Verify class member function parameters
   const VariableInfo::ClassRegistry &classRegistry = variableInfo.getClassRegistry();
@@ -354,32 +364,16 @@ TEST(TestVariableInfo, TestAddParameter) {
 TEST(TestVariableInfo, TestAddLocal) {
   VariableInfo variableInfo;
   variableInfo.addSubProgram("processData", "", "");
-
-  BinaryenExpressionRef const startExpr = reinterpret_cast<BinaryenExpressionRef>(0x1000);
-  BinaryenExpressionRef const endExpr = reinterpret_cast<BinaryenExpressionRef>(0x2000);
-  uint32_t const scopeId = variableInfo.addScope("processData", startExpr, endExpr);
-  variableInfo.addLocal("processData", "result", "i32", 1, scopeId, false);
+  variableInfo.addLocal("result", "i32", 1, false);
 
   const SubProgramRegistry &subProgramRegistry = variableInfo.getSubProgramRegistry();
   const std::deque<SubProgramInfo> &globalFunctions = subProgramRegistry.getList();
   ASSERT_EQ(globalFunctions.size(), 1);
 
-  const SubProgramInfo::LocalsMap &localsMap = globalFunctions[0].getLocals();
-  ASSERT_EQ(localsMap.size(), 1);
-  ASSERT_TRUE(localsMap.count(scopeId) > 0);
-  const std::vector<LocalInfo> &locals = localsMap.at(scopeId);
+  const std::vector<LocalInfo> &locals = globalFunctions[0].getLocals();
   ASSERT_EQ(locals.size(), 1);
   EXPECT_EQ(locals[0].getName(), "result");
   EXPECT_EQ(std::get<LocalIndexLocation>(locals[0].getLocation()).index, 1U);
-  EXPECT_EQ(locals[0].getScopeId(), scopeId);
-
-  const SubProgramInfo::ScopeInfoMap &scopeInfoMap = globalFunctions[0].getScopeInfoMap();
-  ASSERT_EQ(scopeInfoMap.size(), 1);
-  ASSERT_TRUE(scopeInfoMap.count(scopeId) > 0);
-  const ScopeInfo &scopeInfo = scopeInfoMap.at(scopeId);
-
-  EXPECT_EQ(scopeInfo.getScopeStartSubTreeRoot(), startExpr);
-  EXPECT_EQ(scopeInfo.getScopeEndSubTreeRoot(), endExpr);
 }
 
 TEST(TestVariableInfo, TestAddLocalToClassMemberFunction) {
@@ -389,10 +383,7 @@ TEST(TestVariableInfo, TestAddLocalToClassMemberFunction) {
   variableInfo.createClass("Math", 300);
   variableInfo.addBaseClass("Math", "Object");
   variableInfo.addSubProgram("compute", "Math", "");
-  BinaryenExpressionRef const startExpr2 = reinterpret_cast<BinaryenExpressionRef>(0x3000);
-  BinaryenExpressionRef const endExpr2 = reinterpret_cast<BinaryenExpressionRef>(0x4000);
-  uint32_t const scopeId2 = variableInfo.addScope("compute", startExpr2, endExpr2);
-  variableInfo.addLocal("compute", "temp", "i32", 1, scopeId2, false);
+  variableInfo.addLocal("temp", "i32", 1, false);
 
   const VariableInfo::ClassRegistry &classRegistry = variableInfo.getClassRegistry();
   VariableInfo::ClassRegistry::const_iterator const mathIt = classRegistry.find("Math");
@@ -401,14 +392,10 @@ TEST(TestVariableInfo, TestAddLocalToClassMemberFunction) {
   const std::deque<SubProgramInfo> &memberFunctions = mathIt->second.getSubProgramRegistry().getList();
   ASSERT_EQ(memberFunctions.size(), 1);
 
-  const SubProgramInfo::LocalsMap &computeLocalsMap = memberFunctions[0].getLocals();
-  ASSERT_EQ(computeLocalsMap.size(), 1);
-  ASSERT_TRUE(computeLocalsMap.count(scopeId2) > 0);
-  const std::vector<LocalInfo> &computeLocals = computeLocalsMap.at(scopeId2);
+  const std::vector<LocalInfo> &computeLocals = memberFunctions[0].getLocals();
   ASSERT_EQ(computeLocals.size(), 1);
   EXPECT_EQ(computeLocals[0].getName(), "temp");
   EXPECT_EQ(std::get<LocalIndexLocation>(computeLocals[0].getLocation()).index, 1U);
-  EXPECT_EQ(computeLocals[0].getScopeId(), scopeId2);
 }
 
 TEST(TestVariableInfo, TestAddSubProgramWithOuterFunction) {

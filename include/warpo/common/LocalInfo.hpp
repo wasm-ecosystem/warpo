@@ -23,21 +23,19 @@ using VariableLocation = std::variant<LocalIndexLocation, TupleFieldLocation>;
 
 class LocalInfo final {
 public:
-  inline LocalInfo(std::string name, std::string_view const type, VariableLocation location, uint32_t const scopeId,
+  inline LocalInfo(std::string name, std::string_view const type, VariableLocation location,
                    bool const nullable) noexcept
-      : name_(std::move(name)), type_(type), location_(location), scopeId_(scopeId), nullable_(nullable) {}
+      : name_(std::move(name)), type_(type), location_(location), nullable_(nullable) {}
 
   inline std::string_view getName() const noexcept { return name_; }
   inline std::string_view getType() const noexcept { return type_; }
   inline VariableLocation const &getLocation() const noexcept { return location_; }
-  inline uint32_t getScopeId() const noexcept { return scopeId_; }
   inline bool isNullable() const noexcept { return nullable_; }
 
 private:
   std::string name_;
   std::string_view type_;
   VariableLocation location_;
-  uint32_t scopeId_;
   bool nullable_;
 };
 

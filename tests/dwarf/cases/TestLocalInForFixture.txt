@@ -94,46 +94,9 @@ DW_TAG_compile_unit
                 DW_AT_name	("u8")
   DW_TAG_base_type
                 DW_AT_name	("usize")
-  DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
-                DW_AT_signature	(0x00000001)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBufferView")
-                DW_AT_signature	(0x00000003)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    DW_TAG_member
-                  DW_AT_name	("buffer")
-                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("dataStart")
-                  DW_AT_type	("usize")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("byteLength")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000008)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/object/Object")
-                DW_AT_signature	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/string/String")
-                DW_AT_signature	(0x00000002)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    NULL
   DW_TAG_variable
                 DW_AT_name	("tests/dwarf/cases/TestLocalInFor/aaa")
                 DW_AT_type	("i32")
-  DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestLocalInFor/start:tests/dwarf/cases/TestLocalInFor")
-    NULL
   DW_TAG_subprogram
                 DW_AT_name	("start:tests/dwarf/cases/TestLocalInFor")
     NULL
@@ -141,34 +104,30 @@ DW_TAG_compile_unit
                 DW_AT_name	("tests/dwarf/cases/TestLocalInFor/foo")
     DW_TAG_lexical_block
                   scope start	TestLocalInFor.ts:3
-                  scope end	TestLocalInFor.ts:10
+                  scope end	TestLocalInFor.ts:12
       DW_TAG_variable
                     DW_AT_name	("iii")
                     DW_AT_type	("i32")
                     DW_AT_location	(0x00000000)
+      DW_TAG_variable
+                    DW_AT_name	("ddd")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000001)
       DW_TAG_lexical_block
-                    scope start	TestLocalInFor.ts:4
-                    scope end	TestLocalInFor.ts:10
+                    scope start	TestLocalInFor.ts:5
+                    scope end	TestLocalInFor.ts:8
         DW_TAG_variable
-                      DW_AT_name	("ddd")
+                      DW_AT_name	("bbb")
                       DW_AT_type	("i32")
-                      DW_AT_location	(0x00000001)
-        DW_TAG_lexical_block
-                      scope start	TestLocalInFor.ts:6
-                      scope end	TestLocalInFor.ts:7
-          DW_TAG_variable
-                        DW_AT_name	("bbb")
-                        DW_AT_type	("i32")
-                        DW_AT_location	(0x00000002)
-          NULL
-        DW_TAG_lexical_block
-                      scope start	TestLocalInFor.ts:9
-                      scope end	TestLocalInFor.ts:10
-          DW_TAG_variable
-                        DW_AT_name	("ccc")
-                        DW_AT_type	("i32")
-                        DW_AT_location	(0x00000003)
-          NULL
+                      DW_AT_location	(0x00000002)
+        NULL
+      DW_TAG_lexical_block
+                    scope start	TestLocalInFor.ts:8
+                    scope end	TestLocalInFor.ts:11
+        DW_TAG_variable
+                      DW_AT_name	("ccc")
+                      DW_AT_type	("i32")
+                      DW_AT_location	(0x00000003)
         NULL
       NULL
     NULL

@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -13,61 +14,78 @@
 
 #include "LocalInfo.hpp"
 #include "ParameterInfo.hpp"
-#include "ScopeInfo.hpp"
 #include "binaryen-c.h"
 
 namespace warpo {
 
+class BlockInfo {
+public:
+  inline BlockInfo(uint32_t const startLine, uint32_t const endLine) noexcept
+      : startLine_(startLine), endLine_(endLine) {}
+
+  void pushChild(std::unique_ptr<BlockInfo> &&child) noexcept { children_.push_back(std::move(child)); }
+  inline void addLocal(LocalInfo local) noexcept { locals_.push_back(std::move(local)); }
+
+  inline uint32_t getStartLine() const noexcept { return startLine_; }
+  inline uint32_t getEndLine() const noexcept { return endLine_; }
+  inline std::vector<std::unique_ptr<BlockInfo>> const &getChildren() const noexcept { return children_; }
+  inline std::vector<LocalInfo> const &getLocals() const noexcept { return locals_; }
+
+private:
+  uint32_t startLine_;
+  uint32_t endLine_;
+  std::vector<std::unique_ptr<BlockInfo>> children_;
+  std::vector<LocalInfo> locals_;
+};
+
 class SubProgramInfo final {
 public:
-  using ScopeId = uint32_t;
-  using ScopeInfoMap = std::unordered_map<ScopeId, ScopeInfo>;
-  using LocalsMap = std::map<ScopeId, std::vector<LocalInfo>>;
-
   explicit inline SubProgramInfo(std::string_view const name,
                                  std::optional<std::string_view> const outerFunction = std::nullopt) noexcept
-      : name_(name), outerFunction_(outerFunction) {}
+      : name_(name), outerFunction_(outerFunction), heapVariableStorageLocalIndex_{std::nullopt} {}
 
   inline std::string_view getName() const noexcept { return name_; }
   inline std::optional<std::string_view> getOuterFunction() const noexcept { return outerFunction_; }
 
   inline std::vector<ParameterInfo> const &getParameters() const noexcept { return parameters_; }
-  inline LocalsMap const &getLocals() const noexcept { return locals_; }
-  inline ScopeInfoMap const &getScopeInfoMap() const noexcept { return scopeInfoMap_; }
 
   inline void addParameter(ParameterInfo parameter) noexcept { parameters_.push_back(std::move(parameter)); }
-  inline void addLocal(LocalInfo local) noexcept {
-    ScopeId const scopeId = local.getScopeId();
-    locals_[scopeId].push_back(std::move(local));
-  }
 
   void addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
                     bool const nullable);
 
-  void addLocal(std::string variableName, std::string_view const typeName, uint32_t const index, ScopeId const scopeId,
-                bool const nullable);
+  void addLocal(std::string variableName, std::string_view const typeName, uint32_t const index, bool const nullable);
 
   void addTupleLocal(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
-                     uint32_t const storageLocalIndex, ScopeId const scopeId, bool const nullable);
+                     uint32_t const storageLocalIndex, bool const nullable);
 
   void addTupleParameter(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
                          uint32_t const storageLocalIndex, bool const nullable);
-
-  uint32_t addScope(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr);
 
   inline std::optional<uint32_t> getHeapVariableStorageLocalIndex() const noexcept {
     return heapVariableStorageLocalIndex_;
   }
   inline void setHeapVariableStorageLocalIndex(uint32_t index) noexcept { heapVariableStorageLocalIndex_ = index; }
 
+  void enterBlock(uint32_t const startLine, uint32_t const endLine);
+
+  void leaveBlock();
+
+  inline void leaveFunction() noexcept { assert(blockInfoStack_.empty()); }
+
+  inline std::vector<LocalInfo> const &getLocals() const noexcept { return locals_; }
+  inline std::vector<std::unique_ptr<BlockInfo>> const &getBlocks() const noexcept { return blocks_; }
+
 private:
+  void addLocal(LocalInfo local);
+
   std::string_view name_;
   std::optional<std::string_view> outerFunction_;
   std::vector<ParameterInfo> parameters_;
-  LocalsMap locals_;
-  ScopeInfoMap scopeInfoMap_;
-  ScopeId nextScopeId_ = 0;
-  std::optional<uint32_t> heapVariableStorageLocalIndex_{std::nullopt};
+  std::vector<LocalInfo> locals_;
+  std::optional<uint32_t> heapVariableStorageLocalIndex_;
+  std::vector<std::unique_ptr<BlockInfo>> blocks_;
+  std::vector<std::unique_ptr<BlockInfo>> blockInfoStack_;
 };
 
 } // namespace warpo

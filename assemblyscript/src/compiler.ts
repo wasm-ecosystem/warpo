@@ -1024,6 +1024,7 @@ export class Compiler extends DiagnosticEmitter {
     for (let statements = file.source.statements, i = 0, k = statements.length; i < k; ++i) {
       this.compileTopLevelStatement(statements[i], startFunctionBody);
     }
+    mir.leaveFunction();
     this.ctxElement = ctxElement;
     // no need to insert unreachable since last statement should have done that
     this.currentFlow = previousFlow;
@@ -1506,6 +1507,8 @@ export class Compiler extends DiagnosticEmitter {
     let pendingElements = this.pendingElements;
     pendingElements.add(instance);
 
+    instance.emitSubProgramInfo();
+
     let previousType = this.currentType;
     let module = this.module;
     let signature = instance.signature;
@@ -1620,6 +1623,9 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     instance.finalize(module, funcRef);
+    if (!instance.prototype.is(CommonFlags.Ambient)) {
+      mir.leaveFunction();
+    }
     this.currentType = previousType;
     pendingElements.delete(instance);
     return true;
@@ -1650,6 +1656,8 @@ export class Compiler extends DiagnosticEmitter {
     instance.set(CommonFlags.Compiled);
     let pendingElements = this.pendingElements;
     pendingElements.add(instance);
+
+    instance.emitSubProgramInfo();
 
     let previousType = this.currentType;
     let module = this.module;
@@ -1702,6 +1710,7 @@ export class Compiler extends DiagnosticEmitter {
           "closure captures too much data; reduce the number or size of captured variables"
         );
         instance.set(CommonFlags.Errored);
+        mir.leaveFunction();
         this.currentType = previousType;
         pendingElements.delete(instance);
         return false;
@@ -1763,6 +1772,7 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     instance.finalize(module, funcRef);
+    mir.leaveFunction();
     this.currentType = previousType;
     pendingElements.delete(instance);
     return true;
@@ -1882,8 +1892,6 @@ export class Compiler extends DiagnosticEmitter {
         flow.set(FlowFlags.Returns | FlowFlags.Terminates);
       }
     }
-    flow.addLocalsToBlock(stmts);
-
     // Make constructors return their instance pointer, and prepend a conditional
     // allocation if any code path accesses `this`.
     if (instance.is(CommonFlags.Constructor)) {
@@ -2506,8 +2514,11 @@ export class Compiler extends DiagnosticEmitter {
     let innerFlow = outerFlow.fork();
     this.currentFlow = innerFlow;
 
+    let source = statement.range.source;
+    mir.enterScope(source.lineAt(statement.range.start), source.lineAt(statement.range.end));
+
     let stmts = this.compileStatements(statements);
-    innerFlow.addLocalsToBlock(stmts);
+    mir.leaveScope();
     outerFlow.inherit(innerFlow);
     this.currentFlow = outerFlow;
     return this.module.flatten(stmts);
@@ -2615,11 +2626,14 @@ export class Compiler extends DiagnosticEmitter {
     }
     let bodyStmts = new Array<ExpressionRef>();
     let body = statement.body;
+    let doBodySource = body.range.source;
+    mir.enterScope(doBodySource.lineAt(body.range.start), doBodySource.lineAt(body.range.end));
     if (body.kind == NodeKind.Block) {
       this.compileStatements((<BlockStatement>body).statements, bodyStmts);
     } else {
       bodyStmts.push(this.compileStatement(body));
     }
+    mir.leaveScope();
     flow.popControlFlowLabel(label);
 
     let possiblyContinues = flow.isAny(FlowFlags.Continues | FlowFlags.ConditionallyContinues);
@@ -2667,7 +2681,6 @@ export class Compiler extends DiagnosticEmitter {
 
     // Finalize and leave everything else to the optimizer
     this.currentFlow = outerFlow;
-    flow.addLocalsToBlock(bodyStmts);
     if (loopClosureTupleInfo) {
       let tupleStmts = this.emitLoopClosureTuple(targetFunction, loopClosureTupleInfo, null, null, statement);
       bodyStmts = tupleStmts.concat(bodyStmts);
@@ -2725,6 +2738,8 @@ export class Compiler extends DiagnosticEmitter {
     let flow = outerFlow.fork();
     this.currentFlow = flow;
     let stmts = new Array<ExpressionRef>();
+    let forSource = statement.range.source;
+    mir.enterScope(forSource.lineAt(statement.range.start), forSource.lineAt(statement.range.end));
     let targetFunction = outerFlow.targetFunction;
     let loopClosureInfo = this.program.closureScanner.getClosureFunctionInfo(statement);
     let loopStorage: Local | null = null;
@@ -2766,6 +2781,7 @@ export class Compiler extends DiagnosticEmitter {
         stmts.push(module.drop(condExprTrueish));
         outerFlow.inherit(flow);
         this.currentFlow = outerFlow;
+        mir.leaveScope();
         return module.flatten(stmts);
       }
     } else {
@@ -2862,6 +2878,7 @@ export class Compiler extends DiagnosticEmitter {
       // may be necessary multiple times where locals depend on each other.
       if (outerFlow.resetIfNeedsRecompile(bodyFlow.forkThen(condExpr), numLocalsBefore)) {
         this.currentFlow = outerFlow;
+        mir.leaveScope();
         return this.doCompileForStatement(statement);
       }
     }
@@ -2869,9 +2886,6 @@ export class Compiler extends DiagnosticEmitter {
     // Finalize
     outerFlow.inherit(flow);
     this.currentFlow = outerFlow;
-    if (bodyEnd != 0) {
-      bodyFlow.addLocalsToBlockWithStartEndStmt(bodyStmts[0], bodyEnd);
-    }
     let ifExpr = module.if(condExprTrueish, module.flatten(bodyStmts));
     let expr: ExpressionRef;
     if (loopClosureTupleInfo) {
@@ -2899,12 +2913,7 @@ export class Compiler extends DiagnosticEmitter {
       stmts.push(module.unreachable());
     }
 
-    if (bodyEnd != 0) {
-      flow.addLocalsToBlockWithStartEndStmt(stmts[0], bodyEnd);
-    } else {
-      flow.addLocalsToBlock(stmts);
-    }
-
+    mir.leaveScope();
     return module.flatten(stmts);
   }
 
@@ -2928,6 +2937,8 @@ export class Compiler extends DiagnosticEmitter {
     const outerFlow = this.currentFlow;
     const flow = outerFlow.fork();
     this.currentFlow = flow;
+    let forOfSource = statement.range.source;
+    mir.enterScope(forOfSource.lineAt(statement.range.start), forOfSource.lineAt(statement.range.end));
     const targetFunction = outerFlow.targetFunction;
     const loopClosureInfo = program.closureScanner.getClosureFunctionInfo(statement);
     let loopStorage: Local | null = null;
@@ -2950,11 +2961,15 @@ export class Compiler extends DiagnosticEmitter {
         iterable.range,
         iterableType.toString()
       );
+      mir.leaveScope();
       return module.unreachable();
     }
     const iteratorMethod = iterableClass.getMethod(program.iteratorMethodName);
     assert(iteratorMethod || this.hasDiag());
-    if (iteratorMethod == null) return module.unreachable();
+    if (iteratorMethod == null) {
+      mir.leaveScope();
+      return module.unreachable();
+    }
     const iteratorExpr = this.compileCallDirect(
       iteratorMethod,
       [],
@@ -2966,10 +2981,16 @@ export class Compiler extends DiagnosticEmitter {
     const iteratorLocal = outerFlow.getTempLocal(iteratorType);
     stmts.push(module.local_set(iteratorLocal.index, iteratorExpr, iteratorType.isManaged));
     assert(iteratorClass || this.hasDiag());
-    if (iteratorClass == null) return module.unreachable();
+    if (iteratorClass == null) {
+      mir.leaveScope();
+      return module.unreachable();
+    }
     const nextMethod = iteratorClass.getMethod("next");
     assert(nextMethod || this.hasDiag());
-    if (nextMethod == null) return module.unreachable();
+    if (nextMethod == null) {
+      mir.leaveScope();
+      return module.unreachable();
+    }
     const tmpExpr = this.compileCallDirect(
       nextMethod,
       [],
@@ -2982,7 +3003,10 @@ export class Compiler extends DiagnosticEmitter {
     stmts.push(module.local_set(tmpLocal.index, tmpExpr, tmpType.isManaged));
 
     assert(tmpClass || this.hasDiag());
-    if (tmpClass == null) return module.unreachable();
+    if (tmpClass == null) {
+      mir.leaveScope();
+      return module.unreachable();
+    }
 
     const getDone = assert(
       assert(this.resolver.resolveProperty(<PropertyPrototype>assert(tmpClass.getMember("done")))).getterInstance
@@ -3067,9 +3091,6 @@ export class Compiler extends DiagnosticEmitter {
     // finalize
     outerFlow.inherit(flow);
     this.currentFlow = outerFlow;
-    if (bodyEnd != 0) {
-      bodyFlow.addLocalsToBlockWithStartEndStmt(bodyStmts[0], bodyEnd);
-    }
     let ifExpr = module.if(isNotDoneExpr, module.flatten(bodyStmts));
     let expr: ExpressionRef;
     if (loopClosureTupleInfo) {
@@ -3096,11 +3117,7 @@ export class Compiler extends DiagnosticEmitter {
     if (outerFlow.is(FlowFlags.Terminates)) {
       stmts.push(module.unreachable());
     }
-    if (bodyEnd != 0) {
-      flow.addLocalsToBlockWithStartEndStmt(stmts[0], bodyEnd);
-    } else {
-      flow.addLocalsToBlock(stmts);
-    }
+    mir.leaveScope();
     return module.flatten(stmts);
   }
 
@@ -3144,11 +3161,14 @@ export class Compiler extends DiagnosticEmitter {
     let thenStmts = new Array<ExpressionRef>();
     let thenFlow = flow.forkThen(condExpr);
     this.currentFlow = thenFlow;
+    let ifTrueSource = ifTrue.range.source;
+    mir.enterScope(ifTrueSource.lineAt(ifTrue.range.start), ifTrueSource.lineAt(ifTrue.range.end));
     if (ifTrue.kind == NodeKind.Block) {
       this.compileStatements((<BlockStatement>ifTrue).statements, thenStmts);
     } else {
       thenStmts.push(this.compileStatement(ifTrue));
     }
+    mir.leaveScope();
     this.currentFlow = flow;
 
     // Compile ifFalse assuming the condition turned out false, if present
@@ -3156,14 +3176,15 @@ export class Compiler extends DiagnosticEmitter {
     if (ifFalse) {
       this.currentFlow = elseFlow;
       let elseStmts = new Array<ExpressionRef>();
+      let ifFalseSource = ifFalse.range.source;
+      mir.enterScope(ifFalseSource.lineAt(ifFalse.range.start), ifFalseSource.lineAt(ifFalse.range.end));
       if (ifFalse.kind == NodeKind.Block) {
         this.compileStatements((<BlockStatement>ifFalse).statements, elseStmts);
       } else {
         elseStmts.push(this.compileStatement(ifFalse));
       }
+      mir.leaveScope();
       flow.inheritAlternatives(thenFlow, elseFlow); // terminates if both do
-      thenFlow.addLocalsToBlock(thenStmts);
-      elseFlow.addLocalsToBlock(elseStmts);
       this.currentFlow = flow;
       return module.if(condExprTrueish, module.flatten(thenStmts), module.flatten(elseStmts));
     } else {
@@ -3176,7 +3197,6 @@ export class Compiler extends DiagnosticEmitter {
         flow.inheritAlternatives(thenFlow, elseFlow);
       }
       this.currentFlow = flow;
-      thenFlow.addLocalsToBlock(thenStmts);
       return module.if(condExprTrueish, module.flatten(thenStmts));
     }
   }
@@ -3274,6 +3294,8 @@ export class Compiler extends DiagnosticEmitter {
 
     // Nest the case blocks in order, to be targeted by the br_if sequence
     let currentBlock = module.block(`case0|${label}`, breaks, TypeRef.None);
+    let switchSource = statement.range.source;
+    mir.enterScope(switchSource.lineAt(statement.range.start), switchSource.lineAt(statement.range.end));
     let fallThroughFlow: Flow | null = null;
     let breakingFlowAlternatives: Flow | null = null;
     for (let i = 0; i < numCases; ++i) {
@@ -3304,7 +3326,6 @@ export class Compiler extends DiagnosticEmitter {
           break;
         }
       }
-      this.currentFlow.addLocalsToBlock(stmts.slice(1)); // need to slice off the container block
       stmts.length = count;
       fallThroughFlow = possiblyFallsThrough ? innerFlow : null;
       let possiblyBreaks = innerFlow.isAny(FlowFlags.Breaks | FlowFlags.ConditionallyBreaks);
@@ -3336,6 +3357,7 @@ export class Compiler extends DiagnosticEmitter {
     }
 
     this.currentFlow = outerFlow;
+    mir.leaveScope();
     return currentBlock;
   }
 
@@ -3529,6 +3551,7 @@ export class Compiler extends DiagnosticEmitter {
             continue;
           }
           local = flow.targetFunction.addLocal(type, name, declaration);
+          mir.addLocal(flow.targetFunction, local);
           flow.unsetLocalFlag(local.index, ~0);
           if (isConst) flow.setLocalFlag(local.index, LocalFlags.Constant);
         }
@@ -3608,11 +3631,14 @@ export class Compiler extends DiagnosticEmitter {
     }
     let bodyStmts = new Array<ExpressionRef>();
     let body = statement.body;
+    let whileBodySource = body.range.source;
+    mir.enterScope(whileBodySource.lineAt(body.range.start), whileBodySource.lineAt(body.range.end));
     if (body.kind == NodeKind.Block) {
       this.compileStatements((<BlockStatement>body).statements, bodyStmts);
     } else {
       bodyStmts.push(this.compileStatement(body));
     }
+    mir.leaveScope();
     bodyStmts.push(module.br(continueLabel));
     thenFlow.popControlFlowLabel(label);
 
@@ -3655,7 +3681,6 @@ export class Compiler extends DiagnosticEmitter {
 
     // Finalize and leave everything else to the optimizer
     this.currentFlow = outerFlow;
-    thenFlow.addLocalsToBlock(bodyStmts);
     let ifExpr = module.if(condExprTrueish, module.flatten(bodyStmts));
     let loopExpr: ExpressionRef;
     if (loopClosureTupleInfo) {
@@ -9871,6 +9896,8 @@ export class Compiler extends DiagnosticEmitter {
       if (!members) classInstance.members = members = new Map();
       members.set(CommonNames.constructor, instance.prototype);
 
+      instance.emitSubProgramInfo();
+
       let previousFlow = this.currentFlow;
       let flow = instance.flow;
       this.currentFlow = flow;
@@ -9923,6 +9950,7 @@ export class Compiler extends DiagnosticEmitter {
         module.flatten(stmts, sizeTypeRef)
       );
       instance.finalize(module, funcRef);
+      mir.leaveFunction();
     }
 
     return instance;

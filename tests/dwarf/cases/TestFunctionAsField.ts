@@ -3,3 +3,6 @@ class FnFieldClass {
 }
 
 export const v = new FnFieldClass();
+v.fnField = (): void => {};
+const f = v.fnField;
+f();
