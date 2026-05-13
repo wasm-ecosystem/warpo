@@ -50,7 +50,9 @@ export function buildDominatorTree(graph: Map<number, number[]>, rootNodes: Set<
   while (dfsStack.length > 0) {
     const { node, parentNum } = dfsStack.pop();
 
-    if (nodeToNum.has(node)) {continue;}
+    if (nodeToNum.has(node)) {
+      continue;
+    }
 
     const num = n++;
     nodeToNum.set(node, num);
@@ -73,7 +75,9 @@ export function buildDominatorTree(graph: Map<number, number[]>, rootNodes: Set<
     }
   }
 
-  if (n === 0) {return new Map();}
+  if (n === 0) {
+    return new Map();
+  }
 
   // Build predecessor lists using DFS numbering
   for (let u = 0; u < n; u++) {
@@ -107,7 +111,9 @@ export function buildDominatorTree(graph: Map<number, number[]>, rootNodes: Set<
 
   // EVAL: return vertex with minimum semi in ancestor chain
   function evalNode(v: number): number {
-    if (ancestor[v] === -1) {return v;}
+    if (ancestor[v] === -1) {
+      return v;
+    }
     compress(v);
     return label[v];
   }
