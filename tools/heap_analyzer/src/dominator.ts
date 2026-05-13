@@ -16,10 +16,8 @@ export const VIRTUAL_ROOT = -1;
  * @param rootNodes Set of GC root payloadPtrs (deduplicated from RootInfo[])
  * @returns Map<node, immediate dominator> for all reachable nodes
  */
-export function buildDominatorTree(
-  graph: Map<number, number[]>,
-  rootNodes: Set<number>,
-): Map<number, number> {
+// eslint-disable-next-line sonarjs/cognitive-complexity
+export function buildDominatorTree(graph: Map<number, number[]>, rootNodes: Set<number>): Map<number, number> {
   // DFS numbering arrays
   const semi: number[] = []; // semi-dominator DFS number
   const vertex: number[] = []; // DFS number → node
@@ -47,14 +45,12 @@ export function buildDominatorTree(
 
   // Step 1: DFS from VIRTUAL_ROOT
   // Iterative DFS to avoid stack overflow on large graphs
-  const dfsStack: Array<{ node: number; parentNum: number }> = [
-    { node: VIRTUAL_ROOT, parentNum: -1 },
-  ];
+  const dfsStack: Array<{ node: number; parentNum: number }> = [{ node: VIRTUAL_ROOT, parentNum: -1 }];
 
   while (dfsStack.length > 0) {
-    const { node, parentNum } = dfsStack.pop()!;
+    const { node, parentNum } = dfsStack.pop();
 
-    if (nodeToNum.has(node)) continue;
+    if (nodeToNum.has(node)) {continue;}
 
     const num = n++;
     nodeToNum.set(node, num);
@@ -77,7 +73,7 @@ export function buildDominatorTree(
     }
   }
 
-  if (n === 0) return new Map();
+  if (n === 0) {return new Map();}
 
   // Build predecessor lists using DFS numbering
   for (let u = 0; u < n; u++) {
@@ -111,7 +107,7 @@ export function buildDominatorTree(
 
   // EVAL: return vertex with minimum semi in ancestor chain
   function evalNode(v: number): number {
-    if (ancestor[v] === -1) return v;
+    if (ancestor[v] === -1) {return v;}
     compress(v);
     return label[v];
   }
