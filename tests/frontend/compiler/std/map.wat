@@ -31301,7 +31301,6 @@
  )
  (func $~lib/tuple/SmallTuple#__visit (param $this i32) (param $cookie i32)
   (local $rtSize i32)
-  (local $elementCount i32)
   (local $remaining i64)
   (local $index i32)
   (local $elementPtr i32)
@@ -31311,15 +31310,6 @@
      (local.get $this)
      (i32.const 20)
     )
-   )
-  )
-  (local.set $elementCount
-   (i32.shr_u
-    (i32.sub
-     (local.get $rtSize)
-     (i32.const 8)
-    )
-    (i32.const 2)
    )
   )
   (local.set $remaining
@@ -31346,15 +31336,6 @@
         (i64.ctz
          (local.get $remaining)
         )
-       )
-      )
-      (if
-       (i32.ge_u
-        (local.get $index)
-        (local.get $elementCount)
-       )
-       (then
-        (br $while-break|0)
        )
       )
       (local.set $elementPtr

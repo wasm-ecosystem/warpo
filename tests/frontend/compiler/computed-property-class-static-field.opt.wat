@@ -2000,8 +2000,8 @@
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   (local $1 i32)
-  (local $2 i32)
-  (local $3 i64)
+  (local $2 i64)
+  (local $3 i32)
   block $invalid
    block $computed-property-class-static-field/computed_property_class_static_field.Fn
     block $"~lib/map/Map<usize,~lib/string/String>"
@@ -2024,7 +2024,7 @@
       call $~lib/rt/itcms/__visit
       local.get $0
       i32.load offset=8
-      local.tee $2
+      local.tee $3
       local.tee $1
       local.get $0
       i32.load offset=16
@@ -2054,54 +2054,41 @@
         br $while-continue|0
        end
       end
-      local.get $2
+      local.get $3
       call $~lib/rt/itcms/__visit
       return
      end
      local.get $0
+     local.get $0
      i32.const 20
      i32.sub
      i32.load offset=16
-     local.tee $1
-     i32.const 8
-     i32.sub
-     i32.const 2
-     i32.shr_u
-     local.set $2
-     local.get $0
-     local.get $1
      i32.add
      i32.const 8
      i32.sub
      i64.load
-     local.set $3
+     local.set $2
      loop $while-continue|00
-      local.get $3
+      local.get $2
       i64.const 0
       i64.ne
       if
+       local.get $0
        local.get $2
-       local.get $3
        i64.ctz
        i32.wrap_i64
-       local.tee $1
-       i32.gt_u
-       if
-        local.get $0
-        local.get $1
-        i32.const 2
-        i32.shl
-        i32.add
-        i32.load
-        call $~lib/rt/itcms/__visit
-        local.get $3
-        local.get $3
-        i64.const 1
-        i64.sub
-        i64.and
-        local.set $3
-        br $while-continue|00
-       end
+       i32.const 2
+       i32.shl
+       i32.add
+       i32.load
+       call $~lib/rt/itcms/__visit
+       local.get $2
+       local.get $2
+       i64.const 1
+       i64.sub
+       i64.and
+       local.set $2
+       br $while-continue|00
       end
      end
      return
@@ -2111,7 +2098,7 @@
     call $~lib/rt/itcms/__visit
     local.get $0
     i32.load offset=8
-    local.tee $2
+    local.tee $3
     local.tee $1
     local.get $0
     i32.load offset=16
@@ -2141,7 +2128,7 @@
       br $while-continue|01
      end
     end
-    local.get $2
+    local.get $3
     call $~lib/rt/itcms/__visit
     return
    end
