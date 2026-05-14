@@ -3364,9 +3364,9 @@
  )
  (func $~lib/tuple/SmallTuple#__visit (param $this i32) (param $cookie i32)
   (local $rtSize i32)
-  (local $elemntCount i32)
-  (local $bitmap i64)
-  (local $i i32)
+  (local $elementCount i32)
+  (local $remaining i64)
+  (local $index i32)
   (local $elementPtr i32)
   (local.set $rtSize
    (call $~lib/rt/common/OBJECT#get:rtSize
@@ -3376,7 +3376,7 @@
     )
    )
   )
-  (local.set $elemntCount
+  (local.set $elementCount
    (i32.shr_u
     (i32.sub
      (local.get $rtSize)
@@ -3385,7 +3385,7 @@
     (i32.const 2)
    )
   )
-  (local.set $bitmap
+  (local.set $remaining
    (i64.load
     (i32.sub
      (i32.add
@@ -3396,54 +3396,56 @@
     )
    )
   )
-  (local.set $i
-   (i32.const 0)
-  )
-  (loop $for-loop|0
-   (if
-    (i32.lt_u
-     (local.get $i)
-     (local.get $elemntCount)
-    )
-    (then
-     (if
-      (i64.ne
+  (block $while-break|0
+   (loop $while-continue|0
+    (if
+     (i64.ne
+      (local.get $remaining)
+      (i64.const 0)
+     )
+     (then
+      (local.set $index
+       (i32.wrap_i64
+        (i64.ctz
+         (local.get $remaining)
+        )
+       )
+      )
+      (if
+       (i32.ge_u
+        (local.get $index)
+        (local.get $elementCount)
+       )
+       (then
+        (br $while-break|0)
+       )
+      )
+      (local.set $elementPtr
+       (i32.add
+        (local.get $this)
+        (i32.shl
+         (local.get $index)
+         (i32.const 2)
+        )
+       )
+      )
+      (call $~lib/rt/itcms/__visit
+       (i32.load
+        (local.get $elementPtr)
+       )
+       (local.get $cookie)
+      )
+      (local.set $remaining
        (i64.and
-        (local.get $bitmap)
-        (i64.shl
+        (local.get $remaining)
+        (i64.sub
+         (local.get $remaining)
          (i64.const 1)
-         (i64.extend_i32_u
-          (local.get $i)
-         )
         )
-       )
-       (i64.const 0)
-      )
-      (then
-       (local.set $elementPtr
-        (i32.add
-         (local.get $this)
-         (i32.shl
-          (local.get $i)
-          (i32.const 2)
-         )
-        )
-       )
-       (call $~lib/rt/itcms/__visit
-        (i32.load
-         (local.get $elementPtr)
-        )
-        (local.get $cookie)
        )
       )
+      (br $while-continue|0)
      )
-     (local.set $i
-      (i32.add
-       (local.get $i)
-       (i32.const 1)
-      )
-     )
-     (br $for-loop|0)
     )
    )
   )

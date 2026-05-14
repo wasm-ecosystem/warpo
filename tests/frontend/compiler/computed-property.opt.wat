@@ -2082,21 +2082,17 @@
      i32.sub
      i64.load
      local.set $3
-     i32.const 0
-     local.set $1
-     loop $for-loop|0
-      local.get $1
-      local.get $2
-      i32.lt_u
+     loop $while-continue|00
+      local.get $3
+      i64.const 0
+      i64.ne
       if
+       local.get $2
        local.get $3
-       i64.const 1
-       local.get $1
-       i64.extend_i32_u
-       i64.shl
-       i64.and
-       i64.const 0
-       i64.ne
+       i64.ctz
+       i32.wrap_i64
+       local.tee $1
+       i32.gt_u
        if
         local.get $0
         local.get $1
@@ -2105,12 +2101,14 @@
         i32.add
         i32.load
         call $~lib/rt/itcms/__visit
+        local.get $3
+        local.get $3
+        i64.const 1
+        i64.sub
+        i64.and
+        local.set $3
+        br $while-continue|00
        end
-       local.get $1
-       i32.const 1
-       i32.add
-       local.set $1
-       br $for-loop|0
       end
      end
      return
@@ -2128,7 +2126,7 @@
     i32.mul
     i32.add
     local.set $0
-    loop $while-continue|00
+    loop $while-continue|01
      local.get $0
      local.get $1
      i32.gt_u
@@ -2147,7 +2145,7 @@
       i32.const 12
       i32.add
       local.set $1
-      br $while-continue|00
+      br $while-continue|01
      end
     end
     local.get $2
