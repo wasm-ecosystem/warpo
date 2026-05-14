@@ -2967,8 +2967,8 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   (local $1 i32)
   (local $2 i32)
-  (local $3 i32)
-  (local $4 i64)
+  (local $3 i64)
+  (local $4 i32)
   block $invalid
    block $~lib/staticarray/StaticArray<~lib/string/String>
     block $"~lib/iterator/Iterable<[usize, ~lib/string/String]>"
@@ -3014,9 +3014,9 @@
           if
            local.get $1
            i32.load offset=4
-           local.tee $3
+           local.tee $4
            if
-            local.get $3
+            local.get $4
             call $~lib/rt/itcms/__visit
            end
           end
@@ -3032,51 +3032,36 @@
         return
        end
        local.get $0
+       local.get $0
        i32.const 20
        i32.sub
        i32.load offset=16
-       local.tee $1
-       i32.const 8
-       i32.sub
-       i32.const 2
-       i32.shr_u
-       local.set $2
-       local.get $0
-       local.get $1
        i32.add
        i32.const 8
        i32.sub
        i64.load
-       local.set $4
-       i32.const 0
-       local.set $1
-       loop $for-loop|0
-        local.get $1
-        local.get $2
-        i32.lt_u
+       local.set $3
+       loop $while-continue|00
+        local.get $3
+        i64.const 0
+        i64.ne
         if
-         local.get $4
-         i64.const 1
-         local.get $1
-         i64.extend_i32_u
-         i64.shl
-         i64.and
-         i64.const 0
-         i64.ne
-         if
-          local.get $0
-          local.get $1
-          i32.const 2
-          i32.shl
-          i32.add
-          i32.load
-          call $~lib/rt/itcms/__visit
-         end
-         local.get $1
-         i32.const 1
+         local.get $0
+         local.get $3
+         i64.ctz
+         i32.wrap_i64
+         i32.const 2
+         i32.shl
          i32.add
-         local.set $1
-         br $for-loop|0
+         i32.load
+         call $~lib/rt/itcms/__visit
+         local.get $3
+         local.get $3
+         i64.const 1
+         i64.sub
+         i64.and
+         local.set $3
+         br $while-continue|00
         end
        end
        return
@@ -3094,7 +3079,7 @@
       i32.mul
       i32.add
       local.set $0
-      loop $while-continue|00
+      loop $while-continue|01
        local.get $0
        local.get $1
        i32.gt_u
@@ -3113,7 +3098,7 @@
         i32.const 12
         i32.add
         local.set $1
-        br $while-continue|00
+        br $while-continue|01
        end
       end
       local.get $2
@@ -3133,7 +3118,7 @@
      i32.mul
      i32.add
      local.set $0
-     loop $while-continue|01
+     loop $while-continue|02
       local.get $0
       local.get $1
       i32.gt_u
@@ -3152,7 +3137,7 @@
        i32.const 12
        i32.add
        local.set $1
-       br $while-continue|01
+       br $while-continue|02
       end
      end
      local.get $2
@@ -3168,7 +3153,7 @@
    i32.load offset=16
    i32.add
    local.set $1
-   loop $while-continue|02
+   loop $while-continue|03
     local.get $0
     local.get $1
     i32.lt_u
@@ -3184,7 +3169,7 @@
      i32.const 4
      i32.add
      local.set $0
-     br $while-continue|02
+     br $while-continue|03
     end
    end
    return

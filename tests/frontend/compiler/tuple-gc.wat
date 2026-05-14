@@ -5,14 +5,12 @@
  (type $3 (func (param i32 i32 i32)))
  (type $4 (func (param i32 i32) (result i32)))
  (type $5 (func))
- (type $6 (func (result i32)))
- (type $7 (func (param i32 i32 i32 i32)))
- (type $8 (func (param i32 i32 i32) (result i32)))
- (type $9 (func (param i32 i32 i64) (result i32)))
+ (type $6 (func (param i32 i32 i32 i32)))
+ (type $7 (func (param i32 i32 i32) (result i32)))
+ (type $8 (func (param i32 i32 i64) (result i32)))
+ (type $9 (func (result i32)))
  (type $10 (func (param i32 i64) (result i32)))
- (import "as-builtin-fn" "~lib/rt/closure/getClosureEnvByLevel" (func $~lib/rt/closure/getClosureEnvByLevel (param i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
- (import "as-builtin-fn" "~lib/rt/closure/setClosureEnv" (func $~lib/rt/closure/setClosureEnv (param i32)))
  (import "as-builtin-fn" "~lib/rt/__localtostack" (func $~lib/rt/__localtostack (param i32) (result i32)))
  (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
  (global $~lib/shared/runtime/Runtime.Radical i32 (i32.const 1))
@@ -28,12 +26,10 @@
  (global $~lib/rt/itcms/fromSpace (mut i32) (i32.const 0))
  (global $~lib/rt/tlsf/ROOT (mut i32) (i32.const 0))
  (global $~lib/native/ASC_LOW_MEMORY_LIMIT i32 (i32.const 0))
- (global $~lib/rt/closure/env (mut i32) (i32.const 0))
- (global $~argumentsLength (mut i32) (i32.const 0))
- (global $~lib/rt/__rtti_base i32 (i32.const 496))
- (global $~lib/memory/__data_end i32 (i32.const 524))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33292))
- (global $~lib/memory/__heap_base i32 (i32.const 33292))
+ (global $~lib/rt/__rtti_base i32 (i32.const 464))
+ (global $~lib/memory/__data_end i32 (i32.const 492))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33260))
+ (global $~lib/memory/__heap_base i32 (i32.const 33260))
  (memory $0 1)
  (data $0 (i32.const 12) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00(\00\00\00A\00l\00l\00o\00c\00a\00t\00i\00o\00n\00 \00t\00o\00o\00 \00l\00a\00r\00g\00e\00\00\00\00\00")
  (data $1 (i32.const 76) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00 \00\00\00~\00l\00i\00b\00/\00r\00t\00/\00i\00t\00c\00m\00s\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00")
@@ -43,43 +39,12 @@
  (data $5 (i32.const 268) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\14\00\00\00~\00l\00i\00b\00/\00r\00t\00.\00t\00s\00\00\00\00\00\00\00\00\00")
  (data $6 (i32.const 320) "\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
  (data $7 (i32.const 348) "<\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (data $8 (i32.const 412) "L\00\00\00\00\00\00\00\00\00\00\00\02\00\00\008\00\00\00c\00l\00o\00s\00u\00r\00e\00-\00a\00r\00r\00o\00w\00-\00i\00n\00-\00f\00u\00n\00c\00t\00i\00o\00n\00.\00t\00s\00\00\00\00\00")
- (data $9 (i32.const 496) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00\00\00\00\00\00\00\00\00")
- (table $0 2 2 funcref)
- (elem $0 (i32.const 1) $closure-arrow-in-function/testNormalFunction~anonymous|0)
- (export "testNormalFunction" (func $closure-arrow-in-function/testNormalFunction))
+ (data $8 (i32.const 412) ",\00\00\00\00\00\00\00\00\00\00\00\02\00\00\00\16\00\00\00t\00u\00p\00l\00e\00-\00g\00c\00.\00t\00s\00\00\00\00\00\00\00")
+ (data $9 (i32.const 464) "\06\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00 \00\00\00\00\00\00\00")
+ (table $0 1 1 funcref)
+ (elem $0 (i32.const 1))
  (export "memory" (memory $0))
  (start $~start)
- (func $~lib/tuple/SmallTuple#__set<i32> (param $this i32) (param $offset i32) (param $value i32)
-  (local $elementPtr i32)
-  (local.set $elementPtr
-   (i32.add
-    (local.get $this)
-    (local.get $offset)
-   )
-  )
-  (i32.store
-   (local.get $elementPtr)
-   (local.get $value)
-  )
-  (drop
-   (i32.const 0)
-  )
- )
- (func $~lib/tuple/SmallTuple#__get<i32> (param $this i32) (param $offset i32) (result i32)
-  (local $elementPtr i32)
-  (local.set $elementPtr
-   (i32.add
-    (local.get $this)
-    (local.get $offset)
-   )
-  )
-  (return
-   (i32.load
-    (local.get $elementPtr)
-   )
-  )
- )
  (func $~lib/rt/itcms/Object#set:nextWithColor (param $this i32) (param $nextWithColor i32)
   (i32.store offset=4
    (local.get $this)
@@ -2956,7 +2921,7 @@
   (local.set $ptr
    (call $~lib/rt/itcms/__new
     (local.get $totalSize)
-    (i32.const 4)
+    (i32.const 5)
    )
   )
   (i64.store
@@ -2969,6 +2934,38 @@
   (return
    (local.get $ptr)
   )
+ )
+ (func $~lib/tuple/SmallTuple#__set<i32> (param $this i32) (param $offset i32) (param $value i32)
+  (local $elementPtr i32)
+  (local.set $elementPtr
+   (i32.add
+    (local.get $this)
+    (local.get $offset)
+   )
+  )
+  (i32.store
+   (local.get $elementPtr)
+   (local.get $value)
+  )
+  (drop
+   (i32.const 0)
+  )
+ )
+ (func $tuple-gc/Box#set:value (param $this i32) (param $value i32)
+  (i32.store
+   (local.get $this)
+   (local.get $value)
+  )
+ )
+ (func $tuple-gc/Box#constructor (param $this i32) (param $value i32) (result i32)
+  (nop)
+  (call $tuple-gc/Box#set:value
+   (call $~lib/rt/__tmptostack
+    (local.get $this)
+   )
+   (local.get $value)
+  )
+  (local.get $this)
  )
  (func $~lib/rt/itcms/__link (param $parentPtr i32) (param $childPtr i32) (param $expectMultiple i32)
   (local $child i32)
@@ -3074,7 +3071,7 @@
    )
   )
  )
- (func $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null> (param $this i32) (param $offset i32) (param $value i32)
+ (func $~lib/tuple/SmallTuple#__set<tuple-gc/Box> (param $this i32) (param $offset i32) (param $value i32)
   (local $elementPtr i32)
   (local.set $elementPtr
    (i32.add
@@ -3095,135 +3092,176 @@
    (i32.const 0)
   )
  )
- (func $closure-arrow-in-function/testNormalFunction~anonymous|0 (result i32)
-  (local $0 i32)
-  (local.set $0
-   (call $~lib/rt/__localtostack
-    (call $~lib/rt/__newTuple
-     (i32.const 4)
-     (i64.const 1)
+ (func $~lib/rt/itcms/__collect
+  (drop
+   (i32.const 0)
+  )
+  (if
+   (i32.gt_s
+    (global.get $~lib/rt/itcms/state)
+    (i32.const 0)
+   )
+   (then
+    (block $while-break|0
+     (loop $while-continue|0
+      (if
+       (i32.ne
+        (global.get $~lib/rt/itcms/state)
+        (i32.const 0)
+       )
+       (then
+        (drop
+         (call $~lib/rt/itcms/step)
+        )
+        (br $while-continue|0)
+       )
+      )
+     )
     )
    )
   )
-  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
-   (call $~lib/rt/__tmptostack
-    (local.get $0)
-   )
-   (i32.const 0)
-   (call $~lib/rt/__tmptostack
-    (global.get $~lib/rt/closure/env)
-   )
+  (drop
+   (call $~lib/rt/itcms/step)
   )
-  (global.set $~lib/rt/closure/env
-   (i32.const 0)
-  )
-  (call $~lib/tuple/SmallTuple#__set<i32>
-   (call $~lib/rt/__tmptostack
-    (call $~lib/rt/closure/getClosureEnvByLevel
-     (i32.const 1)
+  (block $while-break|1
+   (loop $while-continue|1
+    (if
+     (i32.ne
+      (global.get $~lib/rt/itcms/state)
+      (i32.const 0)
+     )
+     (then
+      (drop
+       (call $~lib/rt/itcms/step)
+      )
+      (br $while-continue|1)
+     )
     )
    )
-   (i32.const 4)
+  )
+  (global.set $~lib/rt/itcms/threshold
    (i32.add
-    (call $~lib/tuple/SmallTuple#__get<i32>
-     (call $~lib/rt/__tmptostack
-      (call $~lib/rt/closure/getClosureEnvByLevel
+    (i32.wrap_i64
+     (i64.div_u
+      (i64.mul
+       (i64.extend_i32_u
+        (global.get $~lib/rt/itcms/total)
+       )
+       (i64.extend_i32_u
+        (i32.const 200)
+       )
+      )
+      (i64.const 100)
+     )
+    )
+    (i32.const 1024)
+   )
+  )
+  (drop
+   (i32.const 0)
+  )
+ )
+ (func $tuple-gc/Box#get:value (param $this i32) (result i32)
+  (i32.load
+   (local.get $this)
+  )
+ )
+ (func $tuple-gc/churn
+  (local $i i32)
+  (local $box i32)
+  (local.set $i
+   (i32.const 0)
+  )
+  (loop $for-loop|0
+   (if
+    (i32.lt_s
+     (local.get $i)
+     (i32.const 128)
+    )
+    (then
+     (local.set $box
+      (call $~lib/rt/__localtostack
+       (call $tuple-gc/Box#constructor
+        (call $~lib/rt/__tmptostack
+         (call $~lib/rt/itcms/__new
+          (i32.const 4)
+          (i32.const 4)
+         )
+        )
+        (local.get $i)
+       )
+      )
+     )
+     (if
+      (i32.eq
+       (call $tuple-gc/Box#get:value
+        (call $~lib/rt/__tmptostack
+         (local.get $box)
+        )
+       )
+       (i32.const -1)
+      )
+      (then
+       (unreachable)
+      )
+     )
+     (local.set $i
+      (i32.add
+       (local.get $i)
        (i32.const 1)
       )
      )
-     (i32.const 4)
+     (br $for-loop|0)
     )
-    (i32.const 1)
-   )
-  )
-  (return
-   (call $~lib/tuple/SmallTuple#__get<i32>
-    (call $~lib/rt/__tmptostack
-     (call $~lib/rt/closure/getClosureEnvByLevel
-      (i32.const 1)
-     )
-    )
-    (i32.const 4)
    )
   )
  )
- (func $~lib/rt/__newFunction (param $functionIdnex i32) (param $env i32) (param $rtid i32) (result i32)
-  (local $ptr i32)
-  (local.set $ptr
-   (call $~lib/rt/itcms/__new
-    (i32.const 8)
-    (local.get $rtid)
-   )
-  )
-  (i32.store
-   (local.get $ptr)
-   (local.get $functionIdnex)
-  )
-  (i32.store
+ (func $~lib/tuple/SmallTuple#__get<tuple-gc/Box> (param $this i32) (param $offset i32) (result i32)
+  (local $elementPtr i32)
+  (local.set $elementPtr
    (i32.add
-    (local.get $ptr)
-    (i32.const 4)
+    (local.get $this)
+    (local.get $offset)
    )
-   (local.get $env)
   )
   (return
-   (local.get $ptr)
+   (i32.load
+    (local.get $elementPtr)
+   )
   )
  )
- (func $closure-arrow-in-function/testNormalFunction (result i32)
-  (local $0 i32)
-  (local $x i32)
-  (local $add i32)
-  (local.set $0
-   (call $~lib/rt/__localtostack
-    (call $~lib/rt/__newTuple
-     (i32.const 8)
-     (i64.const 1)
-    )
-   )
-  )
-  (call $~lib/tuple/SmallTuple#__set<~lib/tuple/SmallTuple|null>
-   (call $~lib/rt/__tmptostack
-    (local.get $0)
-   )
-   (i32.const 0)
-   (i32.const 0)
-  )
-  (call $~lib/tuple/SmallTuple#__set<i32>
-   (call $~lib/rt/__tmptostack
-    (local.get $0)
-   )
-   (i32.const 4)
-   (i32.const 41)
-  )
-  (local.set $add
-   (call $~lib/rt/__localtostack
-    (call $~lib/rt/__newFunction
-     (i32.const 1)
-     (local.get $0)
-     (i32.const 5)
-    )
-   )
-  )
+ (func $tuple-gc/sumTupleRefs (param $tuple i32) (result i32)
+  (call $~lib/rt/itcms/__collect)
+  (call $tuple-gc/churn)
   (return
-   (call_indirect (type $6)
-    (block (result i32)
-     (call $~lib/rt/closure/setClosureEnv
-      (i32.load offset=4
-       (local.get $add)
+   (i32.add
+    (call $tuple-gc/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<tuple-gc/Box>
+       (call $~lib/rt/__tmptostack
+        (local.get $tuple)
+       )
+       (i32.const 12)
       )
      )
-     (global.set $~argumentsLength
-      (i32.const 0)
-     )
-     (i32.load
-      (local.get $add)
+    )
+    (call $tuple-gc/Box#get:value
+     (call $~lib/rt/__tmptostack
+      (call $~lib/tuple/SmallTuple#__get<tuple-gc/Box>
+       (call $~lib/rt/__tmptostack
+        (local.get $tuple)
+       )
+       (i32.const 24)
+      )
      )
     )
    )
   )
  )
- (func $start:closure-arrow-in-function
+ (func $start:tuple-gc
+  (local $i i32)
+  (local $1 i32)
+  (local $tuple i32)
   (global.set $~lib/rt/itcms/threshold
    (i32.shr_u
     (i32.sub
@@ -3251,42 +3289,137 @@
     (i32.const 320)
    )
   )
-  (if
-   (i32.eqz
-    (i32.eq
-     (block (result i32)
-      (call $~lib/rt/closure/setClosureEnv
-       (i32.const 0)
-      )
-      (call $closure-arrow-in-function/testNormalFunction)
-     )
-     (i32.const 42)
-    )
+  (block
+   (local.set $i
+    (i32.const 0)
    )
-   (then
-    (call $~lib/builtins/abort
-     (i32.const 0)
-     (i32.const 432)
-     (i32.const 10)
-     (i32.const 1)
+   (loop $for-loop|0
+    (if
+     (i32.lt_s
+      (local.get $i)
+      (i32.const 32)
+     )
+     (then
+      (local.set $tuple
+       (call $~lib/rt/__localtostack
+        (block (result i32)
+         (local.set $1
+          (call $~lib/rt/__localtostack
+           (call $~lib/rt/__newTuple
+            (i32.const 28)
+            (i64.const 72)
+           )
+          )
+         )
+         (call $~lib/tuple/SmallTuple#__set<i32>
+          (call $~lib/rt/__tmptostack
+           (local.get $1)
+          )
+          (i32.const 0)
+          (i32.const 1)
+         )
+         (call $~lib/tuple/SmallTuple#__set<i32>
+          (call $~lib/rt/__tmptostack
+           (local.get $1)
+          )
+          (i32.const 4)
+          (i32.const 2)
+         )
+         (call $~lib/tuple/SmallTuple#__set<i32>
+          (call $~lib/rt/__tmptostack
+           (local.get $1)
+          )
+          (i32.const 8)
+          (i32.const 3)
+         )
+         (call $~lib/tuple/SmallTuple#__set<tuple-gc/Box>
+          (call $~lib/rt/__tmptostack
+           (local.get $1)
+          )
+          (i32.const 12)
+          (call $~lib/rt/__tmptostack
+           (call $tuple-gc/Box#constructor
+            (call $~lib/rt/__tmptostack
+             (call $~lib/rt/itcms/__new
+              (i32.const 4)
+              (i32.const 4)
+             )
+            )
+            (i32.const 10)
+           )
+          )
+         )
+         (call $~lib/tuple/SmallTuple#__set<i32>
+          (call $~lib/rt/__tmptostack
+           (local.get $1)
+          )
+          (i32.const 16)
+          (i32.const 4)
+         )
+         (call $~lib/tuple/SmallTuple#__set<i32>
+          (call $~lib/rt/__tmptostack
+           (local.get $1)
+          )
+          (i32.const 20)
+          (i32.const 5)
+         )
+         (call $~lib/tuple/SmallTuple#__set<tuple-gc/Box>
+          (call $~lib/rt/__tmptostack
+           (local.get $1)
+          )
+          (i32.const 24)
+          (call $~lib/rt/__tmptostack
+           (call $tuple-gc/Box#constructor
+            (call $~lib/rt/__tmptostack
+             (call $~lib/rt/itcms/__new
+              (i32.const 4)
+              (i32.const 4)
+             )
+            )
+            (i32.const 20)
+           )
+          )
+         )
+         (local.get $1)
+        )
+       )
+      )
+      (if
+       (i32.eqz
+        (i32.eq
+         (call $tuple-gc/sumTupleRefs
+          (call $~lib/rt/__tmptostack
+           (local.get $tuple)
+          )
+         )
+         (i32.const 30)
+        )
+       )
+       (then
+        (call $~lib/builtins/abort
+         (i32.const 0)
+         (i32.const 432)
+         (i32.const 24)
+         (i32.const 3)
+        )
+        (unreachable)
+       )
+      )
+      (local.set $i
+       (i32.add
+        (local.get $i)
+        (i32.const 1)
+       )
+      )
+      (br $for-loop|0)
+     )
     )
-    (unreachable)
    )
   )
  )
  (func $~lib/rt/__visit_globals (param $0 i32)
   (local $1 i32)
-  (if
-   (local.tee $1
-    (global.get $~lib/rt/closure/env)
-   )
-   (then
-    (call $~lib/rt/itcms/__visit
-     (local.get $1)
-     (local.get $0)
-    )
-   )
-  )
+  (nop)
  )
  (func $~lib/arraybuffer/ArrayBufferView~visit (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -3388,40 +3521,15 @@
    (local.get $1)
   )
  )
- (func $~lib/function/Function<%28%29=>i32>#get:_env (param $this i32) (result i32)
-  (i32.load offset=4
-   (local.get $this)
-  )
- )
- (func $~lib/function/Function<%28%29=>i32>#__visit (param $this i32) (param $cookie i32)
-  (call $~lib/rt/itcms/__visit
-   (call $~lib/function/Function<%28%29=>i32>#get:_env
-    (call $~lib/rt/__tmptostack
-     (local.get $this)
-    )
-   )
-   (local.get $cookie)
-  )
- )
- (func $~lib/function/Function<%28%29=>i32>~visit (param $0 i32) (param $1 i32)
-  (call $~lib/object/Object~visit
-   (local.get $0)
-   (local.get $1)
-  )
-  (call $~lib/function/Function<%28%29=>i32>#__visit
-   (local.get $0)
-   (local.get $1)
-  )
- )
  (func $~lib/rt/__visit_members (param $0 i32) (param $1 i32)
   (block $invalid
-   (block $~lib/function/Function<%28%29=>i32>
-    (block $~lib/tuple/SmallTuple
+   (block $~lib/tuple/SmallTuple
+    (block $tuple-gc/Box
      (block $~lib/arraybuffer/ArrayBufferView
       (block $~lib/string/String
        (block $~lib/arraybuffer/ArrayBuffer
         (block $~lib/object/Object
-         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $~lib/tuple/SmallTuple $~lib/function/Function<%28%29=>i32> $invalid
+         (br_table $~lib/object/Object $~lib/arraybuffer/ArrayBuffer $~lib/string/String $~lib/arraybuffer/ArrayBufferView $tuple-gc/Box $~lib/tuple/SmallTuple $invalid
           (i32.load
            (i32.sub
             (local.get $0)
@@ -3444,16 +3552,10 @@
       (return)
      )
     )
-    (block
-     (call $~lib/tuple/SmallTuple~visit
-      (local.get $0)
-      (local.get $1)
-     )
-     (return)
-    )
+    (return)
    )
    (block
-    (call $~lib/function/Function<%28%29=>i32>~visit
+    (call $~lib/tuple/SmallTuple~visit
      (local.get $0)
      (local.get $1)
     )
@@ -3463,6 +3565,6 @@
   (unreachable)
  )
  (func $~start
-  (call $start:closure-arrow-in-function)
+  (call $start:tuple-gc)
  )
 )
