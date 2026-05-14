@@ -3400,7 +3400,7 @@
          (i32.const 0)
          (i32.const 432)
          (i32.const 24)
-         (i32.const 5)
+         (i32.const 3)
         )
         (unreachable)
        )
