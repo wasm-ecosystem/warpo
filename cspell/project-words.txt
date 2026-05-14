@@ -71,6 +71,8 @@ gtest
 hicpp
 IDLEFACTOR
 idof
+idom
+Idom
 ifndef
 ilammy
 inlinings
@@ -83,6 +85,7 @@ itoa
 joinee
 laneselect
 lastp
+Lengauer
 lengthof
 LESSTHAN
 libarary
@@ -139,6 +142,7 @@ rtid
 rtti
 scalbn
 schleifner
+sdom
 seenlog
 Shru
 Sideeffects
