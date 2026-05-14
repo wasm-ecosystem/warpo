@@ -90,6 +90,78 @@ describe("buildDominatorTree", () => {
     assertIdom(domTree, 30, 20);
   });
 
+  it("matches the DomTreeImpl complex branching-and-join case", () => {
+    //        0
+    //       / \
+    //      1   2
+    //     / \   \
+    //    3   4   5
+    //    |    \ /
+    //    6     7
+    //     \   /
+    //       8
+    const graph = new Map([
+      [0, [1, 2]],
+      [1, [3, 4]],
+      [2, [5]],
+      [3, [6]],
+      [4, [7]],
+      [5, [7]],
+      [6, [8]],
+      [7, [8]],
+    ]);
+    const roots = new Set([0]);
+    const domTree = buildDominatorTree(graph, roots);
+
+    assert.strictEqual(domTree.size, 9);
+    assertIdom(domTree, 0, VIRTUAL_ROOT);
+    assertIdom(domTree, 1, 0);
+    assertIdom(domTree, 2, 0);
+    assertIdom(domTree, 3, 1);
+    assertIdom(domTree, 4, 1);
+    assertIdom(domTree, 5, 2);
+    assertIdom(domTree, 6, 3);
+    assertIdom(domTree, 7, 0);
+    assertIdom(domTree, 8, 0);
+  });
+
+  it("matches the DomTreeImpl loop case", () => {
+    //        0
+    //        |
+    //        1
+    //      /   \
+    //     2     3 <-+
+    //     |     |   |
+    //     4     5 --6
+    //      \   /
+    //        7
+    //        |
+    //        8
+    const graph = new Map([
+      [0, [1]],
+      [1, [2, 3]],
+      [2, [4]],
+      [3, [5]],
+      [4, [7]],
+      [5, [6, 7]],
+      [6, [3]],
+      [7, [8]],
+    ]);
+    const roots = new Set([0]);
+    const domTree = buildDominatorTree(graph, roots);
+
+    assert.strictEqual(domTree.size, 9);
+    assertIdom(domTree, 0, VIRTUAL_ROOT);
+    assertIdom(domTree, 1, 0);
+    assertIdom(domTree, 2, 1);
+    assertIdom(domTree, 3, 1);
+    assertIdom(domTree, 4, 2);
+    assertIdom(domTree, 5, 3);
+    assertIdom(domTree, 6, 5);
+    assertIdom(domTree, 7, 1);
+    assertIdom(domTree, 8, 7);
+  });
+
   it("should handle unreachable nodes", () => {
     // 10 -> 20
     // 30 (unreachable)
