@@ -28,27 +28,31 @@ void SubProgramInfo::addParameter(std::string variableName, std::string_view con
   });
 }
 
-void SubProgramInfo::addLocal(std::string variableName, std::string_view const typeName, ScopeId const index,
-                              uint32_t const scopeId, bool const nullable) {
+void SubProgramInfo::addLocal(LocalInfo local) {
+  if (blockInfoStack_.empty()) {
+    locals_.push_back(std::move(local));
+  } else {
+    blockInfoStack_.back()->addLocal(std::move(local));
+  }
+}
 
+void SubProgramInfo::addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
+                              bool const nullable) {
   addLocal(LocalInfo{
       std::move(variableName),
       typeName,
       LocalIndexLocation{index},
-      scopeId,
       nullable,
   });
 }
 
 void SubProgramInfo::addTupleLocal(std::string variableName, std::string_view const typeName,
                                    uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex,
-                                   ScopeId const scopeId, bool const nullable) {
-
+                                   bool const nullable) {
   addLocal(LocalInfo{
       std::move(variableName),
       typeName,
       TupleFieldLocation{tupleFieldOffset, storageLocalIndex},
-      scopeId,
       nullable,
   });
 }
@@ -65,10 +69,17 @@ void SubProgramInfo::addTupleParameter(std::string variableName, std::string_vie
   });
 }
 
-uint32_t SubProgramInfo::addScope(BinaryenExpressionRef const startExpr, BinaryenExpressionRef const endExpr) {
-  uint32_t const scopeId = nextScopeId_;
-  scopeInfoMap_.emplace(scopeId, ScopeInfo{startExpr, endExpr});
-  nextScopeId_++;
-  return scopeId;
+void SubProgramInfo::enterBlock(uint32_t const startLine, uint32_t const endLine) {
+  blockInfoStack_.push_back(std::make_unique<BlockInfo>(startLine, endLine));
+}
+
+void SubProgramInfo::leaveBlock() {
+  std::unique_ptr<BlockInfo> last = std::move(blockInfoStack_.back());
+  blockInfoStack_.pop_back();
+  if (blockInfoStack_.empty()) {
+    blocks_.push_back(std::move(last));
+  } else {
+    blockInfoStack_.back()->pushChild(std::move(last));
+  }
 }
 } // namespace warpo

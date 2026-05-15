@@ -112,24 +112,6 @@ DW_TAG_compile_unit
                   DW_AT_type	("~lib/object/Object")
     NULL
   DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBufferView")
-                DW_AT_signature	(0x00000003)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    DW_TAG_member
-                  DW_AT_name	("buffer")
-                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("dataStart")
-                  DW_AT_type	("usize")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("byteLength")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000008)
-    NULL
-  DW_TAG_class_type
                 DW_AT_name	("~lib/iterator/IteratorResult<[i32, ~lib/string/String]>")
                 DW_AT_signature	(0x00000009)
     DW_TAG_inheritance
@@ -525,32 +507,25 @@ DW_TAG_compile_unit
                 DW_AT_name	("~lib/util/number/MAX_DOUBLE_LENGTH")
                 DW_AT_type	("i32")
   DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestMapWithIterator/start:tests/dwarf/cases/TestMapWithIterator")
-    NULL
-  DW_TAG_subprogram
                 DW_AT_name	("start:tests/dwarf/cases/TestMapWithIterator")
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestMapWithIterator/test")
+    DW_TAG_variable
+                  DW_AT_name	("m")
+                  DW_AT_type	("~lib/map/Map<i32,~lib/string/String>")
+                  DW_AT_location	(0x00000000)
+    DW_TAG_variable
+                  DW_AT_name	("sum")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000001)
     DW_TAG_lexical_block
-                  scope start	TestMapWithIterator.ts:2
-                  scope end	TestMapWithIterator.ts:9
+                  scope start	TestMapWithIterator.ts:6
+                  scope end	TestMapWithIterator.ts:8
       DW_TAG_variable
-                    DW_AT_name	("m")
-                    DW_AT_type	("~lib/map/Map<i32,~lib/string/String>")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_variable
-                    DW_AT_name	("sum")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000001)
-      DW_TAG_lexical_block
-                    scope start	TestMapWithIterator.ts:5
-                    scope end	TestMapWithIterator.ts:7
-        DW_TAG_variable
-                      DW_AT_name	("entry")
-                      DW_AT_type	("[i32,~lib/string/String]")
-                      DW_AT_location	(0x00000005)
-        NULL
+                    DW_AT_name	("entry")
+                    DW_AT_type	("[i32,~lib/string/String]")
+                    DW_AT_location	(0x00000005)
       NULL
     NULL
 

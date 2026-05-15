@@ -4437,6 +4437,8 @@ export class Function extends TypedElement {
   /** Counting id of anonymous inner functions. */
   nextAnonymousId: i32 = 0;
 
+  /** Internal name of the outer (enclosing) function, for closures. Null if not a closure. */
+  outerFunctionInternalName: string | null = null;
   /** Local to save the address of tuple which contains the heap allocated locals. */
   heapLocalsStorage: Local | null = null;
   /** Pending initialization of closure locals for `for` loops. */
@@ -4523,15 +4525,10 @@ export class Function extends TypedElement {
     this.original = this;
     let program = prototype.program;
     this.type = signature.type;
+    this.outerFunctionInternalName = outerFunctionInternalName;
     let flow = Flow.createDefault(this);
     this.flow = flow;
     if (!prototype.is(CommonFlags.Ambient)) {
-      if (this.parent.kind == ElementKind.Class) {
-        mir.addSubProgram(this, this.parent as Class, outerFunctionInternalName);
-      } else {
-        mir.addSubProgram(this, null, outerFunctionInternalName);
-      }
-
       const isClosureFunction = this.isClosureFunction();
       if (isClosureFunction) {
         this.pushClosureScope(assert(prototype.closureInfo));
@@ -4598,7 +4595,6 @@ export class Function extends TypedElement {
         let storage = flow.getTempLocal(Type.i32);
         this.currentClosureScope.storage = storage;
         this.heapLocalsStorage = storage;
-        mir.addHeapVariableStorageLocalIndex(this, storage.index);
         for (let i = 0; i < localIndex; ++i) {
           let local = this.localsByIndex[i];
           if (local.isClosureVariable()) {
@@ -4606,16 +4602,31 @@ export class Function extends TypedElement {
           }
         }
       }
-
-      for (let i = 0; i < localIndex; ++i) {
-        mir.addParameter(this, this.localsByIndex[i]);
-      }
     }
     if (program.instancesByName.has(this.internalName)) {
       program.error(DiagnosticCode.Duplicate_function_implementation, prototype.identifierNode.range);
       this.set(CommonFlags.Errored);
     } else {
       registerConcreteElement(program, this);
+    }
+  }
+
+  /** Emits subprogram metadata (debug info) for this function. Must be called at compilation start. */
+  emitSubProgramInfo(): void {
+    if (this.prototype.is(CommonFlags.Ambient)) return;
+    if (this.parent.kind == ElementKind.Class) {
+      mir.addSubProgram(this, this.parent as Class, this.outerFunctionInternalName);
+    } else {
+      mir.addSubProgram(this, null, this.outerFunctionInternalName);
+    }
+    let heapStorage = this.heapLocalsStorage;
+    if (this.isClosureFunction() && heapStorage) {
+      mir.addHeapVariableStorageLocalIndex(this, heapStorage.index);
+    }
+    let paramCount = this.signature.parameterTypes.length;
+    if (this.signature.thisType) ++paramCount;
+    for (let i = 0; i < paramCount; ++i) {
+      mir.addParameter(this, this.localsByIndex[i]);
     }
   }
 

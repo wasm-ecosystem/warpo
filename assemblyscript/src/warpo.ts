@@ -26,45 +26,27 @@ export declare function _WarpoAddSubProgram(
   belongClassName: string | null,
   outerFunctionName: string | null
 ): void;
-export declare function _WarpoAddParameter(
-  subProgramName: string,
-  variableName: string,
-  typeName: string,
-  index: u32,
-  nullable: bool
-): void;
-export declare function _WarpoAddLocal(
-  subProgramName: string,
-  variableName: string,
-  typeName: string,
-  index: u32,
-  scopeId: u32,
-  nullable: bool
-): void;
+export declare function _WarpoAddParameter(variableName: string, typeName: string, index: u32, nullable: bool): void;
+export declare function _WarpoAddLocal(variableName: string, typeName: string, index: u32, nullable: bool): void;
 export declare function _WarpoAddTupleLocal(
-  subProgramName: string,
   variableName: string,
   typeName: string,
   tupleFieldOffset: u32,
   storageLocalIndex: u32,
-  scopeId: u32,
   nullable: bool
 ): void;
 export declare function _WarpoAddTupleParameter(
-  subProgramName: string,
   variableName: string,
   typeName: string,
   tupleFieldOffset: u32,
   storageLocalIndex: u32,
   nullable: bool
 ): void;
-export declare function _WarpoAddScope(
-  functionName: string,
-  startExpression: ExpressionRef,
-  endExpression: ExpressionRef
-): u32;
 
 export declare function _WarpoAddHeapVariableStorageLocalIndex(subProgramName: string, index: u32): void;
+export declare function _WarpoEnterScope(startLine: u32, endLine: u32): void;
+export declare function _WarpoLeaveScope(): void;
+export declare function _WarpoLeaveFunction(): void;
 
 export function markDataElementImmutable(begin: i64, size: i32): void {
   _WarpoMarkDataElementImmutable(i64_low(begin), <u32>size);

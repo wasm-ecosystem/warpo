@@ -6,5 +6,6 @@ let c1 = new C1();
 let bbb: i32 = 1;
 
 export function test(): i32 {
+  c1.aaa = 2;
   return c1.aaa + bbb;
 }

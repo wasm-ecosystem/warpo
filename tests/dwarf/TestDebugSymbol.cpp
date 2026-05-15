@@ -6,7 +6,6 @@
 #include <sstream>
 #include <string>
 #include <support/colors.h>
-#include <unordered_map>
 #include <vector>
 #include <warpo/common/AsModule.hpp>
 #include <warpo/support/FileSystem.hpp>
@@ -14,8 +13,6 @@
 #include "passes/BinaryWriter.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/Opt.hpp"
-#include "wasm-binary.h"
-#include "wasm.h"
 
 namespace {
 warpo::cli::Opt<bool> updateFixturesFlag{
@@ -106,52 +103,6 @@ private:
   std::string pendingSubprogramLine_;
 };
 
-class Context {
-  warpo::AsModule const &m_;
-  std::unordered_map<uint64_t, wasm::Expression *> addressToExpressionMap_;
-  std::vector<std::string> fileNamesOnly_;
-
-  static std::vector<std::string> getFileNamesOnly(std::vector<std::string> debugInfoFileNames) {
-    std::vector<std::string> fileNamesOnly;
-    fileNamesOnly.reserve(debugInfoFileNames.size());
-    for (std::string const &fullPath : debugInfoFileNames) {
-      fileNamesOnly.push_back(std::filesystem::path(fullPath).filename().string());
-    }
-    return fileNamesOnly;
-  }
-  static std::unordered_map<uint64_t, wasm::Expression *>
-  buildAddressToExpressionMap(wasm::BinaryLocations const &locations) {
-    std::unordered_map<uint64_t, wasm::Expression *> map;
-    for (auto const &[expr, loc] : locations.expressions) {
-      map[loc.start] = expr;
-    }
-    return map;
-  }
-
-public:
-  Context(warpo::AsModule const &m, wasm::WasmBinaryWriter const &writer)
-      : m_{m}, addressToExpressionMap_{buildAddressToExpressionMap(writer.getBinaryLocations())},
-        fileNamesOnly_{getFileNamesOnly(m.get()->debugInfoFileNames)} {}
-  wasm::Function::DebugLocation const *convertAddressToDebugLocation(uint64_t address) const {
-    auto const it = addressToExpressionMap_.find(address);
-    if (it == addressToExpressionMap_.end())
-      return nullptr;
-    wasm::Expression *const addressExpr = it->second;
-    for (std::unique_ptr<wasm::Function> const &func : m_.get()->functions) {
-      auto const it = func->debugLocations.find(addressExpr);
-      if (it != func->debugLocations.end()) {
-        std::optional<wasm::Function::DebugLocation> const &loc = it->second;
-        if (loc.has_value())
-          return &loc.value();
-      }
-    }
-    return nullptr;
-  }
-  std::string const &getFileName(wasm::Function::DebugLocation const &loc) const {
-    return fileNamesOnly_.at(loc.fileIndex);
-  }
-};
-
 bool isUnitHeaderLine(std::string const &line) {
   return line.find("Compile Unit:") != std::string::npos || line.find("Type Unit:") != std::string::npos;
 }
@@ -184,39 +135,30 @@ void normalizeUnitHeaderLine(std::string &line) {
   }
 }
 
-std::optional<std::string> tryReplacePcWithFileLine(std::string const &line, Context const &context) {
-  // Check for DW_AT_low_pc or DW_AT_high_pc
+std::optional<std::string> tryReplacePcWithFileLine(std::string const &line, std::string const &fileName) {
   size_t const lowPcPos = line.find("DW_AT_low_pc");
   size_t const highPcPos = line.find("DW_AT_high_pc");
   if ((lowPcPos == std::string::npos) && (highPcPos == std::string::npos))
     return std::nullopt;
 
-  // Extract the hex address from the line
   size_t const openParen = line.find('(');
   if (openParen == std::string::npos)
     return std::nullopt;
 
   size_t const closeParen = line.find(')');
   assert(closeParen != std::string::npos && closeParen > openParen);
-  std::string const addressStr = line.substr(openParen + 1U, closeParen - openParen - 1);
-  assert(addressStr.find("0x") == 0);
+  std::string const valueStr = line.substr(openParen + 1U, closeParen - openParen - 1);
+  assert(valueStr.find("0x") == 0);
 
-  // Parse the hex address
-  uint64_t const address = std::stoull(addressStr, nullptr, 16);
+  uint64_t const lineNumber = std::stoull(valueStr, nullptr, 16);
 
-  wasm::Function::DebugLocation const *const debugLoc = context.convertAddressToDebugLocation(address);
-  if (debugLoc == nullptr)
-    return std::nullopt;
-
-  // Replace the address with file:line
   size_t const indentEnd = line.find_first_not_of(' ');
   std::string const indent = (indentEnd != std::string::npos) ? line.substr(0, indentEnd) : "";
   std::string const attrName = (lowPcPos != std::string::npos) ? "scope start" : "scope end";
-  return indent + attrName + "\t" + context.getFileName(*debugLoc) + ":" + std::to_string(debugLoc->lineNumber) + "\n";
+  return indent + attrName + "\t" + fileName + ":" + std::to_string(lineNumber) + "\n";
 }
 
-std::string filterLibSubprograms(std::string const &dump, Context const &context) {
-  // Cache filenames without paths
+std::string filterLibSubprograms(std::string const &dump, std::string const &fileName) {
   std::istringstream input(dump);
   LineReader reader(input);
   std::ostringstream output;
@@ -233,7 +175,7 @@ std::string filterLibSubprograms(std::string const &dump, Context const &context
       continue;
     }
 
-    if (std::optional<std::string> const replacement = tryReplacePcWithFileLine(line, context);
+    if (std::optional<std::string> const replacement = tryReplacePcWithFileLine(line, fileName);
         replacement.has_value()) {
       output << *replacement;
       continue;
@@ -279,7 +221,7 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
   writer.write();
 
   std::string const rawDump = writer.dumpDwarf();
-  std::string const dumpOutput = filterLibSubprograms(rawDump, Context{compileResult.m, writer.raw()});
+  std::string const dumpOutput = filterLibSubprograms(rawDump, testCaseName + ".ts");
   std::string const fixtureName = testCaseName + "Fixture.txt";
   std::filesystem::path const expectedDumpPath = testDir / fixtureName;
 

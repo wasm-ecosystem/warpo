@@ -6,7 +6,6 @@
 #include "BinaryenExt.hpp"
 #include "ir/iteration.h"
 #include "ir/properties.h"
-#include "warpo/common/ScopeInfo.hpp"
 
 namespace warpo::passes {
 
@@ -57,34 +56,6 @@ wasm::Expression *findLastInstruction(wasm::Expression *expr) noexcept {
   }
 
   return expr;
-}
-
-wasm::BinaryLocations::Span getRangeOfScope(ScopeInfo const &scopeInfo,
-                                            wasm::BinaryLocations const &binaryLocations) noexcept {
-  wasm::BinaryLocations::Span span{0, 0};
-
-  wasm::Expression *const startExpr = scopeInfo.getScopeStartSubTreeRoot();
-  assert(startExpr != nullptr);
-  wasm::Expression *const firstExpr = findFirstInstruction(startExpr);
-  if (firstExpr != nullptr) {
-    auto const it = binaryLocations.expressions.find(firstExpr);
-    if (it != binaryLocations.expressions.end()) {
-      span.start = static_cast<uint32_t>(it->second.start);
-    }
-  }
-
-  wasm::Expression *const endExpr = scopeInfo.getScopeEndSubTreeRoot();
-  assert(endExpr != nullptr);
-  wasm::Expression *const lastExpr = findLastInstruction(endExpr);
-  if (lastExpr != nullptr) {
-    auto const it = binaryLocations.expressions.find(lastExpr);
-    if (it != binaryLocations.expressions.end()) {
-      // we want both low PC and high PC point to the beginning of the instruction.
-      span.end = static_cast<uint32_t>(it->second.start);
-    }
-  }
-
-  return span;
 }
 
 } // namespace warpo::passes

@@ -402,6 +402,7 @@ export class Flow {
     else assert(!scopedLocals.has(name));
     scopedLocal.set(CommonFlags.Scoped);
     scopedLocals.set(name, scopedLocal);
+    mir.addLocal(this.targetFunction, scopedLocal);
     return scopedLocal;
   }
 
@@ -1420,28 +1421,6 @@ export class Flow {
     if (this.is(FlowFlags.ConditionallyAccessesThis)) sb.push("CONDITIONALLY_ACCESSES_THIS");
     if (this.is(FlowFlags.MayReturnNonThis)) sb.push("MAY_RETURN_NONTHIS");
     return `Flow(${this.targetFunction})[${levels}] ${sb.join(" ")}`;
-  }
-
-  addLocalsToBlock(stmts: ExpressionRef[]): void {
-    if (stmts.length > 0) {
-      this.addLocalsToBlockWithStartEndStmt(stmts[0], stmts[stmts.length - 1]);
-    }
-  }
-
-  addLocalsToBlockWithStartEndStmt(startStmt: ExpressionRef, endStmt: ExpressionRef): void {
-    assert(startStmt && endStmt);
-    if (this.scopedLocals) {
-      let scopedLocals = this.scopedLocals as Map<string, Local>;
-      let keys = Map_keys(scopedLocals);
-      let scopeId = mir.addScope(this.targetFunction, startStmt, endStmt);
-      for (let i = 0; i < keys.length; ++i) {
-        let key = unchecked(keys[i]);
-        let local = scopedLocals.get(key) as Local;
-        if (!local.isParameter()) {
-          mir.addLocal(this.targetFunction, local, scopeId);
-        }
-      }
-    }
   }
 }
 

@@ -6,17 +6,19 @@ import {
   _WarpoAddBaseClass,
   _WarpoAddField,
   _WarpoAddGlobal,
+  _WarpoEnterScope,
+  _WarpoLeaveScope,
   _WarpoAddLocal,
   _WarpoAddTupleLocal,
   _WarpoAddTupleParameter,
   _WarpoAddParameter,
-  _WarpoAddScope,
   _WarpoAddSubProgram,
   _WarpoAddTemplateType,
   _WarpoCreateBaseType,
   _WarpoCreateClass,
   _WarpoCreateClassWithoutRtid,
   _WarpoAddHeapVariableStorageLocalIndex,
+  _WarpoLeaveFunction,
 } from "./warpo";
 
 function typeToMIRName(type: Type): string {
@@ -52,10 +54,6 @@ function classToMIRName(clazz: Class): string {
   return typeToMIRName(clazz.type);
 }
 
-export function addScope(subprogram: Function, startExpression: ExpressionRef, endExpression: ExpressionRef): u32 {
-  return _WarpoAddScope(subprogram.internalName, startExpression, endExpression);
-}
-
 export function addGlobal(variable: Global, type: Type): void {
   _WarpoAddGlobal(
     variable.internalName,
@@ -68,7 +66,6 @@ export function addGlobal(variable: Global, type: Type): void {
 export function addParameter(subprogram: Function, variable: Local): void {
   if (variable.isClosureVariable()) {
     _WarpoAddTupleParameter(
-      subprogram.internalName,
       variable.name,
       decodeURIComponent(typeToMIRName(variable.type)),
       variable.getTupleElementInfo().offset,
@@ -77,7 +74,6 @@ export function addParameter(subprogram: Function, variable: Local): void {
     );
   } else {
     _WarpoAddParameter(
-      subprogram.internalName,
       variable.name,
       decodeURIComponent(typeToMIRName(variable.type)),
       variable.index,
@@ -85,24 +81,20 @@ export function addParameter(subprogram: Function, variable: Local): void {
     );
   }
 }
-export function addLocal(subProgram: Function, variable: Local, scopeId: u32): void {
+export function addLocal(subProgram: Function, variable: Local): void {
   if (variable.isClosureVariable()) {
     _WarpoAddTupleLocal(
-      subProgram.internalName,
       variable.name,
       decodeURIComponent(typeToMIRName(variable.type)),
       variable.getTupleElementInfo().offset,
       variable.tupleAddressLocalIndex,
-      scopeId,
       variable.type.is(TypeFlags.Nullable)
     );
   } else {
     _WarpoAddLocal(
-      subProgram.internalName,
       variable.name,
       decodeURIComponent(typeToMIRName(variable.type)),
       variable.index,
-      scopeId,
       variable.type.is(TypeFlags.Nullable)
     );
   }
@@ -126,6 +118,18 @@ export function addSubProgram(
 
 export function addHeapVariableStorageLocalIndex(subprogram: Function, index: u32): void {
   _WarpoAddHeapVariableStorageLocalIndex(subprogram.internalName, index);
+}
+
+export function enterScope(startLine: u32, endLine: u32): void {
+  _WarpoEnterScope(startLine, endLine);
+}
+
+export function leaveScope(): void {
+  _WarpoLeaveScope();
+}
+
+export function leaveFunction(): void {
+  _WarpoLeaveFunction();
 }
 
 export function createClass(clazz: Class): void {

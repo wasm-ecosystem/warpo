@@ -141,24 +141,6 @@ DW_TAG_compile_unit
                   DW_AT_type	("~lib/object/Object")
     NULL
   DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBufferView")
-                DW_AT_signature	(0x00000003)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    DW_TAG_member
-                  DW_AT_name	("buffer")
-                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("dataStart")
-                  DW_AT_type	("usize")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("byteLength")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000008)
-    NULL
-  DW_TAG_class_type
                 DW_AT_name	("~lib/iterator/IteratorResult<i32>")
                 DW_AT_signature	(0x00000008)
     DW_TAG_inheritance
@@ -181,28 +163,6 @@ DW_TAG_compile_unit
                   DW_AT_name	("mmInfo")
                   DW_AT_type	("usize")
                   DW_AT_data_member_location	(0x00000000)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/rt/common/OBJECT")
-                DW_AT_signature	(0x00000000)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/rt/common/BLOCK")
-    DW_TAG_member
-                  DW_AT_name	("gcInfo")
-                  DW_AT_type	("u32")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("gcInfo2")
-                  DW_AT_type	("u32")
-                  DW_AT_data_member_location	(0x00000008)
-    DW_TAG_member
-                  DW_AT_name	("rtId")
-                  DW_AT_type	("u32")
-                  DW_AT_data_member_location	(0x0000000c)
-    DW_TAG_member
-                  DW_AT_name	("rtSize")
-                  DW_AT_type	("u32")
-                  DW_AT_data_member_location	(0x00000010)
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/rt/itcms/Object")
@@ -443,49 +403,42 @@ DW_TAG_compile_unit
                 DW_AT_name	("~lib/util/sort/MIN_RUN_LENGTH")
                 DW_AT_type	("i32")
   DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestLocalInForOf/start:tests/dwarf/cases/TestLocalInForOf")
-    NULL
-  DW_TAG_subprogram
                 DW_AT_name	("start:tests/dwarf/cases/TestLocalInForOf")
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestLocalInForOf/foo")
+    DW_TAG_variable
+                  DW_AT_name	("aaa")
+                  DW_AT_type	("~lib/array/Array<i32>")
+                  DW_AT_location	(0x00000001)
     DW_TAG_lexical_block
-                  scope start	TestLocalInForOf.ts:3
-                  scope end	TestLocalInForOf.ts:3
+                  scope start	TestLocalInForOf.ts:4
+                  scope end	TestLocalInForOf.ts:12
       DW_TAG_variable
-                    DW_AT_name	("aaa")
-                    DW_AT_type	("~lib/array/Array<i32>")
-                    DW_AT_location	(0x00000001)
+                    DW_AT_name	("v")
+                    DW_AT_type	("i32")
+                    DW_AT_location	(0x00000005)
       DW_TAG_lexical_block
-                    scope start	TestLocalInForOf.ts:3
-                    scope end	TestLocalInForOf.ts:3
+                    scope start	TestLocalInForOf.ts:5
+                    scope end	TestLocalInForOf.ts:11
         DW_TAG_variable
                       DW_AT_name	("v")
                       DW_AT_type	("i32")
-                      DW_AT_location	(0x00000005)
+                      DW_AT_location	(0x00000009)
         DW_TAG_lexical_block
-                      scope start	TestLocalInForOf.ts:3
-                      scope end	TestLocalInForOf.ts:3
+                      scope start	TestLocalInForOf.ts:6
+                      scope end	TestLocalInForOf.ts:10
           DW_TAG_variable
                         DW_AT_name	("v")
                         DW_AT_type	("i32")
-                        DW_AT_location	(0x00000009)
+                        DW_AT_location	(0x0000000d)
           DW_TAG_lexical_block
-                        scope start	TestLocalInForOf.ts:3
-                        scope end	TestLocalInForOf.ts:8
+                        scope start	TestLocalInForOf.ts:7
+                        scope end	TestLocalInForOf.ts:9
             DW_TAG_variable
                           DW_AT_name	("v")
                           DW_AT_type	("i32")
-                          DW_AT_location	(0x0000000d)
-            DW_TAG_lexical_block
-                          scope start	TestLocalInForOf.ts:3
-                          scope end	TestLocalInForOf.ts:8
-              DW_TAG_variable
-                            DW_AT_name	("v")
-                            DW_AT_type	("i32")
-                            DW_AT_location	(0x00000011)
-              NULL
+                          DW_AT_location	(0x00000011)
             NULL
           NULL
         NULL

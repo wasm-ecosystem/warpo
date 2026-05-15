@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 #include "ClassInfo.hpp"
 #include "SubProgramInfo.hpp"
@@ -52,22 +53,22 @@ public:
   void addSubProgram(std::string subProgramName, std::string_view const belongClassName,
                      std::string_view const outerFunctionName);
 
-  void addParameter(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
-                    uint32_t const index, bool const nullable);
+  void addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
+                    bool const nullable);
 
-  uint32_t addScope(std::string_view const subProgramName, BinaryenExpressionRef const startExpr,
-                    BinaryenExpressionRef const endExpr);
+  void addLocal(std::string variableName, std::string_view const typeName, uint32_t const index, bool const nullable);
 
-  void addLocal(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
-                uint32_t const index, uint32_t const scopeId, bool const nullable);
+  void addTupleLocal(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
+                     uint32_t const storageLocalIndex, bool const nullable);
 
-  void addTupleLocal(std::string_view const subProgramName, std::string variableName, std::string_view const typeName,
-                     uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex, uint32_t const scopeId,
-                     bool const nullable);
-
-  void addTupleParameter(std::string_view const subProgramName, std::string variableName,
-                         std::string_view const typeName, uint32_t const tupleFieldOffset,
+  void addTupleParameter(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
                          uint32_t const storageLocalIndex, bool const nullable);
+
+  void enterScope(uint32_t const startLine, uint32_t const endLine);
+
+  void leaveScope();
+
+  void leaveFunction();
 
   SubProgramLookupMap const &getSubProgramLookupMap() const noexcept { return subProgramLookupMap_; }
 
@@ -80,6 +81,7 @@ private:
   StringPool stringPool_;
   SubProgramRegistry subProgramRegistry_;
   SubProgramLookupMap subProgramLookupMap_;
+  std::vector<SubProgramInfo *> subProgramStack_;
 };
 
 } // namespace warpo

@@ -104,7 +104,7 @@ DW_TAG_compile_unit
                   DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000000)
     DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/Calculator#get:value")
+                  DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/Calculator#constructor")
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
                     DW_AT_type	("tests/dwarf/cases/TestFunctionParameter/Calculator")
@@ -122,13 +122,6 @@ DW_TAG_compile_unit
                     DW_AT_location	(0x00000001)
       NULL
     DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/Calculator#constructor")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestFunctionParameter/Calculator")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/Calculator#add")
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
@@ -142,10 +135,13 @@ DW_TAG_compile_unit
                     DW_AT_name	("b")
                     DW_AT_type	("i32")
                     DW_AT_location	(0x00000002)
-      DW_TAG_lexical_block
-                    scope start	TestFunctionParameter.ts:5
-                    scope end	TestFunctionParameter.ts:5
-        NULL
+      NULL
+    DW_TAG_subprogram
+                  DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/Calculator#get:value")
+      DW_TAG_formal_parameter
+                    DW_AT_name	("this")
+                    DW_AT_type	("tests/dwarf/cases/TestFunctionParameter/Calculator")
+                    DW_AT_location	(0x00000000)
       NULL
     DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/Calculator#processNullable")
@@ -159,7 +155,7 @@ DW_TAG_compile_unit
                     DW_AT_location	(0x00000001)
       DW_TAG_lexical_block
                     scope start	TestFunctionParameter.ts:9
-                    scope end	TestFunctionParameter.ts:12
+                    scope end	TestFunctionParameter.ts:11
         NULL
       NULL
     DW_TAG_subprogram
@@ -172,35 +168,7 @@ DW_TAG_compile_unit
                     DW_AT_name	("text")
                     DW_AT_type	("~lib/string/String")
                     DW_AT_location	(0x00000001)
-      DW_TAG_lexical_block
-                    scope start	TestFunctionParameter.ts:16
-                    scope end	TestFunctionParameter.ts:16
-        NULL
       NULL
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBuffer")
-                DW_AT_signature	(0x00000001)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("~lib/arraybuffer/ArrayBufferView")
-                DW_AT_signature	(0x00000003)
-    DW_TAG_inheritance
-                  DW_AT_type	("~lib/object/Object")
-    DW_TAG_member
-                  DW_AT_name	("buffer")
-                  DW_AT_type	("~lib/arraybuffer/ArrayBuffer")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("dataStart")
-                  DW_AT_type	("usize")
-                  DW_AT_data_member_location	(0x00000004)
-    DW_TAG_member
-                  DW_AT_name	("byteLength")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000008)
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/object/Object")
@@ -475,9 +443,6 @@ DW_TAG_compile_unit
                 DW_AT_name	("~lib/util/sort/MIN_RUN_LENGTH")
                 DW_AT_type	("i32")
   DW_TAG_subprogram
-                DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/start:tests/dwarf/cases/TestFunctionParameter")
-    NULL
-  DW_TAG_subprogram
                 DW_AT_name	("start:tests/dwarf/cases/TestFunctionParameter")
     NULL
   DW_TAG_subprogram
@@ -490,10 +455,6 @@ DW_TAG_compile_unit
                   DW_AT_name	("y")
                   DW_AT_type	("i32")
                   DW_AT_location	(0x00000001)
-    DW_TAG_lexical_block
-                  scope start	TestFunctionParameter.ts:22
-                  scope end	TestFunctionParameter.ts:22
-      NULL
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/processString")
@@ -503,7 +464,7 @@ DW_TAG_compile_unit
                   DW_AT_location	(0x00000000)
     DW_TAG_lexical_block
                   scope start	TestFunctionParameter.ts:26
-                  scope end	TestFunctionParameter.ts:29
+                  scope end	TestFunctionParameter.ts:28
       NULL
     NULL
   DW_TAG_subprogram
@@ -516,49 +477,41 @@ DW_TAG_compile_unit
                   DW_AT_name	("b")
                   DW_AT_type	("~lib/string/String")
                   DW_AT_location	(0x00000001)
-    DW_TAG_lexical_block
-                  scope start	TestFunctionParameter.ts:33
-                  scope end	TestFunctionParameter.ts:33
-      NULL
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/test")
-    DW_TAG_lexical_block
-                  scope start	TestFunctionParameter.ts:41
-                  scope end	TestFunctionParameter.ts:50
-      DW_TAG_variable
-                    DW_AT_name	("calc")
-                    DW_AT_type	("tests/dwarf/cases/TestFunctionParameter/Calculator")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_variable
-                    DW_AT_name	("result1")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000001)
-      DW_TAG_variable
-                    DW_AT_name	("result2")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000002)
-      DW_TAG_variable
-                    DW_AT_name	("result3")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000003)
-      DW_TAG_variable
-                    DW_AT_name	("result4")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000004)
-      DW_TAG_variable
-                    DW_AT_name	("result5")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000005)
-      DW_TAG_variable
-                    DW_AT_name	("str")
-                    DW_AT_type	("~lib/string/String")
-                    DW_AT_location	(0x00000006)
-      DW_TAG_variable
-                    DW_AT_name	("result6")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000007)
-      NULL
+    DW_TAG_variable
+                  DW_AT_name	("calc")
+                  DW_AT_type	("tests/dwarf/cases/TestFunctionParameter/Calculator")
+                  DW_AT_location	(0x00000000)
+    DW_TAG_variable
+                  DW_AT_name	("result1")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000001)
+    DW_TAG_variable
+                  DW_AT_name	("result2")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000002)
+    DW_TAG_variable
+                  DW_AT_name	("result3")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000003)
+    DW_TAG_variable
+                  DW_AT_name	("result4")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000004)
+    DW_TAG_variable
+                  DW_AT_name	("result5")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000005)
+    DW_TAG_variable
+                  DW_AT_name	("str")
+                  DW_AT_type	("~lib/string/String")
+                  DW_AT_location	(0x00000006)
+    DW_TAG_variable
+                  DW_AT_name	("result6")
+                  DW_AT_type	("i32")
+                  DW_AT_location	(0x00000007)
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/goo<i32>")
@@ -566,10 +519,6 @@ DW_TAG_compile_unit
                   DW_AT_name	("item")
                   DW_AT_type	("i32")
                   DW_AT_location	(0x00000000)
-    DW_TAG_lexical_block
-                  scope start	TestFunctionParameter.ts:37
-                  scope end	TestFunctionParameter.ts:37
-      NULL
     NULL
 
 .debug_str contents:

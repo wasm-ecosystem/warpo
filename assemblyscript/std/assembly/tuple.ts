@@ -25,14 +25,12 @@ import { OBJECT, TOTAL_OVERHEAD } from "rt/common";
   // RT integration
   private __visit(cookie: u32): void {
     const rtSize = <usize>changetype<OBJECT>(changetype<usize>(this) - TOTAL_OVERHEAD).rtSize;
-    const bitmapSize = sizeof<u64>();
-    const elemntCount = (rtSize - bitmapSize) >>> alignof<usize>();
-    const bitmap = load<u64>(changetype<usize>(this) + rtSize - sizeof<u64>());
-    for (let i: usize = 0; i < elemntCount; ++i) {
-      if ((bitmap & ((<u64>1) << (<u64>i))) != 0) {
-        const elementPtr = changetype<usize>(this) + (i << alignof<usize>());
-        __visit(changetype<usize>(load<usize>(elementPtr)), cookie);
-      }
+    let remaining = load<u64>(changetype<usize>(this) + rtSize - sizeof<u64>());
+    while (remaining != 0) {
+      const index = <usize>ctz(remaining);
+      const elementPtr = changetype<usize>(this) + (index << alignof<usize>());
+      __visit(changetype<usize>(load<usize>(elementPtr)), cookie);
+      remaining &= remaining - 1; // Equals to remaining &= ~((<u64>1) << index)
     }
   }
 }
