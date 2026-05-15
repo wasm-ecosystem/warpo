@@ -9,6 +9,64 @@ function assertIdom(tree: Map<number, number>, node: number, expected: number): 
   assert.strictEqual(tree.get(node), expected);
 }
 
+function dominates(tree: Map<number, number>, dominator: number, node: number): boolean {
+  if (dominator === node) {
+    return true;
+  }
+
+  let current = tree.get(node);
+  while (current !== undefined) {
+    if (current === dominator) {
+      return true;
+    }
+    if (current === VIRTUAL_ROOT) {
+      return false;
+    }
+    current = tree.get(current);
+  }
+
+  return false;
+}
+
+function nearestCommonDominator(tree: Map<number, number>, lhs: number, rhs: number): number | undefined {
+  const dominators = new Set<number>([lhs]);
+
+  let current = tree.get(lhs);
+  while (current !== undefined) {
+    dominators.add(current);
+    if (current === VIRTUAL_ROOT) {
+      break;
+    }
+    current = tree.get(current);
+  }
+
+  if (dominators.has(rhs)) {
+    return rhs;
+  }
+
+  current = tree.get(rhs);
+  while (current !== undefined) {
+    if (dominators.has(current)) {
+      return current;
+    }
+    if (current === VIRTUAL_ROOT) {
+      break;
+    }
+    current = tree.get(current);
+  }
+
+  return undefined;
+}
+
+function assertDomChildren(tree: Map<number, number>, node: number, expectedChildren: number[]): void {
+  const actualChildren = Array.from(tree.entries())
+    .filter(([, idom]) => idom === node)
+    .map(([child]) => child)
+    .toSorted((lhs, rhs) => lhs - rhs);
+  const sortedExpectedChildren = expectedChildren.toSorted((lhs, rhs) => lhs - rhs);
+  assert.deepStrictEqual(actualChildren, sortedExpectedChildren);
+}
+
 describe("buildDominatorTree", () => {
   it("should handle an empty graph", () => {
     const graph = new Map<number, number[]>();
@@ -73,6 +131,98 @@ describe("buildDominatorTree", () => {
     assertIdom(domTree, 20, 10);
     assertIdom(domTree, 30, 10);
     assertIdom(domTree, 40, 10);
+  });
+
+  it("matches the LLVM dominance no-regions case", () => {
+    const graph = new Map([
+      [0, [1]],
+      [1, [2, 3]],
+      [2, [4]],
+      [3, [4]],
+      [4, [5]],
+    ]);
+    const roots = new Set([0]);
+    const domTree = buildDominatorTree(graph, roots);
+
+    assert.strictEqual(dominates(domTree, 1, 4), true);
+    assert.strictEqual(dominates(domTree, 4, 1), false);
+
+    assert.strictEqual(dominates(domTree, 1, 2), true);
+    assert.strictEqual(dominates(domTree, 2, 1), false);
+
+    assert.strictEqual(dominates(domTree, 1, 3), true);
+    assert.strictEqual(dominates(domTree, 3, 1), false);
+
+    assert.strictEqual(nearestCommonDominator(domTree, 2, 3), 1);
+    assert.strictEqual(nearestCommonDominator(domTree, 2, 4), 1);
+    assert.strictEqual(nearestCommonDominator(domTree, 4, 4), 4);
+  });
+
+  it("matches the rust paper example", () => {
+    const graph = new Map([
+      [6, [5, 4]],
+      [5, [1]],
+      [4, [2, 3]],
+      [1, [2]],
+      [2, [3, 1]],
+      [3, [2]],
+    ]);
+    const roots = new Set([6]);
+    const domTree = buildDominatorTree(graph, roots);
+
+    assert.strictEqual(domTree.get(0), undefined);
+    assertIdom(domTree, 1, 6);
+    assertIdom(domTree, 2, 6);
+    assertIdom(domTree, 3, 6);
+    assertIdom(domTree, 4, 6);
+    assertIdom(domTree, 5, 6);
+    assertIdom(domTree, 6, VIRTUAL_ROOT);
+  });
+
+  it("handles the rust paper_slt example", () => {
+    const graph = new Map([
+      [1, [2, 3]],
+      [2, [3, 7]],
+      [3, [4, 6]],
+      [4, [5]],
+      [5, [4]],
+      [6, [7]],
+      [7, [8]],
+      [8, [5]],
+    ]);
+    const roots = new Set([1]);
+
+    buildDominatorTree(graph, roots);
+  });
+
+  it("matches the rust immediate_dominator case", () => {
+    const graph = new Map([
+      [1, [2]],
+      [2, [3]],
+    ]);
+    const roots = new Set([1]);
+    const domTree = buildDominatorTree(graph, roots);
+
+    assert.strictEqual(domTree.get(0), undefined);
+    assertIdom(domTree, 1, VIRTUAL_ROOT);
+    assertIdom(domTree, 2, 1);
+    assertIdom(domTree, 3, 2);
+  });
+
+  it("matches the rust transitive_dominator case", () => {
+    const graph = new Map([
+      [0, [1, 7]],
+      [1, [2, 5]],
+      [2, [3]],
+      [3, [4]],
+      [5, [6, 3]],
+      [7, [2]],
+    ]);
+    const roots = new Set([0]);
+    const domTree = buildDominatorTree(graph, roots);
+
+    assertIdom(domTree, 2, 0);
+    assertIdom(domTree, 3, 0);
   });
 
   it("should handle a graph with a cycle", () => {
@@ -160,6 +310,76 @@ describe("buildDominatorTree", () => {
     assertIdom(domTree, 6, 5);
     assertIdom(domTree, 7, 1);
     assertIdom(domTree, 8, 7);
+  });
+
+  it("matches the LLVM consecutive-regions graph at block level", () => {
+    const graph = new Map([
+      [0, [10]],
+      [10, [11]],
+      [11, [12, 13]],
+      [12, [14]],
+      [13, [13, 14]],
+      [14, [20]],
+      [20, [21]],
+      [21, [22]],
+      [22, [30]],
+    ]);
+    const roots = new Set([0]);
+    const domTree = buildDominatorTree(graph, roots);
+
+    assertDomChildren(domTree, 10, [11]);
+    assertDomChildren(domTree, 11, [12, 13, 14]);
+    assertDomChildren(domTree, 12, []);
+    assertDomChildren(domTree, 13, []);
+    assertDomChildren(domTree, 14, [20]);
+    assertDomChildren(domTree, 20, [21]);
+    assertDomChildren(domTree, 21, [22]);
+
+    assert.strictEqual(dominates(domTree, 10, 20), true);
+    assert.strictEqual(dominates(domTree, 20, 10), false);
+
+    assert.strictEqual(dominates(domTree, 11, 14), true);
+    assert.strictEqual(dominates(domTree, 14, 11), false);
+
+    assert.strictEqual(dominates(domTree, 21, 22), true);
+    assert.strictEqual(dominates(domTree, 22, 21), false);
+
+    assert.strictEqual(dominates(domTree, 11, 21), true);
+    assert.strictEqual(dominates(domTree, 21, 11), false);
+
+    assert.strictEqual(dominates(domTree, 14, 21), true);
+    assert.strictEqual(dominates(domTree, 13, 21), false);
+
+    assert.strictEqual(dominates(domTree, 10, 21), true);
+    assert.strictEqual(dominates(domTree, 21, 10), false);
+  });
+
+  it("matches the LLVM nested-regions graph at block level", () => {
+    const graph = new Map([
+      [0, [10]],
+      [10, [11]],
+      [11, [20, 12]],
+      [20, [21]],
+      [21, [22]],
+      [22, [21, 23]],
+      [23, [13]],
+      [12, [13]],
+      [13, [30]],
+      [30, [31]],
+    ]);
+    const roots = new Set([0]);
+    const domTree = buildDominatorTree(graph, roots);
+
+    assertDomChildren(domTree, 0, [10]);
+    assertDomChildren(domTree, 10, [11]);
+    assertDomChildren(domTree, 11, [12, 13, 20]);
+    assertDomChildren(domTree, 12, []);
+    assertDomChildren(domTree, 20, [21]);
+    assertDomChildren(domTree, 21, [22]);
+    assertDomChildren(domTree, 22, [23]);
+    assertDomChildren(domTree, 23, []);
+    assertDomChildren(domTree, 13, [30]);
+    assertDomChildren(domTree, 30, [31]);
   });
 
   it("should handle unreachable nodes", () => {

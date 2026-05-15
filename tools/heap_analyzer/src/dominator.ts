@@ -145,7 +145,7 @@ export function buildDominatorTree(graph: Map<number, number[]>, rootNodes: Set<
       const u = evalNode(v);
       idom[v] = semi[u] < semi[v] ? u : p;
     }
-    bucket[p] = [];
+    bucket[p].length = 0;
   }
 
   // Step 4: Finalize idom values
