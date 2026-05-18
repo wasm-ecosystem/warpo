@@ -1,3 +1,6 @@
+// Copyright (C) 2026 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 import { DUMP_MAGIC, DUMP_VERSION, DUMP_HEADER_SIZE } from "./constants.js";
 import { DumpedMemory } from "./types.js";
 

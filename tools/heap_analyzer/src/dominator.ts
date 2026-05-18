@@ -1,3 +1,6 @@
+// Copyright (C) 2026 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * Dominator tree computation using the Lengauer-Tarjan algorithm.
  * Computes immediate dominators for all nodes reachable from GC roots.

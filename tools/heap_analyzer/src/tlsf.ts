@@ -1,3 +1,6 @@
+// Copyright (C) 2026 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 import { ObjectHeader } from "./types.js";
 import { AL_MASK, BLOCK_OVERHEAD, ROOT_SIZE, FREE, TAGS_MASK, TOTAL_OVERHEAD, COLOR_MASK } from "./constants.js";
 

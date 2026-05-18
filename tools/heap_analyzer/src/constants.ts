@@ -1,3 +1,6 @@
+// Copyright (C) 2026 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 // TLSF Allocator Constants (32-bit)
 export const AL_BITS = 4;
 export const AL_SIZE = 1 << AL_BITS; // 16

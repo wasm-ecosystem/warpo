@@ -1,3 +1,6 @@
+// Copyright (C) 2026 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 export interface ObjectHeader {
   mmInfo: number;
   rtId: number;
