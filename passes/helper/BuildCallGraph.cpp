@@ -22,7 +22,7 @@ CallGraph CallGraphBuilder::createResults(wasm::Module &m) {
 void CallGraphBuilder::visitCall(wasm::Call *expr) { cg_.at(getFunction()->name).insert(expr->target); }
 
 void CallGraphBuilder::visitCallIndirect(wasm::CallIndirect *expr) {
-  wasm::Module *m = getModule();
+  wasm::Module const *const m = getModule();
   std::unordered_set<wasm::Name> &call = cg_.at(getFunction()->name);
   std::vector<wasm::Expression *> const &potentialTargets = m->getElementSegment(expr->table)->data;
   for (wasm::Expression *target : potentialTargets) {

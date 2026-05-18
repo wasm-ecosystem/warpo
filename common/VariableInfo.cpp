@@ -60,62 +60,76 @@ void VariableInfo::addGlobalType(std::string variableName, std::string_view cons
 
 void VariableInfo::addSubProgram(std::string subProgramName, std::string_view const belongClassName,
                                  std::string_view const outerFunctionName) {
+  std::string_view const internedName = stringPool_.internString(subProgramName);
   std::optional<std::string_view> outerFunction = std::nullopt;
   if (!outerFunctionName.empty() && (outerFunctionName != "<<NULL>>")) {
-    auto const outerIt = subProgramLookupMap_.find(outerFunctionName);
+    SubProgramLookupMap::const_iterator const outerIt = subProgramLookupMap_.find(outerFunctionName);
     assert(outerIt != subProgramLookupMap_.end() && "Outer function not found in registry");
     outerFunction = outerIt->second.getName();
   }
 
   if (!belongClassName.empty() && (belongClassName != "<<NULL>>")) {
-    auto classIt = classRegistry_.find(belongClassName);
+    ClassRegistry::iterator const classIt = classRegistry_.find(belongClassName);
     assert(classIt != classRegistry_.end() && "Class not found in registry");
     // NOLINTNEXTLINE(misc-const-correctness)
-    SubProgramInfo &subProgramInfo = classIt->second.addSubProgram(std::move(subProgramName), outerFunction);
+    SubProgramInfo &subProgramInfo = classIt->second.addSubProgram(internedName, outerFunction);
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
-    subProgramStack_.push_back(&subProgramInfo);
+    scopeStack_.push_back(&subProgramInfo);
+  } else if (outerFunction.has_value() && !scopeStack_.empty()) {
+    std::unique_ptr<SubProgramInfo> child = std::make_unique<SubProgramInfo>(internedName, outerFunction);
+    // NOLINTNEXTLINE(misc-const-correctness, cppcoreguidelines-pro-type-static-cast-downcast)
+    SubProgramInfo &subProgramInfo = static_cast<SubProgramInfo &>(scopeStack_.back()->addChild(std::move(child)));
+    subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
+    scopeStack_.push_back(&subProgramInfo);
   } else {
     // NOLINTNEXTLINE(misc-const-correctness)
-    SubProgramInfo &subProgramInfo = subProgramRegistry_.addSubProgram(std::move(subProgramName), outerFunction);
+    SubProgramInfo &subProgramInfo = topLevelSubPrograms_.emplace_back(internedName, outerFunction);
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
-    subProgramStack_.push_back(&subProgramInfo);
+    scopeStack_.push_back(&subProgramInfo);
   }
+}
+
+SubProgramInfo *VariableInfo::findCurrentSubProgram() const noexcept {
+  for (size_t i = scopeStack_.size(); i > 0; --i) {
+    if (scopeStack_[i - 1]->getKind() == ScopeInfo::Kind::SubProgram)
+      // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+      return static_cast<SubProgramInfo *>(scopeStack_[i - 1]);
+  }
+  return nullptr;
 }
 
 void VariableInfo::addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
                                 bool const nullable) {
-  std::string_view const normalizedTypeName = typeName;
-  std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(!subProgramStack_.empty() && "Current subprogram is not set");
-  subProgramStack_.back()->addParameter(std::move(variableName), internedTypeName, index, nullable);
+  std::string_view const internedTypeName = stringPool_.internString(typeName);
+  SubProgramInfo *current = findCurrentSubProgram();
+  assert(current != nullptr && "Current subprogram is not set");
+  current->addParameter(std::move(variableName), internedTypeName, index, nullable);
 }
 
 void VariableInfo::addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
                             bool const nullable) {
-  std::string_view const normalizedTypeName = typeName;
-  std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(!subProgramStack_.empty() && "Current subprogram is not set");
-  subProgramStack_.back()->addLocal(std::move(variableName), internedTypeName, index, nullable);
+  std::string_view const internedTypeName = stringPool_.internString(typeName);
+  assert(!scopeStack_.empty() && "Current scope is not set");
+  scopeStack_.back()->addLocal(
+      LocalInfo{std::move(variableName), internedTypeName, LocalIndexLocation{index}, nullable});
 }
 
 void VariableInfo::addTupleLocal(std::string variableName, std::string_view const typeName,
                                  uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex,
                                  bool const nullable) {
-  std::string_view const normalizedTypeName = typeName;
-  std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(!subProgramStack_.empty() && "Current subprogram is not set");
-  subProgramStack_.back()->addTupleLocal(std::move(variableName), internedTypeName, tupleFieldOffset, storageLocalIndex,
-                                         nullable);
+  std::string_view const internedTypeName = stringPool_.internString(typeName);
+  assert(!scopeStack_.empty() && "Current scope is not set");
+  scopeStack_.back()->addLocal(LocalInfo{std::move(variableName), internedTypeName,
+                                         TupleFieldLocation{tupleFieldOffset, storageLocalIndex}, nullable});
 }
 
 void VariableInfo::addTupleParameter(std::string variableName, std::string_view const typeName,
                                      uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex,
                                      bool const nullable) {
-  std::string_view const normalizedTypeName = typeName;
-  std::string_view const internedTypeName = stringPool_.internString(normalizedTypeName);
-  assert(!subProgramStack_.empty() && "Current subprogram is not set");
-  subProgramStack_.back()->addTupleParameter(std::move(variableName), internedTypeName, tupleFieldOffset,
-                                             storageLocalIndex, nullable);
+  std::string_view const internedTypeName = stringPool_.internString(typeName);
+  SubProgramInfo *current = findCurrentSubProgram();
+  assert(current != nullptr && "Current subprogram is not set");
+  current->addTupleParameter(std::move(variableName), internedTypeName, tupleFieldOffset, storageLocalIndex, nullable);
 }
 
 void VariableInfo::addHeapVariableStorageLocalIndex(std::string_view const subProgramName, uint32_t const index) {
@@ -125,22 +139,26 @@ void VariableInfo::addHeapVariableStorageLocalIndex(std::string_view const subPr
 }
 
 void VariableInfo::enterScope(uint32_t const startLine, uint32_t const endLine) {
-  if (subProgramStack_.empty())
+  if (scopeStack_.empty())
     return;
-  subProgramStack_.back()->enterBlock(startLine, endLine);
+  std::unique_ptr<BlockInfo> block = std::make_unique<BlockInfo>(startLine, endLine);
+  ScopeInfo *const ptr = block.get();
+  scopeStack_.back()->addChild(std::move(block));
+  scopeStack_.push_back(ptr);
 }
 
 void VariableInfo::leaveScope() {
-  if (subProgramStack_.empty())
+  if (scopeStack_.empty())
     return;
-  subProgramStack_.back()->leaveBlock();
+  assert(scopeStack_.back()->getKind() == ScopeInfo::Kind::Block);
+  scopeStack_.pop_back();
 }
 
 void VariableInfo::leaveFunction() {
-  if (subProgramStack_.empty())
+  if (scopeStack_.empty())
     return;
-  subProgramStack_.back()->leaveFunction();
-  subProgramStack_.pop_back();
+  assert(scopeStack_.back()->getKind() == ScopeInfo::Kind::SubProgram);
+  scopeStack_.pop_back();
 }
 
 } // namespace warpo
@@ -312,8 +330,7 @@ TEST(TestVariableInfo, TestAddParameter) {
   variableInfo.addParameter("b", "i32", 1, false);
 
   // Verify global function parameters
-  const SubProgramRegistry &subProgramRegistry = variableInfo.getSubProgramRegistry();
-  const std::deque<SubProgramInfo> &globalFunctions = subProgramRegistry.getList();
+  const std::deque<SubProgramInfo> &globalFunctions = variableInfo.getTopLevelSubPrograms();
   ASSERT_EQ(globalFunctions.size(), 1);
 
   const SubProgramInfo &calculateSum = globalFunctions[0];
@@ -330,6 +347,8 @@ TEST(TestVariableInfo, TestAddParameter) {
   EXPECT_EQ(std::get<LocalIndexLocation>(calcParams[1].getLocation()).index, 1U);
   EXPECT_FALSE(calcParams[1].isNullable());
 
+  variableInfo.leaveFunction();
+
   // Test adding parameters to class member function
   variableInfo.createClass("Math", 200);
   variableInfo.addBaseClass("Math", "Object");
@@ -343,7 +362,7 @@ TEST(TestVariableInfo, TestAddParameter) {
   ASSERT_NE(mathIt, classRegistry.end());
 
   const ClassInfo &mathClass = mathIt->second;
-  const std::deque<SubProgramInfo> &memberFunctions = mathClass.getSubProgramRegistry().getList();
+  const std::deque<SubProgramInfo> &memberFunctions = mathClass.getSubPrograms();
   ASSERT_EQ(memberFunctions.size(), 1);
 
   const SubProgramInfo &multiply = memberFunctions[0];
@@ -366,8 +385,7 @@ TEST(TestVariableInfo, TestAddLocal) {
   variableInfo.addSubProgram("processData", "", "");
   variableInfo.addLocal("result", "i32", 1, false);
 
-  const SubProgramRegistry &subProgramRegistry = variableInfo.getSubProgramRegistry();
-  const std::deque<SubProgramInfo> &globalFunctions = subProgramRegistry.getList();
+  const std::deque<SubProgramInfo> &globalFunctions = variableInfo.getTopLevelSubPrograms();
   ASSERT_EQ(globalFunctions.size(), 1);
 
   const std::vector<LocalInfo> &locals = globalFunctions[0].getLocals();
@@ -389,7 +407,7 @@ TEST(TestVariableInfo, TestAddLocalToClassMemberFunction) {
   VariableInfo::ClassRegistry::const_iterator const mathIt = classRegistry.find("Math");
   ASSERT_NE(mathIt, classRegistry.end());
 
-  const std::deque<SubProgramInfo> &memberFunctions = mathIt->second.getSubProgramRegistry().getList();
+  const std::deque<SubProgramInfo> &memberFunctions = mathIt->second.getSubPrograms();
   ASSERT_EQ(memberFunctions.size(), 1);
 
   const std::vector<LocalInfo> &computeLocals = memberFunctions[0].getLocals();
@@ -403,11 +421,20 @@ TEST(TestVariableInfo, TestAddSubProgramWithOuterFunction) {
 
   variableInfo.addSubProgram("outer", "", "");
   variableInfo.addSubProgram("inner", "", "outer");
+  variableInfo.leaveFunction();
+  variableInfo.leaveFunction();
 
-  const std::deque<SubProgramInfo> &globalFunctions = variableInfo.getSubProgramRegistry().getList();
-  ASSERT_EQ(globalFunctions.size(), 2);
-  ASSERT_TRUE(globalFunctions[1].getOuterFunction().has_value());
-  EXPECT_EQ(*globalFunctions[1].getOuterFunction(), "outer");
+  const std::deque<SubProgramInfo> &globalFunctions = variableInfo.getTopLevelSubPrograms();
+  ASSERT_EQ(globalFunctions.size(), 1);
+
+  // inner is now a child of outer
+  std::vector<std::unique_ptr<ScopeInfo>> const &outerChildren = globalFunctions[0].getChildren();
+  ASSERT_EQ(outerChildren.size(), 1);
+  ASSERT_EQ(outerChildren[0]->getKind(), ScopeInfo::Kind::SubProgram);
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+  SubProgramInfo const &inner = static_cast<SubProgramInfo const &>(*outerChildren[0]);
+  ASSERT_TRUE(inner.getOuterFunction().has_value());
+  EXPECT_EQ(*inner.getOuterFunction(), "outer");
 }
 
 } // namespace warpo::ut
