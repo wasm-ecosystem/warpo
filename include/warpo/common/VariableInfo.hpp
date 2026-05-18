@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstdint>
+#include <deque>
 #include <map>
 #include <set>
 #include <string>
@@ -13,7 +14,7 @@
 
 #include "ClassInfo.hpp"
 #include "SubProgramInfo.hpp"
-#include "SubProgramRegistry.hpp"
+#include "warpo/support/StringPool.hpp"
 
 namespace warpo {
 
@@ -48,7 +49,7 @@ public:
 
   GlobalTypes const &getGlobalTypes() const noexcept { return globalTypes_; }
 
-  SubProgramRegistry const &getSubProgramRegistry() const noexcept { return subProgramRegistry_; }
+  std::deque<SubProgramInfo> const &getTopLevelSubPrograms() const noexcept { return topLevelSubPrograms_; }
 
   void addSubProgram(std::string subProgramName, std::string_view const belongClassName,
                      std::string_view const outerFunctionName);
@@ -75,13 +76,15 @@ public:
   void addHeapVariableStorageLocalIndex(std::string_view const subProgramName, uint32_t const index);
 
 private:
+  SubProgramInfo *findCurrentSubProgram() const noexcept;
+
   BaseTypeRegistry baseTypeRegistry_;
   ClassRegistry classRegistry_;
   GlobalTypes globalTypes_;
   StringPool stringPool_;
-  SubProgramRegistry subProgramRegistry_;
+  std::deque<SubProgramInfo> topLevelSubPrograms_;
   SubProgramLookupMap subProgramLookupMap_;
-  std::vector<SubProgramInfo *> subProgramStack_;
+  std::vector<ScopeInfo *> scopeStack_;
 };
 
 } // namespace warpo

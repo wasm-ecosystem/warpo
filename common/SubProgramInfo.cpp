@@ -17,6 +17,7 @@
 #include "warpo/common/SubProgramInfo.hpp"
 
 namespace warpo {
+
 void SubProgramInfo::addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
                                   bool const nullable) {
 
@@ -24,35 +25,6 @@ void SubProgramInfo::addParameter(std::string variableName, std::string_view con
       std::move(variableName),
       typeName,
       index,
-      nullable,
-  });
-}
-
-void SubProgramInfo::addLocal(LocalInfo local) {
-  if (blockInfoStack_.empty()) {
-    locals_.push_back(std::move(local));
-  } else {
-    blockInfoStack_.back()->addLocal(std::move(local));
-  }
-}
-
-void SubProgramInfo::addLocal(std::string variableName, std::string_view const typeName, uint32_t const index,
-                              bool const nullable) {
-  addLocal(LocalInfo{
-      std::move(variableName),
-      typeName,
-      LocalIndexLocation{index},
-      nullable,
-  });
-}
-
-void SubProgramInfo::addTupleLocal(std::string variableName, std::string_view const typeName,
-                                   uint32_t const tupleFieldOffset, uint32_t const storageLocalIndex,
-                                   bool const nullable) {
-  addLocal(LocalInfo{
-      std::move(variableName),
-      typeName,
-      TupleFieldLocation{tupleFieldOffset, storageLocalIndex},
       nullable,
   });
 }
@@ -69,17 +41,4 @@ void SubProgramInfo::addTupleParameter(std::string variableName, std::string_vie
   });
 }
 
-void SubProgramInfo::enterBlock(uint32_t const startLine, uint32_t const endLine) {
-  blockInfoStack_.push_back(std::make_unique<BlockInfo>(startLine, endLine));
-}
-
-void SubProgramInfo::leaveBlock() {
-  std::unique_ptr<BlockInfo> last = std::move(blockInfoStack_.back());
-  blockInfoStack_.pop_back();
-  if (blockInfoStack_.empty()) {
-    blocks_.push_back(std::move(last));
-  } else {
-    blockInfoStack_.back()->pushChild(std::move(last));
-  }
-}
 } // namespace warpo

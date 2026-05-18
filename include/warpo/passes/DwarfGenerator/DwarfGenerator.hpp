@@ -22,7 +22,6 @@ public:
   static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> generateDebugSections(VariableInfo const &variableInfo);
   static std::string dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const &debugSections);
 
-private:
   struct AbbrevCodes final {
     uint32_t subprogram;
     uint32_t closureSubprogram;
@@ -32,9 +31,6 @@ private:
     uint32_t localVariable;
     uint32_t tupleFieldLocalVariable;
   };
-
-  static void addSubProgramWithParameters(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
-                                          AbbrevCodes const &abbrevCodes, std::vector<TypeRefFixup> &typeRefFixups);
 };
 
 } // namespace warpo::passes
