@@ -46,3 +46,6 @@
 /tests/frontend/compiler/std/operator-overloading.ts
 /tests/frontend/compiler/unary-errors.ts
 /tests/frontend/compiler/unmanaged-errors.ts
+
+# bug of prettier
+/tests/frontend/compiler/multi-return.ts
