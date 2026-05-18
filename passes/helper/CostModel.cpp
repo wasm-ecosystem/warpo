@@ -547,6 +547,11 @@ float CostModel::getSizeCostByExpr(wasm::Module *m, wasm::Expression *expr) cons
   }
   case wasm::Expression::SelectId:
     return getSizeCostByOpcode(Opcode::SELECT);
+
+  case wasm::Expression::TupleExtractId: {
+    // TupleExtract does not have a direct opcode
+    return 0.0F;
+  }
   case wasm::Expression::DropId:
     return getSizeCostByOpcode(Opcode::DROP);
   case wasm::Expression::ReturnId:

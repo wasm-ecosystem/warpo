@@ -19,6 +19,8 @@ Features Features::fromString(std::vector<std::string> const &featureStrs) {
       res = res | Features::nontrappingF2I();
     } else if (featureStr == "bulk-memory") {
       res = res | Features::bulkMemory();
+    } else if (featureStr == "multi-value") {
+      res = res | Features::multiValue();
     } else {
       throw std::runtime_error("unknown feature: " + featureStr);
     }
@@ -36,6 +38,7 @@ enum class ASFeatures : uint32_t {
   MutableGlobals = 1U << 1U, // see: https://github.com/WebAssembly/mutable-global
   NontrappingF2I = 1U << 2U, // see: https://github.com/WebAssembly/nontrapping-float-to-int-conversions
   BulkMemory = 1U << 3U,     // see: https://github.com/WebAssembly/bulk-memory-operations
+  MultiValue = 1U << 9U,     // see: https://github.com/WebAssembly/multi-value
   All = (1U << 15U) - 1U
 };
 } // namespace
@@ -50,6 +53,8 @@ uint32_t Features::toASFeaturesFlags() const {
     flags |= static_cast<uint32_t>(ASFeatures::NontrappingF2I);
   if (has(Features::bulkMemory()))
     flags |= static_cast<uint32_t>(ASFeatures::BulkMemory);
+  if (has(Features::multiValue()))
+    flags |= static_cast<uint32_t>(ASFeatures::MultiValue);
   return flags;
 }
 
@@ -63,6 +68,8 @@ uint32_t Features::toBinaryenFeatureSet() const {
     features |= wasm::FeatureSet::TruncSat;
   if (has(Features::bulkMemory()))
     features |= wasm::FeatureSet::BulkMemoryOpt;
+  if (has(Features::multiValue()))
+    features |= wasm::FeatureSet::Multivalue;
   return features.features;
 }
 

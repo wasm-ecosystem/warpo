@@ -136,11 +136,18 @@ cli::Opt<std::vector<std::string>> disableFeatureOptions{
     cli::Category::Frontend | cli::Category::Optimization,
     "--disable-feature",
     [](argparse::Argument &arg) -> void {
-      arg.help("disable WebAssembly features, mutable-globals, sign-extension, nontrapping-f2i, bulk-memory")
+      arg.help(
+             "disable WebAssembly features, mutable-globals, sign-extension, nontrapping-f2i, bulk-memory, multi-value")
           .nargs(argparse::nargs_pattern::at_least_one)
-          .choices("mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory")
+          .choices("mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory", "multi-value")
           .append();
     },
+};
+
+cli::Opt<bool> enableMultiValueOption{
+    cli::Category::Frontend | cli::Category::Optimization,
+    "--enable-multi-value",
+    [](argparse::Argument &arg) -> void { arg.help("enable WebAssembly multi-value feature").flag(); },
 };
 
 cli::Opt<std::filesystem::path> outputPathOption{
@@ -247,12 +254,23 @@ std::optional<std::filesystem::path> ConfigProvider::projectPath() {
 }
 
 Features ConfigProvider::features() {
-  if (disableFeatureOptions.isSet())
-    return Features::all() & ~Features::fromString(disableFeatureOptions.get());
+  if (disableFeatureOptions.isSet()) {
+    Features features = Features::all() & ~Features::fromString(disableFeatureOptions.get());
+    if (enableMultiValueOption.isSet())
+      features = features | Features::multiValue();
+    return features;
+  }
 
   std::optional<MergedFileConfig> const &fileCfg = MergedFileConfig::getConfigFromFile();
-  if (fileCfg.has_value() && fileCfg->options.features.has_value())
-    return fileCfg->options.features.value();
+  if (fileCfg.has_value() && fileCfg->options.features.has_value()) {
+    Features features = fileCfg->options.features.value();
+    if (enableMultiValueOption.isSet())
+      features = features | Features::multiValue();
+    return features;
+  }
+
+  if (enableMultiValueOption.isSet())
+    return Features::all() | Features::multiValue();
 
   return Features::all();
 }

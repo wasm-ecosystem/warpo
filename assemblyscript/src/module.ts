@@ -1339,6 +1339,11 @@ export class Module {
 
 // types
 
+/** Creates a Binaryen tuple type. */
+export function createTupleType(types: TypeRef[] | null): TypeRef {
+  return createType(types);
+}
+
 export function createType(types: TypeRef[] | null): TypeRef {
   if (!types) return TypeRef.None;
   switch (types.length) {

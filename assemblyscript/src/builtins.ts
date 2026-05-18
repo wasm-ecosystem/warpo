@@ -669,6 +669,8 @@ export namespace BuiltinNames {
   export const closureEnv = "~lib/rt/closure/env";
   export const setClosureEnv = "~lib/rt/closure/setClosureEnv";
   export const getClosureEnvByLevel = "~lib/rt/closure/getClosureEnvByLevel";
+
+  export const multi_return_to_tuple = "~lib/warpo/ffi/ffi.multi_return_to_tuple";
 }
 
 /** Builtin types context. */
@@ -2773,6 +2775,64 @@ function builtin_unreachable(ctx: BuiltinFunctionContext): ExpressionRef {
   return ctx.compiler.module.unreachable();
 }
 builtinFunctions.set(BuiltinNames.unreachable, builtin_unreachable);
+
+function builtin_multi_return_to_tuple(ctx: BuiltinFunctionContext): ExpressionRef {
+  let compiler = ctx.compiler;
+  let module = compiler.module;
+  let flow = compiler.currentFlow;
+  if (checkTypeRequired(ctx, true) | checkArgsRequired(ctx, 1)) return module.unreachable();
+
+  let tupleType = assert(ctx.typeArguments)[0];
+  let tupleInfo = tupleType.tupleInfo;
+  if (!tupleInfo) {
+    compiler.error(DiagnosticCode.Not_implemented_0, ctx.reportNode.range, "multi_return_to_tuple requires tuple type");
+    return module.unreachable();
+  }
+
+  let tupleClass = tupleType.getClass();
+  if (!tupleClass) {
+    compiler.error(DiagnosticCode.Expression_cannot_be_represented_by_a_type, ctx.reportNode.range);
+    return module.unreachable();
+  }
+
+  let operandTupleType = Type.binaryenTuple(tupleInfo);
+
+  let operand0 = compiler.compileExpression(ctx.operands[0], Type.auto);
+  let tempOperand = flow.getTempLocal(operandTupleType);
+  let tempTuple = flow.getTempLocal(Type.usize32);
+  let stmts = new Array<ExpressionRef>();
+
+  stmts.push(module.local_set(tempOperand.index, operand0, false));
+  stmts.push(
+    module.local_set(
+      tempTuple.index,
+      compiler.makeNewTuple(tupleInfo.getElementsAreaByteSize(), tupleInfo.getBitmap(), ctx.reportNode),
+      true
+    )
+  );
+
+  for (let i = 0, k = tupleInfo.elementCount; i < k; ++i) {
+    let elementInfo = tupleInfo.elements[i];
+    let setter = assert(tupleClass.getMethod("__set", [elementInfo.type]));
+    stmts.push(
+      compiler.makeCallDirect(
+        setter,
+        [
+          module.local_get(tempTuple.index, tupleType.toRef()),
+          module.usize(elementInfo.offset),
+          module.tuple_extract(module.local_get(tempOperand.index, tempOperand.type.toRef()), i),
+        ],
+        ctx.reportNode,
+        true
+      )
+    );
+  }
+
+  compiler.currentType = tupleType;
+  stmts.push(module.local_get(tempTuple.index, tupleType.toRef()));
+  return module.block(null, stmts, tupleType.toRef());
+}
+builtinFunctions.set(BuiltinNames.multi_return_to_tuple, builtin_multi_return_to_tuple);
 
 // === Memory =================================================================================
 
