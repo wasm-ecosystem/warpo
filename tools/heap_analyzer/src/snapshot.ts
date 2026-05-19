@@ -211,6 +211,5 @@ function buildSummary(objects: HeapObject[]): SnapshotSummaryEntry[] {
 function computeFirstBlock(heapBase: number): number {
   // Match the AssemblyScript runtime's TLSF root and first-block alignment rules.
   const tlsfRoot = (heapBase + AL_MASK) & ~AL_MASK;
-  const afterRoot = (tlsfRoot + ROOT_SIZE + AL_MASK) & ~AL_MASK;
-  return ((afterRoot + BLOCK_OVERHEAD + AL_MASK) & ~AL_MASK) - BLOCK_OVERHEAD;
+  return ((tlsfRoot + ROOT_SIZE + BLOCK_OVERHEAD + AL_MASK) & ~AL_MASK) - BLOCK_OVERHEAD;
 }
