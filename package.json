@@ -46,6 +46,8 @@
   },
   "files": [
     "asconfig.schema.json",
+    "assemblyscript/package.json",
+    "assemblyscript/build-parser/**/*",
     "assemblyscript/std/assembly/index.d.ts",
     "create",
     "dist",

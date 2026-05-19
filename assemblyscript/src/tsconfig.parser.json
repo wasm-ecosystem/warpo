@@ -2,7 +2,7 @@
   "extends": "../../types/tsconfig-std.json",
   "compilerOptions": {
     "target": "esnext",
-    "module": "esnext",
+    "module": "commonjs",
     "outDir": "../build-parser",
     "allowJs": false,
     "sourceMap": true,
