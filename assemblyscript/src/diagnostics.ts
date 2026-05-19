@@ -6,11 +6,7 @@ import { Source } from "./ast";
 
 import { DiagnosticCode, diagnosticCodeToString } from "./diagnosticMessages.generated";
 
-import {
-  CharCode,
-  isLineBreak,
-  isWhiteSpace,
-} from "./util/text";
+import { CharCode, isLineBreak, isWhiteSpace } from "./util/text";
 import {
   COLOR_CYAN,
   COLOR_YELLOW,
