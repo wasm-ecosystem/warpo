@@ -18,7 +18,7 @@ import {
   isHighSurrogate,
   combineSurrogates,
   numCodeUnits,
-} from "./util";
+} from "./util/text";
 
 /** Named token types. */
 export const enum Token {

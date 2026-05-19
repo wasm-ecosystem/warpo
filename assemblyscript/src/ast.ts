@@ -5,17 +5,15 @@
 // TODO: Make the AST more easily serializable by refactoring `Node#range` so
 // it doesn't reference the non-serializable `Source` object.
 
-import { CommonFlags } from "./common";
-import { PATH_DELIMITER, LIBRARY_PREFIX } from "./mangle";
+import { CommonFlags } from "./common-flags";
+import { PATH_DELIMITER, LIBRARY_PREFIX, mangleInternalPath } from "./paths";
 import { Range } from "./diagnostics";
 
 import { Token } from "./tokenizer";
 
-import { normalizePath, resolvePath, CharCode } from "./util";
+import { normalizePath, resolvePath } from "./util/path";
+import { CharCode } from "./util/text";
 
-import { ExpressionRef } from "./module";
-
-import { Type } from "./types";
 import { JsonObject } from "./json";
 import { IVisitor } from "./ast/visitor";
 
@@ -342,10 +340,6 @@ export abstract class Node implements INode {
 
   static createUnaryPrefixExpression(operator: Token, operand: Expression, range: Range): UnaryPrefixExpression {
     return new UnaryPrefixExpression(operator, operand, range);
-  }
-
-  static createCompiledExpression(expr: ExpressionRef, type: Type, range: Range): Expression {
-    return new CompiledExpression(expr, type, range);
   }
 
   // statements
@@ -1677,24 +1671,6 @@ export class UnaryPrefixExpression extends UnaryExpression {
   }
 }
 
-/** Represents a special pre-compiled expression. If the expression has side-effects, special care has to be taken. */
-export class CompiledExpression extends Expression {
-  constructor(
-    /** Compiled expression. */
-    public expr: ExpressionRef,
-    /** Type of the compiled expression. */
-    public type: Type,
-    /** Source range. */
-    range: Range
-  ) {
-    super(NodeKind.Compiled, range);
-  }
-
-  accept(visitor: IVisitor): void {
-    visitor.visitCompiledExpression(this);
-  }
-}
-
 // statements
 
 /** Base class of all statement nodes. */
@@ -2761,16 +2737,6 @@ export function findDecorator(kind: DecoratorKind, decorators: DecoratorNode[] |
     }
   }
   return null;
-}
-
-/** Mangles an external to an internal path. */
-export function mangleInternalPath(path: string): string {
-  if (path.endsWith("/")) {
-    path += "index";
-  } else if (path.endsWith(".ts")) {
-    path = path.substring(0, path.length - 3);
-  }
-  return path;
 }
 
 /** Tests if the specified type node represents an omitted type. */

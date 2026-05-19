@@ -143,7 +143,6 @@ import {
   TemplateLiteralExpression,
   UnaryPostfixExpression,
   UnaryPrefixExpression,
-  CompiledExpression,
   TypeNode,
   NamedTypeNode,
   findDecorator,
@@ -155,6 +154,7 @@ import {
   VariableLikeBase,
   CommentKind,
 } from "./ast";
+import { CompiledExpression, createCompiledExpression } from "./compiled-expression";
 import { Type, TypeKind, TypeFlags, Signature, typesToRefs, SmallTupleTypeInfo } from "./types";
 import {
   writeI8,
@@ -9164,7 +9164,7 @@ export class Compiler extends DiagnosticEmitter {
     // Desugar to compileCallExpression
     let args = expressions.slice();
     args.unshift(
-      Node.createCompiledExpression(
+      createCompiledExpression(
         module.usize(i64_add(arraySegment.offset, i64_new(this.program.totalOverhead))),
         arrayInstance.type,
         Source.native.range

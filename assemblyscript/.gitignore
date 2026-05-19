@@ -1,6 +1,7 @@
 node_modules/
 *debug.log
 build/
+build-parser/
 raw/
 .history
 *.backup

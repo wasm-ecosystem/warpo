@@ -7,8 +7,11 @@ import { Source } from "./ast";
 import { DiagnosticCode, diagnosticCodeToString } from "./diagnosticMessages.generated";
 
 import {
+  CharCode,
   isLineBreak,
   isWhiteSpace,
+} from "./util/text";
+import {
   COLOR_CYAN,
   COLOR_YELLOW,
   COLOR_RED,
@@ -16,8 +19,7 @@ import {
   COLOR_RESET,
   isColorsEnabled,
   setColorsEnabled,
-  CharCode,
-} from "./util";
+} from "./util/terminal";
 
 export { DiagnosticCode, diagnosticCodeToString } from "./diagnosticMessages.generated";
 

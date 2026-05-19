@@ -92,7 +92,6 @@ import {
   FalseExpression,
   SuperExpression,
   NullExpression,
-  CompiledExpression,
   OmittedExpression,
 } from "../ast";
 
@@ -581,7 +580,7 @@ export class ASTPrinter extends BaseVisitor {
     this.visitNode(node.operand);
   }
 
-  visitCompiledExpression(node: CompiledExpression): void {
+  visitCompiledExpression(node: Expression): void {
     assert(false);
   }
 

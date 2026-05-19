@@ -1,0 +1,18 @@
+{
+  "extends": "../../types/tsconfig-std.json",
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "outDir": "../build-parser",
+    "allowJs": false,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "useDefineForClassFields": false,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "esModuleInterop": true,
+    "noEmit": false
+  },
+  "files": ["./index-parser.ts"]
+}

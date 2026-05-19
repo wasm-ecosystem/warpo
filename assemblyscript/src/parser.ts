@@ -2,13 +2,14 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-import { CommonFlags } from "./common";
-import { LIBRARY_PREFIX, PATH_DELIMITER } from "./mangle";
+import { CommonFlags } from "./common-flags";
+import { LIBRARY_PREFIX, PATH_DELIMITER, mangleInternalPath } from "./paths";
 import { Tokenizer, Token, IdentifierHandling, isIllegalVariableIdentifier } from "./tokenizer";
 
 import { Range, DiagnosticCode, DiagnosticEmitter, DiagnosticMessage } from "./diagnostics";
 
-import { CharCode, normalizePath } from "./util";
+import { normalizePath } from "./util/path";
+import { CharCode } from "./util/text";
 
 import {
   Node,
@@ -63,7 +64,6 @@ import {
   VoidStatement,
   WhileStatement,
   ModuleDeclaration,
-  mangleInternalPath,
   MethodDeclaration,
   JsonSource,
   IPropertyName,
