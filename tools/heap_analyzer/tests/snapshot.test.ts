@@ -112,6 +112,7 @@ describeIntegration("analyzeHeap", (ctx) => {
     assert.strictEqual(totalCount, snapshot.objects.length);
     assert.strictEqual(totalShallowSize, snapshot.totalLiveSize);
     assert.ok(snapshot.totalHeapSize >= snapshot.totalLiveSize);
+    assert.strictEqual(snapshot.totalFreeSize, snapshot.totalHeapSize - snapshot.totalLiveSize);
     assert.ok(snapshot.totalFreeSize >= 0);
   });
 

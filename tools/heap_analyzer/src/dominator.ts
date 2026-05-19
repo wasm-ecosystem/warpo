@@ -73,7 +73,7 @@ export function buildDominatorTree(graph: Map<number, number[]>, rootNodes: Set<
     for (let i = succs.length - 1; i >= 0; i--) {
       const succ = succs[i];
       if (!nodeToNum.has(succ)) {
-        // TODO: to be optimized, reduce memory allocation
+        // todo: to be optimized, reduce memory allocation
         dfsStack.push({ node: succ, parentNum: num });
       }
     }

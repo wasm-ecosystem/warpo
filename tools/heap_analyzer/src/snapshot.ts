@@ -69,9 +69,8 @@ export function analyzeHeap(
 
   // Step 11: Compute top-level totals and the class summary view.
   const totalLiveSize = heapObjects.reduce((sum, obj) => sum + obj.shallowSize, 0);
-  const totalAllocatedSize = objects.reduce((sum, obj) => sum + shallowSize(obj), 0);
   const totalHeapSize = memory.byteLength - computeFirstBlock(rtGlobals.heapBase);
-  const totalFreeSize = Math.max(0, totalHeapSize - totalAllocatedSize);
+  const totalFreeSize = Math.max(0, totalHeapSize - totalLiveSize);
 
   return {
     objects: heapObjects,

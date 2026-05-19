@@ -39,9 +39,6 @@ function aggregateRetainedSizes(
 
   while (stack.length > 0) {
     const current = stack.pop();
-    if (current === undefined) {
-      break;
-    }
 
     if (!current.visited) {
       stack.push({ node: current.node, visited: true });
