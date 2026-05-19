@@ -60,9 +60,11 @@ if (!runtime.i32) {
   runtime.i32 = cast;
 }
 
-runtime.unchecked = runtime.unchecked ?? function unchecked<T>(value: T): T {
-  return value;
-};
+runtime.unchecked =
+  runtime.unchecked ??
+  function unchecked<T>(value: T): T {
+    return value;
+  };
 
 runtime.i64_zero = asI64(0n);
 runtime.i64_one = asI64(1n);

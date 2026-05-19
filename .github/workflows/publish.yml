@@ -59,6 +59,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - run: npm ci
       - run: npm run build:ts
+      - run: npm run build:parser:ts
       - id: release_info
         uses: actions/github-script@v7
         with:
