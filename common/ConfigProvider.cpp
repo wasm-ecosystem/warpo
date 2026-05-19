@@ -144,12 +144,6 @@ cli::Opt<std::vector<std::string>> disableFeatureOptions{
     },
 };
 
-cli::Opt<bool> enableMultiValueOption{
-    cli::Category::Frontend | cli::Category::Optimization,
-    "--enable-multi-value",
-    [](argparse::Argument &arg) -> void { arg.help("enable WebAssembly multi-value feature").flag(); },
-};
-
 cli::Opt<std::filesystem::path> outputPathOption{
     cli::Category::All,
     "-o",
@@ -254,23 +248,12 @@ std::optional<std::filesystem::path> ConfigProvider::projectPath() {
 }
 
 Features ConfigProvider::features() {
-  if (disableFeatureOptions.isSet()) {
-    Features features = Features::all() & ~Features::fromString(disableFeatureOptions.get());
-    if (enableMultiValueOption.isSet())
-      features = features | Features::multiValue();
-    return features;
-  }
+  if (disableFeatureOptions.isSet())
+    return Features::all() & ~Features::fromString(disableFeatureOptions.get());
 
   std::optional<MergedFileConfig> const &fileCfg = MergedFileConfig::getConfigFromFile();
-  if (fileCfg.has_value() && fileCfg->options.features.has_value()) {
-    Features features = fileCfg->options.features.value();
-    if (enableMultiValueOption.isSet())
-      features = features | Features::multiValue();
-    return features;
-  }
-
-  if (enableMultiValueOption.isSet())
-    return Features::all() | Features::multiValue();
+  if (fileCfg.has_value() && fileCfg->options.features.has_value())
+    return fileCfg->options.features.value();
 
   return Features::all();
 }
