@@ -1,3 +1,6 @@
+// Copyright (C) 2026 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 import { DW_AT, DW_TAG, buildOffsetMap, findDIEsByTag, getAttr, parseDwarf, type DwarfDIE } from "./dwarfParser.js";
 import type { ClassField, ClassLayout } from "./types.js";
 

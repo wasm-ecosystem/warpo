@@ -1,3 +1,6 @@
+// Copyright (C) 2026 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 import { ObjectHeader } from "./types.js";
 import { AL_MASK, BLOCK_OVERHEAD, ROOT_SIZE, FREE, TAGS_MASK, TOTAL_OVERHEAD, COLOR_MASK } from "./constants.js";
 
@@ -20,10 +23,9 @@ import { AL_MASK, BLOCK_OVERHEAD, ROOT_SIZE, FREE, TAGS_MASK, TOTAL_OVERHEAD, CO
 export function walkBlocks(memory: DataView, heapBase: number): ObjectHeader[] {
   const tlsfRoot = (heapBase + AL_MASK) & ~AL_MASK;
   // Matches AS runtime rt/tlsf.ts:
-  //   initialize() calls addMemory(root, (rootOffset + ROOT_SIZE + AL_MASK) & ~AL_MASK, ...)
+  //   initialize() calls addMemory(root, rootOffset + ROOT_SIZE, ...)
   //   addMemory() computes start = ((start + BLOCK_OVERHEAD + AL_MASK) & ~AL_MASK) - BLOCK_OVERHEAD
-  const afterRoot = (tlsfRoot + ROOT_SIZE + AL_MASK) & ~AL_MASK;
-  const firstBlock = ((afterRoot + BLOCK_OVERHEAD + AL_MASK) & ~AL_MASK) - BLOCK_OVERHEAD;
+  const firstBlock = ((tlsfRoot + ROOT_SIZE + BLOCK_OVERHEAD + AL_MASK) & ~AL_MASK) - BLOCK_OVERHEAD;
   const memoryEnd = memory.byteLength;
 
   const objects: ObjectHeader[] = [];
