@@ -10,6 +10,14 @@ import { scanReferences } from "./referenceScanner.js";
 import { walkBlocks } from "./tlsf.js";
 import type { HeapObject, HeapSnapshot, RootInfo, RootType, RuntimeGlobals, SnapshotSummaryEntry } from "./types.js";
 
+function getAssignedRootType(rootTypes: Map<number, RootType>, payloadPtr: number): RootType {
+  const rootType = rootTypes.get(payloadPtr);
+  if (!rootType) {
+    throw new Error(`Missing root type for live object ${payloadPtr}`);
+  }
+  return rootType;
+}
+
 export function analyzeHeap(
   memory: DataView,
   rtGlobals: RuntimeGlobals,
@@ -53,7 +61,7 @@ export function analyzeHeap(
     className: classResolver.getClassName(obj.rtId),
     shallowSize: shallowSize(obj),
     retainedSize: retainedSizes.get(obj.payloadPtr) ?? shallowSize(obj),
-    rootType: rootTypes.get(obj.payloadPtr) ?? "unknown",
+    rootType: getAssignedRootType(rootTypes, obj.payloadPtr),
   }));
 
   // Step 10: Enrich root records with resolved class names.
@@ -140,9 +148,6 @@ function classifyRootTypes(roots: RootInfo[], graph: Map<number, number[]>): Map
       }
       case "pinned": {
         pinnedRoots.add(root.objectPtr);
-        break;
-      }
-      default: {
         break;
       }
     }

@@ -29,6 +29,34 @@ function buildChildrenMap(objects: ObjectHeader[], dominatorTree: Map<number, nu
   return children;
 }
 
+function pushChildrenOntoStack(
+  node: number,
+  children: Map<number, number[]>,
+  stack: Array<{ node: number; visited: boolean }>
+): void {
+  const childNodes = children.get(node);
+  if (!childNodes) {
+    return;
+  }
+
+  for (const child of childNodes) {
+    stack.push({ node: child, visited: false });
+  }
+}
+
+function sumRetainedChildren(node: number, children: Map<number, number[]>, retained: Map<number, number>): number {
+  const childNodes = children.get(node);
+  if (!childNodes) {
+    return 0;
+  }
+
+  let size = 0;
+  for (const child of childNodes) {
+    size += retained.get(child) ?? 0;
+  }
+  return size;
+}
+
 function aggregateRetainedSizes(
   root: number,
   objectByPtr: Map<number, ObjectHeader>,
@@ -42,9 +70,7 @@ function aggregateRetainedSizes(
 
     if (!current.visited) {
       stack.push({ node: current.node, visited: true });
-      for (const child of children.get(current.node) ?? []) {
-        stack.push({ node: child, visited: false });
-      }
+      pushChildrenOntoStack(current.node, children, stack);
       continue;
     }
 
@@ -57,10 +83,7 @@ function aggregateRetainedSizes(
       throw new Error(`Missing object header for retained-size node ${current.node}`);
     }
 
-    let size = shallowSize(obj);
-    for (const child of children.get(current.node) ?? []) {
-      size += retained.get(child) ?? 0;
-    }
+    const size = shallowSize(obj) + sumRetainedChildren(current.node, children, retained);
     retained.set(current.node, size);
   }
 
