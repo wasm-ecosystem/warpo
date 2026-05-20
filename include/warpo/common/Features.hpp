@@ -17,6 +17,7 @@ class Features {
     SignExtension = 1U << 1U,
     NontrappingF2I = 1U << 2U,
     BulkMemory = 1U << 3U,
+    MultiValue = 1U << 4U,
     All = static_cast<uint32_t>(-1),
   };
 
@@ -33,6 +34,7 @@ public:
   constexpr static Features signExtension() { return Features{FeaturesEnum::SignExtension}; }
   constexpr static Features nontrappingF2I() { return Features{FeaturesEnum::NontrappingF2I}; }
   constexpr static Features bulkMemory() { return Features{FeaturesEnum::BulkMemory}; }
+  constexpr static Features multiValue() { return Features{FeaturesEnum::MultiValue}; }
 
   Features operator|(Features other) const {
     return Features{static_cast<FeaturesEnum>(static_cast<uint32_t>(features) | static_cast<uint32_t>(other.features))};

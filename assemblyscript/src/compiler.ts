@@ -9176,7 +9176,7 @@ export class Compiler extends DiagnosticEmitter {
   }
 
   /** Makes a new tuple instance from a static buffer segment. */
-  private makeNewTuple(elementSlotSize: i32, bitmap: i64, reportNode: Node): ExpressionRef {
+  makeNewTuple(elementSlotSize: i32, bitmap: i64, reportNode: Node): ExpressionRef {
     const program = this.program;
     const module = this.module;
     const expr = this.makeCallDirect(

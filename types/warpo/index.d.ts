@@ -3,6 +3,8 @@
 declare module "warpo/ffi" {
   namespace ffi {
     function set_ffi_closure_env(value: i32): void;
+    function multi_return_to_tuple<T>(value: MultiReturn<T>): T;
+    class MultiReturn<T> {}
   }
 }
 

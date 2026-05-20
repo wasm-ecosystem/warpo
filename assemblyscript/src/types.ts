@@ -70,6 +70,10 @@ export const enum TypeKind {
   Array,
   /** 31-bit integer reference. */
   I31,
+
+  /** Binaryen tuple value type (multi-value). */
+  BinaryenTuple,
+
   // other
 
   /** No return type. */
@@ -474,6 +478,16 @@ export class Type {
     if (this.kind != other.kind) {
       return false;
     }
+    if (this.kind == TypeKind.BinaryenTuple) {
+      let thisTupleInfo = this.tupleInfo;
+      let otherTupleInfo = other.tupleInfo;
+      if (!thisTupleInfo || !otherTupleInfo) return false;
+      if (thisTupleInfo.elementCount != otherTupleInfo.elementCount) return false;
+      for (let i = 0, k = thisTupleInfo.elementCount; i < k; ++i) {
+        if (!thisTupleInfo.elements[i].type.equals(otherTupleInfo.elements[i].type)) return false;
+      }
+      return true;
+    }
     if (this.isReference) {
       let selfSignatureReference = this.signatureReference;
       let otherSignatureReference = other.signatureReference;
@@ -674,6 +688,15 @@ export class Type {
         return CommonNames.ref_array;
       case TypeKind.I31:
         return CommonNames.ref_i31;
+      case TypeKind.BinaryenTuple: {
+        let tupleInfo = assert(this.tupleInfo);
+        let elementCount = tupleInfo.elementCount;
+        let tupleName = new Array<string>(elementCount);
+        for (let i = 0; i < elementCount; ++i) {
+          tupleName[i] = tupleInfo.elements[i].type.kindToString();
+        }
+        return "binaryen.tuple<" + tupleName.join(",") + ">";
+      }
       default:
         assert(false);
       case TypeKind.Void:
@@ -719,6 +742,20 @@ export class Type {
 
   /** Converts this type to its respective type reference. */
   toRef(): TypeRef {
+    let classReference = this.getClass();
+    if (classReference) {
+      let prototypeInternalName = classReference.prototype.internalName;
+      let isFfiMultiReturn = prototypeInternalName == "~lib/warpo/ffi/ffi.MultiReturn";
+      if (isFfiMultiReturn) {
+        // Fixme, need a type check to avoid wrong usage of ffi.MultiReturn
+        let typeArguments = assert(classReference.typeArguments);
+        assert(typeArguments.length == 1);
+        let tupleType = typeArguments[0];
+        assert(tupleType.isTuple);
+        return Type.binaryenTuple(assert(tupleType.tupleInfo)).toRef();
+      }
+    }
+
     switch (this.kind) {
       case TypeKind.Bool:
       case TypeKind.I8:
@@ -760,6 +797,15 @@ export class Type {
       }
       case TypeKind.I31: {
         return binaryen._BinaryenTypeFromHeapType(HeapTypeRef.I31, this.is(TypeFlags.Nullable));
+      }
+      case TypeKind.BinaryenTuple: {
+        let tupleInfo = assert(this.tupleInfo);
+        let elementCount = tupleInfo.elementCount;
+        let resultTypeRefs = new Array<TypeRef>(elementCount);
+        for (let i = 0; i < elementCount; ++i) {
+          resultTypeRefs[i] = tupleInfo.elements[i].type.toRef();
+        }
+        return createType(resultTypeRefs);
       }
       case TypeKind.Void:
         return TypeRef.None;
@@ -876,6 +922,13 @@ export class Type {
 
   /** No return type. */
   static readonly void: Type = new Type(TypeKind.Void, TypeFlags.None, 0);
+
+  /** Creates a Binaryen tuple value type from tuple element info. */
+  static binaryenTuple(tupleInfo: SmallTupleTypeInfo): Type {
+    let type = new Type(TypeKind.BinaryenTuple, TypeFlags.None, 0);
+    type.tupleInfo = tupleInfo;
+    return type;
+  }
 
   /** Alias of i32 indicating type inference of locals and globals with just an initializer. */
   static readonly auto: Type = new Type(Type.i32.kind, Type.i32.flags, Type.i32.size);

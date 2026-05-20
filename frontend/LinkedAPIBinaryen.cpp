@@ -867,6 +867,11 @@ uint64_t BinaryenTupleMakeGetOperandAtForLink(uint64_t expr, uint32_t index, [[m
   return reinterpret_cast<uint64_t>(
       BinaryenTupleMakeGetOperandAt(reinterpret_cast<BinaryenExpressionRef>(expr), index));
 }
+uint64_t BinaryenTupleExtractForLink(uint64_t module, uint64_t tupleExpr, uint32_t index,
+                                     [[maybe_unused]] vb::WasmModule *ctx) {
+  return reinterpret_cast<uint64_t>(BinaryenTupleExtract(reinterpret_cast<BinaryenModuleRef>(module),
+                                                         reinterpret_cast<BinaryenExpressionRef>(tupleExpr), index));
+}
 uint64_t BinaryenTupleExtractGetTupleForLink(uint64_t expr, [[maybe_unused]] vb::WasmModule *ctx) {
   return reinterpret_cast<uint64_t>(BinaryenTupleExtractGetTuple(reinterpret_cast<BinaryenExpressionRef>(expr)));
 }
@@ -1263,6 +1268,7 @@ std::vector<vb::NativeSymbol> createBinaryenLinkedAPI() {
       STATIC_LINK("binaryen", "_BinaryenThrowGetOperandAt", BinaryenThrowGetOperandAtForLink),
       STATIC_LINK("binaryen", "_BinaryenTupleMakeGetNumOperands", BinaryenTupleMakeGetNumOperandsForLink),
       STATIC_LINK("binaryen", "_BinaryenTupleMakeGetOperandAt", BinaryenTupleMakeGetOperandAtForLink),
+      STATIC_LINK("binaryen", "_BinaryenTupleExtract", BinaryenTupleExtractForLink),
       STATIC_LINK("binaryen", "_BinaryenTupleExtractGetTuple", BinaryenTupleExtractGetTupleForLink),
       STATIC_LINK("binaryen", "_BinaryenRefI31GetValue", BinaryenRefI31GetValueForLink),
       STATIC_LINK("binaryen", "_BinaryenI31GetGetI31", BinaryenI31GetGetI31ForLink),

@@ -1338,7 +1338,6 @@ export class Module {
 }
 
 // types
-
 export function createType(types: TypeRef[] | null): TypeRef {
   if (!types) return TypeRef.None;
   switch (types.length) {
