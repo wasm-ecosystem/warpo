@@ -5,6 +5,7 @@
     "module": "commonjs",
     "outDir": "../build-parser",
     "allowJs": false,
+    "declaration": true,
     "sourceMap": true,
     "skipLibCheck": true,
     "useDefineForClassFields": false,
