@@ -23,7 +23,7 @@ export const COLOR_WHITE = "\u001b[97m";
 export const COLOR_RESET = "\u001b[0m";
 
 /** Whether terminal colors are enabled or not. */
-let colorsEnabled = true;
+let colorsEnabled: bool = true;
 
 /** Checks whether terminal colors are enabled or not. */
 export function isColorsEnabled(): bool {

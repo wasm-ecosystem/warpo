@@ -9,6 +9,7 @@
   "scripts": {
     "update": "cmake -S . -B build && cmake --build build --parallel --target warpo_binaryen_enums_gen && ./build/bin/warpo_binaryen_enums_gen",
     "build:ts": "tsc -p tools/tsconfig.json",
+    "build:parser:ts": "node assemblyscript/scripts/build-parser.js",
     "build:cpp": "cmake -S . -B build && cmake --build build --parallel 4",
     "build": "npm run build:ts && npm run build:cpp",
     "test:as:ut": "node dist/warpo.js test",
@@ -45,6 +46,7 @@
   },
   "files": [
     "asconfig.schema.json",
+    "assemblyscript/build-parser/**/*",
     "assemblyscript/std/assembly/index.d.ts",
     "create",
     "dist",
@@ -63,6 +65,7 @@
     "cross-env": "^10.1.0",
     "cspell": "^9.3.0",
     "diff": "^8.0.0",
+    "esbuild": "^0.27.0",
     "eslint": "^9.0.0",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.32.0",

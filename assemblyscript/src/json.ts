@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Expression, JsonSource, Node, Statement, VariableDeclaration } from "./ast";
-import { CommonFlags } from "./common";
+import { CommonFlags } from "./common-flags";
 import { DiagnosticCode, DiagnosticEmitter, DiagnosticMessage, Range } from "./diagnostics";
 import { Token, Tokenizer } from "./tokenizer";
-import { CharCode } from "./util";
+import { CharCode } from "./util/text";
 
 export enum JsonValueKind {
   Unknown,

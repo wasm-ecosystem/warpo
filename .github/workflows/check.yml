@@ -46,6 +46,7 @@ jobs:
           OS_ID: ${{ matrix.os }}
           CMAKE_ARGS: ${{ matrix.os == 'ubuntu-latest' && '-DWARPO_SANITIZE=ON' || '' }}
       - run: npm run build:ts
+      - run: npm run build:parser:ts
       # test
       - run: npm run test:as:ut
       - run: npm run test:cpp:ut

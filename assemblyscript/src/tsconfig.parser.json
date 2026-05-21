@@ -1,0 +1,20 @@
+{
+  "extends": "../../types/tsconfig-std.json",
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "esnext",
+    "outDir": "../build-parser",
+    "allowJs": false,
+    "declaration": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "useDefineForClassFields": false,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "esModuleInterop": true,
+    "noEmit": false,
+    "moduleResolution": "bundler"
+  },
+  "files": ["./index-parser.ts"]
+}
