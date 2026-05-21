@@ -46,3 +46,7 @@
 /tests/frontend/compiler/std/operator-overloading.ts
 /tests/frontend/compiler/unary-errors.ts
 /tests/frontend/compiler/unmanaged-errors.ts
+
+# bug of prettier
+# Fixme: https://github.com/wasm-ecosystem/assemblyscript-prettier/issues/21
+/tests/frontend/compiler/multi-return.ts

@@ -38,6 +38,7 @@ export default tseslint.config(
   sonarjs.configs.recommended,
   {
     rules: {
+      "sonarjs/todo-tag": "off",
       "sonarjs/redundant-type-aliases": "off",
     },
   },

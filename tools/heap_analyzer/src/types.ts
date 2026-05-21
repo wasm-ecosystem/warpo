@@ -1,3 +1,6 @@
+// Copyright (C) 2026 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 export interface ObjectHeader {
   mmInfo: number;
   rtId: number;
@@ -43,12 +46,12 @@ export interface ClassLayout {
   entryLayout?: EntryLayout;
 }
 
-export type RootType = "global" | "local" | "pinned" | "unknown";
+export type RootType = "global" | "local" | "pinned";
 
 export interface RootInfo {
   objectPtr: number; // payloadPtr of the referenced object
   className: string; // resolved class name
-  rootType: RootType; // 'global' | 'local' | 'pinned'
+  rootType: RootType;
   sourceAddress: number; // address where pointer was found (0 for pinned)
 }
 

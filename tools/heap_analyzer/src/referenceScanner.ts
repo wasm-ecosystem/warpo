@@ -1,3 +1,6 @@
+// Copyright (C) 2026 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 import type { ClassLayout, EntryLayout, ObjectHeader } from "./types.js";
 import type { ClassResolver } from "./classResolver.js";
 

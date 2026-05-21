@@ -1,3 +1,6 @@
+// Copyright (C) 2026 wasm-ecosystem
+// SPDX-License-Identifier: Apache-2.0
+
 /**
  * Dominator tree computation using the Lengauer-Tarjan algorithm.
  * Computes immediate dominators for all nodes reachable from GC roots.
@@ -70,7 +73,7 @@ export function buildDominatorTree(graph: Map<number, number[]>, rootNodes: Set<
     for (let i = succs.length - 1; i >= 0; i--) {
       const succ = succs[i];
       if (!nodeToNum.has(succ)) {
-        // TODO: to be optimized, reduce memory allocation
+        // todo: to be optimized, reduce memory allocation
         dfsStack.push({ node: succ, parentNum: num });
       }
     }

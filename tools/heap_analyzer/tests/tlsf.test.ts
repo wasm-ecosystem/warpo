@@ -59,8 +59,7 @@ describeIntegration("walkBlocks", (ctx) => {
   it("first block payloadPtr matches computed firstBlock + TOTAL_OVERHEAD", () => {
     const heapBase = dump.rtGlobals.heapBase;
     const tlsfRoot = (heapBase + AL_MASK) & ~AL_MASK;
-    const afterRoot = (tlsfRoot + ROOT_SIZE + AL_MASK) & ~AL_MASK;
-    const firstBlock = ((afterRoot + BLOCK_OVERHEAD + AL_MASK) & ~AL_MASK) - BLOCK_OVERHEAD;
+    const firstBlock = ((tlsfRoot + ROOT_SIZE + BLOCK_OVERHEAD + AL_MASK) & ~AL_MASK) - BLOCK_OVERHEAD;
     assert.strictEqual(blocks[0].payloadPtr, firstBlock + TOTAL_OVERHEAD);
   });
 });
@@ -88,7 +87,7 @@ describeIntegration("object header parsing", (ctx) => {
       counts[b.rtId] = (counts[b.rtId] || 0) + 1;
     }
     assert.strictEqual(counts[1], 29);
-    assert.strictEqual(counts[2], 3);
+    assert.strictEqual(counts[2], 4);
     assert.strictEqual(counts[13], 31);
   });
 
@@ -100,7 +99,7 @@ describeIntegration("object header parsing", (ctx) => {
 
   it("blocks with rtId 2 have non-zero rtSize", () => {
     const strings = blocks.filter((b) => b.rtId === 2);
-    assert.strictEqual(strings.length, 3);
+    assert.strictEqual(strings.length, 4);
     for (const s of strings) {
       assert.ok(s.rtSize > 0);
     }

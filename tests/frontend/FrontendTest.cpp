@@ -20,6 +20,7 @@
 #include <string>
 #include <support/colors.h>
 #include <thread>
+#include <tuple>
 #include <utility>
 #include <vector>
 #include <wasm-binary.h>
@@ -35,6 +36,7 @@
 #include "wasm.h"
 
 #include "src/core/common/function_traits.hpp"
+#include "src/core/runtime/ImportFunctionV2.hpp"
 #include "src/core/runtime/TrapException.hpp"
 
 namespace warpo {
@@ -44,6 +46,16 @@ double seedForSnapshotTest(vb::WasmModule * /*ctx*/) {
   // Deterministic stub for snapshot-test execution.
   return 1.0;
 }
+
+class SnapshotApiMultiReturn final : public ImportFunctionV2<std::tuple<>, std::tuple<uint32_t, uint32_t>> {
+public:
+  using ImportFunctionV2::ImportFunctionV2;
+
+  static void call(void * /*params*/, void *results, void * /*ctx*/) {
+    setRet<0>(results, 10U);
+    setRet<1>(results, 20U);
+  }
+};
 
 cli::Opt<bool> updateFlag{
     cli::Category::All,
@@ -73,8 +85,8 @@ public:
   frontend::Config createConfig() const {
     frontend::Config config = frontend::Config::getDefault();
     config.useColorfulDiagMessage = false;
-    config.features =
-        common::Features::bulkMemory() | common::Features::mutableGlobals() | common::Features::signExtension();
+    config.features = common::Features::bulkMemory() | common::Features::mutableGlobals() |
+                      common::Features::signExtension() | common::Features::multiValue();
     if (configJson_.contains("asc_flags")) {
       nlohmann::json::array_t const &ascFlags = configJson_["asc_flags"].get<nlohmann::json::array_t>();
       for (nlohmann::basic_json<> const &flag : ascFlags) {
@@ -153,6 +165,8 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
     static std::vector<vb::NativeSymbol> const linkedAPI = []() {
       std::vector<vb::NativeSymbol> api = frontend::createAssemblyscriptAPI();
       api.push_back(STATIC_LINK("env", "seed", seedForSnapshotTest));
+      api.push_back(SnapshotApiMultiReturn::generateNativeSymbol(
+          "env", "multi_return_api", vb::NativeSymbol::Linkage::DYNAMIC, SnapshotApiMultiReturn::call));
       return api;
     }();
     r.initFromBytecode(vb::Span<const uint8_t>{wasm.data(), wasm.size()},
