@@ -15,8 +15,7 @@ function readVersion() {
 
 function parsePositiveInteger(value, optionName) {
   const parsed = Number.parseInt(value, 10);
-  if (!Number.isInteger(parsed) || parsed < 1)
-    throw new Error(`${optionName} must be a positive integer`);
+  if (!Number.isInteger(parsed) || parsed < 1) throw new Error(`${optionName} must be a positive integer`);
 
   return parsed;
 }
@@ -69,8 +68,7 @@ function analyzeDumpWithCli(dumpFile, options) {
   const snapshot = analyzeDump(dumpBuffer, wasmBytes);
 
   let summary = sortSummary(snapshot.summary, options.sort);
-  if (options.top !== undefined)
-    summary = summary.slice(0, options.top);
+  if (options.top !== undefined) summary = summary.slice(0, options.top);
 
   const output = {
     summary,
@@ -81,8 +79,7 @@ function analyzeDumpWithCli(dumpFile, options) {
     roots: snapshot.roots,
   };
 
-  if (options.objects)
-    output.objects = snapshot.objects;
+  if (options.objects) output.objects = snapshot.objects;
 
   const indent = options.pretty ? 2 : undefined;
   console.log(JSON.stringify(output, null, indent));
