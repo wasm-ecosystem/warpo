@@ -49,7 +49,7 @@ function readUint8Array(filePath, label) {
 function sortSummary(summary, sortField) {
   switch (sortField) {
     case "retained": {
-      return [...summary];
+      return summary;
     }
     case "shallow": {
       return summary.toSorted((lhs, rhs) => rhs.totalShallowSize - lhs.totalShallowSize);
