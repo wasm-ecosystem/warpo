@@ -36,6 +36,7 @@ jobs:
           CMAKE_ARGS: "-DWARPO_RELEASE=ON"
           OS_ID: ${{ matrix.os }}
       - run: npm run build:ts
+      - run: npm run build:parser:ts
 
       - name: pack build/warpo directory (unix)
         if: runner.os != 'Windows'
@@ -66,7 +67,6 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - run: npm ci
       - run: npm run build:ts
-      - run: npm run build:parser:ts
       - id: release_info
         uses: actions/github-script@v7
         with:
