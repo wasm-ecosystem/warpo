@@ -22,7 +22,7 @@ jobs:
       - run: npm ci
       - uses: ./.github/action/build
         with:
-          CMAKE_ARGS: "-DWARPO_RELEASE=ON"
+          CMAKE_ARGS: "-DWARPO_RELEASE=ON -DCMAKE_BUILD_TYPE=Release"
           OS_ID: "ubuntu-22.04"
       - run: npm run build:ts
       # enable docs is available
