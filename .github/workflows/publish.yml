@@ -33,7 +33,7 @@ jobs:
 
       - uses: ./.github/action/build
         with:
-          CMAKE_ARGS: "-DWARPO_RELEASE=ON"
+          CMAKE_ARGS: "-DWARPO_RELEASE=ON -DCMAKE_BUILD_TYPE=Release"
           OS_ID: ${{ matrix.os }}
       - run: npm run build:ts
       - run: npm run build:parser:ts

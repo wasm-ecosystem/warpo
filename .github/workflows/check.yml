@@ -11,9 +11,19 @@ concurrency:
     github.head_ref || github.ref }}"
   cancel-in-progress: true
 
+env:
+  NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+  NPM_CONFIG_REPLACE_REGISTRY_HOST: never
+  NPM_CONFIG_FETCH_RETRIES: 5
+  NPM_CONFIG_FETCH_RETRY_MINTIMEOUT: 20000
+  NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT: 120000
+
 jobs:
-  build_only:
-    runs-on: ubuntu-22.04
+  build_release_only:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -22,8 +32,8 @@ jobs:
       - run: npm ci
       - uses: ./.github/action/build
         with:
-          CMAKE_ARGS: "-DWARPO_RELEASE=ON"
-          OS_ID: "ubuntu-22.04"
+          CMAKE_ARGS: "-DWARPO_RELEASE=ON -DCMAKE_BUILD_TYPE=Release"
+          OS_ID: ${{ matrix.os }}
       - run: npm run build:ts
       # enable docs is available
       - run: npm run docs:build
