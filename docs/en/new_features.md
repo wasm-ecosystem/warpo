@@ -24,4 +24,5 @@ Comparison with AS, we support some new features.
 
 - [build and test with WARPO CLI](/en/using_compiler/build_and_test)
 - [closure](/en/using_language/details/closure)
+- [multi return](/en/using_language/details/multi_return)
 - [promise](/en/using_compiler/promise)
