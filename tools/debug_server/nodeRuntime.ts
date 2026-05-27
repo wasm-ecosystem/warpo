@@ -45,13 +45,7 @@ export class NodeRuntime implements Runtime {
 
     this.child = spawn(
       process.execPath,
-      [
-        `--inspect-brk=${port}`,
-        entryScript,
-        config.wasmFilePath,
-        config.entryFunctionName,
-        ...config.args.map(String),
-      ],
+      [`--inspect-brk=${port}`, entryScript, config.wasmFilePath, config.entryFunctionName, ...config.args.map(String)],
       { stdio: ["pipe", "pipe", "pipe"] }
     );
 
@@ -81,20 +75,30 @@ export class NodeRuntime implements Runtime {
         resolve();
       });
 
-      ws.addEventListener("error", (e) => reject(e));
+      ws.addEventListener("error", (e) => {
+        const message = e instanceof Error ? e.message : "WebSocket connection failed";
+        reject(new Error(message));
+      });
 
       ws.addEventListener("message", (ev) => {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const msg: CDPResponse = JSON.parse(String(ev.data));
         if (msg.method === "Debugger.scriptParsed") {
-          const lang = msg.params?.scriptLanguage as string | undefined;
-          if (lang === "WebAssembly") {
+          const params = msg.params;
+          const lang = params?.scriptLanguage;
+          if (
+            params &&
+            lang === "WebAssembly" &&
+            typeof params.scriptId === "string" &&
+            typeof params.url === "string"
+          ) {
             this.onModuleLoad?.({
-              scriptId: msg.params!.scriptId as string,
-              url: msg.params!.url as string,
+              scriptId: params.scriptId,
+              url: params.url,
             });
           }
         }
-      };
+      });
     });
   }
 

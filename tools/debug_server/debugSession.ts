@@ -84,38 +84,48 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.logAllBreakpoints();
   }
 
-  protected async launchRequest(response: DebugProtocol.LaunchResponse, args: WarpoLaunchRequestArguments): Promise<void> {
-    this.log(`Launch requested for: ${args.program}`);
+  protected launchRequest(response: DebugProtocol.LaunchResponse, args: WarpoLaunchRequestArguments): void {
+    void this.doLaunchRequest(response, args);
+  }
 
-    const launchType = args.launchType ?? "wasm file";
-    if (launchType === "wasm file") {
-      const runtimeName = args.runtime ?? "node";
-      let runtime: Runtime;
-      switch (runtimeName) {
-        case "node":
+  private async doLaunchRequest(
+    response: DebugProtocol.LaunchResponse,
+    args: WarpoLaunchRequestArguments
+  ): Promise<void> {
+    try {
+      this.log(`Launch requested for: ${args.program}`);
+
+      const launchType = args.launchType ?? "wasm file";
+      if (launchType === "wasm file") {
+        const runtimeName = args.runtime ?? "node";
+        let runtime: Runtime;
+        if (runtimeName === "node") {
           runtime = new NodeRuntime();
-          break;
-        default:
+        } else {
           this.sendErrorResponse(response, 1, `Unknown runtime "${runtimeName}"`);
           return;
+        }
+
+        runtime.onModuleLoad = (info) => {
+          this.log(`Wasm module loaded: ${info.url} (scriptId: ${info.scriptId})`);
+        };
+
+        this.runtime?.dispose();
+        this.runtime = runtime;
+        await runtime.launch({
+          wasmFilePath: path.resolve(args.program),
+          entryFunctionName: args.entryFunctionName ?? "main",
+          args: args.args ?? [],
+        });
+
+        this.log(`[${runtime.name}] Runtime launched`);
       }
 
-      runtime.onModuleLoad = (info) => {
-        this.log(`Wasm module loaded: ${info.url} (scriptId: ${info.scriptId})`);
-      };
-
-      this.runtime?.dispose();
-      this.runtime = runtime;
-      await runtime.launch({
-        wasmFilePath: path.resolve(args.program),
-        entryFunctionName: args.entryFunctionName ?? "main",
-        args: args.args ?? [],
-      });
-
-      this.log(`[${runtime.name}] Runtime launched`);
+      this.sendResponse(response);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.sendErrorResponse(response, 1, `Launch failed: ${message}`);
     }
-
-    this.sendResponse(response);
   }
 
   protected threadsRequest(response: DebugProtocol.ThreadsResponse): void {

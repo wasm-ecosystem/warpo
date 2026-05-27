@@ -89,7 +89,7 @@ export default tseslint.config(
       "n/no-unsupported-features/node-builtins": [
         "error",
         {
-          version: ">=22.0.0",
+          version: ">=22.4.0",
         },
       ],
     },

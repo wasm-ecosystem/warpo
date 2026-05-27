@@ -1,5 +1,6 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
+/* eslint-disable n/no-process-exit, unicorn/no-process-exit */
 
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -32,7 +33,8 @@ async function main() {
   }
 
   console.log(`Calling ${entryFunctionName}(${args.join(", ")})...`);
-  const result = Reflect.apply(fn, undefined, args);
+  const result = (fn as (...a: number[]) => unknown)(...args);
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string
   console.log(`Result: ${result}`);
 }
 
