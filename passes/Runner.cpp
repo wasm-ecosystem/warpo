@@ -135,11 +135,13 @@ static void optimize(AsModule const &m, Config const &config) {
     passRunner->setDebug(false);
     passRunner->addDefaultOptimizationPasses();
     {
-      // Run a small late cleanup after the final default optimization batch.
-      // CombineSwitchTargets only rewrites the br_table targets in
-      // __visit_members. Once late inlining/simplification has exposed
-      // identical case continuations, that retargeting makes the old inner
-      // case continuation unreachable.
+      // Run CombineSwitchTargets again after the final default optimization batch.
+      // It checks __visit_members for duplicate visit continuations and merges
+      // the corresponding br_table cases. Before late inlining, two cases may
+      // still be separate calls such as A.visit and B.visit, so
+      // CombineSwitchTargets cannot treat them as identical. After inlining,
+      // both cases become the same bytecode, and rerunning the pass here lets
+      // it merge them.
       //
       // Schematic WAT progression:
       // 1) After CombineSwitchTargets, only the branch targets change:
