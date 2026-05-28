@@ -38,13 +38,7 @@ jobs:
       - run: npm run build:ts
       - run: npm run build:parser:ts
 
-      - name: pack build/warpo directory (unix)
-        if: runner.os != 'Windows'
-        run: |
-          tar -czvf build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.tar.gz -C build warpo
-      - name: pack build/warpo directory (windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
+      - name: pack build/warpo directory
         run: |
           tar -czvf build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.tar.gz -C build warpo
       - name: upload to GitHub Release

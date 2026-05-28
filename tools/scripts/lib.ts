@@ -75,6 +75,10 @@ function getCurrentMachineAsset(assets: ReleaseAsset[], version: string): Releas
   );
 }
 
+function getBinaryName(): string {
+  return os.platform() === "win32" ? "warpo_asc.exe" : "warpo_asc";
+}
+
 function getExtractedPath(archivePath: string): string {
   if (archivePath.endsWith(".tar.gz")) {
     return join(dirname, basename(archivePath, ".tar.gz"));
@@ -184,21 +188,21 @@ async function downloadForCurrentMachineBinary(proxy?: string): Promise<string |
     return process.env["WARPO_BINARY_PATH"];
   }
   if (process.env["WARPO_FORCE_DOWNLOAD"] !== "1" && existsSync(join(dirname, "warpo"))) {
-    return join(dirname, "warpo", "warpo_asc");
+    return join(dirname, "warpo", getBinaryName());
   }
 
   const version = getVersion();
 
   if (version === "0.0.0") {
     // for development purpose, use local build
-    return join(warpoRoot, "build", "warpo", "warpo_asc");
+    return join(warpoRoot, "build", "warpo", getBinaryName());
   }
 
   const assets = await getReleaseAssets(version, proxy);
   const asset = getCurrentMachineAsset(assets, version);
   const outputPath = getExtractedPathForAsset(asset);
   await downloadAndExtractAsset(asset, version, proxy);
-  return join(outputPath, "warpo", "warpo_asc");
+  return join(outputPath, "warpo", getBinaryName());
 }
 
 export async function build(options: Option): Promise<number> {
