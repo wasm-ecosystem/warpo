@@ -878,17 +878,14 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $folding-inner0
    block $invalid
-    block
-     block $~lib/string/String
-      local.get $0
-      i32.const 8
-      i32.sub
-      i32.load
-      br_table $~lib/string/String $~lib/string/String $~lib/string/String $folding-inner0 $folding-inner0 $folding-inner0 $invalid
-     end
-     return
+    block $~lib/string/String
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $~lib/string/String $~lib/string/String $~lib/string/String $folding-inner0 $folding-inner0 $folding-inner0 $invalid
     end
-    unreachable
+    return
    end
    unreachable
   end

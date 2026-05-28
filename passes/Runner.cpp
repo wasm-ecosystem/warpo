@@ -134,6 +134,63 @@ static void optimize(AsModule const &m, Config const &config) {
     std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
     passRunner->setDebug(false);
     passRunner->addDefaultOptimizationPasses();
+    {
+      // Run a small late cleanup after the final default optimization batch.
+      // CombineSwitchTargets only rewrites the br_table targets in
+      // __visit_members. Once late inlining/simplification has exposed
+      // identical case continuations, that retargeting makes the old inner
+      // case continuation unreachable.
+      //
+      // Schematic WAT progression:
+      // 1) After CombineSwitchTargets, only the branch targets change:
+      //      br_table ... $func1 $func2 $invalid
+      //   => br_table ... $func2 $func2 $invalid
+      //
+      //    but the old nested structure is still there:
+      //      (block $func2
+      //        (block $func1
+      //          (block $tuple ...)
+      //        )
+      //        ;; old $func1 continuation, now unreachable
+      //        local.get $0
+      //        i32.load offset=4
+      //        call $~lib/rt/itcms/__visit
+      //        return
+      //      )
+      //      ;; canonical $func2 continuation
+      //      local.get $0
+      //      i32.load offset=4
+      //      call $~lib/rt/itcms/__visit
+      //      return
+      //
+      // 2) vacuum turns the old $func1 continuation into an explicit
+      //    unreachable, but the wrapper block still exists:
+      //      (block $func2
+      //        (block $func1
+      //          (block $tuple ...)
+      //        )
+      //        unreachable
+      //      )
+      //      local.get $0
+      //      i32.load offset=4
+      //      call $~lib/rt/itcms/__visit
+      //      return
+      //
+      // 3) merge-blocks can then remove that useless wrapper block shape:
+      //      (block $func2
+      //        (block $tuple ...)
+      //      )
+      //      local.get $0
+      //      i32.load offset=4
+      //      call $~lib/rt/itcms/__visit
+      //      return
+      //
+      // 4) remove-unused-names strips any labels left without incoming branches.
+      passRunner->add(std::unique_ptr<wasm::Pass>{createCombineSwitchTargetsPass()});
+      passRunner->add("vacuum");
+      passRunner->add("merge-blocks");
+      passRunner->add("remove-unused-names");
+    }
     passRunner->add(std::unique_ptr<wasm::Pass>{createMergeDataSectionPass()});
     passRunner->run();
   }
