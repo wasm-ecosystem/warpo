@@ -12,6 +12,8 @@ The WARPO CLI now provides project-oriented subcommands for the common local wor
 
 These commands are the recommended entry points when you are working inside a WARPO project.
 
+If you want to prefetch compiler binaries manually, WARPO also provides `npx warpo download` and `npx warpo download --all`.
+
 ## Build a Project
 
 `npx warpo build` forwards all extra arguments to the compiler and adds a few project-friendly defaults:
@@ -45,6 +47,25 @@ npx warpo build --target debug
 npx warpo build --target release
 npx warpo build --config ./configs/asconfig.json --target release
 ```
+
+If `--proxy` is set, WARPO uses that proxy for release metadata and compiler archive downloads. Otherwise it falls back to `HTTPS_PROXY` or `https_proxy` from the environment.
+
+## Download Prebuilt Compiler
+
+`npx warpo download` downloads and extracts the prebuilt WARPO compiler for the current OS and CPU. Use this when you want to prefetch the compiler archive instead of letting `build` download it on demand.
+
+`npx warpo download --all` downloads and extracts all published release archives for the current WARPO version.
+
+Common commands:
+
+```bash
+npx warpo download
+npx warpo download --all
+npx warpo download --proxy http://127.0.0.1:7890
+npx warpo download --all --proxy http://127.0.0.1:7890
+```
+
+If `--proxy` is set, WARPO uses that proxy for release metadata and archive downloads. Otherwise it falls back to `HTTPS_PROXY` or `https_proxy` from the environment.
 
 The legacy direct form is still supported:
 

@@ -4,7 +4,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { Command } from "commander";
-import { build as runCompiler } from "./scripts/lib.js";
+import { build as runCompiler, downloadAll, downloadForCurrentMachine } from "./scripts/lib.js";
 import { runFromCliArgs as runUnitTestsFromCliArgs } from "./test_runner/cli.js";
 
 export interface CliOption {
@@ -32,6 +32,7 @@ export async function main(options: CliOption): Promise<number> {
   if (
     first !== undefined &&
     first !== "build" &&
+    first !== "download" &&
     first !== "test" &&
     first !== "-h" &&
     first !== "--help" &&
@@ -51,9 +52,10 @@ export async function main(options: CliOption): Promise<number> {
   program
     .command("build")
     .description("Build AssemblyScript project via WARPO compiler")
+    .option("--proxy <url>", "Proxy URL for WARPO binary download")
     .allowUnknownOption(true)
     .argument("[buildArgs...]", "Arguments passed through to warpo_asc")
-    .action(async () => {
+    .action(async (command: { proxy?: string }) => {
       const index = args.indexOf("build");
       const buildArgs = index === -1 ? [] : args.slice(index + 1);
       const cwd = options.cwd ?? process.cwd();
@@ -71,7 +73,20 @@ export async function main(options: CliOption): Promise<number> {
         env: options.env,
         cwd: options.cwd,
         onStdout: options.onStdout,
+        proxy: command.proxy,
       });
+    });
+  program
+    .command("download")
+    .description("Download WARPO prebuilt compiler archive")
+    .option("--all", "Download all release assets")
+    .option("--proxy <url>", "Proxy URL for WARPO binary download")
+    .action(async (command: { all?: boolean; proxy?: string }) => {
+      if (command.all) {
+        await downloadAll(command.proxy);
+        return;
+      }
+      await downloadForCurrentMachine(command.proxy);
     });
   program
     .command("test")
