@@ -4,7 +4,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { Command } from "commander";
-import { build as runCompiler, downloadAll, downloadForCurrentMachine } from "./scripts/lib.js";
+import { build as runCompiler, cleanDownloaded, downloadAll, downloadForCurrentMachine } from "./scripts/lib.js";
 import { runFromCliArgs as runUnitTestsFromCliArgs } from "./test_runner/cli.js";
 
 export interface CliOption {
@@ -80,8 +80,13 @@ export async function main(options: CliOption): Promise<number> {
     .command("download")
     .description("Download WARPO prebuilt compiler archive")
     .option("--all", "Download all release assets")
+    .option("--clean", "Remove pre-downloaded compiler folders")
     .option("--proxy <url>", "Proxy URL for WARPO binary download")
-    .action(async (command: { all?: boolean; proxy?: string }) => {
+    .action(async (command: { all?: boolean; clean?: boolean; proxy?: string }) => {
+      if (command.clean) {
+        await cleanDownloaded();
+        return;
+      }
       if (command.all) {
         await downloadAll(command.proxy);
         return;

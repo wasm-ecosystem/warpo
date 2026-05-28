@@ -1,7 +1,7 @@
 import * as os from "node:os";
 import { spawn } from "node:child_process";
 import { createWriteStream, existsSync, readFileSync } from "node:fs";
-import { access, mkdir, rm } from "node:fs/promises";
+import { access, mkdir, readdir, rm } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
@@ -22,6 +22,10 @@ const warpoRoot = join(dirname, "..", "..");
 interface ReleaseAsset {
   name: string;
   browser_download_url: string;
+}
+
+function isTarGzAsset(asset: ReleaseAsset): boolean {
+  return asset.name.endsWith(".tar.gz");
 }
 
 function getFetchOptions(proxy?: string): { dispatcher: ProxyAgent | undefined; headers: { "user-agent": string } } {
@@ -139,13 +143,40 @@ export async function downloadAll(proxy?: string): Promise<string[]> {
     throw new Error("download command is unavailable for development version 0.0.0");
   }
   const assets = await getReleaseAssets(version, proxy);
+  const tarGzAssets = assets.filter(isTarGzAsset);
   return await Promise.all(
-    assets.map(async (asset) => {
+    tarGzAssets.map(async (asset) => {
       const outputPath = getExtractedPathForAsset(asset);
       await downloadAndExtractAsset(asset, version, proxy);
       return outputPath;
     })
   );
+}
+
+export async function cleanDownloaded(): Promise<string[]> {
+  const version = getVersion();
+  const cachedDirs = [join(dirname, "warpo")];
+  const entries = await readdir(dirname, { withFileTypes: true });
+  for (const entry of entries) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+    if (!entry.name.startsWith(`warpo-${version}-`)) {
+      continue;
+    }
+    cachedDirs.push(join(dirname, entry.name));
+  }
+  const removedDirs: string[] = [];
+  await Promise.all(
+    cachedDirs.map(async (dirPath) => {
+      if (!(await pathExists(dirPath))) {
+        return;
+      }
+      await rm(dirPath, { recursive: true, force: true });
+      removedDirs.push(dirPath);
+    })
+  );
+  return removedDirs;
 }
 
 async function downloadForCurrentMachineBinary(proxy?: string): Promise<string | null> {

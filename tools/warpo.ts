@@ -8,6 +8,7 @@ import { main } from "./warpo_internal.js";
 
 main({ argv: processArgv.slice(2), env: processEnv })
   .then((code) => processExit(code))
-  .catch(() => {
+  .catch((error: unknown) => {
+    console.error(error);
     processExit(255);
   });
