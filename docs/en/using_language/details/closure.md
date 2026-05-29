@@ -177,7 +177,7 @@ export function _start(): void {
     trace(`tick: x = ${x}`);
     if (x >= 3) {
       if (intervalInfo) {
-        clearInterval_wrapper(intervalInfo);
+        clearInterval_wrapper(intervalInfo!);
       }
     }
   }
