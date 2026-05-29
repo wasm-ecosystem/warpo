@@ -10,6 +10,8 @@ import { runFromCliArgs as runUnitTestsFromCliArgs } from "./test_runner/cli.js"
 
 export interface CliOption {
   argv: string[];
+  env?: NodeJS.Dict<string>;
+  cwd?: string;
   onStdout?: (chunk: string) => void;
 }
 
@@ -38,7 +40,7 @@ export async function main(options: CliOption): Promise<number> {
     first !== "--version" &&
     first !== "-v"
   ) {
-    return await runCompiler({ argv: args });
+    return await runCompiler({ argv: args, env: options.env, cwd: options.cwd });
   }
 
   let returnCode = 0;
@@ -56,7 +58,7 @@ export async function main(options: CliOption): Promise<number> {
     .action(async () => {
       const index = args.indexOf("build");
       const buildArgs = index === -1 ? [] : args.slice(index + 1);
-      const cwd = process.cwd();
+      const cwd = options.cwd ?? process.cwd();
       const handleConfigOption = (args: string[]) => {
         const configPath = join(cwd, "asconfig.json");
         const hasConfig = args.includes("--config") || args.includes("-c");
@@ -68,6 +70,8 @@ export async function main(options: CliOption): Promise<number> {
       };
       returnCode = await runCompiler({
         argv: [handleConfigOption, handleProjectOption].reduce((args, handler) => handler(args), buildArgs),
+        env: options.env,
+        cwd: options.cwd,
         onStdout: options.onStdout,
       });
     });

@@ -11,6 +11,8 @@ import { fetch, ProxyAgent } from "undici";
 
 export interface Option {
   argv: string[];
+  env?: NodeJS.Dict<string>;
+  cwd?: string;
   onStdout?: (chunk: string) => void;
   proxy?: string;
 }
@@ -214,8 +216,8 @@ export async function build(options: Option): Promise<number> {
   const binary = await downloadForCurrentMachineBinary(options.proxy);
   const ps = spawn(binary, options.argv, {
     stdio: options.onStdout === undefined ? "inherit" : ["inherit", "pipe", "inherit"],
-    env: process.env,
-    cwd: process.cwd(),
+    env: options.env ?? process.env,
+    cwd: options.cwd ?? process.cwd(),
   });
   if (options.onStdout !== undefined) {
     ps.stdout.on("data", (chunk: Buffer) => {
