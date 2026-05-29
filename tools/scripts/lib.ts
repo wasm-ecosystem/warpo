@@ -28,8 +28,14 @@ function isTarGzAsset(asset: ReleaseAsset): boolean {
   return asset.name.endsWith(".tar.gz");
 }
 
+function getProxyUrl(proxy?: string): string | undefined {
+  return (
+    proxy ?? process.env.HTTPS_PROXY ?? process.env.https_proxy ?? process.env.HTTP_PROXY ?? process.env.http_proxy
+  );
+}
+
 function getFetchOptions(proxy?: string): { dispatcher: ProxyAgent | undefined; headers: { "user-agent": string } } {
-  const proxyUrl = proxy ?? process.env.HTTPS_PROXY ?? process.env.https_proxy;
+  const proxyUrl = getProxyUrl(proxy);
   return {
     dispatcher: proxyUrl ? new ProxyAgent(proxyUrl) : undefined,
     headers: { "user-agent": "warpo-release-downloader" },
@@ -65,14 +71,16 @@ function getAssetUrl(asset: ReleaseAsset, version: string): string {
   return process.env["WARPO_DOWNLOAD_BASE_URL"] ? `${base_url}/${version}/${asset.name}` : asset.browser_download_url;
 }
 
-function getCurrentMachineAsset(assets: ReleaseAsset[], version: string): ReleaseAsset {
-  const asset = assets.find((item) => item.name.includes(`-${os.platform()}-${os.arch()}.`));
-  if (asset) {
-    return asset;
-  }
-  throw new Error(
-    `there is no precompiled binary for ${version} + ${os.platform()} + ${os.arch()}, please compile from source.`
-  );
+function getCurrentMachineAssetName(version: string): string {
+  return `warpo-${version}-${os.platform()}-${os.arch()}.tar.gz`;
+}
+
+function createCurrentMachineAsset(version: string): ReleaseAsset {
+  const name = getCurrentMachineAssetName(version);
+  return {
+    name,
+    browser_download_url: `https://github.com/wasm-ecosystem/warpo/releases/download/${version}/${name}`,
+  };
 }
 
 function getBinaryName(): string {
@@ -134,8 +142,7 @@ export async function downloadForCurrentMachine(proxy?: string): Promise<string>
   if (version === "0.0.0") {
     throw new Error("download command is unavailable for development version 0.0.0");
   }
-  const assets = await getReleaseAssets(version, proxy);
-  const asset = getCurrentMachineAsset(assets, version);
+  const asset = createCurrentMachineAsset(version);
   const outputPath = getExtractedPathForAsset(asset);
   await downloadAndExtractAsset(asset, version, proxy);
   return outputPath;
@@ -198,8 +205,7 @@ async function downloadForCurrentMachineBinary(proxy?: string): Promise<string |
     return join(warpoRoot, "build", "warpo", getBinaryName());
   }
 
-  const assets = await getReleaseAssets(version, proxy);
-  const asset = getCurrentMachineAsset(assets, version);
+  const asset = createCurrentMachineAsset(version);
   const outputPath = getExtractedPathForAsset(asset);
   await downloadAndExtractAsset(asset, version, proxy);
   return join(outputPath, "warpo", getBinaryName());

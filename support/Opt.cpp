@@ -4,6 +4,7 @@
 
 #include <argparse/argparse.hpp>
 #include <cassert>
+#include <fmt/base.h>
 #include <functional>
 #include <map>
 #include <vector>
@@ -33,5 +34,6 @@ void warpo::cli::init(Category cat, argparse::ArgumentParser &program, int argc,
     for (auto const &fn : fns)
       fn(program);
   }
-  program.parse_args(argc, argv);
+  for (auto const &arg : program.parse_known_args(argc, argv))
+    fmt::println(stderr, "WARNING: unknown argument ignored: {}", arg);
 }

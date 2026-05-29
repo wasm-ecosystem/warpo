@@ -12,7 +12,7 @@ The WARPO CLI now provides project-oriented subcommands for the common local wor
 
 These commands are the recommended entry points when you are working inside a WARPO project.
 
-If you want to prefetch compiler binaries manually, WARPO also provides `npx warpo download` and `npx warpo download --all`.
+If you want to manage prefetched compiler binaries manually, WARPO also provides `npx warpo download`, `npx warpo download --all`, and `npx warpo download --clean`.
 
 ## Build a Project
 
@@ -48,7 +48,7 @@ npx warpo build --target release
 npx warpo build --config ./configs/asconfig.json --target release
 ```
 
-If `--proxy` is set, WARPO uses that proxy for release metadata and compiler archive downloads. Otherwise it falls back to `HTTPS_PROXY` or `https_proxy` from the environment.
+When `build` needs to download the compiler, it uses proxy settings from the environment only. Supported variables are `HTTPS_PROXY`, `https_proxy`, `HTTP_PROXY`, and `http_proxy`.
 
 ## Download Prebuilt Compiler
 
@@ -56,16 +56,19 @@ If `--proxy` is set, WARPO uses that proxy for release metadata and compiler arc
 
 `npx warpo download --all` downloads and extracts all published release archives for the current WARPO version.
 
+`npx warpo download --clean` removes previously extracted predownloaded compiler folders for the current WARPO version.
+
 Common commands:
 
 ```bash
 npx warpo download
 npx warpo download --all
+npx warpo download --clean
 npx warpo download --proxy http://127.0.0.1:7890
 npx warpo download --all --proxy http://127.0.0.1:7890
 ```
 
-If `--proxy` is set, WARPO uses that proxy for release metadata and archive downloads. Otherwise it falls back to `HTTPS_PROXY` or `https_proxy` from the environment.
+If `--proxy` is set, WARPO uses that proxy for release metadata and archive downloads. Otherwise it falls back to `HTTPS_PROXY`, `https_proxy`, `HTTP_PROXY`, or `http_proxy` from the environment.
 
 The legacy direct form is still supported:
 

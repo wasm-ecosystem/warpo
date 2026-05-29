@@ -52,10 +52,9 @@ export async function main(options: CliOption): Promise<number> {
   program
     .command("build")
     .description("Build AssemblyScript project via WARPO compiler")
-    .option("--proxy <url>", "Proxy URL for WARPO binary download")
     .allowUnknownOption(true)
     .argument("[buildArgs...]", "Arguments passed through to warpo_asc")
-    .action(async (command: { proxy?: string }) => {
+    .action(async () => {
       const index = args.indexOf("build");
       const buildArgs = index === -1 ? [] : args.slice(index + 1);
       const cwd = options.cwd ?? process.cwd();
@@ -73,7 +72,6 @@ export async function main(options: CliOption): Promise<number> {
         env: options.env,
         cwd: options.cwd,
         onStdout: options.onStdout,
-        proxy: command.proxy,
       });
     });
   program
