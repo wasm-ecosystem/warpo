@@ -12,8 +12,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build_only:
-    runs-on: ubuntu-22.04
+  build_release_only:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-22.04-arm, macos-latest, windows-latest, windows-11-arm]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -22,8 +25,8 @@ jobs:
       - run: npm ci
       - uses: ./.github/action/build
         with:
-          CMAKE_ARGS: "-DWARPO_RELEASE=ON"
-          OS_ID: "ubuntu-22.04"
+          CMAKE_ARGS: "-DWARPO_RELEASE=ON -DCMAKE_BUILD_TYPE=Release"
+          OS_ID: ${{ matrix.os }}
       - run: npm run build:ts
       # enable docs is available
       - run: npm run docs:build
@@ -31,7 +34,7 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-22.04, ubuntu-22.04-arm, macos-latest, windows-latest, windows-11-arm]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Configure Git to preserve line endings
