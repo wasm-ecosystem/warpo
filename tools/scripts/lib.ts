@@ -5,18 +5,17 @@ import { access, mkdir, readdir, rm } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
+import { fileURLToPath } from "node:url";
 import * as tar from "tar";
 import { fetch, ProxyAgent } from "undici";
 
 export interface Option {
-  env: NodeJS.Dict<string>;
   argv: string[];
-  cwd?: string;
   onStdout?: (chunk: string) => void;
   proxy?: string;
 }
 
-const dirname = import.meta.dirname;
+const dirname = fileURLToPath(new URL(".", import.meta.url));
 const warpoRoot = join(dirname, "..", "..");
 
 interface ReleaseAsset {
@@ -215,8 +214,8 @@ export async function build(options: Option): Promise<number> {
   const binary = await downloadForCurrentMachineBinary(options.proxy);
   const ps = spawn(binary, options.argv, {
     stdio: options.onStdout === undefined ? "inherit" : ["inherit", "pipe", "inherit"],
-    env: options.env,
-    cwd: options.cwd,
+    env: process.env,
+    cwd: process.cwd(),
   });
   if (options.onStdout !== undefined) {
     ps.stdout.on("data", (chunk: Buffer) => {

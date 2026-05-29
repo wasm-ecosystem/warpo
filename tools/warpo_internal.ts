@@ -3,18 +3,17 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { Command } from "commander";
 import { build as runCompiler, cleanDownloaded, downloadAll, downloadForCurrentMachine } from "./scripts/lib.js";
 import { runFromCliArgs as runUnitTestsFromCliArgs } from "./test_runner/cli.js";
 
 export interface CliOption {
-  env: NodeJS.Dict<string>;
   argv: string[];
-  cwd?: string;
   onStdout?: (chunk: string) => void;
 }
 
-const warpoRoot = join(import.meta.dirname, "..");
+const warpoRoot = join(fileURLToPath(new URL(".", import.meta.url)), "..");
 
 function getVersion(): string {
   try {
@@ -39,7 +38,7 @@ export async function main(options: CliOption): Promise<number> {
     first !== "--version" &&
     first !== "-v"
   ) {
-    return await runCompiler({ argv: args, env: options.env, cwd: options.cwd });
+    return await runCompiler({ argv: args });
   }
 
   let returnCode = 0;
@@ -57,7 +56,7 @@ export async function main(options: CliOption): Promise<number> {
     .action(async () => {
       const index = args.indexOf("build");
       const buildArgs = index === -1 ? [] : args.slice(index + 1);
-      const cwd = options.cwd ?? process.cwd();
+      const cwd = process.cwd();
       const handleConfigOption = (args: string[]) => {
         const configPath = join(cwd, "asconfig.json");
         const hasConfig = args.includes("--config") || args.includes("-c");
@@ -69,8 +68,6 @@ export async function main(options: CliOption): Promise<number> {
       };
       returnCode = await runCompiler({
         argv: [handleConfigOption, handleProjectOption].reduce((args, handler) => handler(args), buildArgs),
-        env: options.env,
-        cwd: options.cwd,
         onStdout: options.onStdout,
       });
     });
