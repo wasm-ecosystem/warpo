@@ -2641,17 +2641,11 @@
      block $"~lib/map/MapIterator<i32,i32>"
       block $~lib/tuple/SmallTuple
        block $"~lib/map/Map<i32,i32>"
-        block $~lib/arraybuffer/ArrayBufferView
-         local.get $0
-         i32.const 8
-         i32.sub
-         i32.load
-         br_table $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/iterator/Iterator<[i32, i32]>" $~lib/arraybuffer/ArrayBufferView $"~lib/map/Map<i32,i32>" $~lib/tuple/SmallTuple $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/map/MapIterator<i32,i32>" $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/iterator/IteratorResult<[i32, i32]>" $invalid
-        end
         local.get $0
+        i32.const 8
+        i32.sub
         i32.load
-        call $~lib/rt/itcms/__visit
-        return
+        br_table $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/iterator/IteratorResult<[i32, i32]>" $"~lib/map/Map<i32,i32>" $~lib/tuple/SmallTuple $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/map/MapIterator<i32,i32>" $"~lib/iterator/Iterator<[i32, i32]>" $"~lib/iterator/IteratorResult<[i32, i32]>" $invalid
        end
        local.get $0
        i32.load

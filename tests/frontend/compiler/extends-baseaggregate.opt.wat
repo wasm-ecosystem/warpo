@@ -1571,17 +1571,11 @@
     block $~lib/iterator/Iterable<extends-baseaggregate/A2>
      block $~lib/array/Array<extends-baseaggregate/A2>
       block $extends-baseaggregate/A2
-       block $extends-baseaggregate/A1
-        local.get $0
-        i32.const 8
-        i32.sub
-        i32.load
-        br_table $~lib/iterator/Iterable<extends-baseaggregate/A2> $~lib/iterator/Iterable<extends-baseaggregate/A2> $~lib/iterator/Iterable<extends-baseaggregate/A2> $folding-inner0 $folding-inner0 $extends-baseaggregate/A1 $folding-inner0 $extends-baseaggregate/A2 $~lib/array/Array<extends-baseaggregate/A2> $~lib/iterator/Iterable<extends-baseaggregate/A2> $~lib/array/Array<extends-baseaggregate/A2> $~lib/iterator/Iterable<extends-baseaggregate/A2> $invalid
-       end
        local.get $0
-       i32.load offset=16
-       call $~lib/rt/itcms/__visit
-       return
+       i32.const 8
+       i32.sub
+       i32.load
+       br_table $~lib/iterator/Iterable<extends-baseaggregate/A2> $~lib/iterator/Iterable<extends-baseaggregate/A2> $~lib/iterator/Iterable<extends-baseaggregate/A2> $folding-inner0 $folding-inner0 $extends-baseaggregate/A2 $folding-inner0 $extends-baseaggregate/A2 $~lib/array/Array<extends-baseaggregate/A2> $~lib/iterator/Iterable<extends-baseaggregate/A2> $~lib/array/Array<extends-baseaggregate/A2> $~lib/iterator/Iterable<extends-baseaggregate/A2> $invalid
       end
       local.get $0
       i32.load offset=16

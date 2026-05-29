@@ -1571,19 +1571,13 @@
   block $invalid
    block $~lib/tuple/SmallTuple
     block $tuple-type-field/A
-     block $~lib/arraybuffer/ArrayBufferView
-      block $~lib/string/String
-       local.get $0
-       i32.const 8
-       i32.sub
-       i32.load
-       br_table $~lib/string/String $~lib/string/String $~lib/string/String $~lib/arraybuffer/ArrayBufferView $tuple-type-field/A $~lib/tuple/SmallTuple $invalid
-      end
-      return
+     block $~lib/string/String
+      local.get $0
+      i32.const 8
+      i32.sub
+      i32.load
+      br_table $~lib/string/String $~lib/string/String $~lib/string/String $tuple-type-field/A $tuple-type-field/A $~lib/tuple/SmallTuple $invalid
      end
-     local.get $0
-     i32.load
-     call $~lib/rt/itcms/__visit
      return
     end
     local.get $0

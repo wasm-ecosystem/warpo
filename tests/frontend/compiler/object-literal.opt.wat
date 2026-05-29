@@ -1705,21 +1705,15 @@
    block $object-literal/OmittedFoo
     block $object-literal/MixedOmitted
      block $object-literal/OmittedTypes
-      block $object-literal/Managed
-       block $~lib/arraybuffer/ArrayBufferView
-        local.get $0
-        i32.const 8
-        i32.sub
-        i32.load
-        br_table $object-literal/OmittedTypes $object-literal/OmittedTypes $object-literal/OmittedTypes $~lib/arraybuffer/ArrayBufferView $object-literal/Managed $object-literal/OmittedTypes $object-literal/MixedOmitted $object-literal/OmittedFoo $invalid
-       end
+      block $~lib/arraybuffer/ArrayBufferView
        local.get $0
+       i32.const 8
+       i32.sub
        i32.load
-       call $~lib/rt/itcms/__visit
-       return
+       br_table $object-literal/OmittedTypes $object-literal/OmittedTypes $object-literal/OmittedTypes $~lib/arraybuffer/ArrayBufferView $object-literal/MixedOmitted $object-literal/OmittedTypes $object-literal/MixedOmitted $object-literal/OmittedFoo $invalid
       end
       local.get $0
-      i32.load offset=4
+      i32.load
       call $~lib/rt/itcms/__visit
       return
      end

@@ -943,19 +943,13 @@
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
    block $issues/1095/Foo
-    block $~lib/arraybuffer/ArrayBufferView
-     block $~lib/string/String
-      local.get $0
-      i32.const 8
-      i32.sub
-      i32.load
-      br_table $~lib/string/String $~lib/string/String $~lib/string/String $~lib/arraybuffer/ArrayBufferView $issues/1095/Foo $invalid
-     end
-     return
+    block $~lib/string/String
+     local.get $0
+     i32.const 8
+     i32.sub
+     i32.load
+     br_table $~lib/string/String $~lib/string/String $~lib/string/String $issues/1095/Foo $issues/1095/Foo $invalid
     end
-    local.get $0
-    i32.load
-    call $~lib/rt/itcms/__visit
     return
    end
    local.get $0
