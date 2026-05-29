@@ -125,6 +125,19 @@ function getExtractedPathForAsset(asset: ReleaseAsset): string {
   return getExtractedPath(join(dirname, asset.name));
 }
 
+function applyDefaultBuildOptions(args: string[], cwd: string): string[] {
+  const handleConfigOption = (args: string[]) => {
+    const configPath = join(cwd, "asconfig.json");
+    const hasConfig = args.includes("--config") || args.includes("-c");
+    return !hasConfig && existsSync(configPath) ? [...args, "--config", configPath] : args;
+  };
+  const handleProjectOption = (args: string[]) => {
+    const hasProject = args.includes("--project") || args.includes("-p");
+    return !hasProject && existsSync(join(cwd, "create.ts")) ? [...args, "--project", cwd] : args;
+  };
+  return [handleConfigOption, handleProjectOption].reduce((nextArgs, handler) => handler(nextArgs), args);
+}
+
 async function downloadAndExtractAsset(asset: ReleaseAsset, version: string, proxy?: string): Promise<void> {
   const archivePath = join(dirname, asset.name);
   const outputPath = getExtractedPathForAsset(asset);
@@ -213,11 +226,13 @@ async function downloadForCurrentMachineBinary(proxy?: string): Promise<string |
 }
 
 export async function build(options: Option): Promise<number> {
+  const cwd = options.cwd ?? process.cwd();
+  const argv = applyDefaultBuildOptions(options.argv, cwd);
   const binary = await downloadForCurrentMachineBinary(options.proxy);
-  const ps = spawn(binary, options.argv, {
+  const ps = spawn(binary, argv, {
     stdio: options.onStdout === undefined ? "inherit" : ["inherit", "pipe", "inherit"],
     env: options.env ?? process.env,
-    cwd: options.cwd ?? process.cwd(),
+    cwd,
   });
   if (options.onStdout !== undefined) {
     ps.stdout.on("data", (chunk: Buffer) => {
