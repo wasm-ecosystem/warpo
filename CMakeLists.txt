@@ -50,6 +50,8 @@ if(MSVC)
     $<$<CONFIG:>:/MD> # ---------|
     $<$<CONFIG:Debug>:/MDd> # ---|-- Dynamic link the runtime libraries
     $<$<CONFIG:Release>:/MD> # --|
+    $<$<CONFIG:RelWithDebInfo>:/MD>
+    $<$<CONFIG:MinSizeRel>:/MD>
   )
 
   foreach(config DEBUG RELWITHDEBINFO)
