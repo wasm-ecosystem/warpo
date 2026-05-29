@@ -1960,17 +1960,11 @@
    block $~lib/iterator/IteratorResult<~lib/string/String>
     block $~lib/iterator/Iterator<~lib/string/String>
      block $~lib/string/StringIterator
-      block $~lib/arraybuffer/ArrayBufferView
-       local.get $0
-       i32.const 8
-       i32.sub
-       i32.load
-       br_table $~lib/iterator/Iterator<~lib/string/String> $~lib/iterator/Iterator<~lib/string/String> $~lib/iterator/Iterator<~lib/string/String> $~lib/arraybuffer/ArrayBufferView $~lib/string/StringIterator $~lib/iterator/Iterator<~lib/string/String> $~lib/iterator/IteratorResult<~lib/string/String> $invalid
-      end
       local.get $0
+      i32.const 8
+      i32.sub
       i32.load
-      call $~lib/rt/itcms/__visit
-      return
+      br_table $~lib/iterator/Iterator<~lib/string/String> $~lib/iterator/Iterator<~lib/string/String> $~lib/iterator/Iterator<~lib/string/String> $~lib/iterator/IteratorResult<~lib/string/String> $~lib/string/StringIterator $~lib/iterator/Iterator<~lib/string/String> $~lib/iterator/IteratorResult<~lib/string/String> $invalid
      end
      local.get $0
      i32.load offset=8

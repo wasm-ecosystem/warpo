@@ -1747,19 +1747,13 @@
     block $field-initialization/SomeOtherObject
      block $field-initialization/SomeObject
       block $field-initialization/Inherit_Ctor
-       block $field-initialization/Inherit
-        block $field-initialization/Value_Ctor_Init
-         local.get $0
-         i32.const 8
-         i32.sub
-         i32.load
-         br_table $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $folding-inner0 $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $folding-inner0 $folding-inner0 $folding-inner0 $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $field-initialization/Inherit $folding-inner0 $field-initialization/Inherit_Ctor $field-initialization/SomeObject $field-initialization/SomeOtherObject $folding-inner0 $folding-inner0 $folding-inner0 $invalid
-        end
-        return
+       block $field-initialization/Value_Ctor_Init
+        local.get $0
+        i32.const 8
+        i32.sub
+        i32.load
+        br_table $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $folding-inner0 $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $folding-inner0 $folding-inner0 $folding-inner0 $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $field-initialization/Value_Ctor_Init $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $folding-inner0 $field-initialization/Inherit_Ctor $folding-inner0 $field-initialization/Inherit_Ctor $field-initialization/SomeObject $field-initialization/SomeOtherObject $folding-inner0 $folding-inner0 $folding-inner0 $invalid
        end
-       local.get $0
-       i32.load
-       call $~lib/rt/itcms/__visit
        return
       end
       local.get $0

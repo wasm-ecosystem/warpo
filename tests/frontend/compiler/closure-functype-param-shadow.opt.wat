@@ -1635,61 +1635,55 @@
   (local $1 i64)
   block $invalid
    block $~lib/function/Function<%28~lib/object/Object%29=>void>
-    block $~lib/function/Function<%28%28~lib/object/Object%29=>void%29=>void>
-     block $~lib/tuple/SmallTuple
-      block $closure-functype-param-shadow/C1
-       block $~lib/arraybuffer/ArrayBufferView
-        local.get $0
-        i32.const 8
-        i32.sub
-        i32.load
-        br_table $closure-functype-param-shadow/C1 $closure-functype-param-shadow/C1 $closure-functype-param-shadow/C1 $~lib/arraybuffer/ArrayBufferView $closure-functype-param-shadow/C1 $~lib/tuple/SmallTuple $~lib/function/Function<%28%28~lib/object/Object%29=>void%29=>void> $~lib/function/Function<%28~lib/object/Object%29=>void> $invalid
-       end
+    block $~lib/tuple/SmallTuple
+     block $closure-functype-param-shadow/C1
+      block $~lib/arraybuffer/ArrayBufferView
        local.get $0
+       i32.const 8
+       i32.sub
        i32.load
-       call $~lib/rt/itcms/__visit
-       return
+       br_table $closure-functype-param-shadow/C1 $closure-functype-param-shadow/C1 $closure-functype-param-shadow/C1 $~lib/arraybuffer/ArrayBufferView $closure-functype-param-shadow/C1 $~lib/tuple/SmallTuple $~lib/function/Function<%28~lib/object/Object%29=>void> $~lib/function/Function<%28~lib/object/Object%29=>void> $invalid
       end
+      local.get $0
+      i32.load
+      call $~lib/rt/itcms/__visit
       return
-     end
-     local.get $0
-     local.get $0
-     i32.const 20
-     i32.sub
-     i32.load offset=16
-     i32.add
-     i32.const 8
-     i32.sub
-     i64.load
-     local.set $1
-     loop $while-continue|0
-      local.get $1
-      i64.const 0
-      i64.ne
-      if
-       local.get $0
-       local.get $1
-       i64.ctz
-       i32.wrap_i64
-       i32.const 2
-       i32.shl
-       i32.add
-       i32.load
-       call $~lib/rt/itcms/__visit
-       local.get $1
-       local.get $1
-       i64.const 1
-       i64.sub
-       i64.and
-       local.set $1
-       br $while-continue|0
-      end
      end
      return
     end
     local.get $0
-    i32.load offset=4
-    call $~lib/rt/itcms/__visit
+    local.get $0
+    i32.const 20
+    i32.sub
+    i32.load offset=16
+    i32.add
+    i32.const 8
+    i32.sub
+    i64.load
+    local.set $1
+    loop $while-continue|0
+     local.get $1
+     i64.const 0
+     i64.ne
+     if
+      local.get $0
+      local.get $1
+      i64.ctz
+      i32.wrap_i64
+      i32.const 2
+      i32.shl
+      i32.add
+      i32.load
+      call $~lib/rt/itcms/__visit
+      local.get $1
+      local.get $1
+      i64.const 1
+      i64.sub
+      i64.and
+      local.set $1
+      br $while-continue|0
+     end
+    end
     return
    end
    local.get $0
