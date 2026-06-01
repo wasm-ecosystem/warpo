@@ -23,7 +23,6 @@
 #include "LinkedAPI.hpp"
 #include "ModuleResolver.hpp"
 #include "warpo/frontend/Compiler.hpp"
-#include "warpo/support/Debug.hpp"
 #include "warpo/support/FileSystem.hpp"
 #include "warpo/support/Statistics.hpp"
 
@@ -37,42 +36,7 @@ namespace warpo::frontend {
 
 namespace {
 
-#define PASS_NAME "FrontendCompiler"
-
 enum WasmFFIBool : uint32_t { WASM_FALSE = 0, WASM_TRUE = 1 };
-
-constexpr std::string_view tracedIndexLibPath = "~lib/index.ts";
-constexpr std::string_view tracedObjectLibKey = "object";
-constexpr std::string_view tracedObjectLibPath = "~lib/object.ts";
-constexpr std::string_view tracedRuntimeLibPath = "~lib/rt/index.ts";
-
-bool isFrontendTraceEnabled() { return support::isDebug(PASS_NAME); }
-
-std::string previewSource(std::string_view source) {
-  size_t const previewLength = source.size() < 96U ? source.size() : 96U;
-  std::string preview{source.substr(0U, previewLength)};
-  for (char &ch : preview)
-    if (ch == '\r' || ch == '\n' || ch == '\t')
-      ch = ' ';
-  return preview;
-}
-
-void traceEmbeddedLibraryEntry(std::string_view key) {
-  if (!isFrontendTraceEnabled())
-    return;
-
-  auto const it = embed_library_sources.find(std::string{key});
-  if (it == embed_library_sources.end()) {
-    fmt::println("[frontend] embedded '{}' missing", key);
-    return;
-  }
-
-  fmt::println("[frontend] embedded '{}' bytes={} preview='{}'", key, it->second.size(), previewSource(it->second));
-}
-
-bool shouldTraceParsedPath(std::string_view path) {
-  return path == tracedIndexLibPath || path == tracedObjectLibPath || path == tracedRuntimeLibPath;
-}
 
 std::string normalizePathForPlatform(std::filesystem::path const &filePath) {
   // NOLINTNEXTLINE(misc-const-correctness)
@@ -88,13 +52,6 @@ std::string normalizePathForPlatform(std::filesystem::path const &filePath) {
 
 void FrontendCompiler::parseFile(int32_t const program, std::optional<std::string_view> const &code,
                                  std::string_view path, IsEntry isEntry) {
-  if (isFrontendTraceEnabled() && shouldTraceParsedPath(path)) {
-    fmt::println("[frontend] parse '{}' entry={} has-code={} bytes={}", path, isEntry == IsEntry::YES, code.has_value(),
-                 code.has_value() ? code->size() : 0U);
-    if (code.has_value())
-      fmt::println("[frontend] parse preview '{}' -> '{}'", path, previewSource(*code));
-  }
-
   r.callExportedFunctionWithName<0>("__setArgumentsLength", 4U);
   if (code.has_value()) {
     r.callExportedFunctionWithName<0>("parse", program, r.allocString(code.value()), r.allocString(path), isEntry);
@@ -110,10 +67,6 @@ Dependency FrontendCompiler::getDependency(std::string const &nextFileInternalPa
     return moduleResolver_.getDependencyForUserCode(nextFileInternalPath);
 
   std::string const plainName = nextFileInternalPath.substr(std::string_view{libraryPrefix}.size());
-  if (isFrontendTraceEnabled() && plainName == tracedObjectLibKey) {
-    fmt::println("[frontend] dependency '{}' embedded={} extension-embedded={}", nextFileInternalPath,
-                 embed_library_sources.contains(plainName), embed_extension_library_sources.contains(plainName));
-  }
   if (embed_library_sources.contains(plainName))
     return {.text = std::string{embed_library_sources.at(plainName)}, .path = libraryPrefix + plainName + extension};
   if (embed_extension_library_sources.contains(plainName))
@@ -257,15 +210,6 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
 
     int32_t const program = r.callExportedFunctionWithName<1>("newProgram", option)[0].i32;
     r.callExportedFunctionWithName<1>("__pin", program);
-
-    if (isFrontendTraceEnabled()) {
-      fmt::println("[frontend] embedded builtin library count={}", embed_library_sources.size());
-      traceEmbeddedLibraryEntry("index");
-      traceEmbeddedLibraryEntry(tracedObjectLibKey);
-      traceEmbeddedLibraryEntry(config_.runtime == RuntimeKind::Incremental ? "rt/index-incremental"
-                                                                            : "rt/index-radical");
-    }
-
     initStat.release();
 
     support::PerfRAII parseStat{support::PerfItemKind::CompilationHIR_Parsing};
@@ -313,9 +257,6 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
 
     support::PerfRAII compileStat{support::PerfItemKind::CompilationHIR_Compilation};
 
-    if (isFrontendTraceEnabled())
-      fmt::println("[frontend] calling initializeProgram");
-
     r.callExportedFunctionWithName<0>("initializeProgram", program);
 
     int32_t const compiled = r.callExportedFunctionWithName<1>("compile", program)[0].i32;
@@ -326,8 +267,6 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
     compileStat.release();
     return {.m = std::move(asModule_), .errorMessage = errorMessage_};
   } catch (vb::TrapException const &e) {
-    if (isFrontendTraceEnabled())
-      fmt::println("[frontend] trap while compiling; inspect preceding [frontend] trace for builtin library state");
     r.getLogger() << "Error: " << e.what() << vb::endStatement;
     r.printStacktrace();
   } catch (std::exception const &e) {

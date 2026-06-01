@@ -59,7 +59,6 @@
     "@types/node": "^22.15.21",
     "@types/tar-stream": "^3.1.4",
     "@types/vscode": "^1.80.0",
-    "@types/yauzl": "^2.10.3",
     "@vscode/debugadapter-testsupport": "^1.65.0",
     "@vscode/vsce": "^3.0.0",
     "assemblyscript": "^0.28.9",
@@ -98,7 +97,6 @@
     "tar": "^7.5.15",
     "tar-stream": "^2.2.0",
     "undici": "^7.26.0",
-    "wasmparser": "^5.11.1",
-    "yauzl": "^2.10.0"
+    "wasmparser": "^5.11.1"
   }
 }
