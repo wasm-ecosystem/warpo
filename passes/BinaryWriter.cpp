@@ -25,7 +25,13 @@ void BinaryWriter::write() {
   }
   writer_.write();
   if (emitDwarf_) {
-    debugSections_ = DwarfGenerator::generateDebugSections(m_.variableInfo_);
+    debugSections_ = DwarfGenerator::generateDebugSections(
+        m_.variableInfo_, [this](std::string_view const globalName) -> std::optional<uint32_t> {
+          wasm::Name const name{globalName};
+          if (m_.get()->getGlobalOrNull(name) == nullptr)
+            return std::nullopt;
+          return writer_.getGlobalIndex(name);
+        });
     for (auto const &section : debugSections_) {
       wasm::CustomSection const customSection{
           .name = section.first(),

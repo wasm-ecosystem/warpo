@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <fmt/base.h>
-#include <queue>
 #include <unordered_set>
 
-#include "../helper/BinaryenExt.hpp"
 #include "AbbrevFactory.hpp"
 #include "DebugStringManager.hpp"
 #include "binaryen/third_party/llvm-project/DWARFVisitor.h"
@@ -257,7 +255,7 @@ static void emitScopeChildren(std::vector<std::unique_ptr<ScopeInfo>> const &chi
 
 llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
 
-DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
+DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, GlobalIndexResolver globalIndexResolver) {
   VariableInfo::ClassRegistry const &classRegistry = variableInfo.getClassRegistry();
   VariableInfo::GlobalTypes const &globalTypes = variableInfo.getGlobalTypes();
   VariableInfo::BaseTypeRegistry const &baseTypeRegistry = variableInfo.getBaseTypeRegistry();
@@ -372,6 +370,12 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
   variableTypeAttr.Form = llvm::dwarf::DW_FORM_ref4;
   variableTypeAttr.Value = 0U;
   variableAbbrev.Attributes.push_back(variableTypeAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev variableLocationAttr{};
+  variableLocationAttr.Attribute = llvm::dwarf::DW_AT_location;
+  variableLocationAttr.Form = llvm::dwarf::DW_FORM_data4;
+  variableLocationAttr.Value = 0U;
+  variableAbbrev.Attributes.push_back(variableLocationAttr);
 
   abbrevDecls.push_back(variableAbbrev);
 
@@ -646,6 +650,9 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
   for (std::pair<std::string const, VariableInfo::GlobalTypeInfo> const &globalEntry : globalTypes) {
     std::string const &variableName = globalEntry.first;
     std::string_view const typeName = globalEntry.second.typeName;
+    std::optional<uint32_t> const globalIndex = globalIndexResolver(variableName);
+    if (!globalIndex.has_value())
+      continue;
 
     llvm::DWARFYAML::Entry variableEntry;
     variableEntry.AbbrCode = variableAbbrev.Code;
@@ -658,6 +665,10 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo) {
     llvm::DWARFYAML::FormValue variableTypeValue;
     variableTypeValue.Value = 0xDEADBEEFU;
     variableEntry.Values.push_back(variableTypeValue);
+
+    llvm::DWARFYAML::FormValue variableLocationValue;
+    variableLocationValue.Value = *globalIndex;
+    variableEntry.Values.push_back(variableLocationValue);
 
     size_t const variableIndex = rootUnit.Entries.size();
     typeRefFixups.push_back({variableIndex, 1U, typeName});
