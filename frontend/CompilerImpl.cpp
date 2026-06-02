@@ -126,7 +126,7 @@ FrontendCompiler::~FrontendCompiler() {
 }
 
 FrontendCompiler::FrontendCompiler(Config const &config, Pluggable *plugin)
-    : r{this}, moduleResolver_(plugin), config_{config} {
+    : r{this}, moduleResolver_(plugin, config.packageSearchPaths), config_{config} {
   if (config.ascWasmPath) [[unlikely]] {
     support::PerfRAII const p{support::PerfItemKind::CompilationHIR_PrepareWASMModule};
     std::string const wasmBytes = readBinaryFile(*config.ascWasmPath);

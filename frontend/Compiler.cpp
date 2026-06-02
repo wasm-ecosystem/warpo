@@ -30,6 +30,16 @@ static cli::Opt<std::string> ascWasmOption{
     [](argparse::Argument &arg) -> void { arg.help("WASM files for the frontend compiler").hidden(); },
 };
 
+static cli::Opt<std::vector<std::string>> pathOptions{
+    cli::Category::Frontend,
+    "--path",
+    [](argparse::Argument &arg) -> void {
+      arg.help("Adds a package resolution path, similar to node_modules. Repeat to add multiple search roots.")
+          .nargs(1U)
+          .append();
+    },
+};
+
 static void applyJsonConfig(Config &config, const common::FileConfigOptions &jsonConfig) {
   if (jsonConfig.exportStart)
     config.exportStart = *jsonConfig.exportStart;
@@ -57,6 +67,10 @@ static void applyCLIConfig(Config &config) {
   if (ascWasmOption.isSet()) {
     config.ascWasmPath = convertEmptyStringToNullOpt(ascWasmOption.get());
   }
+  if (pathOptions.isSet()) {
+    for (std::string const &path : pathOptions.get())
+      config.packageSearchPaths.push_back(std::filesystem::absolute(path).lexically_normal());
+  }
 }
 
 Config Config::getDefault() {
@@ -72,6 +86,7 @@ Config Config::getDefault() {
       .lowMemoryLimit = std::nullopt,
       .stackSize = DEFAULT_STACK_SIZE,
       .host = HostKind::None,
+      .packageSearchPaths = {},
 
       .useColorfulDiagMessage = support::isTTY(),
 

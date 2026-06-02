@@ -62,6 +62,17 @@ std::optional<std::filesystem::path> ModuleResolver::findPackageRoot(std::filesy
     }
     current = current.parent_path();
   }
+
+  for (std::filesystem::path const &searchRoot : packageSearchPaths_) {
+    std::filesystem::path const target = searchRoot / packageName;
+    if (std::filesystem::exists(target) && std::filesystem::is_directory(target)) {
+      packageRootMap_[packageName] = target;
+      if (support::isDebug("ModuleResolve"))
+        fmt::println("[module resolve] resolve library '{}' in '{}' via --path", packageName, target.string());
+      return target;
+    }
+  }
+
   return std::nullopt;
 }
 

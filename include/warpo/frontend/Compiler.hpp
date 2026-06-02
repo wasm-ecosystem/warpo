@@ -91,6 +91,7 @@ struct Config {
   std::optional<uint32_t> lowMemoryLimit;
   uint32_t stackSize = DEFAULT_STACK_SIZE;
   HostKind host = HostKind::None;
+  std::vector<std::filesystem::path> packageSearchPaths;
 
   bool useColorfulDiagMessage = false;
 
