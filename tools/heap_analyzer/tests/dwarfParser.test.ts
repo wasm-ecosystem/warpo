@@ -4,7 +4,7 @@ import {
   DW_AT,
   DW_FORM,
   DW_TAG,
-  extractCustomSections,
+  extractWasmSections,
   parseAbbrevTable,
   parseDwarf,
   tagName,
@@ -32,28 +32,36 @@ describeIntegration("dwarfParser", (ctx) => {
     root = dwarf.compilationUnits[0].rootDIE;
   });
 
-  describe("extractCustomSections", () => {
+  describe("extractWasmSections", () => {
     it("finds DWARF custom sections in wasm binary", () => {
-      const sections = extractCustomSections(ctx.loadFixtureWasm());
-      const names = new Set(sections.map((s) => s.name));
+      const sections = extractWasmSections(ctx.loadFixtureWasm());
+      const names = new Set(sections.customSections.map((s) => s.name));
       assert.ok(names.has("debug_info"));
       assert.ok(names.has("debug_abbrev"));
       assert.ok(names.has("debug_str"));
     });
 
     it("returns non-empty payloads for DWARF sections", () => {
-      const sections = extractCustomSections(ctx.loadFixtureWasm());
-      const debugInfo = sections.find((s) => s.name === "debug_info");
-      const debugAbbrev = sections.find((s) => s.name === "debug_abbrev");
+      const sections = extractWasmSections(ctx.loadFixtureWasm());
+      const debugInfo = sections.customSections.find((s) => s.name === "debug_info");
+      const debugAbbrev = sections.customSections.find((s) => s.name === "debug_abbrev");
       assert.ok(debugInfo.payload.length > 0);
       assert.ok(debugAbbrev.payload.length > 0);
+    });
+
+    it("returns the fixture's global entries with the expected mutability split", () => {
+      const sections = extractWasmSections(ctx.loadFixtureWasm());
+      const mutableGlobals = sections.globals.filter((entry) => entry.mutable);
+
+      assert.strictEqual(sections.globals.length, 25);
+      assert.strictEqual(mutableGlobals.length, 16);
     });
   });
 
   describe("parseAbbrevTable", () => {
     it("parses abbreviation entries from debug_abbrev", () => {
-      const sections = extractCustomSections(ctx.loadFixtureWasm());
-      const abbrevSection = sections.find((s) => s.name === "debug_abbrev");
+      const sections = extractWasmSections(ctx.loadFixtureWasm());
+      const abbrevSection = sections.customSections.find((s) => s.name === "debug_abbrev");
       const table = parseAbbrevTable(abbrevSection.payload);
 
       assert.ok(table.size > 0);
@@ -65,8 +73,8 @@ describeIntegration("dwarfParser", (ctx) => {
     });
 
     it("parses class_type abbreviation", () => {
-      const sections = extractCustomSections(ctx.loadFixtureWasm());
-      const table = parseAbbrevTable(sections.find((s) => s.name === "debug_abbrev").payload);
+      const sections = extractWasmSections(ctx.loadFixtureWasm());
+      const table = parseAbbrevTable(sections.customSections.find((s) => s.name === "debug_abbrev").payload);
 
       const classAbbrev = [...table.values()].find((e) => e.tag === DW_TAG.class_type);
       assert.notStrictEqual(classAbbrev, undefined);
@@ -75,8 +83,8 @@ describeIntegration("dwarfParser", (ctx) => {
     });
 
     it("parses member abbreviation", () => {
-      const sections = extractCustomSections(ctx.loadFixtureWasm());
-      const table = parseAbbrevTable(sections.find((s) => s.name === "debug_abbrev").payload);
+      const sections = extractWasmSections(ctx.loadFixtureWasm());
+      const table = parseAbbrevTable(sections.customSections.find((s) => s.name === "debug_abbrev").payload);
 
       const memberAbbrev = [...table.values()].find((e) => e.tag === DW_TAG.member);
       assert.notStrictEqual(memberAbbrev, undefined);

@@ -10,7 +10,16 @@
  * raw bytes.
  */
 
-import { BinaryReader, BinaryReaderState, ISectionInformation, SectionCode } from "wasmparser";
+import {
+  BinaryReader,
+  BinaryReaderState,
+  IGlobalVariable,
+  IOperatorInformation,
+  ISectionInformation,
+  OperatorCode,
+  SectionCode,
+  Type,
+} from "wasmparser";
 
 // ── DWARF constants ──────────────────────────────────────────────────────────
 
@@ -155,42 +164,83 @@ class BufferReader {
 
 // ── Raw section extraction ───────────────────────────────────────────────────
 
-interface CustomSection {
+export interface CustomSection {
   name: string;
   payload: Uint8Array;
 }
 
+export interface WasmGlobalEntry {
+  index: number;
+  mutable: boolean;
+  type: Type;
+  initialValue: number;
+}
+
+export interface WasmSections {
+  customSections: CustomSection[];
+  globals: WasmGlobalEntry[];
+}
+
 /**
- * Extract custom sections from a wasm binary using wasmparser's BinaryReader.
- * The reader validates wasm structure while iterating through sections.
+ * Extract custom sections and global entries from a wasm binary using
+ * wasmparser's BinaryReader. The reader validates wasm structure while
+ * iterating through sections.
  */
-export function extractCustomSections(wasmBinary: Uint8Array): CustomSection[] {
+export function extractWasmSections(wasmBinary: Uint8Array): WasmSections {
   const reader = new BinaryReader();
   reader.setData(wasmBinary.buffer as ArrayBuffer, wasmBinary.byteOffset, wasmBinary.byteLength);
 
-  const sections: CustomSection[] = [];
+  const customSections: CustomSection[] = [];
+  const globals: WasmGlobalEntry[] = [];
   let currentSectionName: string | undefined;
+  let globalIndex = 0;
+  const decoder = new TextDecoder();
 
   while (reader.read()) {
     switch (reader.state) {
       case BinaryReaderState.BEGIN_SECTION: {
         const info = reader.result as ISectionInformation;
         if (info.id === SectionCode.Custom && info.name) {
-          currentSectionName = new TextDecoder().decode(info.name);
-        } else {
+          currentSectionName = decoder.decode(info.name);
+        } else if (info.id !== SectionCode.Global) {
           currentSectionName = undefined;
           reader.skipSection();
+        } else {
+          currentSectionName = undefined;
         }
         break;
       }
       case BinaryReaderState.SECTION_RAW_DATA: {
         if (currentSectionName !== undefined) {
           const rawData = reader.result as Uint8Array;
-          sections.push({
+          customSections.push({
             name: currentSectionName,
             payload: new Uint8Array(rawData),
           });
           currentSectionName = undefined;
+        }
+        break;
+      }
+      case BinaryReaderState.BEGIN_GLOBAL_SECTION_ENTRY: {
+        const globalVar = reader.result as IGlobalVariable;
+        globals.push({
+          index: globalIndex++,
+          mutable: globalVar.type.mutability !== 0,
+          type: globalVar.type.contentType,
+          initialValue: 0,
+        });
+        break;
+      }
+      case BinaryReaderState.INIT_EXPRESSION_OPERATOR: {
+        const op = reader.result as IOperatorInformation;
+        if (
+          op.code === OperatorCode.i32_const ||
+          op.code === OperatorCode.i64_const ||
+          op.code === OperatorCode.f32_const ||
+          op.code === OperatorCode.f64_const
+        ) {
+          const last = globals[globals.length - 1];
+          if (last) last.initialValue = Number(op.literal);
         }
         break;
       }
@@ -200,7 +250,7 @@ export function extractCustomSections(wasmBinary: Uint8Array): CustomSection[] {
     }
   }
 
-  return sections;
+  return { customSections, globals };
 }
 
 // ── Abbreviation table parsing ───────────────────────────────────────────────
@@ -428,7 +478,7 @@ function parseDIETree(
 export function parseDwarf(wasmBinary: Uint8Array | ArrayBuffer): DwarfInfo {
   const binary = wasmBinary instanceof Uint8Array ? wasmBinary : new Uint8Array(wasmBinary);
 
-  const customSections = extractCustomSections(binary);
+  const { customSections } = extractWasmSections(binary);
 
   const debugAbbrev = customSections.find((s) => s.name === "debug_abbrev");
   const debugInfo = customSections.find((s) => s.name === "debug_info");

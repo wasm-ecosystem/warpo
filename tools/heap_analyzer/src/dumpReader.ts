@@ -26,9 +26,22 @@ export function parseDumpFile(buffer: ArrayBuffer): DumpedMemory {
   const dataEnd = view.getUint32(8, true);
   const heapBase = view.getUint32(12, true);
   const stackPointer = view.getUint32(16, true);
+  const numMutableI32Globals = view.getUint32(20, true);
+  const memoryOffset = DUMP_HEADER_SIZE + numMutableI32Globals * 4;
+
+  if (buffer.byteLength < memoryOffset) {
+    throw new Error(
+      `Dump file too small for ${numMutableI32Globals} mutable i32 globals: expected at least ${memoryOffset} bytes, got ${buffer.byteLength}`
+    );
+  }
+
+  const mutableI32Globals = new Array<number>(numMutableI32Globals);
+  for (let index = 0; index < numMutableI32Globals; index++) {
+    mutableI32Globals[index] = view.getUint32(DUMP_HEADER_SIZE + index * 4, true);
+  }
 
   return {
-    rtGlobals: { dataEnd, heapBase, stackPointer },
-    memory: new DataView(buffer, DUMP_HEADER_SIZE),
+    rtGlobals: { dataEnd, heapBase, stackPointer, mutableI32Globals },
+    memory: new DataView(buffer, memoryOffset),
   };
 }

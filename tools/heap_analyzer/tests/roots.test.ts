@@ -84,7 +84,7 @@ it("reports transparent-color objects as pinned roots", () => {
 
   memory.setUint32(0, 16, true);
 
-  const roots = findRoots(memory, { dataEnd: 0, stackPointer: 0, heapBase: 4 }, objects);
+  const roots = findRoots(memory, { dataEnd: 0, stackPointer: 0, heapBase: 4, mutableI32Globals: [] }, objects);
   const pinnedRoots = roots.filter((root) => root.rootType === "pinned");
   const localRoots = roots.filter((root) => root.rootType === "local");
 

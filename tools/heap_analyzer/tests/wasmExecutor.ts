@@ -2,7 +2,7 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 const DUMP_MAGIC = new Uint8Array([0x41, 0x53, 0x48, 0x44]); // "A S H D"
-const DUMP_VERSION = 1;
+const DUMP_VERSION = 2;
 const HEADER_SIZE = 24;
 
 interface AscExports extends WebAssembly.Exports {
@@ -23,6 +23,7 @@ function writeDump(exports: AscExports, outputPath: string): void {
   view.setUint32(8, Number(exports.__data_end.value), true);
   view.setUint32(12, Number(exports.__heap_base.value), true);
   view.setUint32(16, Number(exports.__stack_pointer.value), true);
+  view.setUint32(20, 0, true);
   dump.set(raw, HEADER_SIZE);
 
   mkdirSync(dirname(outputPath), { recursive: true });

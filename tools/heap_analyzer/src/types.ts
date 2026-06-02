@@ -13,6 +13,7 @@ export interface RuntimeGlobals {
   dataEnd: number;
   heapBase: number;
   stackPointer: number;
+  mutableI32Globals: number[];
 }
 
 export interface DumpedMemory {
