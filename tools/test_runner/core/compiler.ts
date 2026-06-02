@@ -43,7 +43,6 @@ async function buildWithWARPO({
   }
   const returnCode = await warpo.build({
     argv: warpoArgv,
-    env: process.env,
   });
   if (returnCode !== 0) {
     throw new CompilationError(undefined);

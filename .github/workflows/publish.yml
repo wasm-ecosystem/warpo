@@ -38,21 +38,14 @@ jobs:
       - run: npm run build:ts
       - run: npm run build:parser:ts
 
-      - name: pack build/warpo directory (unix)
-        if: runner.os != 'Windows'
+      - name: pack build/warpo directory
         run: |
           tar -czvf build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.tar.gz -C build warpo
-      - name: pack build/warpo directory (windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          Compress-Archive -Path build/warpo -DestinationPath build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.zip
       - name: upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.tar.gz
-            build/warpo-${{ steps.release_info.outputs.VERSION }}-${{ steps.release_info.outputs.PLATFORM }}-${{ steps.release_info.outputs.ARCH }}.zip
 
   npm:
     runs-on: ubuntu-latest

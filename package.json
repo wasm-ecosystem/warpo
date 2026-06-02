@@ -57,6 +57,7 @@
     "@eslint/js": "^9.0.0",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.15.21",
+    "@types/tar-stream": "^3.1.4",
     "@types/vscode": "^1.80.0",
     "@vscode/debugadapter-testsupport": "^1.65.0",
     "@vscode/vsce": "^3.0.0",
@@ -90,8 +91,12 @@
     "commander": "^14.0.3",
     "fs-extra": "^11.3.3",
     "glob": "^13.0.0",
+    "https-proxy-agent": "^7.0.6",
     "ignore": "^7.0.5",
     "source-map": "^0.7.6",
+    "tar": "^7.5.15",
+    "tar-stream": "^2.2.0",
+    "undici": "^7.26.0",
     "wasmparser": "^5.11.1"
   }
 }
