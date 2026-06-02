@@ -28,6 +28,7 @@ Abbrev table for offset: 0x00000000
 [8] DW_TAG_variable	DW_CHILDREN_no
 	DW_AT_name	DW_FORM_string
 	DW_AT_type	DW_FORM_ref4
+	DW_AT_location	DW_FORM_data4
 
 [9] DW_TAG_variable	DW_CHILDREN_no
 	DW_AT_name	DW_FORM_string

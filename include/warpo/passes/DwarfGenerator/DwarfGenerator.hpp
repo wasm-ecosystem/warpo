@@ -3,10 +3,15 @@
 
 #pragma once
 
-#include <wasm.h>
+#include <cstdint>
+#include <functional>
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 
-#include "llvm/ObjectYAML/DWARFYAML.h"
-#include "warpo/common/SubProgramInfo.hpp"
+#include "llvm/ADT/StringMap.h"
+#include "llvm/Support/MemoryBuffer.h"
 #include "warpo/common/VariableInfo.hpp"
 
 namespace warpo::passes {
@@ -19,7 +24,10 @@ struct TypeRefFixup final {
 
 class DwarfGenerator final {
 public:
-  static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> generateDebugSections(VariableInfo const &variableInfo);
+  using GlobalIndexResolver = std::function<std::optional<uint32_t>(std::string_view)>;
+
+  static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
+  generateDebugSections(VariableInfo const &variableInfo, GlobalIndexResolver globalIndexResolver);
   static std::string dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const &debugSections);
 
   struct AbbrevCodes final {
