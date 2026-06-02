@@ -12,11 +12,17 @@ export interface WasmModuleInfo {
   url: string;
 }
 
-export interface Runtime {
+export interface DebugPauseInfo {
+  reason: string;
+}
+
+export interface Debugger {
   readonly name: string;
 
   launch(config: WasmLaunchConfig): Promise<void>;
   dispose(): void;
+  resume(): Promise<void>;
 
   onModuleLoad: ((info: WasmModuleInfo) => void) | undefined;
+  onPause: ((info: DebugPauseInfo) => void | Promise<void>) | undefined;
 }

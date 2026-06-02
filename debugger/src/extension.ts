@@ -9,6 +9,14 @@ import { launchDapServer } from "./launcher";
 
 let serverProcess: ChildProcess | undefined;
 
+interface WarpoDebugConfiguration extends vscode.DebugConfiguration {
+  program?: string;
+  launchType?: string;
+  runtime?: string;
+  entryFunctionName?: string;
+  args?: number[];
+}
+
 export function activate(context: vscode.ExtensionContext) {
   const factory = new WarpoDebugAdapterFactory();
   const configProvider = new WarpoDebugConfigurationProvider();
@@ -49,14 +57,17 @@ class WarpoDebugConfigurationProvider implements vscode.DebugConfigurationProvid
     _folder: vscode.WorkspaceFolder | undefined,
     config: vscode.DebugConfiguration
   ): vscode.ProviderResult<vscode.DebugConfiguration> {
-    if (!config.program) {
-      return vscode.window.showErrorMessage("No 'program' specified in launch configuration.").then(() => undefined);
+    const warpoConfig = config as WarpoDebugConfiguration;
+
+    if (!warpoConfig.program) {
+      void vscode.window.showErrorMessage("No 'program' specified in launch configuration.");
+      return undefined;
     }
-    config.launchType = config.launchType ?? "wasm file";
-    config.runtime = config.runtime ?? "node";
-    config.entryFunctionName = config.entryFunctionName ?? "main";
-    config.args = config.args ?? [];
-    return config;
+    warpoConfig.launchType = warpoConfig.launchType ?? "wasm file";
+    warpoConfig.runtime = warpoConfig.runtime ?? "node";
+    warpoConfig.entryFunctionName = warpoConfig.entryFunctionName ?? "main";
+    warpoConfig.args = warpoConfig.args ?? [];
+    return warpoConfig;
   }
 }
 

@@ -1,11 +1,20 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-import { LoggingDebugSession, InitializedEvent, Thread, Breakpoint, logger } from "@vscode/debugadapter";
+import {
+  LoggingDebugSession,
+  InitializedEvent,
+  Thread,
+  Breakpoint,
+  LoadedSourceEvent,
+  StoppedEvent,
+  ContinuedEvent,
+  logger,
+} from "@vscode/debugadapter";
 import type { DebugProtocol } from "@vscode/debugprotocol";
 import * as path from "node:path";
-import type { Runtime } from "./runtime.js";
-import { NodeRuntime } from "./nodeRuntime.js";
+import type { DebugPauseInfo, Debugger } from "./debugger.js";
+import { NodeDebugger } from "./nodeDebugger.js";
 
 interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
   program: string;
@@ -26,10 +35,15 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private static threadId = 1;
   private breakpointId = 0;
   private breakpoints = new Map<string, BreakpointInfo[]>();
-  private runtime: Runtime | undefined;
+  private runtime: Debugger | undefined;
 
   private log(msg: string): void {
     logger.log(msg);
+  }
+
+  private handleRuntimePause(runtime: Debugger, info: DebugPauseInfo): void {
+    this.log(`[${runtime.name}] Paused: ${info.reason}`);
+    this.sendEvent(new StoppedEvent("pause", WarpoDebugSession.threadId, info.reason));
   }
 
   protected initializeRequest(
@@ -40,6 +54,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response.body.supportsConfigurationDoneRequest = true;
     response.body.supportsSetVariable = false;
     response.body.supportsBreakpointLocationsRequest = false;
+    response.body.supportsLoadedSourcesRequest = true;
 
     this.sendResponse(response);
     this.sendEvent(new InitializedEvent());
@@ -98,16 +113,26 @@ export class WarpoDebugSession extends LoggingDebugSession {
       const launchType = args.launchType ?? "wasm file";
       if (launchType === "wasm file") {
         const runtimeName = args.runtime ?? "node";
-        let runtime: Runtime;
+        let runtime: Debugger;
         if (runtimeName === "node") {
-          runtime = new NodeRuntime();
+          runtime = new NodeDebugger();
         } else {
           this.sendErrorResponse(response, 1, `Unknown runtime "${runtimeName}"`);
           return;
         }
 
         runtime.onModuleLoad = (info) => {
-          this.log(`Wasm module loaded: ${info.url} (scriptId: ${info.scriptId})`);
+          const programPath = path.resolve(args.program);
+          this.log(`Wasm module loaded: ${programPath} (reported as ${info.url}, scriptId: ${info.scriptId})`);
+          this.sendEvent(
+            new LoadedSourceEvent("new", {
+              name: path.basename(programPath),
+              path: programPath,
+            })
+          );
+        };
+        runtime.onPause = (info) => {
+          this.handleRuntimePause(runtime, info);
         };
 
         this.runtime?.dispose();
@@ -135,6 +160,10 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.sendResponse(response);
   }
 
+  protected continueRequest(response: DebugProtocol.ContinueResponse, _args: DebugProtocol.ContinueArguments): void {
+    void this.doContinueRequest(response);
+  }
+
   protected disconnectRequest(
     response: DebugProtocol.DisconnectResponse,
     _args: DebugProtocol.DisconnectArguments
@@ -143,6 +172,23 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.runtime = undefined;
     this.log("Debug session ended.");
     this.sendResponse(response);
+  }
+
+  private async doContinueRequest(response: DebugProtocol.ContinueResponse): Promise<void> {
+    if (!this.runtime) {
+      this.sendErrorResponse(response, 1, "No active runtime");
+      return;
+    }
+
+    try {
+      await this.runtime.resume();
+      response.body = { allThreadsContinued: true };
+      this.sendResponse(response);
+      this.sendEvent(new ContinuedEvent(WarpoDebugSession.threadId, true));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.sendErrorResponse(response, 1, `Continue failed: ${message}`);
+    }
   }
 
   private logAllBreakpoints(): void {

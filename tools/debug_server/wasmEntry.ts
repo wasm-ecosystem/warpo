@@ -3,6 +3,7 @@
 /* eslint-disable n/no-process-exit, unicorn/no-process-exit */
 
 import * as fs from "node:fs";
+import * as inspector from "node:inspector";
 import * as path from "node:path";
 
 const [wasmFilePath, entryFunctionName, ...rawArgs] = process.argv.slice(2);
@@ -17,6 +18,8 @@ if (!fs.existsSync(resolvedPath)) {
   console.error(`Wasm file not found: ${resolvedPath}`);
   process.exit(1);
 }
+
+inspector.waitForDebugger();
 
 const args = rawArgs.map(Number);
 
@@ -34,7 +37,7 @@ async function main() {
 
   console.log(`Calling ${entryFunctionName}(${args.join(", ")})...`);
   const result = (fn as (...a: number[]) => unknown)(...args);
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string
+  // eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
   console.log(`Result: ${result}`);
 }
 
