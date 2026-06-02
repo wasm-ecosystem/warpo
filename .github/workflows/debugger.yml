@@ -47,6 +47,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      - uses: ./.github/action/build
+        with:
+          CMAKE_ARGS: "-DWARPO_RELEASE=ON -DCMAKE_BUILD_TYPE=Release"
+          OS_ID: ${{ matrix.os }}
       - name: Build debug server
         working-directory: .
         run: npm ci && npm run build:ts
