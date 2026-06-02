@@ -17,6 +17,7 @@ export type {
   ClassLayout,
   DumpedMemory,
   EntryLayout,
+  GlobalRoot,
   HeapObject,
   HeapSnapshot,
   ObjectHeader,

@@ -96,13 +96,15 @@ export interface CompilationUnit {
   rootDIE: DwarfDIE;
 }
 
-export interface DwarfInfo {
+export interface WasmDebugInfo {
   /** Parsed .debug_str string table (offset → string). */
   stringTable: Map<number, string>;
   /** Parsed abbreviation tables. */
   abbreviations: AbbrevTable;
   /** All compilation units in .debug_info. */
   compilationUnits: CompilationUnit[];
+  /** All wasm globals in module order. */
+  globals: WasmGlobalEntry[];
 }
 
 class BufferReader {
@@ -468,17 +470,17 @@ function parseDIETree(
 // ── High-level API ───────────────────────────────────────────────────────────
 
 /**
- * Parse DWARF debug information from a WebAssembly binary.
+ * Parse debug metadata from a WebAssembly binary.
  *
  * @param wasmBinary The raw wasm file content as a Uint8Array or ArrayBuffer.
- * @returns Parsed DWARF info including compilation units, abbreviations, and string table.
+ * @returns Parsed DWARF units together with wasm global metadata.
  * @throws If required DWARF sections are missing or malformed.
  *
  */
-export function parseDwarf(wasmBinary: Uint8Array | ArrayBuffer): DwarfInfo {
+export function parseWasmDebugInfo(wasmBinary: Uint8Array | ArrayBuffer): WasmDebugInfo {
   const binary = wasmBinary instanceof Uint8Array ? wasmBinary : new Uint8Array(wasmBinary);
 
-  const { customSections } = extractWasmSections(binary);
+  const { customSections, globals } = extractWasmSections(binary);
 
   const debugAbbrev = customSections.find((s) => s.name === "debug_abbrev");
   const debugInfo = customSections.find((s) => s.name === "debug_info");
@@ -495,7 +497,7 @@ export function parseDwarf(wasmBinary: Uint8Array | ArrayBuffer): DwarfInfo {
   const abbreviations = parseAbbrevTable(debugAbbrev.payload);
   const compilationUnits = parseDebugInfo(debugInfo.payload, abbreviations, stringTable);
 
-  return { stringTable, abbreviations, compilationUnits };
+  return { stringTable, abbreviations, compilationUnits, globals };
 }
 
 // ── Convenience helpers ──────────────────────────────────────────────────────

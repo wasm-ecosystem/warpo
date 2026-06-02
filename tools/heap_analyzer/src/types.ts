@@ -16,6 +16,13 @@ export interface RuntimeGlobals {
   mutableI32Globals: number[];
 }
 
+export interface GlobalRoot {
+  name: string;
+  className: string;
+  globalIndex: number;
+  value: number;
+}
+
 export interface DumpedMemory {
   rtGlobals: RuntimeGlobals;
   memory: DataView;
@@ -53,7 +60,7 @@ export interface RootInfo {
   objectPtr: number; // payloadPtr of the referenced object
   className: string; // resolved class name
   rootType: RootType;
-  sourceAddress: number; // address where pointer was found (0 for pinned)
+  sourceAddress: number; // stack address, wasm global index, or 0 for pinned
 }
 
 export interface HeapObject {

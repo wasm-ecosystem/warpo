@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AL_MASK, BLOCK_OVERHEAD, ROOT_SIZE } from "./constants.js";
-import { ClassResolver } from "./classResolver.js";
+import { DebugInfoResolver } from "./debugInfoResolver.js";
 import { buildDominatorTree } from "./dominator.js";
 import { computeRetainedSizes, shallowSize } from "./retainedSize.js";
 import { findRoots } from "./roots.js";
@@ -23,17 +23,17 @@ export function analyzeHeap(
   rtGlobals: RuntimeGlobals,
   wasmBinary: Uint8Array | ArrayBuffer
 ): HeapSnapshot {
-  // Resolve DWARF-derived class layouts once up front for the entire pipeline.
-  const classResolver = ClassResolver.fromWasm(wasmBinary);
+  // Resolve DWARF-derived class and global metadata once up front for the entire pipeline.
+  const debugInfoResolver = DebugInfoResolver.fromWasm(wasmBinary);
 
   // Step 1: Enumerate all allocated heap objects from TLSF blocks.
   const objects = walkBlocks(memory, rtGlobals.heapBase);
 
   // Step 2: Build the full object reference graph.
-  const graph = scanReferences(memory, objects, classResolver);
+  const graph = scanReferences(memory, objects, debugInfoResolver);
 
-  // Step 3: Discover currently supported roots: shadow stack and pinned objects.
-  const roots = findRoots(memory, rtGlobals, objects);
+  // Step 3: Discover current roots from globals, shadow stack, and pinned objects.
+  const roots = findRoots(memory, rtGlobals, objects, debugInfoResolver.getGlobalRoots(rtGlobals));
 
   // Step 4: Traverse from roots to determine the live object set.
   const liveSet = markLive(roots, graph);
@@ -58,7 +58,7 @@ export function analyzeHeap(
   const heapObjects: HeapObject[] = liveObjects.map((obj) => ({
     address: obj.payloadPtr,
     classId: obj.rtId,
-    className: classResolver.getClassName(obj.rtId),
+    className: debugInfoResolver.getClassName(obj.rtId),
     shallowSize: shallowSize(obj),
     retainedSize: retainedSizes.get(obj.payloadPtr) ?? shallowSize(obj),
     rootType: getAssignedRootType(rootTypes, obj.payloadPtr),
@@ -66,7 +66,7 @@ export function analyzeHeap(
 
   // Step 10: Enrich root records with resolved class names.
   const rootsWithClassName = roots.map((root) => {
-    const className = classResolver.getClassName(objectRtIds.get(root.objectPtr) ?? -1);
+    const className = debugInfoResolver.getClassName(objectRtIds.get(root.objectPtr) ?? -1);
     return {
       objectPtr: root.objectPtr,
       className,

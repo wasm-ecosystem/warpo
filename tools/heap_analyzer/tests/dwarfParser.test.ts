@@ -6,7 +6,7 @@ import {
   DW_TAG,
   extractWasmSections,
   parseAbbrevTable,
-  parseDwarf,
+  parseWasmDebugInfo,
   tagName,
   attrName,
   getAttr,
@@ -14,7 +14,7 @@ import {
   findDIEsByTag,
   buildOffsetMap,
   type DwarfDIE,
-  type DwarfInfo,
+  type WasmDebugInfo,
 } from "../src/dwarfParser.js";
 import { CLASS_PREFIX, describeIntegration } from "./testHelper.js";
 
@@ -23,13 +23,13 @@ import { CLASS_PREFIX, describeIntegration } from "./testHelper.js";
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describeIntegration("dwarfParser", (ctx) => {
-  let dwarf: DwarfInfo;
+  let debugInfo: WasmDebugInfo;
   let root: DwarfDIE;
 
   before(() => {
     ctx.compileFixture();
-    dwarf = parseDwarf(ctx.loadFixtureWasm());
-    root = dwarf.compilationUnits[0].rootDIE;
+    debugInfo = parseWasmDebugInfo(ctx.loadFixtureWasm());
+    root = debugInfo.compilationUnits[0].rootDIE;
   });
 
   describe("extractWasmSections", () => {
@@ -53,8 +53,8 @@ describeIntegration("dwarfParser", (ctx) => {
       const sections = extractWasmSections(ctx.loadFixtureWasm());
       const mutableGlobals = sections.globals.filter((entry) => entry.mutable);
 
-      assert.strictEqual(sections.globals.length, 25);
-      assert.strictEqual(mutableGlobals.length, 16);
+      assert.strictEqual(sections.globals.length, 18);
+      assert.strictEqual(mutableGlobals.length, 15);
     });
   });
 
@@ -96,17 +96,25 @@ describeIntegration("dwarfParser", (ctx) => {
     });
   });
 
-  describe("parseDwarf", () => {
+  describe("parseWasmDebugInfo", () => {
     it("parses a single DWARF4 compilation unit", () => {
-      assert.strictEqual(dwarf.compilationUnits.length, 1);
-      const unit = dwarf.compilationUnits[0];
+      assert.strictEqual(debugInfo.compilationUnits.length, 1);
+      const unit = debugInfo.compilationUnits[0];
       assert.strictEqual(unit.version, 4);
       assert.strictEqual(unit.addressSize, 4);
     });
 
+    it("returns wasm globals alongside DWARF units", () => {
+      const mutableGlobals = debugInfo.globals.filter((entry) => entry.mutable);
+
+      assert.strictEqual(debugInfo.globals.length, 18);
+      assert.strictEqual(mutableGlobals.length, 15);
+    });
+
     it("accepts ArrayBuffer input", () => {
-      const result = parseDwarf(ctx.loadFixtureWasm().buffer as ArrayBuffer);
+      const result = parseWasmDebugInfo(ctx.loadFixtureWasm().buffer as ArrayBuffer);
       assert.strictEqual(result.compilationUnits.length, 1);
+      assert.strictEqual(result.globals.length, debugInfo.globals.length);
     });
 
     it("has warpo as producer", () => {
@@ -115,31 +123,31 @@ describeIntegration("dwarfParser", (ctx) => {
 
     it("throws when debug_abbrev is missing", () => {
       const minimalWasm = new Uint8Array([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]);
-      assert.throws(() => parseDwarf(minimalWasm), /Missing .debug_abbrev section/);
+      assert.throws(() => parseWasmDebugInfo(minimalWasm), /Missing .debug_abbrev section/);
     });
 
     it("has non-empty abbreviations table", () => {
-      assert.ok(dwarf.abbreviations.size > 0);
+      assert.ok(debugInfo.abbreviations.size > 0);
     });
 
     it("has abbrevOffset of 0", () => {
-      assert.strictEqual(dwarf.compilationUnits[0].abbrevOffset, 0);
+      assert.strictEqual(debugInfo.compilationUnits[0].abbrevOffset, 0);
     });
   });
 
   describe("stringTable", () => {
     it("is a non-empty Map", () => {
-      assert.ok(dwarf.stringTable instanceof Map);
-      assert.ok(dwarf.stringTable.size > 0);
+      assert.ok(debugInfo.stringTable instanceof Map);
+      assert.ok(debugInfo.stringTable.size > 0);
     });
 
     it("contains producer string 'warpo'", () => {
-      const values = [...dwarf.stringTable.values()];
+      const values = [...debugInfo.stringTable.values()];
       assert.ok(values.includes("warpo"));
     });
 
     it("all values are non-empty strings", () => {
-      for (const str of dwarf.stringTable.values()) {
+      for (const str of debugInfo.stringTable.values()) {
         assert.strictEqual(typeof str, "string");
         assert.ok(str.length > 0);
       }
@@ -150,7 +158,7 @@ describeIntegration("dwarfParser", (ctx) => {
       assert.notStrictEqual(producer, undefined);
       assert.strictEqual(producer.form, DW_FORM.strp);
       assert.strictEqual(typeof producer.value, "string");
-      assert.strictEqual(dwarf.stringTable.get(0), producer.value);
+      assert.strictEqual(debugInfo.stringTable.get(0), producer.value);
     });
   });
 

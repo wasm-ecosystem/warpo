@@ -1,35 +1,70 @@
 // Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-import { DW_AT, DW_TAG, buildOffsetMap, findDIEsByTag, getAttr, parseDwarf, type DwarfDIE } from "./dwarfParser.js";
-import type { ClassField, ClassLayout } from "./types.js";
+import {
+  DW_AT,
+  DW_TAG,
+  buildOffsetMap,
+  findDIEsByTag,
+  getAttr,
+  parseWasmDebugInfo,
+  type DwarfDIE,
+  type WasmGlobalEntry,
+} from "./dwarfParser.js";
+import type { ClassField, ClassLayout, GlobalRoot, RuntimeGlobals } from "./types.js";
+
+const I32_TYPE_KIND = -1;
+
+interface GlobalVariableDebugInfo {
+  name: string;
+  typeName: string;
+  index: number;
+}
 
 /**
- * Resolves class layouts from DWARF debug information embedded in a
- * WebAssembly binary and provides helper queries for reference scanning.
+ * Resolves class layouts and global-root metadata from WebAssembly debug
+ * information and provides helper queries for reference scanning.
  *
  * Only classes with a runtime ID (`DW_AT_signature`) are included.
  */
-export class ClassResolver {
+export class DebugInfoResolver {
   private readonly layoutMap: Map<number, ClassLayout>;
+  private readonly globalVariables: GlobalVariableDebugInfo[];
+  private readonly wasmGlobals: WasmGlobalEntry[];
 
-  private constructor(layouts: ClassLayout[]) {
+  private constructor(
+    layouts: ClassLayout[],
+    globalVariables: GlobalVariableDebugInfo[],
+    wasmGlobals: WasmGlobalEntry[]
+  ) {
     this.layoutMap = new Map(layouts.map((l) => [l.rtid, l]));
+    this.globalVariables = globalVariables;
+    this.wasmGlobals = wasmGlobals;
   }
 
-  static fromWasm(wasmBinary: Uint8Array | ArrayBuffer): ClassResolver {
-    const dwarf = parseDwarf(wasmBinary);
+  static fromWasm(wasmBinary: Uint8Array | ArrayBuffer): DebugInfoResolver {
+    const debugInfo = parseWasmDebugInfo(wasmBinary);
     const classes: ClassLayout[] = [];
+    const globalVariables: GlobalVariableDebugInfo[] = [];
 
-    for (const unit of dwarf.compilationUnits) {
+    for (const unit of debugInfo.compilationUnits) {
       const resolver = new CompilationUnitResolver(unit.rootDIE);
       for (const layout of resolver.resolve(unit.rootDIE)) {
         classes.push(layout);
       }
+      for (const globalVariable of resolver.resolveGlobalVariables(unit.rootDIE)) {
+        globalVariables.push(globalVariable);
+      }
     }
 
     flattenInheritedFields(classes);
-    return new ClassResolver(classes);
+    const classNames = new Set(classes.map((layout) => layout.name));
+
+    return new DebugInfoResolver(
+      classes,
+      globalVariables.filter((globalVariable) => classNames.has(globalVariable.typeName)),
+      debugInfo.globals
+    );
   }
 
   getLayouts(): ClassLayout[] {
@@ -45,6 +80,27 @@ export class ClassResolver {
   /** Returns ClassDef or undefined */
   getClassDef(classId: number): ClassLayout | undefined {
     return this.layoutMap.get(classId);
+  }
+
+  getGlobalRoots(rtGlobals: RuntimeGlobals): GlobalRoot[] {
+    const i32ValuesByGlobalIndex = this.buildI32GlobalValueMap(rtGlobals);
+    const globalRoots: GlobalRoot[] = [];
+
+    for (const globalVariable of this.globalVariables) {
+      const value = i32ValuesByGlobalIndex.get(globalVariable.index);
+      if (value === undefined) {
+        continue;
+      }
+
+      globalRoots.push({
+        name: globalVariable.name,
+        className: globalVariable.typeName,
+        globalIndex: globalVariable.index,
+        value,
+      });
+    }
+
+    return globalRoots;
   }
 
   /**
@@ -81,6 +137,31 @@ export class ClassResolver {
     }
     return layout.fields.filter((f) => f.isReference);
   }
+
+  private buildI32GlobalValueMap(rtGlobals: RuntimeGlobals): Map<number, number> {
+    const values = new Map<number, number>();
+    let mutableI32Slot = 0;
+
+    for (const globalEntry of this.wasmGlobals) {
+      if (globalEntry.type.kind !== I32_TYPE_KIND) {
+        continue;
+      }
+
+      if (globalEntry.mutable) {
+        const value = rtGlobals.mutableI32Globals[mutableI32Slot];
+        mutableI32Slot++;
+        if (value === undefined) {
+          continue;
+        }
+        values.set(globalEntry.index, value);
+        continue;
+      }
+
+      values.set(globalEntry.index, globalEntry.initialValue);
+    }
+
+    return values;
+  }
 }
 
 class CompilationUnitResolver {
@@ -108,6 +189,23 @@ class CompilationUnitResolver {
       }
     }
     return layouts;
+  }
+
+  resolveGlobalVariables(root: DwarfDIE): GlobalVariableDebugInfo[] {
+    const globalVariables: GlobalVariableDebugInfo[] = [];
+
+    for (const child of root.children) {
+      if (child.tag !== DW_TAG.variable) {
+        continue;
+      }
+
+      const globalVariable = this.resolveGlobalVariable(child);
+      if (globalVariable) {
+        globalVariables.push(globalVariable);
+      }
+    }
+
+    return globalVariables;
   }
 
   private resolveTypeInfo(typeRef: number): { name?: string; size: number; isReference: boolean } {
@@ -172,6 +270,26 @@ class CompilationUnitResolver {
     return (getAttr(parentDie, DW_AT.name)?.value as string) ?? null;
   }
 
+  private resolveGlobalVariable(variableDie: DwarfDIE): GlobalVariableDebugInfo | null {
+    const nameAttr = getAttr(variableDie, DW_AT.name);
+    const typeAttr = getAttr(variableDie, DW_AT.type);
+    const locationAttr = getAttr(variableDie, DW_AT.location);
+    if (!nameAttr || !typeAttr || !locationAttr) {
+      return null;
+    }
+
+    const { name: typeName } = this.resolveTypeInfo(typeAttr.value as number);
+    if (typeName === undefined) {
+      return null;
+    }
+
+    return {
+      name: nameAttr.value as string,
+      typeName,
+      index: locationAttr.value as number,
+    };
+  }
+
   private resolveClassLayout(classDie: DwarfDIE): ClassLayout | null {
     const nameAttr = getAttr(classDie, DW_AT.name);
     if (!nameAttr) {
@@ -215,7 +333,7 @@ class CompilationUnitResolver {
  * Only classes with a runtime ID (`DW_AT_signature`) are included.
  */
 export function resolveClassLayouts(wasmBinary: Uint8Array | ArrayBuffer): ClassLayout[] {
-  return ClassResolver.fromWasm(wasmBinary).getLayouts();
+  return DebugInfoResolver.fromWasm(wasmBinary).getLayouts();
 }
 
 function flattenInheritedFields(classes: ClassLayout[]): void {
