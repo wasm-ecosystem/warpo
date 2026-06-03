@@ -13,7 +13,7 @@ import {
   type DwarfDIE,
   type WasmGlobalEntry,
 } from "./dwarfParser.js";
-import type { ClassField, ClassLayout, GlobalRoot, RuntimeGlobals } from "./types.js";
+import type { ClassField, ClassLayout, GlobalRoot } from "./types.js";
 
 interface GlobalVariableDebugInfo {
   name: string;
@@ -29,31 +29,31 @@ interface GlobalVariableDebugInfo {
  */
 export class DebugInfoResolver {
   private readonly layoutMap: Map<number, ClassLayout>;
-  private readonly globalVariables: GlobalVariableDebugInfo[];
-  private readonly wasmGlobals: WasmGlobalEntry[];
+  private readonly globalVariableDebugInfos: GlobalVariableDebugInfo[];
+  private readonly wasmGlobalEntries: WasmGlobalEntry[];
 
   private constructor(
     layouts: ClassLayout[],
-    globalVariables: GlobalVariableDebugInfo[],
-    wasmGlobals: WasmGlobalEntry[]
+    globalVariableDebugInfos: GlobalVariableDebugInfo[],
+    wasmGlobalEntries: WasmGlobalEntry[]
   ) {
     this.layoutMap = new Map(layouts.map((l) => [l.rtid, l]));
-    this.globalVariables = globalVariables;
-    this.wasmGlobals = wasmGlobals;
+    this.globalVariableDebugInfos = globalVariableDebugInfos;
+    this.wasmGlobalEntries = wasmGlobalEntries;
   }
 
   static fromWasm(wasmBinary: Uint8Array | ArrayBuffer): DebugInfoResolver {
     const debugInfo = parseWasmDebugInfo(wasmBinary);
     const classes: ClassLayout[] = [];
-    const globalVariables: GlobalVariableDebugInfo[] = [];
+    const globalVariableDebugInfos: GlobalVariableDebugInfo[] = [];
 
     for (const unit of debugInfo.compilationUnits) {
       const resolver = new CompilationUnitResolver(unit.rootDIE);
       for (const layout of resolver.resolve(unit.rootDIE)) {
         classes.push(layout);
       }
-      for (const globalVariable of resolver.resolveGlobalVariables(unit.rootDIE)) {
-        globalVariables.push(globalVariable);
+      for (const globalVariableDebugInfo of resolver.resolveGlobalVariableDebugInfos(unit.rootDIE)) {
+        globalVariableDebugInfos.push(globalVariableDebugInfo);
       }
     }
 
@@ -62,7 +62,7 @@ export class DebugInfoResolver {
 
     return new DebugInfoResolver(
       classes,
-      globalVariables.filter((globalVariable) => classNames.has(globalVariable.typeName)),
+      globalVariableDebugInfos.filter((globalVariableDebugInfo) => classNames.has(globalVariableDebugInfo.typeName)),
       debugInfo.globals
     );
   }
@@ -82,20 +82,20 @@ export class DebugInfoResolver {
     return this.layoutMap.get(classId);
   }
 
-  getGlobalRoots(rtGlobals: RuntimeGlobals): GlobalRoot[] {
-    const i32ValuesByGlobalIndex = this.buildI32GlobalValueMap(rtGlobals);
+  getGlobalRoots(mutableI32Globals: number[]): GlobalRoot[] {
+    const i32ValuesByGlobalIndex = this.buildI32GlobalValueMap(mutableI32Globals);
     const globalRoots: GlobalRoot[] = [];
 
-    for (const globalVariable of this.globalVariables) {
-      const value = i32ValuesByGlobalIndex.get(globalVariable.index);
+    for (const globalVariableDebugInfo of this.globalVariableDebugInfos) {
+      const value = i32ValuesByGlobalIndex.get(globalVariableDebugInfo.index);
       if (value === undefined) {
         continue;
       }
 
       globalRoots.push({
-        name: globalVariable.name,
-        className: globalVariable.typeName,
-        globalIndex: globalVariable.index,
+        name: globalVariableDebugInfo.name,
+        className: globalVariableDebugInfo.typeName,
+        globalIndex: globalVariableDebugInfo.index,
         value,
       });
     }
@@ -138,26 +138,26 @@ export class DebugInfoResolver {
     return layout.fields.filter((f) => f.isReference);
   }
 
-  private buildI32GlobalValueMap(rtGlobals: RuntimeGlobals): Map<number, number> {
+  private buildI32GlobalValueMap(mutableI32Globals: number[]): Map<number, number> {
     const values = new Map<number, number>();
     let mutableI32Slot = 0;
 
-    for (const globalEntry of this.wasmGlobals) {
-      if (globalEntry.type.kind !== TypeKind.i32) {
+    for (const wasmGlobalEntry of this.wasmGlobalEntries) {
+      if (wasmGlobalEntry.type.kind !== TypeKind.i32) {
         continue;
       }
 
-      if (globalEntry.mutable) {
-        const value = rtGlobals.mutableI32Globals[mutableI32Slot];
+      if (wasmGlobalEntry.mutable) {
+        const value = mutableI32Globals[mutableI32Slot];
         mutableI32Slot++;
         if (value === undefined) {
           continue;
         }
-        values.set(globalEntry.index, value);
+        values.set(wasmGlobalEntry.index, value);
         continue;
       }
 
-      values.set(globalEntry.index, globalEntry.initialValue);
+      values.set(wasmGlobalEntry.index, wasmGlobalEntry.initialValue);
     }
 
     return values;
@@ -191,21 +191,21 @@ class CompilationUnitResolver {
     return layouts;
   }
 
-  resolveGlobalVariables(root: DwarfDIE): GlobalVariableDebugInfo[] {
-    const globalVariables: GlobalVariableDebugInfo[] = [];
+  resolveGlobalVariableDebugInfos(root: DwarfDIE): GlobalVariableDebugInfo[] {
+    const globalVariableDebugInfos: GlobalVariableDebugInfo[] = [];
 
     for (const child of root.children) {
       if (child.tag !== DW_TAG.variable) {
         continue;
       }
 
-      const globalVariable = this.resolveGlobalVariable(child);
-      if (globalVariable) {
-        globalVariables.push(globalVariable);
+      const globalVariableDebugInfo = this.resolveGlobalVariableDebugInfo(child);
+      if (globalVariableDebugInfo) {
+        globalVariableDebugInfos.push(globalVariableDebugInfo);
       }
     }
 
-    return globalVariables;
+    return globalVariableDebugInfos;
   }
 
   private resolveTypeInfo(typeRef: number): { name?: string; size: number; isReference: boolean } {
@@ -270,7 +270,7 @@ class CompilationUnitResolver {
     return (getAttr(parentDie, DW_AT.name)?.value as string) ?? null;
   }
 
-  private resolveGlobalVariable(variableDie: DwarfDIE): GlobalVariableDebugInfo | null {
+  private resolveGlobalVariableDebugInfo(variableDie: DwarfDIE): GlobalVariableDebugInfo | null {
     const nameAttr = getAttr(variableDie, DW_AT.name);
     const typeAttr = getAttr(variableDie, DW_AT.type);
     const locationAttr = getAttr(variableDie, DW_AT.location);

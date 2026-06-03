@@ -24,7 +24,12 @@ describeIntegration("findRoots", (ctx) => {
     dump = loadFixture(ctx);
     objects = walkBlocks(dump.memory, dump.rtGlobals.heapBase);
     debugInfoResolver = DebugInfoResolver.fromWasm(ctx.loadFixtureWasm());
-    roots = findRoots(dump.memory, dump.rtGlobals, objects, debugInfoResolver.getGlobalRoots(dump.rtGlobals));
+    roots = findRoots(
+      dump.memory,
+      dump.rtGlobals,
+      objects,
+      debugInfoResolver.getGlobalRoots(dump.rtGlobals.mutableI32Globals)
+    );
   });
 
   it("currently reports local roots only for the shared fixture dump", () => {

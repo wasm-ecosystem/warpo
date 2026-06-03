@@ -33,7 +33,7 @@ export function analyzeHeap(
   const graph = scanReferences(memory, objects, debugInfoResolver);
 
   // Step 3: Discover current roots from globals, shadow stack, and pinned objects.
-  const roots = findRoots(memory, rtGlobals, objects, debugInfoResolver.getGlobalRoots(rtGlobals));
+  const roots = findRoots(memory, rtGlobals, objects, debugInfoResolver.getGlobalRoots(rtGlobals.mutableI32Globals));
 
   // Step 4: Traverse from roots to determine the live object set.
   const liveSet = markLive(roots, graph);
