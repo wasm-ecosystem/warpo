@@ -183,11 +183,7 @@ export interface WasmSections {
   globals: WasmGlobalEntry[];
 }
 
-function readSectionName(
-  reader: BinaryReader,
-  info: ISectionInformation,
-  decoder: TextDecoder
-): string | undefined {
+function readSectionName(reader: BinaryReader, info: ISectionInformation, decoder: TextDecoder): string | undefined {
   if (info.id === SectionCode.Custom && info.name) {
     return decoder.decode(info.name);
   }
@@ -199,10 +195,7 @@ function readSectionName(
   return undefined;
 }
 
-function updateLastGlobalInitialValue(
-  globals: WasmGlobalEntry[],
-  op: IOperatorInformation
-): void {
+function updateLastGlobalInitialValue(globals: WasmGlobalEntry[], op: IOperatorInformation): void {
   switch (op.code) {
     case OperatorCode.i32_const:
     case OperatorCode.i64_const:
@@ -235,11 +228,7 @@ export function extractWasmSections(wasmBinary: Uint8Array): WasmSections {
   while (reader.read()) {
     switch (reader.state) {
       case BinaryReaderState.BEGIN_SECTION: {
-        currentSectionName = readSectionName(
-          reader,
-          reader.result as ISectionInformation,
-          decoder
-        );
+        currentSectionName = readSectionName(reader, reader.result as ISectionInformation, decoder);
         break;
       }
       case BinaryReaderState.SECTION_RAW_DATA: {

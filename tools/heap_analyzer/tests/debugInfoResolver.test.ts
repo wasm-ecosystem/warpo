@@ -1,11 +1,10 @@
 import assert from "node:assert/strict";
 import { before, describe, it } from "node:test";
+import { TypeKind } from "wasmparser/dist/cjs/WasmParser.js";
 import { DebugInfoResolver, resolveClassLayouts } from "../src/debugInfoResolver.js";
 import { parseWasmDebugInfo, DW_AT, DW_TAG, getAttr } from "../src/dwarfParser.js";
 import type { ClassLayout, RuntimeGlobals } from "../src/types.js";
 import { CLASS_PREFIX, describeIntegration } from "./testHelper.js";
-
-const I32_TYPE_KIND = -1;
 
 describeIntegration("debug-info-resolver", (ctx) => {
   let classes: ClassLayout[];
@@ -138,7 +137,7 @@ describeIntegration("debug-info-resolver", (ctx) => {
     it("maps mutable i32 runtime globals back to their wasm global indices", () => {
       const debugInfo = parseWasmDebugInfo(fixtureWasm);
       const mutableI32Globals = new Array<number>(
-        debugInfo.globals.filter((entry) => entry.mutable && entry.type.kind === I32_TYPE_KIND).length
+        debugInfo.globals.filter((entry) => entry.mutable && entry.type.kind === TypeKind.i32).length
       ).fill(0);
       const topLevelGlobals = debugInfo.compilationUnits[0].rootDIE.children.filter(
         (child) => child.tag === DW_TAG.variable
@@ -151,7 +150,7 @@ describeIntegration("debug-info-resolver", (ctx) => {
       let expectedSlot = -1;
       let mutableI32Slot = 0;
       for (const globalEntry of debugInfo.globals) {
-        if (globalEntry.type.kind !== I32_TYPE_KIND) {
+        if (globalEntry.type.kind !== TypeKind.i32) {
           continue;
         }
         if (globalEntry.mutable) {

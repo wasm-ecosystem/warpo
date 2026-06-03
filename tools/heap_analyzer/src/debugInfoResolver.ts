@@ -1,6 +1,8 @@
 // Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+import { TypeKind } from "wasmparser/dist/cjs/WasmParser.js";
+
 import {
   DW_AT,
   DW_TAG,
@@ -12,8 +14,6 @@ import {
   type WasmGlobalEntry,
 } from "./dwarfParser.js";
 import type { ClassField, ClassLayout, GlobalRoot, RuntimeGlobals } from "./types.js";
-
-const I32_TYPE_KIND = -1;
 
 interface GlobalVariableDebugInfo {
   name: string;
@@ -143,7 +143,7 @@ export class DebugInfoResolver {
     let mutableI32Slot = 0;
 
     for (const globalEntry of this.wasmGlobals) {
-      if (globalEntry.type.kind !== I32_TYPE_KIND) {
+      if (globalEntry.type.kind !== TypeKind.i32) {
         continue;
       }
 
