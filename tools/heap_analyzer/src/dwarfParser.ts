@@ -183,6 +183,40 @@ export interface WasmSections {
   globals: WasmGlobalEntry[];
 }
 
+function readSectionName(
+  reader: BinaryReader,
+  info: ISectionInformation,
+  decoder: TextDecoder
+): string | undefined {
+  if (info.id === SectionCode.Custom && info.name) {
+    return decoder.decode(info.name);
+  }
+
+  if (info.id !== SectionCode.Global) {
+    reader.skipSection();
+  }
+
+  return undefined;
+}
+
+function updateLastGlobalInitialValue(
+  globals: WasmGlobalEntry[],
+  op: IOperatorInformation
+): void {
+  switch (op.code) {
+    case OperatorCode.i32_const:
+    case OperatorCode.i64_const:
+    case OperatorCode.f32_const:
+    case OperatorCode.f64_const: {
+      const lastGlobal = globals.at(-1);
+      if (lastGlobal) {
+        lastGlobal.initialValue = Number(op.literal);
+      }
+      break;
+    }
+  }
+}
+
 /**
  * Extract custom sections and global entries from a wasm binary using
  * wasmparser's BinaryReader. The reader validates wasm structure while
@@ -201,15 +235,11 @@ export function extractWasmSections(wasmBinary: Uint8Array): WasmSections {
   while (reader.read()) {
     switch (reader.state) {
       case BinaryReaderState.BEGIN_SECTION: {
-        const info = reader.result as ISectionInformation;
-        if (info.id === SectionCode.Custom && info.name) {
-          currentSectionName = decoder.decode(info.name);
-        } else if (info.id !== SectionCode.Global) {
-          currentSectionName = undefined;
-          reader.skipSection();
-        } else {
-          currentSectionName = undefined;
-        }
+        currentSectionName = readSectionName(
+          reader,
+          reader.result as ISectionInformation,
+          decoder
+        );
         break;
       }
       case BinaryReaderState.SECTION_RAW_DATA: {
@@ -234,16 +264,7 @@ export function extractWasmSections(wasmBinary: Uint8Array): WasmSections {
         break;
       }
       case BinaryReaderState.INIT_EXPRESSION_OPERATOR: {
-        const op = reader.result as IOperatorInformation;
-        if (
-          op.code === OperatorCode.i32_const ||
-          op.code === OperatorCode.i64_const ||
-          op.code === OperatorCode.f32_const ||
-          op.code === OperatorCode.f64_const
-        ) {
-          const last = globals[globals.length - 1];
-          if (last) last.initialValue = Number(op.literal);
-        }
+        updateLastGlobalInitialValue(globals, reader.result as IOperatorInformation);
         break;
       }
       case BinaryReaderState.ERROR: {

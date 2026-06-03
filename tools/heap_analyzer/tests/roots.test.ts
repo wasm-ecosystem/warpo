@@ -103,16 +103,11 @@ it("reports global roots when resolved wasm globals point at valid objects", () 
     { mmInfo: 24, rtId: 2, rtSize: 8, payloadPtr: 32, gcColor: 0 },
   ];
 
-  const roots = findRoots(
-    memory,
-    { dataEnd: 0, stackPointer: 0, heapBase: 0, mutableI32Globals: [] },
-    objects,
-    [
-      { name: "globalTree", className: "TreeNode", globalIndex: 2, value: 32 },
-      { name: "globalNull", className: "TreeNode", globalIndex: 3, value: 0 },
-      { name: "globalDead", className: "TreeNode", globalIndex: 4, value: 48 },
-    ]
-  );
+  const roots = findRoots(memory, { dataEnd: 0, stackPointer: 0, heapBase: 0, mutableI32Globals: [] }, objects, [
+    { name: "globalTree", className: "TreeNode", globalIndex: 2, value: 32 },
+    { name: "globalNull", className: "TreeNode", globalIndex: 3, value: 0 },
+    { name: "globalDead", className: "TreeNode", globalIndex: 4, value: 48 },
+  ]);
 
   assert.deepStrictEqual(roots, [{ objectPtr: 32, className: "", rootType: "global", sourceAddress: 2 }]);
 });
