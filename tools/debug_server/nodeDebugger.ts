@@ -70,11 +70,18 @@ export class NodeDebugger implements Debugger {
 
   async launch(config: WasmLaunchConfig): Promise<void> {
     const port = await findFreePort();
-    const entryScript = path.join(DIRNAME, "wasmEntry.js");
 
     this.child = spawn(
       process.execPath,
-      [`--inspect=${port}`, entryScript, config.wasmFilePath, config.entryFunctionName, ...config.args.map(String)],
+      [
+        `--inspect=${port}`,
+        "--import",
+        "tsx",
+        path.join(DIRNAME, "wasmEntry.ts"),
+        config.wasmFilePath,
+        config.entryFunctionName,
+        ...config.args.map(String),
+      ],
       { stdio: ["pipe", "pipe", "pipe"] }
     );
 
