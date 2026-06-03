@@ -10,7 +10,16 @@
  * raw bytes.
  */
 
-import { BinaryReader, BinaryReaderState, ISectionInformation, SectionCode } from "wasmparser";
+import {
+  BinaryReader,
+  BinaryReaderState,
+  IGlobalVariable,
+  IOperatorInformation,
+  ISectionInformation,
+  OperatorCode,
+  SectionCode,
+  Type,
+} from "wasmparser";
 
 // ── DWARF constants ──────────────────────────────────────────────────────────
 
@@ -87,13 +96,15 @@ export interface CompilationUnit {
   rootDIE: DwarfDIE;
 }
 
-export interface DwarfInfo {
+export interface WasmDebugInfo {
   /** Parsed .debug_str string table (offset → string). */
   stringTable: Map<number, string>;
   /** Parsed abbreviation tables. */
   abbreviations: AbbrevTable;
   /** All compilation units in .debug_info. */
   compilationUnits: CompilationUnit[];
+  /** All wasm globals in module order. */
+  globals: WasmGlobalEntry[];
 }
 
 class BufferReader {
@@ -155,43 +166,94 @@ class BufferReader {
 
 // ── Raw section extraction ───────────────────────────────────────────────────
 
-interface CustomSection {
+export interface CustomSection {
   name: string;
   payload: Uint8Array;
 }
 
+export interface WasmGlobalEntry {
+  index: number;
+  mutable: boolean;
+  type: Type;
+  initialValue: number;
+}
+
+export interface WasmSections {
+  customSections: CustomSection[];
+  globals: WasmGlobalEntry[];
+}
+
+function readSectionName(reader: BinaryReader, info: ISectionInformation, decoder: TextDecoder): string | undefined {
+  if (info.id === SectionCode.Custom && info.name) {
+    return decoder.decode(info.name);
+  }
+
+  if (info.id !== SectionCode.Global) {
+    reader.skipSection();
+  }
+
+  return undefined;
+}
+
+function updateLastGlobalInitialValue(globals: WasmGlobalEntry[], op: IOperatorInformation): void {
+  switch (op.code) {
+    case OperatorCode.i32_const:
+    case OperatorCode.i64_const:
+    case OperatorCode.f32_const:
+    case OperatorCode.f64_const: {
+      const lastGlobal = globals.at(-1);
+      if (lastGlobal) {
+        lastGlobal.initialValue = Number(op.literal);
+      }
+      break;
+    }
+  }
+}
+
 /**
- * Extract custom sections from a wasm binary using wasmparser's BinaryReader.
- * The reader validates wasm structure while iterating through sections.
+ * Extract custom sections and global entries from a wasm binary using
+ * wasmparser's BinaryReader. The reader validates wasm structure while
+ * iterating through sections.
  */
-export function extractCustomSections(wasmBinary: Uint8Array): CustomSection[] {
+export function extractWasmSections(wasmBinary: Uint8Array): WasmSections {
   const reader = new BinaryReader();
   reader.setData(wasmBinary.buffer as ArrayBuffer, wasmBinary.byteOffset, wasmBinary.byteLength);
 
-  const sections: CustomSection[] = [];
+  const customSections: CustomSection[] = [];
+  const globals: WasmGlobalEntry[] = [];
   let currentSectionName: string | undefined;
+  let globalIndex = 0;
+  const decoder = new TextDecoder();
 
   while (reader.read()) {
     switch (reader.state) {
       case BinaryReaderState.BEGIN_SECTION: {
-        const info = reader.result as ISectionInformation;
-        if (info.id === SectionCode.Custom && info.name) {
-          currentSectionName = new TextDecoder().decode(info.name);
-        } else {
-          currentSectionName = undefined;
-          reader.skipSection();
-        }
+        currentSectionName = readSectionName(reader, reader.result as ISectionInformation, decoder);
         break;
       }
       case BinaryReaderState.SECTION_RAW_DATA: {
         if (currentSectionName !== undefined) {
           const rawData = reader.result as Uint8Array;
-          sections.push({
+          customSections.push({
             name: currentSectionName,
             payload: new Uint8Array(rawData),
           });
           currentSectionName = undefined;
         }
+        break;
+      }
+      case BinaryReaderState.BEGIN_GLOBAL_SECTION_ENTRY: {
+        const globalVar = reader.result as IGlobalVariable;
+        globals.push({
+          index: globalIndex++,
+          mutable: globalVar.type.mutability !== 0,
+          type: globalVar.type.contentType,
+          initialValue: 0,
+        });
+        break;
+      }
+      case BinaryReaderState.INIT_EXPRESSION_OPERATOR: {
+        updateLastGlobalInitialValue(globals, reader.result as IOperatorInformation);
         break;
       }
       case BinaryReaderState.ERROR: {
@@ -200,7 +262,7 @@ export function extractCustomSections(wasmBinary: Uint8Array): CustomSection[] {
     }
   }
 
-  return sections;
+  return { customSections, globals };
 }
 
 // ── Abbreviation table parsing ───────────────────────────────────────────────
@@ -418,17 +480,17 @@ function parseDIETree(
 // ── High-level API ───────────────────────────────────────────────────────────
 
 /**
- * Parse DWARF debug information from a WebAssembly binary.
+ * Parse debug metadata from a WebAssembly binary.
  *
  * @param wasmBinary The raw wasm file content as a Uint8Array or ArrayBuffer.
- * @returns Parsed DWARF info including compilation units, abbreviations, and string table.
+ * @returns Parsed DWARF units together with wasm global metadata.
  * @throws If required DWARF sections are missing or malformed.
  *
  */
-export function parseDwarf(wasmBinary: Uint8Array | ArrayBuffer): DwarfInfo {
+export function parseWasmDebugInfo(wasmBinary: Uint8Array | ArrayBuffer): WasmDebugInfo {
   const binary = wasmBinary instanceof Uint8Array ? wasmBinary : new Uint8Array(wasmBinary);
 
-  const customSections = extractCustomSections(binary);
+  const { customSections, globals } = extractWasmSections(binary);
 
   const debugAbbrev = customSections.find((s) => s.name === "debug_abbrev");
   const debugInfo = customSections.find((s) => s.name === "debug_info");
@@ -445,7 +507,7 @@ export function parseDwarf(wasmBinary: Uint8Array | ArrayBuffer): DwarfInfo {
   const abbreviations = parseAbbrevTable(debugAbbrev.payload);
   const compilationUnits = parseDebugInfo(debugInfo.payload, abbreviations, stringTable);
 
-  return { stringTable, abbreviations, compilationUnits };
+  return { stringTable, abbreviations, compilationUnits, globals };
 }
 
 // ── Convenience helpers ──────────────────────────────────────────────────────

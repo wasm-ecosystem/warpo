@@ -17,11 +17,12 @@ export type {
   ClassLayout,
   DumpedMemory,
   EntryLayout,
+  GlobalRoot,
   HeapObject,
   HeapSnapshot,
   ObjectHeader,
   RootInfo,
   RootType,
-  RuntimeGlobals,
+  RuntimeGlobalValues,
   SnapshotSummaryEntry,
 } from "./types.js";

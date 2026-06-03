@@ -9,14 +9,24 @@ export interface ObjectHeader {
   gcColor: number; // nextWithColor & COLOR_MASK
 }
 
-export interface RuntimeGlobals {
+/** Runtime-captured values for the globals tracked in the dump header. */
+export interface RuntimeGlobalValues {
   dataEnd: number;
   heapBase: number;
   stackPointer: number;
+  /** Serialized values of mutable i32 wasm globals in module order. */
+  mutableI32GlobalValues: number[];
+}
+
+export interface GlobalRoot {
+  name: string;
+  className: string;
+  globalIndex: number;
+  value: number;
 }
 
 export interface DumpedMemory {
-  rtGlobals: RuntimeGlobals;
+  rtGlobals: RuntimeGlobalValues;
   memory: DataView;
 }
 
@@ -52,7 +62,7 @@ export interface RootInfo {
   objectPtr: number; // payloadPtr of the referenced object
   className: string; // resolved class name
   rootType: RootType;
-  sourceAddress: number; // address where pointer was found (0 for pinned)
+  sourceAddress: number; // stack address, wasm global index, or 0 for pinned
 }
 
 export interface HeapObject {

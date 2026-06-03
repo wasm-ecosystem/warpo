@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import type { ClassLayout, EntryLayout, ObjectHeader } from "./types.js";
-import type { ClassResolver } from "./classResolver.js";
+import type { DebugInfoResolver } from "./debugInfoResolver.js";
 
 function readValidPtr(memory: DataView, addr: number, validPtrs: Set<number>): number | null {
   if (addr + 4 > memory.byteLength) {
@@ -18,11 +18,11 @@ function readValidPtr(memory: DataView, addr: number, validPtrs: Set<number>): n
 function scanReferenceFields(
   memory: DataView,
   obj: ObjectHeader,
-  classResolver: ClassResolver,
+  debugInfoResolver: DebugInfoResolver,
   validPtrs: Set<number>,
   edges: number[]
 ): void {
-  for (const field of classResolver.getReferenceFields(obj.rtId)) {
+  for (const field of debugInfoResolver.getReferenceFields(obj.rtId)) {
     if (field.offset + field.size > obj.rtSize) {
       // Skip fields that don't fit within the object's size (could be a broken dumped memory or stale debug info)
       continue;
@@ -160,13 +160,13 @@ function scanContainerElements(
  *
  * @param memory Header-stripped DataView (wasm addr 0 = offset 0)
  * @param objects Parsed object headers from parseAllObjects
- * @param classResolver ClassResolver built from debug info
+ * @param debugInfoResolver DebugInfoResolver built from debug info
  * @returns Adjacency list: payloadPtr → array of referenced payloadPtrs
  */
 export function scanReferences(
   memory: DataView,
   objects: ObjectHeader[],
-  classResolver: ClassResolver
+  debugInfoResolver: DebugInfoResolver
 ): Map<number, number[]> {
   const validPtrs = new Set(objects.map((o) => o.payloadPtr));
   const graph = new Map<number, number[]>();
@@ -174,9 +174,9 @@ export function scanReferences(
   for (const obj of objects) {
     const edges: number[] = [];
 
-    const classLayout = classResolver.getClassDef(obj.rtId);
-    if (classLayout && !classResolver.isPointerfree(obj.rtId)) {
-      scanReferenceFields(memory, obj, classResolver, validPtrs, edges);
+    const classLayout = debugInfoResolver.getClassDef(obj.rtId);
+    if (classLayout && !debugInfoResolver.isPointerfree(obj.rtId)) {
+      scanReferenceFields(memory, obj, debugInfoResolver, validPtrs, edges);
       scanContainerElements(memory, obj, classLayout, validPtrs, edges);
     }
 

@@ -26,9 +26,9 @@ describeIntegration("analyzeHeap", (ctx) => {
   });
 
   it("matches the fixture's live-object and root counts", () => {
-    assert.strictEqual(snapshot.objectCount, 89);
-    assert.strictEqual(snapshot.objects.length, 89);
-    assert.strictEqual(snapshot.roots.length, 23);
+    assert.strictEqual(snapshot.objectCount, 90);
+    assert.strictEqual(snapshot.objects.length, 90);
+    assert.strictEqual(snapshot.roots.length, 19);
   });
 
   it("reports only local roots for the current fixture", () => {
@@ -37,7 +37,7 @@ describeIntegration("analyzeHeap", (ctx) => {
       rootTypeCounts[root.rootType] = (rootTypeCounts[root.rootType] ?? 0) + 1;
     }
 
-    assert.deepStrictEqual(rootTypeCounts, { local: 23 });
+    assert.deepStrictEqual(rootTypeCounts, { local: 19 });
   });
 
   it("propagates local rootType to all live objects", () => {
@@ -46,14 +46,14 @@ describeIntegration("analyzeHeap", (ctx) => {
       objectRootTypeCounts[obj.rootType] = (objectRootTypeCounts[obj.rootType] ?? 0) + 1;
     }
 
-    assert.deepStrictEqual(objectRootTypeCounts, { local: 89 });
+    assert.deepStrictEqual(objectRootTypeCounts, { local: 90 });
   });
 
   it("matches expected class counts for key fixture types", () => {
     assert.strictEqual(objectCounts.get(`${CLASS_PREFIX}TreeNode`), 31);
-    assert.strictEqual(objectCounts.get("~lib/arraybuffer/ArrayBuffer"), 18);
+    assert.strictEqual(objectCounts.get("~lib/arraybuffer/ArrayBuffer"), 17);
     assert.strictEqual(objectCounts.get(`${CLASS_PREFIX}Item`), 10);
-    assert.strictEqual(objectCounts.get(`${CLASS_PREFIX}Vector2`), 6);
+    assert.strictEqual(objectCounts.get(`${CLASS_PREFIX}Vector2`), 8);
     assert.strictEqual(objectCounts.get(`${CLASS_PREFIX}ListNode`), 5);
     assert.strictEqual(objectCounts.get(`${CLASS_PREFIX}NPC`), 3);
     assert.strictEqual(objectCounts.get(`${CLASS_PREFIX}Player`), 2);

@@ -6,22 +6,36 @@ import { describeIntegration } from "./testHelper.js";
 
 describeIntegration("parseDumpFile", (ctx) => {
   let buffer: ArrayBuffer;
+  let header: DataView;
 
   before(() => {
     ctx.compileFixture();
     ctx.generateFixtureDump();
     buffer = ctx.loadFixtureDumpBuffer();
+    header = new DataView(buffer);
   });
 
   it("parses metadata from generated dump", () => {
     const result = parseDumpFile(buffer);
-    const header = new DataView(buffer);
     assert.strictEqual(result.rtGlobals.dataEnd, header.getUint32(8, true));
     assert.strictEqual(result.rtGlobals.heapBase, header.getUint32(12, true));
     assert.strictEqual(result.rtGlobals.stackPointer, header.getUint32(16, true));
     assert.ok(result.rtGlobals.dataEnd > 0);
     assert.ok(result.rtGlobals.heapBase > result.rtGlobals.dataEnd);
     assert.ok(result.rtGlobals.stackPointer <= result.rtGlobals.heapBase);
+  });
+
+  it("parses mutable i32 globals from the variable-length header", () => {
+    const result = parseDumpFile(buffer);
+    const numMutableI32GlobalValues = header.getUint32(20, true);
+
+    assert.strictEqual(result.rtGlobals.mutableI32GlobalValues.length, numMutableI32GlobalValues);
+    for (let index = 0; index < numMutableI32GlobalValues; index++) {
+      assert.strictEqual(
+        result.rtGlobals.mutableI32GlobalValues[index],
+        header.getUint32(DUMP_HEADER_SIZE + index * 4, true)
+      );
+    }
   });
 
   it("returns a DataView over the memory region", () => {
@@ -31,7 +45,9 @@ describeIntegration("parseDumpFile", (ctx) => {
 
   it("memory size equals file size minus header", () => {
     const result = parseDumpFile(buffer);
-    assert.strictEqual(result.memory.byteLength, buffer.byteLength - DUMP_HEADER_SIZE);
+    const memoryOffset = DUMP_HEADER_SIZE + header.getUint32(20, true) * 4;
+
+    assert.strictEqual(result.memory.byteLength, buffer.byteLength - memoryOffset);
     assert.strictEqual(result.memory.byteLength, 65536);
   });
 

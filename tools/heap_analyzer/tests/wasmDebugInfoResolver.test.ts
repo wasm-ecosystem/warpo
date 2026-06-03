@@ -1,22 +1,22 @@
 import assert from "node:assert/strict";
 import { before, describe, it } from "node:test";
-import { DebugInfoResolver, resolveClassLayouts } from "../src/debugInfoResolver.js";
+import { WasmDebugInfoResolver, resolveClassLayouts } from "../src/wasmDebugInfoResolver.js";
 import { parseWasmDebugInfo, DW_AT, DW_TAG, getAttr } from "../src/dwarfParser.js";
 import type { ClassLayout, RuntimeGlobalValues } from "../src/types.js";
 import { CLASS_PREFIX, describeIntegration } from "./testHelper.js";
 
 const I32_TYPE_KIND = -1;
 
-describeIntegration("class-resolver", (ctx) => {
+describeIntegration("wasm-debug-info-resolver", (ctx) => {
   let classes: ClassLayout[];
   let classMap: Map<string, ClassLayout>;
-  let resolver: DebugInfoResolver;
+  let debugInfoResolver: WasmDebugInfoResolver;
   let fixtureWasm: Uint8Array;
 
   before(() => {
     ctx.compileFixture();
     fixtureWasm = ctx.loadFixtureWasm();
-    resolver = DebugInfoResolver.fromWasm(fixtureWasm);
+    debugInfoResolver = WasmDebugInfoResolver.fromWasm(fixtureWasm);
     classes = resolveClassLayouts(fixtureWasm);
     classMap = new Map(classes.map((c) => [c.name, c]));
   });
@@ -174,7 +174,7 @@ describeIntegration("class-resolver", (ctx) => {
         mutableI32GlobalValues,
       };
       const rootMap = new Map(
-        resolver.getGlobalRoots(runtimeGlobalValues.mutableI32GlobalValues).map((root) => [root.name, root])
+        debugInfoResolver.getGlobalRoots(runtimeGlobalValues.mutableI32GlobalValues).map((root) => [root.name, root])
       );
 
       assert.strictEqual(rootMap.get(`${CLASS_PREFIX}globalTree`)?.value, expectedValue);

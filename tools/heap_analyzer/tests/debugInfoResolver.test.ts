@@ -1,22 +1,21 @@
 import assert from "node:assert/strict";
 import { before, describe, it } from "node:test";
+import { TypeKind } from "wasmparser/dist/cjs/WasmParser.js";
 import { DebugInfoResolver, resolveClassLayouts } from "../src/debugInfoResolver.js";
 import { parseWasmDebugInfo, DW_AT, DW_TAG, getAttr } from "../src/dwarfParser.js";
-import type { ClassLayout, RuntimeGlobalValues } from "../src/types.js";
+import type { ClassLayout } from "../src/types.js";
 import { CLASS_PREFIX, describeIntegration } from "./testHelper.js";
 
-const I32_TYPE_KIND = -1;
-
-describeIntegration("class-resolver", (ctx) => {
+describeIntegration("debug-info-resolver", (ctx) => {
   let classes: ClassLayout[];
   let classMap: Map<string, ClassLayout>;
-  let resolver: DebugInfoResolver;
+  let debugInfoResolver: DebugInfoResolver;
   let fixtureWasm: Uint8Array;
 
   before(() => {
     ctx.compileFixture();
     fixtureWasm = ctx.loadFixtureWasm();
-    resolver = DebugInfoResolver.fromWasm(fixtureWasm);
+    debugInfoResolver = DebugInfoResolver.fromWasm(fixtureWasm);
     classes = resolveClassLayouts(fixtureWasm);
     classMap = new Map(classes.map((c) => [c.name, c]));
   });
@@ -136,26 +135,27 @@ describeIntegration("class-resolver", (ctx) => {
 
   describe("global roots", () => {
     it("maps mutable i32 runtime globals back to their wasm global indices", () => {
-      const debugInfo = parseWasmDebugInfo(fixtureWasm);
+      const wasmDebugInfo = parseWasmDebugInfo(fixtureWasm);
+      const wasmGlobalEntries = wasmDebugInfo.globals;
       const mutableI32GlobalValues = new Array<number>(
-        debugInfo.globals.filter((entry) => entry.mutable && entry.type.kind === I32_TYPE_KIND).length
+        wasmGlobalEntries.filter((entry) => entry.mutable && entry.type.kind === TypeKind.i32).length
       ).fill(0);
-      const topLevelGlobals = debugInfo.compilationUnits[0].rootDIE.children.filter(
+      const topLevelGlobalVariableDIEs = wasmDebugInfo.compilationUnits[0].rootDIE.children.filter(
         (child) => child.tag === DW_TAG.variable
       );
-      const globalTreeDie = topLevelGlobals.find((die) =>
+      const globalTreeDie = topLevelGlobalVariableDIEs.find((die) =>
         String(getAttr(die, DW_AT.name)?.value).endsWith("/globalTree")
       );
       const globalTreeIndex = getAttr(globalTreeDie, DW_AT.location)?.value as number;
 
       let expectedSlot = -1;
       let mutableI32Slot = 0;
-      for (const globalEntry of debugInfo.globals) {
-        if (globalEntry.type.kind !== I32_TYPE_KIND) {
+      for (const wasmGlobalEntry of wasmGlobalEntries) {
+        if (wasmGlobalEntry.type.kind !== TypeKind.i32) {
           continue;
         }
-        if (globalEntry.mutable) {
-          if (globalEntry.index === globalTreeIndex) {
+        if (wasmGlobalEntry.mutable) {
+          if (wasmGlobalEntry.index === globalTreeIndex) {
             expectedSlot = mutableI32Slot;
             break;
           }
@@ -167,14 +167,8 @@ describeIntegration("class-resolver", (ctx) => {
 
       const expectedValue = 0x12345678;
       mutableI32GlobalValues[expectedSlot] = expectedValue;
-      const runtimeGlobalValues: RuntimeGlobalValues = {
-        dataEnd: 0,
-        heapBase: 0,
-        stackPointer: 0,
-        mutableI32GlobalValues,
-      };
       const rootMap = new Map(
-        resolver.getGlobalRoots(runtimeGlobalValues.mutableI32GlobalValues).map((root) => [root.name, root])
+        debugInfoResolver.getGlobalRoots(mutableI32GlobalValues).map((root) => [root.name, root])
       );
 
       assert.strictEqual(rootMap.get(`${CLASS_PREFIX}globalTree`)?.value, expectedValue);
