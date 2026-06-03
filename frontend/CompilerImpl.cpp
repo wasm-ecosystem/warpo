@@ -257,6 +257,8 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
 
     support::PerfRAII compileStat{support::PerfItemKind::CompilationHIR_Compilation};
 
+    r.callExportedFunctionWithName<0>("initializeProgram", program);
+
     int32_t const compiled = r.callExportedFunctionWithName<1>("compile", program)[0].i32;
     static_cast<void>(compiled);
     if (checkDiag(program, config_.useColorfulDiagMessage))
