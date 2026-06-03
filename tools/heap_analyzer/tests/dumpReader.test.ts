@@ -27,12 +27,12 @@ describeIntegration("parseDumpFile", (ctx) => {
 
   it("parses mutable i32 globals from the variable-length header", () => {
     const result = parseDumpFile(buffer);
-    const numMutableI32Globals = header.getUint32(20, true);
+    const numMutableI32GlobalValues = header.getUint32(20, true);
 
-    assert.strictEqual(result.rtGlobals.mutableI32Globals.length, numMutableI32Globals);
-    for (let index = 0; index < numMutableI32Globals; index++) {
+    assert.strictEqual(result.rtGlobals.mutableI32GlobalValues.length, numMutableI32GlobalValues);
+    for (let index = 0; index < numMutableI32GlobalValues; index++) {
       assert.strictEqual(
-        result.rtGlobals.mutableI32Globals[index],
+        result.rtGlobals.mutableI32GlobalValues[index],
         header.getUint32(DUMP_HEADER_SIZE + index * 4, true)
       );
     }

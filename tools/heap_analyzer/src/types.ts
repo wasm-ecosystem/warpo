@@ -9,11 +9,13 @@ export interface ObjectHeader {
   gcColor: number; // nextWithColor & COLOR_MASK
 }
 
-export interface RuntimeGlobals {
+/** Runtime-captured values for the globals tracked in the dump header. */
+export interface RuntimeGlobalValues {
   dataEnd: number;
   heapBase: number;
   stackPointer: number;
-  mutableI32Globals: number[];
+  /** Serialized values of mutable i32 wasm globals in module order. */
+  mutableI32GlobalValues: number[];
 }
 
 export interface GlobalRoot {
@@ -24,7 +26,7 @@ export interface GlobalRoot {
 }
 
 export interface DumpedMemory {
-  rtGlobals: RuntimeGlobals;
+  rtGlobals: RuntimeGlobalValues;
   memory: DataView;
 }
 

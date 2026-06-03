@@ -8,7 +8,14 @@ import { computeRetainedSizes, shallowSize } from "./retainedSize.js";
 import { findRoots } from "./roots.js";
 import { scanReferences } from "./referenceScanner.js";
 import { walkBlocks } from "./tlsf.js";
-import type { HeapObject, HeapSnapshot, RootInfo, RootType, RuntimeGlobals, SnapshotSummaryEntry } from "./types.js";
+import type {
+  HeapObject,
+  HeapSnapshot,
+  RootInfo,
+  RootType,
+  RuntimeGlobalValues,
+  SnapshotSummaryEntry,
+} from "./types.js";
 
 function getAssignedRootType(rootTypes: Map<number, RootType>, payloadPtr: number): RootType {
   const rootType = rootTypes.get(payloadPtr);
@@ -20,7 +27,7 @@ function getAssignedRootType(rootTypes: Map<number, RootType>, payloadPtr: numbe
 
 export function analyzeHeap(
   memory: DataView,
-  rtGlobals: RuntimeGlobals,
+  rtGlobals: RuntimeGlobalValues,
   wasmBinary: Uint8Array | ArrayBuffer
 ): HeapSnapshot {
   // Resolve DWARF-derived class and global metadata once up front for the entire pipeline.
@@ -33,7 +40,12 @@ export function analyzeHeap(
   const graph = scanReferences(memory, objects, debugInfoResolver);
 
   // Step 3: Discover current roots from globals, shadow stack, and pinned objects.
-  const roots = findRoots(memory, rtGlobals, objects, debugInfoResolver.getGlobalRoots(rtGlobals.mutableI32Globals));
+  const roots = findRoots(
+    memory,
+    rtGlobals,
+    objects,
+    debugInfoResolver.getGlobalRoots(rtGlobals.mutableI32GlobalValues)
+  );
 
   // Step 4: Traverse from roots to determine the live object set.
   const liveSet = markLive(roots, graph);

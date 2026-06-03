@@ -23,6 +23,6 @@ export type {
   ObjectHeader,
   RootInfo,
   RootType,
-  RuntimeGlobals,
+  RuntimeGlobalValues,
   SnapshotSummaryEntry,
 } from "./types.js";

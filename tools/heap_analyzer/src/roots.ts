@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { GC_COLOR_TRANSPARENT } from "./constants.js";
-import type { GlobalRoot, ObjectHeader, RootInfo, RuntimeGlobals } from "./types.js";
+import type { GlobalRoot, ObjectHeader, RootInfo, RuntimeGlobalValues } from "./types.js";
 
 /**
  * Identify GC roots that can be recovered reliably from the current dump model.
@@ -14,7 +14,7 @@ import type { GlobalRoot, ObjectHeader, RootInfo, RuntimeGlobals } from "./types
  */
 export function findRoots(
   memory: DataView,
-  rtGlobals: RuntimeGlobals,
+  rtGlobals: RuntimeGlobalValues,
   objects: ObjectHeader[],
   globalRoots: GlobalRoot[] = []
 ): RootInfo[] {

@@ -28,7 +28,7 @@ describeIntegration("findRoots", (ctx) => {
       dump.memory,
       dump.rtGlobals,
       objects,
-      debugInfoResolver.getGlobalRoots(dump.rtGlobals.mutableI32Globals)
+      debugInfoResolver.getGlobalRoots(dump.rtGlobals.mutableI32GlobalValues)
     );
   });
 
@@ -76,7 +76,7 @@ describeIntegration("findRoots", (ctx) => {
   });
 
   it("shared fixture dump has no serialized mutable globals yet", () => {
-    assert.strictEqual(dump.rtGlobals.mutableI32Globals.length, 0);
+    assert.strictEqual(dump.rtGlobals.mutableI32GlobalValues.length, 0);
     assert.strictEqual(
       roots.some((root) => root.rootType === "global"),
       false
@@ -93,7 +93,7 @@ it("reports transparent-color objects as pinned roots", () => {
 
   memory.setUint32(0, 16, true);
 
-  const roots = findRoots(memory, { dataEnd: 0, stackPointer: 0, heapBase: 4, mutableI32Globals: [] }, objects);
+  const roots = findRoots(memory, { dataEnd: 0, stackPointer: 0, heapBase: 4, mutableI32GlobalValues: [] }, objects);
   const pinnedRoots = roots.filter((root) => root.rootType === "pinned");
   const localRoots = roots.filter((root) => root.rootType === "local");
 
@@ -108,7 +108,7 @@ it("reports global roots when resolved wasm globals point at valid objects", () 
     { mmInfo: 24, rtId: 2, rtSize: 8, payloadPtr: 32, gcColor: 0 },
   ];
 
-  const roots = findRoots(memory, { dataEnd: 0, stackPointer: 0, heapBase: 0, mutableI32Globals: [] }, objects, [
+  const roots = findRoots(memory, { dataEnd: 0, stackPointer: 0, heapBase: 0, mutableI32GlobalValues: [] }, objects, [
     { name: "globalTree", className: "TreeNode", globalIndex: 2, value: 32 },
     { name: "globalNull", className: "TreeNode", globalIndex: 3, value: 0 },
     { name: "globalDead", className: "TreeNode", globalIndex: 4, value: 48 },
