@@ -1,7 +1,7 @@
 // Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ClassLayout, EntryLayout, ObjectHeader } from "./types.js";
+import { getReferenceFields, isPointerfree, type ClassLayout, type EntryLayout, type ObjectHeader } from "./types.js";
 import type { DebugInfoResolver } from "./debugInfoResolver.js";
 
 function readValidPtr(memory: DataView, addr: number, validPtrs: Set<number>): number | null {
@@ -18,11 +18,11 @@ function readValidPtr(memory: DataView, addr: number, validPtrs: Set<number>): n
 function scanReferenceFields(
   memory: DataView,
   obj: ObjectHeader,
-  debugInfoResolver: DebugInfoResolver,
+  classLayout: ClassLayout,
   validPtrs: Set<number>,
   edges: number[]
 ): void {
-  for (const field of debugInfoResolver.getReferenceFields(obj.rtId)) {
+  for (const field of getReferenceFields(classLayout)) {
     if (field.offset + field.size > obj.rtSize) {
       // Skip fields that don't fit within the object's size (could be a broken dumped memory or stale debug info)
       continue;
@@ -175,8 +175,8 @@ export function scanReferences(
     const edges: number[] = [];
 
     const classLayout = debugInfoResolver.getClassDef(obj.rtId);
-    if (classLayout && !debugInfoResolver.isPointerfree(obj.rtId)) {
-      scanReferenceFields(memory, obj, debugInfoResolver, validPtrs, edges);
+    if (classLayout && !isPointerfree(classLayout)) {
+      scanReferenceFields(memory, obj, classLayout, validPtrs, edges);
       scanContainerElements(memory, obj, classLayout, validPtrs, edges);
     }
 

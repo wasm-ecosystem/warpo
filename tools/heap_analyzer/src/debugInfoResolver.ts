@@ -15,6 +15,8 @@ import {
 } from "./dwarfParser.js";
 import type { ClassField, ClassLayout, GlobalRoot } from "./types.js";
 
+type ResolvedTypeInfo = { name?: string; size: number; isReference: boolean };
+
 interface GlobalVariableDebugInfo {
   name: string;
   typeName: string;
@@ -106,41 +108,6 @@ export class DebugInfoResolver {
     return globalRoots;
   }
 
-  /**
-   * Check if a type has no managed references (no reference fields, no reference elements).
-   * Derived from field layout and elementIsReference rather than flags.
-   */
-  isPointerfree(classId: number): boolean {
-    const layout = this.layoutMap.get(classId);
-    if (!layout) {
-      return false;
-    }
-
-    if (layout.elementIsReference === true) {
-      return false;
-    }
-
-    for (const field of layout.fields) {
-      if (field.isReference) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  /**
-   * Returns all reference fields (isReference == true) for this class,
-   * walking the full inheritance chain via base.
-   */
-  getReferenceFields(classId: number): ClassField[] {
-    const layout = this.layoutMap.get(classId);
-    if (!layout) {
-      return [];
-    }
-    return layout.fields.filter((f) => f.isReference);
-  }
-
   /** Maps i32 wasm global indices to runtime mutable values or immutable initial values. */
   private buildI32GlobalValueMap(mutableI32GlobalValues: number[]): Map<number, number> {
     const values = new Map<number, number>();
@@ -212,7 +179,7 @@ class CompilationUnitResolver {
     return globalVariableDebugInfos;
   }
 
-  private resolveTypeInfo(typeRef: number): { name?: string; size: number; isReference: boolean } {
+  private resolveTypeInfo(typeRef: number): ResolvedTypeInfo {
     const typeDie = this.offsetMap.get(typeRef);
     if (!typeDie) {
       return { size: 4, isReference: false };
@@ -241,7 +208,7 @@ class CompilationUnitResolver {
     };
   }
 
-  private resolveTemplateType(classDie: DwarfDIE): string | undefined {
+  private resolveTemplateType(classDie: DwarfDIE): ResolvedTypeInfo | undefined {
     const templateParam = classDie.children.find((c) => c.tag === DW_TAG.template_type_parameter);
     if (!templateParam) {
       return undefined;
@@ -252,7 +219,7 @@ class CompilationUnitResolver {
       return undefined;
     }
 
-    return this.resolveTypeInfo(typeAttr.value as number).name;
+    return this.resolveTypeInfo(typeAttr.value as number);
   }
 
   private resolveBaseName(classDie: DwarfDIE): string | null {
@@ -296,7 +263,7 @@ class CompilationUnitResolver {
 
   private resolveClassLayout(classDie: DwarfDIE): ClassLayout | null {
     const nameAttr = getAttr(classDie, DW_AT.name);
-    if (!nameAttr) {
+    if (nameAttr === undefined) {
       return null;
     }
 
@@ -314,17 +281,16 @@ class CompilationUnitResolver {
       }
     }
 
+    const templateType = this.resolveTemplateType(classDie);
+
     const layout: ClassLayout = {
       rtid: sigAttr.value as number,
       name: nameAttr.value as string,
       base: this.resolveBaseName(classDie),
       fields,
+      templateType: templateType?.name,
+      templateTypeIsReference: templateType?.isReference,
     };
-
-    const templateType = this.resolveTemplateType(classDie);
-    if (templateType !== undefined) {
-      layout.templateType = templateType;
-    }
 
     return layout;
   }

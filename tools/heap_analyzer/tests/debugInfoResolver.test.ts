@@ -119,11 +119,11 @@ describeIntegration("debug-info-resolver", (ctx) => {
   });
 
   describe("template types", () => {
-    it("resolves template type for Array<Item>", () => {
+    it("resolves template type metadata for Array<Item>", () => {
       const arrayItem = classes.find((c) => c.name === `~lib/array/Array<${CLASS_PREFIX}Item>`);
-      if (arrayItem) {
-        assert.notStrictEqual(arrayItem.templateType, undefined);
-      }
+      assert.ok(arrayItem);
+      assert.strictEqual(arrayItem.templateType, `${CLASS_PREFIX}Item`);
+      assert.strictEqual(arrayItem.templateTypeIsReference, true);
     });
   });
 
