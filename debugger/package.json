@@ -48,14 +48,14 @@
                 "type": "string",
                 "description": "Path to the wasm file to debug."
               },
-              "launchType": {
+              "sessionMode": {
                 "type": "string",
                 "enum": [
                   "wasm file",
                   "js file"
                 ],
                 "default": "wasm file",
-                "description": "How to launch the debug target."
+                "description": "Which Warpo debugging workflow to use for this session."
               },
               "entryFunctionName": {
                 "type": "string",
@@ -87,7 +87,7 @@
             "request": "launch",
             "name": "Warpo Debug (wasm file)",
             "program": "${workspaceFolder}/build/output.wasm",
-            "launchType": "wasm file",
+            "sessionMode": "wasm file",
             "entryFunctionName": "main",
             "args": []
           }
