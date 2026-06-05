@@ -23,6 +23,10 @@ interface GlobalVariableDebugInfo {
   index: number;
 }
 
+function shouldKeepClassLayout(classLayout: ClassLayout): boolean {
+  return classLayout.rtid !== 0 || classLayout.name === "~lib/object/Object";
+}
+
 function computeFieldExtent(fields: ClassField[]): number {
   let size = 0;
   for (const field of fields) {
@@ -118,10 +122,12 @@ export class DebugInfoResolver {
 
     flattenInheritedFields(classes);
     attachEntryLayouts(classes);
-    const classNames = new Set(classes.map((layout) => layout.name));
+
+    const filteredClasses = classes.filter(shouldKeepClassLayout);
+    const classNames = new Set(filteredClasses.map((layout) => layout.name));
 
     return new DebugInfoResolver(
-      classes,
+      filteredClasses,
       globalVariableDebugInfos.filter((globalVariableDebugInfo) => classNames.has(globalVariableDebugInfo.typeName)),
       debugInfo.globals
     );

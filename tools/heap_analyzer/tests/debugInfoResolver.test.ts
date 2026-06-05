@@ -59,6 +59,11 @@ describeIntegration("debug-info-resolver", (ctx) => {
     assert.strictEqual(new Set(nonZeroRtIds).size, nonZeroRtIds.length);
   });
 
+  it("keeps only ~lib/object/Object among zero-rtid layouts", () => {
+    const zeroRtIdNames = classes.filter((c) => c.rtid === 0).map((c) => c.name).toSorted();
+    assert.deepStrictEqual(zeroRtIdNames, ["~lib/object/Object"]);
+  });
+
   describe("Vector2 layout", () => {
     it("has two f32 fields at correct offsets", () => {
       const vec2 = mustGetLayout(classMap, CLASS_PREFIX + "Vector2");
