@@ -467,8 +467,6 @@ export class Program extends DiagnosticEmitter {
 
   closureScanner: ClosureScanner = new ClosureScanner();
 
-  registeredTupleTypes: Set<string> = new Set();
-
   // Standard library
 
   /** Gets the standard `ArrayBufferView` instance. */
@@ -4476,7 +4474,7 @@ export class Function extends TypedElement {
   /** Pushes a new closure scope onto the stack. */
   pushClosureScope(closureInfo: ClosureFunctionInfo, storage: Local | null = null): void {
     let program = this.prototype.program;
-    let builder = new TupleTypeBuilder(program, program.registeredTupleTypes);
+    let builder = new TupleTypeBuilder(program);
     builder.push(
       program.smallTupleInstance.type.asNullable(),
       this.prototype.declarationBase.nameRange,
