@@ -9,14 +9,28 @@ import { launchDapServer } from "./launcher";
 
 let serverProcess: ChildProcess | undefined;
 
+interface WarpoDebugConfiguration extends vscode.DebugConfiguration {
+  program?: string;
+  sessionMode?: string;
+  runtime?: string;
+  entryFunctionName?: string;
+  args?: number[];
+}
+
 export function activate(context: vscode.ExtensionContext) {
   const factory = new WarpoDebugAdapterFactory();
-  context.subscriptions.push(vscode.debug.registerDebugAdapterDescriptorFactory("warpo", factory), {
-    dispose() {
-      serverProcess?.kill();
-      serverProcess = undefined;
-    },
-  });
+  const configProvider = new WarpoDebugConfigurationProvider();
+
+  context.subscriptions.push(
+    vscode.debug.registerDebugConfigurationProvider("warpo", configProvider),
+    vscode.debug.registerDebugAdapterDescriptorFactory("warpo", factory),
+    {
+      dispose() {
+        serverProcess?.kill();
+        serverProcess = undefined;
+      },
+    }
+  );
 }
 
 export function deactivate() {
@@ -36,6 +50,25 @@ function findDapServer(workspaceFolder: string): string | undefined {
 
   const candidate = path.join(workspaceFolder, "node_modules", "warpo", "dist", "debug_server", "dapServer.js");
   return fs.existsSync(candidate) ? candidate : undefined;
+}
+
+class WarpoDebugConfigurationProvider implements vscode.DebugConfigurationProvider {
+  resolveDebugConfiguration(
+    _folder: vscode.WorkspaceFolder | undefined,
+    config: vscode.DebugConfiguration
+  ): vscode.ProviderResult<vscode.DebugConfiguration> {
+    const warpoConfig = config as WarpoDebugConfiguration;
+
+    if (!warpoConfig.program) {
+      void vscode.window.showErrorMessage("No 'program' specified in launch configuration.");
+      return undefined;
+    }
+    warpoConfig.sessionMode = warpoConfig.sessionMode ?? "wasm file";
+    warpoConfig.runtime = warpoConfig.runtime ?? "node";
+    warpoConfig.entryFunctionName = warpoConfig.entryFunctionName ?? "main";
+    warpoConfig.args = warpoConfig.args ?? [];
+    return warpoConfig;
+  }
 }
 
 class WarpoDebugAdapterFactory implements vscode.DebugAdapterDescriptorFactory {

@@ -34,7 +34,7 @@ class FrontendCompiler final {
   size_t errorCount_ = 0;
   std::string errorMessage_;
 
-  void parseFile(int32_t const program, std::optional<std::string_view> const &code, std::string_view path,
+  void parseFile(int32_t const program, std::optional<std::string_view> const code, std::string_view path,
                  IsEntry isEntry);
 
   Dependency getDependency(std::string const &nextFileInternalPath, int32_t program, int32_t nextFile);

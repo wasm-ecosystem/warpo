@@ -50,7 +50,7 @@ std::string normalizePathForPlatform(std::filesystem::path const &filePath) {
 
 } // namespace
 
-void FrontendCompiler::parseFile(int32_t const program, std::optional<std::string_view> const &code,
+void FrontendCompiler::parseFile(int32_t const program, std::optional<std::string_view> const code,
                                  std::string_view path, IsEntry isEntry) {
   r.callExportedFunctionWithName<0>("__setArgumentsLength", 4U);
   if (code.has_value()) {
