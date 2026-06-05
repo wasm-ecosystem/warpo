@@ -2,14 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { DebugClient } from "@vscode/debugadapter-testsupport";
+import type { DebugProtocol } from "@vscode/debugprotocol";
 import * as assert from "node:assert/strict";
 import * as path from "node:path";
-import { describe, it, beforeEach, afterEach } from "node:test";
+import { describe, it, before, beforeEach, afterEach } from "node:test";
 import { fileURLToPath } from "node:url";
 import { launchDapServer, type DapServerHandle } from "./launcher.js";
+import { build } from "../../scripts/lib.js";
 
 const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
 const DAP_SERVER = path.resolve(DIRNAME, "..", "..", "..", "dist", "debug_server", "dapServer.js");
+const TEST_MODULE_DIR = path.resolve(DIRNAME, "testModule");
+const TEST_MODULE_SOURCE = path.join(TEST_MODULE_DIR, "debugger_basic.ts");
+const TEST_MODULE_OUTPUT = path.join(TEST_MODULE_DIR, "build/debugger_basic.wasm");
 
 const waitForExit = (child: DapServerHandle["child"], timeoutMs: number): Promise<boolean> =>
   new Promise((resolve) => {
@@ -30,6 +35,20 @@ const waitForExit = (child: DapServerHandle["child"], timeoutMs: number): Promis
 
     child.once("exit", onExit);
   });
+
+before(async () => {
+  let buildOutput = "";
+  const exitCode = await build({
+    argv: [TEST_MODULE_SOURCE, "-o", TEST_MODULE_OUTPUT, "--debug"],
+    cwd: TEST_MODULE_DIR,
+    onStdout: (chunk: string) => {
+      buildOutput += chunk;
+    },
+  });
+  if (exitCode !== 0) {
+    throw new Error(`failed to build debugger test module: ${buildOutput}`);
+  }
+});
 
 void describe("WarpoDebugSession", () => {
   let dc: DebugClient;
@@ -69,5 +88,32 @@ void describe("WarpoDebugSession", () => {
     assert.equal(response.body.breakpoints[0].line, 5);
     assert.equal(response.body.breakpoints[1].verified, true);
     assert.equal(response.body.breakpoints[1].line, 10);
+  });
+
+  void it("should report the built wasm as a loaded source on launch", { timeout: 5000 }, async () => {
+    await dc.initializeRequest();
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: TEST_MODULE_OUTPUT,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    const loadedSourcePromise = dc.waitForEvent("loadedSource");
+
+    await dc.launchRequest(launchArgs);
+
+    const event = await loadedSourcePromise;
+    const eventBody = event.body as { source?: DebugProtocol.Source; reason?: string } | undefined;
+
+    assert.equal(eventBody?.reason, "new");
+    assert.equal(eventBody?.source?.path, path.resolve(TEST_MODULE_OUTPUT));
+    assert.equal(eventBody?.source?.name, path.basename(TEST_MODULE_OUTPUT));
   });
 });

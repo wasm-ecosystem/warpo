@@ -26,10 +26,10 @@ uint32_t WarpRunner::allocObject(vb::WasmModule *instance, int32_t rtId, int32_t
 
 uint32_t WarpRunner::allocString(vb::WasmModule *instance, std::string_view str) {
   std::u16string utf16Str = utf16::fromUTF8(std::string(str));
-  uint32_t const offset = allocObject(instance, 2 /* rtId for string */, static_cast<int32_t>(utf16Str.size() * 2U));
-  uint8_t *const ptr =
-      instance->getLinearMemoryRegion(static_cast<uint32_t>(offset), static_cast<uint32_t>(utf16Str.size()));
-  std::memcpy(ptr, utf16Str.data(), utf16Str.size() * sizeof(char16_t));
+  size_t const byteSize{utf16Str.size() * sizeof(char16_t)};
+  uint32_t const offset = allocObject(instance, 2 /* rtId for string */, static_cast<int32_t>(byteSize));
+  uint8_t *const ptr = instance->getLinearMemoryRegion(static_cast<uint32_t>(offset), static_cast<uint32_t>(byteSize));
+  std::memcpy(ptr, utf16Str.data(), byteSize);
   return offset;
 }
 
