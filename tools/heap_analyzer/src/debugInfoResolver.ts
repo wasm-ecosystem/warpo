@@ -13,7 +13,7 @@ import {
   type DwarfDIE,
   type WasmGlobalEntry,
 } from "./dwarfParser.js";
-import type { ClassField, ClassLayout, GlobalRoot } from "./types.js";
+import { BuiltinContainerKind, type ClassField, type ClassLayout, type EntryLayout, type GlobalRoot } from "./types.js";
 
 type ResolvedTypeInfo = { name?: string; size: number; isReference: boolean };
 
@@ -21,6 +21,60 @@ interface GlobalVariableDebugInfo {
   name: string;
   typeName: string;
   index: number;
+}
+
+function computeFieldExtent(fields: ClassField[]): number {
+  let size = 0;
+  for (const field of fields) {
+    size = Math.max(size, field.offset + field.size);
+  }
+  return size;
+}
+
+function resolveEntryClassName(className: string): string | undefined {
+  if (className.startsWith("~lib/set/Set<")) {
+    return className.replace("~lib/set/Set<", "~lib/set/SetEntry<");
+  }
+
+  if (className.startsWith("~lib/map/Map<")) {
+    return className.replace("~lib/map/Map<", "~lib/map/MapEntry<");
+  }
+
+  return undefined;
+}
+
+function attachEntryLayouts(classes: ClassLayout[]): void {
+  const classByName = new Map(classes.map((classLayout) => [classLayout.name, classLayout]));
+
+  for (const classLayout of classes) {
+    if (classLayout.builtinKind !== BuiltinContainerKind.MapOrSet) {
+      continue;
+    }
+
+    const entryClassName = resolveEntryClassName(classLayout.name);
+    if (!entryClassName) {
+      continue;
+    }
+
+    const entryClass = classByName.get(entryClassName);
+    if (!entryClass) {
+      continue;
+    }
+
+    const referenceOffsets = entryClass.fields
+      .filter((field) => field.name !== "taggedNext" && field.isReference)
+      .map((field) => field.offset);
+    const size = entryClass.byteSize || computeFieldExtent(entryClass.fields);
+    if (size === 0) {
+      continue;
+    }
+
+    const entryLayout: EntryLayout = {
+      size,
+      referenceOffsets,
+    };
+    classLayout.entryLayout = entryLayout;
+  }
 }
 
 /**
@@ -63,6 +117,7 @@ export class DebugInfoResolver {
     }
 
     flattenInheritedFields(classes);
+    attachEntryLayouts(classes);
     const classNames = new Set(classes.map((layout) => layout.name));
 
     return new DebugInfoResolver(
@@ -261,6 +316,26 @@ class CompilationUnitResolver {
     };
   }
 
+  private resolveBuiltinKind(className: string): BuiltinContainerKind | undefined {
+    if (className.startsWith("~lib/array/Array<")) {
+      return BuiltinContainerKind.Array;
+    }
+
+    if (className.startsWith("~lib/staticarray/StaticArray<")) {
+      return BuiltinContainerKind.StaticArray;
+    }
+
+    if (className.startsWith("~lib/map/Map<") || className.startsWith("~lib/set/Set<")) {
+      return BuiltinContainerKind.MapOrSet;
+    }
+
+    if (className === "~lib/tuple/SmallTuple") {
+      return BuiltinContainerKind.SmallTuple;
+    }
+
+    return undefined;
+  }
+
   private resolveClassLayout(classDie: DwarfDIE): ClassLayout | null {
     const nameAttr = getAttr(classDie, DW_AT.name);
     if (nameAttr === undefined) {
@@ -282,12 +357,16 @@ class CompilationUnitResolver {
     }
 
     const templateType = this.resolveTemplateType(classDie);
+    const className = nameAttr.value as string;
+    const byteSizeAttr = getAttr(classDie, DW_AT.byte_size);
 
     const layout: ClassLayout = {
       rtid: sigAttr.value as number,
-      name: nameAttr.value as string,
+      name: className,
       base: this.resolveBaseName(classDie),
+      byteSize: byteSizeAttr === undefined ? computeFieldExtent(fields) : (byteSizeAttr.value as number),
       fields,
+      builtinKind: this.resolveBuiltinKind(className),
       templateType: templateType?.name,
       templateTypeIsReference: templateType?.isReference,
     };

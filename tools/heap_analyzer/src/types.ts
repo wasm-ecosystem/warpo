@@ -37,6 +37,13 @@ export interface ClassField {
   isReference: boolean;
 }
 
+export enum BuiltinContainerKind {
+  Array,
+  StaticArray,
+  MapOrSet,
+  SmallTuple,
+}
+
 /** Layout of a single entry in a Set or Map's entries ArrayBuffer. */
 export interface EntryLayout {
   /** Total byte size of one entry (stride). */
@@ -49,7 +56,9 @@ export interface ClassLayout {
   rtid: number;
   name: string;
   base: string | null;
+  byteSize: number;
   fields: ClassField[];
+  builtinKind?: BuiltinContainerKind;
   templateType?: string;
   templateTypeIsReference?: boolean;
   /** For Set/Map: describes the layout of entries inside the backing ArrayBuffer. */

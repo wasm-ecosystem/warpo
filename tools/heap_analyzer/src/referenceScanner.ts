@@ -1,7 +1,14 @@
 // Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-import { getReferenceFields, isPointerfree, type ClassLayout, type EntryLayout, type ObjectHeader } from "./types.js";
+import {
+  BuiltinContainerKind,
+  getReferenceFields,
+  isPointerfree,
+  type ClassLayout,
+  type EntryLayout,
+  type ObjectHeader,
+} from "./types.js";
 import type { DebugInfoResolver } from "./debugInfoResolver.js";
 
 function readValidPtr(memory: DataView, addr: number, validPtrs: Set<number>): number | null {
@@ -126,32 +133,40 @@ function scanSmallTupleElements(memory: DataView, obj: ObjectHeader, validPtrs: 
   }
 }
 
-function scanContainerElements(
+function scanBuiltinContainer(
   memory: DataView,
   obj: ObjectHeader,
   classLayout: ClassLayout,
   validPtrs: Set<number>,
   edges: number[]
 ): void {
-  const name = classLayout.name;
+  scanReferenceFields(memory, obj, classLayout, validPtrs, edges);
 
-  if (name.startsWith("~lib/array/Array<")) {
-    scanArrayElements(memory, obj, validPtrs, edges);
-    return;
-  }
+  switch (classLayout.builtinKind) {
+    case BuiltinContainerKind.Array:
+      if (classLayout.templateTypeIsReference === true) {
+        scanArrayElements(memory, obj, validPtrs, edges);
+      }
+      return;
 
-  if (name.startsWith("~lib/staticarray/StaticArray<")) {
-    scanStaticArrayElements(memory, obj, validPtrs, edges);
-    return;
-  }
+    case BuiltinContainerKind.StaticArray:
+      if (classLayout.templateTypeIsReference === true) {
+        scanStaticArrayElements(memory, obj, validPtrs, edges);
+      }
+      return;
 
-  if (name === "~lib/tuple/SmallTuple") {
-    scanSmallTupleElements(memory, obj, validPtrs, edges);
-    return;
-  }
+    case BuiltinContainerKind.SmallTuple:
+      scanSmallTupleElements(memory, obj, validPtrs, edges);
+      return;
 
-  if (classLayout.entryLayout) {
-    scanSetMapEntries(memory, obj, classLayout.entryLayout, validPtrs, edges);
+    case BuiltinContainerKind.MapOrSet:
+      if (classLayout.entryLayout) {
+        scanSetMapEntries(memory, obj, classLayout.entryLayout, validPtrs, edges);
+      }
+      return;
+
+    default:
+      return;
   }
 }
 
@@ -175,9 +190,12 @@ export function scanReferences(
     const edges: number[] = [];
 
     const classLayout = debugInfoResolver.getClassDef(obj.rtId);
-    if (classLayout && !isPointerfree(classLayout)) {
-      scanReferenceFields(memory, obj, classLayout, validPtrs, edges);
-      scanContainerElements(memory, obj, classLayout, validPtrs, edges);
+    if (classLayout) {
+      if (classLayout.builtinKind !== undefined) {
+        scanBuiltinContainer(memory, obj, classLayout, validPtrs, edges);
+      } else if (!isPointerfree(classLayout)) {
+        scanReferenceFields(memory, obj, classLayout, validPtrs, edges);
+      }
     }
 
     graph.set(obj.payloadPtr, edges);
