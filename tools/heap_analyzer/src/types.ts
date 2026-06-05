@@ -42,6 +42,7 @@ export enum BuiltinContainerKind {
   StaticArray,
   MapOrSet,
   SmallTuple,
+  Function,
 }
 
 /** Layout of a single entry in a Set or Map's entries ArrayBuffer. */

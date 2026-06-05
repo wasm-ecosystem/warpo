@@ -81,6 +81,22 @@ function attachEntryLayouts(classes: ClassLayout[]): void {
   }
 }
 
+export function attachBuiltinKind(classLayout: Pick<ClassLayout, "name" | "builtinKind">): void {
+  const { name: className } = classLayout;
+
+  if (className.startsWith("~lib/array/Array<")) {
+    classLayout.builtinKind = BuiltinContainerKind.Array;
+  } else if (className.startsWith("~lib/staticarray/StaticArray<")) {
+    classLayout.builtinKind = BuiltinContainerKind.StaticArray;
+  } else if (className.startsWith("~lib/map/Map<") || className.startsWith("~lib/set/Set<")) {
+    classLayout.builtinKind = BuiltinContainerKind.MapOrSet;
+  } else if (className.startsWith("~lib/function/Function<")) {
+    classLayout.builtinKind = BuiltinContainerKind.Function;
+  } else if (className === "~lib/tuple/SmallTuple") {
+    classLayout.builtinKind = BuiltinContainerKind.SmallTuple;
+  }
+}
+
 /**
  * Resolves class layouts and global-root metadata from WebAssembly debug
  * information and provides helper queries for reference scanning.
@@ -322,26 +338,6 @@ class CompilationUnitResolver {
     };
   }
 
-  private resolveBuiltinKind(className: string): BuiltinContainerKind | undefined {
-    if (className.startsWith("~lib/array/Array<")) {
-      return BuiltinContainerKind.Array;
-    }
-
-    if (className.startsWith("~lib/staticarray/StaticArray<")) {
-      return BuiltinContainerKind.StaticArray;
-    }
-
-    if (className.startsWith("~lib/map/Map<") || className.startsWith("~lib/set/Set<")) {
-      return BuiltinContainerKind.MapOrSet;
-    }
-
-    if (className === "~lib/tuple/SmallTuple") {
-      return BuiltinContainerKind.SmallTuple;
-    }
-
-    return undefined;
-  }
-
   private resolveClassLayout(classDie: DwarfDIE): ClassLayout | null {
     const nameAttr = getAttr(classDie, DW_AT.name);
     if (nameAttr === undefined) {
@@ -372,10 +368,11 @@ class CompilationUnitResolver {
       base: this.resolveBaseName(classDie),
       byteSize: byteSizeAttr === undefined ? computeFieldExtent(fields) : (byteSizeAttr.value as number),
       fields,
-      builtinKind: this.resolveBuiltinKind(className),
       templateType: templateType?.name,
       templateTypeIsReference: templateType?.isReference,
     };
+
+    attachBuiltinKind(layout);
 
     return layout;
   }

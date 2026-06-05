@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { before, describe, it } from "node:test";
 import { TypeKind } from "wasmparser/dist/cjs/WasmParser.js";
-import { DebugInfoResolver, resolveClassLayouts } from "../src/debugInfoResolver.js";
+import { attachBuiltinKind, DebugInfoResolver, resolveClassLayouts } from "../src/debugInfoResolver.js";
 import { parseWasmDebugInfo, DW_AT, DW_TAG, getAttr } from "../src/dwarfParser.js";
 import { BuiltinContainerKind, type ClassField, type ClassLayout } from "../src/types.js";
 import { CLASS_PREFIX, describeIntegration } from "./testHelper.js";
@@ -60,7 +60,10 @@ describeIntegration("debug-info-resolver", (ctx) => {
   });
 
   it("keeps only ~lib/object/Object among zero-rtid layouts", () => {
-    const zeroRtIdNames = classes.filter((c) => c.rtid === 0).map((c) => c.name).toSorted();
+    const zeroRtIdNames = classes
+      .filter((c) => c.rtid === 0)
+      .map((c) => c.name)
+      .toSorted((left, right) => left.localeCompare(right));
     assert.deepStrictEqual(zeroRtIdNames, ["~lib/object/Object"]);
   });
 
@@ -149,9 +152,18 @@ describeIntegration("debug-info-resolver", (ctx) => {
     });
 
     it("resolves builtin kinds for stdlib containers", () => {
-      assert.strictEqual(classMap.get("~lib/staticarray/StaticArray<i32>")?.builtinKind, BuiltinContainerKind.StaticArray);
+      const functionLayout: Pick<ClassLayout, "name" | "builtinKind"> = {
+        name: "~lib/function/Function<(i32)=>i32>",
+      };
+      attachBuiltinKind(functionLayout);
+
+      assert.strictEqual(
+        classMap.get("~lib/staticarray/StaticArray<i32>")?.builtinKind,
+        BuiltinContainerKind.StaticArray
+      );
       assert.strictEqual(classMap.get("~lib/set/Set<i32>")?.builtinKind, BuiltinContainerKind.MapOrSet);
       assert.strictEqual(classMap.get("~lib/map/Map<i32,i32>")?.builtinKind, BuiltinContainerKind.MapOrSet);
+      assert.strictEqual(functionLayout.builtinKind, BuiltinContainerKind.Function);
     });
   });
 

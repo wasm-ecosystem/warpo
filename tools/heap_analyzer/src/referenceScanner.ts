@@ -133,6 +133,24 @@ function scanSmallTupleElements(memory: DataView, obj: ObjectHeader, validPtrs: 
   }
 }
 
+function scanFunctionEnv(
+  memory: DataView,
+  obj: ObjectHeader,
+  classLayout: ClassLayout,
+  validPtrs: Set<number>,
+  edges: number[]
+): void {
+  const envField = classLayout.fields.find((field) => field.name === "_env");
+  if (!envField || envField.offset + envField.size > obj.rtSize) {
+    return;
+  }
+
+  const ptr = readValidPtr(memory, obj.payloadPtr + envField.offset, validPtrs);
+  if (ptr !== null) {
+    edges.push(ptr);
+  }
+}
+
 function scanBuiltinContainer(
   memory: DataView,
   obj: ObjectHeader,
@@ -143,30 +161,40 @@ function scanBuiltinContainer(
   scanReferenceFields(memory, obj, classLayout, validPtrs, edges);
 
   switch (classLayout.builtinKind) {
-    case BuiltinContainerKind.Array:
+    case BuiltinContainerKind.Array: {
       if (classLayout.templateTypeIsReference === true) {
         scanArrayElements(memory, obj, validPtrs, edges);
       }
       return;
+    }
 
-    case BuiltinContainerKind.StaticArray:
+    case BuiltinContainerKind.StaticArray: {
       if (classLayout.templateTypeIsReference === true) {
         scanStaticArrayElements(memory, obj, validPtrs, edges);
       }
       return;
+    }
 
-    case BuiltinContainerKind.SmallTuple:
+    case BuiltinContainerKind.SmallTuple: {
       scanSmallTupleElements(memory, obj, validPtrs, edges);
       return;
+    }
 
-    case BuiltinContainerKind.MapOrSet:
+    case BuiltinContainerKind.Function: {
+      scanFunctionEnv(memory, obj, classLayout, validPtrs, edges);
+      return;
+    }
+
+    case BuiltinContainerKind.MapOrSet: {
       if (classLayout.entryLayout) {
         scanSetMapEntries(memory, obj, classLayout.entryLayout, validPtrs, edges);
       }
       return;
+    }
 
-    default:
+    default: {
       return;
+    }
   }
 }
 
