@@ -47,6 +47,10 @@ function resolveEntryClassName(className: string): string | undefined {
   return undefined;
 }
 
+// Map/Set only expose their backing `entries: ArrayBuffer` as an object field.
+// The actual key/value references live inside unmanaged MapEntry/SetEntry
+// records stored in that buffer, so we cache each entry's stride plus the
+// offsets of reference-bearing fields for the reference scanner.
 function attachEntryLayouts(classes: ClassLayout[]): void {
   const classByName = new Map(classes.map((classLayout) => [classLayout.name, classLayout]));
 
@@ -137,6 +141,9 @@ export class DebugInfoResolver {
     }
 
     flattenInheritedFields(classes);
+    // Derive Map/Set entry-buffer metadata before dropping rtid==0 helper
+    // classes, because MapEntry/SetEntry may be filtered out afterwards but
+    // their field layout is still needed to scan the `entries` ArrayBuffer.
     attachEntryLayouts(classes);
 
     const filteredClasses = classes.filter(shouldKeepClassLayout);
