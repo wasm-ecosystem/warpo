@@ -147,10 +147,7 @@ export class TupleTypeBuilder {
   private elements: TupleElementInfo[] = [];
   private memoryOffset: i32 = 0;
 
-  constructor(
-    private program: Program,
-    private registeredTupleTypes: Set<string>
-  ) {}
+  constructor(private program: Program) {}
 
   push(type: Type, range: Range, reportMode: ReportMode): bool {
     if (type.kind == TypeKind.Void) {
@@ -178,12 +175,6 @@ export class TupleTypeBuilder {
       tupleType.classReference = smallTupleClass;
       tupleType.tupleInfo = new SmallTupleTypeInfo(this.elements);
 
-      let tupleTypeName = mir.getTupleMIRName(tupleType);
-      if (!this.registeredTupleTypes.has(tupleTypeName)) {
-        this.registeredTupleTypes.add(tupleTypeName);
-        mir.createTupleType(tupleType);
-      }
-
       return tupleType;
     }
     if (reportMode == ReportMode.Report) {
@@ -205,8 +196,6 @@ export class TupleTypeBuilder {
 export class Resolver extends DiagnosticEmitter {
   /** The program this resolver belongs to. */
   program: Program;
-  /** Tracks registered tuple types to avoid duplicate MIR entries. */
-  registeredTupleTypes: Set<string> = new Set();
 
   /** Target expression of the previously resolved property or element access. */
   currentThisExpression: Expression | null = null;
@@ -494,7 +483,7 @@ export class Resolver extends DiagnosticEmitter {
   ): Type | null {
     let elementTypeNodes = node.elementTypes;
     let elementCount = elementTypeNodes.length;
-    let builder = new TupleTypeBuilder(this.program, this.program.registeredTupleTypes);
+    let builder = new TupleTypeBuilder(this.program);
 
     for (let i = 0; i < elementCount; ++i) {
       let elementType = this.resolveType(elementTypeNodes[i], flow, ctxElement, ctxTypes, reportMode);

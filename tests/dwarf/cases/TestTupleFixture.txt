@@ -96,46 +96,13 @@ DW_TAG_compile_unit
   DW_TAG_base_type
                 DW_AT_name	("usize")
   DW_TAG_class_type
-                DW_AT_name	("[i32,i64]")
-    DW_TAG_member
-                  DW_AT_name	("0")
-                  DW_AT_type	("i32")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("1")
-                  DW_AT_type	("i64")
-                  DW_AT_data_member_location	(0x00000008)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("[~lib/array/Array<i32>,i64]")
-    DW_TAG_member
-                  DW_AT_name	("0")
-                  DW_AT_type	("~lib/array/Array<i32>")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("1")
-                  DW_AT_type	("i64")
-                  DW_AT_data_member_location	(0x00000008)
-    NULL
-  DW_TAG_class_type
-                DW_AT_name	("[~lib/function/Function<(i32)=>i32>,i64]")
-    DW_TAG_member
-                  DW_AT_name	("0")
-                  DW_AT_type	("~lib/function/Function<(i32)=>i32>")
-                  DW_AT_data_member_location	(0x00000000)
-    DW_TAG_member
-                  DW_AT_name	("1")
-                  DW_AT_type	("i64")
-                  DW_AT_data_member_location	(0x00000008)
-    NULL
-  DW_TAG_class_type
                 DW_AT_name	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
                 DW_AT_signature	(0x00000005)
     DW_TAG_inheritance
                   DW_AT_type	("~lib/object/Object")
     DW_TAG_member
                   DW_AT_name	("member")
-                  DW_AT_type	("[i32,i64]")
+                  DW_AT_type	("~lib/tuple/SmallTuple")
                   DW_AT_data_member_location	(0x00000000)
     DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestTuple/ClassWithTupleMember#constructor")
@@ -152,7 +119,7 @@ DW_TAG_compile_unit
                     DW_AT_location	(0x00000000)
       DW_TAG_formal_parameter
                     DW_AT_name	("member")
-                    DW_AT_type	("[i32,i64]")
+                    DW_AT_type	("~lib/tuple/SmallTuple")
                     DW_AT_location	(0x00000001)
       NULL
     DW_TAG_subprogram
@@ -358,7 +325,7 @@ DW_TAG_compile_unit
                 DW_AT_name	("tests/dwarf/cases/TestTuple/foo")
     DW_TAG_variable
                   DW_AT_name	("pair")
-                  DW_AT_type	("[i32,i64]")
+                  DW_AT_type	("~lib/tuple/SmallTuple")
                   DW_AT_location	(0x00000001)
     DW_TAG_variable
                   DW_AT_name	("aaa")
@@ -370,7 +337,7 @@ DW_TAG_compile_unit
                   DW_AT_location	(0x00000003)
     DW_TAG_variable
                   DW_AT_name	("pair2")
-                  DW_AT_type	("[i32,i64]")
+                  DW_AT_type	("~lib/tuple/SmallTuple")
                   DW_AT_location	(0x00000005)
     NULL
   DW_TAG_subprogram
@@ -392,7 +359,7 @@ DW_TAG_compile_unit
                 DW_AT_name	("tests/dwarf/cases/TestTuple/baz")
     DW_TAG_variable
                   DW_AT_name	("pair")
-                  DW_AT_type	("[~lib/array/Array<i32>,i64]")
+                  DW_AT_type	("~lib/tuple/SmallTuple")
                   DW_AT_location	(0x00000002)
     DW_TAG_variable
                   DW_AT_name	("arr")
@@ -407,7 +374,7 @@ DW_TAG_compile_unit
                 DW_AT_name	("tests/dwarf/cases/TestTuple/nullableElement")
     DW_TAG_variable
                   DW_AT_name	("pair")
-                  DW_AT_type	("[~lib/array/Array<i32>,i64]")
+                  DW_AT_type	("~lib/tuple/SmallTuple")
                   DW_AT_location	(0x00000001)
     NULL
   DW_TAG_subprogram
@@ -418,7 +385,7 @@ DW_TAG_compile_unit
                   DW_AT_location	(0x00000000)
     DW_TAG_variable
                   DW_AT_name	("pair")
-                  DW_AT_type	("[~lib/function/Function<(i32)=>i32>,i64]")
+                  DW_AT_type	("~lib/tuple/SmallTuple")
                   DW_AT_location	(0x00000002)
     NULL
   DW_TAG_subprogram
