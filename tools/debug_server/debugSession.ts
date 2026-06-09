@@ -13,6 +13,7 @@ import {
 } from "@vscode/debugadapter";
 import type { DebugProtocol } from "@vscode/debugprotocol";
 import * as path from "node:path";
+import type { DebuggerBreakpointInfo, DebuggerWasmModule } from "./debuggerWasmModule.js";
 import type { DebugPauseInfo, Debugger } from "./debugger.js";
 import { NodeDebugger } from "./nodeDebugger.js";
 
@@ -24,26 +25,44 @@ interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArgumen
   args?: number[];
 }
 
-interface BreakpointInfo {
-  id: number;
-  line: number;
-  verified: boolean;
-  source: string;
-}
-
 export class WarpoDebugSession extends LoggingDebugSession {
   private static threadId = 1;
   private breakpointId = 0;
-  private breakpoints = new Map<string, BreakpointInfo[]>();
+  private requestedBreakpointsBySource = new Map<string, DebuggerBreakpointInfo[]>();
+  private pendingBreakpointUpdatesBySource = new Map<string, DebuggerBreakpointInfo[]>();
+  private loadedModule: DebuggerWasmModule | undefined;
   private runtime: Debugger | undefined;
 
   private log(msg: string): void {
     logger.log(msg);
   }
 
-  private handleRuntimePause(runtime: Debugger, info: DebugPauseInfo): void {
+  private normalizeSourcePath(filePath: string): string {
+    if (filePath === "") {
+      return "";
+    }
+
+    return path.resolve(filePath).replaceAll("\\", "/");
+  }
+
+  private sendStoppedEvent(runtime: Debugger, info: DebugPauseInfo): void {
     this.log(`[${runtime.name}] Paused: ${info.reason}`);
-    this.sendEvent(new StoppedEvent("pause", WarpoDebugSession.threadId, info.reason));
+    const reason = info.reason === "breakpoint" ? "breakpoint" : "pause";
+    this.sendEvent(new StoppedEvent(reason, WarpoDebugSession.threadId, info.reason));
+  }
+
+  private handleRuntimePause(runtime: Debugger, info: DebugPauseInfo): void {
+    this.applyPendingBreakpointUpdates(runtime, () => {
+      if (info.reason === "other") {
+        void runtime.resume().catch((error: unknown) => {
+          const message = error instanceof Error ? error.message : "unknown error";
+          this.log(`Failed to resume after breakpoint update: ${message}`);
+        });
+        return;
+      }
+
+      this.sendStoppedEvent(runtime, info);
+    });
   }
 
   protected initializeRequest(
@@ -64,12 +83,12 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response: DebugProtocol.SetBreakpointsResponse,
     args: DebugProtocol.SetBreakpointsArguments
   ): void {
-    const sourcePath = args.source.path || "";
+    const sourcePath = this.normalizeSourcePath(args.source.path || "");
     const clientLines = args.breakpoints || [];
 
-    const bps: BreakpointInfo[] = clientLines.map((bp) => {
+    const bps: DebuggerBreakpointInfo[] = clientLines.map((bp) => {
       const id = ++this.breakpointId;
-      const info: BreakpointInfo = {
+      const info: DebuggerBreakpointInfo = {
         id,
         line: bp.line,
         verified: true,
@@ -79,7 +98,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
       return info;
     });
 
-    this.breakpoints.set(sourcePath, bps);
+    this.requestedBreakpointsBySource.set(sourcePath, bps);
+    this.pendingBreakpointUpdatesBySource.set(sourcePath, [...bps]);
 
     const breakpoints: DebugProtocol.Breakpoint[] = bps.map((bp) => {
       const dbp = new Breakpoint(bp.verified, bp.line) as DebugProtocol.Breakpoint;
@@ -89,6 +109,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
     response.body = { breakpoints };
     this.sendResponse(response);
+
+    this.requestBreakpointUpdate();
   }
 
   protected configurationDoneRequest(
@@ -121,20 +143,33 @@ export class WarpoDebugSession extends LoggingDebugSession {
           return;
         }
 
-        runtime.onModuleLoad = (info) => {
-          const programPath = path.resolve(args.program);
-          this.log(`Wasm module loaded: ${programPath} (reported as ${info.url}, scriptId: ${info.scriptId})`);
+        runtime.onModuleLoad = (module) => {
+          this.loadedModule = module;
+          this.log(
+            `Wasm module loaded: ${module.wasmFilePath} (reported as ${module.url}, scriptId: ${module.scriptId})`
+          );
           this.sendEvent(
             new LoadedSourceEvent("new", {
-              name: path.basename(programPath),
-              path: programPath,
+              name: path.basename(module.wasmFilePath),
+              path: module.wasmFilePath,
             })
           );
+          this.sendEvent(
+            new LoadedSourceEvent("new", {
+              name: path.basename(module.sourceMapFilePath),
+              path: module.sourceMapFilePath,
+            })
+          );
+
+          this.applyPendingBreakpointUpdates(runtime, () => {
+            runtime.finishModuleLoad();
+          });
         };
         runtime.onPause = (info) => {
           this.handleRuntimePause(runtime, info);
         };
 
+        this.disposeLoadedModule();
         this.runtime?.dispose();
         this.runtime = runtime;
         await runtime.launch({
@@ -168,6 +203,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response: DebugProtocol.DisconnectResponse,
     _args: DebugProtocol.DisconnectArguments
   ): void {
+    this.disposeLoadedModule();
     this.runtime?.dispose();
     this.runtime = undefined;
     this.log("Debug session ended.");
@@ -193,11 +229,87 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   private logAllBreakpoints(): void {
     this.log("=== Registered Breakpoints ===");
-    for (const [source, bps] of this.breakpoints) {
+    for (const [source, bps] of this.requestedBreakpointsBySource) {
       for (const bp of bps) {
         this.log(`  ${path.basename(source)}:${bp.line} (id=${bp.id}, verified=${bp.verified})`);
       }
     }
     this.log("==============================");
+  }
+
+  private requestBreakpointUpdate(): void {
+    if (!this.runtime || !this.loadedModule || this.pendingBreakpointUpdatesBySource.size === 0) {
+      return;
+    }
+
+    if (this.runtime.isPaused()) {
+      this.applyPendingBreakpointUpdates(this.runtime);
+      return;
+    }
+
+    for (const sourcePath of this.pendingBreakpointUpdatesBySource.keys()) {
+      if (this.loadedModule.hasSource(sourcePath)) {
+        this.runtime.pause();
+        return;
+      }
+    }
+  }
+
+  private applyPendingBreakpointUpdates(runtime: Debugger, onComplete?: () => void): void {
+    const module = this.loadedModule;
+    if (!module) {
+      onComplete?.();
+      return;
+    }
+
+    for (const [sourcePath, breakpoints] of this.pendingBreakpointUpdatesBySource) {
+      if (breakpoints.length === 0) {
+        this.pendingBreakpointUpdatesBySource.delete(sourcePath);
+        continue;
+      }
+
+      if (!module.hasSource(sourcePath)) {
+        continue;
+      }
+
+      const breakpoint = breakpoints.shift();
+      if (!breakpoint) {
+        this.pendingBreakpointUpdatesBySource.delete(sourcePath);
+        continue;
+      }
+
+      if (breakpoints.length === 0) {
+        this.pendingBreakpointUpdatesBySource.delete(sourcePath);
+      }
+
+      const bytecodeOffset = module.findBytecodeOffset(breakpoint.source, breakpoint.line);
+      if (bytecodeOffset === undefined) {
+        this.log(`No source-map match for breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line}`);
+        this.applyPendingBreakpointUpdates(runtime, onComplete);
+        return;
+      }
+
+      this.log(
+        `Resolved breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line} -> bytecode offset ${bytecodeOffset}`
+      );
+      runtime.setWasmBreakpoint(module, bytecodeOffset, {
+        onSuccess: () => {
+          this.applyPendingBreakpointUpdates(runtime, onComplete);
+        },
+        onError: (error: Error) => {
+          this.log(`Failed to set breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line}: ${error.message}`);
+          this.applyPendingBreakpointUpdates(runtime, onComplete);
+        },
+      });
+      return;
+    }
+
+    onComplete?.();
+  }
+
+  private disposeLoadedModule(): void {
+    this.loadedModule?.dispose();
+    this.loadedModule = undefined;
+    this.pendingBreakpointUpdatesBySource.clear();
   }
 }
