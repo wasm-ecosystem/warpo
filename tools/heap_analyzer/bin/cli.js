@@ -46,43 +46,38 @@ function readUint8Array(filePath, label) {
   }
 }
 
-function sortSummary(summary, sortField) {
+function sortConstructors(constructors, sortField) {
   switch (sortField) {
     case "retained": {
-      return summary;
+      return constructors;
     }
     case "shallow": {
-      return summary.toSorted((lhs, rhs) => rhs.totalShallowSize - lhs.totalShallowSize);
+      return constructors.toSorted((lhs, rhs) => rhs.totalShallowSize - lhs.totalShallowSize);
     }
     case "count": {
-      return summary.toSorted((lhs, rhs) => rhs.count - lhs.count);
+      return constructors.toSorted((lhs, rhs) => rhs.count - lhs.count);
     }
     default: {
       throw new Error(`Invalid sort field: ${sortField}. Must be retained, shallow, or count.`);
     }
   }
 }
+
 function analyzeDumpWithCli(dumpFile, options) {
   const dumpBuffer = readArrayBuffer(dumpFile, "dump file");
   const wasmBytes = readUint8Array(options.wasm, "wasm file");
   const snapshot = analyzeDump(dumpBuffer, wasmBytes);
 
-  let summary = sortSummary(snapshot.summary, options.sort);
-  if (options.top !== undefined) summary = summary.slice(0, options.top);
+  let constructors = sortConstructors(snapshot.constructors, options.sort);
+  if (options.top !== undefined) constructors = constructors.slice(0, options.top);
 
   const output = {
-    summary,
     totalHeapSize: snapshot.totalHeapSize,
     totalLiveSize: snapshot.totalLiveSize,
-    totalFreeSize: snapshot.totalFreeSize,
-    objectCount: snapshot.objectCount,
-    roots: snapshot.roots,
+    constructors,
   };
 
-  if (options.objects) output.objects = snapshot.objects;
-
-  const indent = options.pretty ? 2 : undefined;
-  console.log(JSON.stringify(output, null, indent));
+  console.log(JSON.stringify(output, null, 2));
 }
 
 const program = new Command();
@@ -94,10 +89,8 @@ program
   .showHelpAfterError()
   .argument("<dump-file>", "Path to the heap dump file")
   .requiredOption("--wasm <file>", "Path to the wasm binary with DWARF custom sections")
-  .option("--sort <field>", "Sort summary by: retained | shallow | count", parseSortField, "retained")
-  .option("--top <n>", "Show top N classes in summary", (value) => parsePositiveInteger(value, "--top"))
-  .option("--objects", "Include individual object details in output")
-  .option("--pretty", "Pretty-print JSON output")
+  .option("--sort <field>", "Sort constructors by: retained | shallow | count", parseSortField, "retained")
+  .option("--top <n>", "Show top N classes in constructor view", (value) => parsePositiveInteger(value, "--top"))
   .action((dumpFile, options) => {
     analyzeDumpWithCli(dumpFile, options);
   });
