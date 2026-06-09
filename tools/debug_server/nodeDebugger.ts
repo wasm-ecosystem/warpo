@@ -193,7 +193,9 @@ export class NodeDebugger implements Debugger {
           try {
             trace("ws open -> Debugger.enable");
             await this.waitForCommand("Debugger.enable");
-            trace("Debugger.enable -> Runtime.runIfWaitingForDebugger");
+            trace("Debugger.enable -> Debugger.setBreakpointsActive");
+            await this.waitForCommand("Debugger.setBreakpointsActive", { active: true });
+            trace("Debugger.setBreakpointsActive -> Runtime.runIfWaitingForDebugger");
             await this.waitForCommand("Runtime.runIfWaitingForDebugger");
             trace("Runtime.runIfWaitingForDebugger -> launch ready");
             resolve();

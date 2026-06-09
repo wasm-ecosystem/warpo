@@ -22,6 +22,8 @@ if (!fs.existsSync(resolvedPath)) {
 const args = rawArgs.map(Number);
 
 async function main() {
+  inspector.waitForDebugger();
+
   const buffer = fs.readFileSync(resolvedPath);
   const module = await WebAssembly.compile(buffer);
   const instance = await WebAssembly.instantiate(module, {});

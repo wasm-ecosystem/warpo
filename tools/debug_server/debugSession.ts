@@ -204,6 +204,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     _args: DebugProtocol.DisconnectArguments
   ): void {
     this.disposeLoadedModule();
+    this.pendingBreakpointUpdatesBySource.clear();
     this.runtime?.dispose();
     this.runtime = undefined;
     this.log("Debug session ended.");
@@ -310,6 +311,5 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private disposeLoadedModule(): void {
     this.loadedModule?.dispose();
     this.loadedModule = undefined;
-    this.pendingBreakpointUpdatesBySource.clear();
   }
 }

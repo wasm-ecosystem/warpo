@@ -22,6 +22,16 @@ export interface DebuggerBreakpointInfo {
 
 type RawParsedSourceMap = RawSourceMap | RawIndexMap;
 
+interface LineMappedPosition {
+  source: string;
+  line: number;
+  column?: number;
+}
+
+interface LineLookupSourceMap {
+  allGeneratedPositionsFor(originalPosition: LineMappedPosition): Array<{ line: number | null; column: number | null }>;
+}
+
 export class DebuggerWasmModule {
   private readonly sourcesByPath: ReadonlyMap<string, string>;
 
@@ -65,27 +75,45 @@ export class DebuggerWasmModule {
     this.sourceMap.destroy();
   }
 
-  findBytecodeOffset(sourcePath: string, line: number, column = 0): number | undefined {
-    const source = this.sourcesByPath.get(sourcePath);
+  findBytecodeOffset(sourcePath: string, line: number): number | undefined {
+    const source = this.findSource(sourcePath);
     if (!source) {
       return undefined;
     }
 
-    const generatedPosition = this.sourceMap.generatedPositionFor({
-      source,
-      line,
-      column,
-      bias: SourceMapConsumer.LEAST_UPPER_BOUND,
-    });
-    if (generatedPosition.line === null || generatedPosition.column === null) {
-      return undefined;
+    const generatedPositions = (this.sourceMap as LineLookupSourceMap).allGeneratedPositionsFor({ source, line });
+
+    let firstOffset: number | undefined;
+    for (const generatedPosition of generatedPositions) {
+      if (generatedPosition.line === null || generatedPosition.column === null) {
+        continue;
+      }
+
+      if (firstOffset === undefined || generatedPosition.column < firstOffset) {
+        firstOffset = generatedPosition.column;
+      }
     }
 
-    return generatedPosition.column;
+    return firstOffset;
   }
 
   hasSource(sourcePath: string): boolean {
-    return this.sourcesByPath.has(sourcePath);
+    return this.findSource(sourcePath) !== undefined;
+  }
+
+  private findSource(sourcePath: string): string | undefined {
+    const directSource = this.sourcesByPath.get(sourcePath);
+    if (directSource) {
+      return directSource;
+    }
+
+    for (const source of this.sourceMap.sources) {
+      if (sourcePath === source || sourcePath.endsWith(`/${source}`)) {
+        return source;
+      }
+    }
+
+    return undefined;
   }
 
   private static async loadSourceMap(sourceMapFilePath: string): Promise<ParsedSourceMap> {
