@@ -1,7 +1,14 @@
 // Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-import type { ClassLayout, EntryLayout, ObjectHeader } from "./types.js";
+import {
+  BuiltinContainerKind,
+  getReferenceFields,
+  isPointerfree,
+  type ClassLayout,
+  type EntryLayout,
+  type ObjectHeader,
+} from "./types.js";
 import type { DebugInfoResolver } from "./debugInfoResolver.js";
 
 function readValidPtr(memory: DataView, addr: number, validPtrs: Set<number>): number | null {
@@ -18,11 +25,11 @@ function readValidPtr(memory: DataView, addr: number, validPtrs: Set<number>): n
 function scanReferenceFields(
   memory: DataView,
   obj: ObjectHeader,
-  debugInfoResolver: DebugInfoResolver,
+  classLayout: ClassLayout,
   validPtrs: Set<number>,
   edges: number[]
 ): void {
-  for (const field of debugInfoResolver.getReferenceFields(obj.rtId)) {
+  for (const field of getReferenceFields(classLayout)) {
     if (field.offset + field.size > obj.rtSize) {
       // Skip fields that don't fit within the object's size (could be a broken dumped memory or stale debug info)
       continue;
@@ -126,32 +133,68 @@ function scanSmallTupleElements(memory: DataView, obj: ObjectHeader, validPtrs: 
   }
 }
 
-function scanContainerElements(
+function scanFunctionEnv(
   memory: DataView,
   obj: ObjectHeader,
   classLayout: ClassLayout,
   validPtrs: Set<number>,
   edges: number[]
 ): void {
-  const name = classLayout.name;
-
-  if (name.startsWith("~lib/array/Array<")) {
-    scanArrayElements(memory, obj, validPtrs, edges);
+  const envField = classLayout.fields.find((field) => field.name === "_env");
+  if (!envField || envField.offset + envField.size > obj.rtSize) {
     return;
   }
 
-  if (name.startsWith("~lib/staticarray/StaticArray<")) {
-    scanStaticArrayElements(memory, obj, validPtrs, edges);
-    return;
+  const ptr = readValidPtr(memory, obj.payloadPtr + envField.offset, validPtrs);
+  if (ptr !== null) {
+    edges.push(ptr);
   }
+}
 
-  if (name === "~lib/tuple/SmallTuple") {
-    scanSmallTupleElements(memory, obj, validPtrs, edges);
-    return;
-  }
+function scanBuiltinContainer(
+  memory: DataView,
+  obj: ObjectHeader,
+  classLayout: ClassLayout,
+  validPtrs: Set<number>,
+  edges: number[]
+): void {
+  scanReferenceFields(memory, obj, classLayout, validPtrs, edges);
 
-  if (classLayout.entryLayout) {
-    scanSetMapEntries(memory, obj, classLayout.entryLayout, validPtrs, edges);
+  switch (classLayout.builtinKind) {
+    case BuiltinContainerKind.Array: {
+      if (classLayout.templateTypeIsReference === true) {
+        scanArrayElements(memory, obj, validPtrs, edges);
+      }
+      return;
+    }
+
+    case BuiltinContainerKind.StaticArray: {
+      if (classLayout.templateTypeIsReference === true) {
+        scanStaticArrayElements(memory, obj, validPtrs, edges);
+      }
+      return;
+    }
+
+    case BuiltinContainerKind.SmallTuple: {
+      scanSmallTupleElements(memory, obj, validPtrs, edges);
+      return;
+    }
+
+    case BuiltinContainerKind.Function: {
+      scanFunctionEnv(memory, obj, classLayout, validPtrs, edges);
+      return;
+    }
+
+    case BuiltinContainerKind.MapOrSet: {
+      if (classLayout.entryLayout) {
+        scanSetMapEntries(memory, obj, classLayout.entryLayout, validPtrs, edges);
+      }
+      return;
+    }
+
+    default: {
+      return;
+    }
   }
 }
 
@@ -175,9 +218,12 @@ export function scanReferences(
     const edges: number[] = [];
 
     const classLayout = debugInfoResolver.getClassDef(obj.rtId);
-    if (classLayout && !debugInfoResolver.isPointerfree(obj.rtId)) {
-      scanReferenceFields(memory, obj, debugInfoResolver, validPtrs, edges);
-      scanContainerElements(memory, obj, classLayout, validPtrs, edges);
+    if (classLayout) {
+      if (classLayout.builtinKind !== undefined) {
+        scanBuiltinContainer(memory, obj, classLayout, validPtrs, edges);
+      } else if (!isPointerfree(classLayout)) {
+        scanReferenceFields(memory, obj, classLayout, validPtrs, edges);
+      }
     }
 
     graph.set(obj.payloadPtr, edges);

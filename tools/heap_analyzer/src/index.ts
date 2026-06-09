@@ -13,6 +13,7 @@ export function analyzeDump(dumpBuffer: ArrayBuffer, wasmBinary: Uint8Array | Ar
 export { analyzeHeap } from "./snapshot.js";
 export { parseDumpFile } from "./dumpReader.js";
 export type {
+  BuiltinContainerKind,
   ClassField,
   ClassLayout,
   DumpedMemory,

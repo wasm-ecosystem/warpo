@@ -37,6 +37,14 @@ export interface ClassField {
   isReference: boolean;
 }
 
+export enum BuiltinContainerKind {
+  Array,
+  StaticArray,
+  MapOrSet,
+  SmallTuple,
+  Function,
+}
+
 /** Layout of a single entry in a Set or Map's entries ArrayBuffer. */
 export interface EntryLayout {
   /** Total byte size of one entry (stride). */
@@ -49,11 +57,31 @@ export interface ClassLayout {
   rtid: number;
   name: string;
   base: string | null;
+  byteSize: number;
   fields: ClassField[];
+  builtinKind?: BuiltinContainerKind;
   templateType?: string;
-  elementIsReference?: boolean;
+  templateTypeIsReference?: boolean;
   /** For Set/Map: describes the layout of entries inside the backing ArrayBuffer. */
   entryLayout?: EntryLayout;
+}
+
+export function isPointerfree(classLayout: ClassLayout): boolean {
+  if (classLayout.templateTypeIsReference === true) {
+    return false;
+  }
+
+  for (const field of classLayout.fields) {
+    if (field.isReference) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export function getReferenceFields(classLayout: ClassLayout): ClassField[] {
+  return classLayout.fields.filter((field) => field.isReference);
 }
 
 export type RootType = "global" | "local" | "pinned";

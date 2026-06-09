@@ -13,12 +13,92 @@ import {
   type DwarfDIE,
   type WasmGlobalEntry,
 } from "./dwarfParser.js";
-import type { ClassField, ClassLayout, GlobalRoot } from "./types.js";
+import { BuiltinContainerKind, type ClassField, type ClassLayout, type EntryLayout, type GlobalRoot } from "./types.js";
+
+type ResolvedTypeInfo = { name?: string; size: number; isReference: boolean };
 
 interface GlobalVariableDebugInfo {
   name: string;
   typeName: string;
   index: number;
+}
+
+function shouldKeepClassLayout(classLayout: ClassLayout): boolean {
+  return classLayout.rtid !== 0 || classLayout.name === "~lib/object/Object";
+}
+
+function computeFieldExtent(fields: ClassField[]): number {
+  let size = 0;
+  for (const field of fields) {
+    size = Math.max(size, field.offset + field.size);
+  }
+  return size;
+}
+
+function resolveEntryClassName(className: string): string | undefined {
+  if (className.startsWith("~lib/set/Set<")) {
+    return className.replace("~lib/set/Set<", "~lib/set/SetEntry<");
+  }
+
+  if (className.startsWith("~lib/map/Map<")) {
+    return className.replace("~lib/map/Map<", "~lib/map/MapEntry<");
+  }
+
+  return undefined;
+}
+
+// Map/Set only expose their backing `entries: ArrayBuffer` as an object field.
+// The actual key/value references live inside unmanaged MapEntry/SetEntry
+// records stored in that buffer, so we cache each entry's stride plus the
+// offsets of reference-bearing fields for the reference scanner.
+function attachEntryLayouts(classes: ClassLayout[]): void {
+  const classByName = new Map(classes.map((classLayout) => [classLayout.name, classLayout]));
+
+  for (const classLayout of classes) {
+    if (classLayout.builtinKind !== BuiltinContainerKind.MapOrSet) {
+      continue;
+    }
+
+    const entryClassName = resolveEntryClassName(classLayout.name);
+    if (!entryClassName) {
+      continue;
+    }
+
+    const entryClass = classByName.get(entryClassName);
+    if (!entryClass) {
+      continue;
+    }
+
+    const referenceOffsets = entryClass.fields
+      .filter((field) => field.name !== "taggedNext" && field.isReference)
+      .map((field) => field.offset);
+    const size = entryClass.byteSize || computeFieldExtent(entryClass.fields);
+    if (size === 0) {
+      continue;
+    }
+
+    const entryLayout: EntryLayout = {
+      size,
+      referenceOffsets,
+    };
+    classLayout.entryLayout = entryLayout;
+  }
+}
+
+export function attachBuiltinKind(classLayout: Pick<ClassLayout, "name" | "builtinKind">): void {
+  const { name: className } = classLayout;
+
+  if (className.startsWith("~lib/array/Array<")) {
+    classLayout.builtinKind = BuiltinContainerKind.Array;
+  } else if (className.startsWith("~lib/staticarray/StaticArray<")) {
+    classLayout.builtinKind = BuiltinContainerKind.StaticArray;
+  } else if (className.startsWith("~lib/map/Map<") || className.startsWith("~lib/set/Set<")) {
+    classLayout.builtinKind = BuiltinContainerKind.MapOrSet;
+  } else if (className.startsWith("~lib/function/Function<")) {
+    classLayout.builtinKind = BuiltinContainerKind.Function;
+  } else if (className === "~lib/tuple/SmallTuple") {
+    classLayout.builtinKind = BuiltinContainerKind.SmallTuple;
+  }
 }
 
 /**
@@ -61,10 +141,16 @@ export class DebugInfoResolver {
     }
 
     flattenInheritedFields(classes);
-    const classNames = new Set(classes.map((layout) => layout.name));
+    // Derive Map/Set entry-buffer metadata before dropping rtid==0 helper
+    // classes, because MapEntry/SetEntry may be filtered out afterwards but
+    // their field layout is still needed to scan the `entries` ArrayBuffer.
+    attachEntryLayouts(classes);
+
+    const filteredClasses = classes.filter(shouldKeepClassLayout);
+    const classNames = new Set(filteredClasses.map((layout) => layout.name));
 
     return new DebugInfoResolver(
-      classes,
+      filteredClasses,
       globalVariableDebugInfos.filter((globalVariableDebugInfo) => classNames.has(globalVariableDebugInfo.typeName)),
       debugInfo.globals
     );
@@ -104,41 +190,6 @@ export class DebugInfoResolver {
     }
 
     return globalRoots;
-  }
-
-  /**
-   * Check if a type has no managed references (no reference fields, no reference elements).
-   * Derived from field layout and elementIsReference rather than flags.
-   */
-  isPointerfree(classId: number): boolean {
-    const layout = this.layoutMap.get(classId);
-    if (!layout) {
-      return false;
-    }
-
-    if (layout.elementIsReference === true) {
-      return false;
-    }
-
-    for (const field of layout.fields) {
-      if (field.isReference) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  /**
-   * Returns all reference fields (isReference == true) for this class,
-   * walking the full inheritance chain via base.
-   */
-  getReferenceFields(classId: number): ClassField[] {
-    const layout = this.layoutMap.get(classId);
-    if (!layout) {
-      return [];
-    }
-    return layout.fields.filter((f) => f.isReference);
   }
 
   /** Maps i32 wasm global indices to runtime mutable values or immutable initial values. */
@@ -212,7 +263,7 @@ class CompilationUnitResolver {
     return globalVariableDebugInfos;
   }
 
-  private resolveTypeInfo(typeRef: number): { name?: string; size: number; isReference: boolean } {
+  private resolveTypeInfo(typeRef: number): ResolvedTypeInfo {
     const typeDie = this.offsetMap.get(typeRef);
     if (!typeDie) {
       return { size: 4, isReference: false };
@@ -241,7 +292,7 @@ class CompilationUnitResolver {
     };
   }
 
-  private resolveTemplateType(classDie: DwarfDIE): string | undefined {
+  private resolveTemplateType(classDie: DwarfDIE): ResolvedTypeInfo | undefined {
     const templateParam = classDie.children.find((c) => c.tag === DW_TAG.template_type_parameter);
     if (!templateParam) {
       return undefined;
@@ -252,7 +303,7 @@ class CompilationUnitResolver {
       return undefined;
     }
 
-    return this.resolveTypeInfo(typeAttr.value as number).name;
+    return this.resolveTypeInfo(typeAttr.value as number);
   }
 
   private resolveBaseName(classDie: DwarfDIE): string | null {
@@ -296,7 +347,7 @@ class CompilationUnitResolver {
 
   private resolveClassLayout(classDie: DwarfDIE): ClassLayout | null {
     const nameAttr = getAttr(classDie, DW_AT.name);
-    if (!nameAttr) {
+    if (nameAttr === undefined) {
       return null;
     }
 
@@ -314,17 +365,21 @@ class CompilationUnitResolver {
       }
     }
 
+    const templateType = this.resolveTemplateType(classDie);
+    const className = nameAttr.value as string;
+    const byteSizeAttr = getAttr(classDie, DW_AT.byte_size);
+
     const layout: ClassLayout = {
       rtid: sigAttr.value as number,
-      name: nameAttr.value as string,
+      name: className,
       base: this.resolveBaseName(classDie),
+      byteSize: byteSizeAttr === undefined ? computeFieldExtent(fields) : (byteSizeAttr.value as number),
       fields,
+      templateType: templateType?.name,
+      templateTypeIsReference: templateType?.isReference,
     };
 
-    const templateType = this.resolveTemplateType(classDie);
-    if (templateType !== undefined) {
-      layout.templateType = templateType;
-    }
+    attachBuiltinKind(layout);
 
     return layout;
   }
