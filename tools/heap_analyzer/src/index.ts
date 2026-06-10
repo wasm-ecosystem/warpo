@@ -16,6 +16,8 @@ export type {
   BuiltinContainerKind,
   ClassField,
   ClassLayout,
+  ConstructorEntry,
+  ConstructorInstance,
   DumpedMemory,
   EntryLayout,
   GlobalRoot,
@@ -25,5 +27,4 @@ export type {
   RootInfo,
   RootType,
   RuntimeGlobalValues,
-  SnapshotSummaryEntry,
 } from "./types.js";

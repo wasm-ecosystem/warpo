@@ -99,23 +99,24 @@ export interface HeapObject {
   className: string;
   shallowSize: number;
   retainedSize: number;
-  rootType: RootType;
 }
 
-export interface SnapshotSummaryEntry {
+export interface ConstructorInstance {
+  address: number;
+  shallowSize: number;
+  retainedSize: number;
+}
+
+export interface ConstructorEntry {
   className: string;
-  classId: number;
   count: number;
   totalShallowSize: number;
   totalRetainedSize: number;
+  instances: ConstructorInstance[];
 }
 
 export interface HeapSnapshot {
-  objects: HeapObject[];
-  summary: SnapshotSummaryEntry[];
-  roots: RootInfo[];
+  constructors: ConstructorEntry[];
   totalHeapSize: number;
   totalLiveSize: number;
-  totalFreeSize: number;
-  objectCount: number;
 }

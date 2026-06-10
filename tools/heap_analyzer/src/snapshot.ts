@@ -9,21 +9,13 @@ import { findRoots } from "./roots.js";
 import { scanReferences } from "./referenceScanner.js";
 import { walkBlocks } from "./tlsf.js";
 import type {
+  ConstructorEntry,
+  ConstructorInstance,
   HeapObject,
   HeapSnapshot,
   RootInfo,
-  RootType,
   RuntimeGlobalValues,
-  SnapshotSummaryEntry,
 } from "./types.js";
-
-function getAssignedRootType(rootTypes: Map<number, RootType>, payloadPtr: number): RootType {
-  const rootType = rootTypes.get(payloadPtr);
-  if (!rootType) {
-    throw new Error(`Missing root type for live object ${payloadPtr}`);
-  }
-  return rootType;
-}
 
 export function analyzeHeap(
   memory: DataView,
@@ -61,45 +53,23 @@ export function analyzeHeap(
   // Step 7: Aggregate retained sizes bottom-up on the dominator tree.
   const retainedSizes = computeRetainedSizes(liveObjects, dominatorTree);
 
-  // Step 8: Propagate root categories across the live graph.
-  const rootTypes = classifyRootTypes(roots, liveGraph);
-
-  const objectRtIds = new Map(objects.map((obj) => [obj.payloadPtr, obj.rtId]));
-
-  // Step 9: Materialize per-object results.
+  // Step 8: Materialize per-object results for constructor aggregation.
   const heapObjects: HeapObject[] = liveObjects.map((obj) => ({
     address: obj.payloadPtr,
     classId: obj.rtId,
     className: debugInfoResolver.getClassName(obj.rtId),
     shallowSize: shallowSize(obj),
     retainedSize: retainedSizes.get(obj.payloadPtr) ?? shallowSize(obj),
-    rootType: getAssignedRootType(rootTypes, obj.payloadPtr),
   }));
 
-  // Step 10: Enrich root records with resolved class names.
-  const rootsWithClassName = roots.map((root) => {
-    const className = debugInfoResolver.getClassName(objectRtIds.get(root.objectPtr) ?? -1);
-    return {
-      objectPtr: root.objectPtr,
-      className,
-      rootType: root.rootType,
-      sourceAddress: root.sourceAddress,
-    };
-  });
-
-  // Step 11: Compute top-level totals and the class summary view.
+  // Step 9: Compute top-level totals and constructor view.
   const totalLiveSize = heapObjects.reduce((sum, obj) => sum + obj.shallowSize, 0);
   const totalHeapSize = memory.byteLength - computeFirstBlock(rtGlobals.heapBase);
-  const totalFreeSize = Math.max(0, totalHeapSize - totalLiveSize);
 
   return {
-    objects: heapObjects,
-    summary: buildSummary(heapObjects),
-    roots: rootsWithClassName,
+    constructors: buildConstructors(heapObjects),
     totalHeapSize,
     totalLiveSize,
-    totalFreeSize,
-    objectCount: heapObjects.length,
   };
 }
 
@@ -140,88 +110,55 @@ function buildLiveGraph(liveSet: Set<number>, graph: Map<number, number[]>): Map
 
   return liveGraph;
 }
-
-function classifyRootTypes(roots: RootInfo[], graph: Map<number, number[]>): Map<number, RootType> {
-  // Root-type propagation is priority-based: global > local > pinned.
-  const result = new Map<number, RootType>();
-  const localRoots = new Set<number>();
-  const pinnedRoots = new Set<number>();
-  const globalRoots = new Set<number>();
-
-  for (const root of roots) {
-    switch (root.rootType) {
-      case "global": {
-        globalRoots.add(root.objectPtr);
-        break;
-      }
-      case "local": {
-        localRoots.add(root.objectPtr);
-        break;
-      }
-      case "pinned": {
-        pinnedRoots.add(root.objectPtr);
-        break;
-      }
-    }
-  }
-
-  bfsAssignRootType(pinnedRoots, graph, result, "pinned");
-  bfsAssignRootType(localRoots, graph, result, "local");
-  bfsAssignRootType(globalRoots, graph, result, "global");
-
-  return result;
-}
-
-function bfsAssignRootType(
-  startPtrs: Set<number>,
-  graph: Map<number, number[]>,
-  result: Map<number, RootType>,
-  rootType: RootType
-): void {
-  // Walk one root category at a time and stamp every reachable node with that category.
-  const visited = new Set<number>();
-  const workList = Array.from(startPtrs);
-
-  for (let index = 0; index < workList.length; index++) {
-    const ptr = workList[index];
-    if (visited.has(ptr)) {
-      continue;
-    }
-
-    visited.add(ptr);
-    result.set(ptr, rootType);
-
-    for (const child of graph.get(ptr) ?? []) {
-      if (!visited.has(child)) {
-        workList.push(child);
-      }
-    }
-  }
-}
-
-function buildSummary(objects: HeapObject[]): SnapshotSummaryEntry[] {
-  // Summary is grouped by class name and sorted like a heap-summary view.
-  const summaryByClass = new Map<string, SnapshotSummaryEntry>();
+function buildConstructors(objects: HeapObject[]): ConstructorEntry[] {
+  const constructorsByClass = new Map<string, ConstructorEntry>();
 
   for (const obj of objects) {
-    let entry = summaryByClass.get(obj.className);
+    let entry = constructorsByClass.get(obj.className);
     if (!entry) {
       entry = {
         className: obj.className,
-        classId: obj.classId,
         count: 0,
         totalShallowSize: 0,
         totalRetainedSize: 0,
+        instances: [],
       };
-      summaryByClass.set(obj.className, entry);
+      constructorsByClass.set(obj.className, entry);
     }
 
     entry.count++;
     entry.totalShallowSize += obj.shallowSize;
     entry.totalRetainedSize += obj.retainedSize;
+
+    entry.instances.push({
+      address: obj.address,
+      shallowSize: obj.shallowSize,
+      retainedSize: obj.retainedSize,
+    });
   }
 
-  return [...summaryByClass.values()].toSorted((lhs, rhs) => rhs.totalRetainedSize - lhs.totalRetainedSize);
+  return Array.from(constructorsByClass.values(), (entry) => ({
+    className: entry.className,
+    count: entry.count,
+    totalShallowSize: entry.totalShallowSize,
+    totalRetainedSize: entry.totalRetainedSize,
+    instances: sortConstructorInstances(entry.instances),
+  })).toSorted(sortConstructors);
+}
+
+function sortConstructors(lhs: ConstructorEntry, rhs: ConstructorEntry): number {
+  return (
+    rhs.totalRetainedSize - lhs.totalRetainedSize ||
+    rhs.totalShallowSize - lhs.totalShallowSize ||
+    rhs.count - lhs.count ||
+    lhs.className.localeCompare(rhs.className)
+  );
+}
+
+function sortConstructorInstances(instances: ConstructorInstance[]): ConstructorInstance[] {
+  return instances.toSorted(
+    (lhs, rhs) => rhs.retainedSize - lhs.retainedSize || rhs.shallowSize - lhs.shallowSize || lhs.address - rhs.address
+  );
 }
 
 function computeFirstBlock(heapBase: number): number {

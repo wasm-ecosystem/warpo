@@ -12,70 +12,52 @@ function loadFixture(ctx: FixtureContext): DumpedMemory {
 describeIntegration("analyzeHeap", (ctx) => {
   let dump: DumpedMemory;
   let snapshot: ReturnType<typeof analyzeHeap>;
-  let objectCounts: Map<string, number>;
+  let constructorCounts: Map<string, number>;
 
   before(() => {
     ctx.compileFixture();
     ctx.generateFixtureDump();
     dump = loadFixture(ctx);
     snapshot = analyzeHeap(dump.memory, dump.rtGlobals, ctx.loadFixtureWasm());
-    objectCounts = new Map<string, number>();
-    for (const obj of snapshot.objects) {
-      objectCounts.set(obj.className, (objectCounts.get(obj.className) ?? 0) + 1);
+    constructorCounts = new Map<string, number>();
+    for (const entry of snapshot.constructors) {
+      constructorCounts.set(entry.className, entry.count);
     }
   });
 
-  it("matches the fixture's live-object and root counts", () => {
-    assert.strictEqual(snapshot.objectCount, 93);
-    assert.strictEqual(snapshot.objects.length, 93);
-    assert.strictEqual(snapshot.roots.length, 19);
-  });
+  it("matches the fixture's live-object count through constructor rows", () => {
+    const totalCount = snapshot.constructors.reduce((sum, entry) => sum + entry.count, 0);
 
-  it("reports only local roots for the current fixture", () => {
-    const rootTypeCounts: Record<string, number> = {};
-    for (const root of snapshot.roots) {
-      rootTypeCounts[root.rootType] = (rootTypeCounts[root.rootType] ?? 0) + 1;
-    }
-
-    assert.deepStrictEqual(rootTypeCounts, { local: 19 });
-  });
-
-  it("propagates local rootType to all live objects", () => {
-    const objectRootTypeCounts: Record<string, number> = {};
-    for (const obj of snapshot.objects) {
-      objectRootTypeCounts[obj.rootType] = (objectRootTypeCounts[obj.rootType] ?? 0) + 1;
-    }
-
-    assert.deepStrictEqual(objectRootTypeCounts, { local: 93 });
+    assert.strictEqual(totalCount, 93);
   });
 
   it("matches expected class counts for key fixture types", () => {
-    assert.strictEqual(objectCounts.get(`${CLASS_PREFIX}TreeNode`), 31);
-    assert.strictEqual(objectCounts.get("~lib/arraybuffer/ArrayBuffer"), 17);
-    assert.strictEqual(objectCounts.get(`${CLASS_PREFIX}Item`), 13);
-    assert.strictEqual(objectCounts.get(`${CLASS_PREFIX}Vector2`), 8);
-    assert.strictEqual(objectCounts.get(`${CLASS_PREFIX}ListNode`), 5);
-    assert.strictEqual(objectCounts.get(`${CLASS_PREFIX}NPC`), 3);
-    assert.strictEqual(objectCounts.get(`${CLASS_PREFIX}Player`), 2);
-    assert.strictEqual(objectCounts.get("~lib/string/String"), 1);
+    assert.strictEqual(constructorCounts.get(`${CLASS_PREFIX}TreeNode`), 31);
+    assert.strictEqual(constructorCounts.get("~lib/arraybuffer/ArrayBuffer"), 17);
+    assert.strictEqual(constructorCounts.get(`${CLASS_PREFIX}Item`), 13);
+    assert.strictEqual(constructorCounts.get(`${CLASS_PREFIX}Vector2`), 8);
+    assert.strictEqual(constructorCounts.get(`${CLASS_PREFIX}ListNode`), 5);
+    assert.strictEqual(constructorCounts.get(`${CLASS_PREFIX}NPC`), 3);
+    assert.strictEqual(constructorCounts.get(`${CLASS_PREFIX}Player`), 2);
+    assert.strictEqual(constructorCounts.get("~lib/string/String"), 1);
   });
 
-  it("keeps summary sorted by retained size and matches key summary rows", () => {
-    for (let index = 1; index < snapshot.summary.length; index++) {
-      assert.ok(snapshot.summary[index - 1].totalRetainedSize >= snapshot.summary[index].totalRetainedSize);
+  it("keeps constructors sorted by retained size and matches key rows", () => {
+    for (let index = 1; index < snapshot.constructors.length; index++) {
+      assert.ok(snapshot.constructors[index - 1].totalRetainedSize >= snapshot.constructors[index].totalRetainedSize);
     }
 
-    assert.deepStrictEqual(snapshot.summary[0], {
+    assert.deepStrictEqual(snapshot.constructors[0], {
       className: `${CLASS_PREFIX}TreeNode`,
-      classId: snapshot.summary[0].classId,
       count: 31,
       totalShallowSize: 992,
       totalRetainedSize: 4128,
+      instances: snapshot.constructors[0].instances,
     });
 
-    const players = snapshot.summary.find((entry) => entry.className === `${CLASS_PREFIX}Player`);
-    const npc = snapshot.summary.find((entry) => entry.className === `${CLASS_PREFIX}NPC`);
-    const strings = snapshot.summary.find((entry) => entry.className === "~lib/string/String");
+    const players = snapshot.constructors.find((entry) => entry.className === `${CLASS_PREFIX}Player`);
+    const npc = snapshot.constructors.find((entry) => entry.className === `${CLASS_PREFIX}NPC`);
+    const strings = snapshot.constructors.find((entry) => entry.className === "~lib/string/String");
 
     assert.deepStrictEqual(
       players && {
@@ -103,26 +85,53 @@ describeIntegration("analyzeHeap", (ctx) => {
     );
   });
 
-  it("computes totals consistent with the object and summary rows", () => {
-    const totalLiveSize = snapshot.objects.reduce((sum, obj) => sum + obj.shallowSize, 0);
-    const totalCount = snapshot.summary.reduce((sum, entry) => sum + entry.count, 0);
-    const totalShallowSize = snapshot.summary.reduce((sum, entry) => sum + entry.totalShallowSize, 0);
-
-    assert.strictEqual(snapshot.totalLiveSize, totalLiveSize);
-    assert.strictEqual(totalCount, snapshot.objects.length);
-    assert.strictEqual(totalShallowSize, snapshot.totalLiveSize);
-    assert.ok(snapshot.totalHeapSize >= snapshot.totalLiveSize);
-    assert.strictEqual(snapshot.totalFreeSize, snapshot.totalHeapSize - snapshot.totalLiveSize);
-    assert.ok(snapshot.totalFreeSize >= 0);
-  });
-
-  it("enriches every root with a resolved class name present in the object set", () => {
-    const objectAddresses = new Set(snapshot.objects.map((obj) => obj.address));
-    assert.ok(snapshot.roots.length > 0);
-
-    for (const root of snapshot.roots) {
-      assert.notStrictEqual(root.className, "");
-      assert.ok(objectAddresses.has(root.objectPtr));
+  it("includes instance rows by default", () => {
+    for (const entry of snapshot.constructors) {
+      assert.ok(Array.isArray(entry.instances));
     }
   });
+
+  it("keeps instance rows sorted", () => {
+    const totalInstanceCount = snapshot.constructors.reduce((sum, entry) => sum + entry.instances.length, 0);
+    assert.strictEqual(totalInstanceCount, 93);
+
+    const treeNodes = snapshot.constructors.find((entry) => entry.className === `${CLASS_PREFIX}TreeNode`);
+    assert.ok(treeNodes);
+    assert.strictEqual(treeNodes.instances.length, 31);
+    assert.deepStrictEqual(
+      Object.keys(treeNodes.instances[0]).toSorted((lhs, rhs) => lhs.localeCompare(rhs)),
+      ["address", "retainedSize", "shallowSize"]
+    );
+    assert.strictEqual(treeNodes.instances[0].shallowSize, 32);
+    assert.strictEqual(treeNodes.instances[0].retainedSize, 992);
+    assertInstancesSorted(treeNodes.instances);
+
+    const players = snapshot.constructors.find((entry) => entry.className === `${CLASS_PREFIX}Player`);
+    assert.ok(players);
+    assert.strictEqual(players.instances[0].shallowSize, 48);
+    assert.strictEqual(players.instances[0].retainedSize, 288);
+    assertInstancesSorted(players.instances);
+  });
+
+  it("computes totals consistent with the constructor rows", () => {
+    const totalCount = snapshot.constructors.reduce((sum, entry) => sum + entry.count, 0);
+    const totalShallowSize = snapshot.constructors.reduce((sum, entry) => sum + entry.totalShallowSize, 0);
+
+    assert.strictEqual(totalCount, 93);
+    assert.strictEqual(totalShallowSize, snapshot.totalLiveSize);
+    assert.ok(snapshot.totalHeapSize >= snapshot.totalLiveSize);
+  });
 });
+
+function assertInstancesSorted(instances: Array<{ address: number; shallowSize: number; retainedSize: number }>): void {
+  for (let index = 1; index < instances.length; index++) {
+    const previous = instances[index - 1];
+    const current = instances[index];
+    assert.ok(
+      previous.retainedSize > current.retainedSize ||
+        (previous.retainedSize === current.retainedSize &&
+          (previous.shallowSize > current.shallowSize ||
+            (previous.shallowSize === current.shallowSize && previous.address <= current.address)))
+    );
+  }
+}
