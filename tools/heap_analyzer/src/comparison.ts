@@ -23,7 +23,9 @@ export function compareSnapshots(before: HeapSnapshot, after: HeapSnapshot): Hea
     afterTotalLiveSize: after.totalLiveSize,
     totalLiveSizeDelta: after.totalLiveSize - before.totalLiveSize,
     constructors: [...classNames]
-      .map((className) => compareConstructorEntries(className, beforeConstructors.get(className), afterConstructors.get(className)))
+      .map((className) =>
+        compareConstructorEntries(className, beforeConstructors.get(className), afterConstructors.get(className))
+      )
       .filter((entry) => entry.instances.length > 0)
       .toSorted(sortConstructorComparisons),
   };

@@ -86,17 +86,13 @@ function sortConstructorComparisons(constructors, sortField) {
     case "freed": {
       return constructors.toSorted(
         (lhs, rhs) =>
-          rhs.freedSize - lhs.freedSize ||
-          lhs.sizeDelta - rhs.sizeDelta ||
-          lhs.className.localeCompare(rhs.className)
+          rhs.freedSize - lhs.freedSize || lhs.sizeDelta - rhs.sizeDelta || lhs.className.localeCompare(rhs.className)
       );
     }
     case "count": {
       return constructors.toSorted(
         (lhs, rhs) =>
-          rhs.countDelta - lhs.countDelta ||
-          rhs.sizeDelta - lhs.sizeDelta ||
-          lhs.className.localeCompare(rhs.className)
+          rhs.countDelta - lhs.countDelta || rhs.sizeDelta - lhs.sizeDelta || lhs.className.localeCompare(rhs.className)
       );
     }
     default: {
