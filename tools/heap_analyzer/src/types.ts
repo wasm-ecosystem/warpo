@@ -99,7 +99,6 @@ export interface HeapObject {
   className: string;
   shallowSize: number;
   retainedSize: number;
-  rootType: RootType;
 }
 
 export interface ConstructorInstance {

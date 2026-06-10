@@ -60,7 +60,6 @@ export function analyzeHeap(
     className: debugInfoResolver.getClassName(obj.rtId),
     shallowSize: shallowSize(obj),
     retainedSize: retainedSizes.get(obj.payloadPtr) ?? shallowSize(obj),
-    rootType: "local",
   }));
 
   // Step 9: Compute top-level totals and constructor view.
@@ -138,11 +137,13 @@ function buildConstructors(objects: HeapObject[]): ConstructorEntry[] {
     });
   }
 
-  return [...constructorsByClass.values()]
-    .map((entry) => ({
-      ...entry,
-      instances: sortConstructorInstances(entry.instances),
-    }))
+  return Array.from(constructorsByClass.values(), (entry) => ({
+    className: entry.className,
+    count: entry.count,
+    totalShallowSize: entry.totalShallowSize,
+    totalRetainedSize: entry.totalRetainedSize,
+    instances: sortConstructorInstances(entry.instances),
+  }))
     .toSorted(sortConstructors);
 }
 
