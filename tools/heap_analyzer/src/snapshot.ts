@@ -143,8 +143,7 @@ function buildConstructors(objects: HeapObject[]): ConstructorEntry[] {
     totalShallowSize: entry.totalShallowSize,
     totalRetainedSize: entry.totalRetainedSize,
     instances: sortConstructorInstances(entry.instances),
-  }))
-    .toSorted(sortConstructors);
+  })).toSorted(sortConstructors);
 }
 
 function sortConstructors(lhs: ConstructorEntry, rhs: ConstructorEntry): number {
