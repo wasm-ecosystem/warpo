@@ -115,8 +115,35 @@ export interface ConstructorEntry {
   instances: ConstructorInstance[];
 }
 
+export type ComparisonInstanceChangeKind = "new" | "delete";
+
+export interface ComparisonInstance extends ConstructorInstance {
+  changeKind: ComparisonInstanceChangeKind;
+}
+
+export interface ConstructorComparisonEntry {
+  className: string;
+  newCount: number;
+  deletedCount: number;
+  countDelta: number;
+  allocatedSize: number;
+  freedSize: number;
+  sizeDelta: number;
+  instances: ComparisonInstance[];
+}
+
 export interface HeapSnapshot {
   constructors: ConstructorEntry[];
   totalHeapSize: number;
   totalLiveSize: number;
+}
+
+export interface HeapComparison {
+  beforeTotalHeapSize: number;
+  afterTotalHeapSize: number;
+  totalHeapSizeDelta: number;
+  beforeTotalLiveSize: number;
+  afterTotalLiveSize: number;
+  totalLiveSizeDelta: number;
+  constructors: ConstructorComparisonEntry[];
 }
