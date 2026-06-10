@@ -6,7 +6,8 @@ import { appendFileSync, writeFileSync } from "node:fs";
 import * as path from "node:path";
 import * as net from "node:net";
 import { fileURLToPath } from "node:url";
-import type { DebugPauseInfo, Debugger, WasmLaunchConfig, WasmModuleInfo } from "./debugger.js";
+import type { DebugPauseInfo, Debugger, DebuggerCommandCallbacks, WasmLaunchConfig } from "./debugger.js";
+import { DebuggerWasmModule } from "./debuggerWasmModule.js";
 
 const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
 const DEBUG_SERVER_TRACE_ENABLED = process.env.WARPO_DEBUG_SERVER_TRACE === "1";
@@ -56,28 +57,31 @@ interface CDPResponse {
   method?: string;
   params?: Record<string, unknown>;
   result?: Record<string, unknown>;
-  error?: unknown;
+  error?: { message?: string };
 }
 
 export class NodeDebugger implements Debugger {
   readonly name = "node";
-  onModuleLoad: ((info: WasmModuleInfo) => void) | undefined;
+  onModuleLoad: ((module: DebuggerWasmModule) => void | Promise<void>) | undefined;
   onPause: ((info: DebugPauseInfo) => void | Promise<void>) | undefined;
 
   private child: ChildProcess | undefined;
   private ws: WebSocket | undefined;
   private cdpId = 0;
+  private readonly pendingCommandCallbacks = new Map<number, DebuggerCommandCallbacks>();
+  private paused = false;
+  private wasmFilePath: string | undefined;
 
   async launch(config: WasmLaunchConfig): Promise<void> {
+    this.wasmFilePath = config.wasmFilePath;
+
     const port = await findFreePort();
 
     this.child = spawn(
       process.execPath,
       [
         `--inspect=${port}`,
-        "--import",
-        "tsx",
-        path.join(DIRNAME, "wasmEntry.ts"),
+        path.join(DIRNAME, "wasmEntry.js"),
         config.wasmFilePath,
         config.entryFunctionName,
         ...config.args.map(String),
@@ -90,13 +94,48 @@ export class NodeDebugger implements Debugger {
   }
 
   dispose(): void {
+    this.paused = false;
+    this.wasmFilePath = undefined;
     this.ws?.close();
     this.child?.kill();
   }
 
-  resume(): Promise<void> {
-    this.sendCommand("Debugger.resume");
-    return Promise.resolve();
+  isPaused(): boolean {
+    return this.paused;
+  }
+
+  pause(): void {
+    this.sendCommand("Debugger.pause");
+  }
+
+  async resume(): Promise<void> {
+    await this.waitForCommand("Debugger.resume");
+    this.paused = false;
+  }
+
+  finishModuleLoad(): void {
+    this.sendCommand("Runtime.runIfWaitingForDebugger");
+  }
+
+  setWasmBreakpoint(module: DebuggerWasmModule, bytecodeOffset: number, callbacks?: DebuggerCommandCallbacks): void {
+    this.sendCommand(
+      "Debugger.setBreakpointByUrl",
+      {
+        url: module.url,
+        lineNumber: 0,
+        columnNumber: bytecodeOffset,
+      },
+      {
+        onSuccess: () => {
+          trace(`setWasmBreakpoint success offset=${bytecodeOffset}`);
+          callbacks?.onSuccess?.();
+        },
+        onError: (error) => {
+          trace(`setWasmBreakpoint error offset=${bytecodeOffset} message=${error.message}`);
+          callbacks?.onError?.(error);
+        },
+      }
+    );
   }
 
   private async fetchWsUrl(port: number): Promise<string> {
@@ -119,12 +158,29 @@ export class NodeDebugger implements Debugger {
 
     throw new Error(`timed out waiting for inspector endpoint on port ${port}`);
   }
-  private sendCommand(method: string): void {
+  private sendCommand(method: string, params?: Record<string, unknown>, callbacks?: DebuggerCommandCallbacks): void {
     if (!this.ws) {
       throw new Error("debugger is not connected");
     }
 
-    this.ws.send(JSON.stringify({ id: ++this.cdpId, method }));
+    const id = ++this.cdpId;
+    if (callbacks) {
+      this.pendingCommandCallbacks.set(id, callbacks);
+    }
+    this.ws.send(JSON.stringify({ id, method, params }));
+  }
+
+  private waitForCommand(method: string, params?: Record<string, unknown>): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.sendCommand(method, params, {
+        onSuccess: () => {
+          resolve();
+        },
+        onError: (error) => {
+          reject(error);
+        },
+      });
+    });
   }
 
   private connectCDP(wsUrl: string): Promise<void> {
@@ -133,16 +189,20 @@ export class NodeDebugger implements Debugger {
       this.ws = ws;
 
       ws.addEventListener("open", () => {
-        try {
-          trace("ws open -> Debugger.enable");
-          this.sendCommand("Debugger.enable");
-          trace("Debugger.enable -> Runtime.runIfWaitingForDebugger");
-          this.sendCommand("Runtime.runIfWaitingForDebugger");
-          trace("Runtime.runIfWaitingForDebugger -> launch ready");
-          resolve();
-        } catch (error) {
-          reject(error instanceof Error ? error : new Error(String(error)));
-        }
+        void (async () => {
+          try {
+            trace("ws open -> Debugger.enable");
+            await this.waitForCommand("Debugger.enable");
+            trace("Debugger.enable -> Debugger.setBreakpointsActive");
+            await this.waitForCommand("Debugger.setBreakpointsActive", { active: true });
+            trace("Debugger.setBreakpointsActive -> Runtime.runIfWaitingForDebugger");
+            await this.waitForCommand("Runtime.runIfWaitingForDebugger");
+            trace("Runtime.runIfWaitingForDebugger -> launch ready");
+            resolve();
+          } catch (error) {
+            reject(error instanceof Error ? error : new Error(String(error)));
+          }
+        })();
       });
 
       ws.addEventListener("error", (e) => {
@@ -154,11 +214,13 @@ export class NodeDebugger implements Debugger {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const msg: CDPResponse = JSON.parse(String(ev.data));
         if (typeof msg.id === "number") {
+          this.handleCommandResponse(msg.id, msg);
           return;
         }
 
         if (msg.method === "Debugger.paused") {
-          const reason = typeof msg.params?.reason === "string" ? msg.params.reason : "unknown";
+          const reason = this.getPauseReason(msg.params);
+          this.paused = true;
           trace(`Debugger.paused reason=${reason}`);
           void Promise.resolve(this.onPause?.({ reason })).catch((error: unknown) => {
             trace(`pause handler failed: ${error instanceof Error ? error.message : "unknown error"}`);
@@ -172,13 +234,53 @@ export class NodeDebugger implements Debugger {
           trace(`Debugger.scriptParsed language=${lang} url=${url}`);
           if (params && lang === "WebAssembly" && typeof params.scriptId === "string") {
             trace(`wasm module detected scriptId=${params.scriptId}`);
-            this.onModuleLoad?.({
+            void this.handleModuleLoad({
               scriptId: params.scriptId,
               url,
+            }).catch((error: unknown) => {
+              const message = error instanceof Error ? error.message : "unknown error";
+              trace(`module load handler failed: ${message}`);
+              process.stderr.write(`[node-debugger] module load handler failed: ${message}\n`);
             });
           }
         }
       });
     });
+  }
+
+  private handleCommandResponse(id: number, msg: CDPResponse): void {
+    const callbacks = this.pendingCommandCallbacks.get(id);
+    if (!callbacks) {
+      return;
+    }
+
+    this.pendingCommandCallbacks.delete(id);
+    if (msg.error) {
+      callbacks.onError?.(new Error(msg.error.message ?? "CDP command failed"));
+      return;
+    }
+
+    callbacks.onSuccess?.();
+  }
+
+  private getPauseReason(params?: Record<string, unknown>): string {
+    if (Array.isArray(params?.hitBreakpoints) && params.hitBreakpoints.length > 0) {
+      return "breakpoint";
+    }
+
+    if (typeof params?.reason === "string") {
+      return params.reason;
+    }
+
+    return "unknown";
+  }
+
+  private async handleModuleLoad(runtimeInfo: { scriptId: string; url: string }): Promise<void> {
+    if (!this.wasmFilePath) {
+      throw new Error("wasm file path is not available");
+    }
+
+    const module = await DebuggerWasmModule.load(this.wasmFilePath, runtimeInfo);
+    void this.onModuleLoad?.(module);
   }
 }

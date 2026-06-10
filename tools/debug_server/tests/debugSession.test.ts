@@ -93,6 +93,14 @@ void describe("WarpoDebugSession", () => {
   void it("should report the built wasm as a loaded source on launch", { timeout: 5000 }, async () => {
     await dc.initializeRequest();
 
+    const breakpointResponse = await dc.setBreakpointsRequest({
+      source: { path: TEST_MODULE_SOURCE },
+      breakpoints: [{ line: 3 }],
+    });
+    assert.equal(breakpointResponse.body.breakpoints.length, 1);
+    assert.equal(breakpointResponse.body.breakpoints[0].verified, true);
+    assert.equal(breakpointResponse.body.breakpoints[0].line, 3);
+
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
       program: string;
       launchType: string;
@@ -106,14 +114,18 @@ void describe("WarpoDebugSession", () => {
     };
 
     const loadedSourcePromise = dc.waitForEvent("loadedSource");
+    const stoppedPromise = dc.waitForEvent("stopped");
 
     await dc.launchRequest(launchArgs);
 
-    const event = await loadedSourcePromise;
-    const eventBody = event.body as { source?: DebugProtocol.Source; reason?: string } | undefined;
+    const loadedSourceEvent = await loadedSourcePromise;
+    const loadedSourceBody = loadedSourceEvent.body as { source?: DebugProtocol.Source; reason?: string } | undefined;
+    const stoppedEvent = await stoppedPromise;
+    const stoppedBody = stoppedEvent.body as { reason?: string } | undefined;
 
-    assert.equal(eventBody?.reason, "new");
-    assert.equal(eventBody?.source?.path, path.resolve(TEST_MODULE_OUTPUT));
-    assert.equal(eventBody?.source?.name, path.basename(TEST_MODULE_OUTPUT));
+    assert.equal(loadedSourceBody?.reason, "new");
+    assert.equal(loadedSourceBody?.source?.path, path.resolve(TEST_MODULE_OUTPUT));
+    assert.equal(loadedSourceBody?.source?.name, path.basename(TEST_MODULE_OUTPUT));
+    assert.equal(stoppedBody?.reason, "breakpoint");
   });
 });

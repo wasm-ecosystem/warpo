@@ -1,15 +1,17 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+import type { DebuggerWasmModule } from "./debuggerWasmModule.js";
+
+export interface DebuggerCommandCallbacks {
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+}
+
 export interface WasmLaunchConfig {
   wasmFilePath: string;
   entryFunctionName: string;
   args: number[];
-}
-
-export interface WasmModuleInfo {
-  scriptId: string;
-  url: string;
 }
 
 export interface DebugPauseInfo {
@@ -21,8 +23,12 @@ export interface Debugger {
 
   launch(config: WasmLaunchConfig): Promise<void>;
   dispose(): void;
+  isPaused(): boolean;
+  pause(): void;
   resume(): Promise<void>;
+  finishModuleLoad(): void;
+  setWasmBreakpoint(module: DebuggerWasmModule, bytecodeOffset: number, callbacks?: DebuggerCommandCallbacks): void;
 
-  onModuleLoad: ((info: WasmModuleInfo) => void) | undefined;
+  onModuleLoad: ((module: DebuggerWasmModule) => void | Promise<void>) | undefined;
   onPause: ((info: DebugPauseInfo) => void | Promise<void>) | undefined;
 }

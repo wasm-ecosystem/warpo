@@ -19,14 +19,16 @@ if (!fs.existsSync(resolvedPath)) {
   process.exit(1);
 }
 
-inspector.waitForDebugger();
-
 const args = rawArgs.map(Number);
 
 async function main() {
+  inspector.waitForDebugger();
+
   const buffer = fs.readFileSync(resolvedPath);
   const module = await WebAssembly.compile(buffer);
   const instance = await WebAssembly.instantiate(module, {});
+
+  inspector.waitForDebugger();
 
   const fn = instance.exports[entryFunctionName];
   if (typeof fn !== "function") {
