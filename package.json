@@ -4,7 +4,8 @@
   "description": "next generation AssemblyScript compiler with optimizations",
   "type": "module",
   "bin": {
-    "warpo": "dist/warpo.js"
+    "warpo": "dist/warpo.js",
+    "heap-analyzer": "dist/heap_analyzer/cli.js"
   },
   "scripts": {
     "update": "cmake -S . -B build && cmake --build build --parallel --target warpo_binaryen_enums_gen && ./build/bin/warpo_binaryen_enums_gen",
