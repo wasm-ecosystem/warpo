@@ -24,7 +24,9 @@ function readVersion(): string {
 
 function parsePositiveInteger(value: string, optionName: string): number {
   const parsed = Number.parseInt(value, 10);
-  if (!Number.isInteger(parsed) || parsed < 1) {throw new Error(`${optionName} must be a positive integer`);}
+  if (!Number.isInteger(parsed) || parsed < 1) {
+    throw new Error(`${optionName} must be a positive integer`);
+  }
 
   return parsed;
 }
@@ -126,7 +128,9 @@ function analyzeDumpWithCli(dumpFile: string, options: HeapAnalyzerCommandOption
   const snapshot = analyzeDump(dumpBuffer, wasmBytes);
   const sortField = options.sort ?? "retained";
   let constructors = sortConstructors(snapshot.constructors, sortField);
-  if (options.top !== undefined) {constructors = constructors.slice(0, options.top);}
+  if (options.top !== undefined) {
+    constructors = constructors.slice(0, options.top);
+  }
 
   console.log(
     JSON.stringify(
@@ -141,18 +145,16 @@ function analyzeDumpWithCli(dumpFile: string, options: HeapAnalyzerCommandOption
   );
 }
 
-function diffDumpsWithCli(
-  beforeDumpFile: string,
-  afterDumpFile: string,
-  options: HeapAnalyzerCommandOptions
-): void {
+function diffDumpsWithCli(beforeDumpFile: string, afterDumpFile: string, options: HeapAnalyzerCommandOptions): void {
   const beforeDumpBuffer = readArrayBuffer(beforeDumpFile, "baseline dump file");
   const afterDumpBuffer = readArrayBuffer(afterDumpFile, "current dump file");
   const wasmBytes = readUint8Array(options.wasm, "wasm file");
   const comparison = compareDumps(beforeDumpBuffer, afterDumpBuffer, wasmBytes);
   const sortField = options.sort ?? "delta";
   let constructors = sortConstructorComparisons(comparison.constructors, sortField);
-  if (options.top !== undefined) {constructors = constructors.slice(0, options.top);}
+  if (options.top !== undefined) {
+    constructors = constructors.slice(0, options.top);
+  }
 
   console.log(
     JSON.stringify(
