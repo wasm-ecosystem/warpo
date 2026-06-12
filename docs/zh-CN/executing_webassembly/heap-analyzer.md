@@ -114,7 +114,7 @@ const imports = {
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
-const DUMP_MAGIC = new Uint8Array([0x41, 0x53, 0x48, 0x44]); // "ASHD"
+const DUMP_MAGIC = new Uint8Array([0x41, 0x53, 0x48, 0x44]); // "A S H D"
 const HEADER_SIZE = 24;
 const DUMP_VERSION = 2;
 
@@ -138,7 +138,7 @@ function writeDump(exports, outputPath) {
 
 当前 dump 文件格式为：
 
-- magic: `ASHD`
+- magic: 'A' 'S' 'H' 'D'
 - version
 - `__data_end`
 - `__heap_base`
