@@ -1,0 +1,13 @@
+// warpo compile with "--debug --exportRuntime"
+// --debug enable dwarf debug info generation
+// --exportRuntime export the rt globals like: `__data_end`, `__heap_base` and `__stack_pointer`
+./build/warpo/warpo_asc heap-analyzer-example/dwarfFixture.ts -o heap-analyzer-example/dwarfFixture.wasm --shrinkLevel 2 --debug --exportRuntime
+
+// Use wasm-compiler vb_demo to execute the _start function
+../../atc-github/wasm-compiler/build/bin/vb_demo ./heap-analyzer-example/dwarfFixture.wasm
+
+// Analyze single snapshot with constructor view
+node ./dist/heap_analyzer/cli.js analyze --wasm ./heap-analyzer-example/dwarfFixture.wasm ./heap-analyzer-example/example.dump > heap-analyzer-example/analysis.json
+
+// Analyze two snapshot with comparsion view
+node ./dist/heap_analyzer/cli.js diff heap-analyzer-example/example-before.dump heap-analyzer-example/example-after.dump --wasm heap-analyzer-example/dwarfFixture.wasm > heap-analyzer-example/diff.json
