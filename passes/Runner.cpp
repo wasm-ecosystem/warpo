@@ -19,6 +19,7 @@
 #include "Closure.hpp"
 #include "CombineSwitchTargets.hpp"
 #include "ConditionalReturn.hpp"
+#include "ConstructorNewOutlining.hpp"
 #include "ExtractMostFrequentlyUsedGlobals.hpp"
 #include "GC/FastLower.hpp"
 #include "GC/OptLower.hpp"
@@ -82,6 +83,7 @@ static void lowering(AsModule const &m, Config const &config) {
     support::PerfRAII const r{support::PerfItemKind::Lowering};
     std::unique_ptr<wasm::PassRunner> const passRunner = createPassRunner(m.get(), config);
     passRunner->add(std::unique_ptr<wasm::Pass>{createInlinedDecoratorLower(m.forceInlineHints_)});
+    passRunner->add(std::unique_ptr<wasm::Pass>{createConstructorNewOutliningPass()});
     if (passRunner->options.shrinkLevel > 0 || passRunner->options.optimizeLevel > 0) {
       passRunner->add(std::make_unique<closure::OptLower>(&m.variableInfo_));
       passRunner->add(std::unique_ptr<wasm::Pass>{new gc::OptLower(&m.variableInfo_)});

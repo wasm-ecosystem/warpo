@@ -3,10 +3,11 @@
  (type $1 (func))
  (type $2 (func (param i32 i32)))
  (type $3 (func (param i32 i32) (result i32)))
- (type $4 (func (param i32) (result i32)))
- (type $5 (func (param i32 i32 i32 i32)))
- (type $6 (func (param i32 i32 i32)))
- (type $7 (func (param i32 i32 i64)))
+ (type $4 (func (param i32 i32 i32 i32)))
+ (type $5 (func (param i32 i32 i32)))
+ (type $6 (func (param i32 i32 i64)))
+ (type $7 (func (param i32) (result i32)))
+ (type $8 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33328))
  (global $~lib/rt/tcms/total (mut i32) (i32.const 0))
@@ -1323,25 +1324,6 @@
   memory.fill
   local.get $1
  )
- (func $~lib/array/Array<i32>#constructor (param $0 i32) (result i32)
-  (local $1 i32)
-  local.get $0
-  i32.const 400
-  i32.const 1
-  call $~lib/rt/tcms/__new
-  local.tee $1
-  i32.store
-  local.get $0
-  local.get $1
-  i32.store offset=4
-  local.get $0
-  i32.const 400
-  i32.store offset=8
-  local.get $0
-  i32.const 100
-  i32.store offset=12
-  local.get $0
- )
  (func $~lib/rt/tcms/__pin (param $0 i32) (result i32)
   (local $1 i32)
   local.get $0
@@ -1458,7 +1440,6 @@
  (func $~start
   (local $0 i32)
   (local $1 i32)
-  (local $2 i32)
   global.get $~lib/memory/__stack_pointer
   i32.const 4
   i32.sub
@@ -1497,24 +1478,24 @@
   i32.const 304
   global.set $~lib/rt/tcms/fromSpace
   loop $for-loop|0
-   local.get $2
+   local.get $1
    i32.const 10
    i32.lt_s
    if
     i32.const 44
     i32.const 4
     call $~lib/rt/tcms/__new
-    local.set $1
+    local.set $0
     global.get $~lib/memory/__stack_pointer
-    local.get $1
+    local.get $0
     i32.store align=1
     global.get $~lib/memory/__stack_pointer
-    i32.const 8
+    i32.const 4
     i32.sub
     global.set $~lib/memory/__stack_pointer
     global.get $~lib/memory/__stack_pointer
-    i64.const 0
-    i64.store align=1
+    i32.const 0
+    i32.store align=1
     global.get $~lib/memory/__stack_pointer
     i32.const 560
     i32.lt_s
@@ -1522,137 +1503,49 @@
      unreachable
     end
     global.get $~lib/memory/__stack_pointer
-    local.get $1
+    local.get $0
     i32.store align=1
-    i32.const 16
-    i32.const 5
-    call $~lib/rt/tcms/__new
-    local.set $0
-    global.get $~lib/memory/__stack_pointer
     local.get $0
-    i32.store offset=4 align=1
-    local.get $1
-    local.get $0
-    call $~lib/array/Array<i32>#constructor
+    call $~lib/array/Array<i32>#constructor@new
     i32.store
-    i32.const 16
-    i32.const 5
-    call $~lib/rt/tcms/__new
-    local.set $0
-    global.get $~lib/memory/__stack_pointer
     local.get $0
-    i32.store offset=4 align=1
-    local.get $1
-    local.get $0
-    call $~lib/array/Array<i32>#constructor
+    call $~lib/array/Array<i32>#constructor@new
     i32.store offset=4
-    i32.const 16
-    i32.const 5
-    call $~lib/rt/tcms/__new
-    local.set $0
-    global.get $~lib/memory/__stack_pointer
     local.get $0
-    i32.store offset=4 align=1
-    local.get $1
-    local.get $0
-    call $~lib/array/Array<i32>#constructor
+    call $~lib/array/Array<i32>#constructor@new
     i32.store offset=8
-    i32.const 16
-    i32.const 5
-    call $~lib/rt/tcms/__new
-    local.set $0
-    global.get $~lib/memory/__stack_pointer
     local.get $0
-    i32.store offset=4 align=1
-    local.get $1
-    local.get $0
-    call $~lib/array/Array<i32>#constructor
+    call $~lib/array/Array<i32>#constructor@new
     i32.store offset=12
-    i32.const 16
-    i32.const 5
-    call $~lib/rt/tcms/__new
-    local.set $0
-    global.get $~lib/memory/__stack_pointer
     local.get $0
-    i32.store offset=4 align=1
-    local.get $1
-    local.get $0
-    call $~lib/array/Array<i32>#constructor
+    call $~lib/array/Array<i32>#constructor@new
     i32.store offset=16
-    i32.const 16
-    i32.const 5
-    call $~lib/rt/tcms/__new
-    local.set $0
-    global.get $~lib/memory/__stack_pointer
     local.get $0
-    i32.store offset=4 align=1
-    local.get $1
-    local.get $0
-    call $~lib/array/Array<i32>#constructor
+    call $~lib/array/Array<i32>#constructor@new
     i32.store offset=20
-    i32.const 16
-    i32.const 5
-    call $~lib/rt/tcms/__new
-    local.set $0
-    global.get $~lib/memory/__stack_pointer
     local.get $0
-    i32.store offset=4 align=1
-    local.get $1
-    local.get $0
-    call $~lib/array/Array<i32>#constructor
+    call $~lib/array/Array<i32>#constructor@new
     i32.store offset=24
-    i32.const 16
-    i32.const 5
-    call $~lib/rt/tcms/__new
-    local.set $0
-    global.get $~lib/memory/__stack_pointer
     local.get $0
-    i32.store offset=4 align=1
-    local.get $1
-    local.get $0
-    call $~lib/array/Array<i32>#constructor
+    call $~lib/array/Array<i32>#constructor@new
     i32.store offset=28
-    i32.const 16
-    i32.const 5
-    call $~lib/rt/tcms/__new
-    local.set $0
-    global.get $~lib/memory/__stack_pointer
     local.get $0
-    i32.store offset=4 align=1
-    local.get $1
-    local.get $0
-    call $~lib/array/Array<i32>#constructor
+    call $~lib/array/Array<i32>#constructor@new
     i32.store offset=32
-    i32.const 16
-    i32.const 5
-    call $~lib/rt/tcms/__new
-    local.set $0
-    global.get $~lib/memory/__stack_pointer
     local.get $0
-    i32.store offset=4 align=1
-    local.get $1
-    local.get $0
-    call $~lib/array/Array<i32>#constructor
+    call $~lib/array/Array<i32>#constructor@new
     i32.store offset=36
-    i32.const 16
-    i32.const 5
-    call $~lib/rt/tcms/__new
-    local.set $0
-    global.get $~lib/memory/__stack_pointer
     local.get $0
-    i32.store offset=4 align=1
-    local.get $1
-    local.get $0
-    call $~lib/array/Array<i32>#constructor
+    call $~lib/array/Array<i32>#constructor@new
     i32.store offset=40
     global.get $~lib/memory/__stack_pointer
-    i32.const 8
+    i32.const 4
     i32.add
     global.set $~lib/memory/__stack_pointer
-    local.get $2
+    local.get $1
     i32.const 1
     i32.add
-    local.set $2
+    local.set $1
     br $for-loop|0
    end
   end
@@ -1660,5 +1553,49 @@
   i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
+ )
+ (func $~lib/array/Array<i32>#constructor@new (result i32)
+  (local $0 i32)
+  (local $1 i32)
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 560
+  i32.lt_s
+  if
+   unreachable
+  end
+  i32.const 16
+  i32.const 5
+  call $~lib/rt/tcms/__new
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
+  local.get $0
+  i32.const 400
+  i32.const 1
+  call $~lib/rt/tcms/__new
+  local.tee $1
+  i32.store
+  local.get $0
+  local.get $1
+  i32.store offset=4
+  local.get $0
+  i32.const 400
+  i32.store offset=8
+  local.get $0
+  i32.const 100
+  i32.store offset=12
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
  )
 )

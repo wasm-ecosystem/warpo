@@ -135,7 +135,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$90
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$92
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -159,7 +159,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$90
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$92
      end
      local.get $0
      i32.load offset=8
@@ -1735,7 +1735,7 @@
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store offset=4 align=1
-  loop $while-continue|17
+  loop $while-continue|10
    local.get $0
    if
     local.get $1
@@ -1753,7 +1753,7 @@
      call $~lib/rt/itcms/__new
     end
     local.set $0
-    br $while-continue|17
+    br $while-continue|10
    end
   end
   local.get $1
@@ -1853,6 +1853,21 @@
   global.set $while/ran
   i32.const 0
   local.set $0
+  loop $while-continue|07
+   local.get $0
+   i32.const 1
+   i32.add
+   local.tee $0
+   i32.const 0
+   i32.le_s
+   br_if $while-continue|07
+  end
+  i32.const 1
+  global.set $while/ran
+  i32.const 0
+  global.set $while/ran
+  i32.const 0
+  local.set $0
   loop $while-continue|08
    local.get $0
    i32.const 1
@@ -1861,21 +1876,6 @@
    i32.const 0
    i32.le_s
    br_if $while-continue|08
-  end
-  i32.const 1
-  global.set $while/ran
-  i32.const 0
-  global.set $while/ran
-  i32.const 0
-  local.set $0
-  loop $while-continue|09
-   local.get $0
-   i32.const 1
-   i32.add
-   local.tee $0
-   i32.const 0
-   i32.le_s
-   br_if $while-continue|09
   end
   i32.const 1
   global.set $while/ran
@@ -1909,23 +1909,23 @@
   i32.const 0
   i32.gt_s
   if
-   loop $while-continue|010
+   loop $while-continue|09
     global.get $~lib/rt/itcms/state
     if
      call $~lib/rt/itcms/step
      drop
-     br $while-continue|010
+     br $while-continue|09
     end
    end
   end
   call $~lib/rt/itcms/step
   drop
-  loop $while-continue|111
+  loop $while-continue|110
    global.get $~lib/rt/itcms/state
    if
     call $~lib/rt/itcms/step
     drop
-    br $while-continue|111
+    br $while-continue|110
    end
   end
   global.get $~lib/rt/itcms/total

@@ -183,7 +183,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$115
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$113
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -207,7 +207,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$115
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$113
      end
      local.get $0
      i32.load offset=8
@@ -1026,7 +1026,7 @@
     local.set $2
     loop $do-loop|0
      local.get $2
-     block $__inlined_func$~lib/rt/itcms/step$120 (result i32)
+     block $__inlined_func$~lib/rt/itcms/step$118 (result i32)
       block $break|0
        block $case2|0
         block $case1|0
@@ -1042,7 +1042,7 @@
          global.get $~lib/rt/itcms/toSpace
          global.set $~lib/rt/itcms/iter
          global.get $~lib/rt/itcms/visitCount
-         br $__inlined_func$~lib/rt/itcms/step$120
+         br $__inlined_func$~lib/rt/itcms/step$118
         end
         global.get $~lib/rt/itcms/white
         i32.eqz
@@ -1081,7 +1081,7 @@
            i32.add
            call $~lib/rt/__visit_members
            global.get $~lib/rt/itcms/visitCount
-           br $__inlined_func$~lib/rt/itcms/step$120
+           br $__inlined_func$~lib/rt/itcms/step$118
           end
           local.get $2
           i32.load offset=4
@@ -1173,7 +1173,7 @@
          global.set $~lib/rt/itcms/state
         end
         global.get $~lib/rt/itcms/visitCount
-        br $__inlined_func$~lib/rt/itcms/step$120
+        br $__inlined_func$~lib/rt/itcms/step$118
        end
        global.get $~lib/rt/itcms/iter
        local.tee $3
@@ -1272,7 +1272,7 @@
          end
         end
         i32.const 10
-        br $__inlined_func$~lib/rt/itcms/step$120
+        br $__inlined_func$~lib/rt/itcms/step$118
        end
        global.get $~lib/rt/itcms/toSpace
        global.get $~lib/rt/itcms/toSpace
@@ -1799,7 +1799,7 @@
   i32.const 11
   call $~lib/rt/itcms/__new
   global.set $class-implements/h
-  block $__inlined_func$class-implements/I#foo@override$94 (result i32)
+  block $__inlined_func$class-implements/I#foo@override$91 (result i32)
    block $case3
     block $case2
      block $case1
@@ -1825,13 +1825,13 @@
        unreachable
       end
       i32.const 4
-      br $__inlined_func$class-implements/I#foo@override$94
+      br $__inlined_func$class-implements/I#foo@override$91
      end
      i32.const 1
-     br $__inlined_func$class-implements/I#foo@override$94
+     br $__inlined_func$class-implements/I#foo@override$91
     end
     i32.const 2
-    br $__inlined_func$class-implements/I#foo@override$94
+    br $__inlined_func$class-implements/I#foo@override$91
    end
    i32.const 3
   end
@@ -1845,7 +1845,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  block $__inlined_func$class-implements/J#foo@override$95 (result i32)
+  block $__inlined_func$class-implements/J#foo@override$92 (result i32)
    block $case20
     block $case11
      i32.const 0
@@ -1873,10 +1873,10 @@
       unreachable
      end
      i32.const 4
-     br $__inlined_func$class-implements/J#foo@override$95
+     br $__inlined_func$class-implements/J#foo@override$92
     end
     i32.const 3
-    br $__inlined_func$class-implements/J#foo@override$95
+    br $__inlined_func$class-implements/J#foo@override$92
    end
    i32.const 1
   end

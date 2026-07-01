@@ -6,15 +6,14 @@
  (type $4 (func (param i32)))
  (type $5 (func (param i32 i32 i32) (result i32)))
  (type $6 (func))
- (type $7 (func (param i32 i32 i32) (result i64)))
- (type $8 (func (param i32 i32 i32 i32 i32 i32 i32) (result i64)))
- (type $9 (func (param i32 i32 i32 i32)))
- (type $10 (func (param i64) (result i32)))
- (type $11 (func (param i32 i64) (result i32)))
- (type $12 (func (param i32 i32 i64)))
- (type $13 (func (param i32 i64)))
- (type $14 (func (param i32 i32 i32 i64) (result i64)))
- (type $15 (func (param i32 i32 i32 i32) (result i32)))
+ (type $7 (func (param i64) (result i32)))
+ (type $8 (func (param i32 i32 i32) (result i64)))
+ (type $9 (func (param i32 i32 i32 i32 i32 i32 i32) (result i64)))
+ (type $10 (func (param i32 i32 i32 i32)))
+ (type $11 (func (param i32 i32 i64)))
+ (type $12 (func (param i32 i64)))
+ (type $13 (func (param i32 i32 i32 i64) (result i64)))
+ (type $14 (func (param i32 i32 i32 i32) (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 40220))
  (global $~lib/date/_day (mut i32) (i32.const 0))
@@ -377,37 +376,6 @@
   local.get $2
   global.set $~lib/date/_month
   local.get $1
- )
- (func $~lib/date/Date#constructor (param $0 i32) (param $1 i64) (result i32)
-  local.get $0
-  local.get $1
-  i64.store offset=16
-  local.get $1
-  i64.const -8640000000000000
-  i64.lt_s
-  local.get $1
-  i64.const 8640000000000000
-  i64.gt_s
-  i32.or
-  if
-   i32.const 32
-   i32.const 80
-   i32.const 127
-   i32.const 35
-   call $~lib/builtins/abort
-   unreachable
-  end
-  local.get $0
-  local.get $1
-  call $~lib/date/dateFromEpoch
-  i32.store
-  local.get $0
-  global.get $~lib/date/_month
-  i32.store offset=4
-  local.get $0
-  global.get $~lib/date/_day
-  i32.store offset=8
-  local.get $0
  )
  (func $~lib/rt/itcms/visitRoots
   (local $0 i32)
@@ -3966,7 +3934,7 @@
    i32.const 2147483647
    local.set $2
   end
-  block $__inlined_func$~lib/string/String#split$273 (result i32)
+  block $__inlined_func$~lib/string/String#split$274 (result i32)
    i32.const 12
    call $~lib/rt/__decrease_sp
    block $folding-inner1
@@ -4007,7 +3975,7 @@
       i32.add
       global.set $~lib/memory/__stack_pointer
       local.get $1
-      br $__inlined_func$~lib/string/String#split$273
+      br $__inlined_func$~lib/string/String#split$274
      end
      local.get $0
      i32.const 20
@@ -4040,7 +4008,7 @@
        i32.add
        global.set $~lib/memory/__stack_pointer
        local.get $0
-       br $__inlined_func$~lib/string/String#split$273
+       br $__inlined_func$~lib/string/String#split$274
       end
      else
       local.get $3
@@ -4102,7 +4070,7 @@
       i32.add
       global.set $~lib/memory/__stack_pointer
       local.get $2
-      br $__inlined_func$~lib/string/String#split$273
+      br $__inlined_func$~lib/string/String#split$274
      end
      i32.const 0
      call $~lib/rt/__newArray
@@ -4217,7 +4185,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/string/String#split$273
+    br $__inlined_func$~lib/string/String#split$274
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 12
@@ -4697,9 +4665,6 @@
    end
    local.set $0
   end
-  i32.const 24
-  i32.const 4
-  call $~lib/rt/itcms/__new
   local.get $2
   local.get $5
   local.get $0
@@ -4711,7 +4676,7 @@
   local.get $8
   i64.extend_i32_s
   i64.sub
-  call $~lib/date/Date#constructor
+  call $~lib/date/Date#constructor@new
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   (local $1 i32)
@@ -5030,11 +4995,8 @@
      i32.store
      i32.const 464
      global.set $~lib/rt/itcms/fromSpace
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1541847600001
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i64.load offset=16
      i64.const 1541847600001
@@ -5062,11 +5024,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 5918283958183706
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.load
      i32.const 189512
@@ -5151,11 +5110,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 123814991274
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.load
      i32.const 1973
@@ -5240,11 +5196,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 399464523963984
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      call $~lib/date/Date#getUTCMilliseconds
      i32.const 984
@@ -5367,11 +5320,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 372027318331986
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      call $~lib/date/Date#getUTCSeconds
      i32.const 31
@@ -5444,11 +5394,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 372027318331986
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      call $~lib/date/Date#getUTCMinutes
      i32.const 45
@@ -5521,11 +5468,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 372027318331986
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      call $~lib/date/Date#getUTCHours
      i32.const 17
@@ -5598,11 +5542,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 123814991274
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.load
      i32.const 1973
@@ -5777,11 +5718,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1362106799999
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.const 20
      call $~lib/date/Date#setUTCDate
@@ -5872,11 +5810,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 123814991274
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.const -2208
      call $~lib/date/Date#setUTCDate
@@ -5892,11 +5827,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 123814991274
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.const 2208
      call $~lib/date/Date#setUTCDate
@@ -5912,11 +5844,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1467763200000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.load
      local.get $0
@@ -5934,11 +5863,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1467763199999
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.load
      local.get $0
@@ -5956,11 +5882,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1467849599999
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.load
      local.get $0
@@ -5978,11 +5901,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1467849600000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.load
      local.get $0
@@ -6000,11 +5920,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1468022400000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.load
      local.get $0
@@ -6022,11 +5939,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1468022399999
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.load
      local.get $0
@@ -6044,11 +5958,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1468108799999
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.load
      local.get $0
@@ -6066,11 +5977,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1468108800000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.load
      local.get $0
@@ -6086,11 +5994,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 7899943856218720
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.load offset=4
      i32.const 4
@@ -6241,11 +6146,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 7941202527925698
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.tee $0
      i32.load
      i32.const 253616
@@ -6305,11 +6207,8 @@
      end
      i32.const 8
      call $~lib/rt/__decrease_sp
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const -62167219200000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6327,11 +6226,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const -62167219200001
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6349,11 +6245,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const -62127219200000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6371,11 +6264,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1231231231020
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6393,11 +6283,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1231231231456
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6415,11 +6302,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 322331231231020
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6437,11 +6321,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 253402300799999
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6459,11 +6340,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 253402300800000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6481,11 +6359,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const -62847038769226
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6503,11 +6378,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const -61536067200000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6525,11 +6397,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1580601600000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6547,11 +6416,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const -62183116800000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6569,11 +6435,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const -61536067200000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6591,11 +6454,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 253402300799999
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6613,11 +6473,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const -61536067200000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6635,11 +6492,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 1580741613467
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6657,11 +6511,8 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const -62183116800000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -6952,20 +6803,14 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const -8640000000000000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
      i32.store offset=4 align=1
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 8640000000000000
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $2
      global.get $~lib/memory/__stack_pointer
      local.get $2
@@ -7092,20 +6937,14 @@
       call $~lib/builtins/abort
       unreachable
      end
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const 8639999999999999
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $2
      global.get $~lib/memory/__stack_pointer
      local.get $2
      i32.store offset=4 align=1
-     i32.const 24
-     i32.const 4
-     call $~lib/rt/itcms/__new
      i64.const -8639999999999999
-     call $~lib/date/Date#constructor
+     call $~lib/date/Date#constructor@new
      local.set $0
      global.get $~lib/memory/__stack_pointer
      local.get $0
@@ -7230,6 +7069,41 @@
     unreachable
    end
   end
+ )
+ (func $~lib/date/Date#constructor@new (param $0 i64) (result i32)
+  (local $1 i32)
+  i32.const 24
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.tee $1
+  local.get $0
+  i64.store offset=16
+  local.get $0
+  i64.const -8640000000000000
+  i64.lt_s
+  local.get $0
+  i64.const 8640000000000000
+  i64.gt_s
+  i32.or
+  if
+   i32.const 32
+   i32.const 80
+   i32.const 127
+   i32.const 35
+   call $~lib/builtins/abort
+   unreachable
+  end
+  local.get $1
+  local.get $0
+  call $~lib/date/dateFromEpoch
+  i32.store
+  local.get $1
+  global.get $~lib/date/_month
+  i32.store offset=4
+  local.get $1
+  global.get $~lib/date/_day
+  i32.store offset=8
+  local.get $1
  )
  (func $~lib/rt/__decrease_sp (param $0 i32)
   global.get $~lib/memory/__stack_pointer

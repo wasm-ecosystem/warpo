@@ -1,10 +1,10 @@
 (module
  (type $0 (func (param i32 i32)))
  (type $1 (func (param i32 i32) (result i32)))
- (type $2 (func (param i32 i32 i32) (result i32)))
- (type $3 (func (param i32 i32 i32)))
- (type $4 (func (param i32)))
- (type $5 (func (param i32) (result i32)))
+ (type $2 (func (param i32) (result i32)))
+ (type $3 (func (param i32 i32 i32) (result i32)))
+ (type $4 (func (param i32 i32 i32)))
+ (type $5 (func (param i32)))
  (type $6 (func (param i32 i64)))
  (type $7 (func))
  (type $8 (func (param i32 i32 i32 i32)))
@@ -141,7 +141,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$573
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$574
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -165,7 +165,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$573
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$574
    end
    local.get $0
    i32.load offset=8
@@ -1528,22 +1528,6 @@
   memory.fill
   local.get $1
  )
- (func $~lib/arraybuffer/ArrayBuffer#constructor (param $0 i32) (result i32)
-  local.get $0
-  i32.const 1073741820
-  i32.gt_u
-  if
-   i32.const 32
-   i32.const 80
-   i32.const 50
-   i32.const 43
-   call $~lib/builtins/abort
-   unreachable
-  end
-  local.get $0
-  i32.const 1
-  call $~lib/rt/itcms/__new
- )
  (func $~lib/rt/itcms/__link (param $0 i32) (param $1 i32)
   local.get $1
   if
@@ -1699,34 +1683,20 @@
   (local $6 i32)
   (local $7 i32)
   (local $8 i32)
-  i32.const 16
+  i32.const 4
   call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=8 align=1
   local.get $1
   i32.const 1
   i32.add
-  local.tee $2
+  local.tee $3
   i32.const 2
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $6
-  global.get $~lib/memory/__stack_pointer
-  local.get $6
-  i32.store offset=12 align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   local.set $5
   global.get $~lib/memory/__stack_pointer
   local.get $5
-  i32.store offset=8 align=1
-  local.get $2
+  i32.store align=1
+  local.get $3
   i32.const 3
   i32.shl
   i32.const 3
@@ -1734,8 +1704,8 @@
   local.tee $7
   i32.const 3
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $5
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  local.set $6
   local.get $0
   i32.load offset=8
   local.tee $4
@@ -1745,8 +1715,8 @@
   i32.shl
   i32.add
   local.set $8
-  local.get $5
-  local.set $2
+  local.get $6
+  local.set $3
   loop $while-continue|0
    local.get $4
    local.get $8
@@ -1758,15 +1728,15 @@
     i32.and
     i32.eqz
     if
-     local.get $2
+     local.get $3
      local.get $4
      i32.load8_s
-     local.tee $3
+     local.tee $2
      i32.store8
-     local.get $2
-     local.get $6
-     local.get $1
      local.get $3
+     local.get $5
+     local.get $1
+     local.get $2
      i32.extend8_s
      i32.const -1028477379
      i32.mul
@@ -1776,39 +1746,39 @@
      i32.rotl
      i32.const 668265263
      i32.mul
-     local.tee $3
+     local.tee $2
      i32.const 15
      i32.shr_u
-     local.get $3
+     local.get $2
      i32.xor
      i32.const -2048144777
      i32.mul
-     local.tee $3
+     local.tee $2
      i32.const 13
      i32.shr_u
-     local.get $3
+     local.get $2
      i32.xor
      i32.const -1028477379
      i32.mul
-     local.tee $3
+     local.tee $2
      i32.const 16
      i32.shr_u
-     local.get $3
+     local.get $2
      i32.xor
      i32.and
      i32.const 2
      i32.shl
      i32.add
-     local.tee $3
+     local.tee $2
      i32.load
      i32.store offset=4
+     local.get $2
      local.get $3
-     local.get $2
      i32.store
-     local.get $2
+     local.get $3
      i32.const 8
      i32.add
-     local.set $2
+     local.set $3
     end
     local.get $4
     i32.const 8
@@ -1818,13 +1788,13 @@
    end
   end
   local.get $0
-  local.get $6
+  local.get $5
   call $~lib/set/Set<i8>#set:buckets
   local.get $0
   local.get $1
   i32.store offset=4
   local.get $0
-  local.get $5
+  local.get $6
   call $~lib/set/Set<i8>#set:entries
   local.get $0
   local.get $7
@@ -1834,7 +1804,7 @@
   i32.load offset=20
   i32.store offset=16
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
  )
@@ -2017,7 +1987,7 @@
    local.get $0
    i32.load
    local.tee $2
-   block $__inlined_func$~lib/rt/itcms/__renew$578 (result i32)
+   block $__inlined_func$~lib/rt/itcms/__renew$579 (result i32)
     local.get $3
     if
      i32.const 1073741820
@@ -2053,7 +2023,7 @@
      local.get $1
      i32.store offset=16
      local.get $2
-     br $__inlined_func$~lib/rt/itcms/__renew$578
+     br $__inlined_func$~lib/rt/itcms/__renew$579
     end
     local.get $1
     local.get $3
@@ -2234,33 +2204,19 @@
   (local $6 i32)
   (local $7 i32)
   (local $8 i32)
-  i32.const 16
+  i32.const 4
   call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=8 align=1
   local.get $1
   i32.const 1
   i32.add
   local.tee $2
   i32.const 2
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $5
-  global.get $~lib/memory/__stack_pointer
-  local.get $5
-  i32.store offset=12 align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   local.set $4
   global.get $~lib/memory/__stack_pointer
   local.get $4
-  i32.store offset=8 align=1
+  i32.store align=1
   local.get $2
   i32.const 3
   i32.shl
@@ -2269,8 +2225,8 @@
   local.tee $7
   i32.const 3
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $4
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  local.set $6
   local.get $0
   i32.load offset=8
   local.tee $3
@@ -2280,7 +2236,7 @@
   i32.shl
   i32.add
   local.set $8
-  local.get $4
+  local.get $6
   local.set $2
   loop $while-continue|0
    local.get $3
@@ -2296,21 +2252,21 @@
      local.get $2
      local.get $3
      i32.load8_u
-     local.tee $6
+     local.tee $5
      i32.store8
      local.get $2
+     local.get $4
      local.get $5
-     local.get $6
      call $~lib/util/hash/HASH<u8>
      local.get $1
      i32.and
      i32.const 2
      i32.shl
      i32.add
-     local.tee $6
+     local.tee $5
      i32.load
      i32.store offset=4
-     local.get $6
+     local.get $5
      local.get $2
      i32.store
      local.get $2
@@ -2326,13 +2282,13 @@
    end
   end
   local.get $0
-  local.get $5
+  local.get $4
   call $~lib/set/Set<i8>#set:buckets
   local.get $0
   local.get $1
   i32.store offset=4
   local.get $0
-  local.get $4
+  local.get $6
   call $~lib/set/Set<i8>#set:entries
   local.get $0
   local.get $7
@@ -2342,7 +2298,7 @@
   i32.load offset=20
   i32.store offset=16
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
  )
@@ -2570,34 +2526,20 @@
   (local $6 i32)
   (local $7 i32)
   (local $8 i32)
-  i32.const 16
+  i32.const 4
   call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=8 align=1
   local.get $1
   i32.const 1
   i32.add
-  local.tee $2
+  local.tee $3
   i32.const 2
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $6
-  global.get $~lib/memory/__stack_pointer
-  local.get $6
-  i32.store offset=12 align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   local.set $5
   global.get $~lib/memory/__stack_pointer
   local.get $5
-  i32.store offset=8 align=1
-  local.get $2
+  i32.store align=1
+  local.get $3
   i32.const 3
   i32.shl
   i32.const 3
@@ -2605,8 +2547,8 @@
   local.tee $7
   i32.const 3
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $5
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  local.set $6
   local.get $0
   i32.load offset=8
   local.tee $4
@@ -2616,8 +2558,8 @@
   i32.shl
   i32.add
   local.set $8
-  local.get $5
-  local.set $2
+  local.get $6
+  local.set $3
   loop $while-continue|0
    local.get $4
    local.get $8
@@ -2629,15 +2571,15 @@
     i32.and
     i32.eqz
     if
-     local.get $2
+     local.get $3
      local.get $4
      i32.load16_s
-     local.tee $3
+     local.tee $2
      i32.store16
-     local.get $2
-     local.get $6
-     local.get $1
      local.get $3
+     local.get $5
+     local.get $1
+     local.get $2
      i32.extend16_s
      i32.const -1028477379
      i32.mul
@@ -2647,39 +2589,39 @@
      i32.rotl
      i32.const 668265263
      i32.mul
-     local.tee $3
+     local.tee $2
      i32.const 15
      i32.shr_u
-     local.get $3
+     local.get $2
      i32.xor
      i32.const -2048144777
      i32.mul
-     local.tee $3
+     local.tee $2
      i32.const 13
      i32.shr_u
-     local.get $3
+     local.get $2
      i32.xor
      i32.const -1028477379
      i32.mul
-     local.tee $3
+     local.tee $2
      i32.const 16
      i32.shr_u
-     local.get $3
+     local.get $2
      i32.xor
      i32.and
      i32.const 2
      i32.shl
      i32.add
-     local.tee $3
+     local.tee $2
      i32.load
      i32.store offset=4
+     local.get $2
      local.get $3
-     local.get $2
      i32.store
-     local.get $2
+     local.get $3
      i32.const 8
      i32.add
-     local.set $2
+     local.set $3
     end
     local.get $4
     i32.const 8
@@ -2689,13 +2631,13 @@
    end
   end
   local.get $0
-  local.get $6
+  local.get $5
   call $~lib/set/Set<i8>#set:buckets
   local.get $0
   local.get $1
   i32.store offset=4
   local.get $0
-  local.get $5
+  local.get $6
   call $~lib/set/Set<i8>#set:entries
   local.get $0
   local.get $7
@@ -2705,7 +2647,7 @@
   i32.load offset=20
   i32.store offset=16
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
  )
@@ -2962,33 +2904,19 @@
   (local $6 i32)
   (local $7 i32)
   (local $8 i32)
-  i32.const 16
+  i32.const 4
   call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=8 align=1
   local.get $1
   i32.const 1
   i32.add
   local.tee $2
   i32.const 2
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $5
-  global.get $~lib/memory/__stack_pointer
-  local.get $5
-  i32.store offset=12 align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   local.set $4
   global.get $~lib/memory/__stack_pointer
   local.get $4
-  i32.store offset=8 align=1
+  i32.store align=1
   local.get $2
   i32.const 3
   i32.shl
@@ -2997,8 +2925,8 @@
   local.tee $7
   i32.const 3
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $4
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  local.set $6
   local.get $0
   i32.load offset=8
   local.tee $3
@@ -3008,7 +2936,7 @@
   i32.shl
   i32.add
   local.set $8
-  local.get $4
+  local.get $6
   local.set $2
   loop $while-continue|0
    local.get $3
@@ -3024,21 +2952,21 @@
      local.get $2
      local.get $3
      i32.load16_u
-     local.tee $6
+     local.tee $5
      i32.store16
      local.get $2
+     local.get $4
      local.get $5
-     local.get $6
      call $~lib/util/hash/HASH<u16>
      local.get $1
      i32.and
      i32.const 2
      i32.shl
      i32.add
-     local.tee $6
+     local.tee $5
      i32.load
      i32.store offset=4
-     local.get $6
+     local.get $5
      local.get $2
      i32.store
      local.get $2
@@ -3054,13 +2982,13 @@
    end
   end
   local.get $0
-  local.get $5
+  local.get $4
   call $~lib/set/Set<i8>#set:buckets
   local.get $0
   local.get $1
   i32.store offset=4
   local.get $0
-  local.get $4
+  local.get $6
   call $~lib/set/Set<i8>#set:entries
   local.get $0
   local.get $7
@@ -3070,7 +2998,7 @@
   i32.load offset=20
   i32.store offset=16
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
  )
@@ -3299,33 +3227,19 @@
   (local $6 i32)
   (local $7 i32)
   (local $8 i32)
-  i32.const 16
+  i32.const 4
   call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=8 align=1
   local.get $1
   i32.const 1
   i32.add
   local.tee $2
   i32.const 2
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $5
-  global.get $~lib/memory/__stack_pointer
-  local.get $5
-  i32.store offset=12 align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   local.set $4
   global.get $~lib/memory/__stack_pointer
   local.get $4
-  i32.store offset=8 align=1
+  i32.store align=1
   local.get $2
   i32.const 3
   i32.shl
@@ -3334,8 +3248,8 @@
   local.tee $7
   i32.const 3
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $4
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  local.set $6
   local.get $0
   i32.load offset=8
   local.tee $3
@@ -3345,7 +3259,7 @@
   i32.shl
   i32.add
   local.set $8
-  local.get $4
+  local.get $6
   local.set $2
   loop $while-continue|0
    local.get $3
@@ -3361,21 +3275,21 @@
      local.get $2
      local.get $3
      i32.load
-     local.tee $6
+     local.tee $5
      i32.store
      local.get $2
+     local.get $4
      local.get $5
-     local.get $6
      call $~lib/util/hash/HASH<i32>
      local.get $1
      i32.and
      i32.const 2
      i32.shl
      i32.add
-     local.tee $6
+     local.tee $5
      i32.load
      i32.store offset=4
-     local.get $6
+     local.get $5
      local.get $2
      i32.store
      local.get $2
@@ -3391,13 +3305,13 @@
    end
   end
   local.get $0
-  local.get $5
+  local.get $4
   call $~lib/set/Set<i8>#set:buckets
   local.get $0
   local.get $1
   i32.store offset=4
   local.get $0
-  local.get $4
+  local.get $6
   call $~lib/set/Set<i8>#set:entries
   local.get $0
   local.get $7
@@ -3407,7 +3321,7 @@
   i32.load offset=20
   i32.store offset=16
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
  )
@@ -3645,33 +3559,19 @@
   (local $6 i32)
   (local $7 i32)
   (local $8 i32)
-  i32.const 16
+  i32.const 4
   call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=8 align=1
   local.get $1
   i32.const 1
   i32.add
   local.tee $2
   i32.const 2
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $5
-  global.get $~lib/memory/__stack_pointer
-  local.get $5
-  i32.store offset=12 align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   local.set $4
   global.get $~lib/memory/__stack_pointer
   local.get $4
-  i32.store offset=8 align=1
+  i32.store align=1
   local.get $2
   i32.const 3
   i32.shl
@@ -3680,8 +3580,8 @@
   local.tee $7
   i32.const 3
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $4
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  local.set $6
   local.get $0
   i32.load offset=8
   local.tee $3
@@ -3691,7 +3591,7 @@
   i32.shl
   i32.add
   local.set $8
-  local.get $4
+  local.get $6
   local.set $2
   loop $while-continue|0
    local.get $3
@@ -3707,21 +3607,21 @@
      local.get $2
      local.get $3
      i32.load
-     local.tee $6
+     local.tee $5
      i32.store
      local.get $2
+     local.get $4
      local.get $5
-     local.get $6
      call $~lib/util/hash/HASH<i32>
      local.get $1
      i32.and
      i32.const 2
      i32.shl
      i32.add
-     local.tee $6
+     local.tee $5
      i32.load
      i32.store offset=4
-     local.get $6
+     local.get $5
      local.get $2
      i32.store
      local.get $2
@@ -3737,13 +3637,13 @@
    end
   end
   local.get $0
-  local.get $5
+  local.get $4
   call $~lib/set/Set<i8>#set:buckets
   local.get $0
   local.get $1
   i32.store offset=4
   local.get $0
-  local.get $4
+  local.get $6
   call $~lib/set/Set<i8>#set:entries
   local.get $0
   local.get $7
@@ -3753,7 +3653,7 @@
   i32.load offset=20
   i32.store offset=16
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
  )
@@ -3996,33 +3896,19 @@
   (local $7 i32)
   (local $8 i64)
   (local $9 i32)
-  i32.const 16
+  i32.const 4
   call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=8 align=1
   local.get $1
   i32.const 1
   i32.add
   local.tee $2
   i32.const 2
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $5
-  global.get $~lib/memory/__stack_pointer
-  local.get $5
-  i32.store offset=12 align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   local.set $4
   global.get $~lib/memory/__stack_pointer
   local.get $4
-  i32.store offset=8 align=1
+  i32.store align=1
   local.get $2
   i32.const 3
   i32.shl
@@ -4031,8 +3917,8 @@
   local.tee $6
   i32.const 4
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $4
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  local.set $5
   local.get $0
   i32.load offset=8
   local.tee $3
@@ -4042,7 +3928,7 @@
   i32.shl
   i32.add
   local.set $7
-  local.get $4
+  local.get $5
   local.set $2
   loop $while-continue|0
    local.get $3
@@ -4061,7 +3947,7 @@
      local.tee $8
      i64.store
      local.get $2
-     local.get $5
+     local.get $4
      local.get $8
      call $~lib/util/hash/HASH<i64>
      local.get $1
@@ -4088,13 +3974,13 @@
    end
   end
   local.get $0
-  local.get $5
+  local.get $4
   call $~lib/set/Set<i8>#set:buckets
   local.get $0
   local.get $1
   i32.store offset=4
   local.get $0
-  local.get $4
+  local.get $5
   call $~lib/set/Set<i8>#set:entries
   local.get $0
   local.get $6
@@ -4104,7 +3990,7 @@
   i32.load offset=20
   i32.store offset=16
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
  )
@@ -4344,33 +4230,19 @@
   (local $7 i32)
   (local $8 i64)
   (local $9 i32)
-  i32.const 16
+  i32.const 4
   call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=8 align=1
   local.get $1
   i32.const 1
   i32.add
   local.tee $2
   i32.const 2
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $5
-  global.get $~lib/memory/__stack_pointer
-  local.get $5
-  i32.store offset=12 align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   local.set $4
   global.get $~lib/memory/__stack_pointer
   local.get $4
-  i32.store offset=8 align=1
+  i32.store align=1
   local.get $2
   i32.const 3
   i32.shl
@@ -4379,8 +4251,8 @@
   local.tee $6
   i32.const 4
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $4
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  local.set $5
   local.get $0
   i32.load offset=8
   local.tee $3
@@ -4390,7 +4262,7 @@
   i32.shl
   i32.add
   local.set $7
-  local.get $4
+  local.get $5
   local.set $2
   loop $while-continue|0
    local.get $3
@@ -4409,7 +4281,7 @@
      local.tee $8
      i64.store
      local.get $2
-     local.get $5
+     local.get $4
      local.get $8
      call $~lib/util/hash/HASH<i64>
      local.get $1
@@ -4436,13 +4308,13 @@
    end
   end
   local.get $0
-  local.get $5
+  local.get $4
   call $~lib/set/Set<i8>#set:buckets
   local.get $0
   local.get $1
   i32.store offset=4
   local.get $0
-  local.get $4
+  local.get $5
   call $~lib/set/Set<i8>#set:entries
   local.get $0
   local.get $6
@@ -4452,7 +4324,7 @@
   i32.load offset=20
   i32.store offset=16
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
  )
@@ -4680,33 +4552,19 @@
   (local $7 i32)
   (local $8 i32)
   (local $9 f32)
-  i32.const 16
+  i32.const 4
   call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=8 align=1
   local.get $1
   i32.const 1
   i32.add
   local.tee $2
   i32.const 2
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $6
-  global.get $~lib/memory/__stack_pointer
-  local.get $6
-  i32.store offset=12 align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   local.set $5
   global.get $~lib/memory/__stack_pointer
   local.get $5
-  i32.store offset=8 align=1
+  i32.store align=1
   local.get $2
   i32.const 3
   i32.shl
@@ -4715,8 +4573,8 @@
   local.tee $7
   i32.const 3
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $5
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  local.set $6
   local.get $0
   i32.load offset=8
   local.tee $4
@@ -4726,7 +4584,7 @@
   i32.shl
   i32.add
   local.set $8
-  local.get $5
+  local.get $6
   local.set $2
   loop $while-continue|0
    local.get $4
@@ -4745,7 +4603,7 @@
      local.tee $9
      f32.store
      local.get $2
-     local.get $6
+     local.get $5
      local.get $1
      local.get $9
      i32.reinterpret_f32
@@ -4799,13 +4657,13 @@
    end
   end
   local.get $0
-  local.get $6
+  local.get $5
   call $~lib/set/Set<i8>#set:buckets
   local.get $0
   local.get $1
   i32.store offset=4
   local.get $0
-  local.get $5
+  local.get $6
   call $~lib/set/Set<i8>#set:entries
   local.get $0
   local.get $7
@@ -4815,7 +4673,7 @@
   i32.load offset=20
   i32.store offset=16
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
  )
@@ -5116,33 +4974,19 @@
   (local $7 i32)
   (local $8 f64)
   (local $9 i32)
-  i32.const 16
+  i32.const 4
   call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=8 align=1
   local.get $1
   i32.const 1
   i32.add
   local.tee $2
   i32.const 2
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $5
-  global.get $~lib/memory/__stack_pointer
-  local.get $5
-  i32.store offset=12 align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   local.set $4
   global.get $~lib/memory/__stack_pointer
   local.get $4
-  i32.store offset=8 align=1
+  i32.store align=1
   local.get $2
   i32.const 3
   i32.shl
@@ -5151,8 +4995,8 @@
   local.tee $6
   i32.const 4
   i32.shl
-  call $~lib/arraybuffer/ArrayBuffer#constructor
-  local.set $4
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  local.set $5
   local.get $0
   i32.load offset=8
   local.tee $3
@@ -5162,7 +5006,7 @@
   i32.shl
   i32.add
   local.set $7
-  local.get $4
+  local.get $5
   local.set $2
   loop $while-continue|0
    local.get $3
@@ -5181,7 +5025,7 @@
      local.tee $8
      f64.store
      local.get $2
-     local.get $5
+     local.get $4
      local.get $8
      call $~lib/util/hash/HASH<f64>
      local.get $1
@@ -5208,13 +5052,13 @@
    end
   end
   local.get $0
-  local.get $5
+  local.get $4
   call $~lib/set/Set<i8>#set:buckets
   local.get $0
   local.get $1
   i32.store offset=4
   local.get $0
-  local.get $4
+  local.get $5
   call $~lib/set/Set<i8>#set:entries
   local.get $0
   local.get $6
@@ -5224,7 +5068,7 @@
   i32.load offset=20
   i32.store offset=16
   global.get $~lib/memory/__stack_pointer
-  i32.const 16
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
  )
@@ -5445,22 +5289,14 @@
   global.set $~lib/rt/itcms/fromSpace
   i32.const 12
   call $~lib/rt/__decrease_sp
-  i32.const 24
   i32.const 4
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store align=1
-  local.get $2
-  i32.const 32
-  call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+  call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
   local.set $1
   global.get $~lib/memory/__stack_pointer
   local.get $1
-  i32.store offset=4 align=1
+  i32.store offset=8 align=1
   block $folding-inner17
-   block $__inlined_func$start:std/set$679
+   block $__inlined_func$start:std/set$680
     block $folding-inner16
      block $folding-inner15
       block $folding-inner14
@@ -5611,21 +5447,13 @@
                      global.set $~lib/memory/__stack_pointer
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
-                     i32.store align=1
-                     i32.const 24
+                     i32.store offset=4 align=1
                      i32.const 4
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store offset=8 align=1
-                     local.get $0
-                     i32.const 32
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
-                     i32.store offset=8 align=1
+                     i32.store align=1
                      i32.const 0
                      local.set $0
                      loop $for-loop|2
@@ -5760,20 +5588,12 @@
                      local.set $0
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 24
                      i32.const 7
-                     call $~lib/rt/itcms/__new
-                     local.set $2
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $2
-                     i32.store align=1
-                     local.get $2
-                     i32.const 32
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
-                     i32.store offset=4 align=1
+                     i32.store offset=8 align=1
                      loop $for-loop|001
                       local.get $0
                       i32.const 100
@@ -5909,21 +5729,13 @@
                      global.set $~lib/memory/__stack_pointer
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
-                     i32.store align=1
-                     i32.const 24
+                     i32.store offset=4 align=1
                      i32.const 7
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store offset=8 align=1
-                     local.get $0
-                     i32.const 32
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
-                     i32.store offset=8 align=1
+                     i32.store align=1
                      i32.const 0
                      local.set $0
                      loop $for-loop|22
@@ -6058,20 +5870,12 @@
                      local.set $0
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 24
                      i32.const 10
-                     call $~lib/rt/itcms/__new
-                     local.set $2
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $2
-                     i32.store align=1
-                     local.get $2
-                     i32.const 32
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
-                     i32.store offset=4 align=1
+                     i32.store offset=8 align=1
                      loop $for-loop|05
                       local.get $0
                       i32.const 100
@@ -6209,21 +6013,13 @@
                      global.set $~lib/memory/__stack_pointer
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
-                     i32.store align=1
-                     i32.const 24
+                     i32.store offset=4 align=1
                      i32.const 10
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store offset=8 align=1
-                     local.get $0
-                     i32.const 32
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
-                     i32.store offset=8 align=1
+                     i32.store align=1
                      i32.const 0
                      local.set $0
                      loop $for-loop|27
@@ -6362,20 +6158,12 @@
                      local.set $0
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 24
                      i32.const 13
-                     call $~lib/rt/itcms/__new
-                     local.set $2
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $2
-                     i32.store align=1
-                     local.get $2
-                     i32.const 32
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
-                     i32.store offset=4 align=1
+                     i32.store offset=8 align=1
                      loop $for-loop|010
                       local.get $0
                       i32.const 100
@@ -6513,21 +6301,13 @@
                      global.set $~lib/memory/__stack_pointer
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
-                     i32.store align=1
-                     i32.const 24
+                     i32.store offset=4 align=1
                      i32.const 13
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store offset=8 align=1
-                     local.get $0
-                     i32.const 32
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
-                     i32.store offset=8 align=1
+                     i32.store align=1
                      i32.const 0
                      local.set $0
                      loop $for-loop|212
@@ -6666,20 +6446,12 @@
                      local.set $0
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 24
                      i32.const 16
-                     call $~lib/rt/itcms/__new
-                     local.set $2
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $2
-                     i32.store align=1
-                     local.get $2
-                     i32.const 32
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
-                     i32.store offset=4 align=1
+                     i32.store offset=8 align=1
                      loop $for-loop|015
                       local.get $0
                       i32.const 100
@@ -6817,21 +6589,13 @@
                      global.set $~lib/memory/__stack_pointer
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
-                     i32.store align=1
-                     i32.const 24
+                     i32.store offset=4 align=1
                      i32.const 16
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store offset=8 align=1
-                     local.get $0
-                     i32.const 32
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
-                     i32.store offset=8 align=1
+                     i32.store align=1
                      i32.const 0
                      local.set $0
                      loop $for-loop|217
@@ -6970,20 +6734,12 @@
                      local.set $0
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 24
                      i32.const 19
-                     call $~lib/rt/itcms/__new
-                     local.set $2
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $2
-                     i32.store align=1
-                     local.get $2
-                     i32.const 32
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
-                     i32.store offset=4 align=1
+                     i32.store offset=8 align=1
                      loop $for-loop|020
                       local.get $0
                       i32.const 100
@@ -7121,21 +6877,13 @@
                      global.set $~lib/memory/__stack_pointer
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
-                     i32.store align=1
-                     i32.const 24
+                     i32.store offset=4 align=1
                      i32.const 19
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store offset=8 align=1
-                     local.get $0
-                     i32.const 32
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
-                     i32.store offset=8 align=1
+                     i32.store align=1
                      i32.const 0
                      local.set $0
                      loop $for-loop|222
@@ -7272,20 +7020,12 @@
                      global.set $~lib/memory/__stack_pointer
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 24
                      i32.const 22
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store align=1
-                     local.get $0
-                     i32.const 64
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
-                     i32.store offset=4 align=1
+                     i32.store offset=8 align=1
                      loop $for-loop|025
                       local.get $5
                       i64.const 100
@@ -7423,21 +7163,13 @@
                      global.set $~lib/memory/__stack_pointer
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
-                     i32.store align=1
-                     i32.const 24
+                     i32.store offset=4 align=1
                      i32.const 22
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store offset=8 align=1
-                     local.get $0
-                     i32.const 64
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
-                     i32.store offset=8 align=1
+                     i32.store align=1
                      i32.const 0
                      local.set $0
                      loop $for-loop|227
@@ -7576,20 +7308,12 @@
                      local.set $5
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 24
                      i32.const 25
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store align=1
-                     local.get $0
-                     i32.const 64
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
-                     i32.store offset=4 align=1
+                     i32.store offset=8 align=1
                      loop $for-loop|030
                       local.get $5
                       i64.const 100
@@ -7727,21 +7451,13 @@
                      global.set $~lib/memory/__stack_pointer
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
-                     i32.store align=1
-                     i32.const 24
+                     i32.store offset=4 align=1
                      i32.const 25
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store offset=8 align=1
-                     local.get $0
-                     i32.const 64
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
-                     i32.store offset=8 align=1
+                     i32.store align=1
                      i32.const 0
                      local.set $0
                      loop $for-loop|232
@@ -7878,20 +7594,12 @@
                      global.set $~lib/memory/__stack_pointer
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 24
                      i32.const 28
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store align=1
-                     local.get $0
-                     i32.const 32
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
                      local.set $3
                      global.get $~lib/memory/__stack_pointer
                      local.get $3
-                     i32.store offset=4 align=1
+                     i32.store offset=8 align=1
                      loop $for-loop|035
                       local.get $6
                       f32.const 100
@@ -8056,21 +7764,13 @@
                      global.set $~lib/memory/__stack_pointer
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
-                     i32.store align=1
-                     i32.const 24
+                     i32.store offset=4 align=1
                      i32.const 28
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store offset=8 align=1
-                     local.get $0
-                     i32.const 32
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
-                     i32.store offset=8 align=1
+                     i32.store align=1
                      i32.const 0
                      local.set $0
                      loop $for-loop|237
@@ -8207,20 +7907,12 @@
                      global.set $~lib/memory/__stack_pointer
                      i32.const 12
                      call $~lib/rt/__decrease_sp
-                     i32.const 24
                      i32.const 31
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store align=1
-                     local.get $0
-                     i32.const 64
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new
                      local.set $3
                      global.get $~lib/memory/__stack_pointer
                      local.get $3
-                     i32.store offset=4 align=1
+                     i32.store offset=8 align=1
                      loop $for-loop|040
                       local.get $7
                       f64.const 100
@@ -8385,21 +8077,13 @@
                      global.set $~lib/memory/__stack_pointer
                      global.get $~lib/memory/__stack_pointer
                      local.get $2
-                     i32.store align=1
-                     i32.const 24
+                     i32.store offset=4 align=1
                      i32.const 31
-                     call $~lib/rt/itcms/__new
-                     local.set $0
-                     global.get $~lib/memory/__stack_pointer
-                     local.get $0
-                     i32.store offset=8 align=1
-                     local.get $0
-                     i32.const 64
-                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor
+                     call $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
-                     i32.store offset=8 align=1
+                     i32.store align=1
                      i32.const 0
                      local.set $0
                      loop $for-loop|242
@@ -8567,7 +8251,7 @@
                      i32.const 1024
                      i32.add
                      global.set $~lib/rt/itcms/threshold
-                     br $__inlined_func$start:std/set$679
+                     br $__inlined_func$start:std/set$680
                     end
                     i32.const 0
                     i32.const 544
@@ -8697,6 +8381,38 @@
   call $~lib/builtins/abort
   unreachable
  )
+ (func $~lib/arraybuffer/ArrayBuffer#constructor@new (param $0 i32) (result i32)
+  (local $1 i32)
+  i32.const 4
+  call $~lib/rt/__decrease_sp
+  i32.const 0
+  i32.const 1
+  call $~lib/rt/itcms/__new
+  local.set $1
+  global.get $~lib/memory/__stack_pointer
+  local.get $1
+  i32.store align=1
+  local.get $0
+  i32.const 1073741820
+  i32.gt_u
+  if
+   i32.const 32
+   i32.const 80
+   i32.const 50
+   i32.const 43
+   call $~lib/builtins/abort
+   unreachable
+  end
+  local.get $0
+  i32.const 1
+  call $~lib/rt/itcms/__new
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
+ )
  (func $~lib/rt/__decrease_sp (param $0 i32)
   global.get $~lib/memory/__stack_pointer
   local.get $0
@@ -8750,34 +8466,22 @@
   i32.store offset=12
   local.get $0
  )
+ (func $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new (param $0 i32) (result i32)
+  local.get $0
+  i32.const 32
+  call $byn$mgfn-shared$byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+ )
  (func $byn$mgfn-shared$~lib/set/Set<i8>#clear (param $0 i32) (param $1 i32)
-  (local $2 i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=4 align=1
   local.get $0
   i32.const 16
-  call $~lib/arraybuffer/ArrayBuffer#constructor
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   call $~lib/set/Set<i8>#set:buckets
   local.get $0
   i32.const 3
   i32.store offset=4
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=4 align=1
   local.get $0
   local.get $1
-  call $~lib/arraybuffer/ArrayBuffer#constructor
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   call $~lib/set/Set<i8>#set:entries
   local.get $0
   i32.const 4
@@ -8788,45 +8492,38 @@
   local.get $0
   i32.const 0
   i32.store offset=20
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
- (func $byn$mgfn-shared$~lib/set/Set<i8>#constructor (param $0 i32) (param $1 i32) (result i32)
-  (local $2 i32)
-  i32.const 8
+ (func $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new (param $0 i32) (result i32)
+  local.get $0
+  i32.const 64
+  call $byn$mgfn-shared$byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+ )
+ (func $byn$mgfn-shared$byn$mgfn-shared$~lib/set/Set<i16>#constructor@new (param $0 i32) (param $1 i32) (result i32)
+  i32.const 4
   call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
+  i32.const 24
+  local.get $0
   call $~lib/rt/itcms/__new
-  local.set $2
+  local.set $0
   global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=4 align=1
+  local.get $0
+  i32.store align=1
   local.get $0
   i32.const 16
-  call $~lib/arraybuffer/ArrayBuffer#constructor
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   call $~lib/set/Set<i8>#set:buckets
   local.get $0
   i32.const 3
   i32.store offset=4
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $2
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store offset=4 align=1
   local.get $0
   local.get $1
-  call $~lib/arraybuffer/ArrayBuffer#constructor
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   call $~lib/set/Set<i8>#set:entries
   local.get $0
   i32.const 4
   i32.store offset=12
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0

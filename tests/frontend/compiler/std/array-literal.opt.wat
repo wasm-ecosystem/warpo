@@ -215,7 +215,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$106
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$104
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -239,7 +239,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$106
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$104
    end
    local.get $0
    i32.load offset=8
@@ -1736,7 +1736,7 @@
    local.get $0
    i32.load
    local.tee $4
-   block $__inlined_func$~lib/rt/itcms/__renew$111 (result i32)
+   block $__inlined_func$~lib/rt/itcms/__renew$109 (result i32)
     i32.const 1073741820
     local.get $3
     i32.const 1
@@ -1776,7 +1776,7 @@
      local.get $3
      i32.store offset=16
      local.get $4
-     br $__inlined_func$~lib/rt/itcms/__renew$111
+     br $__inlined_func$~lib/rt/itcms/__renew$109
     end
     local.get $3
     local.get $1
