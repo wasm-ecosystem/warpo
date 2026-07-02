@@ -1,0 +1,113 @@
+name: bench
+
+on:
+  pull_request:
+
+concurrency:
+  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR merge commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Save bootstrap release script
+        run: |
+          cp tests/bootstrap/release.sh "$RUNNER_TEMP/bootstrap-release.sh"
+          chmod +x "$RUNNER_TEMP/bootstrap-release.sh"
+
+      - uses: ./.github/action/build
+        with:
+          OS_ID: ubuntu-latest
+          UPLOAD_CACHE: false
+          CMAKE_ARGS: "-DCMAKE_BUILD_TYPE=Release"
+
+      - name: Build TypeScript
+        run: npm run build:ts
+
+      - name: Run bootstrap release for PR merge commit
+        run: "$RUNNER_TEMP/bootstrap-release.sh"
+        env:
+          BOOTSTRAP_RELEASE_SKIP_THIRD: "1"
+
+      - name: Record PR merge commit size
+        id: merge-size
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "bootstrap=$(stat -c%s tests/bootstrap/tmp/release/assemblyscript.warpo-test-bootstrap.wasm)" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout base commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          clean: true
+
+      - name: Install base dependencies
+        run: npm ci
+
+      - uses: ./.github/action/build
+        with:
+          OS_ID: ubuntu-latest
+          UPLOAD_CACHE: false
+          CMAKE_ARGS: "-DCMAKE_BUILD_TYPE=Release"
+
+      - name: Build base TypeScript
+        run: npm run build:ts
+
+      - name: Run bootstrap release for base commit
+        run: "$RUNNER_TEMP/bootstrap-release.sh"
+        env:
+          BOOTSTRAP_RELEASE_SKIP_THIRD: "1"
+
+      - name: Record base commit size
+        id: base-size
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "bootstrap=$(stat -c%s tests/bootstrap/tmp/release/assemblyscript.warpo-test-bootstrap.wasm)" >> "$GITHUB_OUTPUT"
+
+      - name: Create diff
+        id: create-diff
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          cat > base.txt <<EOF
+          bootstrap wasm: ${{ steps.base-size.outputs.bootstrap }} bytes
+          EOF
+
+          cat > merge.txt <<EOF
+          bootstrap wasm: ${{ steps.merge-size.outputs.bootstrap }} bytes
+          EOF
+
+          {
+            echo 'bench_diff<<EOF'
+            diff base.txt merge.txt -U 999 || true
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ```diff
+            ${{ steps.create-diff.outputs.bench_diff }}
+            ```
+          comment_tag: bench
