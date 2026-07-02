@@ -9,8 +9,6 @@ concurrency:
 
 permissions:
   contents: read
-  issues: write
-  pull-requests: write
 
 jobs:
   bench:
@@ -86,7 +84,6 @@ jobs:
           echo "bootstrap=$(stat -c%s tests/bootstrap/tmp/release/assemblyscript.warpo-test-bootstrap.wasm)" >> "$GITHUB_OUTPUT"
 
       - name: Create diff
-        id: create-diff
         shell: bash
         run: |
           set -euo pipefail
@@ -99,16 +96,18 @@ jobs:
           bootstrap wasm: ${{ steps.merge-size.outputs.bootstrap }} bytes
           EOF
 
-          {
-            echo 'bench_diff<<EOF'
-            diff base.txt merge.txt -U 999 || true
-            echo 'EOF'
-          } >> "$GITHUB_OUTPUT"
+          diff base.txt merge.txt -U 999 > bench.diff || true
 
-      - uses: thollander/actions-comment-pull-request@v3
+      - name: Save bench result
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p bench-result
+          cp bench.diff bench-result/bench.diff
+          echo '${{ github.event.pull_request.number }}' > bench-result/pr-number
+
+      - uses: actions/upload-artifact@v4
         with:
-          message: |
-            ```diff
-            ${{ steps.create-diff.outputs.bench_diff }}
-            ```
-          comment-tag: bench
+          name: bench-result
+          path: bench-result/
+          retention-days: 7
