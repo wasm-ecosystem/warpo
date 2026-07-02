@@ -5290,7 +5290,7 @@
   i32.const 12
   call $~lib/rt/__decrease_sp
   i32.const 4
-  call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+  call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
   local.set $1
   global.get $~lib/memory/__stack_pointer
   local.get $1
@@ -5449,7 +5449,7 @@
                      local.get $2
                      i32.store offset=4 align=1
                      i32.const 4
-                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
@@ -5589,7 +5589,7 @@
                      i32.const 12
                      call $~lib/rt/__decrease_sp
                      i32.const 7
-                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
@@ -5731,7 +5731,7 @@
                      local.get $2
                      i32.store offset=4 align=1
                      i32.const 7
-                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
@@ -5871,7 +5871,7 @@
                      i32.const 12
                      call $~lib/rt/__decrease_sp
                      i32.const 10
-                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
@@ -6015,7 +6015,7 @@
                      local.get $2
                      i32.store offset=4 align=1
                      i32.const 10
-                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
@@ -6159,7 +6159,7 @@
                      i32.const 12
                      call $~lib/rt/__decrease_sp
                      i32.const 13
-                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
@@ -6303,7 +6303,7 @@
                      local.get $2
                      i32.store offset=4 align=1
                      i32.const 13
-                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
@@ -6447,7 +6447,7 @@
                      i32.const 12
                      call $~lib/rt/__decrease_sp
                      i32.const 16
-                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
@@ -6591,7 +6591,7 @@
                      local.get $2
                      i32.store offset=4 align=1
                      i32.const 16
-                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
@@ -6735,7 +6735,7 @@
                      i32.const 12
                      call $~lib/rt/__decrease_sp
                      i32.const 19
-                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
@@ -6879,7 +6879,7 @@
                      local.get $2
                      i32.store offset=4 align=1
                      i32.const 19
-                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
@@ -7021,7 +7021,7 @@
                      i32.const 12
                      call $~lib/rt/__decrease_sp
                      i32.const 22
-                     call $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
@@ -7165,7 +7165,7 @@
                      local.get $2
                      i32.store offset=4 align=1
                      i32.const 22
-                     call $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
@@ -7309,7 +7309,7 @@
                      i32.const 12
                      call $~lib/rt/__decrease_sp
                      i32.const 25
-                     call $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
                      local.set $1
                      global.get $~lib/memory/__stack_pointer
                      local.get $1
@@ -7453,7 +7453,7 @@
                      local.get $2
                      i32.store offset=4 align=1
                      i32.const 25
-                     call $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
@@ -7595,7 +7595,7 @@
                      i32.const 12
                      call $~lib/rt/__decrease_sp
                      i32.const 28
-                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $3
                      global.get $~lib/memory/__stack_pointer
                      local.get $3
@@ -7766,7 +7766,7 @@
                      local.get $2
                      i32.store offset=4 align=1
                      i32.const 28
-                     call $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
@@ -7908,7 +7908,7 @@
                      i32.const 12
                      call $~lib/rt/__decrease_sp
                      i32.const 31
-                     call $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
                      local.set $3
                      global.get $~lib/memory/__stack_pointer
                      local.get $3
@@ -8079,7 +8079,7 @@
                      local.get $2
                      i32.store offset=4 align=1
                      i32.const 31
-                     call $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new
+                     call $byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
                      local.set $4
                      global.get $~lib/memory/__stack_pointer
                      local.get $4
@@ -8466,10 +8466,10 @@
   i32.store offset=12
   local.get $0
  )
- (func $byn$mgfn-shared$~lib/set/Set<i16>#constructor@new (param $0 i32) (result i32)
+ (func $byn$mgfn-shared$~lib/set/Set<i64>#constructor@new (param $0 i32) (result i32)
   local.get $0
-  i32.const 32
-  call $byn$mgfn-shared$byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+  i32.const 64
+  call $byn$mgfn-shared$byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
  )
  (func $byn$mgfn-shared$~lib/set/Set<i8>#clear (param $0 i32) (param $1 i32)
   local.get $0
@@ -8493,12 +8493,12 @@
   i32.const 0
   i32.store offset=20
  )
- (func $byn$mgfn-shared$~lib/set/Set<u64>#constructor@new (param $0 i32) (result i32)
+ (func $byn$mgfn-shared$~lib/set/Set<i8>#constructor@new (param $0 i32) (result i32)
   local.get $0
-  i32.const 64
-  call $byn$mgfn-shared$byn$mgfn-shared$~lib/set/Set<i16>#constructor@new
+  i32.const 32
+  call $byn$mgfn-shared$byn$mgfn-shared$~lib/set/Set<i64>#constructor@new
  )
- (func $byn$mgfn-shared$byn$mgfn-shared$~lib/set/Set<i16>#constructor@new (param $0 i32) (param $1 i32) (result i32)
+ (func $byn$mgfn-shared$byn$mgfn-shared$~lib/set/Set<i64>#constructor@new (param $0 i32) (param $1 i32) (result i32)
   i32.const 4
   call $~lib/rt/__decrease_sp
   i32.const 24

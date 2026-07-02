@@ -163,7 +163,17 @@ struct ConstructorNewOutlining : public wasm::Pass {
     }
 
     bool changed = false;
-    for (auto const &[constructorName, matches] : candidates) {
+    std::vector<CandidateMap::const_iterator> orderedCandidates;
+    orderedCandidates.reserve(candidates.size());
+    for (auto const &function : m->functions) {
+      auto const candidate = candidates.find(function->name);
+      if (candidate == candidates.end())
+        continue;
+      orderedCandidates.push_back(candidate);
+    }
+
+    for (auto const candidate : orderedCandidates) {
+      auto const &[constructorName, matches] = *candidate;
       if (matches.size() < 2)
         continue;
       wasm::Name const helperName = addHelperFunction(*m, constructorName, matches);

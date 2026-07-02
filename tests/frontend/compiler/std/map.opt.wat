@@ -11360,27 +11360,6 @@
    unreachable
   end
  )
- (func $"~lib/map/Map<i32,i32>#constructor@new" (result i32)
-  (local $0 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  i32.const 24
-  i32.const 13
-  call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  i32.const 48
-  call $"byn$mgfn-shared$~lib/map/Map<i8,i32>#constructor"
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
- )
  (func $~lib/arraybuffer/ArrayBuffer#constructor@new (param $0 i32) (result i32)
   (local $1 i32)
   i32.const 4
@@ -11429,6 +11408,27 @@
   i32.const 2
   i32.const 268435455
   call $byn$mgfn-shared$~lib/array/Array<i32>#constructor
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
+ )
+ (func $"~lib/map/Map<i32,i32>#constructor@new" (result i32)
+  (local $0 i32)
+  i32.const 4
+  call $~lib/rt/__decrease_sp
+  i32.const 24
+  i32.const 13
+  call $~lib/rt/itcms/__new
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
+  local.get $0
+  i32.const 48
+  call $"byn$mgfn-shared$~lib/map/Map<i8,i32>#constructor"
   local.set $0
   global.get $~lib/memory/__stack_pointer
   i32.const 4
