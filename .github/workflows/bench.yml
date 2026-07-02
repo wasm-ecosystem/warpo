@@ -9,7 +9,7 @@ concurrency:
 
 permissions:
   contents: read
-  pull-requests: write
+  issues: write
 
 jobs:
   bench:
@@ -104,7 +104,7 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
 
-      - uses: thollander/actions-comment-pull-request@v2
+      - uses: thollander/actions-comment-pull-request@v3
         with:
           message: |
             ```diff
