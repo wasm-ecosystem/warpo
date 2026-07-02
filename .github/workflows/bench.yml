@@ -88,15 +88,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          cat > base.txt <<EOF
-          bootstrap wasm: ${{ steps.base-size.outputs.bootstrap }} bytes
-          EOF
-
-          cat > merge.txt <<EOF
-          bootstrap wasm: ${{ steps.merge-size.outputs.bootstrap }} bytes
-          EOF
-
-          diff base.txt merge.txt -U 999 > bench.diff || true
+          {
+            echo "-${{ steps.base-size.outputs.bootstrap }} bytes"
+            echo "+${{ steps.merge-size.outputs.bootstrap }} bytes"
+          } > bench.diff
 
       - name: Save bench result
         shell: bash
