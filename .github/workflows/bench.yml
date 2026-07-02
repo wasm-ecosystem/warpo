@@ -10,6 +10,7 @@ concurrency:
 permissions:
   contents: read
   issues: write
+  pull-requests: write
 
 jobs:
   bench:
@@ -110,4 +111,4 @@ jobs:
             ```diff
             ${{ steps.create-diff.outputs.bench_diff }}
             ```
-          comment_tag: bench
+          comment-tag: bench
