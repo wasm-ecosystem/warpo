@@ -22,6 +22,8 @@
 #include <wasm.h>
 
 #include "ConstructorNewOutlining.hpp"
+#include "helper/CFG.hpp"
+#include "helper/FindExpr.hpp"
 #include "warpo/support/Debug.hpp"
 
 #define PASS_NAME "ConstructorNewOutlining"
@@ -86,7 +88,25 @@ public:
   bool isFunctionParallel() override { return true; }
   std::unique_ptr<wasm::Pass> create() override { return std::make_unique<Scanner>(candidates, candidateMutex); }
 
-  void visitCall(wasm::Call *call) {
+  void doWalkFunction(wasm::Function *function) {
+    if (function->body == nullptr)
+      return;
+
+    CFG const cfg = CFG::fromFunction(function);
+    DynBitset const insideLoop = cfg.getBlockInsideLoop();
+    for (BasicBlock const &bb : cfg) {
+      if (insideLoop.get(bb.getIndex()))
+        continue;
+      for (wasm::Expression *const expr : bb) {
+        wasm::Call *const call = expr->dynCast<wasm::Call>();
+        if (call != nullptr)
+          collectCandidate(function, call);
+      }
+    }
+  }
+
+private:
+  void collectCandidate(wasm::Function *function, wasm::Call *call) {
     if (!isConstructorName(call->target) || call->operands.empty())
       return;
 
@@ -94,13 +114,15 @@ public:
     if (getAllocationCall(allocationOperand) == nullptr)
       return;
 
-    Match const match{.expr = getCurrentPointer(), .call = call, .allocationOperand = allocationOperand};
+    wasm::Expression **const expr = findExprPointer(call, function);
+    assert(expr != nullptr);
+
+    Match const match{.expr = expr, .call = call, .allocationOperand = allocationOperand};
     std::lock_guard<std::mutex> const lock{candidateMutex};
     auto [candidate, inserted] = candidates.try_emplace(call->target);
     candidate->second.push_back(match);
   }
 
-private:
   CandidateMap &candidates;
   std::mutex &candidateMutex;
 };
@@ -160,7 +182,8 @@ void replaceMatches(wasm::Module &m, wasm::Name const helperName, std::vector<Ma
 
 // Reduce code size by outlining the same constructor allocation pattern when
 // it appears multiple times in a module. The pass replaces repeated object
-// allocations for the same constructor with one shared helper.
+// allocations for the same constructor with one shared helper. Candidates in
+// loops are skipped to avoid adding helper-call overhead on hot paths.
 //
 // Example:
 //   input, repeated several times for the same object type:
@@ -223,6 +246,27 @@ wasm::Pass *warpo::passes::createConstructorNewOutliningPass() { return new Cons
 #include "pass.h"
 
 namespace warpo::passes::ut {
+namespace {
+
+struct CallTargetCounter : public wasm::PostWalker<CallTargetCounter> {
+  explicit CallTargetCounter(wasm::Name target) : target(std::move(target)) {}
+
+  void visitCall(wasm::Call *call) {
+    if (call->target == target)
+      count++;
+  }
+
+  wasm::Name target;
+  size_t count = 0U;
+};
+
+size_t countCallsTo(wasm::Function *function, wasm::Name target) {
+  CallTargetCounter counter{std::move(target)};
+  counter.walk(function->body);
+  return counter.count;
+}
+
+} // namespace
 
 TEST(ConstructorNewOutliningTest, OutlinesRepeatedConstructorAllocation) {
   auto m = loadWat(R"(
@@ -348,6 +392,77 @@ TEST(ConstructorNewOutliningTest, UsesConstructorSignatureForHelperParameters) {
   EXPECT_EQ(helper->getParams().size(), 1U);
   EXPECT_EQ(helper->getParams()[0], wasm::Type::i32);
   EXPECT_EQ(helper->getResults(), wasm::Type::i32);
+}
+
+TEST(ConstructorNewOutliningTest, OutlinesNonLoopCallsButKeepsLoopCalls) {
+  auto m = loadWat(R"(
+    (module
+      (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
+      (func $~lib/rt/itcms/__new (param i32 i32) (result i32)
+        (i32.const 1)
+      )
+      (func $A#constructor (param i32) (result i32)
+        (local.get 0)
+      )
+      (func $one (result i32)
+        (call $A#constructor
+          (call $~lib/rt/__tmptostack
+            (call $~lib/rt/itcms/__new
+              (i32.const 16)
+              (i32.const 4)
+            )
+          )
+        )
+      )
+      (func $two (result i32)
+        (call $A#constructor
+          (call $~lib/rt/__tmptostack
+            (call $~lib/rt/itcms/__new
+              (i32.const 16)
+              (i32.const 4)
+            )
+          )
+        )
+      )
+      (func $looped (result i32)
+        (loop $again
+          (drop
+            (call $A#constructor
+              (call $~lib/rt/__tmptostack
+                (call $~lib/rt/itcms/__new
+                  (i32.const 16)
+                  (i32.const 4)
+                )
+              )
+            )
+          )
+          (br_if $again
+            (i32.const 0)
+          )
+        )
+        (i32.const 0)
+      )
+    )
+  )");
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{warpo::passes::createConstructorNewOutliningPass()});
+  runner.run();
+
+  ASSERT_NE(m->getFunctionOrNull("A#constructor@new"), nullptr);
+
+  auto *const one = m->getFunction("one");
+  auto *const two = m->getFunction("two");
+  auto *const oneCall = one->body->dynCast<wasm::Call>();
+  auto *const twoCall = two->body->dynCast<wasm::Call>();
+  ASSERT_NE(oneCall, nullptr);
+  ASSERT_NE(twoCall, nullptr);
+  EXPECT_EQ(oneCall->target, wasm::Name("A#constructor@new"));
+  EXPECT_EQ(twoCall->target, wasm::Name("A#constructor@new"));
+
+  auto *const looped = m->getFunction("looped");
+  EXPECT_EQ(countCallsTo(looped, "A#constructor@new"), 0U);
+  EXPECT_EQ(countCallsTo(looped, "A#constructor"), 1U);
 }
 
 TEST(ConstructorNewOutliningTest, DoesNotMatchUserFunctionsBySuffix) {
