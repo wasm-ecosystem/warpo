@@ -65,11 +65,15 @@ struct Match {
 
 using CandidateMap = std::unordered_map<wasm::Name, std::vector<Match>>;
 
-std::vector<wasm::Type> getParameterTypes(wasm::Call const *call) {
+std::vector<wasm::Type> getHelperParameterTypes(wasm::Function *function) {
   std::vector<wasm::Type> parameterTypes;
-  parameterTypes.reserve(call->operands.size() - 1);
-  for (wasm::Index i = 1; i < call->operands.size(); i++) {
-    parameterTypes.push_back(call->operands[i]->type);
+  wasm::Signature const sig = function->type.getHeapType().getSignature();
+  if (sig.params.size() <= 1)
+    return parameterTypes;
+
+  parameterTypes.reserve(sig.params.size() - 1);
+  for (wasm::Index i = 1; i < sig.params.size(); i++) {
+    parameterTypes.push_back(sig.params[i]);
   }
   return parameterTypes;
 }
@@ -113,22 +117,26 @@ wasm::Type makeFunctionType(std::vector<wasm::Type> const &parameterTypes, wasm:
 
 wasm::Expression *makeHelperBody(wasm::Module &m, wasm::Name const constructorName, Match const &representative) {
   wasm::Builder builder{m};
-  std::vector<wasm::Type> const parameterTypes = getParameterTypes(representative.call);
+  wasm::Function &constructor = *m.getFunction(constructorName);
+  std::vector<wasm::Type> const parameterTypes = getHelperParameterTypes(&constructor);
+  wasm::Signature const sig = constructor.type.getHeapType().getSignature();
   std::vector<wasm::Expression *> operands;
   operands.reserve(parameterTypes.size() + 1);
   operands.push_back(wasm::ExpressionManipulator::copy(representative.allocationOperand, m));
   for (wasm::Index i = 0; i < parameterTypes.size(); i++) {
     operands.push_back(builder.makeLocalGet(i, parameterTypes[i]));
   }
-  return builder.makeCall(constructorName, operands, representative.call->type);
+  return builder.makeCall(constructorName, operands, sig.results);
 }
 
 wasm::Name addHelperFunction(wasm::Module &m, wasm::Name const constructorName, std::vector<Match> const &matches) {
   Match const &representative = matches.front();
-  std::vector<wasm::Type> const parameterTypes = getParameterTypes(representative.call);
+  wasm::Function &constructor = *m.getFunction(constructorName);
+  std::vector<wasm::Type> const parameterTypes = getHelperParameterTypes(&constructor);
+  wasm::Signature const sig = constructor.type.getHeapType().getSignature();
   wasm::Name const helperName = wasm::Names::getValidFunctionName(m, fmt::format("{}@new", constructorName.view()));
-  auto function = wasm::Builder::makeFunction(helperName, makeFunctionType(parameterTypes, representative.call->type),
-                                              {}, makeHelperBody(m, constructorName, representative));
+  auto function = wasm::Builder::makeFunction(helperName, makeFunctionType(parameterTypes, sig.results), {},
+                                              makeHelperBody(m, constructorName, representative));
   m.addFunction(std::move(function));
 
   if (support::isDebug(PASS_NAME)) {
@@ -150,6 +158,23 @@ void replaceMatches(wasm::Module &m, wasm::Name const helperName, std::vector<Ma
   }
 }
 
+// Reduce code size by outlining the same constructor allocation pattern when
+// it appears multiple times in a module. The pass replaces repeated object
+// allocations for the same constructor with one shared helper.
+//
+// Example:
+//   input, repeated several times for the same object type:
+//     (call $A#constructor
+//       (call $~lib/rt/__tmptostack
+//         (call $~lib/rt/itcms/__new ...))
+//       (i32.const 7))
+//   output:
+//     (func $A#constructor@new (param ...constructor args...)
+//       (call $A#constructor
+//         (call $~lib/rt/__tmptostack
+//           (call $~lib/rt/itcms/__new ...))
+//         (local.get ...constructor args...)))
+//     (call $A#constructor@new ...)
 struct ConstructorNewOutlining : public wasm::Pass {
   bool modifiesBinaryenIR() override { return true; }
 
@@ -275,6 +300,54 @@ TEST(ConstructorNewOutliningTest, DoesNotOutlineSingleUse) {
   runner.run();
 
   EXPECT_EQ(m->getFunctionOrNull("A#constructor@new"), nullptr);
+}
+
+TEST(ConstructorNewOutliningTest, UsesConstructorSignatureForHelperParameters) {
+  auto m = loadWat(R"(
+    (module
+      (import "as-builtin-fn" "~lib/rt/__tmptostack" (func $~lib/rt/__tmptostack (param i32) (result i32)))
+      (func $~lib/rt/itcms/__new (param i32 i32) (result i32)
+        (i32.const 1)
+      )
+      (func $A#constructor (param i32 i32) (result i32)
+        (local.get 0)
+      )
+      (func $both (result i32)
+        (block (result i32)
+          (drop
+            (call $A#constructor
+              (call $~lib/rt/__tmptostack
+                (call $~lib/rt/itcms/__new
+                  (i32.const 16)
+                  (i32.const 4)
+                )
+              )
+              (unreachable)
+            )
+          )
+          (call $A#constructor
+            (call $~lib/rt/__tmptostack
+              (call $~lib/rt/itcms/__new
+                (i32.const 16)
+                (i32.const 4)
+              )
+            )
+            (i32.const 7)
+          )
+        )
+      )
+    )
+  )");
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{warpo::passes::createConstructorNewOutliningPass()});
+  runner.run();
+
+  auto *const helper = m->getFunction("A#constructor@new");
+  ASSERT_NE(helper, nullptr);
+  EXPECT_EQ(helper->getParams().size(), 1u);
+  EXPECT_EQ(helper->getParams()[0], wasm::Type::i32);
+  EXPECT_EQ(helper->getResults(), wasm::Type::i32);
 }
 
 TEST(ConstructorNewOutliningTest, DoesNotMatchUserFunctionsBySuffix) {
