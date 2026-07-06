@@ -134,7 +134,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$87
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$89
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -158,7 +158,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$87
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$89
      end
      local.get $0
      i32.load offset=8
@@ -1714,7 +1714,7 @@
   end
   call $~lib/rt/itcms/__new
   drop
-  loop $do-loop|07
+  loop $do-loop|06
    local.get $0
    i32.const 1
    i32.add
@@ -1730,7 +1730,7 @@
     call $~lib/rt/itcms/__new
    end
    local.tee $1
-   br_if $do-loop|07
+   br_if $do-loop|06
   end
   local.get $0
   i32.const 10
@@ -1780,7 +1780,7 @@
   global.get $~lib/memory/__stack_pointer
   local.get $1
   i32.store align=1
-  loop $do-loop|06
+  loop $do-loop|07
    block $do-break|0
     local.get $0
     i32.const 1
@@ -1794,7 +1794,7 @@
      br $do-break|0
     end
     call $~lib/rt/itcms/__new
-    br_if $do-loop|06
+    br_if $do-loop|07
    end
   end
   local.get $0

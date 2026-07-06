@@ -3,10 +3,11 @@
  (type $1 (func (param i32)))
  (type $2 (func (param i32 i32)))
  (type $3 (func (param i32 i32) (result i32)))
- (type $4 (func (param i32) (result i32)))
- (type $5 (func (param i32 i32 i32 i32)))
- (type $6 (func (param i32 i32 i32)))
- (type $7 (func (param i32 i32 i64)))
+ (type $4 (func (param i32 i32 i32 i32)))
+ (type $5 (func (param i32 i32 i32)))
+ (type $6 (func (param i32 i32 i64)))
+ (type $7 (func (param i32) (result i32)))
+ (type $8 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33604))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -1570,60 +1571,6 @@
    end
   end
  )
- (func $std/iterator/MyIterable#constructor (param $0 i32) (result i32)
-  (local $1 i32)
-  (local $2 i32)
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  i32.const 12
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.tee $2
-  i32.const 128
-  i32.const 12
-  memory.copy
-  global.get $~lib/memory/__stack_pointer
-  local.get $2
-  i32.store align=1
-  i32.const 16
-  i32.const 6
-  call $~lib/rt/itcms/__new
-  local.tee $1
-  local.get $2
-  i32.store
-  local.get $1
-  local.get $2
-  call $~lib/rt/itcms/__link
-  local.get $1
-  local.get $2
-  i32.store offset=4
-  local.get $1
-  i32.const 12
-  i32.store offset=8
-  local.get $1
-  i32.const 3
-  i32.store offset=12
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
-  local.get $1
-  i32.store
-  local.get $0
-  local.get $1
-  call $~lib/rt/itcms/__link
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
- )
  (func $std/iterator/MyIterator#next (param $0 i32) (result i32)
   (local $1 i32)
   local.get $0
@@ -1816,15 +1763,7 @@
   (local $2 i32)
   i32.const 8
   call $~lib/rt/__decrease_sp
-  i32.const 4
-  i32.const 4
-  call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  call $std/iterator/MyIterable#constructor
+  call $std/iterator/MyIterable#constructor@new
   local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $0
@@ -1933,15 +1872,7 @@
   (local $2 i32)
   i32.const 8
   call $~lib/rt/__decrease_sp
-  i32.const 4
-  i32.const 4
-  call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  local.get $0
-  call $std/iterator/MyIterable#constructor
+  call $std/iterator/MyIterable#constructor@new
   local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $0
@@ -2146,6 +2077,74 @@
   global.set $~lib/rt/itcms/fromSpace
   call $std/iterator/test1
   call $std/iterator/test2
+ )
+ (func $std/iterator/MyIterable#constructor@new (result i32)
+  (local $0 i32)
+  (local $1 i32)
+  (local $2 i32)
+  i32.const 4
+  call $~lib/rt/__decrease_sp
+  i32.const 4
+  i32.const 4
+  call $~lib/rt/itcms/__new
+  local.set $1
+  global.get $~lib/memory/__stack_pointer
+  local.get $1
+  i32.store align=1
+  i32.const 4
+  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  local.get $1
+  i32.store align=1
+  i32.const 4
+  call $~lib/rt/__decrease_sp
+  i32.const 12
+  i32.const 1
+  call $~lib/rt/itcms/__new
+  local.tee $2
+  i32.const 128
+  i32.const 12
+  memory.copy
+  global.get $~lib/memory/__stack_pointer
+  local.get $2
+  i32.store align=1
+  i32.const 16
+  i32.const 6
+  call $~lib/rt/itcms/__new
+  local.tee $0
+  local.get $2
+  i32.store
+  local.get $0
+  local.get $2
+  call $~lib/rt/itcms/__link
+  local.get $0
+  local.get $2
+  i32.store offset=4
+  local.get $0
+  i32.const 12
+  i32.store offset=8
+  local.get $0
+  i32.const 3
+  i32.store offset=12
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $1
+  local.get $0
+  i32.store
+  local.get $1
+  local.get $0
+  call $~lib/rt/itcms/__link
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $1
  )
  (func $~lib/rt/__decrease_sp (param $0 i32)
   global.get $~lib/memory/__stack_pointer

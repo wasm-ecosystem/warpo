@@ -137,7 +137,7 @@
      end
      global.set $~lib/rt/itcms/iter
     end
-    block $__inlined_func$~lib/rt/itcms/Object#unlink$90
+    block $__inlined_func$~lib/rt/itcms/Object#unlink$91
      local.get $0
      i32.load offset=4
      i32.const -4
@@ -161,7 +161,7 @@
        call $~lib/builtins/abort
        unreachable
       end
-      br $__inlined_func$~lib/rt/itcms/Object#unlink$90
+      br $__inlined_func$~lib/rt/itcms/Object#unlink$91
      end
      local.get $0
      i32.load offset=8

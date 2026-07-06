@@ -748,7 +748,7 @@
    end
    global.set $~lib/rt/itcms/iter
   end
-  block $__inlined_func$~lib/rt/itcms/Object#unlink$732
+  block $__inlined_func$~lib/rt/itcms/Object#unlink$733
    local.get $0
    i32.load offset=4
    i32.const -4
@@ -772,7 +772,7 @@
      call $~lib/builtins/abort
      unreachable
     end
-    br $__inlined_func$~lib/rt/itcms/Object#unlink$732
+    br $__inlined_func$~lib/rt/itcms/Object#unlink$733
    end
    local.get $0
    i32.load offset=8
@@ -2242,19 +2242,9 @@
  )
  (func $std/typedarray/testInstantiate (param $0 i32)
   (local $1 i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
-  i32.const 12
-  i32.const 4
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store offset=4 align=1
-  local.get $1
   local.get $0
-  i32.const 0
-  call $~lib/arraybuffer/ArrayBufferView#constructor
+  i32.const 4
+  call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
   if
@@ -2289,17 +2279,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 12
-  i32.const 6
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store offset=4 align=1
-  local.get $1
   local.get $0
-  i32.const 0
-  call $~lib/arraybuffer/ArrayBufferView#constructor
+  i32.const 6
+  call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
   if
@@ -2334,17 +2316,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 12
-  i32.const 8
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store offset=4 align=1
-  local.get $1
   local.get $0
-  i32.const 0
-  call $~lib/arraybuffer/ArrayBufferView#constructor
+  i32.const 8
+  call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
   if
@@ -2379,17 +2353,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 12
-  i32.const 9
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store offset=4 align=1
-  local.get $1
   local.get $0
-  i32.const 1
-  call $~lib/arraybuffer/ArrayBufferView#constructor
+  i32.const 9
+  call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
   if
@@ -2428,17 +2394,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 12
-  i32.const 11
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store offset=4 align=1
-  local.get $1
   local.get $0
-  i32.const 1
-  call $~lib/arraybuffer/ArrayBufferView#constructor
+  i32.const 11
+  call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
   if
@@ -2477,17 +2435,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 12
-  i32.const 13
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store offset=4 align=1
-  local.get $1
   local.get $0
-  i32.const 2
-  call $~lib/arraybuffer/ArrayBufferView#constructor
+  i32.const 13
+  call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
   if
@@ -2526,17 +2476,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 12
-  i32.const 15
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store offset=4 align=1
-  local.get $1
   local.get $0
-  i32.const 2
-  call $~lib/arraybuffer/ArrayBufferView#constructor
+  i32.const 15
+  call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
   if
@@ -2575,17 +2517,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 12
-  i32.const 17
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store offset=4 align=1
-  local.get $1
   local.get $0
-  i32.const 3
-  call $~lib/arraybuffer/ArrayBufferView#constructor
+  i32.const 17
+  call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
   if
@@ -2624,17 +2558,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 12
-  i32.const 19
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store offset=4 align=1
-  local.get $1
   local.get $0
-  i32.const 3
-  call $~lib/arraybuffer/ArrayBufferView#constructor
+  i32.const 19
+  call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
   if
@@ -2673,17 +2599,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 12
-  i32.const 21
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store offset=4 align=1
-  local.get $1
   local.get $0
-  i32.const 2
-  call $~lib/arraybuffer/ArrayBufferView#constructor
+  i32.const 21
+  call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
   if
@@ -2722,17 +2640,9 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 12
-  i32.const 23
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store offset=4 align=1
-  local.get $1
   local.get $0
-  i32.const 3
-  call $~lib/arraybuffer/ArrayBufferView#constructor
+  i32.const 23
+  call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
   local.tee $1
   call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
   if
@@ -2771,10 +2681,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
  )
  (func $~lib/typedarray/Int32Array#__set (param $0 i32) (param $1 i32) (param $2 i32)
   local.get $0
@@ -4240,7 +4146,6 @@
  )
  (func $~lib/typedarray/Int32Array#slice (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
-  (local $4 i32)
   local.get $0
   i32.load offset=8
   i32.const 2
@@ -4268,16 +4173,6 @@
    select
   end
   local.set $1
-  i32.const 4
-  call $~lib/rt/__decrease_sp
-  i32.const 12
-  i32.const 13
-  call $~lib/rt/itcms/__new
-  local.set $4
-  global.get $~lib/memory/__stack_pointer
-  local.get $4
-  i32.store align=1
-  local.get $4
   local.get $2
   i32.const 0
   i32.lt_s
@@ -4308,8 +4203,8 @@
   i32.gt_s
   select
   local.tee $2
-  i32.const 2
-  call $~lib/arraybuffer/ArrayBufferView#constructor
+  i32.const 13
+  call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
   local.tee $3
   i32.load offset=4
   local.get $0
@@ -4322,10 +4217,6 @@
   i32.const 2
   i32.shl
   memory.copy
-  global.get $~lib/memory/__stack_pointer
-  i32.const 4
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $3
  )
  (func $~lib/typedarray/Int32Array#slice@varargs (param $0 i32) (result i32)
@@ -11089,7 +10980,7 @@
     local.get $6
     i32.gt_s
     if
-     block $__inlined_func$~lib/util/number/itoa_buffered<u32>$202 (result i32)
+     block $__inlined_func$~lib/util/number/itoa_buffered<u32>$200 (result i32)
       local.get $3
       local.get $0
       i32.const 1
@@ -11112,7 +11003,7 @@
        i32.or
        i32.store16
        i32.const 1
-       br $__inlined_func$~lib/util/number/itoa_buffered<u32>$202
+       br $__inlined_func$~lib/util/number/itoa_buffered<u32>$200
       end
       local.get $7
       local.get $4
@@ -11149,7 +11040,7 @@
      br $for-loop|0
     end
    end
-   block $__inlined_func$~lib/util/number/itoa_buffered<u32>$203 (result i32)
+   block $__inlined_func$~lib/util/number/itoa_buffered<u32>$201 (result i32)
     local.get $3
     local.get $0
     i32.const 1
@@ -11172,7 +11063,7 @@
      i32.or
      i32.store16
      i32.const 1
-     br $__inlined_func$~lib/util/number/itoa_buffered<u32>$203
+     br $__inlined_func$~lib/util/number/itoa_buffered<u32>$201
     end
     local.get $2
     local.get $1
@@ -11410,7 +11301,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinIntegerArray<i64>$779 (result i32)
+  block $__inlined_func$~lib/util/string/joinIntegerArray<i64>$780 (result i32)
    local.get $0
    i32.load offset=4
    local.set $4
@@ -11433,7 +11324,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     i32.const 6752
-    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$779
+    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$780
    end
    local.get $2
    i32.eqz
@@ -11510,7 +11401,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$779
+    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$780
    end
    i32.const 8556
    i32.load
@@ -11605,7 +11496,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$779
+    br $__inlined_func$~lib/util/string/joinIntegerArray<i64>$780
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 4
@@ -11662,7 +11553,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinIntegerArray<u64>$780 (result i32)
+  block $__inlined_func$~lib/util/string/joinIntegerArray<u64>$781 (result i32)
    local.get $0
    i32.load offset=4
    local.set $4
@@ -11685,7 +11576,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     i32.const 6752
-    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$780
+    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$781
    end
    local.get $2
    i32.eqz
@@ -11735,7 +11626,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$780
+    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$781
    end
    i32.const 8556
    i32.load
@@ -11830,7 +11721,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$780
+    br $__inlined_func$~lib/util/string/joinIntegerArray<u64>$781
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 4
@@ -12839,7 +12730,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinFloatArray<f32>$781 (result i32)
+  block $__inlined_func$~lib/util/string/joinFloatArray<f32>$782 (result i32)
    local.get $0
    i32.load offset=4
    local.set $4
@@ -12862,7 +12753,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     i32.const 6752
-    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$781
+    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$782
    end
    local.get $3
    i32.eqz
@@ -12918,7 +12809,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$781
+    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$782
    end
    i32.const 8556
    i32.load
@@ -13013,7 +12904,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$781
+    br $__inlined_func$~lib/util/string/joinFloatArray<f32>$782
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 4
@@ -13103,7 +12994,7 @@
   (local $5 i32)
   (local $6 i32)
   (local $7 i32)
-  block $__inlined_func$~lib/util/string/joinFloatArray<f64>$782 (result i32)
+  block $__inlined_func$~lib/util/string/joinFloatArray<f64>$783 (result i32)
    local.get $0
    i32.load offset=4
    local.set $4
@@ -13126,7 +13017,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     i32.const 6752
-    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$782
+    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$783
    end
    local.get $3
    i32.eqz
@@ -13181,7 +13072,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$782
+    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$783
    end
    i32.const 8556
    i32.load
@@ -13276,7 +13167,7 @@
     i32.add
     global.set $~lib/memory/__stack_pointer
     local.get $0
-    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$782
+    br $__inlined_func$~lib/util/string/joinFloatArray<f64>$783
    end
    global.get $~lib/memory/__stack_pointer
    i32.const 4
@@ -22384,8 +22275,8 @@
   (local $9 f64)
   (local $10 i32)
   (local $11 i64)
-  block $__inlined_func$start:std/typedarray$1034
-   i32.const 16
+  block $__inlined_func$start:std/typedarray$1035
+   i32.const 12
    call $~lib/rt/__decrease_sp
    memory.size
    i32.const 16
@@ -22423,17 +22314,9 @@
    call $std/typedarray/testInstantiate
    i32.const 5
    call $std/typedarray/testInstantiate
-   i32.const 12
-   i32.const 13
-   call $~lib/rt/itcms/__new
-   local.set $1
-   global.get $~lib/memory/__stack_pointer
-   local.get $1
-   i32.store align=1
-   local.get $1
    i32.const 3
-   i32.const 2
-   call $~lib/arraybuffer/ArrayBufferView#constructor
+   i32.const 13
+   call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
    local.set $1
    global.get $~lib/memory/__stack_pointer
    local.get $1
@@ -22580,17 +22463,9 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 12
-   i32.const 23
-   call $~lib/rt/itcms/__new
-   local.set $1
-   global.get $~lib/memory/__stack_pointer
-   local.get $1
-   i32.store align=1
-   local.get $1
    i32.const 8
-   i32.const 3
-   call $~lib/arraybuffer/ArrayBufferView#constructor
+   i32.const 23
+   call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
    local.set $1
    global.get $~lib/memory/__stack_pointer
    local.get $1
@@ -22715,17 +22590,9 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 12
-   i32.const 8
-   call $~lib/rt/itcms/__new
-   local.set $1
-   global.get $~lib/memory/__stack_pointer
-   local.get $1
-   i32.store align=1
-   local.get $1
    i32.const 3
-   i32.const 0
-   call $~lib/arraybuffer/ArrayBufferView#constructor
+   i32.const 8
+   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
    local.tee $1
    i32.const 0
    i32.const -32
@@ -22775,17 +22642,9 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 12
-   i32.const 4
-   call $~lib/rt/itcms/__new
-   local.set $1
-   global.get $~lib/memory/__stack_pointer
-   local.get $1
-   i32.store align=1
-   local.get $1
    i32.const 5
-   i32.const 0
-   call $~lib/arraybuffer/ArrayBufferView#constructor
+   i32.const 4
+   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
    local.set $1
    global.get $~lib/memory/__stack_pointer
    local.get $1
@@ -22921,17 +22780,17 @@
    i32.const 1
    i32.const 4
    call $~lib/typedarray/Int8Array#subarray
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store align=1
    i32.const 1
    global.set $~argumentsLength
-   local.get $3
+   local.get $2
    i32.const 0
    i32.const 0
    call $~lib/typedarray/Int8Array#fill@varargs
-   local.get $3
+   local.get $2
    i32.load offset=8
    i32.const 3
    i32.ne
@@ -22943,7 +22802,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
    i32.const 1
    i32.ne
@@ -22955,7 +22814,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    i32.load offset=8
    i32.const 3
    i32.ne
@@ -22967,7 +22826,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    i32.const 3
    i32.const 0
    i32.const 26
@@ -22999,17 +22858,9 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 12
-   i32.const 13
-   call $~lib/rt/itcms/__new
-   local.set $1
-   global.get $~lib/memory/__stack_pointer
-   local.get $1
-   i32.store align=1
-   local.get $1
    i32.const 5
-   i32.const 2
-   call $~lib/arraybuffer/ArrayBufferView#constructor
+   i32.const 13
+   call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
    local.set $1
    global.get $~lib/memory/__stack_pointer
    local.get $1
@@ -23145,17 +22996,17 @@
    i32.const 1
    i32.const 4
    call $~lib/typedarray/Int32Array#subarray
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store align=1
    i32.const 1
    global.set $~argumentsLength
-   local.get $3
+   local.get $2
    i32.const 0
    i32.const 0
    call $~lib/typedarray/Int32Array#fill@varargs
-   local.get $3
+   local.get $2
    i32.load offset=8
    i32.const 2
    i32.shr_u
@@ -23169,7 +23020,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
    i32.const 4
    i32.ne
@@ -23181,7 +23032,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    i32.load offset=8
    i32.const 12
    i32.ne
@@ -23193,7 +23044,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    i32.const 3
    i32.const 2
    i32.const 27
@@ -23225,17 +23076,9 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 12
-   i32.const 4
-   call $~lib/rt/itcms/__new
-   local.set $1
-   global.get $~lib/memory/__stack_pointer
-   local.get $1
-   i32.store align=1
-   local.get $1
    i32.const 6
-   i32.const 0
-   call $~lib/arraybuffer/ArrayBufferView#constructor
+   i32.const 4
+   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
    local.set $1
    global.get $~lib/memory/__stack_pointer
    local.get $1
@@ -23431,44 +23274,36 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 12
-   i32.const 13
-   call $~lib/rt/itcms/__new
-   local.set $1
-   global.get $~lib/memory/__stack_pointer
-   local.get $1
-   i32.store align=1
-   local.get $1
    i32.const 5
-   i32.const 2
-   call $~lib/arraybuffer/ArrayBufferView#constructor
-   local.set $3
+   i32.const 13
+   call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store offset=4 align=1
-   local.get $3
+   local.get $2
    i32.const 0
    i32.const 1
    call $~lib/typedarray/Int32Array#__set
-   local.get $3
+   local.get $2
    i32.const 1
    i32.const 2
    call $~lib/typedarray/Int32Array#__set
-   local.get $3
+   local.get $2
    i32.const 2
    i32.const 3
    call $~lib/typedarray/Int32Array#__set
-   local.get $3
+   local.get $2
    i32.const 3
    i32.const 4
    call $~lib/typedarray/Int32Array#__set
-   local.get $3
+   local.get $2
    i32.const 4
    i32.const 5
    call $~lib/typedarray/Int32Array#__set
    i32.const 1
    global.set $~argumentsLength
-   local.get $3
+   local.get $2
    call $~lib/typedarray/Int32Array#slice@varargs
    local.set $1
    global.get $~lib/memory/__stack_pointer
@@ -23476,16 +23311,16 @@
    i32.store align=1
    i32.const 2
    global.set $~argumentsLength
-   local.get $3
+   local.get $2
    i32.const 0
    i32.const 3
    i32.const 0
    call $~lib/typedarray/Int32Array#copyWithin@varargs
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store offset=4 align=1
-   local.get $3
+   local.get $2
    i32.const 5
    i32.const 2
    i32.const 27
@@ -23511,11 +23346,11 @@
    global.set $~argumentsLength
    i32.const 0
    call $~lib/typedarray/Int32Array#copyWithin@varargs
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store offset=4 align=1
-   local.get $3
+   local.get $2
    i32.const 5
    i32.const 2
    i32.const 27
@@ -23541,11 +23376,11 @@
    global.set $~argumentsLength
    i32.const 0
    call $~lib/typedarray/Int32Array#copyWithin@varargs
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store offset=4 align=1
-   local.get $3
+   local.get $2
    i32.const 5
    i32.const 2
    i32.const 27
@@ -23571,11 +23406,11 @@
    global.set $~argumentsLength
    i32.const 0
    call $~lib/typedarray/Int32Array#copyWithin@varargs
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store offset=4 align=1
-   local.get $3
+   local.get $2
    i32.const 5
    i32.const 2
    i32.const 27
@@ -23599,11 +23434,11 @@
    i32.const 3
    i32.const 4
    call $~lib/typedarray/Int32Array#copyWithin
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store offset=4 align=1
-   local.get $3
+   local.get $2
    i32.const 5
    i32.const 2
    i32.const 27
@@ -23627,11 +23462,11 @@
    i32.const 3
    i32.const 4
    call $~lib/typedarray/Int32Array#copyWithin
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store offset=4 align=1
-   local.get $3
+   local.get $2
    i32.const 5
    i32.const 2
    i32.const 27
@@ -23655,11 +23490,11 @@
    i32.const 2
    i32.const 4
    call $~lib/typedarray/Int32Array#copyWithin
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store offset=4 align=1
-   local.get $3
+   local.get $2
    i32.const 5
    i32.const 2
    i32.const 27
@@ -23685,11 +23520,11 @@
    global.set $~argumentsLength
    i32.const 0
    call $~lib/typedarray/Int32Array#copyWithin@varargs
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store offset=4 align=1
-   local.get $3
+   local.get $2
    i32.const 5
    i32.const 2
    i32.const 27
@@ -23713,11 +23548,11 @@
    i32.const -2
    i32.const -1
    call $~lib/typedarray/Int32Array#copyWithin
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store offset=4 align=1
-   local.get $3
+   local.get $2
    i32.const 5
    i32.const 2
    i32.const 27
@@ -23741,11 +23576,11 @@
    i32.const -3
    i32.const -2
    call $~lib/typedarray/Int32Array#copyWithin
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store offset=4 align=1
-   local.get $3
+   local.get $2
    i32.const 5
    i32.const 2
    i32.const 27
@@ -23769,11 +23604,11 @@
    i32.const -3
    i32.const -1
    call $~lib/typedarray/Int32Array#copyWithin
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store offset=4 align=1
-   local.get $3
+   local.get $2
    i32.const 5
    i32.const 2
    i32.const 27
@@ -23819,17 +23654,9 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 12
-   i32.const 13
-   call $~lib/rt/itcms/__new
-   local.set $1
-   global.get $~lib/memory/__stack_pointer
-   local.get $1
-   i32.store align=1
-   local.get $1
    i32.const 5
-   i32.const 2
-   call $~lib/arraybuffer/ArrayBufferView#constructor
+   i32.const 13
+   call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
    local.set $1
    global.get $~lib/memory/__stack_pointer
    local.get $1
@@ -23858,11 +23685,11 @@
    i32.const 1
    i32.const 4
    call $~lib/typedarray/Int32Array#subarray
-   local.set $3
+   local.set $2
    global.get $~lib/memory/__stack_pointer
-   local.get $3
+   local.get $2
    i32.store align=1
-   local.get $3
+   local.get $2
    i32.load offset=8
    i32.const 2
    i32.shr_u
@@ -23876,7 +23703,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
    i32.const 4
    i32.ne
@@ -23888,7 +23715,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    i32.load offset=8
    i32.const 12
    i32.ne
@@ -23966,11 +23793,11 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    i32.const 1
    i32.const 2
    call $~lib/typedarray/Int32Array#slice
-   local.tee $3
+   local.tee $2
    i32.const 0
    call $~lib/typedarray/Int32Array#__get
    i32.const 3
@@ -23983,7 +23810,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    i32.load offset=8
    i32.const 2
    i32.shr_u
@@ -23997,7 +23824,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
    if
     i32.const 0
@@ -24007,7 +23834,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    i32.load offset=8
    i32.const 4
    i32.ne
@@ -24023,7 +23850,7 @@
    global.set $~argumentsLength
    local.get $1
    call $~lib/typedarray/Int32Array#slice@varargs
-   local.tee $3
+   local.tee $2
    local.get $1
    i32.eq
    if
@@ -24034,7 +23861,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    i32.load offset=8
    i32.const 2
    i32.shr_u
@@ -24051,7 +23878,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
    local.get $1
    call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
@@ -24064,7 +23891,7 @@
     call $~lib/builtins/abort
     unreachable
    end
-   local.get $3
+   local.get $2
    i32.load offset=8
    local.get $1
    i32.load offset=8
@@ -24077,19 +23904,9 @@
     call $~lib/builtins/abort
     unreachable
    end
-   i32.const 4
-   call $~lib/rt/__decrease_sp
-   i32.const 12
-   i32.const 4
-   call $~lib/rt/itcms/__new
-   local.set $1
-   global.get $~lib/memory/__stack_pointer
-   local.get $1
-   i32.store align=1
-   local.get $1
    i32.const 3
-   i32.const 0
-   call $~lib/arraybuffer/ArrayBufferView#constructor
+   i32.const 4
+   call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
    local.tee $1
    i32.const 0
    i32.const 1
@@ -24103,7 +23920,7 @@
    i32.const 3
    call $~lib/typedarray/Int8Array#__set
    i32.const 0
-   local.set $3
+   local.set $2
    i32.const 0
    local.set $5
    i32.const 4
@@ -24115,16 +23932,16 @@
    i32.load offset=8
    local.set $7
    loop $for-loop|0
-    local.get $3
+    local.get $2
     local.get $7
     i32.lt_s
     if
      local.get $5
-     local.get $3
+     local.get $2
      local.get $6
      i32.add
      i32.load8_s
-     local.get $3
+     local.get $2
      global.get $~lib/memory/__stack_pointer
      local.get $1
      i32.store align=1
@@ -24134,10 +23951,10 @@
      i32.const 2
      call_indirect (type $2)
      local.set $5
-     local.get $3
+     local.get $2
      i32.const 1
      i32.add
-     local.set $3
+     local.set $2
      br $for-loop|0
     end
    end
@@ -24218,23 +24035,9 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $1
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $1
-                                                                      i32.store align=1
-                                                                      local.get $1
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $1
                                                                       i32.const 0
                                                                       i32.const 1
@@ -24255,23 +24058,9 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $1
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $1
-                                                                      i32.store align=1
-                                                                      local.get $1
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 8
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $1
                                                                       i32.const 0
                                                                       i32.const 1
@@ -24292,23 +24081,9 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $1
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $1
-                                                                      i32.store align=1
-                                                                      local.get $1
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $1
                                                                       i32.const 0
                                                                       i32.const 1
@@ -24325,7 +24100,7 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $1
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $1
                                                                       i32.load offset=8
                                                                       i32.const 1
@@ -24337,7 +24112,7 @@
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $4
                                                                         i32.const 1
                                                                         i32.shl
@@ -24370,23 +24145,9 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 11
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $1
                                                                       i32.const 0
                                                                       i32.const 1
@@ -24407,7 +24168,7 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $1
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $1
                                                                       i32.load offset=8
                                                                       i32.const 1
@@ -24419,7 +24180,7 @@
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $4
                                                                         i32.const 1
                                                                         i32.shl
@@ -24452,23 +24213,9 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 13
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $1
                                                                       i32.const 0
                                                                       i32.const 1
@@ -24489,7 +24236,7 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $1
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $1
                                                                       i32.load offset=8
                                                                       i32.const 2
@@ -24501,7 +24248,7 @@
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $4
                                                                         i32.const 2
                                                                         i32.shl
@@ -24532,23 +24279,9 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 15
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $1
                                                                       i32.const 0
                                                                       i32.const 1
@@ -24569,7 +24302,7 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $1
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $1
                                                                       i32.load offset=8
                                                                       i32.const 2
@@ -24581,7 +24314,7 @@
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $4
                                                                         i32.const 2
                                                                         i32.shl
@@ -24612,23 +24345,9 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $1
                                                                       i32.const 0
                                                                       i64.const 1
@@ -24647,7 +24366,7 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $1
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $1
                                                                       i32.load offset=8
                                                                       i32.const 3
@@ -24659,7 +24378,7 @@
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $11
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 3
                                                                         i32.shl
@@ -24690,23 +24409,9 @@
                                                                       i64.const 6
                                                                       i64.ne
                                                                       br_if $folding-inner0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $1
                                                                       i32.const 0
                                                                       i64.const 1
@@ -24727,7 +24432,7 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $1
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $1
                                                                       i32.load offset=8
                                                                       i32.const 3
@@ -24739,7 +24444,7 @@
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $11
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 3
                                                                         i32.shl
@@ -24770,23 +24475,9 @@
                                                                       i64.const 6
                                                                       i64.ne
                                                                       br_if $folding-inner0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $1
                                                                       i32.const 0
                                                                       f32.const 1
@@ -24805,7 +24496,7 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $1
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $1
                                                                       i32.load offset=8
                                                                       i32.const 2
@@ -24817,7 +24508,7 @@
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $8
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 2
                                                                         i32.shl
@@ -24848,23 +24539,9 @@
                                                                       f32.const 6
                                                                       f32.ne
                                                                       br_if $folding-inner0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $1
                                                                       i32.const 0
                                                                       f64.const 1
@@ -24883,7 +24560,7 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $1
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $1
                                                                       i32.load offset=8
                                                                       i32.const 3
@@ -24895,7 +24572,7 @@
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $9
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 3
                                                                         i32.shl
@@ -24926,23 +24603,9 @@
                                                                       f64.const 6
                                                                       f64.ne
                                                                       br_if $folding-inner0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 4
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -24973,23 +24636,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner3
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -25023,23 +24672,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner3
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -25073,23 +24708,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner3
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -25120,23 +24741,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner3
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -25167,23 +24774,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner3
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -25214,23 +24807,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner3
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -25261,23 +24840,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner3
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i64.const 1
@@ -25308,23 +24873,9 @@
                                                                       i64.const 1
                                                                       i64.ne
                                                                       br_if $folding-inner3
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i64.const 1
@@ -25355,23 +24906,9 @@
                                                                       i64.const 1
                                                                       i64.ne
                                                                       br_if $folding-inner3
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f32.const 1
@@ -25402,23 +24939,9 @@
                                                                       f32.const 1
                                                                       f32.ne
                                                                       br_if $folding-inner3
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f64.const 1
@@ -25449,23 +24972,9 @@
                                                                       f64.const 1
                                                                       f64.ne
                                                                       br_if $folding-inner3
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 4
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -25484,7 +24993,7 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $0
                                                                       i32.load offset=8
                                                                       i32.const 1
@@ -25497,7 +25006,7 @@
                                                                        if
                                                                         local.get $4
                                                                         local.get $1
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.add
                                                                         i32.load8_s
                                                                         local.get $1
@@ -25527,23 +25036,9 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner4
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -25564,23 +25059,9 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner4
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 8
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -25601,32 +25082,18 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner4
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $3
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+                                                                      local.tee $2
                                                                       i32.const 0
                                                                       i32.const 1
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       i32.const 2
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Int16Array#__set
@@ -25634,10 +25101,10 @@
                                                                       local.set $1
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=4
                                                                       local.set $4
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=8
                                                                       i32.const 1
                                                                       i32.shr_u
@@ -25658,9 +25125,9 @@
                                                                         i32.load16_s
                                                                         local.get $0
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.store align=1
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 4
                                                                         global.set $~argumentsLength
                                                                         i32.const 16
@@ -25683,32 +25150,18 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner4
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $3
+                                                                      i32.const 11
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+                                                                      local.tee $2
                                                                       i32.const 0
                                                                       i32.const 1
                                                                       call $~lib/typedarray/Uint16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       i32.const 2
                                                                       call $~lib/typedarray/Uint16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Uint16Array#__set
@@ -25716,10 +25169,10 @@
                                                                       local.set $1
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=4
                                                                       local.set $4
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=8
                                                                       i32.const 1
                                                                       i32.shr_u
@@ -25740,9 +25193,9 @@
                                                                         i32.load16_u
                                                                         local.get $0
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.store align=1
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 4
                                                                         global.set $~argumentsLength
                                                                         i32.const 17
@@ -25765,32 +25218,18 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner4
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $3
+                                                                      i32.const 13
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
+                                                                      local.tee $2
                                                                       i32.const 0
                                                                       i32.const 1
                                                                       call $~lib/typedarray/Int32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       i32.const 2
                                                                       call $~lib/typedarray/Int32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Int32Array#__set
@@ -25798,10 +25237,10 @@
                                                                       local.set $1
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=4
                                                                       local.set $4
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
@@ -25822,9 +25261,9 @@
                                                                         i32.load
                                                                         local.get $0
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.store align=1
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 4
                                                                         global.set $~argumentsLength
                                                                         i32.const 18
@@ -25845,32 +25284,18 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner4
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $3
+                                                                      i32.const 15
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
+                                                                      local.tee $2
                                                                       i32.const 0
                                                                       i32.const 1
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       i32.const 2
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Uint32Array#__set
@@ -25878,10 +25303,10 @@
                                                                       local.set $1
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=4
                                                                       local.set $4
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
@@ -25902,9 +25327,9 @@
                                                                         i32.load
                                                                         local.get $0
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.store align=1
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 4
                                                                         global.set $~argumentsLength
                                                                         i32.const 19
@@ -25925,23 +25350,9 @@
                                                                       i32.const 6
                                                                       i32.ne
                                                                       br_if $folding-inner4
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i64.const 1
@@ -25960,7 +25371,7 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $0
                                                                       i32.load offset=8
                                                                       i32.const 3
@@ -25974,7 +25385,7 @@
                                                                        i32.ge_s
                                                                        if
                                                                         local.get $11
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         i32.const 3
                                                                         i32.shl
@@ -26005,23 +25416,9 @@
                                                                       i64.const 6
                                                                       i64.ne
                                                                       br_if $folding-inner4
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i64.const 1
@@ -26040,7 +25437,7 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $0
                                                                       i32.load offset=8
                                                                       i32.const 3
@@ -26054,7 +25451,7 @@
                                                                        i32.ge_s
                                                                        if
                                                                         local.get $11
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         i32.const 3
                                                                         i32.shl
@@ -26085,23 +25482,9 @@
                                                                       i64.const 6
                                                                       i64.ne
                                                                       br_if $folding-inner4
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f32.const 1
@@ -26120,7 +25503,7 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $0
                                                                       i32.load offset=8
                                                                       i32.const 2
@@ -26134,7 +25517,7 @@
                                                                        i32.ge_s
                                                                        if
                                                                         local.get $8
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         i32.const 2
                                                                         i32.shl
@@ -26165,23 +25548,9 @@
                                                                       f32.const 6
                                                                       f32.ne
                                                                       br_if $folding-inner4
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f64.const 1
@@ -26200,7 +25569,7 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $0
                                                                       i32.load offset=8
                                                                       i32.const 3
@@ -26214,7 +25583,7 @@
                                                                        i32.ge_s
                                                                        if
                                                                         local.get $9
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         i32.const 3
                                                                         i32.shl
@@ -26245,23 +25614,11 @@
                                                                       f64.const 6
                                                                       f64.ne
                                                                       br_if $folding-inner4
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 4
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -26301,16 +25658,16 @@
                                                                       local.get $5
                                                                       i32.const 1
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
                                                                       loop $for-loop|015
                                                                        local.get $4
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $4
                                                                         i32.add
                                                                         local.get $4
@@ -26335,13 +25692,13 @@
                                                                        end
                                                                       end
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4
                                                                       local.get $1
                                                                       local.get $5
@@ -26374,17 +25731,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -26424,16 +25773,16 @@
                                                                       local.get $5
                                                                       i32.const 1
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
                                                                       loop $for-loop|016
                                                                        local.get $4
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $4
                                                                         i32.add
                                                                         local.get $4
@@ -26458,13 +25807,13 @@
                                                                        end
                                                                       end
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4
                                                                       local.get $1
                                                                       local.get $5
@@ -26497,17 +25846,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 8
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -26547,16 +25888,16 @@
                                                                       local.get $5
                                                                       i32.const 1
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
                                                                       loop $for-loop|017
                                                                        local.get $4
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $4
                                                                         i32.add
                                                                         local.get $4
@@ -26581,13 +25922,13 @@
                                                                        end
                                                                       end
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4
                                                                       local.get $1
                                                                       local.get $5
@@ -26620,17 +25961,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -26673,17 +26006,17 @@
                                                                       local.tee $6
                                                                       i32.const 1
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
                                                                       loop $for-loop|01518
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $4
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
                                                                         local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.shl
                                                                         local.tee $7
@@ -26692,7 +26025,7 @@
                                                                         local.get $7
                                                                         i32.add
                                                                         i32.load16_s
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
                                                                         local.get $0
                                                                         i32.store align=1
@@ -26702,21 +26035,21 @@
                                                                         i32.const 27
                                                                         call_indirect (type $1)
                                                                         i32.store16
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|01518
                                                                        end
                                                                       end
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4
                                                                       local.get $1
                                                                       local.get $6
@@ -26749,17 +26082,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 11
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -26780,7 +26105,7 @@
                                                                       i32.const 2704
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
@@ -26804,17 +26129,17 @@
                                                                       local.tee $6
                                                                       i32.const 1
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
                                                                       loop $for-loop|01619
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $4
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
                                                                         local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.shl
                                                                         local.tee $7
@@ -26823,7 +26148,7 @@
                                                                         local.get $7
                                                                         i32.add
                                                                         i32.load16_u
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
                                                                         local.get $0
                                                                         i32.store align=1
@@ -26833,21 +26158,21 @@
                                                                         i32.const 28
                                                                         call_indirect (type $1)
                                                                         i32.store16
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|01619
                                                                        end
                                                                       end
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4
                                                                       local.get $1
                                                                       local.get $6
@@ -26880,17 +26205,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 13
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -26911,7 +26228,7 @@
                                                                       i32.const 2736
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
@@ -26935,17 +26252,17 @@
                                                                       local.tee $6
                                                                       i32.const 1
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
                                                                       loop $for-loop|01720
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $4
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
                                                                         local.get $2
+                                                                        local.get $3
                                                                         i32.const 2
                                                                         i32.shl
                                                                         local.tee $7
@@ -26954,7 +26271,7 @@
                                                                         local.get $7
                                                                         i32.add
                                                                         i32.load
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
                                                                         local.get $0
                                                                         i32.store align=1
@@ -26964,21 +26281,21 @@
                                                                         i32.const 29
                                                                         call_indirect (type $1)
                                                                         i32.store
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|01720
                                                                        end
                                                                       end
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4
                                                                       local.get $1
                                                                       local.get $6
@@ -27011,17 +26328,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 15
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -27042,7 +26351,7 @@
                                                                       i32.const 2768
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
@@ -27066,17 +26375,17 @@
                                                                       local.tee $6
                                                                       i32.const 1
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
                                                                       loop $for-loop|018
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $4
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
                                                                         local.get $2
+                                                                        local.get $3
                                                                         i32.const 2
                                                                         i32.shl
                                                                         local.tee $7
@@ -27085,7 +26394,7 @@
                                                                         local.get $7
                                                                         i32.add
                                                                         i32.load
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
                                                                         local.get $0
                                                                         i32.store align=1
@@ -27095,21 +26404,21 @@
                                                                         i32.const 30
                                                                         call_indirect (type $1)
                                                                         i32.store
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|018
                                                                        end
                                                                       end
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4
                                                                       local.get $1
                                                                       local.get $6
@@ -27142,17 +26451,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -27173,7 +26474,7 @@
                                                                       i32.const 2800
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
@@ -27197,17 +26498,17 @@
                                                                       local.tee $6
                                                                       i32.const 1
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
                                                                       loop $for-loop|019
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $4
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
                                                                         local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         local.tee $7
@@ -27216,7 +26517,7 @@
                                                                         local.get $7
                                                                         i32.add
                                                                         i64.load
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
                                                                         local.get $0
                                                                         i32.store align=1
@@ -27226,21 +26527,21 @@
                                                                         i32.const 31
                                                                         call_indirect (type $24)
                                                                         i64.store
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|019
                                                                        end
                                                                       end
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4
                                                                       local.get $1
                                                                       local.get $6
@@ -27273,17 +26574,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -27304,7 +26597,7 @@
                                                                       i32.const 2832
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
@@ -27328,17 +26621,17 @@
                                                                       local.tee $6
                                                                       i32.const 1
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
                                                                       loop $for-loop|020
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $4
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
                                                                         local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         local.tee $7
@@ -27347,7 +26640,7 @@
                                                                         local.get $7
                                                                         i32.add
                                                                         i64.load
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
                                                                         local.get $0
                                                                         i32.store align=1
@@ -27357,21 +26650,21 @@
                                                                         i32.const 32
                                                                         call_indirect (type $24)
                                                                         i64.store
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|020
                                                                        end
                                                                       end
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4
                                                                       local.get $1
                                                                       local.get $6
@@ -27404,17 +26697,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -27435,7 +26720,7 @@
                                                                       i32.const 2864
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
@@ -27459,17 +26744,17 @@
                                                                       local.tee $6
                                                                       i32.const 1
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
                                                                       loop $for-loop|021
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $4
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
                                                                         local.get $2
+                                                                        local.get $3
                                                                         i32.const 2
                                                                         i32.shl
                                                                         local.tee $7
@@ -27478,7 +26763,7 @@
                                                                         local.get $7
                                                                         i32.add
                                                                         f32.load
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
                                                                         local.get $0
                                                                         i32.store align=1
@@ -27488,21 +26773,21 @@
                                                                         i32.const 33
                                                                         call_indirect (type $29)
                                                                         f32.store
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|021
                                                                        end
                                                                       end
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4
                                                                       local.get $1
                                                                       local.get $6
@@ -27535,17 +26820,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -27566,7 +26843,7 @@
                                                                       i32.const 2896
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
@@ -27590,17 +26867,17 @@
                                                                       local.tee $6
                                                                       i32.const 1
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
                                                                       loop $for-loop|022
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $4
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
                                                                         local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         local.tee $7
@@ -27609,7 +26886,7 @@
                                                                         local.get $7
                                                                         i32.add
                                                                         f64.load
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
                                                                         local.get $0
                                                                         i32.store align=1
@@ -27619,21 +26896,21 @@
                                                                         i32.const 34
                                                                         call_indirect (type $30)
                                                                         f64.store
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|022
                                                                        end
                                                                       end
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4
                                                                       local.get $1
                                                                       local.get $6
@@ -27666,38 +26943,30 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 6
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
+                                                                      i32.const 4
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i32.const 1
                                                                       call $~lib/typedarray/Int8Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 2
                                                                       call $~lib/typedarray/Int8Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Int8Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 3
                                                                       i32.const 4
                                                                       call $~lib/typedarray/Int8Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Int8Array#__set
@@ -27705,12 +26974,12 @@
                                                                       i32.const 2928
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       i32.const 0
                                                                       local.set $1
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       local.set $6
                                                                       i32.const 12
@@ -27727,24 +26996,24 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $5
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
                                                                       local.set $7
                                                                       loop $for-loop|023
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $6
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $7
                                                                         i32.add
                                                                         i32.load8_s
                                                                         local.tee $10
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.store align=1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 35
@@ -27761,10 +27030,10 @@
                                                                          local.get $10
                                                                          i32.store8
                                                                         end
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|023
                                                                        end
                                                                       end
@@ -27819,38 +27088,30 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
                                                                       i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 6
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i32.const 1
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 2
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 3
                                                                       i32.const 4
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Uint8Array#__set
@@ -27858,12 +27119,12 @@
                                                                       i32.const 2960
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       i32.const 0
                                                                       local.set $1
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       local.set $6
                                                                       i32.const 12
@@ -27880,24 +27141,24 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $5
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
                                                                       local.set $7
                                                                       loop $for-loop|024
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $6
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $7
                                                                         i32.add
                                                                         i32.load8_u
                                                                         local.tee $10
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.store align=1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 36
@@ -27914,10 +27175,10 @@
                                                                          local.get $10
                                                                          i32.store8
                                                                         end
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|024
                                                                        end
                                                                       end
@@ -27972,38 +27233,30 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 6
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
+                                                                      i32.const 8
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i32.const 1
                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 2
                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 3
                                                                       i32.const 4
                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Uint8ClampedArray#__set
@@ -28011,12 +27264,12 @@
                                                                       i32.const 2992
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       i32.const 0
                                                                       local.set $1
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       local.set $6
                                                                       i32.const 12
@@ -28033,24 +27286,24 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $5
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
                                                                       local.set $7
                                                                       loop $for-loop|025
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $6
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $7
                                                                         i32.add
                                                                         i32.load8_u
                                                                         local.tee $10
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.store align=1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 37
@@ -28067,10 +27320,10 @@
                                                                          local.get $10
                                                                          i32.store8
                                                                         end
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|025
                                                                        end
                                                                       end
@@ -28125,38 +27378,30 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 6
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 0
                                                                       i32.const 1
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       i32.const 2
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 3
                                                                       i32.const 4
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Int16Array#__set
@@ -28164,10 +27409,10 @@
                                                                       i32.const 3024
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=8
                                                                       i32.const 1
                                                                       i32.shr_u
@@ -28188,28 +27433,28 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $5
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=4
                                                                       local.set $7
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|02326
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $6
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $7
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.shl
                                                                         i32.add
                                                                         i32.load16_s
                                                                         local.tee $10
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.store align=1
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 38
@@ -28228,10 +27473,10 @@
                                                                          local.get $10
                                                                          i32.store16
                                                                         end
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|02326
                                                                        end
                                                                       end
@@ -28240,7 +27485,7 @@
                                                                       local.get $0
                                                                       i32.const 1
                                                                       i32.shl
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       call $~lib/rt/itcms/__renew
                                                                       local.tee $0
                                                                       i32.store
@@ -28248,7 +27493,7 @@
                                                                       local.get $0
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $4
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store offset=8
                                                                       local.get $4
                                                                       local.get $0
@@ -28291,38 +27536,30 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 6
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
+                                                                      i32.const 11
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 0
                                                                       i32.const 1
                                                                       call $~lib/typedarray/Uint16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       i32.const 2
                                                                       call $~lib/typedarray/Uint16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Uint16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 3
                                                                       i32.const 4
                                                                       call $~lib/typedarray/Uint16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Uint16Array#__set
@@ -28330,10 +27567,10 @@
                                                                       i32.const 3056
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=8
                                                                       i32.const 1
                                                                       i32.shr_u
@@ -28354,28 +27591,28 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $5
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=4
                                                                       local.set $7
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|02427
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $6
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $7
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.shl
                                                                         i32.add
                                                                         i32.load16_u
                                                                         local.tee $10
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.store align=1
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 39
@@ -28394,10 +27631,10 @@
                                                                          local.get $10
                                                                          i32.store16
                                                                         end
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|02427
                                                                        end
                                                                       end
@@ -28406,7 +27643,7 @@
                                                                       local.get $0
                                                                       i32.const 1
                                                                       i32.shl
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       call $~lib/rt/itcms/__renew
                                                                       local.tee $0
                                                                       i32.store
@@ -28414,7 +27651,7 @@
                                                                       local.get $0
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $4
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store offset=8
                                                                       local.get $4
                                                                       local.get $0
@@ -28457,38 +27694,30 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 6
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
+                                                                      i32.const 13
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 0
                                                                       i32.const 1
                                                                       call $~lib/typedarray/Int32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       i32.const 2
                                                                       call $~lib/typedarray/Int32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Int32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 3
                                                                       i32.const 4
                                                                       call $~lib/typedarray/Int32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Int32Array#__set
@@ -28496,10 +27725,10 @@
                                                                       i32.const 3088
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
@@ -28520,28 +27749,28 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $5
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=4
                                                                       local.set $7
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|02528
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $6
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $7
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
                                                                         i32.load
                                                                         local.tee $10
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.store align=1
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 40
@@ -28560,10 +27789,10 @@
                                                                          local.get $10
                                                                          i32.store
                                                                         end
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|02528
                                                                        end
                                                                       end
@@ -28572,7 +27801,7 @@
                                                                       local.get $0
                                                                       i32.const 2
                                                                       i32.shl
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       call $~lib/rt/itcms/__renew
                                                                       local.tee $0
                                                                       i32.store
@@ -28580,7 +27809,7 @@
                                                                       local.get $0
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $4
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store offset=8
                                                                       local.get $4
                                                                       local.get $0
@@ -28623,38 +27852,30 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 6
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
+                                                                      i32.const 15
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 0
                                                                       i32.const 1
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       i32.const 2
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       i32.const 3
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 3
                                                                       i32.const 4
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 5
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Uint32Array#__set
@@ -28662,10 +27883,10 @@
                                                                       i32.const 3120
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
@@ -28686,28 +27907,28 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $5
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=4
                                                                       local.set $7
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|026
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $6
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $7
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
                                                                         i32.load
                                                                         local.tee $10
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.store align=1
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 41
@@ -28726,10 +27947,10 @@
                                                                          local.get $10
                                                                          i32.store
                                                                         end
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|026
                                                                        end
                                                                       end
@@ -28738,7 +27959,7 @@
                                                                       local.get $0
                                                                       i32.const 2
                                                                       i32.shl
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       call $~lib/rt/itcms/__renew
                                                                       local.tee $0
                                                                       i32.store
@@ -28746,7 +27967,7 @@
                                                                       local.get $0
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $4
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store offset=8
                                                                       local.get $4
                                                                       local.get $0
@@ -28789,38 +28010,30 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 6
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
+                                                                      i32.const 17
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 0
                                                                       i64.const 1
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       i64.const 2
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       i64.const 3
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 3
                                                                       i64.const 4
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 5
                                                                       i64.const 5
                                                                       call $~lib/typedarray/Int64Array#__set
@@ -28828,10 +28041,10 @@
                                                                       i32.const 3152
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
@@ -28852,28 +28065,28 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $5
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=4
                                                                       local.set $7
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|027
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $6
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $7
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
                                                                         i64.load
                                                                         local.tee $11
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.store align=1
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 42
@@ -28892,10 +28105,10 @@
                                                                          local.get $11
                                                                          i64.store
                                                                         end
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|027
                                                                        end
                                                                       end
@@ -28904,7 +28117,7 @@
                                                                       local.get $0
                                                                       i32.const 3
                                                                       i32.shl
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       call $~lib/rt/itcms/__renew
                                                                       local.tee $0
                                                                       i32.store
@@ -28912,7 +28125,7 @@
                                                                       local.get $0
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $4
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store offset=8
                                                                       local.get $4
                                                                       local.get $0
@@ -28955,38 +28168,30 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 6
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
+                                                                      i32.const 19
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 0
                                                                       i64.const 1
                                                                       call $~lib/typedarray/Uint64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       i64.const 2
                                                                       call $~lib/typedarray/Uint64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       i64.const 3
                                                                       call $~lib/typedarray/Uint64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 3
                                                                       i64.const 4
                                                                       call $~lib/typedarray/Uint64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 5
                                                                       i64.const 5
                                                                       call $~lib/typedarray/Uint64Array#__set
@@ -28994,10 +28199,10 @@
                                                                       i32.const 3184
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
@@ -29018,28 +28223,28 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $5
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=4
                                                                       local.set $7
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|028
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $6
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $7
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
                                                                         i64.load
                                                                         local.tee $11
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.store align=1
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 43
@@ -29058,10 +28263,10 @@
                                                                          local.get $11
                                                                          i64.store
                                                                         end
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|028
                                                                        end
                                                                       end
@@ -29070,7 +28275,7 @@
                                                                       local.get $0
                                                                       i32.const 3
                                                                       i32.shl
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       call $~lib/rt/itcms/__renew
                                                                       local.tee $0
                                                                       i32.store
@@ -29078,7 +28283,7 @@
                                                                       local.get $0
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $4
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store offset=8
                                                                       local.get $4
                                                                       local.get $0
@@ -29121,38 +28326,30 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 6
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 0
                                                                       f32.const 1
                                                                       call $~lib/typedarray/Float32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       f32.const 2
                                                                       call $~lib/typedarray/Float32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       f32.const 3
                                                                       call $~lib/typedarray/Float32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 3
                                                                       f32.const 4
                                                                       call $~lib/typedarray/Float32Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 5
                                                                       f32.const 5
                                                                       call $~lib/typedarray/Float32Array#__set
@@ -29160,10 +28357,10 @@
                                                                       i32.const 3216
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
@@ -29184,28 +28381,28 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $5
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=4
                                                                       local.set $7
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|029
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $6
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $7
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
                                                                         f32.load
                                                                         local.tee $8
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.store align=1
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 44
@@ -29224,10 +28421,10 @@
                                                                          local.get $8
                                                                          f32.store
                                                                         end
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|029
                                                                        end
                                                                       end
@@ -29236,7 +28433,7 @@
                                                                       local.get $0
                                                                       i32.const 2
                                                                       i32.shl
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       call $~lib/rt/itcms/__renew
                                                                       local.tee $0
                                                                       i32.store
@@ -29244,7 +28441,7 @@
                                                                       local.get $0
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $4
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store offset=8
                                                                       local.get $4
                                                                       local.get $0
@@ -29287,38 +28484,30 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 8
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 6
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
+                                                                      i32.const 23
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 0
                                                                       f64.const 1
                                                                       call $~lib/typedarray/Float64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       f64.const 2
                                                                       call $~lib/typedarray/Float64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       f64.const 3
                                                                       call $~lib/typedarray/Float64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 3
                                                                       f64.const 4
                                                                       call $~lib/typedarray/Float64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 5
                                                                       f64.const 5
                                                                       call $~lib/typedarray/Float64Array#__set
@@ -29326,10 +28515,10 @@
                                                                       i32.const 3248
                                                                       i32.store align=1
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
@@ -29350,28 +28539,28 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $5
                                                                       i32.store offset=4 align=1
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.load offset=4
                                                                       local.set $7
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|030
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $6
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $7
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
                                                                         f64.load
                                                                         local.tee $9
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.store align=1
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 45
@@ -29390,10 +28579,10 @@
                                                                          local.get $9
                                                                          f64.store
                                                                         end
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|030
                                                                        end
                                                                       end
@@ -29402,7 +28591,7 @@
                                                                       local.get $0
                                                                       i32.const 3
                                                                       i32.shl
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       call $~lib/rt/itcms/__renew
                                                                       local.tee $0
                                                                       i32.store
@@ -29410,7 +28599,7 @@
                                                                       local.get $0
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $4
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store offset=8
                                                                       local.get $4
                                                                       local.get $0
@@ -29451,19 +28640,9 @@
                                                                       i32.const 8
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 4
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -29485,23 +28664,9 @@
                                                                       i32.const 3312
                                                                       call $~lib/typedarray/Int8Array#some
                                                                       br_if $folding-inner14
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -29523,23 +28688,9 @@
                                                                       i32.const 3376
                                                                       call $~lib/typedarray/Uint8Array#some
                                                                       br_if $folding-inner14
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 8
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -29561,23 +28712,9 @@
                                                                       i32.const 3440
                                                                       call $~lib/typedarray/Uint8Array#some
                                                                       br_if $folding-inner14
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -29599,23 +28736,9 @@
                                                                       i32.const 3504
                                                                       call $~lib/typedarray/Int16Array#some
                                                                       br_if $folding-inner14
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 11
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -29637,23 +28760,9 @@
                                                                       i32.const 3568
                                                                       call $~lib/typedarray/Uint16Array#some
                                                                       br_if $folding-inner14
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 13
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -29675,23 +28784,9 @@
                                                                       i32.const 3632
                                                                       call $~lib/typedarray/Int32Array#some
                                                                       br_if $folding-inner14
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 15
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -29713,23 +28808,9 @@
                                                                       i32.const 3696
                                                                       call $~lib/typedarray/Uint32Array#some
                                                                       br_if $folding-inner14
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i64.const 2
@@ -29751,23 +28832,9 @@
                                                                       i32.const 3760
                                                                       call $~lib/typedarray/Int64Array#some
                                                                       br_if $folding-inner14
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i64.const 2
@@ -29789,23 +28856,9 @@
                                                                       i32.const 3824
                                                                       call $~lib/typedarray/Uint64Array#some
                                                                       br_if $folding-inner14
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f32.const 2
@@ -29827,23 +28880,9 @@
                                                                       i32.const 3888
                                                                       call $~lib/typedarray/Float32Array#some
                                                                       br_if $folding-inner14
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f64.const 2
@@ -29865,23 +28904,9 @@
                                                                       i32.const 3952
                                                                       call $~lib/typedarray/Float64Array#some
                                                                       br_if $folding-inner14
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 4
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -29906,23 +28931,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner16
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -29947,23 +28958,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner16
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 8
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -29988,23 +28985,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner16
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -30029,23 +29012,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner16
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 11
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -30070,23 +29039,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner16
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 13
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -30111,23 +29066,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner16
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 15
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -30152,23 +29093,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner16
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i64.const 1
@@ -30193,23 +29120,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner16
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i64.const 1
@@ -30234,23 +29147,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner16
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f32.const 1
@@ -30275,23 +29174,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner16
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f64.const 1
@@ -30316,23 +29201,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner16
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 4
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -30357,23 +29228,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner18
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -30398,23 +29255,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner18
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 8
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -30439,23 +29282,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner18
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -30480,23 +29309,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner18
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 11
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -30521,23 +29336,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner18
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 13
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -30562,23 +29363,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner18
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 15
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 1
@@ -30603,23 +29390,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner18
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i64.const 1
@@ -30644,23 +29417,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner18
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i64.const 1
@@ -30685,23 +29444,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner18
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f32.const 1
@@ -30726,23 +29471,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner18
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f64.const 1
@@ -30767,23 +29498,9 @@
                                                                       i32.const -1
                                                                       i32.ne
                                                                       br_if $folding-inner18
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 4
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -30805,23 +29522,9 @@
                                                                       i32.const 5424
                                                                       call $~lib/typedarray/Int8Array#every
                                                                       br_if $folding-inner20
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -30843,23 +29546,9 @@
                                                                       i32.const 5488
                                                                       call $~lib/typedarray/Uint8Array#every
                                                                       br_if $folding-inner20
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 8
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -30881,23 +29570,9 @@
                                                                       i32.const 5552
                                                                       call $~lib/typedarray/Uint8Array#every
                                                                       br_if $folding-inner20
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -30919,23 +29594,9 @@
                                                                       i32.const 5616
                                                                       call $~lib/typedarray/Int16Array#every
                                                                       br_if $folding-inner20
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 11
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -30957,23 +29618,9 @@
                                                                       i32.const 5680
                                                                       call $~lib/typedarray/Uint16Array#every
                                                                       br_if $folding-inner20
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 13
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -30995,23 +29642,9 @@
                                                                       i32.const 5744
                                                                       call $~lib/typedarray/Int32Array#every
                                                                       br_if $folding-inner20
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 15
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i32.const 2
@@ -31033,23 +29666,9 @@
                                                                       i32.const 5808
                                                                       call $~lib/typedarray/Uint32Array#every
                                                                       br_if $folding-inner20
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i64.const 2
@@ -31071,23 +29690,9 @@
                                                                       i32.const 5872
                                                                       call $~lib/typedarray/Int64Array#every
                                                                       br_if $folding-inner20
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       i64.const 2
@@ -31109,23 +29714,9 @@
                                                                       i32.const 5936
                                                                       call $~lib/typedarray/Uint64Array#every
                                                                       br_if $folding-inner20
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f32.const 2
@@ -31147,23 +29738,9 @@
                                                                       i32.const 6000
                                                                       call $~lib/typedarray/Float32Array#every
                                                                       br_if $folding-inner20
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f64.const 2
@@ -31185,25 +29762,11 @@
                                                                       i32.const 6064
                                                                       call $~lib/typedarray/Float64Array#every
                                                                       br_if $folding-inner20
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
                                                                       i32.const 0
                                                                       global.set $std/typedarray/forEachCallCount
-                                                                      i32.const 12
-                                                                      i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 4
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       global.set $std/typedarray/forEachSelf
                                                                       local.get $0
@@ -31233,17 +29796,17 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       local.get $0
                                                                       i32.load offset=4
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       local.get $0
                                                                       i32.load offset=8
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|031
                                                                        local.get $1
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.add
                                                                         i32.load8_s
                                                                         local.get $1
@@ -31270,25 +29833,11 @@
                                                                       i32.const 3
                                                                       i32.ne
                                                                       br_if $folding-inner21
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
                                                                       i32.const 0
                                                                       global.set $std/typedarray/forEachCallCount
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       global.set $std/typedarray/forEachSelf
                                                                       local.get $0
@@ -31322,25 +29871,11 @@
                                                                       i32.const 3
                                                                       i32.ne
                                                                       br_if $folding-inner21
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
                                                                       i32.const 0
                                                                       global.set $std/typedarray/forEachCallCount
-                                                                      i32.const 12
-                                                                      i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 8
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       global.set $std/typedarray/forEachSelf
                                                                       local.get $0
@@ -31374,42 +29909,28 @@
                                                                       i32.const 3
                                                                       i32.ne
                                                                       br_if $folding-inner21
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
                                                                       i32.const 0
                                                                       global.set $std/typedarray/forEachCallCount
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $2
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+                                                                      local.tee $3
                                                                       global.set $std/typedarray/forEachSelf
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i32.const 6128
                                                                       i32.const 0
                                                                       call $~lib/array/Array<i32>#__get
                                                                       i32.extend16_s
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 6128
                                                                       i32.const 1
                                                                       call $~lib/array/Array<i32>#__get
                                                                       i32.extend16_s
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i32.const 6128
                                                                       i32.const 2
@@ -31420,17 +29941,17 @@
                                                                       local.set $0
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
                                                                       local.set $1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       i32.const 1
                                                                       i32.shr_u
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|03132
                                                                        local.get $0
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -31441,9 +29962,9 @@
                                                                         i32.load16_s
                                                                         local.get $0
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.store align=1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 137
@@ -31463,28 +29984,14 @@
                                                                       i32.const 3
                                                                       i32.ne
                                                                       br_if $folding-inner21
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
                                                                       i32.const 0
                                                                       global.set $std/typedarray/forEachCallCount
-                                                                      i32.const 12
-                                                                      i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $2
+                                                                      i32.const 11
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+                                                                      local.tee $3
                                                                       global.set $std/typedarray/forEachSelf
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i32.const 6128
                                                                       i32.const 0
@@ -31492,7 +29999,7 @@
                                                                       i32.const 65535
                                                                       i32.and
                                                                       call $~lib/typedarray/Uint16Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 6128
                                                                       i32.const 1
@@ -31500,7 +30007,7 @@
                                                                       i32.const 65535
                                                                       i32.and
                                                                       call $~lib/typedarray/Uint16Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i32.const 6128
                                                                       i32.const 2
@@ -31512,17 +30019,17 @@
                                                                       local.set $0
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
                                                                       local.set $1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       i32.const 1
                                                                       i32.shr_u
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|032
                                                                        local.get $0
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -31533,9 +30040,9 @@
                                                                         i32.load16_u
                                                                         local.get $0
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.store align=1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 138
@@ -31555,40 +30062,26 @@
                                                                       i32.const 3
                                                                       i32.ne
                                                                       br_if $folding-inner21
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
                                                                       i32.const 0
                                                                       global.set $std/typedarray/forEachCallCount
-                                                                      i32.const 12
-                                                                      i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $2
+                                                                      i32.const 13
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
+                                                                      local.tee $3
                                                                       global.set $std/typedarray/forEachSelf
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i32.const 6128
                                                                       i32.const 0
                                                                       call $~lib/array/Array<i32>#__get
                                                                       call $~lib/typedarray/Int32Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 6128
                                                                       i32.const 1
                                                                       call $~lib/array/Array<i32>#__get
                                                                       call $~lib/typedarray/Int32Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i32.const 6128
                                                                       i32.const 2
@@ -31598,17 +30091,17 @@
                                                                       local.set $0
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
                                                                       local.set $1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|033
                                                                        local.get $0
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -31619,9 +30112,9 @@
                                                                         i32.load
                                                                         local.get $0
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.store align=1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 139
@@ -31641,40 +30134,26 @@
                                                                       i32.const 3
                                                                       i32.ne
                                                                       br_if $folding-inner21
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
                                                                       i32.const 0
                                                                       global.set $std/typedarray/forEachCallCount
-                                                                      i32.const 12
-                                                                      i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $2
+                                                                      i32.const 15
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
+                                                                      local.tee $3
                                                                       global.set $std/typedarray/forEachSelf
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i32.const 6128
                                                                       i32.const 0
                                                                       call $~lib/array/Array<i32>#__get
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 6128
                                                                       i32.const 1
                                                                       call $~lib/array/Array<i32>#__get
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i32.const 6128
                                                                       i32.const 2
@@ -31684,17 +30163,17 @@
                                                                       local.set $0
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
                                                                       local.set $1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|034
                                                                        local.get $0
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -31705,9 +30184,9 @@
                                                                         i32.load
                                                                         local.get $0
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.store align=1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 140
@@ -31727,42 +30206,28 @@
                                                                       i32.const 3
                                                                       i32.ne
                                                                       br_if $folding-inner21
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
                                                                       i32.const 0
                                                                       global.set $std/typedarray/forEachCallCount
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $2
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.tee $3
                                                                       global.set $std/typedarray/forEachSelf
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i32.const 6128
                                                                       i32.const 0
                                                                       call $~lib/array/Array<i32>#__get
                                                                       i64.extend_i32_s
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 6128
                                                                       i32.const 1
                                                                       call $~lib/array/Array<i32>#__get
                                                                       i64.extend_i32_s
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i32.const 6128
                                                                       i32.const 2
@@ -31773,17 +30238,17 @@
                                                                       local.set $0
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
                                                                       local.set $1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|035
                                                                        local.get $0
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -31794,9 +30259,9 @@
                                                                         i64.load
                                                                         local.get $0
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.store align=1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 141
@@ -31816,42 +30281,28 @@
                                                                       i32.const 3
                                                                       i32.ne
                                                                       br_if $folding-inner21
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
                                                                       i32.const 0
                                                                       global.set $std/typedarray/forEachCallCount
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $2
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.tee $3
                                                                       global.set $std/typedarray/forEachSelf
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i32.const 6128
                                                                       i32.const 0
                                                                       call $~lib/array/Array<i32>#__get
                                                                       i64.extend_i32_s
                                                                       call $~lib/typedarray/Uint64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 6128
                                                                       i32.const 1
                                                                       call $~lib/array/Array<i32>#__get
                                                                       i64.extend_i32_s
                                                                       call $~lib/typedarray/Uint64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i32.const 6128
                                                                       i32.const 2
@@ -31862,17 +30313,17 @@
                                                                       local.set $0
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
                                                                       local.set $1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|036
                                                                        local.get $0
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -31883,9 +30334,9 @@
                                                                         i64.load
                                                                         local.get $0
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.store align=1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 142
@@ -31905,42 +30356,28 @@
                                                                       i32.const 3
                                                                       i32.ne
                                                                       br_if $folding-inner21
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
                                                                       i32.const 0
                                                                       global.set $std/typedarray/forEachCallCount
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $2
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
+                                                                      local.tee $3
                                                                       global.set $std/typedarray/forEachSelf
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i32.const 6128
                                                                       i32.const 0
                                                                       call $~lib/array/Array<i32>#__get
                                                                       f32.convert_i32_s
                                                                       call $~lib/typedarray/Float32Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 6128
                                                                       i32.const 1
                                                                       call $~lib/array/Array<i32>#__get
                                                                       f32.convert_i32_s
                                                                       call $~lib/typedarray/Float32Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i32.const 6128
                                                                       i32.const 2
@@ -31951,17 +30388,17 @@
                                                                       local.set $0
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
                                                                       local.set $1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|037
                                                                        local.get $0
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -31972,9 +30409,9 @@
                                                                         f32.load
                                                                         local.get $0
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.store align=1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 143
@@ -31994,42 +30431,28 @@
                                                                       i32.const 3
                                                                       i32.ne
                                                                       br_if $folding-inner21
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
                                                                       i32.const 0
                                                                       global.set $std/typedarray/forEachCallCount
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $2
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.tee $3
                                                                       global.set $std/typedarray/forEachSelf
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i32.const 6128
                                                                       i32.const 0
                                                                       call $~lib/array/Array<i32>#__get
                                                                       f64.convert_i32_s
                                                                       call $~lib/typedarray/Float64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 6128
                                                                       i32.const 1
                                                                       call $~lib/array/Array<i32>#__get
                                                                       f64.convert_i32_s
                                                                       call $~lib/typedarray/Float64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i32.const 6128
                                                                       i32.const 2
@@ -32040,17 +30463,17 @@
                                                                       local.set $0
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
                                                                       local.set $1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|038
                                                                        local.get $0
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -32061,9 +30484,9 @@
                                                                         f64.load
                                                                         local.get $0
                                                                         global.get $~lib/memory/__stack_pointer
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.store align=1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         global.set $~argumentsLength
                                                                         i32.const 144
@@ -32083,53 +30506,32 @@
                                                                       i32.const 3
                                                                       i32.ne
                                                                       br_if $folding-inner21
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
                                                                       i32.const 12
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6592
-                                                                      i32.store align=1
+                                                                      i32.store offset=8 align=1
                                                                       i32.const 6604
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
                                                                       i32.store offset=4 align=1
-                                                                      i32.const 12
-                                                                      i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
-                                                                      global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=8 align=1
+                                                                      i32.const 4
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
+                                                                      local.set $2
+                                                                      global.get $~lib/memory/__stack_pointer
+                                                                      local.get $2
+                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|039
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -32139,7 +30541,7 @@
                                                                         call $~lib/array/Array<i32>#__get
                                                                         i32.extend8_s
                                                                         call $~lib/typedarray/Int8Array#__set
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 6592
                                                                         local.get $0
@@ -32160,14 +30562,14 @@
                                                                       local.set $0
                                                                       loop $for-loop|1
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
                                                                         local.get $0
                                                                         call $~lib/typedarray/Int8Array#__get
                                                                         i32.const 6592
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.sub
                                                                         local.get $0
@@ -32183,7 +30585,7 @@
                                                                         br $for-loop|1
                                                                        end
                                                                       end
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 4
                                                                       i32.const 8
                                                                       call $~lib/typedarray/Int8Array#subarray
@@ -32220,45 +30622,28 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6592
-                                                                      i32.store align=1
+                                                                      i32.store offset=8 align=1
                                                                       i32.const 6604
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
                                                                       i32.store offset=4 align=1
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
-                                                                      global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=8 align=1
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
+                                                                      local.set $2
+                                                                      global.get $~lib/memory/__stack_pointer
+                                                                      local.get $2
+                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|0040
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -32269,7 +30654,7 @@
                                                                         i32.const 255
                                                                         i32.and
                                                                         call $~lib/typedarray/Uint8Array#__set
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 6592
                                                                         local.get $0
@@ -32291,14 +30676,14 @@
                                                                       local.set $0
                                                                       loop $for-loop|11
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
                                                                         local.get $0
                                                                         call $~lib/typedarray/Uint8Array#__get
                                                                         i32.const 6592
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.sub
                                                                         local.get $0
@@ -32315,7 +30700,7 @@
                                                                         br $for-loop|11
                                                                        end
                                                                       end
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 8
                                                                       i32.const 6
                                                                       call $byn$mgfn-shared$~lib/typedarray/Uint8Array#subarray
@@ -32352,45 +30737,28 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6592
-                                                                      i32.store align=1
+                                                                      i32.store offset=8 align=1
                                                                       i32.const 6604
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
                                                                       i32.store offset=4 align=1
-                                                                      i32.const 12
-                                                                      i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
-                                                                      global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=8 align=1
+                                                                      i32.const 8
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
+                                                                      local.set $2
+                                                                      global.get $~lib/memory/__stack_pointer
+                                                                      local.get $2
+                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|0241
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -32401,7 +30769,7 @@
                                                                         i32.const 255
                                                                         i32.and
                                                                         call $~lib/typedarray/Uint8ClampedArray#__set
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 6592
                                                                         local.get $0
@@ -32423,14 +30791,14 @@
                                                                       local.set $0
                                                                       loop $for-loop|13
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
                                                                         local.get $0
                                                                         call $~lib/typedarray/Uint8ClampedArray#__get
                                                                         i32.const 6592
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.sub
                                                                         local.get $0
@@ -32447,7 +30815,7 @@
                                                                         br $for-loop|13
                                                                        end
                                                                       end
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 8
                                                                       i32.const 8
                                                                       call $byn$mgfn-shared$~lib/typedarray/Uint8Array#subarray
@@ -32484,45 +30852,28 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6592
-                                                                      i32.store align=1
+                                                                      i32.store offset=8 align=1
                                                                       i32.const 6604
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
                                                                       i32.store offset=4 align=1
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
-                                                                      global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=8 align=1
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+                                                                      local.set $2
+                                                                      global.get $~lib/memory/__stack_pointer
+                                                                      local.get $2
+                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|0442
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -32532,7 +30883,7 @@
                                                                         call $~lib/array/Array<i32>#__get
                                                                         i32.extend16_s
                                                                         call $~lib/typedarray/Int16Array#__set
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 6592
                                                                         local.get $0
@@ -32553,14 +30904,14 @@
                                                                       local.set $0
                                                                       loop $for-loop|15
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
                                                                         local.get $0
                                                                         call $~lib/typedarray/Int16Array#__get
                                                                         i32.const 6592
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.sub
                                                                         local.get $0
@@ -32576,7 +30927,7 @@
                                                                         br $for-loop|15
                                                                        end
                                                                       end
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 8
                                                                       i32.const 9
                                                                       call $byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
@@ -32613,45 +30964,28 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6592
-                                                                      i32.store align=1
+                                                                      i32.store offset=8 align=1
                                                                       i32.const 6604
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
                                                                       i32.store offset=4 align=1
-                                                                      i32.const 12
-                                                                      i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
-                                                                      global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=8 align=1
+                                                                      i32.const 11
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+                                                                      local.set $2
+                                                                      global.get $~lib/memory/__stack_pointer
+                                                                      local.get $2
+                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|0643
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -32662,7 +30996,7 @@
                                                                         i32.const 65535
                                                                         i32.and
                                                                         call $~lib/typedarray/Uint16Array#__set
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 6592
                                                                         local.get $0
@@ -32684,14 +31018,14 @@
                                                                       local.set $0
                                                                       loop $for-loop|17
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
                                                                         local.get $0
                                                                         call $~lib/typedarray/Uint16Array#__get
                                                                         i32.const 6592
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.sub
                                                                         local.get $0
@@ -32708,7 +31042,7 @@
                                                                         br $for-loop|17
                                                                        end
                                                                       end
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 8
                                                                       i32.const 11
                                                                       call $byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
@@ -32745,45 +31079,28 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6592
-                                                                      i32.store align=1
+                                                                      i32.store offset=8 align=1
                                                                       i32.const 6604
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
                                                                       i32.store offset=4 align=1
-                                                                      i32.const 12
-                                                                      i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
-                                                                      global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=8 align=1
+                                                                      i32.const 13
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
+                                                                      local.set $2
+                                                                      global.get $~lib/memory/__stack_pointer
+                                                                      local.get $2
+                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|0844
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -32792,7 +31109,7 @@
                                                                         local.get $0
                                                                         call $~lib/array/Array<i32>#__get
                                                                         call $~lib/typedarray/Int32Array#__set
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 6592
                                                                         local.get $0
@@ -32812,14 +31129,14 @@
                                                                       local.set $0
                                                                       loop $for-loop|19
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
                                                                         local.get $0
                                                                         call $~lib/typedarray/Int32Array#__get
                                                                         i32.const 6592
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.sub
                                                                         local.get $0
@@ -32834,7 +31151,7 @@
                                                                         br $for-loop|19
                                                                        end
                                                                       end
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 4
                                                                       i32.const 8
                                                                       call $~lib/typedarray/Int32Array#subarray
@@ -32871,45 +31188,28 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6592
-                                                                      i32.store align=1
+                                                                      i32.store offset=8 align=1
                                                                       i32.const 6604
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
                                                                       i32.store offset=4 align=1
-                                                                      i32.const 12
-                                                                      i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
-                                                                      global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=8 align=1
+                                                                      i32.const 15
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
+                                                                      local.set $2
+                                                                      global.get $~lib/memory/__stack_pointer
+                                                                      local.get $2
+                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|01045
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -32918,7 +31218,7 @@
                                                                         local.get $0
                                                                         call $~lib/array/Array<i32>#__get
                                                                         call $~lib/typedarray/Uint32Array#__set
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 6592
                                                                         local.get $0
@@ -32938,14 +31238,14 @@
                                                                       local.set $0
                                                                       loop $for-loop|111
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
                                                                         local.get $0
                                                                         call $~lib/typedarray/Uint32Array#__get
                                                                         i32.const 6592
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.sub
                                                                         local.get $0
@@ -32960,7 +31260,7 @@
                                                                         br $for-loop|111
                                                                        end
                                                                       end
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 8
                                                                       i32.const 15
                                                                       call $byn$mgfn-shared$~lib/typedarray/Uint32Array#subarray
@@ -32997,45 +31297,28 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6592
-                                                                      i32.store align=1
+                                                                      i32.store offset=8 align=1
                                                                       i32.const 6604
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
                                                                       i32.store offset=4 align=1
-                                                                      i32.const 12
-                                                                      i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
-                                                                      global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=8 align=1
+                                                                      i32.const 17
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $2
+                                                                      global.get $~lib/memory/__stack_pointer
+                                                                      local.get $2
+                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|01246
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -33045,7 +31328,7 @@
                                                                         call $~lib/array/Array<i32>#__get
                                                                         i64.extend_i32_s
                                                                         call $~lib/typedarray/Int64Array#__set
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 6592
                                                                         local.get $0
@@ -33066,14 +31349,14 @@
                                                                       local.set $0
                                                                       loop $for-loop|113
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
                                                                         local.get $0
                                                                         call $~lib/typedarray/Int64Array#__get
                                                                         i32.const 6592
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.sub
                                                                         local.get $0
@@ -33089,7 +31372,7 @@
                                                                         br $for-loop|113
                                                                        end
                                                                       end
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 8
                                                                       i32.const 17
                                                                       call $byn$mgfn-shared$~lib/typedarray/Int64Array#subarray
@@ -33126,45 +31409,28 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6592
-                                                                      i32.store align=1
+                                                                      i32.store offset=8 align=1
                                                                       i32.const 6604
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
                                                                       i32.store offset=4 align=1
-                                                                      i32.const 12
-                                                                      i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
-                                                                      global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=8 align=1
+                                                                      i32.const 19
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $2
+                                                                      global.get $~lib/memory/__stack_pointer
+                                                                      local.get $2
+                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|01447
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -33174,7 +31440,7 @@
                                                                         call $~lib/array/Array<i32>#__get
                                                                         i64.extend_i32_s
                                                                         call $~lib/typedarray/Uint64Array#__set
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 6592
                                                                         local.get $0
@@ -33195,14 +31461,14 @@
                                                                       local.set $0
                                                                       loop $for-loop|115
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
                                                                         local.get $0
                                                                         call $~lib/typedarray/Uint64Array#__get
                                                                         i32.const 6592
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.sub
                                                                         local.get $0
@@ -33218,7 +31484,7 @@
                                                                         br $for-loop|115
                                                                        end
                                                                       end
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 8
                                                                       i32.const 19
                                                                       call $byn$mgfn-shared$~lib/typedarray/Int64Array#subarray
@@ -33255,45 +31521,28 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6592
-                                                                      i32.store align=1
+                                                                      i32.store offset=8 align=1
                                                                       i32.const 6604
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
                                                                       i32.store offset=4 align=1
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
-                                                                      global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=8 align=1
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
+                                                                      local.set $2
+                                                                      global.get $~lib/memory/__stack_pointer
+                                                                      local.get $2
+                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|01648
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -33303,7 +31552,7 @@
                                                                         call $~lib/array/Array<i32>#__get
                                                                         f32.convert_i32_s
                                                                         call $~lib/typedarray/Float32Array#__set
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 6592
                                                                         local.get $0
@@ -33324,14 +31573,14 @@
                                                                       local.set $0
                                                                       loop $for-loop|117
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
                                                                         local.get $0
                                                                         call $~lib/typedarray/Float32Array#__get
                                                                         i32.const 6592
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.sub
                                                                         local.get $0
@@ -33347,7 +31596,7 @@
                                                                         br $for-loop|117
                                                                        end
                                                                       end
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 8
                                                                       i32.const 21
                                                                       call $byn$mgfn-shared$~lib/typedarray/Uint32Array#subarray
@@ -33384,45 +31633,28 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6592
-                                                                      i32.store align=1
+                                                                      i32.store offset=8 align=1
                                                                       i32.const 6604
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
                                                                       i32.store offset=4 align=1
-                                                                      i32.const 12
-                                                                      i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $3
-                                                                      global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=8 align=1
+                                                                      i32.const 23
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $2
+                                                                      global.get $~lib/memory/__stack_pointer
+                                                                      local.get $2
+                                                                      i32.store align=1
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|01849
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -33432,7 +31664,7 @@
                                                                         call $~lib/array/Array<i32>#__get
                                                                         f64.convert_i32_s
                                                                         call $~lib/typedarray/Float64Array#__set
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         i32.const 6592
                                                                         local.get $0
@@ -33453,14 +31685,14 @@
                                                                       local.set $0
                                                                       loop $for-loop|119
                                                                        local.get $0
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
                                                                         local.get $0
                                                                         call $~lib/typedarray/Float64Array#__get
                                                                         i32.const 6592
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.sub
                                                                         local.get $0
@@ -33476,7 +31708,7 @@
                                                                         br $for-loop|119
                                                                        end
                                                                       end
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 4
                                                                       i32.const 8
                                                                       call $~lib/typedarray/Float64Array#subarray
@@ -33515,28 +31747,19 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6704
-                                                                      i32.store align=1
+                                                                      i32.store offset=4 align=1
                                                                       i32.const 6716
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 4
-                                                                      call $~lib/rt/itcms/__new
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       loop $for-loop|02050
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
@@ -33754,28 +31977,19 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6704
-                                                                      i32.store align=1
+                                                                      i32.store offset=4 align=1
                                                                       i32.const 6716
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 6
-                                                                      call $~lib/rt/itcms/__new
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       loop $for-loop|02151
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
@@ -33994,28 +32208,19 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6704
-                                                                      i32.store align=1
+                                                                      i32.store offset=4 align=1
                                                                       i32.const 6716
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 8
-                                                                      call $~lib/rt/itcms/__new
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       loop $for-loop|02252
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
@@ -34234,28 +32439,19 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6704
-                                                                      i32.store align=1
+                                                                      i32.store offset=4 align=1
                                                                       i32.const 6716
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 9
-                                                                      call $~lib/rt/itcms/__new
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       loop $for-loop|02353
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
@@ -34473,28 +32669,19 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6704
-                                                                      i32.store align=1
+                                                                      i32.store offset=4 align=1
                                                                       i32.const 6716
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 11
-                                                                      call $~lib/rt/itcms/__new
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       loop $for-loop|02454
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
@@ -34713,28 +32900,19 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6704
-                                                                      i32.store align=1
+                                                                      i32.store offset=4 align=1
                                                                       i32.const 6716
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 13
-                                                                      call $~lib/rt/itcms/__new
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       loop $for-loop|02555
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
@@ -34951,28 +33129,19 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6704
-                                                                      i32.store align=1
+                                                                      i32.store offset=4 align=1
                                                                       i32.const 6716
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 15
-                                                                      call $~lib/rt/itcms/__new
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       loop $for-loop|02656
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
@@ -35189,28 +33358,19 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6704
-                                                                      i32.store align=1
+                                                                      i32.store offset=4 align=1
                                                                       i32.const 6716
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       loop $for-loop|02757
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
@@ -35428,28 +33588,19 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6704
-                                                                      i32.store align=1
+                                                                      i32.store offset=4 align=1
                                                                       i32.const 6716
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       loop $for-loop|02858
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
@@ -35667,28 +33818,19 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6704
-                                                                      i32.store align=1
+                                                                      i32.store offset=4 align=1
                                                                       i32.const 6716
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 21
-                                                                      call $~lib/rt/itcms/__new
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       loop $for-loop|02959
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
@@ -35906,28 +34048,19 @@
                                                                       call $~lib/rt/__decrease_sp
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       i32.const 6704
-                                                                      i32.store align=1
+                                                                      i32.store offset=4 align=1
                                                                       i32.const 6716
                                                                       i32.load
-                                                                      local.set $2
-                                                                      i32.const 12
+                                                                      local.tee $3
                                                                       i32.const 23
-                                                                      call $~lib/rt/itcms/__new
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
-                                                                      local.get $2
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store align=1
                                                                       loop $for-loop|03060
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $0
@@ -36139,17 +34272,9 @@
                                                                       i32.const 8
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 12
-                                                                      i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 1
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 23
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f64.const nan:0x8000000000000
@@ -36176,9 +34301,9 @@
                                                                        i32.load offset=8
                                                                        i32.const 3
                                                                        i32.shr_u
-                                                                       local.tee $2
+                                                                       local.tee $3
                                                                        i32.eqz
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.eqz
                                                                        i32.or
                                                                        br_if $"__inlined_func$~lib/typedarray/INCLUDES<~lib/typedarray/Float64Array,f64>$1"
@@ -36188,7 +34313,7 @@
                                                                        local.set $0
                                                                        loop $while-continue|0
                                                                         local.get $1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.lt_s
                                                                         if
                                                                          i32.const 1
@@ -36222,17 +34347,9 @@
                                                                        call $~lib/builtins/abort
                                                                        unreachable
                                                                       end
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 1
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 0
                                                                       f32.const nan:0x400000
@@ -36259,9 +34376,9 @@
                                                                        i32.load offset=8
                                                                        i32.const 2
                                                                        i32.shr_u
-                                                                       local.tee $2
+                                                                       local.tee $3
                                                                        i32.eqz
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.eqz
                                                                        i32.or
                                                                        br_if $"__inlined_func$~lib/typedarray/INCLUDES<~lib/typedarray/Float32Array,f32>$1"
@@ -36271,7 +34388,7 @@
                                                                        local.set $0
                                                                        loop $while-continue|061
                                                                         local.get $1
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.lt_s
                                                                         if
                                                                          i32.const 1
@@ -36307,17 +34424,9 @@
                                                                       end
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 5
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 4
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -36360,17 +34469,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 5
                                                                       i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 5
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -36413,17 +34514,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 5
                                                                       i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 5
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -36466,17 +34559,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 5
                                                                       i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 5
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -36519,17 +34604,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 5
                                                                       i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 5
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -36572,17 +34649,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 5
                                                                       i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 5
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -36625,17 +34694,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 5
                                                                       i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 5
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -36678,17 +34739,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 5
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 5
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -36731,17 +34784,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 5
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 5
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -36784,17 +34829,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 5
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -36837,17 +34874,9 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 4
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 5
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 23
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -36889,15 +34918,7 @@
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 0
-                                                                      i32.const 1
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      i32.const 0
-                                                                      i32.const 1
-                                                                      call $~lib/rt/itcms/__new
+                                                                      call $~lib/arraybuffer/ArrayBuffer#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -36916,16 +34937,8 @@
                                                                        call $~lib/builtins/abort
                                                                        unreachable
                                                                       end
-                                                                      i32.const 0
-                                                                      i32.const 1
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
                                                                       i32.const 2
-                                                                      i32.const 1
-                                                                      call $~lib/rt/itcms/__new
+                                                                      call $~lib/arraybuffer/ArrayBuffer#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -36953,18 +34966,9 @@
                                                                       i32.store offset=4 align=1
                                                                       i32.const 9916
                                                                       i32.load
-                                                                      local.set $4
-                                                                      i32.const 12
+                                                                      local.tee $4
                                                                       i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
-                                                                      local.get $4
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
@@ -37002,35 +35006,35 @@
                                                                       i32.load offset=8
                                                                       i32.add
                                                                       call $~lib/arraybuffer/ArrayBuffer#slice
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
                                                                       i32.const 1
                                                                       global.set $~argumentsLength
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 20
                                                                       i32.sub
                                                                       i32.load offset=16
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const -1
                                                                       local.set $0
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       local.set $0
                                                                       i32.const 12
                                                                       i32.const 4
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.tee $2
-                                                                      local.get $3
+                                                                      local.tee $3
+                                                                      local.get $2
                                                                       i32.store
-                                                                      local.get $2
                                                                       local.get $3
-                                                                      call $~lib/rt/itcms/__link
                                                                       local.get $2
+                                                                      call $~lib/rt/itcms/__link
+                                                                      local.get $3
                                                                       local.get $0
                                                                       i32.store offset=8
-                                                                      local.get $2
                                                                       local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4
                                                                       i32.const 0
                                                                       local.set $0
@@ -37042,7 +35046,7 @@
                                                                         local.get $1
                                                                         local.get $0
                                                                         call $~lib/typedarray/Int8Array#__get
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         local.get $0
                                                                         call $~lib/typedarray/Int8Array#__get
                                                                         i32.ne
@@ -37067,28 +35071,19 @@
                                                                       i32.store offset=4 align=1
                                                                       i32.const 9916
                                                                       i32.load
-                                                                      local.set $1
-                                                                      i32.const 12
+                                                                      local.tee $1
                                                                       i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $2
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
-                                                                      local.get $1
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store align=1
                                                                       loop $for-loop|042
                                                                        local.get $0
                                                                        local.get $1
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         local.get $0
                                                                         i32.const 9904
                                                                         local.get $0
@@ -37104,16 +35099,16 @@
                                                                        end
                                                                       end
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load
                                                                       local.tee $0
                                                                       i32.store offset=4 align=1
                                                                       local.get $0
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       i32.add
                                                                       call $~lib/arraybuffer/ArrayBuffer#slice
@@ -37126,7 +35121,7 @@
                                                                       local.get $0
                                                                       i32.const 0
                                                                       call $~lib/typedarray/Uint8Array.wrap@varargs
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       i32.const 0
                                                                       local.set $0
                                                                       loop $for-loop|143
@@ -37134,10 +35129,10 @@
                                                                        local.get $1
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         local.get $0
                                                                         call $~lib/typedarray/Uint8Array#__get
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $0
                                                                         call $~lib/typedarray/Uint8Array#__get
                                                                         i32.ne
@@ -37162,18 +35157,9 @@
                                                                       i32.store offset=4 align=1
                                                                       i32.const 9916
                                                                       i32.load
-                                                                      local.set $4
-                                                                      i32.const 12
+                                                                      local.tee $4
                                                                       i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
-                                                                      local.get $4
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
@@ -37212,35 +35198,35 @@
                                                                       i32.load offset=8
                                                                       i32.add
                                                                       call $~lib/arraybuffer/ArrayBuffer#slice
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4 align=1
                                                                       i32.const 1
                                                                       global.set $~argumentsLength
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 20
                                                                       i32.sub
                                                                       i32.load offset=16
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const -1
                                                                       local.set $0
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       local.set $0
                                                                       i32.const 12
                                                                       i32.const 8
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.tee $2
-                                                                      local.get $3
+                                                                      local.tee $3
+                                                                      local.get $2
                                                                       i32.store
-                                                                      local.get $2
                                                                       local.get $3
-                                                                      call $~lib/rt/itcms/__link
                                                                       local.get $2
+                                                                      call $~lib/rt/itcms/__link
+                                                                      local.get $3
                                                                       local.get $0
                                                                       i32.store offset=8
-                                                                      local.get $2
                                                                       local.get $3
+                                                                      local.get $2
                                                                       i32.store offset=4
                                                                       i32.const 0
                                                                       local.set $0
@@ -37252,7 +35238,7 @@
                                                                         local.get $1
                                                                         local.get $0
                                                                         call $~lib/typedarray/Uint8ClampedArray#__get
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         local.get $0
                                                                         call $~lib/typedarray/Uint8ClampedArray#__get
                                                                         i32.ne
@@ -37277,18 +35263,9 @@
                                                                       i32.store offset=4 align=1
                                                                       i32.const 9916
                                                                       i32.load
-                                                                      local.set $4
-                                                                      i32.const 12
+                                                                      local.tee $4
                                                                       i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      local.get $4
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -37315,9 +35292,9 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
                                                                       i32.load
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       local.get $0
                                                                       call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
                                                                       local.get $0
@@ -37336,23 +35313,23 @@
                                                                       i32.const 20
                                                                       i32.sub
                                                                       i32.load offset=16
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.const 1
                                                                       i32.and
                                                                       br_if $folding-inner57
                                                                       i32.const 12
                                                                       i32.const 9
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       local.get $1
                                                                       i32.store
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       local.get $1
                                                                       call $~lib/rt/itcms/__link
-                                                                      local.get $3
                                                                       local.get $2
-                                                                      i32.store offset=8
                                                                       local.get $3
+                                                                      i32.store offset=8
+                                                                      local.get $2
                                                                       local.get $1
                                                                       i32.store offset=4
                                                                       i32.const 0
@@ -37365,7 +35342,7 @@
                                                                         local.get $0
                                                                         local.get $1
                                                                         call $~lib/typedarray/Int16Array#__get
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         call $~lib/typedarray/Int16Array#__get
                                                                         i32.ne
@@ -37390,18 +35367,9 @@
                                                                       i32.store offset=4 align=1
                                                                       i32.const 9916
                                                                       i32.load
-                                                                      local.set $4
-                                                                      i32.const 12
+                                                                      local.tee $4
                                                                       i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      local.get $4
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -37429,9 +35397,9 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
                                                                       i32.load
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       local.get $0
                                                                       call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
                                                                       local.get $0
@@ -37450,23 +35418,23 @@
                                                                       i32.const 20
                                                                       i32.sub
                                                                       i32.load offset=16
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.const 1
                                                                       i32.and
                                                                       br_if $folding-inner57
                                                                       i32.const 12
                                                                       i32.const 11
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       local.get $1
                                                                       i32.store
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       local.get $1
                                                                       call $~lib/rt/itcms/__link
-                                                                      local.get $3
                                                                       local.get $2
-                                                                      i32.store offset=8
                                                                       local.get $3
+                                                                      i32.store offset=8
+                                                                      local.get $2
                                                                       local.get $1
                                                                       i32.store offset=4
                                                                       i32.const 0
@@ -37479,7 +35447,7 @@
                                                                         local.get $0
                                                                         local.get $1
                                                                         call $~lib/typedarray/Uint16Array#__get
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         call $~lib/typedarray/Uint16Array#__get
                                                                         i32.ne
@@ -37504,18 +35472,9 @@
                                                                       i32.store offset=4 align=1
                                                                       i32.const 9916
                                                                       i32.load
-                                                                      local.set $4
-                                                                      i32.const 12
+                                                                      local.tee $4
                                                                       i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      local.get $4
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -37541,9 +35500,9 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
                                                                       i32.load
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       local.get $0
                                                                       call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
                                                                       local.get $0
@@ -37562,23 +35521,23 @@
                                                                       i32.const 20
                                                                       i32.sub
                                                                       i32.load offset=16
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.const 3
                                                                       i32.and
                                                                       br_if $folding-inner57
                                                                       i32.const 12
                                                                       i32.const 13
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       local.get $1
                                                                       i32.store
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       local.get $1
                                                                       call $~lib/rt/itcms/__link
-                                                                      local.get $3
                                                                       local.get $2
-                                                                      i32.store offset=8
                                                                       local.get $3
+                                                                      i32.store offset=8
+                                                                      local.get $2
                                                                       local.get $1
                                                                       i32.store offset=4
                                                                       i32.const 0
@@ -37591,7 +35550,7 @@
                                                                         local.get $0
                                                                         local.get $1
                                                                         call $~lib/typedarray/Int32Array#__get
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         call $~lib/typedarray/Int32Array#__get
                                                                         i32.ne
@@ -37616,18 +35575,9 @@
                                                                       i32.store offset=4 align=1
                                                                       i32.const 9916
                                                                       i32.load
-                                                                      local.set $4
-                                                                      i32.const 12
+                                                                      local.tee $4
                                                                       i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      local.get $4
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -37653,9 +35603,9 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
                                                                       i32.load
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       local.get $0
                                                                       call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
                                                                       local.get $0
@@ -37674,23 +35624,23 @@
                                                                       i32.const 20
                                                                       i32.sub
                                                                       i32.load offset=16
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.const 3
                                                                       i32.and
                                                                       br_if $folding-inner57
                                                                       i32.const 12
                                                                       i32.const 15
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       local.get $1
                                                                       i32.store
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       local.get $1
                                                                       call $~lib/rt/itcms/__link
-                                                                      local.get $3
                                                                       local.get $2
-                                                                      i32.store offset=8
                                                                       local.get $3
+                                                                      i32.store offset=8
+                                                                      local.get $2
                                                                       local.get $1
                                                                       i32.store offset=4
                                                                       i32.const 0
@@ -37703,7 +35653,7 @@
                                                                         local.get $0
                                                                         local.get $1
                                                                         call $~lib/typedarray/Uint32Array#__get
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         call $~lib/typedarray/Uint32Array#__get
                                                                         i32.ne
@@ -37728,18 +35678,9 @@
                                                                       i32.store offset=4 align=1
                                                                       i32.const 9916
                                                                       i32.load
-                                                                      local.set $4
-                                                                      i32.const 12
+                                                                      local.tee $4
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      local.get $4
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -37766,9 +35707,9 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
                                                                       i32.load
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       local.get $0
                                                                       call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
                                                                       local.get $0
@@ -37787,23 +35728,23 @@
                                                                       i32.const 20
                                                                       i32.sub
                                                                       i32.load offset=16
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.const 7
                                                                       i32.and
                                                                       br_if $folding-inner57
                                                                       i32.const 12
                                                                       i32.const 17
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       local.get $1
                                                                       i32.store
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       local.get $1
                                                                       call $~lib/rt/itcms/__link
-                                                                      local.get $3
                                                                       local.get $2
-                                                                      i32.store offset=8
                                                                       local.get $3
+                                                                      i32.store offset=8
+                                                                      local.get $2
                                                                       local.get $1
                                                                       i32.store offset=4
                                                                       i32.const 0
@@ -37816,7 +35757,7 @@
                                                                         local.get $0
                                                                         local.get $1
                                                                         call $~lib/typedarray/Int64Array#__get
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         call $~lib/typedarray/Int64Array#__get
                                                                         i64.ne
@@ -37841,18 +35782,9 @@
                                                                       i32.store offset=4 align=1
                                                                       i32.const 9916
                                                                       i32.load
-                                                                      local.set $4
-                                                                      i32.const 12
+                                                                      local.tee $4
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      local.get $4
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -37879,9 +35811,9 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
                                                                       i32.load
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       local.get $0
                                                                       call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
                                                                       local.get $0
@@ -37900,23 +35832,23 @@
                                                                       i32.const 20
                                                                       i32.sub
                                                                       i32.load offset=16
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.const 7
                                                                       i32.and
                                                                       br_if $folding-inner57
                                                                       i32.const 12
                                                                       i32.const 19
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       local.get $1
                                                                       i32.store
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       local.get $1
                                                                       call $~lib/rt/itcms/__link
-                                                                      local.get $3
                                                                       local.get $2
-                                                                      i32.store offset=8
                                                                       local.get $3
+                                                                      i32.store offset=8
+                                                                      local.get $2
                                                                       local.get $1
                                                                       i32.store offset=4
                                                                       i32.const 0
@@ -37929,7 +35861,7 @@
                                                                         local.get $0
                                                                         local.get $1
                                                                         call $~lib/typedarray/Uint64Array#__get
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         call $~lib/typedarray/Uint64Array#__get
                                                                         i64.ne
@@ -37954,18 +35886,9 @@
                                                                       i32.store offset=4 align=1
                                                                       i32.const 9916
                                                                       i32.load
-                                                                      local.set $4
-                                                                      i32.const 12
+                                                                      local.tee $4
                                                                       i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      local.get $4
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -37992,9 +35915,9 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
                                                                       i32.load
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       local.get $0
                                                                       call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
                                                                       local.get $0
@@ -38013,23 +35936,23 @@
                                                                       i32.const 20
                                                                       i32.sub
                                                                       i32.load offset=16
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.const 3
                                                                       i32.and
                                                                       br_if $folding-inner57
                                                                       i32.const 12
                                                                       i32.const 21
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       local.get $1
                                                                       i32.store
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       local.get $1
                                                                       call $~lib/rt/itcms/__link
-                                                                      local.get $3
                                                                       local.get $2
-                                                                      i32.store offset=8
                                                                       local.get $3
+                                                                      i32.store offset=8
+                                                                      local.get $2
                                                                       local.get $1
                                                                       i32.store offset=4
                                                                       i32.const 0
@@ -38042,7 +35965,7 @@
                                                                         local.get $0
                                                                         local.get $1
                                                                         call $~lib/typedarray/Float32Array#__get
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         call $~lib/typedarray/Float32Array#__get
                                                                         f32.ne
@@ -38067,18 +35990,9 @@
                                                                       i32.store offset=4 align=1
                                                                       i32.const 9916
                                                                       i32.load
-                                                                      local.set $4
-                                                                      i32.const 12
+                                                                      local.tee $4
                                                                       i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      local.get $4
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
@@ -38105,9 +36019,9 @@
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
                                                                       i32.load
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.store offset=4 align=1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       local.get $0
                                                                       call $~lib/arraybuffer/ArrayBufferView#get:byteOffset
                                                                       local.get $0
@@ -38126,23 +36040,23 @@
                                                                       i32.const 20
                                                                       i32.sub
                                                                       i32.load offset=16
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.const 7
                                                                       i32.and
                                                                       br_if $folding-inner57
                                                                       i32.const 12
                                                                       i32.const 23
                                                                       call $~lib/rt/itcms/__new
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       local.get $1
                                                                       i32.store
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       local.get $1
                                                                       call $~lib/rt/itcms/__link
-                                                                      local.get $3
                                                                       local.get $2
-                                                                      i32.store offset=8
                                                                       local.get $3
+                                                                      i32.store offset=8
+                                                                      local.get $2
                                                                       local.get $1
                                                                       i32.store offset=4
                                                                       i32.const 0
@@ -38155,7 +36069,7 @@
                                                                         local.get $0
                                                                         local.get $1
                                                                         call $~lib/typedarray/Float64Array#__get
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         call $~lib/typedarray/Float64Array#__get
                                                                         f64.ne
@@ -38173,48 +36087,32 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 16
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
+                                                                      local.get $3
+                                                                      i32.store offset=12 align=1
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i64.const 7
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i64.const 8
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i64.const 9
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
                                                                       i32.const 4
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store offset=8 align=1
                                                                       local.get $1
                                                                       i32.const 0
                                                                       i32.const 100
@@ -38231,21 +36129,13 @@
                                                                       i32.const 3
                                                                       i32.const 103
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $4
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $4
-                                                                      i32.store offset=8 align=1
+                                                                      i32.store offset=4 align=1
                                                                       local.get $4
                                                                       i32.const 0
                                                                       i32.const 1000
@@ -38258,21 +36148,13 @@
                                                                       i32.const 2
                                                                       i32.const 1002
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=12 align=1
-                                                                      local.get $0
                                                                       i32.const 10
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 4
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=12 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       call $~lib/typedarray/Int8Array#set<~lib/array/Array<i32>>
                                                                       local.get $0
@@ -38300,17 +36182,17 @@
                                                                       i32.load
                                                                       local.set $7
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|089
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $6
                                                                         i32.add
                                                                         local.get $7
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
@@ -38327,10 +36209,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store8
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|089
                                                                        end
                                                                       end
@@ -38342,7 +36224,7 @@
                                                                       call $~lib/rt/__newArray
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Int8Array>
                                                                       local.get $0
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       call $~lib/typedarray/Int8Array#set<~lib/typedarray/Int64Array>
                                                                       local.get $0
                                                                       i32.const 10
@@ -38355,7 +36237,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 10172
                                                                       i32.load
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       i32.const 2
                                                                       i32.add
                                                                       i32.lt_s
@@ -38369,17 +36251,17 @@
                                                                       i32.load
                                                                       local.set $6
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       loop $for-loop|090
                                                                        local.get $2
                                                                        local.get $3
-                                                                       i32.lt_s
+                                                                       i32.gt_s
                                                                        if
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         local.get $5
                                                                         i32.add
                                                                         local.get $6
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
@@ -38396,10 +36278,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store8
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|090
                                                                        end
                                                                       end
@@ -38431,48 +36313,32 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 16
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
+                                                                      local.get $3
+                                                                      i32.store offset=12 align=1
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i64.const 7
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i64.const 8
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i64.const 9
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
                                                                       i32.const 4
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store offset=8 align=1
                                                                       local.get $1
                                                                       i32.const 0
                                                                       i32.const 100
@@ -38489,21 +36355,13 @@
                                                                       i32.const 3
                                                                       i32.const 103
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $4
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $4
-                                                                      i32.store offset=8 align=1
+                                                                      i32.store offset=4 align=1
                                                                       local.get $4
                                                                       i32.const 0
                                                                       i32.const 1000
@@ -38516,21 +36374,13 @@
                                                                       i32.const 2
                                                                       i32.const 1002
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=12 align=1
-                                                                      local.get $0
                                                                       i32.const 10
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=12 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       call $~lib/typedarray/Int8Array#set<~lib/array/Array<i32>>
                                                                       local.get $0
@@ -38559,17 +36409,17 @@
                                                                       i32.load
                                                                       local.set $7
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|091
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $6
                                                                         i32.add
                                                                         local.get $7
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
@@ -38586,10 +36436,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store8
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|091
                                                                        end
                                                                       end
@@ -38602,7 +36452,7 @@
                                                                       i32.const 10528
                                                                       call $byn$mgfn-shared$std/typedarray/valuesEqual<~lib/typedarray/Uint8Array>
                                                                       local.get $0
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       call $~lib/typedarray/Int8Array#set<~lib/typedarray/Int64Array>
                                                                       local.get $0
                                                                       i32.const 10
@@ -38616,7 +36466,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 10172
                                                                       i32.load
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       i32.const 2
                                                                       i32.add
                                                                       i32.lt_s
@@ -38630,17 +36480,17 @@
                                                                       i32.load
                                                                       local.set $6
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       loop $for-loop|092
                                                                        local.get $2
                                                                        local.get $3
-                                                                       i32.lt_s
+                                                                       i32.gt_s
                                                                        if
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         local.get $5
                                                                         i32.add
                                                                         local.get $6
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
@@ -38657,10 +36507,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store8
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|092
                                                                        end
                                                                       end
@@ -38694,48 +36544,32 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 16
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
+                                                                      local.get $3
+                                                                      i32.store offset=12 align=1
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i64.const 7
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i64.const 8
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i64.const 9
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
                                                                       i32.const 4
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store offset=8 align=1
                                                                       local.get $1
                                                                       i32.const 0
                                                                       i32.const 100
@@ -38752,21 +36586,13 @@
                                                                       i32.const 3
                                                                       i32.const 103
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $4
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $4
-                                                                      i32.store offset=8 align=1
+                                                                      i32.store offset=4 align=1
                                                                       local.get $4
                                                                       i32.const 0
                                                                       i32.const 1000
@@ -38779,21 +36605,13 @@
                                                                       i32.const 2
                                                                       i32.const 1002
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=12 align=1
-                                                                      local.get $0
                                                                       i32.const 10
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 8
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=12 align=1
+                                                                      i32.store align=1
                                                                       i32.const 9996
                                                                       i32.load
                                                                       local.tee $6
@@ -38808,17 +36626,17 @@
                                                                       i32.load
                                                                       local.set $10
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|093
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $6
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $7
                                                                         i32.add
                                                                         local.get $10
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
@@ -38837,10 +36655,10 @@
                                                                         i32.xor
                                                                         i32.and
                                                                         i32.store8
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|093
                                                                        end
                                                                       end
@@ -38870,17 +36688,17 @@
                                                                       i32.load
                                                                       local.set $7
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|094
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $6
                                                                         i32.add
                                                                         local.get $7
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
@@ -38901,10 +36719,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store8
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|094
                                                                        end
                                                                       end
@@ -38917,7 +36735,7 @@
                                                                       i32.const 10736
                                                                       call $byn$mgfn-shared$std/typedarray/valuesEqual<~lib/typedarray/Uint8Array>
                                                                       local.get $0
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 6
                                                                       call $~lib/typedarray/Uint8ClampedArray#set<~lib/typedarray/Int64Array>
                                                                       local.get $0
@@ -38932,7 +36750,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 10172
                                                                       i32.load
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       i32.const 2
                                                                       i32.add
                                                                       i32.lt_s
@@ -38946,17 +36764,17 @@
                                                                       i32.load
                                                                       local.set $6
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       loop $for-loop|095
                                                                        local.get $2
                                                                        local.get $3
-                                                                       i32.lt_s
+                                                                       i32.gt_s
                                                                        if
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         local.get $5
                                                                         i32.add
                                                                         local.get $6
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
@@ -38977,10 +36795,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store8
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|095
                                                                        end
                                                                       end
@@ -39003,7 +36821,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 10252
                                                                       i32.load
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       i32.const 7
                                                                       i32.add
                                                                       i32.lt_s
@@ -39020,7 +36838,7 @@
                                                                       local.set $1
                                                                       loop $for-loop|096
                                                                        local.get $1
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -39030,14 +36848,14 @@
                                                                         local.get $5
                                                                         i32.add
                                                                         i32.load8_s
-                                                                        local.tee $2
+                                                                        local.tee $3
                                                                         i32.const 255
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.sub
                                                                         i32.const 31
                                                                         i32.shr_s
                                                                         i32.or
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 31
                                                                         i32.shr_s
                                                                         i32.const -1
@@ -39065,48 +36883,32 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 16
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
+                                                                      local.get $3
+                                                                      i32.store offset=12 align=1
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i64.const 7
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i64.const 8
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i64.const 9
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
                                                                       i32.const 4
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store offset=8 align=1
                                                                       local.get $1
                                                                       i32.const 0
                                                                       i32.const 100
@@ -39123,21 +36925,13 @@
                                                                       i32.const 3
                                                                       i32.const 103
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $4
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $4
-                                                                      i32.store offset=8 align=1
+                                                                      i32.store offset=4 align=1
                                                                       local.get $4
                                                                       i32.const 0
                                                                       i32.const 1000
@@ -39150,21 +36944,13 @@
                                                                       i32.const 2
                                                                       i32.const 1002
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=12 align=1
-                                                                      local.get $0
                                                                       i32.const 10
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=12 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       call $~lib/typedarray/Int16Array#set<~lib/array/Array<i32>>
                                                                       local.get $0
@@ -39194,19 +36980,19 @@
                                                                       i32.load
                                                                       local.set $7
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|097
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $6
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.shl
                                                                         i32.add
                                                                         local.get $7
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
@@ -39223,10 +37009,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store16
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|097
                                                                        end
                                                                       end
@@ -39238,7 +37024,7 @@
                                                                       call $~lib/rt/__newArray
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Int16Array>
                                                                       local.get $0
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       call $~lib/typedarray/Int16Array#set<~lib/typedarray/Int64Array>
                                                                       local.get $0
                                                                       i32.const 10
@@ -39249,7 +37035,7 @@
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Int16Array>
                                                                       i32.const 10172
                                                                       i32.load
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       i32.const 2
                                                                       i32.add
                                                                       local.get $0
@@ -39267,19 +37053,19 @@
                                                                       i32.load
                                                                       local.set $6
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       loop $for-loop|098
                                                                        local.get $2
                                                                        local.get $3
-                                                                       i32.lt_s
+                                                                       i32.gt_s
                                                                        if
                                                                         local.get $5
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.shl
                                                                         i32.add
                                                                         local.get $6
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
@@ -39296,10 +37082,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store16
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|098
                                                                        end
                                                                       end
@@ -39331,48 +37117,32 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 16
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
+                                                                      local.get $3
+                                                                      i32.store offset=12 align=1
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i64.const 7
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i64.const 8
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i64.const 9
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
                                                                       i32.const 4
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store offset=8 align=1
                                                                       local.get $1
                                                                       i32.const 0
                                                                       i32.const 100
@@ -39389,21 +37159,13 @@
                                                                       i32.const 3
                                                                       i32.const 103
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $4
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $4
-                                                                      i32.store offset=8 align=1
+                                                                      i32.store offset=4 align=1
                                                                       local.get $4
                                                                       i32.const 0
                                                                       i32.const 1000
@@ -39416,21 +37178,13 @@
                                                                       i32.const 2
                                                                       i32.const 1002
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=12 align=1
-                                                                      local.get $0
                                                                       i32.const 10
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 11
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=12 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       call $~lib/typedarray/Int16Array#set<~lib/array/Array<i32>>
                                                                       local.get $0
@@ -39460,19 +37214,19 @@
                                                                       i32.load
                                                                       local.set $7
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|099
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $6
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.shl
                                                                         i32.add
                                                                         local.get $7
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
@@ -39489,10 +37243,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store16
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|099
                                                                        end
                                                                       end
@@ -39504,7 +37258,7 @@
                                                                       call $~lib/rt/__newArray
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Uint16Array>
                                                                       local.get $0
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       call $~lib/typedarray/Int16Array#set<~lib/typedarray/Int64Array>
                                                                       local.get $0
                                                                       i32.const 10
@@ -39515,7 +37269,7 @@
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Uint16Array>
                                                                       i32.const 10172
                                                                       i32.load
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       i32.const 2
                                                                       i32.add
                                                                       local.get $0
@@ -39533,19 +37287,19 @@
                                                                       i32.load
                                                                       local.set $6
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       loop $for-loop|0100
                                                                        local.get $2
                                                                        local.get $3
-                                                                       i32.lt_s
+                                                                       i32.gt_s
                                                                        if
                                                                         local.get $5
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.shl
                                                                         i32.add
                                                                         local.get $6
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
@@ -39562,10 +37316,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store16
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|0100
                                                                        end
                                                                       end
@@ -39597,48 +37351,32 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 16
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
+                                                                      local.get $3
+                                                                      i32.store offset=12 align=1
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i64.const 7
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i64.const 8
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i64.const 9
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
                                                                       i32.const 4
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store offset=8 align=1
                                                                       local.get $1
                                                                       i32.const 0
                                                                       i32.const 100
@@ -39655,21 +37393,13 @@
                                                                       i32.const 3
                                                                       i32.const 103
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $4
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $4
-                                                                      i32.store offset=8 align=1
+                                                                      i32.store offset=4 align=1
                                                                       local.get $4
                                                                       i32.const 0
                                                                       i32.const 1000
@@ -39682,21 +37412,13 @@
                                                                       i32.const 2
                                                                       i32.const 1002
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=12 align=1
-                                                                      local.get $0
                                                                       i32.const 10
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 13
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=12 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       i32.const 9984
                                                                       i32.const 0
@@ -39728,14 +37450,14 @@
                                                                       i32.load
                                                                       local.set $7
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|0101
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $6
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 2
                                                                         i32.shl
                                                                         local.tee $10
@@ -39756,10 +37478,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|0101
                                                                        end
                                                                       end
@@ -39771,7 +37493,7 @@
                                                                       call $~lib/rt/__newArray
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Int32Array>
                                                                       local.get $0
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       call $~lib/typedarray/Int32Array#set<~lib/typedarray/Int64Array>
                                                                       local.get $0
                                                                       i32.const 10
@@ -39782,7 +37504,7 @@
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Int32Array>
                                                                       i32.const 10172
                                                                       i32.load
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       i32.const 2
                                                                       i32.add
                                                                       local.get $0
@@ -39800,19 +37522,19 @@
                                                                       i32.load
                                                                       local.set $6
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       loop $for-loop|0102
                                                                        local.get $2
                                                                        local.get $3
-                                                                       i32.lt_s
+                                                                       i32.gt_s
                                                                        if
                                                                         local.get $5
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
                                                                         local.get $6
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
@@ -39829,10 +37551,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|0102
                                                                        end
                                                                       end
@@ -39864,48 +37586,32 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 16
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
+                                                                      local.get $3
+                                                                      i32.store offset=12 align=1
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i64.const 7
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i64.const 8
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i64.const 9
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
                                                                       i32.const 4
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store offset=8 align=1
                                                                       local.get $1
                                                                       i32.const 0
                                                                       i32.const 100
@@ -39922,21 +37628,13 @@
                                                                       i32.const 3
                                                                       i32.const 103
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $4
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $4
-                                                                      i32.store offset=8 align=1
+                                                                      i32.store offset=4 align=1
                                                                       local.get $4
                                                                       i32.const 0
                                                                       i32.const 1000
@@ -39949,21 +37647,13 @@
                                                                       i32.const 2
                                                                       i32.const 1002
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=12 align=1
-                                                                      local.get $0
                                                                       i32.const 10
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 15
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=12 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       i32.const 9984
                                                                       i32.const 0
@@ -39995,14 +37685,14 @@
                                                                       i32.load
                                                                       local.set $7
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|0103
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $6
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 2
                                                                         i32.shl
                                                                         local.tee $10
@@ -40023,10 +37713,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|0103
                                                                        end
                                                                       end
@@ -40038,7 +37728,7 @@
                                                                       call $~lib/rt/__newArray
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Uint32Array>
                                                                       local.get $0
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       call $~lib/typedarray/Int32Array#set<~lib/typedarray/Int64Array>
                                                                       local.get $0
                                                                       i32.const 10
@@ -40049,7 +37739,7 @@
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Uint32Array>
                                                                       i32.const 10172
                                                                       i32.load
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       i32.const 2
                                                                       i32.add
                                                                       local.get $0
@@ -40067,19 +37757,19 @@
                                                                       i32.load
                                                                       local.set $6
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       loop $for-loop|0104
                                                                        local.get $2
                                                                        local.get $3
-                                                                       i32.lt_s
+                                                                       i32.gt_s
                                                                        if
                                                                         local.get $5
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
                                                                         local.get $6
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
@@ -40096,10 +37786,10 @@
                                                                          i32.const 0
                                                                         end
                                                                         i32.store
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|0104
                                                                        end
                                                                       end
@@ -40131,48 +37821,32 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 16
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
+                                                                      local.get $3
+                                                                      i32.store offset=12 align=1
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i64.const 7
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i64.const 8
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i64.const 9
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
                                                                       i32.const 4
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store offset=8 align=1
                                                                       local.get $1
                                                                       i32.const 0
                                                                       i32.const 100
@@ -40189,21 +37863,13 @@
                                                                       i32.const 3
                                                                       i32.const 103
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $4
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $4
-                                                                      i32.store offset=8 align=1
+                                                                      i32.store offset=4 align=1
                                                                       local.get $4
                                                                       i32.const 0
                                                                       i32.const 1000
@@ -40216,21 +37882,13 @@
                                                                       i32.const 2
                                                                       i32.const 1002
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=12 align=1
-                                                                      local.get $0
                                                                       i32.const 10
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 17
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=12 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       call $~lib/typedarray/Int64Array#set<~lib/array/Array<i32>>
                                                                       local.get $0
@@ -40260,19 +37918,19 @@
                                                                       i32.load
                                                                       local.set $7
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|0105
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $6
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
                                                                         local.get $7
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
@@ -40289,10 +37947,10 @@
                                                                          i64.const 0
                                                                         end
                                                                         i64.store
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|0105
                                                                        end
                                                                       end
@@ -40304,7 +37962,7 @@
                                                                       call $~lib/rt/__newArray
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Int64Array>
                                                                       local.get $0
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       call $~lib/typedarray/Int64Array#set<~lib/typedarray/Int64Array>
                                                                       local.get $0
                                                                       i32.const 10
@@ -40315,7 +37973,7 @@
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Int64Array>
                                                                       i32.const 10172
                                                                       i32.load
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       i32.const 2
                                                                       i32.add
                                                                       local.get $0
@@ -40333,14 +37991,14 @@
                                                                       i32.load
                                                                       local.set $6
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       loop $for-loop|0106
                                                                        local.get $2
                                                                        local.get $3
-                                                                       i32.lt_s
+                                                                       i32.gt_s
                                                                        if
                                                                         local.get $5
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         local.tee $7
@@ -40361,10 +38019,10 @@
                                                                          i64.const 0
                                                                         end
                                                                         i64.store
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|0106
                                                                        end
                                                                       end
@@ -40396,48 +38054,32 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 16
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
+                                                                      local.get $3
+                                                                      i32.store offset=12 align=1
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i64.const 7
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i64.const 8
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i64.const 9
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
                                                                       i32.const 4
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store offset=8 align=1
                                                                       local.get $1
                                                                       i32.const 0
                                                                       i32.const 100
@@ -40454,21 +38096,13 @@
                                                                       i32.const 3
                                                                       i32.const 103
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $4
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $4
-                                                                      i32.store offset=8 align=1
+                                                                      i32.store offset=4 align=1
                                                                       local.get $4
                                                                       i32.const 0
                                                                       i32.const 1000
@@ -40481,21 +38115,13 @@
                                                                       i32.const 2
                                                                       i32.const 1002
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=12 align=1
-                                                                      local.get $0
                                                                       i32.const 10
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 19
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=12 align=1
+                                                                      i32.store align=1
                                                                       local.get $0
                                                                       call $~lib/typedarray/Int64Array#set<~lib/array/Array<i32>>
                                                                       local.get $0
@@ -40525,19 +38151,19 @@
                                                                       i32.load
                                                                       local.set $7
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|0107
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $6
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
                                                                         local.get $7
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
@@ -40554,10 +38180,10 @@
                                                                          i64.const 0
                                                                         end
                                                                         i64.store
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|0107
                                                                        end
                                                                       end
@@ -40569,7 +38195,7 @@
                                                                       call $~lib/rt/__newArray
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Uint64Array>
                                                                       local.get $0
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       call $~lib/typedarray/Int64Array#set<~lib/typedarray/Int64Array>
                                                                       local.get $0
                                                                       i32.const 10
@@ -40580,7 +38206,7 @@
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Uint64Array>
                                                                       i32.const 10172
                                                                       i32.load
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       i32.const 2
                                                                       i32.add
                                                                       local.get $0
@@ -40598,14 +38224,14 @@
                                                                       i32.load
                                                                       local.set $6
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       loop $for-loop|0108
                                                                        local.get $2
                                                                        local.get $3
-                                                                       i32.lt_s
+                                                                       i32.gt_s
                                                                        if
                                                                         local.get $5
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         local.tee $7
@@ -40626,10 +38252,10 @@
                                                                          i64.const 0
                                                                         end
                                                                         i64.store
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|0108
                                                                        end
                                                                       end
@@ -40661,48 +38287,32 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 16
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
+                                                                      local.get $3
+                                                                      i32.store offset=12 align=1
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i64.const 7
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i64.const 8
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i64.const 9
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
                                                                       i32.const 4
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store offset=8 align=1
                                                                       local.get $1
                                                                       i32.const 0
                                                                       i32.const 100
@@ -40719,21 +38329,13 @@
                                                                       i32.const 3
                                                                       i32.const 103
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $4
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $4
-                                                                      i32.store offset=8 align=1
+                                                                      i32.store offset=4 align=1
                                                                       local.get $4
                                                                       i32.const 0
                                                                       i32.const 1000
@@ -40746,21 +38348,13 @@
                                                                       i32.const 2
                                                                       i32.const 1002
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=12 align=1
-                                                                      local.get $0
                                                                       i32.const 10
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=12 align=1
+                                                                      i32.store align=1
                                                                       i32.const 9996
                                                                       i32.load
                                                                       local.tee $5
@@ -40777,14 +38371,14 @@
                                                                       i32.load
                                                                       local.set $7
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|0109
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $6
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 2
                                                                         i32.shl
                                                                         local.tee $10
@@ -40795,10 +38389,10 @@
                                                                         i32.load
                                                                         f32.convert_i32_s
                                                                         f32.store
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|0109
                                                                        end
                                                                       end
@@ -40820,11 +38414,11 @@
                                                                       i32.const 13568
                                                                       call $~lib/rt/__newArray
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Float32Array>
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       i32.const 6
                                                                       i32.add
                                                                       local.get $0
@@ -40838,33 +38432,33 @@
                                                                       i32.const 24
                                                                       i32.add
                                                                       local.set $5
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
                                                                       local.set $6
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       loop $for-loop|062
                                                                        local.get $2
                                                                        local.get $3
-                                                                       i32.lt_s
+                                                                       i32.gt_s
                                                                        if
                                                                         local.get $5
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
                                                                         local.get $6
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
                                                                         i64.load
                                                                         f32.convert_i64_s
                                                                         f32.store
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|062
                                                                        end
                                                                       end
@@ -40877,7 +38471,7 @@
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Float32Array>
                                                                       local.get $1
                                                                       i32.load offset=8
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       local.get $0
                                                                       i32.load offset=8
                                                                       i32.const 2
@@ -40886,7 +38480,7 @@
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $1
                                                                       i32.load offset=4
                                                                       local.set $5
@@ -40894,10 +38488,10 @@
                                                                       local.set $1
                                                                       loop $for-loop|0110
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         i32.const 2
                                                                         i32.shl
@@ -40919,7 +38513,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 1
                                                                       i32.shr_u
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.const 4
                                                                       i32.add
                                                                       local.get $0
@@ -40935,11 +38529,11 @@
                                                                       local.set $1
                                                                       local.get $4
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       i32.const 0
                                                                       local.set $4
                                                                       loop $for-loop|063
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $4
                                                                        i32.gt_s
                                                                        if
@@ -40948,7 +38542,7 @@
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $4
                                                                         i32.const 1
                                                                         i32.shl
@@ -40965,7 +38559,7 @@
                                                                       end
                                                                       i32.const 10252
                                                                       i32.load
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.const 7
                                                                       i32.add
                                                                       local.get $0
@@ -40978,7 +38572,7 @@
                                                                       i32.load offset=4
                                                                       i32.const 28
                                                                       i32.add
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       i32.const 10244
                                                                       i32.load
                                                                       local.set $4
@@ -40986,10 +38580,10 @@
                                                                       local.set $1
                                                                       loop $for-loop|0111
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         i32.const 2
                                                                         i32.shl
@@ -41020,48 +38614,32 @@
                                                                       global.set $~lib/memory/__stack_pointer
                                                                       i32.const 16
                                                                       call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store align=1
-                                                                      local.get $2
+                                                                      local.get $3
+                                                                      i32.store offset=12 align=1
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i64.const 7
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i64.const 8
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i64.const 9
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $0
                                                                       i32.const 4
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $1
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
-                                                                      i32.store offset=4 align=1
+                                                                      i32.store offset=8 align=1
                                                                       local.get $1
                                                                       i32.const 0
                                                                       i32.const 100
@@ -41078,21 +38656,13 @@
                                                                       i32.const 3
                                                                       i32.const 103
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.set $4
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $4
-                                                                      i32.store offset=8 align=1
+                                                                      i32.store offset=4 align=1
                                                                       local.get $4
                                                                       i32.const 0
                                                                       i32.const 1000
@@ -41105,21 +38675,13 @@
                                                                       i32.const 2
                                                                       i32.const 1002
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store offset=12 align=1
-                                                                      local.get $0
                                                                       i32.const 10
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 23
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
-                                                                      i32.store offset=12 align=1
+                                                                      i32.store align=1
                                                                       i32.const 9996
                                                                       i32.load
                                                                       local.tee $5
@@ -41136,29 +38698,29 @@
                                                                       i32.load
                                                                       local.set $7
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|0112
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $6
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
                                                                         local.get $7
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
                                                                         i32.load
                                                                         f64.convert_i32_s
                                                                         f64.store
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|0112
                                                                        end
                                                                       end
@@ -41189,29 +38751,29 @@
                                                                       i32.load
                                                                       local.set $7
                                                                       i32.const 0
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       loop $for-loop|0113
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        local.get $5
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $6
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
                                                                         local.get $7
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 2
                                                                         i32.shl
                                                                         i32.add
                                                                         f32.load
                                                                         f64.promote_f32
                                                                         f64.store
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $3
+                                                                        local.set $2
                                                                         br $for-loop|0113
                                                                        end
                                                                       end
@@ -41222,11 +38784,11 @@
                                                                       i32.const 13920
                                                                       call $~lib/rt/__newArray
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Float64Array>
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       i32.const 3
                                                                       i32.shr_u
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       i32.const 6
                                                                       i32.add
                                                                       local.get $0
@@ -41240,18 +38802,18 @@
                                                                       i32.const 48
                                                                       i32.add
                                                                       local.set $5
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
                                                                       local.set $6
                                                                       i32.const 0
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       loop $for-loop|064114
                                                                        local.get $2
                                                                        local.get $3
-                                                                       i32.lt_s
+                                                                       i32.gt_s
                                                                        if
                                                                         local.get $5
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 3
                                                                         i32.shl
                                                                         local.tee $7
@@ -41262,10 +38824,10 @@
                                                                         i64.load
                                                                         f64.convert_i64_s
                                                                         f64.store
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 1
                                                                         i32.add
-                                                                        local.set $2
+                                                                        local.set $3
                                                                         br $for-loop|064114
                                                                        end
                                                                       end
@@ -41278,7 +38840,7 @@
                                                                       call $std/typedarray/valuesEqual<~lib/typedarray/Float64Array>
                                                                       local.get $1
                                                                       i32.load offset=8
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       local.get $0
                                                                       i32.load offset=8
                                                                       i32.const 3
@@ -41287,7 +38849,7 @@
                                                                       br_if $folding-inner58
                                                                       local.get $0
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       local.get $1
                                                                       i32.load offset=4
                                                                       local.set $5
@@ -41295,10 +38857,10 @@
                                                                       local.set $1
                                                                       loop $for-loop|0115
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         i32.const 3
                                                                         i32.shl
@@ -41320,7 +38882,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 1
                                                                       i32.shr_u
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.const 4
                                                                       i32.add
                                                                       local.get $0
@@ -41336,11 +38898,11 @@
                                                                       local.set $1
                                                                       local.get $4
                                                                       i32.load offset=4
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       i32.const 0
                                                                       local.set $4
                                                                       loop $for-loop|065
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        local.get $4
                                                                        i32.gt_s
                                                                        if
@@ -41349,7 +38911,7 @@
                                                                         i32.const 3
                                                                         i32.shl
                                                                         i32.add
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $4
                                                                         i32.const 1
                                                                         i32.shl
@@ -41366,7 +38928,7 @@
                                                                       end
                                                                       i32.const 10252
                                                                       i32.load
-                                                                      local.tee $2
+                                                                      local.tee $3
                                                                       i32.const 7
                                                                       i32.add
                                                                       local.get $0
@@ -41379,7 +38941,7 @@
                                                                       i32.load offset=4
                                                                       i32.const 56
                                                                       i32.add
-                                                                      local.set $3
+                                                                      local.set $2
                                                                       i32.const 10244
                                                                       i32.load
                                                                       local.set $4
@@ -41387,10 +38949,10 @@
                                                                       local.set $1
                                                                       loop $for-loop|0116
                                                                        local.get $1
-                                                                       local.get $2
+                                                                       local.get $3
                                                                        i32.lt_s
                                                                        if
-                                                                        local.get $3
+                                                                        local.get $2
                                                                         local.get $1
                                                                         i32.const 3
                                                                         i32.shl
@@ -41419,90 +38981,58 @@
                                                                       i32.const 16
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 12
-                                                                      i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 10
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 8
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $0
                                                                       i32.store align=1
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $2
-                                                                      i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $2
-                                                                      i32.const 0
-                                                                      f32.const 400
-                                                                      call $~lib/typedarray/Float32Array#__set
-                                                                      local.get $2
-                                                                      i32.const 1
-                                                                      f32.const nan:0x400000
-                                                                      call $~lib/typedarray/Float32Array#__set
-                                                                      local.get $2
-                                                                      i32.const 2
-                                                                      f32.const inf
-                                                                      call $~lib/typedarray/Float32Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $1
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $1
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $1
-                                                                      i32.const 4
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $3
-                                                                      i32.store offset=12 align=1
+                                                                      i32.store offset=8 align=1
                                                                       local.get $3
+                                                                      i32.const 0
+                                                                      f32.const 400
+                                                                      call $~lib/typedarray/Float32Array#__set
+                                                                      local.get $3
+                                                                      i32.const 1
+                                                                      f32.const nan:0x400000
+                                                                      call $~lib/typedarray/Float32Array#__set
+                                                                      local.get $3
+                                                                      i32.const 2
+                                                                      f32.const inf
+                                                                      call $~lib/typedarray/Float32Array#__set
+                                                                      i32.const 4
+                                                                      i32.const 17
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
+                                                                      local.set $2
+                                                                      global.get $~lib/memory/__stack_pointer
+                                                                      local.get $2
+                                                                      i32.store offset=4 align=1
+                                                                      local.get $2
                                                                       i32.const 0
                                                                       i64.const -10
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       i64.const 100
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       i64.const 10
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 3
                                                                       i64.const 300
                                                                       call $~lib/typedarray/Int64Array#__set
-                                                                      i32.const 12
+                                                                      i32.const 2
                                                                       i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $1
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $1
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $1
-                                                                      i32.const 2
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $4
                                                                       i32.const 0
                                                                       i32.const 300
@@ -41513,7 +39043,7 @@
                                                                       call $~lib/typedarray/Int32Array#__set
                                                                       local.get $0
                                                                       i32.load offset=8
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
@@ -41527,9 +39057,9 @@
                                                                       i32.const 1
                                                                       i32.add
                                                                       local.set $6
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 0
                                                                       local.set $1
                                                                       loop $for-loop|0117
@@ -41540,7 +39070,7 @@
                                                                         local.get $1
                                                                         local.get $6
                                                                         i32.add
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         local.get $1
                                                                         i32.const 2
                                                                         i32.shl
@@ -41570,7 +39100,7 @@
                                                                        end
                                                                       end
                                                                       local.get $0
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 4
                                                                       call $~lib/typedarray/Uint8ClampedArray#set<~lib/typedarray/Int64Array>
                                                                       local.get $0
@@ -41579,7 +39109,7 @@
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
-                                                                      local.tee $3
+                                                                      local.tee $2
                                                                       i32.const 8
                                                                       i32.add
                                                                       i32.lt_s
@@ -41596,7 +39126,7 @@
                                                                       local.set $1
                                                                       loop $for-loop|0118
                                                                        local.get $1
-                                                                       local.get $3
+                                                                       local.get $2
                                                                        i32.lt_s
                                                                        if
                                                                         local.get $1
@@ -41608,14 +39138,14 @@
                                                                         i32.shl
                                                                         i32.add
                                                                         i32.load
-                                                                        local.tee $2
+                                                                        local.tee $3
                                                                         i32.const 255
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.sub
                                                                         i32.const 31
                                                                         i32.shr_s
                                                                         i32.or
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         i32.const 31
                                                                         i32.shr_s
                                                                         i32.const -1
@@ -41637,65 +39167,49 @@
                                                                       call $~lib/rt/__newArray
                                                                       i32.const 10736
                                                                       call $byn$mgfn-shared$std/typedarray/valuesEqual<~lib/typedarray/Uint8Array>
-                                                                      i32.const 12
-                                                                      i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $2
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $2
                                                                       i32.const 4
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.set $2
+                                                                      i32.const 15
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
-                                                                      i32.store offset=8 align=1
-                                                                      local.get $2
+                                                                      local.get $3
+                                                                      i32.store offset=4 align=1
+                                                                      local.get $3
                                                                       i32.const 0
                                                                       i32.const 1
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 300
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i32.const 100
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 3
                                                                       i32.const -1
                                                                       call $~lib/typedarray/Uint32Array#__set
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $1
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $1
-                                                                      i32.store offset=4 align=1
-                                                                      local.get $1
                                                                       i32.const 4
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $3
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+                                                                      local.tee $2
                                                                       i32.const 0
                                                                       i32.const -10
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 1
                                                                       i32.const 100
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 2
                                                                       i32.const 10
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 3
                                                                       i32.const 300
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=8
                                                                       i32.const 2
                                                                       i32.shr_u
@@ -41707,9 +39221,9 @@
                                                                       local.get $0
                                                                       i32.load offset=4
                                                                       local.set $5
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.load offset=4
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       i32.const 0
                                                                       local.set $1
                                                                       loop $for-loop|0119
@@ -41721,7 +39235,7 @@
                                                                         local.get $5
                                                                         i32.add
                                                                         i32.const 255
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         local.get $1
                                                                         i32.const 2
                                                                         i32.shl
@@ -41741,7 +39255,7 @@
                                                                        end
                                                                       end
                                                                       local.get $0
-                                                                      local.get $3
+                                                                      local.get $2
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Uint8ClampedArray#set<~lib/typedarray/Int16Array>
                                                                       local.get $0
@@ -41752,19 +39266,9 @@
                                                                       call $~lib/rt/__newArray
                                                                       i32.const 10736
                                                                       call $byn$mgfn-shared$std/typedarray/valuesEqual<~lib/typedarray/Uint8Array>
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 4
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 4
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 2
                                                                       i32.const 1
@@ -41822,23 +39326,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner70
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 2
                                                                       i32.const 1
@@ -41895,23 +39385,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner70
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 8
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 8
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 2
                                                                       i32.const 1
@@ -41968,23 +39444,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner70
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 2
                                                                       i32.const 1
@@ -42042,23 +39504,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner70
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 11
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 11
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 2
                                                                       i32.const 1
@@ -42116,23 +39564,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner70
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 13
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 13
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 2
                                                                       i32.const 1
@@ -42190,23 +39624,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner70
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 15
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 15
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 2
                                                                       i32.const 1
@@ -42264,23 +39684,9 @@
                                                                       i32.const 1
                                                                       i32.ne
                                                                       br_if $folding-inner70
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 17
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 2
                                                                       i64.const 1
@@ -42338,23 +39744,9 @@
                                                                       i64.const 1
                                                                       i64.ne
                                                                       br_if $folding-inner70
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 19
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 2
                                                                       i64.const 1
@@ -42412,23 +39804,9 @@
                                                                       i64.const 1
                                                                       i64.ne
                                                                       br_if $folding-inner70
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
-                                                                      i32.const 21
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 2
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      i32.const 21
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 2
                                                                       f32.const 1
@@ -42486,23 +39864,9 @@
                                                                       f32.const 1
                                                                       f32.ne
                                                                       br_if $folding-inner70
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      call $~lib/rt/__decrease_sp
-                                                                      i32.const 12
+                                                                      i32.const 3
                                                                       i32.const 23
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
-                                                                      i32.const 3
-                                                                      i32.const 3
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new
                                                                       local.tee $0
                                                                       i32.const 2
                                                                       f64.const 1
@@ -42559,49 +39923,37 @@
                                                                       f64.const 1
                                                                       f64.ne
                                                                       br_if $folding-inner70
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 4
-                                                                      i32.add
-                                                                      global.set $~lib/memory/__stack_pointer
-                                                                      i32.const 12
-                                                                      i32.const 6
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 3
-                                                                      i32.const 0
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $2
+                                                                      i32.const 6
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new
+                                                                      local.tee $3
                                                                       i32.const 0
                                                                       i32.const 10
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 12
                                                                       call $~lib/typedarray/Uint8Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 2
                                                                       i32.const 14
                                                                       call $~lib/typedarray/Uint8Array#__set
                                                                       i32.const 0
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store align=1
                                                                       i32.const 8
                                                                       i32.const 89
                                                                       call $~lib/rt/itcms/__new
                                                                       local.tee $1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store offset=4
                                                                       local.get $1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $1
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
                                                                       i32.store offset=4 align=1
@@ -42619,7 +39971,7 @@
                                                                         i32.load8_u
                                                                         i32.add
                                                                         local.set $0
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         call $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Uint8Array,u8>#next"
                                                                         local.set $1
                                                                         br $for-of-loop|0
@@ -42636,41 +39988,33 @@
                                                                        call $~lib/builtins/abort
                                                                        unreachable
                                                                       end
-                                                                      i32.const 12
-                                                                      i32.const 9
-                                                                      call $~lib/rt/itcms/__new
-                                                                      local.set $0
-                                                                      global.get $~lib/memory/__stack_pointer
-                                                                      local.get $0
-                                                                      i32.store align=1
-                                                                      local.get $0
                                                                       i32.const 2
-                                                                      i32.const 1
-                                                                      call $~lib/arraybuffer/ArrayBufferView#constructor
-                                                                      local.tee $2
+                                                                      i32.const 9
+                                                                      call $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+                                                                      local.tee $3
                                                                       i32.const 0
                                                                       i32.const -2
                                                                       call $~lib/typedarray/Int16Array#__set
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.const 1
                                                                       i32.const 5
                                                                       call $~lib/typedarray/Int16Array#__set
                                                                       i32.const 0
                                                                       local.set $0
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store align=1
                                                                       i32.const 8
                                                                       i32.const 92
                                                                       call $~lib/rt/itcms/__new
                                                                       local.tee $1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       i32.store offset=4
                                                                       local.get $1
-                                                                      local.get $2
+                                                                      local.get $3
                                                                       call $~lib/rt/itcms/__link
                                                                       local.get $1
-                                                                      local.set $2
+                                                                      local.set $3
                                                                       global.get $~lib/memory/__stack_pointer
                                                                       local.get $1
                                                                       i32.store offset=4 align=1
@@ -42689,7 +40033,7 @@
                                                                         i32.extend16_s
                                                                         i32.add
                                                                         local.set $0
-                                                                        local.get $2
+                                                                        local.get $3
                                                                         call $"~lib/typedarray/TypedArrayIterator<~lib/typedarray/Int16Array,i16>#next"
                                                                         local.set $1
                                                                         br $for-of-loop|1
@@ -42742,10 +40086,10 @@
                                                                       i32.add
                                                                       global.set $~lib/rt/itcms/threshold
                                                                       global.get $~lib/memory/__stack_pointer
-                                                                      i32.const 16
+                                                                      i32.const 12
                                                                       i32.add
                                                                       global.set $~lib/memory/__stack_pointer
-                                                                      br $__inlined_func$start:std/typedarray$1034
+                                                                      br $__inlined_func$start:std/typedarray$1035
                                                                      end
                                                                      i32.const 0
                                                                      i32.const 544
@@ -43217,6 +40561,38 @@
    unreachable
   end
  )
+ (func $~lib/arraybuffer/ArrayBuffer#constructor@new (param $0 i32) (result i32)
+  (local $1 i32)
+  i32.const 4
+  call $~lib/rt/__decrease_sp
+  i32.const 0
+  i32.const 1
+  call $~lib/rt/itcms/__new
+  local.set $1
+  global.get $~lib/memory/__stack_pointer
+  local.get $1
+  i32.store align=1
+  local.get $0
+  i32.const 1073741820
+  i32.gt_u
+  if
+   i32.const 32
+   i32.const 80
+   i32.const 50
+   i32.const 43
+   call $~lib/builtins/abort
+   unreachable
+  end
+  local.get $0
+  i32.const 1
+  call $~lib/rt/itcms/__new
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
+ )
  (func $~lib/rt/__decrease_sp (param $0 i32)
   global.get $~lib/memory/__stack_pointer
   local.get $0
@@ -43342,6 +40718,12 @@
    end
   end
  )
+ (func $byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new (param $0 i32) (param $1 i32) (result i32)
+  local.get $0
+  local.get $1
+  i32.const 1
+  call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+ )
  (func $byn$mgfn-shared$~lib/typedarray/Int16Array#subarray (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   local.get $0
   local.get $1
@@ -43349,12 +40731,30 @@
   i32.const 1
   call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
  )
+ (func $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new (param $0 i32) (param $1 i32) (result i32)
+  local.get $0
+  local.get $1
+  i32.const 2
+  call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+ )
+ (func $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new (param $0 i32) (param $1 i32) (result i32)
+  local.get $0
+  local.get $1
+  i32.const 3
+  call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+ )
  (func $byn$mgfn-shared$~lib/typedarray/Int64Array#subarray (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   local.get $0
   local.get $1
   local.get $2
   i32.const 3
   call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
+ )
+ (func $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new (param $0 i32) (param $1 i32) (result i32)
+  local.get $0
+  local.get $1
+  i32.const 0
+  call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
  )
  (func $byn$mgfn-shared$~lib/typedarray/Uint32Array#subarray (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   local.get $0
@@ -43454,6 +40854,27 @@
   i32.sub
   i32.store offset=8
   local.get $2
+ )
+ (func $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
+  i32.const 4
+  call $~lib/rt/__decrease_sp
+  i32.const 12
+  local.get $1
+  call $~lib/rt/itcms/__new
+  local.set $1
+  global.get $~lib/memory/__stack_pointer
+  local.get $1
+  i32.store align=1
+  local.get $1
+  local.get $0
+  local.get $2
+  call $~lib/arraybuffer/ArrayBufferView#constructor
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
  )
  (func $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#subarray (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
   (local $4 i32)
@@ -43714,7 +41135,7 @@
  )
  (func $byn$mgfn-shared$~lib/util/number/itoa_buffered<u8> (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
-  block $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u8>$173 (result i32)
+  block $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u8>$171 (result i32)
    local.get $1
    local.get $2
    i32.and
@@ -43728,7 +41149,7 @@
     i32.or
     i32.store16
     i32.const 1
-    br $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u8>$173
+    br $__inlined_func$byn$mgfn-shared$~lib/util/number/itoa_buffered<u8>$171
    end
    local.get $1
    local.get $2

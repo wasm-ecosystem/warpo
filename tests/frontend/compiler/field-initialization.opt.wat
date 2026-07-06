@@ -1,12 +1,13 @@
 (module
- (type $0 (func (param i32)))
- (type $1 (func (param i32 i32)))
- (type $2 (func))
+ (type $0 (func (param i32 i32)))
+ (type $1 (func))
+ (type $2 (func (param i32)))
  (type $3 (func (param i32 i32) (result i32)))
- (type $4 (func (param i32) (result i32)))
- (type $5 (func (param i32 i32 i32 i32)))
- (type $6 (func (param i32 i32 i32)))
- (type $7 (func (param i32 i32 i64)))
+ (type $4 (func (param i32 i32 i32 i32)))
+ (type $5 (func (param i32 i32 i32)))
+ (type $6 (func (param i32 i32 i64)))
+ (type $7 (func (param i32) (result i32)))
+ (type $8 (func (result i32)))
  (import "env" "abort" (func $~lib/builtins/abort (param i32 i32 i32 i32)))
  (global $~lib/memory/__stack_pointer (mut i32) (i32.const 33644))
  (global $~lib/rt/itcms/total (mut i32) (i32.const 0))
@@ -1580,45 +1581,24 @@
   call $~lib/rt/itcms/__link
  )
  (func $field-initialization/Ref_Init#constructor (param $0 i32) (result i32)
-  (local $1 i32)
-  i32.const 8
-  call $~lib/rt/__decrease_sp
   global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store offset=4 align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store align=1
-  local.get $0
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  call $field-initialization/Ref_Init#set:a
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
-  local.get $0
- )
- (func $field-initialization/Ref_Init_Ctor#constructor (param $0 i32) (result i32)
-  (local $1 i32)
   i32.const 4
-  call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $1
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  local.get $1
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 876
+  i32.lt_s
+  if
+   unreachable
+  end
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
   i32.store align=1
   local.get $0
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   call $field-initialization/Ref_Init#set:a
   global.get $~lib/memory/__stack_pointer
   i32.const 4
@@ -1845,8 +1825,19 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 8
-  call $~lib/rt/__decrease_sp
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store align=1
+  global.get $~lib/memory/__stack_pointer
+  i32.const 876
+  i32.lt_s
+  if
+   unreachable
+  end
   i32.const 4
   i32.const 6
   call $~lib/rt/itcms/__new
@@ -1953,7 +1944,9 @@
   local.get $0
   i32.store align=1
   local.get $0
-  call $field-initialization/Ref_Init_Ctor#constructor
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  call $field-initialization/Ref_Init#set:a
+  local.get $0
   i32.load
   i32.eqz
   if
@@ -1972,7 +1965,9 @@
   local.get $0
   i32.store align=1
   local.get $0
-  call $field-initialization/Ref_Init_Ctor#constructor
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  call $field-initialization/Ref_Init#set:a
+  local.get $0
   i32.load
   i32.eqz
   if
@@ -1983,16 +1978,7 @@
    call $~lib/builtins/abort
    unreachable
   end
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $0
-  global.get $~lib/memory/__stack_pointer
-  local.get $0
-  i32.store align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $0
@@ -2035,7 +2021,9 @@
   local.get $0
   i32.store align=1
   local.get $0
-  call $field-initialization/Ref_Init_Ctor#constructor
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  call $field-initialization/Ref_Init#set:a
+  local.get $0
   i32.load
   i32.eqz
   if
@@ -2054,7 +2042,9 @@
   local.get $0
   i32.store align=1
   local.get $0
-  call $field-initialization/Ref_Init_Ctor#constructor
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
+  call $field-initialization/Ref_Init#set:a
+  local.get $0
   i32.load
   i32.eqz
   if
@@ -2355,24 +2345,9 @@
   global.get $~lib/memory/__stack_pointer
   local.get $0
   i32.store align=1
-  i32.const 8
-  call $~lib/rt/__decrease_sp
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
-  i32.store offset=4 align=1
   local.get $0
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   call $field-initialization/Ref_Init#set:a
-  global.get $~lib/memory/__stack_pointer
-  i32.const 8
-  i32.add
-  global.set $~lib/memory/__stack_pointer
   local.get $0
   i32.load
   i32.eqz
@@ -2390,18 +2365,9 @@
   local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $0
-  i32.store offset=4 align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
   i32.store align=1
   local.get $0
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   call $field-initialization/Ref_Init#set:a
   local.get $0
   i32.load
@@ -2420,25 +2386,16 @@
   local.set $0
   global.get $~lib/memory/__stack_pointer
   local.get $0
-  i32.store offset=4 align=1
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
-  local.set $1
-  global.get $~lib/memory/__stack_pointer
-  local.get $1
   i32.store align=1
   local.get $0
-  i32.const 0
-  i32.const 1
-  call $~lib/rt/itcms/__new
+  call $~lib/arraybuffer/ArrayBuffer#constructor@new
   call $field-initialization/Ref_Init#set:a
   local.get $0
   i32.load
   i32.eqz
   local.set $0
   global.get $~lib/memory/__stack_pointer
-  i32.const 8
+  i32.const 4
   i32.add
   global.set $~lib/memory/__stack_pointer
   local.get $0
@@ -2451,20 +2408,36 @@
    unreachable
   end
  )
- (func $~lib/rt/__decrease_sp (param $0 i32)
+ (func $~lib/arraybuffer/ArrayBuffer#constructor@new (result i32)
+  (local $0 i32)
   global.get $~lib/memory/__stack_pointer
-  local.get $0
+  i32.const 4
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
   i32.const 0
-  local.get $0
-  memory.fill
+  i32.store align=1
   global.get $~lib/memory/__stack_pointer
   i32.const 876
   i32.lt_s
   if
    unreachable
   end
+  i32.const 0
+  i32.const 1
+  call $~lib/rt/itcms/__new
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.store align=1
+  i32.const 0
+  i32.const 1
+  call $~lib/rt/itcms/__new
+  local.set $0
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
+  local.get $0
  )
 )
