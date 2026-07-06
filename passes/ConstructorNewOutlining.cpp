@@ -23,7 +23,6 @@
 
 #include "ConstructorNewOutlining.hpp"
 #include "helper/CFG.hpp"
-#include "helper/FindExpr.hpp"
 #include "warpo/support/Debug.hpp"
 
 #define PASS_NAME "ConstructorNewOutlining"
@@ -60,12 +59,12 @@ inline wasm::Call *getAllocationCall(wasm::Expression *expr) noexcept {
 }
 
 struct Match {
-  wasm::Expression **expr = nullptr;
   wasm::Call *call = nullptr;
   wasm::Expression *allocationOperand = nullptr;
 };
 
 using CandidateMap = std::unordered_map<wasm::Name, std::vector<Match>>;
+using ReplacementMap = std::unordered_map<wasm::Call *, wasm::Name>;
 
 std::vector<wasm::Type> getHelperParameterTypes(wasm::Function *function) {
   std::vector<wasm::Type> parameterTypes;
@@ -100,13 +99,13 @@ public:
       for (wasm::Expression *const expr : bb) {
         wasm::Call *const call = expr->dynCast<wasm::Call>();
         if (call != nullptr)
-          collectCandidate(function, call);
+          collectCandidate(call);
       }
     }
   }
 
 private:
-  void collectCandidate(wasm::Function *function, wasm::Call *call) {
+  void collectCandidate(wasm::Call *call) {
     if (!isConstructorName(call->target) || call->operands.empty())
       return;
 
@@ -114,10 +113,7 @@ private:
     if (getAllocationCall(allocationOperand) == nullptr)
       return;
 
-    wasm::Expression **const expr = findExprPointer(call, function);
-    assert(expr != nullptr);
-
-    Match const match{.expr = expr, .call = call, .allocationOperand = allocationOperand};
+    Match const match{.call = call, .allocationOperand = allocationOperand};
     std::lock_guard<std::mutex> const lock{candidateMutex};
     auto [candidate, inserted] = candidates.try_emplace(call->target);
     candidate->second.push_back(match);
@@ -125,6 +121,28 @@ private:
 
   CandidateMap &candidates;
   std::mutex &candidateMutex;
+};
+
+class Replacer : public wasm::WalkerPass<wasm::PostWalker<Replacer>> {
+public:
+  explicit Replacer(ReplacementMap const &replacements) : replacements(replacements) {}
+
+  void visitCall(wasm::Call *call) {
+    auto const replacement = replacements.find(call);
+    if (replacement == replacements.end())
+      return;
+
+    wasm::Builder builder{*getModule()};
+    std::vector<wasm::Expression *> operands;
+    operands.reserve(call->operands.size() - 1);
+    for (wasm::Index i = 1; i < call->operands.size(); i++) {
+      operands.push_back(call->operands[i]);
+    }
+    replaceCurrent(builder.makeCall(replacement->second, operands, call->type));
+  }
+
+private:
+  ReplacementMap const &replacements;
 };
 
 wasm::Type makeTupleType(std::vector<wasm::Type> const &types) {
@@ -168,15 +186,9 @@ wasm::Name addHelperFunction(wasm::Module &m, wasm::Name const constructorName, 
   return helperName;
 }
 
-void replaceMatches(wasm::Module &m, wasm::Name const helperName, std::vector<Match> const &matches) {
-  wasm::Builder builder{m};
+void addReplacements(ReplacementMap &replacements, wasm::Name const helperName, std::vector<Match> const &matches) {
   for (Match const &match : matches) {
-    std::vector<wasm::Expression *> operands;
-    operands.reserve(match.call->operands.size() - 1);
-    for (wasm::Index i = 1; i < match.call->operands.size(); i++) {
-      operands.push_back(match.call->operands[i]);
-    }
-    *match.expr = builder.makeCall(helperName, operands, match.call->type);
+    replacements.try_emplace(match.call, helperName);
   }
 }
 
@@ -210,7 +222,7 @@ struct ConstructorNewOutlining : public wasm::Pass {
       runner.run();
     }
 
-    bool changed = false;
+    ReplacementMap replacements;
     std::vector<CandidateMap::const_iterator> orderedCandidates;
     orderedCandidates.reserve(candidates.size());
     for (auto const &function : m->functions) {
@@ -225,11 +237,15 @@ struct ConstructorNewOutlining : public wasm::Pass {
       if (matches.size() < 2)
         continue;
       wasm::Name const helperName = addHelperFunction(*m, constructorName, matches);
-      replaceMatches(*m, helperName, matches);
-      changed = true;
+      addReplacements(replacements, helperName, matches);
     }
-    if (changed)
+
+    if (!replacements.empty()) {
+      wasm::PassRunner runner{getPassRunner()};
+      runner.add(std::make_unique<Replacer>(replacements));
+      runner.run();
       m->updateMaps();
+    }
   }
 };
 
