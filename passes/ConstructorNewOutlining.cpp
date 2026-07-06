@@ -345,7 +345,7 @@ TEST(ConstructorNewOutliningTest, UsesConstructorSignatureForHelperParameters) {
 
   auto *const helper = m->getFunction("A#constructor@new");
   ASSERT_NE(helper, nullptr);
-  EXPECT_EQ(helper->getParams().size(), 1u);
+  EXPECT_EQ(helper->getParams().size(), 1U);
   EXPECT_EQ(helper->getParams()[0], wasm::Type::i32);
   EXPECT_EQ(helper->getResults(), wasm::Type::i32);
 }
