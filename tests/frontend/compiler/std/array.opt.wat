@@ -19039,18 +19039,26 @@
    local.set $1
    global.get $~lib/memory/__stack_pointer
    local.get $1
-   i32.store offset=8 align=1
+   i32.store offset=4 align=1
    loop $for-loop|07
     local.get $0
     i32.const 2
     i32.lt_s
     if
-     i32.const 1
-     call $~lib/array/Array<i32>#constructor@new
+     i32.const 16
+     i32.const 4
+     call $~lib/rt/itcms/__new
      local.set $2
      global.get $~lib/memory/__stack_pointer
      local.get $2
-     i32.store offset=4 align=1
+     i32.store offset=8 align=1
+     local.get $2
+     i32.const 1
+     call $~lib/array/Array<i32>#constructor
+     local.set $2
+     global.get $~lib/memory/__stack_pointer
+     local.get $2
+     i32.store offset=8 align=1
      local.get $2
      i32.const 0
      i32.const 1
