@@ -382,7 +382,7 @@ TEST(ConstructorNewOutliningTest, UsesConstructorSignatureForHelperParameters) {
                   (i32.const 4)
                 )
               )
-              (unreachable)
+              (i32.const 8)
             )
           )
           (call $A#constructor
