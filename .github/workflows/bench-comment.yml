@@ -29,17 +29,8 @@ jobs:
         run: |
           set -euo pipefail
           pr_number=$(cat "${{ runner.temp }}/bench-result/pr-number")
-          if [[ -s "${{ runner.temp }}/bench-result/bench.diff" ]]; then
-            {
-              echo '### code size change'
-              echo
-              echo '```diff'
-              cat "${{ runner.temp }}/bench-result/bench.diff"
-              echo '```'
-            } > "${{ runner.temp }}/bench-result/comment.md"
-          else
-            : > "${{ runner.temp }}/bench-result/comment.md"
-          fi
+          diff_content=$(cat "${{ runner.temp }}/bench-result/bench.diff")
+          printf '### code size change\n\n```diff\n%s\n```\n' "$diff_content" > "${{ runner.temp }}/bench-result/comment.md"
           echo "pr-number=$pr_number" >> "$GITHUB_OUTPUT"
 
       - uses: thollander/actions-comment-pull-request@v3
