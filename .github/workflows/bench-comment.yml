@@ -29,11 +29,15 @@ jobs:
         run: |
           set -euo pipefail
           pr_number=$(cat "${{ runner.temp }}/bench-result/pr-number")
-          {
-            echo '```diff'
-            cat "${{ runner.temp }}/bench-result/bench.diff"
-            echo '```'
-          } > "${{ runner.temp }}/bench-result/comment.md"
+          if [[ -s "${{ runner.temp }}/bench-result/bench.diff" ]]; then
+            {
+              echo '```diff'
+              cat "${{ runner.temp }}/bench-result/bench.diff"
+              echo '```'
+            } > "${{ runner.temp }}/bench-result/comment.md"
+          else
+            : > "${{ runner.temp }}/bench-result/comment.md"
+          fi
           echo "pr-number=$pr_number" >> "$GITHUB_OUTPUT"
 
       - uses: thollander/actions-comment-pull-request@v3
