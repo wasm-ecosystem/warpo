@@ -197,6 +197,12 @@ void addReplacements(ReplacementMap &replacements, wasm::Name const helperName, 
 // allocations for the same constructor with one shared helper. Candidates in
 // loops are skipped to avoid adding helper-call overhead on hot paths.
 //
+// This is separate from Binaryen's generic Outlining pass because this pass
+// targets the AssemblyScript allocation shape before temp-stack lowering,
+// keeps the constructor-specific helper shape (`A#constructor@new`), and avoids
+// outlining loop-contained call sites. The generic pass may outline unrelated
+// instruction sequences and does not use CFG loop information for hot paths.
+//
 // Example:
 //   input, repeated several times for the same object type:
 //     (call $A#constructor
