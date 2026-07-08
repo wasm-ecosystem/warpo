@@ -29,7 +29,7 @@ FetchContent_MakeAvailable(googletest)
 FetchContent_Declare(
   wasm-compiler
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-  URL https://github.com/wasm-ecosystem/wasm-compiler/archive/refs/tags/4.1.1.tar.gz
+  URL https://github.com/wasm-ecosystem/wasm-compiler/archive/refs/tags/4.2.0.tar.gz
 )
 set(ENABLE_EXTENSIONS ON)
 FetchContent_MakeAvailable(wasm-compiler)
