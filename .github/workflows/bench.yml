@@ -88,10 +88,19 @@ jobs:
         run: |
           set -euo pipefail
 
-          {
-            echo "-${{ steps.base-size.outputs.bootstrap }} bytes"
-            echo "+${{ steps.merge-size.outputs.bootstrap }} bytes"
-          } > bench.diff
+          base_size='${{ steps.base-size.outputs.bootstrap }}'
+          merge_size='${{ steps.merge-size.outputs.bootstrap }}'
+
+          if [[ "$base_size" == "$merge_size" ]]; then
+            : > bench.diff
+            echo "unchanged=true" >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "-${base_size} bytes"
+              echo "+${merge_size} bytes"
+            } > bench.diff
+            echo "unchanged=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Save bench result
         shell: bash

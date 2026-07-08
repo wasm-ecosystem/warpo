@@ -24,14 +24,10 @@ export interface FixtureContext {
   loadFixtureDumpBuffer(): ArrayBuffer;
 }
 
-// The fixture wasm hardcodes the dump output path as
-// "./tools/heap_analyzer/tests/fixture/build/example.dump" (relative to PROJECT_ROOT).
-// All suites share this path because the dump content is deterministic.
-const SHARED_DUMP_PATH = resolve(TESTS_DIR, "fixture/build/example.dump");
-
 function createFixtureContext(suiteName: string): FixtureContext {
   const buildDir = resolve(TESTS_DIR, `fixture/build-${suiteName}`);
   const wasmPath = resolve(buildDir, "dwarfFixture.wasm");
+  const dumpPath = resolve(buildDir, "example.dump");
 
   function ensureBuildDir(): void {
     if (!existsSync(buildDir)) {
@@ -51,10 +47,10 @@ function createFixtureContext(suiteName: string): FixtureContext {
       return new Uint8Array(readFileSync(wasmPath));
     },
     generateFixtureDump() {
-      executeFixture(wasmPath, PROJECT_ROOT);
+      executeFixture(wasmPath, dumpPath);
     },
     loadFixtureDumpBuffer() {
-      const buf = readFileSync(SHARED_DUMP_PATH);
+      const buf = readFileSync(dumpPath);
       return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength);
     },
   };
