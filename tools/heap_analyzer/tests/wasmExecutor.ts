@@ -1,5 +1,5 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { dirname } from "node:path";
 
 const DUMP_MAGIC = new Uint8Array([0x41, 0x53, 0x48, 0x44]); // "A S H D"
 const DUMP_VERSION = 2;
@@ -33,12 +33,12 @@ function writeDump(exports: AscExports, outputPath: string): void {
 /**
  * Instantiate a compiled wasm fixture and run its `_start` entry point.
  * The injected `MemoryDump.dumpMemoryRegion` import writes a dump
- * file whose path is decoded (UTF-8) from linear memory.
+ * file to a host-controlled path.
  *
  * The fixture may abort after the dump is written (e.g. debug assertions);
  * such aborts are silently ignored.
  */
-export function executeFixture(wasmPath: string, projectRoot: string): void {
+export function executeFixture(wasmPath: string, outputPath: string): void {
   const wasmBytes = readFileSync(wasmPath);
 
   // eslint-disable-next-line prefer-const
@@ -52,8 +52,8 @@ export function executeFixture(wasmPath: string, projectRoot: string): void {
     },
     MemoryDump: {
       dumpMemoryRegion(offset: number, size: number): void {
-        const guestPath = Buffer.from(exports.memory.buffer, offset, size).toString("utf8");
-        writeDump(exports, resolve(projectRoot, guestPath));
+        Buffer.from(exports.memory.buffer, offset, size).toString("utf8");
+        writeDump(exports, outputPath);
       },
     },
   };
