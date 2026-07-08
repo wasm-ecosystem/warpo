@@ -134,6 +134,9 @@ public:
 
     wasm::Builder builder{*getModule()};
     std::vector<wasm::Expression *> operands;
+    // LCOV_EXCL_START
+    assert(!call->operands.empty());
+    // LCOV_EXCL_STOP
     operands.reserve(call->operands.size() - 1);
     for (wasm::Index i = 1; i < call->operands.size(); i++) {
       operands.push_back(call->operands[i]);
