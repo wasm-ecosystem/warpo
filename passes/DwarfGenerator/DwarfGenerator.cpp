@@ -481,6 +481,18 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, GlobalIn
   subProgramNameAttr.Value = 0U;
   subProgramAbbrev.Attributes.push_back(subProgramNameAttr);
 
+  llvm::DWARFYAML::AttributeAbbrev subProgramLowPcAttr{};
+  subProgramLowPcAttr.Attribute = llvm::dwarf::DW_AT_low_pc;
+  subProgramLowPcAttr.Form = llvm::dwarf::DW_FORM_addr;
+  subProgramLowPcAttr.Value = 0U;
+  subProgramAbbrev.Attributes.push_back(subProgramLowPcAttr);
+
+  llvm::DWARFYAML::AttributeAbbrev subProgramHighPcAttr{};
+  subProgramHighPcAttr.Attribute = llvm::dwarf::DW_AT_high_pc;
+  subProgramHighPcAttr.Form = llvm::dwarf::DW_FORM_addr;
+  subProgramHighPcAttr.Value = 0U;
+  subProgramAbbrev.Attributes.push_back(subProgramHighPcAttr);
+
   abbrevDecls.push_back(subProgramAbbrev);
 
   llvm::DWARFYAML::AttributeAbbrev outerFunctionAttr{};
@@ -496,6 +508,8 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, GlobalIn
   llvm::DWARFYAML::Abbrev closureSubProgramAbbrev =
       abbrevFactory.create(llvm::dwarf::DW_TAG_subprogram, llvm::dwarf::DW_CHILDREN_yes);
   closureSubProgramAbbrev.Attributes.push_back(subProgramNameAttr);
+  closureSubProgramAbbrev.Attributes.push_back(subProgramLowPcAttr);
+  closureSubProgramAbbrev.Attributes.push_back(subProgramHighPcAttr);
   closureSubProgramAbbrev.Attributes.push_back(heapStorageAttr);
   closureSubProgramAbbrev.Attributes.push_back(outerFunctionAttr);
 
@@ -727,6 +741,9 @@ std::string DwarfGenerator::dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::Memo
 
 static void emitSubProgram(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
                            DwarfGenerator::AbbrevCodes const &abbrevCodes, std::vector<TypeRefFixup> &typeRefFixups) {
+  if (!subProgram.hasSourceRange())
+    return;
+
   llvm::DWARFYAML::Entry subprogramEntry;
   std::optional<uint32_t> const heapStorageLocalIndex = subProgram.getHeapVariableStorageLocalIndex();
   std::optional<std::string_view> const outerFunction = subProgram.getOuterFunction();
@@ -739,6 +756,14 @@ static void emitSubProgram(SubProgramInfo const &subProgram, llvm::DWARFYAML::Un
   std::string_view const subProgramName = subProgram.getName();
   subprogramNameValue.CStr = llvm::StringRef(subProgramName.data(), subProgramName.size());
   subprogramEntry.Values.push_back(subprogramNameValue);
+
+  llvm::DWARFYAML::FormValue subprogramLowPcValue;
+  subprogramLowPcValue.Value = subProgram.getStartLine();
+  subprogramEntry.Values.push_back(subprogramLowPcValue);
+
+  llvm::DWARFYAML::FormValue subprogramHighPcValue;
+  subprogramHighPcValue.Value = subProgram.getEndLine();
+  subprogramEntry.Values.push_back(subprogramHighPcValue);
 
   if (isClosureFunction) {
     llvm::DWARFYAML::FormValue heapStorageValue;

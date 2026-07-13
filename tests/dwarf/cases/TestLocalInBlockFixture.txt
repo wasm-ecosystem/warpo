@@ -58,9 +58,13 @@ Abbrev table for offset: 0x00000000
 
 [14] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
+	DW_AT_low_pc	DW_FORM_addr
+	DW_AT_high_pc	DW_FORM_addr
 
 [15] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
+	DW_AT_low_pc	DW_FORM_addr
+	DW_AT_high_pc	DW_FORM_addr
 	DW_AT_static_link	DW_FORM_data4
 	DW_AT_description	DW_FORM_string
 
@@ -96,10 +100,9 @@ DW_TAG_compile_unit
   DW_TAG_base_type
                 DW_AT_name	("usize")
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/dwarf/cases/TestLocalInBlock")
-    NULL
-  DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestLocalInBlock/test")
+                scope start	TestLocalInBlock.ts:1
+                scope end	TestLocalInBlock.ts:11
     DW_TAG_variable
                   DW_AT_name	("aaa")
                   DW_AT_type	("i32")

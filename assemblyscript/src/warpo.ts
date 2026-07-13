@@ -23,7 +23,9 @@ export declare function _WarpoAddGlobal(variableName: string, typeName: string, 
 export declare function _WarpoAddSubProgram(
   subProgramName: string,
   belongClassName: string | null,
-  outerFunctionName: string | null
+  outerFunctionName: string | null,
+  startLine: u32,
+  endLine: u32
 ): void;
 export declare function _WarpoAddParameter(variableName: string, typeName: string, index: u32, nullable: bool): void;
 export declare function _WarpoAddLocal(variableName: string, typeName: string, index: u32, nullable: bool): void;
