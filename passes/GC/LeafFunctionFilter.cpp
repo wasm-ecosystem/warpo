@@ -57,7 +57,7 @@ void LeafFunctionFilter::runOnFunction(wasm::Module *m, wasm::Function *func) {
   if (support::isDebug(PASS_NAME, func->name.view())) {
     std::cout << "=================================\n";
     std::cout << func->name << " liveness leaf filter\n";
-    livenessMap.dump(func);
+    livenessMap.dump(m, func);
     std::cout << "=================================\n";
   }
 }

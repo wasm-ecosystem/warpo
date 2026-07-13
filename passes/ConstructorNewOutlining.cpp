@@ -91,7 +91,7 @@ public:
     if (function->body == nullptr)
       return;
 
-    CFG const cfg = CFG::fromFunction(function);
+    CFG const cfg = CFG::fromFunction(getModule(), function);
     DynBitset const insideLoop = cfg.getBlockInsideLoop();
     for (BasicBlock const &bb : cfg) {
       if (insideLoop.get(bb.getIndex()))
