@@ -58,9 +58,13 @@ Abbrev table for offset: 0x00000000
 
 [14] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
+	DW_AT_low_pc	DW_FORM_addr
+	DW_AT_high_pc	DW_FORM_addr
 
 [15] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
+	DW_AT_low_pc	DW_FORM_addr
+	DW_AT_high_pc	DW_FORM_addr
 	DW_AT_static_link	DW_FORM_data4
 	DW_AT_description	DW_FORM_string
 
@@ -108,49 +112,6 @@ DW_TAG_compile_unit
                   DW_AT_name	("y")
                   DW_AT_type	("~lib/array/Array<i32>")
                   DW_AT_data_member_location	(0x00000004)
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/C1#constructor")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/C1")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/C1#set:y")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/C1")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("y")
-                    DW_AT_type	("~lib/array/Array<i32>")
-                    DW_AT_location	(0x00000001)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/C1#set:x")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/C1")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("x")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000001)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/C1#get:x")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/C1")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/C1#get:y")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/C1")
-                    DW_AT_location	(0x00000000)
-      NULL
     NULL
   DW_TAG_class_type
                 DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>")
@@ -163,31 +124,6 @@ DW_TAG_compile_unit
                   DW_AT_data_member_location	(0x00000000)
     DW_TAG_template_type_parameter
                   DW_AT_type	("i32")
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>#constructor")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>#set:a")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("a")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000001)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>#get:a")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/CT<i32>")
-                    DW_AT_location	(0x00000000)
-      NULL
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/array/Array<i32>")
@@ -334,10 +270,9 @@ DW_TAG_compile_unit
                 DW_AT_type	("~lib/rt/tlsf/Root")
                 DW_AT_location	(0x0000000b)
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/dwarf/cases/TestClassMemberBasic")
-    NULL
-  DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestClassMemberBasic/test")
+                scope start	TestClassMemberBasic.ts:10
+                scope end	TestClassMemberBasic.ts:17
     DW_TAG_variable
                   DW_AT_name	("c1")
                   DW_AT_type	("tests/dwarf/cases/TestClassMemberBasic/C1")

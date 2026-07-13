@@ -58,9 +58,13 @@ Abbrev table for offset: 0x00000000
 
 [14] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
+	DW_AT_low_pc	DW_FORM_addr
+	DW_AT_high_pc	DW_FORM_addr
 
 [15] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
+	DW_AT_low_pc	DW_FORM_addr
+	DW_AT_high_pc	DW_FORM_addr
 	DW_AT_static_link	DW_FORM_data4
 	DW_AT_description	DW_FORM_string
 
@@ -104,31 +108,6 @@ DW_TAG_compile_unit
                   DW_AT_name	("aaa")
                   DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000000)
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestGlobal/C1#constructor")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestGlobal/C1")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestGlobal/C1#set:aaa")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestGlobal/C1")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("aaa")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000001)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestGlobal/C1#get:aaa")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestGlobal/C1")
-                    DW_AT_location	(0x00000000)
-      NULL
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/object/Object")
@@ -253,10 +232,9 @@ DW_TAG_compile_unit
                 DW_AT_type	("~lib/rt/tlsf/Root")
                 DW_AT_location	(0x0000000b)
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/dwarf/cases/TestGlobal")
-    NULL
-  DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestGlobal/test")
+                scope start	TestGlobal.ts:8
+                scope end	TestGlobal.ts:11
     NULL
 
 .debug_str contents:

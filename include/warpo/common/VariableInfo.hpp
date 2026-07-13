@@ -52,7 +52,7 @@ public:
   std::deque<SubProgramInfo> const &getTopLevelSubPrograms() const noexcept { return topLevelSubPrograms_; }
 
   void addSubProgram(std::string subProgramName, std::string_view const belongClassName,
-                     std::string_view const outerFunctionName);
+                     std::string_view const outerFunctionName, uint32_t const startLine = 0, uint32_t const endLine = 0);
 
   void addParameter(std::string variableName, std::string_view const typeName, uint32_t const index,
                     bool const nullable);

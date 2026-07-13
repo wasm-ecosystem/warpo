@@ -61,12 +61,14 @@ void addGlobal(uint32_t const variableNamePtr, uint32_t const typeNamePtr, uint3
 }
 
 void addSubProgram(uint32_t const subProgramNamePtr, uint32_t const belongClassNamePtr,
-                   uint32_t const outerFunctionNamePtr, vb::WasmModule const *const ctx) {
+                   uint32_t const outerFunctionNamePtr, uint32_t const startLine, uint32_t const endLine,
+                   vb::WasmModule const *const ctx) {
   std::string subProgramName = WarpRunner::getString(ctx, subProgramNamePtr);
   std::string const belongClassName = WarpRunner::getString(ctx, belongClassNamePtr);
   std::string const outerFunctionName = WarpRunner::getString(ctx, outerFunctionNamePtr);
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
-  pCompiler->asModule_.variableInfo_.addSubProgram(std::move(subProgramName), belongClassName, outerFunctionName);
+  pCompiler->asModule_.variableInfo_.addSubProgram(std::move(subProgramName), belongClassName, outerFunctionName,
+                                                   startLine, endLine);
 }
 
 void addParameter(uint32_t const variableNamePtr, uint32_t const typeNamePtr, uint32_t const index,

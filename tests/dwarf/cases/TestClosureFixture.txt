@@ -58,9 +58,13 @@ Abbrev table for offset: 0x00000000
 
 [14] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
+	DW_AT_low_pc	DW_FORM_addr
+	DW_AT_high_pc	DW_FORM_addr
 
 [15] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
+	DW_AT_low_pc	DW_FORM_addr
+	DW_AT_high_pc	DW_FORM_addr
 	DW_AT_static_link	DW_FORM_data4
 	DW_AT_description	DW_FORM_string
 
@@ -105,25 +109,9 @@ DW_TAG_compile_unit
                   DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000000)
     DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#constructor")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClosure/Counter")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#set:bias")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClosure/Counter")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("bias")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000001)
-      NULL
-    DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#makeAdder")
+                  scope start	TestClosure.ts:15
+                  scope end	TestClosure.ts:24
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
                     DW_AT_type	("tests/dwarf/cases/TestClosure/Counter")
@@ -145,6 +133,8 @@ DW_TAG_compile_unit
                     DW_AT_location	(0x00000002)
       DW_TAG_subprogram
                     DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#makeAdder~anonymous|0")
+                    scope start	TestClosure.ts:19
+                    scope end	TestClosure.ts:23
                     DW_AT_static_link	(0x00000001)
                     DW_AT_description	("tests/dwarf/cases/TestClosure/Counter#makeAdder")
         DW_TAG_formal_parameter
@@ -156,13 +146,6 @@ DW_TAG_compile_unit
                       DW_AT_type	("i32")
                       DW_AT_location	(0x00000002)
         NULL
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#get:bias")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestClosure/Counter")
-                    DW_AT_location	(0x00000000)
       NULL
     NULL
   DW_TAG_class_type
@@ -372,10 +355,9 @@ DW_TAG_compile_unit
                 DW_AT_type	("~lib/rt/tlsf/Root")
                 DW_AT_location	(0x0000000b)
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/dwarf/cases/TestClosure")
-    NULL
-  DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestClosure/outer")
+                scope start	TestClosure.ts:1
+                scope end	TestClosure.ts:10
     DW_TAG_formal_parameter
                   DW_AT_name	("base")
                   DW_AT_type	("i32")
@@ -397,6 +379,8 @@ DW_TAG_compile_unit
                   DW_AT_location	(0x00000002)
     DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestClosure/outer~anonymous|0")
+                  scope start	TestClosure.ts:5
+                  scope end	TestClosure.ts:9
                   DW_AT_static_link	(0x00000001)
                   DW_AT_description	("tests/dwarf/cases/TestClosure/outer")
       DW_TAG_formal_parameter
@@ -411,6 +395,8 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestClosure/memberOuter")
+                scope start	TestClosure.ts:27
+                scope end	TestClosure.ts:29
     DW_TAG_formal_parameter
                   DW_AT_name	("base")
                   DW_AT_type	("i32")
@@ -418,6 +404,8 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestClosure/loopCapture")
+                scope start	TestClosure.ts:31
+                scope end	TestClosure.ts:39
     DW_TAG_formal_parameter
                   DW_AT_name	("n")
                   DW_AT_type	("i32")
@@ -446,6 +434,8 @@ DW_TAG_compile_unit
                     DW_AT_location	(0x00000004)
       DW_TAG_subprogram
                     DW_AT_name	("tests/dwarf/cases/TestClosure/loopCapture~anonymous|0")
+                    scope start	TestClosure.ts:36
+                    scope end	TestClosure.ts:36
                     DW_AT_static_link	(0x00000001)
                     DW_AT_description	("tests/dwarf/cases/TestClosure/loopCapture")
         DW_TAG_formal_parameter

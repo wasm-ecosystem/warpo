@@ -58,9 +58,13 @@ Abbrev table for offset: 0x00000000
 
 [14] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
+	DW_AT_low_pc	DW_FORM_addr
+	DW_AT_high_pc	DW_FORM_addr
 
 [15] DW_TAG_subprogram	DW_CHILDREN_yes
 	DW_AT_name	DW_FORM_string
+	DW_AT_low_pc	DW_FORM_addr
+	DW_AT_high_pc	DW_FORM_addr
 	DW_AT_static_link	DW_FORM_data4
 	DW_AT_description	DW_FORM_string
 
@@ -105,25 +109,9 @@ DW_TAG_compile_unit
                   DW_AT_type	("i32")
                   DW_AT_data_member_location	(0x00000000)
     DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/Calculator#constructor")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestFunctionParameter/Calculator")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/Calculator#set:value")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestFunctionParameter/Calculator")
-                    DW_AT_location	(0x00000000)
-      DW_TAG_formal_parameter
-                    DW_AT_name	("value")
-                    DW_AT_type	("i32")
-                    DW_AT_location	(0x00000001)
-      NULL
-    DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/Calculator#add")
+                  scope start	TestFunctionParameter.ts:4
+                  scope end	TestFunctionParameter.ts:6
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
                     DW_AT_type	("tests/dwarf/cases/TestFunctionParameter/Calculator")
@@ -138,14 +126,9 @@ DW_TAG_compile_unit
                     DW_AT_location	(0x00000002)
       NULL
     DW_TAG_subprogram
-                  DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/Calculator#get:value")
-      DW_TAG_formal_parameter
-                    DW_AT_name	("this")
-                    DW_AT_type	("tests/dwarf/cases/TestFunctionParameter/Calculator")
-                    DW_AT_location	(0x00000000)
-      NULL
-    DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/Calculator#processNullable")
+                  scope start	TestFunctionParameter.ts:8
+                  scope end	TestFunctionParameter.ts:13
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
                     DW_AT_type	("tests/dwarf/cases/TestFunctionParameter/Calculator")
@@ -161,6 +144,8 @@ DW_TAG_compile_unit
       NULL
     DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/Calculator#getLength")
+                  scope start	TestFunctionParameter.ts:15
+                  scope end	TestFunctionParameter.ts:17
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
                     DW_AT_type	("tests/dwarf/cases/TestFunctionParameter/Calculator")
@@ -312,10 +297,9 @@ DW_TAG_compile_unit
                 DW_AT_type	("~lib/rt/tlsf/Root")
                 DW_AT_location	(0x0000000c)
   DW_TAG_subprogram
-                DW_AT_name	("start:tests/dwarf/cases/TestFunctionParameter")
-    NULL
-  DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/multiply")
+                scope start	TestFunctionParameter.ts:21
+                scope end	TestFunctionParameter.ts:23
     DW_TAG_formal_parameter
                   DW_AT_name	("x")
                   DW_AT_type	("i32")
@@ -327,6 +311,8 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/processString")
+                scope start	TestFunctionParameter.ts:25
+                scope end	TestFunctionParameter.ts:30
     DW_TAG_formal_parameter
                   DW_AT_name	("input")
                   DW_AT_type	("~lib/string/String")
@@ -338,6 +324,8 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/concat")
+                scope start	TestFunctionParameter.ts:32
+                scope end	TestFunctionParameter.ts:34
     DW_TAG_formal_parameter
                   DW_AT_name	("a")
                   DW_AT_type	("~lib/string/String")
@@ -349,6 +337,8 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/test")
+                scope start	TestFunctionParameter.ts:40
+                scope end	TestFunctionParameter.ts:51
     DW_TAG_variable
                   DW_AT_name	("calc")
                   DW_AT_type	("tests/dwarf/cases/TestFunctionParameter/Calculator")
@@ -384,6 +374,8 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestFunctionParameter/goo<i32>")
+                scope start	TestFunctionParameter.ts:36
+                scope end	TestFunctionParameter.ts:38
     DW_TAG_formal_parameter
                   DW_AT_name	("item")
                   DW_AT_type	("i32")
