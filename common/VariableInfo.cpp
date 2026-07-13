@@ -77,7 +77,8 @@ void VariableInfo::addSubProgram(std::string subProgramName, std::string_view co
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
     scopeStack_.push_back(&subProgramInfo);
   } else if (outerFunction.has_value() && !scopeStack_.empty()) {
-    std::unique_ptr<SubProgramInfo> child = std::make_unique<SubProgramInfo>(internedName, startLine, endLine, outerFunction);
+    std::unique_ptr<SubProgramInfo> child =
+        std::make_unique<SubProgramInfo>(internedName, startLine, endLine, outerFunction);
     // NOLINTNEXTLINE(misc-const-correctness, cppcoreguidelines-pro-type-static-cast-downcast)
     SubProgramInfo &subProgramInfo = static_cast<SubProgramInfo &>(scopeStack_.back()->addChild(std::move(child)));
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);

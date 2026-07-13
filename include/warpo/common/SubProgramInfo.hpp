@@ -18,8 +18,8 @@ class SubProgramInfo final : public ScopeInfo {
 public:
   explicit inline SubProgramInfo(std::string_view const name, uint32_t const startLine, uint32_t const endLine,
                                  std::optional<std::string_view> const outerFunction = std::nullopt) noexcept
-      : ScopeInfo(Kind::SubProgram), name_(name), startLine_(startLine), endLine_(endLine), outerFunction_(outerFunction),
-        heapVariableStorageLocalIndex_{std::nullopt} {}
+      : ScopeInfo(Kind::SubProgram), name_(name), startLine_(startLine), endLine_(endLine),
+        outerFunction_(outerFunction), heapVariableStorageLocalIndex_{std::nullopt} {}
 
   inline std::string_view getName() const noexcept { return name_; }
   inline uint32_t getStartLine() const noexcept { return startLine_; }

@@ -111,13 +111,7 @@ export function addSubProgram(
     startLine = source.lineAt(body.range.start);
     endLine = source.lineAt(body.range.end);
   }
-  _WarpoAddSubProgram(
-    subprogram.internalName,
-    belongClassName,
-    outerFunctionName,
-    startLine,
-    endLine
-  );
+  _WarpoAddSubProgram(subprogram.internalName, belongClassName, outerFunctionName, startLine, endLine);
 }
 
 export function addHeapVariableStorageLocalIndex(subprogram: Function, index: u32): void {
