@@ -118,12 +118,11 @@ static InsertPositionHint getShadowStackInsertPoint(std::string_view const funcN
 
 void ShrinkWrapAnalysis::runOnFunction(wasm::Module *const m, wasm::Function *const func) {
   LivenessMap const &livenessMap = livenessInfo_->at(func);
-  static_cast<void>(m);
   if (0U == livenessMap.getValidDimension())
     return;
 
   // FIXME: design framework to avoid duplicate calculate CFG
-  std::shared_ptr<CFG> const cfg = std::make_shared<CFG>(CFG::fromFunction(func));
+  std::shared_ptr<CFG> const cfg = std::make_shared<CFG>(CFG::fromFunction(m, func));
   auto const shouldStackActive = [&](wasm::Expression *expr) -> bool {
     std::optional<Liveness> const liveness = livenessMap.getLiveness(expr);
     if (!liveness.has_value())

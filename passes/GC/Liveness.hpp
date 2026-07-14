@@ -63,7 +63,7 @@ struct LivenessMap {
 
   void setInvalid(DynBitset const &invalid) { invalid_ |= invalid; }
 
-  void dump(wasm::Function *func) const;
+  void dump(wasm::Module *m, wasm::Function *func) const;
 
   enum class MergeOperator { OR };
   void mergeByColumns(size_t targetColumn, size_t sourceColumn, MergeOperator op);

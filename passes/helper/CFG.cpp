@@ -56,7 +56,7 @@ void BasicBlock::print(std::ostream &os, wasm::Module *wasm, size_t start, IInfo
   }
 }
 
-CFG CFG::fromFunction(wasm::Function *func) {
+CFG CFG::fromFunction(wasm::Module *m, wasm::Function *func) {
   struct CFGBuilder
       : wasm::CFGWalker<CFGBuilder, wasm::UnifiedExpressionVisitor<CFGBuilder>, std::vector<wasm::Expression *>> {
     void visitExpression(wasm::Expression *curr) {
@@ -67,7 +67,8 @@ CFG CFG::fromFunction(wasm::Function *func) {
   };
 
   CFGBuilder builder;
-  builder.walkFunction(func);
+  assert(m != nullptr);
+  builder.walkFunctionInModule(func, m);
   builder.unlinkDeadBlocks(builder.findLiveBlocks());
 
   size_t const numBlocks = builder.basicBlocks.size();

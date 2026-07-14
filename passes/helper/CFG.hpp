@@ -69,7 +69,7 @@ private:
 // NOTE: CFG doesn't contain all expressions in the function. Only reachable expression will be existed in CFG.
 // use "dce" pass to remove unreachable expressions before creating CFG if needed.
 struct CFG {
-  static CFG fromFunction(wasm::Function *func);
+  static CFG fromFunction(wasm::Module *m, wasm::Function *func);
 
   // Iterate through basic blocks.
   using iterator = std::vector<BasicBlock>::const_iterator;

@@ -80,7 +80,7 @@ TEST_F(DomTreeTest, Base) {
       )
     )");
 
-  std::shared_ptr<CFG> const cfg{new CFG{CFG::fromFunction(m->getFunction("f"))}};
+  std::shared_ptr<CFG> const cfg{new CFG{CFG::fromFunction(m.get(), m->getFunction("f"))}};
   cfg->print(std::cout, m.get(), EmptyInfoPrinter{});
   DomTree const domTree = DomTree::create(cfg);
 

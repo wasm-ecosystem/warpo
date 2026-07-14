@@ -502,13 +502,11 @@ struct CFGWalker : public PostWalker<SubType, VisitorType> {
         if (isReturnCall(curr)) {
           self->pushTask(SubType::doEndReturn, currp);
         } else {
-          // auto* module = self->getModule();
-          // CHANGE(warpo): we should give correct features to avoid creating
-          // too many BBs
-          // if (!module || module->features.hasExceptionHandling()) {
-          //   // This call might throw, so run the code to handle that.
-          //   self->pushTask(SubType::doEndCall, currp);
-          // }
+          auto* module = self->getModule();
+          if (!module || module->features.hasExceptionHandling()) {
+            // This call might throw, so run the code to handle that.
+            self->pushTask(SubType::doEndCall, currp);
+          }
         }
         break;
       }

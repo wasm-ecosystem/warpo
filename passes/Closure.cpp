@@ -253,8 +253,8 @@ class ClosureEnvDefMap final {
   }
 
 public:
-  explicit ClosureEnvDefMap(wasm::Function *func)
-      : cfg_(std::make_shared<CFG>(CFG::fromFunction(func))), domTree_(DomTree::create(cfg_)), func_(func) {}
+  ClosureEnvDefMap(wasm::Module *m, wasm::Function *func)
+      : cfg_(std::make_shared<CFG>(CFG::fromFunction(m, func))), domTree_(DomTree::create(cfg_)), func_(func) {}
 
   CFG const &cfg() const noexcept { return *cfg_; }
 
@@ -383,7 +383,7 @@ public:
     if (spIt == lookupMap.end() || !spIt->second.getHeapVariableStorageLocalIndex().has_value())
       return;
     wasm::Index const heapIdx = *spIt->second.getHeapVariableStorageLocalIndex();
-    ClosureEnvDefMap defMap(func);
+    ClosureEnvDefMap defMap(getModule(), func);
     forEachGetClosureEnvByLevel(defMap.cfg(), [&](BasicBlock const &bb, wasm::Call *, int32_t const level) {
       if (level > 0)
         defMap.insertUsedLevel(&bb, level);

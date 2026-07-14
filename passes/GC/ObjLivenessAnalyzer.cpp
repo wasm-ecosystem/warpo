@@ -358,17 +358,16 @@ struct InfoPrinter : public IInfoPrinter {
 
 void dumpInfo(wasm::Module *const m, wasm::Function *func, LocalsUses const &localsUses, TmpUses const &tmpUses,
               SSAMap const &ssaMap) {
-  static_cast<void>(m);
-  CFG const cfg = CFG::fromFunction(func);
+  CFG const cfg = CFG::fromFunction(m, func);
   InfoPrinter const infoPrinter{localsUses, tmpUses, ssaMap};
-  cfg.print(std::cout, nullptr, infoPrinter);
+  cfg.print(std::cout, m, infoPrinter);
 }
 
 } // namespace
 
 void ObjLivenessAnalyzer::runOnFunction(wasm::Module *m, wasm::Function *func) {
   SSAMap const &ssaMap = moduleLevelSSAMap_.at(func);
-  wasm::analysis::CFG cfg = wasm::analysis::CFG::fromFunction(func);
+  wasm::analysis::CFG cfg = wasm::analysis::CFG::fromFunction(func, m);
 
   LocalsUses const localsUses = LocalsUses::create(func, ssaMap, cfg);
   TmpUses const tmpUses = TmpUses::create(func, ssaMap);
@@ -389,7 +388,7 @@ void ObjLivenessAnalyzer::runOnFunction(wasm::Module *m, wasm::Function *func) {
     std::cout << "================== " << func->name << " liveness analysis ===============\n";
     dumpInfo(m, func, localsUses, tmpUses, ssaMap);
     std::cout << "\n============\n";
-    livenessMap.dump(func);
+    livenessMap.dump(m, func);
     std::cout << "=================================\n";
   }
 }
