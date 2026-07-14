@@ -269,6 +269,7 @@ For more on how to optimize effectively, see
          [&outputSourceMapUrl](Options* o, const std::string& argument) {
            outputSourceMapUrl = argument;
          })
+
     .add_positional("INFILE",
                     Options::Arguments::One,
                     [](Options* o, const std::string& argument) {
@@ -353,7 +354,7 @@ For more on how to optimize effectively, see
   }
   if (translateToFuzz) {
     TranslateToFuzzReader reader(
-      wasm, options.extra["infile"], options.passOptions.closedWorld);
+      wasm, options.extra["infile"], options.passOptions.worldMode);
     reader.setAllowMemory(fuzzMemory);
     reader.setAllowOOB(fuzzOOB);
     reader.setPreserveImportsAndExports(fuzzPreserveImportsAndExports);
@@ -407,7 +408,7 @@ For more on how to optimize effectively, see
     ModuleWriter writer(options.passOptions);
     writer.setBinary(emitBinary);
     writer.setDebugInfo(options.passOptions.debugInfo);
-    writer.write(wasm, options.extra["output"]);
+    options.write(writer, wasm, options.extra["output"]);
     firstOutput = runCommand(extraFuzzCommand);
     std::cout << "[extra-fuzz-command first output:]\n" << firstOutput << '\n';
   }
@@ -500,7 +501,7 @@ For more on how to optimize effectively, see
       writer.setSourceMapFilename(outputSourceMapFilename);
       writer.setSourceMapUrl(outputSourceMapUrl);
     }
-    writer.write(wasm, options.extra["output"]);
+    options.write(writer, wasm, options.extra["output"]);
   }
 
   if (extraFuzzCommand.size() > 0) {

@@ -26,7 +26,7 @@
 
 namespace wasm {
 
-GlobalTypeRewriter::GlobalTypeRewriter(Module& wasm)
+GlobalTypeRewriter::GlobalTypeRewriter(Module& wasm, WorldMode worldMode)
   : wasm(wasm), publicGroups(wasm.features) {
   // Find the heap types that are not publicly observable. Even in a closed
   // world scenario, don't modify public types because we assume that they may
@@ -34,6 +34,7 @@ GlobalTypeRewriter::GlobalTypeRewriter(Module& wasm)
   // will be located in the builder.
   typeInfo = ModuleUtils::collectHeapTypeInfo(
     wasm,
+    worldMode,
     ModuleUtils::TypeInclusion::UsedIRTypes,
     ModuleUtils::VisibilityHandling::FindVisibility);
 
@@ -324,6 +325,35 @@ void GlobalTypeRewriter::mapTypes(const TypeMap& oldToNewTypes) {
   for (auto& tag : wasm.tags) {
     tag->type = updater.getNew(tag->type);
   }
+
+  // Update indirect call effects per type.
+  // When A is rewritten to B, B inherits the effects of A and A loses its
+  // effects.
+  std::unordered_map<HeapType, std::shared_ptr<const EffectAnalyzer>>
+    newTypeEffects;
+
+  for (const auto& [oldType, newType] : oldToNewTypes) {
+    std::shared_ptr<const EffectAnalyzer>* oldEffects =
+      find_or_null(wasm.indirectCallEffects, oldType);
+    std::shared_ptr<const EffectAnalyzer>* targetEffects =
+      find_or_null(wasm.indirectCallEffects, newType);
+
+    if (!targetEffects) {
+      // Nothing to update, we already know nothing and assume all effects.
+      continue;
+    }
+
+    if (!oldEffects) {
+      targetEffects->reset();
+      continue;
+    }
+
+    auto merged = std::make_shared<EffectAnalyzer>(**targetEffects);
+    merged->mergeIn(**oldEffects);
+    *targetEffects = std::move(merged);
+  }
+
+  wasm.indirectCallEffects = std::move(newTypeEffects);
 }
 
 void GlobalTypeRewriter::mapTypeNamesAndIndices(const TypeMap& oldToNewTypes) {

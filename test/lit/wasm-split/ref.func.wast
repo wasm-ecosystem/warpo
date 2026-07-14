@@ -19,8 +19,7 @@
  ;; PRIMARY:      (global $glob2 (ref func) (ref.func $trampoline_second))
 
  ;; PRIMARY:      (table $table 1 1 funcref)
- (table $table 1 1 funcref)
-
+ (table $table (export "table_export") 1 1 funcref)
  (global $glob1 (ref func) (ref.func $prime))
 
  (global $glob2 (ref func) (ref.func $second))
@@ -33,6 +32,8 @@
  ;; PRIMARY:      (elem $1 (table $1) (i32.const 0) func $placeholder_0 $placeholder_1)
 
  ;; PRIMARY:      (elem declare func $prime $trampoline_second)
+
+ ;; PRIMARY:      (export "table_export" (table $table))
 
  ;; PRIMARY:      (export "prime" (func $prime))
 
@@ -73,7 +74,7 @@
 
  ;; SECONDARY:      (import "primary" "prime" (func $prime (exact (type $0))))
 
- ;; SECONDARY:      (elem $0 (i32.const 0) $second-in-table $second)
+ ;; SECONDARY:      (elem $0 (i32.const 0) $second $second-in-table)
 
  ;; SECONDARY:      (elem declare func $prime)
 
@@ -109,13 +110,13 @@
   ;; (but we will get a placeholder, as all split-out functions do).
  )
 )
-;; PRIMARY:      (func $trampoline_second-in-table (type $0)
+;; PRIMARY:      (func $trampoline_second (type $0)
 ;; PRIMARY-NEXT:  (call_indirect $1 (type $0)
 ;; PRIMARY-NEXT:   (i32.const 0)
 ;; PRIMARY-NEXT:  )
 ;; PRIMARY-NEXT: )
 
-;; PRIMARY:      (func $trampoline_second (type $0)
+;; PRIMARY:      (func $trampoline_second-in-table (type $0)
 ;; PRIMARY-NEXT:  (call_indirect $1 (type $0)
 ;; PRIMARY-NEXT:   (i32.const 1)
 ;; PRIMARY-NEXT:  )

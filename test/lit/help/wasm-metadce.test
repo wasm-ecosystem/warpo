@@ -109,6 +109,9 @@
 ;; CHECK-NEXT:   --const-hoisting                              hoist repeated constants to a
 ;; CHECK-NEXT:                                                 local
 ;; CHECK-NEXT:
+;; CHECK-NEXT:   --constraint-analysis                         finds and uses mathematical
+;; CHECK-NEXT:                                                 constraints on locals
+;; CHECK-NEXT:
 ;; CHECK-NEXT:   --dae                                         removes arguments to calls in an
 ;; CHECK-NEXT:                                                 lto-like manner
 ;; CHECK-NEXT:
@@ -256,6 +259,9 @@
 ;; CHECK-NEXT:   --log-execution                               instrument the build with
 ;; CHECK-NEXT:                                                 logging of where execution goes
 ;; CHECK-NEXT:
+;; CHECK-NEXT:   --mark-js-called                              mark js called functions (using
+;; CHECK-NEXT:                                                 configureAll) as doing so
+;; CHECK-NEXT:
 ;; CHECK-NEXT:   --memory-packing                              packs memory into separate
 ;; CHECK-NEXT:                                                 segments, skipping zeros
 ;; CHECK-NEXT:
@@ -361,6 +367,8 @@
 ;; CHECK-NEXT:                                                 propagates them through locals
 ;; CHECK-NEXT:
 ;; CHECK-NEXT:   --print                                       print in s-expression format
+;; CHECK-NEXT:
+;; CHECK-NEXT:   --print-boundary                              print boundary in JSON format
 ;; CHECK-NEXT:
 ;; CHECK-NEXT:   --print-call-graph                            print call graph
 ;; CHECK-NEXT:
@@ -693,6 +701,10 @@
 ;; CHECK-NEXT:   --experimental-poppy                          Parse wast files as Poppy IR for
 ;; CHECK-NEXT:                                                 testing purposes.
 ;; CHECK-NEXT:
+;; CHECK-NEXT:   --emit-module-names                           Emit module names, even if not
+;; CHECK-NEXT:                                                 emitting the rest of the names
+;; CHECK-NEXT:                                                 section
+;; CHECK-NEXT:
 ;; CHECK-NEXT:   --enable-sign-ext                             Enable sign extension operations
 ;; CHECK-NEXT:
 ;; CHECK-NEXT:   --disable-sign-ext                            Disable sign extension
@@ -819,6 +831,10 @@
 ;; CHECK-NEXT:   --enable-wide-arithmetic                      Enable wide arithmetic
 ;; CHECK-NEXT:
 ;; CHECK-NEXT:   --disable-wide-arithmetic                     Disable wide arithmetic
+;; CHECK-NEXT:
+;; CHECK-NEXT:   --enable-compact-imports                      Enable compact import section
+;; CHECK-NEXT:
+;; CHECK-NEXT:   --disable-compact-imports                     Disable compact import section
 ;; CHECK-NEXT:
 ;; CHECK-NEXT:   --enable-typed-function-references            Deprecated compatibility flag
 ;; CHECK-NEXT:
