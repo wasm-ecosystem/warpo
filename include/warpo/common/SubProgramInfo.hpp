@@ -16,15 +16,17 @@ namespace warpo {
 
 class SubProgramInfo final : public ScopeInfo {
 public:
-  explicit inline SubProgramInfo(std::string_view const name, uint32_t const startLine, uint32_t const endLine,
+  explicit inline SubProgramInfo(std::string_view const name, std::string_view const sourcePath,
+                                 uint32_t const startLine, uint32_t const endLine,
                                  std::optional<std::string_view> const outerFunction = std::nullopt) noexcept
-      : ScopeInfo(Kind::SubProgram), name_(name), startLine_(startLine), endLine_(endLine),
+      : ScopeInfo(Kind::SubProgram), name_(name), sourcePath_(sourcePath), startLine_(startLine), endLine_(endLine),
         outerFunction_(outerFunction), heapVariableStorageLocalIndex_{std::nullopt} {}
 
   inline std::string_view getName() const noexcept { return name_; }
+  inline std::string_view getSourcePath() const noexcept { return sourcePath_; }
   inline uint32_t getStartLine() const noexcept { return startLine_; }
   inline uint32_t getEndLine() const noexcept { return endLine_; }
-  inline bool hasSourceRange() const noexcept { return startLine_ != 0U || endLine_ != 0U; }
+  inline bool hasSourceRange() const noexcept { return !sourcePath_.empty() && (startLine_ != 0U || endLine_ != 0U); }
   inline std::optional<std::string_view> getOuterFunction() const noexcept { return outerFunction_; }
 
   inline std::vector<ParameterInfo> const &getParameters() const noexcept { return parameters_; }
@@ -46,6 +48,7 @@ public:
 
 private:
   std::string_view name_;
+  std::string_view sourcePath_;
   uint32_t startLine_;
   uint32_t endLine_;
   std::optional<std::string_view> outerFunction_;

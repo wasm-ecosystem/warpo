@@ -218,24 +218,30 @@ static void emitScopeTerminator(llvm::DWARFYAML::Unit &rootUnit) {
 }
 
 static void emitSubProgram(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
-                           DwarfGenerator::AbbrevCodes const &abbrevCodes, std::vector<TypeRefFixup> &typeRefFixups);
+                           DwarfGenerator::AbbrevCodes const &abbrevCodes, std::vector<TypeRefFixup> &typeRefFixups,
+                           SourceMapResolver const &sourceMapResolver);
 
 static void emitScopeChildren(std::vector<std::unique_ptr<ScopeInfo>> const &children, llvm::DWARFYAML::Unit &rootUnit,
-                              DwarfGenerator::AbbrevCodes const &abbrevCodes,
-                              std::vector<TypeRefFixup> &typeRefFixups) {
+                              DwarfGenerator::AbbrevCodes const &abbrevCodes, std::vector<TypeRefFixup> &typeRefFixups,
+                              SourceMapResolver const &sourceMapResolver, std::string_view const sourcePath,
+                              std::string_view const functionName) {
   for (std::unique_ptr<ScopeInfo> const &child : children) {
     if (child->getKind() == ScopeInfo::Kind::Block) {
       // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
       BlockInfo const *const block = static_cast<BlockInfo const *>(child.get());
+      std::optional<SourceMapResolver::BytecodeRange> const bytecodeRange =
+          sourceMapResolver.resolveRange(sourcePath, block->getStartLine(), block->getEndLine(), functionName);
+      assert(bytecodeRange.has_value() && "Lexical block source range must resolve to a bytecode range");
+
       llvm::DWARFYAML::Entry blockEntry;
       blockEntry.AbbrCode = abbrevCodes.lexicalBlock;
 
       llvm::DWARFYAML::FormValue blockLowPcValue;
-      blockLowPcValue.Value = block->getStartLine();
+      blockLowPcValue.Value = bytecodeRange->lowPc;
       blockEntry.Values.push_back(blockLowPcValue);
 
       llvm::DWARFYAML::FormValue blockHighPcValue;
-      blockHighPcValue.Value = block->getEndLine();
+      blockHighPcValue.Value = bytecodeRange->highPc;
       blockEntry.Values.push_back(blockHighPcValue);
 
       rootUnit.Entries.push_back(blockEntry);
@@ -244,18 +250,21 @@ static void emitScopeChildren(std::vector<std::unique_ptr<ScopeInfo>> const &chi
         emitLocalVariableEntry(local, rootUnit, abbrevCodes.localVariable, abbrevCodes.tupleFieldLocalVariable,
                                typeRefFixups);
 
-      emitScopeChildren(block->getChildren(), rootUnit, abbrevCodes, typeRefFixups);
+      emitScopeChildren(block->getChildren(), rootUnit, abbrevCodes, typeRefFixups, sourceMapResolver, sourcePath,
+            functionName);
       emitScopeTerminator(rootUnit);
     } else {
       // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
-      emitSubProgram(static_cast<SubProgramInfo const &>(*child), rootUnit, abbrevCodes, typeRefFixups);
+      emitSubProgram(static_cast<SubProgramInfo const &>(*child), rootUnit, abbrevCodes, typeRefFixups,
+                     sourceMapResolver);
     }
   }
 }
 
 llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
 
-DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, GlobalIndexResolver globalIndexResolver) {
+DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, GlobalIndexResolver globalIndexResolver,
+                                      SourceMapResolver const &sourceMapResolver) {
   VariableInfo::ClassRegistry const &classRegistry = variableInfo.getClassRegistry();
   VariableInfo::GlobalTypes const &globalTypes = variableInfo.getGlobalTypes();
   VariableInfo::BaseTypeRegistry const &baseTypeRegistry = variableInfo.getBaseTypeRegistry();
@@ -651,7 +660,7 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, GlobalIn
     // Add class member functions
     std::deque<SubProgramInfo> const &memberFunctionList = classInfo.getSubPrograms();
     for (SubProgramInfo const &subProgram : memberFunctionList) {
-      emitSubProgram(subProgram, rootUnit, abbrevCodes, typeRefFixups);
+      emitSubProgram(subProgram, rootUnit, abbrevCodes, typeRefFixups, sourceMapResolver);
     }
 
     // Add terminator for class children
@@ -693,7 +702,7 @@ DwarfGenerator::generateDebugSections(VariableInfo const &variableInfo, GlobalIn
   // Add global functions
   std::deque<SubProgramInfo> const &globalFunctionList = variableInfo.getTopLevelSubPrograms();
   for (SubProgramInfo const &subProgram : globalFunctionList) {
-    emitSubProgram(subProgram, rootUnit, abbrevCodes, typeRefFixups);
+    emitSubProgram(subProgram, rootUnit, abbrevCodes, typeRefFixups, sourceMapResolver);
   }
 
   compileUnits.push_back(rootUnit);
@@ -740,8 +749,13 @@ std::string DwarfGenerator::dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::Memo
 }
 
 static void emitSubProgram(SubProgramInfo const &subProgram, llvm::DWARFYAML::Unit &rootUnit,
-                           DwarfGenerator::AbbrevCodes const &abbrevCodes, std::vector<TypeRefFixup> &typeRefFixups) {
+                           DwarfGenerator::AbbrevCodes const &abbrevCodes, std::vector<TypeRefFixup> &typeRefFixups,
+                           SourceMapResolver const &sourceMapResolver) {
   if (!subProgram.hasSourceRange())
+    return;
+  std::optional<SourceMapResolver::BytecodeRange> const bytecodeRange = sourceMapResolver.resolveRange(
+      subProgram.getSourcePath(), subProgram.getStartLine(), subProgram.getEndLine(), subProgram.getName());
+  if (!bytecodeRange.has_value())
     return;
 
   llvm::DWARFYAML::Entry subprogramEntry;
@@ -758,11 +772,11 @@ static void emitSubProgram(SubProgramInfo const &subProgram, llvm::DWARFYAML::Un
   subprogramEntry.Values.push_back(subprogramNameValue);
 
   llvm::DWARFYAML::FormValue subprogramLowPcValue;
-  subprogramLowPcValue.Value = subProgram.getStartLine();
+  subprogramLowPcValue.Value = bytecodeRange->lowPc;
   subprogramEntry.Values.push_back(subprogramLowPcValue);
 
   llvm::DWARFYAML::FormValue subprogramHighPcValue;
-  subprogramHighPcValue.Value = subProgram.getEndLine();
+  subprogramHighPcValue.Value = bytecodeRange->highPc;
   subprogramEntry.Values.push_back(subprogramHighPcValue);
 
   if (isClosureFunction) {
@@ -820,7 +834,8 @@ static void emitSubProgram(SubProgramInfo const &subProgram, llvm::DWARFYAML::Un
     emitLocalVariableEntry(local, rootUnit, abbrevCodes.localVariable, abbrevCodes.tupleFieldLocalVariable,
                            typeRefFixups);
 
-  emitScopeChildren(subProgram.getChildren(), rootUnit, abbrevCodes, typeRefFixups);
+  emitScopeChildren(subProgram.getChildren(), rootUnit, abbrevCodes, typeRefFixups, sourceMapResolver,
+                    subProgram.getSourcePath(), subProgram.getName());
 
   // Add terminator for subprogram children
   llvm::DWARFYAML::Entry subProgramTerminator;

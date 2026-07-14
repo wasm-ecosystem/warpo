@@ -255,7 +255,7 @@ passes::Output passes::runOnModule(AsModule const &m, Config const &config) {
 
   // wasm and source map
   BinaryWriter writer{m};
-  writer.setSourceMapEnabled(common::isEmitDebugLine() && !config.sourceMapURL.empty(), config.sourceMapURL);
+  writer.setSourceMapEnabled(common::isEmitDebugLine() || common::isEmitDebugInfo(), config.sourceMapURL);
   writer.setNameSectionEnabled(common::isEmitDebugName());
   writer.setDwarfEnabled(common::isEmitDebugInfo());
   writer.write();

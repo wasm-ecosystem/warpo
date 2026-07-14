@@ -1,8 +1,10 @@
 class FnFieldClass {
-  fnField: (() => void) | null = null;
+  fnField: (() => i32) | null = null;
 }
 
 export const v = new FnFieldClass();
-v.fnField = (): void => {};
+v.fnField = (): i32 => {
+  return 0;
+};
 const f = v.fnField;
 f();

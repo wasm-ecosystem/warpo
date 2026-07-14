@@ -24,6 +24,7 @@ export declare function _WarpoAddSubProgram(
   subProgramName: string,
   belongClassName: string | null,
   outerFunctionName: string | null,
+  sourcePath: string | null,
   startLine: u32,
   endLine: u32
 ): void;

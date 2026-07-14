@@ -104,14 +104,16 @@ export function addSubProgram(
     belongClassName = decodeURIComponent(typeToMIRName(belongClass.type));
   }
   let body = subprogram.prototype.bodyNode;
+  let sourcePath: string | null = null;
   let startLine: u32 = 0;
   let endLine: u32 = 0;
   if (body !== null) {
     let source = body.range.source;
+    sourcePath = source.normalizedPath;
     startLine = source.lineAt(body.range.start);
     endLine = source.lineAt(body.range.end);
   }
-  _WarpoAddSubProgram(subprogram.internalName, belongClassName, outerFunctionName, startLine, endLine);
+  _WarpoAddSubProgram(subprogram.internalName, belongClassName, outerFunctionName, sourcePath, startLine, endLine);
 }
 
 export function addHeapVariableStorageLocalIndex(subprogram: Function, index: u32): void {
