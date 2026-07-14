@@ -157,7 +157,7 @@ struct SegmentInfo {
 };
 
 static std::optional<SegmentInfo> getSegmentInfo(wasm::DataSegment const &segment, std::size_t const index = 0U) {
-  if (segment.isPassive)
+  if (segment.isPassive())
     return std::nullopt;
 
   wasm::Const const *const offset = segment.offset != nullptr ? segment.offset->dynCast<wasm::Const>() : nullptr;

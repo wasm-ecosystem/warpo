@@ -500,7 +500,8 @@ uint64_t BinaryenAtomicNotifyForLink(uint64_t module, uint64_t ptr, uint64_t not
       reinterpret_cast<BinaryenExpressionRef>(notifyCount), reinterpret_cast<const char *>(memoryName)));
 }
 uint64_t BinaryenAtomicFenceForLink(uint64_t module, [[maybe_unused]] vb::WasmModule *ctx) {
-  return reinterpret_cast<uint64_t>(BinaryenAtomicFence(reinterpret_cast<BinaryenModuleRef>(module)));
+  return reinterpret_cast<uint64_t>(
+      BinaryenAtomicFence(reinterpret_cast<BinaryenModuleRef>(module), BinaryenMemoryOrderSeqCst()));
 }
 uint64_t BinaryenMemorySizeForLink(uint64_t module, uint64_t memoryName, uint32_t memoryIs64,
                                    [[maybe_unused]] vb::WasmModule *ctx) {

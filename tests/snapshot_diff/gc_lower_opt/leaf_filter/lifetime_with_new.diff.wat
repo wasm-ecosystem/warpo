@@ -66,7 +66,7 @@
           return
         end
       end
-    local.tee $1
+    local.set $1
 ;; ======remove=======
 ;;    i32.const 12
 ;; =========add========

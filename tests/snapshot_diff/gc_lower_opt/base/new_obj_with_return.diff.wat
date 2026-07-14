@@ -36,7 +36,7 @@
         return
 ;; =========add========
       end
-    local.tee $0
+    local.set $0
       i32.const 4
     call $~lib/rt/__increase_sp
     local.get $0

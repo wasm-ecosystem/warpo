@@ -52,7 +52,7 @@
         end
 ;; =========add========
       end
-    local.tee $1
+    local.set $1
       i32.const 8
     call $~lib/rt/__increase_sp
     local.get $1
