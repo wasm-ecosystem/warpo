@@ -151,15 +151,13 @@ public:
 
   static std::unique_ptr<DataSegment>
   makeDataSegment(Name name = "",
-                  Name memory = "",
-                  bool isPassive = false,
+                  Name memory = Name(),
                   Expression* offset = nullptr,
                   const char* init = "",
                   Address size = 0) {
     auto seg = std::make_unique<DataSegment>();
     seg->name = name;
     seg->memory = memory;
-    seg->isPassive = isPassive;
     seg->offset = offset;
     seg->data.resize(size);
     std::copy_n(init, size, seg->data.begin());
@@ -430,7 +428,11 @@ public:
     notify->memory = memory;
     return notify;
   }
-  AtomicFence* makeAtomicFence() { return wasm.allocator.alloc<AtomicFence>(); }
+  AtomicFence* makeAtomicFence(MemoryOrder order) {
+    auto* ret = wasm.allocator.alloc<AtomicFence>();
+    ret->order = order;
+    return ret;
+  }
   Pause* makePause() { return wasm.allocator.alloc<Pause>(); }
   Store* makeStore(unsigned bytes,
                    Address offset,

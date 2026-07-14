@@ -381,6 +381,8 @@ void test_features() {
   printf("BinaryenFeatureMultibyte: %d\n", BinaryenFeatureMultibyte());
   printf("BinaryenFeatureWideArithmetic: %d\n",
          BinaryenFeatureWideArithmetic());
+  printf("BinaryenFeatureCompactImports: %d\n",
+         BinaryenFeatureCompactImports());
   printf("BinaryenFeatureAll: %d\n", BinaryenFeatureAll());
 }
 
@@ -1126,7 +1128,7 @@ void test_core() {
                  BinaryenAtomicWait(
                    module, temp6, temp6, temp16, BinaryenTypeInt32(), "0")),
     BinaryenDrop(module, BinaryenAtomicNotify(module, temp6, temp6, "0")),
-    BinaryenAtomicFence(module),
+    BinaryenAtomicFence(module, BinaryenMemoryOrderSeqCst()),
     // Tuples
     BinaryenTupleMake(module, tupleElements4a, 4),
     BinaryenTupleExtract(
@@ -1280,6 +1282,14 @@ void test_core() {
 
   BinaryenExpressionPrint(
     valueList[3]); // test printing a standalone expression
+  // test stringifying an expression
+  {
+    char* textPtr = BinaryenExpressionAllocateAndWriteText(valueList[3]);
+    assert(textPtr);
+    assert(strstr(textPtr, "f32.neg"));
+    assert(!strstr(textPtr, "\x1b")); // ensure color escapes are not emitted
+    free(textPtr);
+  }
 
   // Add drops of concrete expressions
   for (int i = 0; i < sizeof(valueList) / sizeof(valueList[0]); ++i) {
@@ -2355,10 +2365,16 @@ void test_relaxed_atomics() {
   printf("Cmpxchg memory order: %d\n",
          BinaryenAtomicCmpxchgGetMemoryOrder(cmpxchg));
 
+  BinaryenExpressionRef fence =
+    BinaryenAtomicFence(module, BinaryenMemoryOrderSeqCst());
+  BinaryenAtomicFenceSetOrder(fence, BinaryenMemoryOrderAcqRel());
+  printf("Fence memory order: %d\n", BinaryenAtomicFenceGetOrder(fence));
+
   BinaryenExpressionRef statements[] = {BinaryenDrop(module, load),
                                         store,
                                         BinaryenDrop(module, rmw),
-                                        BinaryenDrop(module, cmpxchg)};
+                                        BinaryenDrop(module, cmpxchg),
+                                        fence};
 
   BinaryenExpressionRef value =
     BinaryenBlock(module,

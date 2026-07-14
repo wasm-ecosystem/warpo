@@ -20,6 +20,7 @@
 #include <fstream>
 
 #include "ir/module-splitting.h"
+#include "ir/names.h"
 #include "support/file.h"
 #include "support/name.h"
 #include "support/path.h"
@@ -103,10 +104,7 @@ void writeModule(Module& wasm,
   ModuleWriter writer(options.passOptions);
   writer.setBinary(options.emitBinary);
   writer.setDebugInfo(options.passOptions.debugInfo && !options.stripDebug);
-  if (options.emitModuleNames) {
-    writer.setEmitModuleName(true);
-  }
-  writer.write(wasm, filename);
+  options.write(writer, wasm, filename);
 }
 
 void instrumentModule(const WasmSplitOptions& options) {
@@ -229,6 +227,7 @@ void writePlaceholderMap(
 
 void setCommonSplitConfigs(ModuleSplitting::Config& config,
                            const WasmSplitOptions& options) {
+  config.passOptions = options.passOptions;
   config.usePlaceholders = options.usePlaceholders;
   config.minimizeNewExportNames = !options.passOptions.debugInfo;
   if (options.importNamespace) {
@@ -240,6 +239,34 @@ void setCommonSplitConfigs(ModuleSplitting::Config& config,
   if (options.placeholderNamespacePrefix) {
     config.placeholderNamespacePrefix = *options.placeholderNamespacePrefix;
   }
+}
+
+// Returns whether it is valid to split a function out from the main module.
+bool canSplitFunc(Name funcName,
+                  const Module& wasm,
+                  const WasmSplitOptions& options) {
+  auto* func = wasm.getFunctionOrNull(funcName);
+  if (!func) {
+    if (!options.quiet) {
+      std::cerr << "warning: function " << funcName << " does not exist\n";
+    }
+    return false;
+  }
+  if (func->imported()) {
+    if (!options.quiet) {
+      std::cerr << "warning: cannot split out imported function " << funcName
+                << "\n";
+    }
+    return false;
+  }
+  if (func->name == wasm.start) {
+    if (!options.quiet) {
+      std::cerr << "warning: cannot split out start function " << funcName
+                << "\n";
+    }
+    return false;
+  }
+  return true;
 }
 
 void splitModule(const WasmSplitOptions& options) {
@@ -282,18 +309,7 @@ void splitModule(const WasmSplitOptions& options) {
 
   // Use the explicitly provided `splitFuncs`.
   for (auto& func : options.splitFuncs) {
-    auto* function = wasm.getFunctionOrNull(func);
-    if (!function) {
-      if (!options.quiet) {
-        std::cerr << "warning: function " << func << " does not exist\n";
-      }
-      continue;
-    }
-    if (function->imported()) {
-      if (!options.quiet) {
-        std::cerr << "warning: cannot split out imported function " << func
-                  << "\n";
-      }
+    if (!canSplitFunc(func, wasm, options)) {
       continue;
     }
     if (!options.quiet && options.keepFuncs.contains(func)) {
@@ -415,7 +431,7 @@ void multiSplitModule(const WasmSplitOptions& options) {
       }
       continue;
     }
-    Name name = WasmBinaryReader::escape(line);
+    Name name = line;
     if (newSection) {
       if (name.endsWith(":")) {
         name = name.substr(0, name.size() - 1);
@@ -435,15 +451,15 @@ void multiSplitModule(const WasmSplitOptions& options) {
       continue;
     }
     assert(currFuncs);
+    if (!canSplitFunc(name, wasm, options)) {
+      continue;
+    }
     currFuncs->insert(name);
     auto [it, inserted] = funcModules.insert({name, currModule});
     if (!inserted && it->second != currModule) {
       Fatal() << "Function " << name << "cannot be assigned to module "
               << currModule << "; it is already assigned to module "
               << it->second << '\n';
-    }
-    if (inserted && !options.quiet && !wasm.getFunctionOrNull(name)) {
-      std::cerr << "warning: Function " << name << " does not exist\n";
     }
   }
 
@@ -546,22 +562,6 @@ void mergeProfiles(const WasmSplitOptions& options) {
   buffer.writeTo(out.getStream());
 }
 
-std::string unescape(std::string input) {
-  std::string output;
-  for (size_t i = 0; i < input.length(); i++) {
-    if ((input[i] == '\\') && (i + 2 < input.length()) &&
-        isxdigit(input[i + 1]) && isxdigit(input[i + 2])) {
-      std::string byte = input.substr(i + 1, 2);
-      i += 2;
-      char chr = (char)(int)strtol(byte.c_str(), nullptr, 16);
-      output.push_back(chr);
-    } else {
-      output.push_back(input[i]);
-    }
-  }
-  return output;
-}
-
 void checkExists(const std::string& path) {
   std::ifstream infile(path);
   if (!infile.is_open()) {
@@ -586,10 +586,7 @@ void printReadableProfile(const WasmSplitOptions& options) {
 
   auto printFnSet = [&](auto funcs, std::string prefix) {
     for (auto it = funcs.begin(); it != funcs.end(); ++it) {
-      std::cout << prefix << " "
-                << (options.unescape ? unescape(it->toString())
-                                     : it->toString())
-                << std::endl;
+      std::cout << prefix << " " << it->toString() << std::endl;
     }
   };
 

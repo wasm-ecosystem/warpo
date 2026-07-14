@@ -105,6 +105,8 @@ struct MemoryPacking : public Pass {
   void run(Module* module) override;
   bool canOptimize(std::vector<std::unique_ptr<Memory>>& memories,
                    std::vector<std::unique_ptr<DataSegment>>& dataSegments);
+  void
+  zeroOutTrampledData(std::vector<std::unique_ptr<DataSegment>>& dataSegments);
   void optimizeSegmentOps(Module* module);
   void getSegmentReferrers(Module* module, ReferrersMap& referrers);
   void dropUnusedSegments(Module* module,
@@ -193,6 +195,34 @@ void MemoryPacking::run(Module* module) {
   }
 }
 
+// Whether the byte range [offset, offset + size) provably fits in the
+// declared minimum size of the memory, so that writing the segment cannot
+// trap.
+static bool
+provablyInBounds(const Memory& memory, uint64_t offset, uint64_t size) {
+  uint64_t end;
+  if (std::ckd_add(&end, offset, size)) {
+    // The mathematical end is 2^64 + |end| (the wrapped value). That is in
+    // bounds only when it is exactly 2^64, that is, |end| is 0, and the
+    // memory's declared minimum size is the maximal 2^64 bytes. (With
+    // one-byte pages the largest declarable minimum is 2^64 - 1 bytes, so a
+    // segment ending at 2^64 is never in bounds there.)
+    if (end != 0 || memory.pageSizeLog2 == 0) {
+      return false;
+    }
+    return memory.initial == (uint64_t(1) << (64 - memory.pageSizeLog2));
+  }
+  // Compare page counts rather than byte counts: the byte size of a maximal
+  // memory64 (2^48 pages) does not fit in 64 bits. Compute the number of
+  // pages needed to hold |end| bytes, rounding up as a partial page needs a
+  // whole page.
+  uint64_t endPages = end >> memory.pageSizeLog2;
+  if (end % memory.pageSize() != 0) {
+    endPages++;
+  }
+  return endPages <= memory.initial;
+}
+
 bool MemoryPacking::canOptimize(
   std::vector<std::unique_ptr<Memory>>& memories,
   std::vector<std::unique_ptr<DataSegment>>& dataSegments) {
@@ -213,9 +243,8 @@ bool MemoryPacking::canOptimize(
     return true;
   }
   // Check if it is ok for us to optimize.
-  Address maxAddress = 0;
   for (auto& segment : dataSegments) {
-    if (!segment->isPassive) {
+    if (segment->isActive()) {
       auto* c = segment->offset->dynCast<Const>();
       // If an active segment has a non-constant offset, then what gets written
       // cannot be known until runtime. That is, the active segments are written
@@ -239,29 +268,110 @@ bool MemoryPacking::canOptimize(
       if (!c) {
         return false;
       }
-      // Note the maximum address so far.
-      maxAddress = std::max(
-        maxAddress, Address(c->value.getUnsigned() + segment->data.size()));
     }
   }
   // All active segments have constant offsets, known at this time, so we may be
   // able to optimize, but must still check for the trampling problem mentioned
   // earlier.
-  // TODO: optimize in the trampling case
   DisjointSpans space;
   for (auto& segment : dataSegments) {
-    if (!segment->isPassive) {
+    if (segment->isActive()) {
       auto* c = segment->offset->cast<Const>();
       Address start = c->value.getUnsigned();
       DisjointSpans::Span span{start, start + segment->data.size()};
       if (space.addAndCheckOverlap(span)) {
-        std::cerr << "warning: active memory segments have overlap, which "
-                  << "prevents some optimizations.\n";
-        return false;
+        // Some segments overlap, that is, a later segment tramples the data of
+        // an earlier one. If the memory is imported then a trap on a later
+        // out-of-bounds segment leaves the data written so far visible in the
+        // imported memory (which outlives the failed instantiation), so even
+        // trampled data matters. We can only optimize if we prove no active
+        // segment can trap, which is the case when each is in bounds of the
+        // memory's declared minimum size: then instantiation always applies
+        // every segment, and only the final memory contents are observable,
+        // exactly as for a memory defined in the module.
+        // TODO: This could be finer-grained: it is enough for the segments
+        //       after a trampled segment, up to and including its trampling
+        //       segment, to be provably in-bounds, as then no trap can occur
+        //       between the trampled write and the trampling one.
+        if (memory->imported()) {
+          for (auto& seg : dataSegments) {
+            if (seg->isActive() &&
+                !provablyInBounds(
+                  *memory,
+                  seg->offset->cast<Const>()->value.getUnsigned(),
+                  seg->data.size())) {
+              std::cerr
+                << "warning: active memory segments overlap, and some may "
+                << "be out of bounds of the imported memory's declared "
+                << "minimum size, which prevents some optimizations.\n";
+              return false;
+            }
+          }
+        }
+        // Zero out the trampled data, which the normal optimization of zeros
+        // will then remove. For a memory defined in the module
+        // partially-applied segments can never be observed (either
+        // instantiation completes and all the segments are applied in order,
+        // or it traps and the memory is never exposed), and for an imported
+        // memory we just proved that no trap is possible.
+        zeroOutTrampledData(dataSegments);
+        break;
       }
     }
   }
   return true;
+}
+
+void MemoryPacking::zeroOutTrampledData(
+  std::vector<std::unique_ptr<DataSegment>>& dataSegments) {
+  // Active segments are applied in order at instantiation, before any code can
+  // run, so when segments overlap only the last write to each byte is ever
+  // observable. Zero out all bytes that a later segment overwrites. This
+  // assumes all active segments have constant offsets, which canOptimize
+  // verifies before calling us.
+  //
+  // Iterate in reverse, tracking the disjoint regions of memory covered by the
+  // segments seen so far as a map from a region's start address to its end.
+  std::map<uint64_t, uint64_t> covered;
+  for (auto it = dataSegments.rbegin(); it != dataSegments.rend(); ++it) {
+    auto& segment = *it;
+    if (!segment->isActive() || segment->data.empty()) {
+      continue;
+    }
+    uint64_t start = segment->offset->cast<Const>()->value.getUnsigned();
+    uint64_t end = start + segment->data.size();
+    // Zero out our bytes that later segments cover. Look for overlapping
+    // regions starting from the last one beginning at or before us.
+    auto covering = covered.upper_bound(start);
+    if (covering != covered.begin()) {
+      --covering;
+    }
+    for (; covering != covered.end() && covering->first < end; ++covering) {
+      uint64_t overlapStart = std::max(start, covering->first);
+      uint64_t overlapEnd = std::min(end, covering->second);
+      if (overlapStart < overlapEnd) {
+        std::fill(segment->data.begin() + (overlapStart - start),
+                  segment->data.begin() + (overlapEnd - start),
+                  0);
+      }
+    }
+    // Add our span to the covered regions, merging with any regions it
+    // touches.
+    auto next = covered.upper_bound(start);
+    if (next != covered.begin()) {
+      auto prev = std::prev(next);
+      if (prev->second >= start) {
+        start = prev->first;
+        end = std::max(end, prev->second);
+        next = prev;
+      }
+    }
+    while (next != covered.end() && next->first <= end) {
+      end = std::max(end, next->second);
+      next = covered.erase(next);
+    }
+    covered[start] = end;
+  }
 }
 
 bool MemoryPacking::canSplit(const std::unique_ptr<DataSegment>& segment,
@@ -283,7 +393,7 @@ bool MemoryPacking::canSplit(const std::unique_ptr<DataSegment>& segment,
 
   for (auto* referrer : referrers) {
     if (auto* curr = referrer->dynCast<MemoryInit>()) {
-      if (segment->isPassive) {
+      if (segment->isPassive()) {
         // Do not try to split if there is a nonconstant offset or size
         if (!curr->offset->is<Const>() || !curr->size->is<Const>()) {
           return false;
@@ -296,7 +406,7 @@ bool MemoryPacking::canSplit(const std::unique_ptr<DataSegment>& segment,
   }
 
   // Active segments can only be split if they have constant offsets
-  return segment->isPassive || segment->offset->is<Const>();
+  return segment->isPassive() || segment->offset->is<Const>();
 }
 
 void MemoryPacking::calculateRanges(Module* module,
@@ -315,12 +425,8 @@ void MemoryPacking::calculateRanges(Module* module,
     // Check if we can rule out a trap by it being in bounds.
     if (auto* c = segment->offset->dynCast<Const>()) {
       auto* memory = module->getMemory(segment->memory);
-      auto memorySize = memory->initial << memory->pageSizeLog2;
-      Index start = c->value.getUnsigned();
-      Index size = segment->data.size();
-      Index end;
-      if (!std::ckd_add(&end, start, size) && end <= memorySize) {
-        // This is in bounds.
+      if (provablyInBounds(
+            *memory, c->value.getUnsigned(), segment->data.size())) {
         preserveTrap = false;
       }
     }
@@ -351,7 +457,7 @@ void MemoryPacking::calculateRanges(Module* module,
   // entire segment and that all its arguments are constants. These assumptions
   // are true of all memory.inits generated by the tools.
   size_t threshold = 0;
-  if (segment->isPassive) {
+  if (segment->isPassive()) {
     // Passive segment metadata size
     threshold += 2;
     // Zeroes on the edge do not increase the number of segments or data.drops,
@@ -450,7 +556,7 @@ void MemoryPacking::optimizeSegmentOps(Module* module) {
     void visitMemoryInit(MemoryInit* curr) {
       Builder builder(*getModule());
       auto* segment = getModule()->getDataSegment(curr->segment);
-      size_t maxRuntimeSize = segment->isPassive ? segment->data.size() : 0;
+      size_t maxRuntimeSize = segment->isPassive() ? segment->data.size() : 0;
       bool mustNop = false;
       bool mustTrap = false;
       auto* offset = curr->offset->dynCast<Const>();
@@ -483,7 +589,7 @@ void MemoryPacking::optimizeSegmentOps(Module* module) {
                                         builder.makeDrop(curr->size),
                                         builder.makeUnreachable()));
         needsRefinalizing = true;
-      } else if (!segment->isPassive) {
+      } else if (segment->isActive()) {
         // trap if (dest > memory.size | offset | size) != 0
         replaceCurrent(builder.makeIf(
           builder.makeBinary(
@@ -494,7 +600,7 @@ void MemoryPacking::optimizeSegmentOps(Module* module) {
       }
     }
     void visitDataDrop(DataDrop* curr) {
-      if (!getModule()->getDataSegment(curr->segment)->isPassive) {
+      if (getModule()->getDataSegment(curr->segment)->isActive()) {
         ExpressionManipulator::nop(curr);
       }
     }
@@ -569,7 +675,7 @@ void MemoryPacking::dropUnusedSegments(
     bool used = false;
     auto referrersIt = referrers.find(segments[i]->name);
     bool hasReferrers = referrersIt != referrers.end();
-    if (segments[i]->isPassive) {
+    if (segments[i]->isPassive()) {
       if (hasReferrers) {
         for (auto* referrer : referrersIt->second) {
           if (!referrer->is<DataDrop>()) {
@@ -623,7 +729,7 @@ void MemoryPacking::createSplitSegments(
       continue;
     }
     Expression* offset = nullptr;
-    if (!segment->isPassive) {
+    if (segment->isActive()) {
       if (auto* c = segment->offset->dynCast<Const>()) {
         if (c->value.type == Type::i32) {
           offset = addStartAndOffset<uint32_t>(
@@ -663,7 +769,6 @@ void MemoryPacking::createSplitSegments(
     }
     auto curr = Builder::makeDataSegment(name,
                                          segment->memory,
-                                         segment->isPassive,
                                          offset,
                                          segment->data.data() + range.start,
                                          range.end - range.start);
