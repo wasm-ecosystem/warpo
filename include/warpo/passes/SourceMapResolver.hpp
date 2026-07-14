@@ -30,7 +30,6 @@ public:
 
   enum class ResolveBias { Previous, Next };
 
-  explicit SourceMapResolver(std::string const &sourceMap, uint32_t wasmByteSize, uint32_t codeSectionOffset);
   explicit SourceMapResolver(std::string const &sourceMap, uint32_t wasmByteSize, uint32_t codeSectionOffset,
                              wasm::BinaryLocations const &binaryLocations);
 
@@ -43,13 +42,15 @@ public:
 
 private:
   struct Mapping final {
+    Mapping(uint32_t generatedOffset, std::optional<SourceLocation> sourceLocation);
+
     uint32_t generatedOffset;
     std::optional<SourceLocation> sourceLocation;
   };
 
   std::vector<Mapping> mappings_;
   std::unordered_map<std::string, BytecodeRange> functionRanges_;
-  uint32_t codeSectionOffset_ = 0U;
+  uint32_t codeSectionOffset_;
 };
 
 } // namespace warpo::passes

@@ -36,7 +36,7 @@ void BinaryWriter::write() {
     std::vector<uint8_t> const wasmBinary{buffer_.begin(), buffer_.end()};
     uint32_t const codeSectionOffset = SourceMapResolver::getCodeSectionOffset(wasmBinary);
     SourceMapResolver const sourceMapResolver{sourceMap, static_cast<uint32_t>(buffer_.size()), codeSectionOffset,
-                          writer_.getBinaryLocations()};
+                                              writer_.getBinaryLocations()};
     debugSections_ = DwarfGenerator::generateDebugSections(
         m_.variableInfo_,
         [this](std::string_view const globalName) -> std::optional<uint32_t> {

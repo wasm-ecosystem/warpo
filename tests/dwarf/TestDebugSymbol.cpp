@@ -237,7 +237,8 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
   std::vector<uint8_t> const wasmBinary = writer.getBinary();
   uint32_t const codeSectionOffset = warpo::passes::SourceMapResolver::getCodeSectionOffset(wasmBinary);
   warpo::passes::SourceMapResolver const sourceMapResolver{writer.getSourceMap(),
-                                                           static_cast<uint32_t>(wasmBinary.size()), codeSectionOffset};
+                                                           static_cast<uint32_t>(wasmBinary.size()), codeSectionOffset,
+                                                           writer.raw().getBinaryLocations()};
   std::string const dumpOutput = filterLibSubprograms(rawDump, sourceMapResolver);
   std::string const fixtureName = testCaseName + "Fixture.txt";
   std::filesystem::path const expectedDumpPath = testDir / fixtureName;

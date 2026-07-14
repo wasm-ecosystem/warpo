@@ -31,6 +31,9 @@ uint32_t readU32Leb(std::vector<uint8_t> const &buffer, size_t &offset) {
 
 } // namespace
 
+SourceMapResolver::Mapping::Mapping(uint32_t const generatedOffset, std::optional<SourceLocation> sourceLocation)
+    : generatedOffset(generatedOffset), sourceLocation(std::move(sourceLocation)) {}
+
 uint32_t SourceMapResolver::getCodeSectionOffset(std::vector<uint8_t> const &wasmBinary) {
   assert(wasmBinary.size() >= 8U);
   size_t offset = 8U;
@@ -47,43 +50,37 @@ uint32_t SourceMapResolver::getCodeSectionOffset(std::vector<uint8_t> const &was
 }
 
 SourceMapResolver::SourceMapResolver(std::string const &sourceMap, uint32_t const wasmByteSize,
-                                     uint32_t const codeSectionOffset)
-    : codeSectionOffset_(codeSectionOffset) {
-  if (sourceMap.empty())
-    return;
-
-  std::vector<char> sourceMapBuffer{sourceMap.begin(), sourceMap.end()};
-  sourceMapBuffer.push_back('\0');
-  wasm::Module m;
-  wasm::SourceMapReader reader{sourceMapBuffer};
-  reader.parse(m);
-
-  std::optional<wasm::Function::DebugLocation> previousLocation;
-  bool previousLocationSet = false;
-  for (uint32_t generatedOffset = 0U; generatedOffset < wasmByteSize; ++generatedOffset) {
-    std::optional<wasm::Function::DebugLocation> const location = reader.readDebugLocationAt(generatedOffset);
-    if (previousLocationSet && location == previousLocation)
-      continue;
-    previousLocationSet = true;
-    previousLocation = location;
-
-    std::optional<SourceLocation> sourceLocation = std::nullopt;
-    if (location.has_value()) {
-      assert(location->fileIndex >= 0);
-      size_t const fileIndex = static_cast<size_t>(location->fileIndex);
-      assert(fileIndex < m.debugInfoFileNames.size());
-      sourceLocation = SourceLocation{
-          .sourcePath = m.debugInfoFileNames[fileIndex],
-          .line = static_cast<uint32_t>(location->lineNumber),
-      };
-    }
-    mappings_.push_back(Mapping{.generatedOffset = generatedOffset, .sourceLocation = std::move(sourceLocation)});
-  }
-}
-
-SourceMapResolver::SourceMapResolver(std::string const &sourceMap, uint32_t const wasmByteSize,
                                      uint32_t const codeSectionOffset, wasm::BinaryLocations const &binaryLocations)
-    : SourceMapResolver(sourceMap, wasmByteSize, codeSectionOffset) {
+    : codeSectionOffset_(codeSectionOffset) {
+  if (!sourceMap.empty()) {
+    std::vector<char> sourceMapBuffer{sourceMap.begin(), sourceMap.end()};
+    sourceMapBuffer.push_back('\0');
+    wasm::Module m;
+    wasm::SourceMapReader reader{sourceMapBuffer};
+    reader.parse(m);
+
+    std::optional<wasm::Function::DebugLocation> previousLocation;
+    bool previousLocationSet = false;
+    for (uint32_t generatedOffset = 0U; generatedOffset < wasmByteSize; ++generatedOffset) {
+      std::optional<wasm::Function::DebugLocation> const location = reader.readDebugLocationAt(generatedOffset);
+      if (previousLocationSet && location == previousLocation)
+        continue;
+      previousLocationSet = true;
+      previousLocation = location;
+
+      std::optional<SourceLocation> sourceLocation = std::nullopt;
+      if (location.has_value()) {
+        assert(location->fileIndex >= 0);
+        size_t const fileIndex = static_cast<size_t>(location->fileIndex);
+        assert(fileIndex < m.debugInfoFileNames.size());
+        sourceLocation = SourceLocation{
+            .sourcePath = m.debugInfoFileNames[fileIndex],
+            .line = static_cast<uint32_t>(location->lineNumber),
+        };
+      }
+      mappings_.emplace_back(generatedOffset, std::move(sourceLocation));
+    }
+  }
   for (auto const &[func, locations] : binaryLocations.functions) {
     std::string const functionName = func->name.toString();
     functionRanges_.emplace(functionName, BytecodeRange{.lowPc = locations.declarations, .highPc = locations.end});

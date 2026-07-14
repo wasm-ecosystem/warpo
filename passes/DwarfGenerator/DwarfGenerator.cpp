@@ -251,7 +251,7 @@ static void emitScopeChildren(std::vector<std::unique_ptr<ScopeInfo>> const &chi
                                typeRefFixups);
 
       emitScopeChildren(block->getChildren(), rootUnit, abbrevCodes, typeRefFixups, sourceMapResolver, sourcePath,
-            functionName);
+                        functionName);
       emitScopeTerminator(rootUnit);
     } else {
       // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
