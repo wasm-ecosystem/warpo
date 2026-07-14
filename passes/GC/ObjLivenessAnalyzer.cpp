@@ -367,7 +367,7 @@ void dumpInfo(wasm::Module *const m, wasm::Function *func, LocalsUses const &loc
 
 void ObjLivenessAnalyzer::runOnFunction(wasm::Module *m, wasm::Function *func) {
   SSAMap const &ssaMap = moduleLevelSSAMap_.at(func);
-  wasm::analysis::CFG cfg = wasm::analysis::CFG::fromFunction(func);
+  wasm::analysis::CFG cfg = wasm::analysis::CFG::fromFunction(func, m);
 
   LocalsUses const localsUses = LocalsUses::create(func, ssaMap, cfg);
   TmpUses const tmpUses = TmpUses::create(func, ssaMap);
