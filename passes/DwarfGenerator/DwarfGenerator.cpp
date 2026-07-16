@@ -231,7 +231,8 @@ static void emitScopeChildren(std::vector<std::unique_ptr<ScopeInfo>> const &chi
       BlockInfo const *const block = static_cast<BlockInfo const *>(child.get());
       std::optional<SourceMapResolver::BytecodeRange> const bytecodeRange =
           sourceMapResolver.resolveRange(sourcePath, block->getStartLine(), block->getEndLine(), functionName);
-      assert(bytecodeRange.has_value() && "Lexical block source range must resolve to a bytecode range");
+      if (!bytecodeRange.has_value())
+        continue;
 
       llvm::DWARFYAML::Entry blockEntry;
       blockEntry.AbbrCode = abbrevCodes.lexicalBlock;
