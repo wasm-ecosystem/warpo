@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { before, describe, it } from "node:test";
 import { TypeKind } from "wasmparser/dist/cjs/WasmParser.js";
 import { attachBuiltinKind, DebugInfoResolver, resolveClassLayouts } from "../src/debugInfoResolver.js";
-import { parseWasmDebugInfo, DW_AT, DW_TAG, getAttr } from "../src/dwarfParser.js";
+import { parseWasmDebugInfo, DW_AT, DW_TAG, getAttr } from "../../dwarf/dwarfParser.js";
 import { BuiltinContainerKind, type ClassField, type ClassLayout } from "../src/types.js";
 import { CLASS_PREFIX, describeIntegration } from "./testHelper.js";
 

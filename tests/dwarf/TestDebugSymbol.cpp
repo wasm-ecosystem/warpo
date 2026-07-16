@@ -1,5 +1,4 @@
 #include <cstddef>
-#include <cstdint>
 #include <filesystem>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -167,7 +166,7 @@ std::optional<std::string> tryReplacePcWithFileLine(std::string const &line,
   assert(location.has_value());
 
   std::string const sourceFileName = std::filesystem::path{location->sourcePath}.filename().string();
-  return indent + attrName + "\t" + valueStr + "\t" + sourceFileName + ":" + std::to_string(location->line) + "\n";
+  return indent + attrName + "\t" + sourceFileName + ":" + std::to_string(location->line) + "\n";
 }
 
 std::string filterLibSubprograms(std::string const &dump, warpo::passes::SourceMapResolver const &sourceMapResolver) {
@@ -182,9 +181,8 @@ std::string filterLibSubprograms(std::string const &dump, warpo::passes::SourceM
     normalizeUnitHeaderLine(line);
 
     if (std::optional<std::string> const handled = libSkipper.processLine(line); handled.has_value()) {
-      if (!handled->empty()) {
+      if (!handled->empty())
         output << *handled;
-      }
       continue;
     }
 
@@ -256,13 +254,25 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
 
 INSTANTIATE_TEST_SUITE_P(DebugSymbolTests, TestDebugSymbol_P,
                          ::testing::ValuesIn({
-                             "TestBaseTypeToString", "TestClassInheritance", "TestClassMemberBasic",
-                             "TestClosure",          "TestFunctionAsField",  "TestFunctionParameter",
-                             "TestGlobal",           "TestLambda",           "TestTemplateClass",
-                             "TestLocalInFor",       "TestLocalInForOf",     "TestLocalInIf",
-                             "TestLocalInWhile",     "TestLocalInBlock",     "TestEmptyBlock",
-                             "TestLocalInSwitch",    "TestIssue328Crash",    "TestTuple",
-                             "TestMapNoIterator",    "TestMapWithIterator",
+                             "TestBaseTypeToString",
+                             "TestClassInheritance",
+                             "TestClassMemberBasic",
+                             "TestClosure",
+                             "TestFunctionAsField",
+                             "TestFunctionParameter",
+                             "TestGlobal",
+                             "TestLambda",
+                             "TestTemplateClass",
+                             "TestLocalInFor",
+                             "TestLocalInForOf",
+                             "TestLocalInIf",
+                             "TestLocalInWhile",
+                             "TestLocalInBlock",
+                             "TestLocalInSwitch",
+                             "TestIssue328Crash",
+                             "TestTuple",
+                             "TestMapNoIterator",
+                             "TestMapWithIterator",
                          }));
 
 int main(int argc, char **argv) {

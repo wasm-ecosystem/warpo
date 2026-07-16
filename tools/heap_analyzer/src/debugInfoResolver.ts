@@ -12,7 +12,7 @@ import {
   parseWasmDebugInfo,
   type DwarfDIE,
   type WasmGlobalEntry,
-} from "./dwarfParser.js";
+} from "../../dwarf/dwarfParser.js";
 import { BuiltinContainerKind, type ClassField, type ClassLayout, type EntryLayout, type GlobalRoot } from "./types.js";
 
 type ResolvedTypeInfo = { name?: string; size: number; isReference: boolean };

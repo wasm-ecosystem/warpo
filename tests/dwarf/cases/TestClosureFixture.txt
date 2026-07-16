@@ -110,8 +110,8 @@ DW_TAG_compile_unit
                   DW_AT_data_member_location	(0x00000000)
     DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#makeAdder")
-                  scope start	0x0000000000000fc7	TestClosure.ts:16
-                  scope end	0x0000000000000fe7	TestClosure.ts:19
+                  scope start	TestClosure.ts:16
+                  scope end	TestClosure.ts:19
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
                     DW_AT_type	("tests/dwarf/cases/TestClosure/Counter")
@@ -133,8 +133,8 @@ DW_TAG_compile_unit
                     DW_AT_location	(0x00000002)
       DW_TAG_subprogram
                     DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#makeAdder~anonymous|0")
-                    scope start	0x0000000000000f44	TestClosure.ts:20
-                    scope end	0x0000000000000f83	TestClosure.ts:22
+                    scope start	TestClosure.ts:20
+                    scope end	TestClosure.ts:22
                     DW_AT_static_link	(0x00000001)
                     DW_AT_description	("tests/dwarf/cases/TestClosure/Counter#makeAdder")
         DW_TAG_formal_parameter
@@ -356,8 +356,8 @@ DW_TAG_compile_unit
                 DW_AT_location	(0x0000000b)
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestClosure/outer")
-                scope start	0x0000000000000ec8	TestClosure.ts:2
-                scope end	0x0000000000000ee4	TestClosure.ts:5
+                scope start	TestClosure.ts:2
+                scope end	TestClosure.ts:5
     DW_TAG_formal_parameter
                   DW_AT_name	("base")
                   DW_AT_type	("i32")
@@ -379,8 +379,8 @@ DW_TAG_compile_unit
                   DW_AT_location	(0x00000002)
     DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestClosure/outer~anonymous|0")
-                  scope start	0x0000000000000e48	TestClosure.ts:6
-                  scope end	0x0000000000000e83	TestClosure.ts:8
+                  scope start	TestClosure.ts:6
+                  scope end	TestClosure.ts:8
                   DW_AT_static_link	(0x00000001)
                   DW_AT_description	("tests/dwarf/cases/TestClosure/outer")
       DW_TAG_formal_parameter
@@ -395,8 +395,8 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestClosure/memberOuter")
-                scope start	0x0000000000000feb	TestClosure.ts:28
-                scope end	0x0000000000000fff	TestClosure.ts:28
+                scope start	TestClosure.ts:28
+                scope end	TestClosure.ts:28
     DW_TAG_formal_parameter
                   DW_AT_name	("base")
                   DW_AT_type	("i32")
@@ -404,8 +404,8 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestClosure/loopCapture")
-                scope start	0x00000000000012b3	TestClosure.ts:32
-                scope end	0x000000000000135f	TestClosure.ts:38
+                scope start	TestClosure.ts:32
+                scope end	TestClosure.ts:38
     DW_TAG_formal_parameter
                   DW_AT_name	("n")
                   DW_AT_type	("i32")
@@ -420,8 +420,8 @@ DW_TAG_compile_unit
                   DW_AT_type	("~lib/array/Array<(i32)=>i32>")
                   DW_AT_location	(0x00000003)
     DW_TAG_lexical_block
-                  scope start	0x00000000000012cd	TestClosure.ts:34
-                  scope end	0x0000000000001335	TestClosure.ts:34
+                  scope start	TestClosure.ts:34
+                  scope end	TestClosure.ts:34
       DW_TAG_variable
                     DW_AT_name	("i")
                     DW_AT_type	("i32")
@@ -434,8 +434,8 @@ DW_TAG_compile_unit
                     DW_AT_location	(0x00000004)
       DW_TAG_subprogram
                     DW_AT_name	("tests/dwarf/cases/TestClosure/loopCapture~anonymous|0")
-                    scope start	0x00000000000010b3	TestClosure.ts:36
-                    scope end	0x00000000000010d5	TestClosure.ts:36
+                    scope start	TestClosure.ts:36
+                    scope end	TestClosure.ts:36
                     DW_AT_static_link	(0x00000001)
                     DW_AT_description	("tests/dwarf/cases/TestClosure/loopCapture")
         DW_TAG_formal_parameter

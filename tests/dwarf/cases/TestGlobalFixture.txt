@@ -233,8 +233,8 @@ DW_TAG_compile_unit
                 DW_AT_location	(0x0000000b)
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestGlobal/test")
-                scope start	0x0000000000000dad	TestGlobal.ts:9
-                scope end	0x0000000000000dbe	TestGlobal.ts:10
+                scope start	TestGlobal.ts:9
+                scope end	TestGlobal.ts:10
     NULL
 
 .debug_str contents:

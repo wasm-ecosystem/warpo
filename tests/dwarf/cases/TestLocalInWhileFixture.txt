@@ -105,11 +105,11 @@ DW_TAG_compile_unit
                 DW_AT_location	(0x00000000)
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestLocalInWhile/foo")
-                scope start	0x0000000000000005	TestLocalInWhile.ts:3
-                scope end	0x0000000000000022	TestLocalInWhile.ts:7
+                scope start	TestLocalInWhile.ts:3
+                scope end	TestLocalInWhile.ts:7
     DW_TAG_lexical_block
-                  scope start	0x0000000000000005	TestLocalInWhile.ts:3
-                  scope end	0x0000000000000018	TestLocalInWhile.ts:5
+                  scope start	TestLocalInWhile.ts:3
+                  scope end	TestLocalInWhile.ts:5
       DW_TAG_variable
                     DW_AT_name	("aaa")
                     DW_AT_type	("i32")
@@ -118,11 +118,11 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestLocalInWhile/goo")
-                scope start	0x0000000000000028	TestLocalInWhile.ts:11
-                scope end	0x000000000000003f	TestLocalInWhile.ts:15
+                scope start	TestLocalInWhile.ts:11
+                scope end	TestLocalInWhile.ts:15
     DW_TAG_lexical_block
-                  scope start	0x0000000000000028	TestLocalInWhile.ts:11
-                  scope end	0x000000000000003a	TestLocalInWhile.ts:13
+                  scope start	TestLocalInWhile.ts:11
+                  scope end	TestLocalInWhile.ts:13
       DW_TAG_variable
                     DW_AT_name	("bbb")
                     DW_AT_type	("i32")

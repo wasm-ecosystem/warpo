@@ -277,36 +277,36 @@ DW_TAG_compile_unit
                 DW_AT_location	(0x0000000c)
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestLocalInForOf/foo")
-                scope start	0x0000000000000f26	TestLocalInForOf.ts:3
-                scope end	0x0000000000000ffd	TestLocalInForOf.ts:3
+                scope start	TestLocalInForOf.ts:3
+                scope end	TestLocalInForOf.ts:3
     DW_TAG_variable
                   DW_AT_name	("aaa")
                   DW_AT_type	("~lib/array/Array<i32>")
                   DW_AT_location	(0x00000001)
     DW_TAG_lexical_block
-                  scope start	0x0000000000000f34	TestLocalInForOf.ts:4
-                  scope end	0x0000000000000fec	TestLocalInForOf.ts:8
+                  scope start	TestLocalInForOf.ts:4
+                  scope end	TestLocalInForOf.ts:8
       DW_TAG_variable
                     DW_AT_name	("v")
                     DW_AT_type	("i32")
                     DW_AT_location	(0x00000005)
       DW_TAG_lexical_block
-                    scope start	0x0000000000000f61	TestLocalInForOf.ts:5
-                    scope end	0x0000000000000fec	TestLocalInForOf.ts:8
+                    scope start	TestLocalInForOf.ts:5
+                    scope end	TestLocalInForOf.ts:8
         DW_TAG_variable
                       DW_AT_name	("v")
                       DW_AT_type	("i32")
                       DW_AT_location	(0x00000009)
         DW_TAG_lexical_block
-                      scope start	0x0000000000000f8e	TestLocalInForOf.ts:6
-                      scope end	0x0000000000000fec	TestLocalInForOf.ts:8
+                      scope start	TestLocalInForOf.ts:6
+                      scope end	TestLocalInForOf.ts:8
           DW_TAG_variable
                         DW_AT_name	("v")
                         DW_AT_type	("i32")
                         DW_AT_location	(0x0000000d)
           DW_TAG_lexical_block
-                        scope start	0x0000000000000fbb	TestLocalInForOf.ts:7
-                        scope end	0x0000000000000fec	TestLocalInForOf.ts:8
+                        scope start	TestLocalInForOf.ts:7
+                        scope end	TestLocalInForOf.ts:8
             DW_TAG_variable
                           DW_AT_name	("v")
                           DW_AT_type	("i32")
