@@ -256,26 +256,13 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
 
 INSTANTIATE_TEST_SUITE_P(DebugSymbolTests, TestDebugSymbol_P,
                          ::testing::ValuesIn({
-                             "TestBaseTypeToString",
-                             "TestClassInheritance",
-                             "TestClassMemberBasic",
-                             "TestClosure",
-                             "TestFunctionAsField",
-                             "TestFunctionParameter",
-                             "TestGlobal",
-                             "TestLambda",
-                             "TestTemplateClass",
-                             "TestLocalInFor",
-                             "TestLocalInForOf",
-                             "TestLocalInIf",
-                             "TestLocalInWhile",
-                             "TestLocalInBlock",
-                             "TestEmptyBlock",
-                             "TestLocalInSwitch",
-                             "TestIssue328Crash",
-                             "TestTuple",
-                             "TestMapNoIterator",
-                             "TestMapWithIterator",
+                             "TestBaseTypeToString", "TestClassInheritance", "TestClassMemberBasic",
+                             "TestClosure",          "TestFunctionAsField",  "TestFunctionParameter",
+                             "TestGlobal",           "TestLambda",           "TestTemplateClass",
+                             "TestLocalInFor",       "TestLocalInForOf",     "TestLocalInIf",
+                             "TestLocalInWhile",     "TestLocalInBlock",     "TestEmptyBlock",
+                             "TestLocalInSwitch",    "TestIssue328Crash",    "TestTuple",
+                             "TestMapNoIterator",    "TestMapWithIterator",
                          }));
 
 int main(int argc, char **argv) {
