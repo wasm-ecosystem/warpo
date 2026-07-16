@@ -106,11 +106,11 @@ DW_TAG_compile_unit
                   DW_AT_type	("~lib/object/Object")
     DW_TAG_member
                   DW_AT_name	("fnField")
-                  DW_AT_type	("~lib/function/Function<()=>void>")
+                  DW_AT_type	("~lib/function/Function<()=>i32>")
                   DW_AT_data_member_location	(0x00000000)
     NULL
   DW_TAG_class_type
-                DW_AT_name	("~lib/function/Function<()=>void>")
+                DW_AT_name	("~lib/function/Function<()=>i32>")
                 DW_AT_signature	(0x00000005)
     DW_TAG_inheritance
                   DW_AT_type	("~lib/object/Object")
@@ -123,7 +123,7 @@ DW_TAG_compile_unit
                   DW_AT_type	("usize")
                   DW_AT_data_member_location	(0x00000004)
     DW_TAG_template_type_parameter
-                  DW_AT_type	("~lib/function/Function<()=>void>")
+                  DW_AT_type	("~lib/function/Function<()=>i32>")
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/object/Object")
@@ -197,7 +197,7 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_variable
                 DW_AT_name	("tests/dwarf/cases/TestFunctionAsField/f")
-                DW_AT_type	("~lib/function/Function<()=>void>")
+                DW_AT_type	("~lib/function/Function<()=>i32>")
                 DW_AT_location	(0x0000000e)
   DW_TAG_variable
                 DW_AT_name	("tests/dwarf/cases/TestFunctionAsField/v")
@@ -249,8 +249,8 @@ DW_TAG_compile_unit
                 DW_AT_location	(0x0000000b)
   DW_TAG_subprogram
                 DW_AT_name	("start:tests/dwarf/cases/TestFunctionAsField~anonymous|0")
-                scope start	TestFunctionAsField.ts:6
-                scope end	TestFunctionAsField.ts:6
+                scope start	0x0000000000000d6a	TestFunctionAsField.ts:7
+                scope end	0x0000000000000d6c	TestFunctionAsField.ts:7
     NULL
 
 .debug_str contents:

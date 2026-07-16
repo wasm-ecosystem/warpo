@@ -28,12 +28,12 @@ describeIntegration("analyzeHeap", (ctx) => {
   it("matches the fixture's live-object count through constructor rows", () => {
     const totalCount = snapshot.constructors.reduce((sum, entry) => sum + entry.count, 0);
 
-    assert.strictEqual(totalCount, 93);
+    assert.strictEqual(totalCount, 94);
   });
 
   it("matches expected class counts for key fixture types", () => {
     assert.strictEqual(constructorCounts.get(`${CLASS_PREFIX}TreeNode`), 31);
-    assert.strictEqual(constructorCounts.get("~lib/arraybuffer/ArrayBuffer"), 17);
+    assert.strictEqual(constructorCounts.get("~lib/arraybuffer/ArrayBuffer"), 18);
     assert.strictEqual(constructorCounts.get(`${CLASS_PREFIX}Item`), 13);
     assert.strictEqual(constructorCounts.get(`${CLASS_PREFIX}Vector2`), 8);
     assert.strictEqual(constructorCounts.get(`${CLASS_PREFIX}ListNode`), 5);
@@ -93,7 +93,7 @@ describeIntegration("analyzeHeap", (ctx) => {
 
   it("keeps instance rows sorted", () => {
     const totalInstanceCount = snapshot.constructors.reduce((sum, entry) => sum + entry.instances.length, 0);
-    assert.strictEqual(totalInstanceCount, 93);
+    assert.strictEqual(totalInstanceCount, 94);
 
     const treeNodes = snapshot.constructors.find((entry) => entry.className === `${CLASS_PREFIX}TreeNode`);
     assert.ok(treeNodes);
@@ -117,7 +117,7 @@ describeIntegration("analyzeHeap", (ctx) => {
     const totalCount = snapshot.constructors.reduce((sum, entry) => sum + entry.count, 0);
     const totalShallowSize = snapshot.constructors.reduce((sum, entry) => sum + entry.totalShallowSize, 0);
 
-    assert.strictEqual(totalCount, 93);
+    assert.strictEqual(totalCount, 94);
     assert.strictEqual(totalShallowSize, snapshot.totalLiveSize);
     assert.ok(snapshot.totalHeapSize >= snapshot.totalLiveSize);
   });

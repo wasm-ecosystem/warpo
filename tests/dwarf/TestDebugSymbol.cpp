@@ -1,4 +1,5 @@
 #include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -12,6 +13,7 @@
 
 #include "passes/BinaryWriter.hpp"
 #include "warpo/frontend/Compiler.hpp"
+#include "warpo/passes/SourceMapResolver.hpp"
 #include "warpo/support/Opt.hpp"
 
 namespace {
@@ -135,7 +137,8 @@ void normalizeUnitHeaderLine(std::string &line) {
   }
 }
 
-std::optional<std::string> tryReplacePcWithFileLine(std::string const &line, std::string const &fileName) {
+std::optional<std::string> tryReplacePcWithFileLine(std::string const &line,
+                                                    warpo::passes::SourceMapResolver const &sourceMapResolver) {
   size_t const lowPcPos = line.find("DW_AT_low_pc");
   size_t const highPcPos = line.find("DW_AT_high_pc");
   if ((lowPcPos == std::string::npos) && (highPcPos == std::string::npos))
@@ -150,15 +153,24 @@ std::optional<std::string> tryReplacePcWithFileLine(std::string const &line, std
   std::string const valueStr = line.substr(openParen + 1U, closeParen - openParen - 1);
   assert(valueStr.find("0x") == 0);
 
-  uint64_t const lineNumber = std::stoull(valueStr, nullptr, 16);
-
+  uint32_t const value = static_cast<uint32_t>(std::stoul(valueStr, nullptr, 16));
+  bool const isLowPc = lowPcPos != std::string::npos;
   size_t const indentEnd = line.find_first_not_of(' ');
   std::string const indent = (indentEnd != std::string::npos) ? line.substr(0, indentEnd) : "";
-  std::string const attrName = (lowPcPos != std::string::npos) ? "scope start" : "scope end";
-  return indent + attrName + "\t" + fileName + ":" + std::to_string(lineNumber) + "\n";
+  std::string const attrName = isLowPc ? "scope start" : "scope end";
+
+  warpo::passes::SourceMapResolver::ResolveBias const bias =
+      isLowPc ? warpo::passes::SourceMapResolver::ResolveBias::Next
+              : warpo::passes::SourceMapResolver::ResolveBias::Previous;
+  std::optional<warpo::passes::SourceMapResolver::SourceLocation> const location =
+      sourceMapResolver.resolveGeneratedOffset(value, bias);
+  assert(location.has_value());
+
+  std::string const sourceFileName = std::filesystem::path{location->sourcePath}.filename().string();
+  return indent + attrName + "\t" + valueStr + "\t" + sourceFileName + ":" + std::to_string(location->line) + "\n";
 }
 
-std::string filterLibSubprograms(std::string const &dump, std::string const &fileName) {
+std::string filterLibSubprograms(std::string const &dump, warpo::passes::SourceMapResolver const &sourceMapResolver) {
   std::istringstream input(dump);
   LineReader reader(input);
   std::ostringstream output;
@@ -170,12 +182,13 @@ std::string filterLibSubprograms(std::string const &dump, std::string const &fil
     normalizeUnitHeaderLine(line);
 
     if (std::optional<std::string> const handled = libSkipper.processLine(line); handled.has_value()) {
-      if (!handled->empty())
+      if (!handled->empty()) {
         output << *handled;
+      }
       continue;
     }
 
-    if (std::optional<std::string> const replacement = tryReplacePcWithFileLine(line, fileName);
+    if (std::optional<std::string> const replacement = tryReplacePcWithFileLine(line, sourceMapResolver);
         replacement.has_value()) {
       output << *replacement;
       continue;
@@ -221,7 +234,12 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
   writer.write();
 
   std::string const rawDump = writer.dumpDwarf();
-  std::string const dumpOutput = filterLibSubprograms(rawDump, testCaseName + ".ts");
+  std::vector<uint8_t> const wasmBinary = writer.getBinary();
+  uint32_t const codeSectionOffset = warpo::passes::SourceMapResolver::getCodeSectionOffset(wasmBinary);
+  warpo::passes::SourceMapResolver const sourceMapResolver{writer.getSourceMap(),
+                                                           static_cast<uint32_t>(wasmBinary.size()), codeSectionOffset,
+                                                           writer.raw().getBinaryLocations()};
+  std::string const dumpOutput = filterLibSubprograms(rawDump, sourceMapResolver);
   std::string const fixtureName = testCaseName + "Fixture.txt";
   std::filesystem::path const expectedDumpPath = testDir / fixtureName;
 
@@ -238,25 +256,13 @@ TEST_P(TestDebugSymbol_P, DebugInfo) {
 
 INSTANTIATE_TEST_SUITE_P(DebugSymbolTests, TestDebugSymbol_P,
                          ::testing::ValuesIn({
-                             "TestBaseTypeToString",
-                             "TestClassInheritance",
-                             "TestClassMemberBasic",
-                             "TestClosure",
-                             "TestFunctionAsField",
-                             "TestFunctionParameter",
-                             "TestGlobal",
-                             "TestLambda",
-                             "TestTemplateClass",
-                             "TestLocalInFor",
-                             "TestLocalInForOf",
-                             "TestLocalInIf",
-                             "TestLocalInWhile",
-                             "TestLocalInBlock",
-                             "TestLocalInSwitch",
-                             "TestIssue328Crash",
-                             "TestTuple",
-                             "TestMapNoIterator",
-                             "TestMapWithIterator",
+                             "TestBaseTypeToString", "TestClassInheritance", "TestClassMemberBasic",
+                             "TestClosure",          "TestFunctionAsField",  "TestFunctionParameter",
+                             "TestGlobal",           "TestLambda",           "TestTemplateClass",
+                             "TestLocalInFor",       "TestLocalInForOf",     "TestLocalInIf",
+                             "TestLocalInWhile",     "TestLocalInBlock",     "TestEmptyBlock",
+                             "TestLocalInSwitch",    "TestIssue328Crash",    "TestTuple",
+                             "TestMapNoIterator",    "TestMapWithIterator",
                          }));
 
 int main(int argc, char **argv) {

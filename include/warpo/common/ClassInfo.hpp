@@ -35,9 +35,10 @@ public:
 
   std::vector<std::string_view> const &getTemplateTypes() const noexcept { return templateTypes_; }
 
-  SubProgramInfo &addSubProgram(std::string_view const subProgramName, uint32_t const startLine, uint32_t const endLine,
+  SubProgramInfo &addSubProgram(std::string_view const subProgramName, std::string_view const sourcePath,
+                                uint32_t const startLine, uint32_t const endLine,
                                 std::optional<std::string_view> const outerFunction = std::nullopt) {
-    return memberFunctions_.emplace_back(subProgramName, startLine, endLine, outerFunction);
+    return memberFunctions_.emplace_back(subProgramName, sourcePath, startLine, endLine, outerFunction);
   }
 
   std::deque<SubProgramInfo> const &getSubPrograms() const noexcept { return memberFunctions_; }

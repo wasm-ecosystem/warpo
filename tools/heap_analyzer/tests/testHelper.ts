@@ -38,7 +38,7 @@ function createFixtureContext(suiteName: string): FixtureContext {
   return {
     compileFixture() {
       ensureBuildDir();
-      execFileSync(WARPO_ASC, [FIXTURE_SRC, "-o", wasmPath, "--shrinkLevel", "2", "--debug", "--exportRuntime"], {
+      execFileSync(WARPO_ASC, [FIXTURE_SRC, "-o", wasmPath, "--debug", "--exportRuntime"], {
         cwd: PROJECT_ROOT,
         stdio: "pipe",
       });

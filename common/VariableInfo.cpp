@@ -59,9 +59,10 @@ void VariableInfo::addGlobalType(std::string variableName, std::string_view cons
 }
 
 void VariableInfo::addSubProgram(std::string subProgramName, std::string_view const belongClassName,
-                                 std::string_view const outerFunctionName, uint32_t const startLine,
-                                 uint32_t const endLine) {
+                                 std::string_view const outerFunctionName, std::string_view const sourcePath,
+                                 uint32_t const startLine, uint32_t const endLine) {
   std::string_view const internedName = stringPool_.internString(subProgramName);
+  std::string_view const internedSourcePath = stringPool_.internString(sourcePath);
   std::optional<std::string_view> outerFunction = std::nullopt;
   if (!outerFunctionName.empty() && (outerFunctionName != "<<NULL>>")) {
     SubProgramLookupMap::const_iterator const outerIt = subProgramLookupMap_.find(outerFunctionName);
@@ -73,19 +74,21 @@ void VariableInfo::addSubProgram(std::string subProgramName, std::string_view co
     ClassRegistry::iterator const classIt = classRegistry_.find(belongClassName);
     assert(classIt != classRegistry_.end() && "Class not found in registry");
     // NOLINTNEXTLINE(misc-const-correctness)
-    SubProgramInfo &subProgramInfo = classIt->second.addSubProgram(internedName, startLine, endLine, outerFunction);
+    SubProgramInfo &subProgramInfo =
+        classIt->second.addSubProgram(internedName, internedSourcePath, startLine, endLine, outerFunction);
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
     scopeStack_.push_back(&subProgramInfo);
   } else if (outerFunction.has_value() && !scopeStack_.empty()) {
     std::unique_ptr<SubProgramInfo> child =
-        std::make_unique<SubProgramInfo>(internedName, startLine, endLine, outerFunction);
+        std::make_unique<SubProgramInfo>(internedName, internedSourcePath, startLine, endLine, outerFunction);
     // NOLINTNEXTLINE(misc-const-correctness, cppcoreguidelines-pro-type-static-cast-downcast)
     SubProgramInfo &subProgramInfo = static_cast<SubProgramInfo &>(scopeStack_.back()->addChild(std::move(child)));
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
     scopeStack_.push_back(&subProgramInfo);
   } else {
     // NOLINTNEXTLINE(misc-const-correctness)
-    SubProgramInfo &subProgramInfo = topLevelSubPrograms_.emplace_back(internedName, startLine, endLine, outerFunction);
+    SubProgramInfo &subProgramInfo =
+        topLevelSubPrograms_.emplace_back(internedName, internedSourcePath, startLine, endLine, outerFunction);
     subProgramLookupMap_.emplace(subProgramInfo.getName(), subProgramInfo);
     scopeStack_.push_back(&subProgramInfo);
   }

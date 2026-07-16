@@ -53,8 +53,8 @@ describeIntegration("dwarfParser", (ctx) => {
       const sections = extractWasmSections(ctx.loadFixtureWasm());
       const mutableGlobals = sections.globals.filter((entry) => entry.mutable);
 
-      assert.strictEqual(sections.globals.length, 18);
-      assert.strictEqual(mutableGlobals.length, 15);
+      assert.strictEqual(sections.globals.length, 25);
+      assert.strictEqual(mutableGlobals.length, 16);
     });
   });
 
@@ -107,8 +107,8 @@ describeIntegration("dwarfParser", (ctx) => {
     it("returns wasm globals alongside DWARF units", () => {
       const mutableGlobals = debugInfo.globals.filter((entry) => entry.mutable);
 
-      assert.strictEqual(debugInfo.globals.length, 18);
-      assert.strictEqual(mutableGlobals.length, 15);
+      assert.strictEqual(debugInfo.globals.length, 25);
+      assert.strictEqual(mutableGlobals.length, 16);
     });
 
     it("accepts ArrayBuffer input", () => {

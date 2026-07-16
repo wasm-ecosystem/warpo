@@ -333,8 +333,8 @@ DW_TAG_compile_unit
                 DW_AT_location	(0x0000000b)
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestMapWithIterator/test")
-                scope start	TestMapWithIterator.ts:1
-                scope end	TestMapWithIterator.ts:10
+                scope start	0x0000000000001354	TestMapWithIterator.ts:2
+                scope end	0x00000000000013ca	TestMapWithIterator.ts:9
     DW_TAG_variable
                   DW_AT_name	("m")
                   DW_AT_type	("~lib/map/Map<i32,~lib/string/String>")
@@ -344,8 +344,8 @@ DW_TAG_compile_unit
                   DW_AT_type	("i32")
                   DW_AT_location	(0x00000001)
     DW_TAG_lexical_block
-                  scope start	TestMapWithIterator.ts:6
-                  scope end	TestMapWithIterator.ts:8
+                  scope start	0x000000000000137e	TestMapWithIterator.ts:6
+                  scope end	0x00000000000013b7	TestMapWithIterator.ts:7
       DW_TAG_variable
                     DW_AT_name	("entry")
                     DW_AT_type	("~lib/tuple/SmallTuple")

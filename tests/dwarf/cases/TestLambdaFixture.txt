@@ -106,24 +106,24 @@ DW_TAG_compile_unit
                   DW_AT_type	("~lib/object/Object")
     DW_TAG_member
                   DW_AT_name	("f1")
-                  DW_AT_type	("~lib/function/Function<()=>void>")
+                  DW_AT_type	("~lib/function/Function<()=>i32>")
                   DW_AT_data_member_location	(0x00000000)
     DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestLambda/C1#constructor")
-                  scope start	TestLambda.ts:3
-                  scope end	TestLambda.ts:5
+                  scope start	0x0000000000000213	TestLambda.ts:4
+                  scope end	0x0000000000000219	TestLambda.ts:4
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
                     DW_AT_type	("tests/dwarf/cases/TestLambda/C1")
                     DW_AT_location	(0x00000000)
       DW_TAG_formal_parameter
                     DW_AT_name	("fx")
-                    DW_AT_type	("~lib/function/Function<()=>void>")
+                    DW_AT_type	("~lib/function/Function<()=>i32>")
                     DW_AT_location	(0x00000001)
       NULL
     NULL
   DW_TAG_class_type
-                DW_AT_name	("~lib/function/Function<()=>void>")
+                DW_AT_name	("~lib/function/Function<()=>i32>")
                 DW_AT_signature	(0x00000004)
     DW_TAG_inheritance
                   DW_AT_type	("~lib/object/Object")
@@ -136,7 +136,7 @@ DW_TAG_compile_unit
                   DW_AT_type	("usize")
                   DW_AT_data_member_location	(0x00000004)
     DW_TAG_template_type_parameter
-                  DW_AT_type	("~lib/function/Function<()=>void>")
+                  DW_AT_type	("~lib/function/Function<()=>i32>")
     NULL
   DW_TAG_class_type
                 DW_AT_name	("~lib/object/Object")
@@ -214,7 +214,7 @@ DW_TAG_compile_unit
                 DW_AT_location	(0x0000000e)
   DW_TAG_variable
                 DW_AT_name	("tests/dwarf/cases/TestLambda/fn")
-                DW_AT_type	("~lib/function/Function<()=>void>")
+                DW_AT_type	("~lib/function/Function<()=>i32>")
                 DW_AT_location	(0x00000000)
   DW_TAG_variable
                 DW_AT_name	("~lib/native/ASC_LOW_MEMORY_LIMIT")
@@ -262,8 +262,8 @@ DW_TAG_compile_unit
                 DW_AT_location	(0x0000000c)
   DW_TAG_subprogram
                 DW_AT_name	("start:tests/dwarf/cases/TestLambda~anonymous|0")
-                scope start	TestLambda.ts:8
-                scope end	TestLambda.ts:8
+                scope start	0x0000000000000003	TestLambda.ts:9
+                scope end	0x0000000000000005	TestLambda.ts:9
     NULL
 
 .debug_str contents:

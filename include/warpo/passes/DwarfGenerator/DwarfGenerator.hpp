@@ -13,6 +13,7 @@
 #include "llvm/ADT/StringMap.h"
 #include "llvm/Support/MemoryBuffer.h"
 #include "warpo/common/VariableInfo.hpp"
+#include "warpo/passes/SourceMapResolver.hpp"
 
 namespace warpo::passes {
 
@@ -27,7 +28,8 @@ public:
   using GlobalIndexResolver = std::function<std::optional<uint32_t>(std::string_view)>;
 
   static llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>>
-  generateDebugSections(VariableInfo const &variableInfo, GlobalIndexResolver globalIndexResolver);
+  generateDebugSections(VariableInfo const &variableInfo, GlobalIndexResolver globalIndexResolver,
+                        SourceMapResolver const &sourceMapResolver);
   static std::string dumpDwarf(llvm::StringMap<std::unique_ptr<llvm::MemoryBuffer>> const &debugSections);
 
   struct AbbrevCodes final {
