@@ -20,12 +20,14 @@ const PROJECT_ROOT = resolve(TEST_DIR, "../../..");
 const WARPO_ASC_NAME = platform() === "win32" ? "warpo_asc.exe" : "warpo_asc";
 const WARPO_ASC = resolve(PROJECT_ROOT, "build/warpo", WARPO_ASC_NAME);
 const FIXTURE_SOURCE = resolve(TEST_DIR, "fixtures/functionDebugInfo.ts");
-const BUILD_DIR = resolve(TEST_DIR, "fixtures/build-functionDebugInfo");
+const BUILD_DIR = resolve(PROJECT_ROOT, "build/tools/dwarf/functionDebugInfo");
 const WASM_PATH = resolve(BUILD_DIR, "functionDebugInfo.wasm");
 
 const COMPUTE_FUNCTION_NAME = "tools/dwarf/tests/fixtures/functionDebugInfo/compute";
+const WITH_CLOSURE_FUNCTION_NAME = "tools/dwarf/tests/fixtures/functionDebugInfo/withClosure";
 const COMPUTE_LINE = 6;
 const INNER_LINE = 8;
+const CLOSURE_BODY_LINE = 18;
 
 describe("functionDebugInfo", () => {
   let resolver: DwarfFunctionInfoResolver;
@@ -97,6 +99,24 @@ describe("functionDebugInfo", () => {
     assert.deepEqual(
       scopeChain.map((scope) => scope.variables.map((variable) => variable.name)),
       [["inner"]]
+    );
+  });
+
+  it("finds a closure function by bytecode offset", () => {
+    const bytecodeOffset = findBytecodeOffsetFromSourceLine(CLOSURE_BODY_LINE);
+
+    const functionInfo = resolver.findFunctionByBytecodeOffset(bytecodeOffset);
+    assert.match(functionInfo?.name ?? "", /withClosure~anonymous/);
+    assert.equal(functionInfo?.parent?.kind, "function");
+    assert.equal(functionInfo.parent.name, WITH_CLOSURE_FUNCTION_NAME);
+
+    const variables = getVariablesInFunctionAtBytecodeOffset(functionInfo, bytecodeOffset);
+    assert.deepEqual(
+      variables.map((variable) => [variable.name, variable.typeName]),
+      [
+        ["delta", "i32"],
+        ["captured", "i32"],
+      ]
     );
   });
 });

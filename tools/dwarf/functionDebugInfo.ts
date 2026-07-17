@@ -18,6 +18,7 @@ export interface DwarfRangeInfo {
 
 export type DwarfScopeChild = DwarfScopeInfo | DwarfFunctionInfo;
 export type DwarfParentInfo = DwarfScopeInfo | DwarfFunctionInfo;
+type DwarfTreeNode = DwarfFunctionInfo | DwarfScopeInfo;
 
 export interface DwarfScopeInfo {
   kind: "scope";
@@ -68,7 +69,7 @@ export class DwarfFunctionInfoResolver {
   }
 
   findFunctionByBytecodeOffset(bytecodeOffset: number): DwarfFunctionInfo | undefined {
-    const node = findBelongingNode(this.functions, bytecodeOffset);
+    const node = findClosestNodeByBytecodeOffset(this.functions, bytecodeOffset);
     return node ? getScopeTrace(node)?.functionInfo : undefined;
   }
 }
@@ -272,16 +273,40 @@ function isDwarfFunctionInfo(child: DwarfScopeChild): child is DwarfFunctionInfo
   return child.kind === "function";
 }
 
-function findBelongingNode(
-  nodes: (DwarfFunctionInfo | DwarfScopeInfo)[],
-  bytecodeOffset: number
-): DwarfFunctionInfo | DwarfScopeInfo | undefined {
-  const node = findByBytecodeOffset(nodes, bytecodeOffset);
-  if (!node) {
-    return undefined;
+function findClosestNodeByBytecodeOffset(nodes: DwarfTreeNode[], bytecodeOffset: number): DwarfTreeNode | undefined {
+  let closest: DwarfTreeNode | undefined;
+
+  function visit(node: DwarfTreeNode): void {
+    if (containsBytecodeOffset(node, bytecodeOffset) && isCloserNode(node, closest)) {
+      closest = node;
+    }
+
+    for (const child of node.children) {
+      visit(child);
+    }
   }
 
-  return findBelongingNode(node.children, bytecodeOffset) ?? node;
+  for (const node of nodes) {
+    visit(node);
+  }
+
+  return closest;
+}
+
+function containsBytecodeOffset(node: DwarfTreeNode, bytecodeOffset: number): boolean {
+  return bytecodeOffset >= node.range.lowPc && bytecodeOffset <= node.range.highPc;
+}
+
+function isCloserNode(node: DwarfTreeNode, current: DwarfTreeNode | undefined): boolean {
+  if (!current) {
+    return true;
+  }
+
+  return getRangeSize(node) < getRangeSize(current);
+}
+
+function getRangeSize(node: DwarfTreeNode): number {
+  return node.range.highPc - node.range.lowPc;
 }
 
 function findClosestScopeByBytecodeOffset(

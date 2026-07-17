@@ -12,6 +12,15 @@ export function compute(input: i32): i32 {
   return outer;
 }
 
+export function withClosure(input: i32): i32 {
+  const base = input + 3;
+  const add = (delta: i32): i32 => {
+    const captured = base + delta;
+    return captured;
+  };
+  return add(4);
+}
+
 export function _start(): i32 {
-  return compute(1);
+  return compute(1) + withClosure(2);
 }
