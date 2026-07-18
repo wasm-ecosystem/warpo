@@ -13,6 +13,8 @@
     "build:parser:ts": "node assemblyscript/scripts/build-parser.js",
     "build:cpp": "cmake -S . -B build && cmake --build build --parallel 4",
     "build": "npm run build:ts && npm run build:cpp",
+    "build:cpp:release": "cmake -S . -B build -DWARPO_RELEASE=ON -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel 6",
+    "build:release": "npm run build:ts && npm run build:cpp:release",
     "test:as:ut": "node dist/warpo.js test",
     "test:cpp:ut": "cd build && ctest --output-on-failure",
     "test:as:snapshot": "cross-env-shell ./build/tests/frontend/warpo_frontend_test",

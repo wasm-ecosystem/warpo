@@ -3,6 +3,7 @@ unset(CMAKE_CXX_CLANG_TIDY)
 unset(ENABLE_CLANG_TIDY)
 
 set(BUILD_TESTS OFF CACHE BOOL "force disable binaryen's deps" FORCE)
+set(BUILD_TOOLS OFF CACHE BOOL "force disable binaryen tools" FORCE)
 set(ENABLE_WERROR OFF CACHE BOOL "disable -Werror for binaryen" FORCE)
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "build third-party dependencies as static libraries" FORCE)
 add_subdirectory(binaryen)
