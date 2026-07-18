@@ -50,7 +50,6 @@ private:
 
   std::vector<Mapping> mappings_;
   std::unordered_map<std::string, BytecodeRange> functionRanges_;
-  uint32_t codeSectionOffset_;
 };
 
 } // namespace warpo::passes

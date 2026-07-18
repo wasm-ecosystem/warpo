@@ -110,8 +110,8 @@ DW_TAG_compile_unit
                   DW_AT_data_member_location	(0x00000000)
     DW_TAG_subprogram
                   DW_AT_name	("tests/dwarf/cases/TestTuple/ClassWithTupleMember#constructor")
-                  scope start	0x0000000000000ec8	TestTuple.ts:13
-                  scope end	0x0000000000000eec	TestTuple.ts:13
+                  scope start	TestTuple.ts:13
+                  scope end	TestTuple.ts:13
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
                     DW_AT_type	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
@@ -308,8 +308,8 @@ DW_TAG_compile_unit
                 DW_AT_location	(0x0000000b)
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestTuple/foo")
-                scope start	0x0000000000000dcb	TestTuple.ts:2
-                scope end	0x0000000000000e40	TestTuple.ts:6
+                scope start	TestTuple.ts:2
+                scope end	TestTuple.ts:6
     DW_TAG_variable
                   DW_AT_name	("pair")
                   DW_AT_type	("~lib/tuple/SmallTuple")
@@ -329,8 +329,8 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestTuple/bar")
-                scope start	0x0000000000000f01	TestTuple.ts:18
-                scope end	0x0000000000000f31	TestTuple.ts:21
+                scope start	TestTuple.ts:18
+                scope end	TestTuple.ts:21
     DW_TAG_variable
                   DW_AT_name	("obj")
                   DW_AT_type	("tests/dwarf/cases/TestTuple/ClassWithTupleMember")
@@ -346,8 +346,8 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestTuple/baz")
-                scope start	0x0000000000001015	TestTuple.ts:25
-                scope end	0x0000000000001066	TestTuple.ts:28
+                scope start	TestTuple.ts:25
+                scope end	TestTuple.ts:28
     DW_TAG_variable
                   DW_AT_name	("pair")
                   DW_AT_type	("~lib/tuple/SmallTuple")
@@ -363,8 +363,8 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestTuple/nullableElement")
-                scope start	0x000000000000108a	TestTuple.ts:32
-                scope end	0x00000000000010b7	TestTuple.ts:33
+                scope start	TestTuple.ts:32
+                scope end	TestTuple.ts:33
     DW_TAG_variable
                   DW_AT_name	("pair")
                   DW_AT_type	("~lib/tuple/SmallTuple")
@@ -372,8 +372,8 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestTuple/functionElement")
-                scope start	0x00000000000010f2	TestTuple.ts:37
-                scope end	0x0000000000001148	TestTuple.ts:39
+                scope start	TestTuple.ts:37
+                scope end	TestTuple.ts:39
     DW_TAG_variable
                   DW_AT_name	("cb")
                   DW_AT_type	("~lib/function/Function<(i32)=>i32>")
@@ -385,8 +385,8 @@ DW_TAG_compile_unit
     NULL
   DW_TAG_subprogram
                 DW_AT_name	("tests/dwarf/cases/TestTuple/functionElement~anonymous|0")
-                scope start	0x00000000000010bb	TestTuple.ts:37
-                scope end	0x00000000000010bb	TestTuple.ts:37
+                scope start	TestTuple.ts:37
+                scope end	TestTuple.ts:37
     DW_TAG_formal_parameter
                   DW_AT_name	("x")
                   DW_AT_type	("i32")

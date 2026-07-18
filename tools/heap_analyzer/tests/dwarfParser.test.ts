@@ -15,7 +15,7 @@ import {
   buildOffsetMap,
   type DwarfDIE,
   type WasmDebugInfo,
-} from "../src/dwarfParser.js";
+} from "../../dwarf/dwarfParser.js";
 import { CLASS_PREFIX, describeIntegration } from "./testHelper.js";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

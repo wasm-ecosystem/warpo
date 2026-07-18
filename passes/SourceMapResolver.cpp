@@ -50,8 +50,7 @@ uint32_t SourceMapResolver::getCodeSectionOffset(std::vector<uint8_t> const &was
 }
 
 SourceMapResolver::SourceMapResolver(std::string const &sourceMap, uint32_t const wasmByteSize,
-                                     uint32_t const codeSectionOffset, wasm::BinaryLocations const &binaryLocations)
-    : codeSectionOffset_(codeSectionOffset) {
+                                     uint32_t const codeSectionOffset, wasm::BinaryLocations const &binaryLocations) {
   if (!sourceMap.empty()) {
     std::vector<char> sourceMapBuffer{sourceMap.begin(), sourceMap.end()};
     sourceMapBuffer.push_back('\0');
@@ -83,23 +82,23 @@ SourceMapResolver::SourceMapResolver(std::string const &sourceMap, uint32_t cons
   }
   for (auto const &[func, locations] : binaryLocations.functions) {
     std::string const functionName = func->name.toString();
-    functionRanges_.emplace(functionName, BytecodeRange{.lowPc = locations.declarations, .highPc = locations.end});
+    functionRanges_.emplace(functionName, BytecodeRange{.lowPc = codeSectionOffset + locations.declarations,
+                                                        .highPc = codeSectionOffset + locations.end});
   }
 }
 
 std::optional<SourceMapResolver::SourceLocation>
 SourceMapResolver::resolveGeneratedOffset(uint32_t const generatedOffset, ResolveBias const bias) const {
-  uint32_t const sourceMapOffset = codeSectionOffset_ + generatedOffset;
   std::optional<SourceLocation> result;
   if (bias == ResolveBias::Previous) {
     for (Mapping const &mapping : mappings_) {
-      if (mapping.generatedOffset > sourceMapOffset)
+      if (mapping.generatedOffset > generatedOffset)
         break;
       result = mapping.sourceLocation;
     }
   } else {
     for (Mapping const &mapping : mappings_) {
-      if (mapping.generatedOffset < sourceMapOffset || !mapping.sourceLocation.has_value())
+      if (mapping.generatedOffset < generatedOffset || !mapping.sourceLocation.has_value())
         continue;
       result = mapping.sourceLocation;
       break;
@@ -117,13 +116,11 @@ SourceMapResolver::resolveRange(std::string_view const sourcePath, uint32_t cons
   auto const it = functionRanges_.find(std::string{functionName});
   if (it == functionRanges_.end())
     return std::nullopt;
-  uint32_t const lowSourceMapOffset = codeSectionOffset_ + it->second.lowPc;
-  uint32_t const highSourceMapOffset = codeSectionOffset_ + it->second.highPc;
 
   for (Mapping const &mapping : mappings_) {
-    if (mapping.generatedOffset < lowSourceMapOffset)
+    if (mapping.generatedOffset < it->second.lowPc)
       continue;
-    if (mapping.generatedOffset > highSourceMapOffset)
+    if (mapping.generatedOffset > it->second.highPc)
       break;
     if (!mapping.sourceLocation.has_value())
       continue;
@@ -132,9 +129,8 @@ SourceMapResolver::resolveRange(std::string_view const sourcePath, uint32_t cons
       continue;
     if (location.line < startLine || location.line > endLine)
       continue;
-    uint32_t const relativeOffset = mapping.generatedOffset - codeSectionOffset_;
-    lowPc = lowPc.has_value() ? std::min(*lowPc, relativeOffset) : relativeOffset;
-    highPc = highPc.has_value() ? std::max(*highPc, relativeOffset) : relativeOffset;
+    lowPc = lowPc.has_value() ? std::min(*lowPc, mapping.generatedOffset) : mapping.generatedOffset;
+    highPc = highPc.has_value() ? std::max(*highPc, mapping.generatedOffset) : mapping.generatedOffset;
   }
   if (!lowPc.has_value() || !highPc.has_value())
     return std::nullopt;
