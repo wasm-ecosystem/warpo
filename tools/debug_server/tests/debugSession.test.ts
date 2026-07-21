@@ -128,4 +128,43 @@ void describe("WarpoDebugSession", () => {
     assert.equal(loadedSourceBody?.source?.name, path.basename(TEST_MODULE_OUTPUT));
     assert.equal(stoppedBody?.reason, "breakpoint");
   });
+
+  void it("should expose local variables after hitting a breakpoint", { timeout: 5000 }, async () => {
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: TEST_MODULE_SOURCE },
+      breakpoints: [{ line: 4 }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: TEST_MODULE_OUTPUT,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    const stoppedPromise = dc.waitForEvent("stopped");
+    await dc.launchRequest(launchArgs);
+    await stoppedPromise;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = stackTraceResponse.body.stackFrames[0];
+    assert.notStrictEqual(frame, undefined);
+
+    const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
+    const localsScope = scopesResponse.body.scopes.find((scope) => scope.name === "Locals");
+    assert.notStrictEqual(localsScope, undefined);
+
+    const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
+    const variable = variablesResponse.body.variables.find((candidate) => candidate.name === "a");
+    assert.notStrictEqual(variable, undefined);
+    assert.equal(variable.type, "i32");
+    assert.equal(variable.value, "1");
+  });
 });

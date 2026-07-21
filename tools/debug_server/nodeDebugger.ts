@@ -6,7 +6,14 @@ import { appendFileSync, writeFileSync } from "node:fs";
 import * as path from "node:path";
 import * as net from "node:net";
 import { fileURLToPath } from "node:url";
-import type { DebugPauseInfo, Debugger, DebuggerCommandCallbacks, WasmLaunchConfig } from "./debugger.js";
+import type {
+  DebugPauseInfo,
+  Debugger,
+  DebuggerCommandCallbacks,
+  DebugPausedWasmFrame,
+  DebugRuntimeVariable,
+  WasmLaunchConfig,
+} from "./debugger.js";
 import { DebuggerWasmModule } from "./debuggerWasmModule.js";
 
 const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
@@ -60,6 +67,43 @@ interface CDPResponse {
   error?: { message?: string };
 }
 
+interface CDPCommandCallbacks {
+  onSuccess?: (result?: Record<string, unknown>) => void;
+  onError?: (error: Error) => void;
+}
+
+interface CDPLocation {
+  scriptId: string;
+  lineNumber: number;
+  columnNumber: number;
+}
+
+interface CDPRemoteObject {
+  type?: string;
+  subtype?: string;
+  value?: unknown;
+  unserializableValue?: string;
+  description?: string;
+  objectId?: string;
+}
+
+interface CDPScope {
+  type: string;
+  object: CDPRemoteObject;
+}
+
+interface CDPCallFrame {
+  callFrameId: string;
+  functionName: string;
+  location: CDPLocation;
+  scopeChain: CDPScope[];
+}
+
+interface CDPPropertyDescriptor {
+  name: string;
+  value?: CDPRemoteObject;
+}
+
 export class NodeDebugger implements Debugger {
   readonly name = "node";
   onModuleLoad: ((module: DebuggerWasmModule) => void | Promise<void>) | undefined;
@@ -68,9 +112,11 @@ export class NodeDebugger implements Debugger {
   private child: ChildProcess | undefined;
   private ws: WebSocket | undefined;
   private cdpId = 0;
-  private readonly pendingCommandCallbacks = new Map<number, DebuggerCommandCallbacks>();
+  private readonly pendingCommandCallbacks = new Map<number, CDPCommandCallbacks>();
   private paused = false;
   private wasmFilePath: string | undefined;
+  private wasmScriptId: string | undefined;
+  private pausedCallFrame: CDPCallFrame | undefined;
 
   async launch(config: WasmLaunchConfig): Promise<void> {
     this.wasmFilePath = config.wasmFilePath;
@@ -96,6 +142,8 @@ export class NodeDebugger implements Debugger {
   dispose(): void {
     this.paused = false;
     this.wasmFilePath = undefined;
+    this.wasmScriptId = undefined;
+    this.pausedCallFrame = undefined;
     this.ws?.close();
     this.child?.kill();
   }
@@ -111,31 +159,49 @@ export class NodeDebugger implements Debugger {
   async resume(): Promise<void> {
     await this.waitForCommand("Debugger.resume");
     this.paused = false;
+    this.pausedCallFrame = undefined;
   }
 
   finishModuleLoad(): void {
     this.sendCommand("Runtime.runIfWaitingForDebugger");
   }
 
-  setWasmBreakpoint(module: DebuggerWasmModule, bytecodeOffset: number, callbacks?: DebuggerCommandCallbacks): void {
+  setWasmBreakpoint(
+    module: DebuggerWasmModule,
+    wasmBytecodeOffset: number,
+    callbacks?: DebuggerCommandCallbacks
+  ): void {
     this.sendCommand(
       "Debugger.setBreakpointByUrl",
       {
         url: module.url,
         lineNumber: 0,
-        columnNumber: bytecodeOffset,
+        columnNumber: wasmBytecodeOffset,
       },
       {
         onSuccess: () => {
-          trace(`setWasmBreakpoint success offset=${bytecodeOffset}`);
+          trace(`setWasmBreakpoint success wasmBytecodeOffset=${wasmBytecodeOffset}`);
           callbacks?.onSuccess?.();
         },
         onError: (error) => {
-          trace(`setWasmBreakpoint error offset=${bytecodeOffset} message=${error.message}`);
+          trace(`setWasmBreakpoint error wasmBytecodeOffset=${wasmBytecodeOffset} message=${error.message}`);
           callbacks?.onError?.(error);
         },
       }
     );
+  }
+
+  async maybeGetPausedWasmFrame(): Promise<DebugPausedWasmFrame | undefined> {
+    const callFrame = this.pausedCallFrame;
+    if (!callFrame) {
+      return undefined;
+    }
+
+    const variables = await this.getLocalScopeVariables(callFrame);
+    return {
+      functionName: callFrame.functionName,
+      variables,
+    };
   }
 
   private async fetchWsUrl(port: number): Promise<string> {
@@ -158,7 +224,7 @@ export class NodeDebugger implements Debugger {
 
     throw new Error(`timed out waiting for inspector endpoint on port ${port}`);
   }
-  private sendCommand(method: string, params?: Record<string, unknown>, callbacks?: DebuggerCommandCallbacks): void {
+  private sendCommand(method: string, params?: Record<string, unknown>, callbacks?: CDPCommandCallbacks): void {
     if (!this.ws) {
       throw new Error("debugger is not connected");
     }
@@ -175,6 +241,19 @@ export class NodeDebugger implements Debugger {
       this.sendCommand(method, params, {
         onSuccess: () => {
           resolve();
+        },
+        onError: (error) => {
+          reject(error);
+        },
+      });
+    });
+  }
+
+  private waitForCommandResult(method: string, params?: Record<string, unknown>): Promise<Record<string, unknown>> {
+    return new Promise((resolve, reject) => {
+      this.sendCommand(method, params, {
+        onSuccess: (result) => {
+          resolve(result ?? {});
         },
         onError: (error) => {
           reject(error);
@@ -221,8 +300,11 @@ export class NodeDebugger implements Debugger {
         if (msg.method === "Debugger.paused") {
           const reason = this.getPauseReason(msg.params);
           this.paused = true;
+          this.pausedCallFrame = this.getPausedWasmCallFrame(msg.params);
           trace(`Debugger.paused reason=${reason}`);
-          void Promise.resolve(this.onPause?.({ reason })).catch((error: unknown) => {
+          void Promise.resolve(
+            this.onPause?.({ reason, wasmBytecodeOffset: this.pausedCallFrame?.location.columnNumber })
+          ).catch((error: unknown) => {
             trace(`pause handler failed: ${error instanceof Error ? error.message : "unknown error"}`);
           });
           return;
@@ -233,6 +315,7 @@ export class NodeDebugger implements Debugger {
           const url = typeof params?.url === "string" ? params.url : "";
           trace(`Debugger.scriptParsed language=${lang} url=${url}`);
           if (params && lang === "WebAssembly" && typeof params.scriptId === "string") {
+            this.wasmScriptId = params.scriptId;
             trace(`wasm module detected scriptId=${params.scriptId}`);
             void this.handleModuleLoad({
               scriptId: params.scriptId,
@@ -260,7 +343,7 @@ export class NodeDebugger implements Debugger {
       return;
     }
 
-    callbacks.onSuccess?.();
+    callbacks.onSuccess?.(msg.result);
   }
 
   private getPauseReason(params?: Record<string, unknown>): string {
@@ -275,6 +358,58 @@ export class NodeDebugger implements Debugger {
     return "unknown";
   }
 
+  private getPausedWasmCallFrame(params?: Record<string, unknown>): CDPCallFrame | undefined {
+    if (!Array.isArray(params?.callFrames)) {
+      return undefined;
+    }
+
+    return params.callFrames[0] as CDPCallFrame | undefined;
+  }
+
+  private async getLocalScopeVariables(callFrame: CDPCallFrame): Promise<DebugRuntimeVariable[]> {
+    const localScope = callFrame.scopeChain.find((scope) => scope.type === "local") ?? callFrame.scopeChain[0];
+    const objectId = localScope?.object.objectId;
+    if (!objectId) {
+      return [];
+    }
+
+    const result = await this.waitForCommandResult("Runtime.getProperties", {
+      objectId,
+      ownProperties: true,
+    });
+    const properties = Array.isArray(result.result) ? result.result.filter(isCDPPropertyDescriptor) : [];
+    const variables: DebugRuntimeVariable[] = [];
+    for (const property of properties) {
+      if (!property.value) {
+        continue;
+      }
+
+      const localIndex = variables.length;
+
+      variables.push({
+        name: `local${localIndex}`,
+        value: await this.readRemoteObjectValue(property.value),
+        type: property.value.description ?? property.value.type,
+        localIndex,
+      });
+    }
+    return variables;
+  }
+
+  private async readRemoteObjectValue(value: CDPRemoteObject): Promise<string> {
+    if (value.subtype !== "wasmvalue" || !value.objectId) {
+      return formatRemoteObject(value);
+    }
+
+    const result = await this.waitForCommandResult("Runtime.getProperties", {
+      objectId: value.objectId,
+      ownProperties: true,
+    });
+    const innerProperties = Array.isArray(result.result) ? result.result.filter(isCDPPropertyDescriptor) : [];
+    const valueProperty = innerProperties.find((property) => property.name === "value" || property.name === "0");
+    return valueProperty?.value ? formatRemoteObject(valueProperty.value) : formatRemoteObject(value);
+  }
+
   private async handleModuleLoad(runtimeInfo: { scriptId: string; url: string }): Promise<void> {
     if (!this.wasmFilePath) {
       throw new Error("wasm file path is not available");
@@ -283,4 +418,41 @@ export class NodeDebugger implements Debugger {
     const module = await DebuggerWasmModule.load(this.wasmFilePath, runtimeInfo);
     void this.onModuleLoad?.(module);
   }
+}
+
+function isCDPPropertyDescriptor(value: unknown): value is CDPPropertyDescriptor {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  return typeof (value as Partial<CDPPropertyDescriptor>).name === "string";
+}
+
+function formatRemoteObject(value: CDPRemoteObject): string {
+  if (value.unserializableValue !== undefined) {
+    return value.unserializableValue;
+  }
+
+  const rawValue = value.value;
+  if (rawValue !== undefined) {
+    if (rawValue === null) {
+      return "null";
+    }
+
+    if (typeof rawValue === "object") {
+      return value.description ?? value.type ?? "<unavailable>";
+    }
+
+    if (typeof rawValue === "string") {
+      return rawValue;
+    }
+
+    if (typeof rawValue === "number" || typeof rawValue === "boolean" || typeof rawValue === "bigint") {
+      return rawValue.toString();
+    }
+
+    return value.description ?? value.type ?? "<unavailable>";
+  }
+
+  return value.description ?? value.type ?? "<unavailable>";
 }

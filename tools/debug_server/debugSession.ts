@@ -6,15 +6,18 @@ import {
   InitializedEvent,
   Thread,
   Breakpoint,
+  Scope,
+  StackFrame,
   LoadedSourceEvent,
   StoppedEvent,
   ContinuedEvent,
   logger,
 } from "@vscode/debugadapter";
 import type { DebugProtocol } from "@vscode/debugprotocol";
+import assert from "node:assert/strict";
 import * as path from "node:path";
 import type { DebuggerBreakpointInfo, DebuggerWasmModule } from "./debuggerWasmModule.js";
-import type { DebugPauseInfo, Debugger } from "./debugger.js";
+import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
 import { NodeDebugger } from "./nodeDebugger.js";
 
 interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
@@ -30,8 +33,11 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private breakpointId = 0;
   private requestedBreakpointsBySource = new Map<string, DebuggerBreakpointInfo[]>();
   private pendingBreakpointUpdatesBySource = new Map<string, DebuggerBreakpointInfo[]>();
+  private variableHandles = new Map<number, DebugProtocol.Variable[]>();
+  private nextVariablesReference = 1;
   private loadedModule: DebuggerWasmModule | undefined;
   private runtime: Debugger | undefined;
+  private stoppedWasmBytecodeOffset: number | undefined;
 
   private log(msg: string): void {
     logger.log(msg);
@@ -52,6 +58,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
   }
 
   private handleRuntimePause(runtime: Debugger, info: DebugPauseInfo): void {
+    this.stoppedWasmBytecodeOffset = info.wasmBytecodeOffset;
     this.applyPendingBreakpointUpdates(runtime, () => {
       if (info.reason === "other") {
         void runtime.resume().catch((error: unknown) => {
@@ -74,6 +81,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response.body.supportsSetVariable = false;
     response.body.supportsBreakpointLocationsRequest = false;
     response.body.supportsLoadedSourcesRequest = true;
+    response.body.supportsEvaluateForHovers = false;
 
     this.sendResponse(response);
     this.sendEvent(new InitializedEvent());
@@ -195,6 +203,24 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.sendResponse(response);
   }
 
+  protected stackTraceRequest(
+    response: DebugProtocol.StackTraceResponse,
+    _args: DebugProtocol.StackTraceArguments
+  ): void {
+    void this.doStackTraceRequest(response);
+  }
+
+  protected scopesRequest(response: DebugProtocol.ScopesResponse, _args: DebugProtocol.ScopesArguments): void {
+    void this.doScopesRequest(response);
+  }
+
+  protected variablesRequest(response: DebugProtocol.VariablesResponse, args: DebugProtocol.VariablesArguments): void {
+    response.body = {
+      variables: this.variableHandles.get(args.variablesReference) ?? [],
+    };
+    this.sendResponse(response);
+  }
+
   protected continueRequest(response: DebugProtocol.ContinueResponse, _args: DebugProtocol.ContinueArguments): void {
     void this.doContinueRequest(response);
   }
@@ -205,10 +231,79 @@ export class WarpoDebugSession extends LoggingDebugSession {
   ): void {
     this.disposeLoadedModule();
     this.pendingBreakpointUpdatesBySource.clear();
+    this.stoppedWasmBytecodeOffset = undefined;
     this.runtime?.dispose();
     this.runtime = undefined;
     this.log("Debug session ended.");
     this.sendResponse(response);
+  }
+
+  private async doStackTraceRequest(response: DebugProtocol.StackTraceResponse): Promise<void> {
+    const frame = await this.runtime?.maybeGetPausedWasmFrame();
+    const frameName = frame?.functionName || "wasm";
+    response.body = {
+      stackFrames: [new StackFrame(1, frameName)],
+      totalFrames: 1,
+    };
+    this.sendResponse(response);
+  }
+
+  private async doScopesRequest(response: DebugProtocol.ScopesResponse): Promise<void> {
+    const variables = await this.resolveLocalVariables();
+    const variablesReference = this.createVariableHandle(variables);
+    response.body = {
+      scopes: [new Scope("Locals", variablesReference, false)],
+    };
+    this.sendResponse(response);
+  }
+
+  private createVariableHandle(variables: DebugProtocol.Variable[]): number {
+    const variablesReference = this.nextVariablesReference++;
+    this.variableHandles.set(variablesReference, variables);
+    return variablesReference;
+  }
+
+  private async resolveLocalVariables(): Promise<DebugProtocol.Variable[]> {
+    const runtimeFrame = await this.runtime?.maybeGetPausedWasmFrame();
+    const module = this.loadedModule;
+    if (!runtimeFrame || !module) {
+      return [];
+    }
+
+    const wasmBytecodeOffset = this.stoppedWasmBytecodeOffset;
+    if (wasmBytecodeOffset === undefined) {
+      return runtimeFrame.variables.map((variable) => this.toDebugProtocolVariable(variable));
+    }
+
+    const sourceVariables = module.getVariablesAtBytecodeOffset(wasmBytecodeOffset);
+    if (!sourceVariables) {
+      return runtimeFrame.variables.map((variable) => this.toDebugProtocolVariable(variable));
+    }
+
+    const runtimeVariablesByIndex = new Map<number, DebugRuntimeVariable>();
+    for (const variable of runtimeFrame.variables) {
+      runtimeVariablesByIndex.set(variable.localIndex, variable);
+    }
+
+    return sourceVariables.map((variable) => {
+      const runtimeVariable = runtimeVariablesByIndex.get(variable.localIndex);
+      assert(runtimeVariable !== undefined);
+      return {
+        name: variable.name,
+        value: runtimeVariable.value,
+        type: variable.typeName,
+        variablesReference: 0,
+      };
+    });
+  }
+
+  private toDebugProtocolVariable(variable: DebugRuntimeVariable): DebugProtocol.Variable {
+    return {
+      name: variable.name,
+      value: variable.value,
+      type: variable.type,
+      variablesReference: 0,
+    };
   }
 
   private async doContinueRequest(response: DebugProtocol.ContinueResponse): Promise<void> {
@@ -221,6 +316,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
       await this.runtime.resume();
       response.body = { allThreadsContinued: true };
       this.sendResponse(response);
+      this.stoppedWasmBytecodeOffset = undefined;
       this.sendEvent(new ContinuedEvent(WarpoDebugSession.threadId, true));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -283,17 +379,14 @@ export class WarpoDebugSession extends LoggingDebugSession {
         this.pendingBreakpointUpdatesBySource.delete(sourcePath);
       }
 
-      const bytecodeOffset = module.findBytecodeOffset(breakpoint.source, breakpoint.line);
-      if (bytecodeOffset === undefined) {
+      const breakpointLocation = module.resolveBreakpointLocation(breakpoint);
+      if (!breakpointLocation) {
         this.log(`No source-map match for breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line}`);
         this.applyPendingBreakpointUpdates(runtime, onComplete);
         return;
       }
 
-      this.log(
-        `Resolved breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line} -> bytecode offset ${bytecodeOffset}`
-      );
-      runtime.setWasmBreakpoint(module, bytecodeOffset, {
+      runtime.setWasmBreakpoint(module, breakpointLocation.wasmBytecodeOffset, {
         onSuccess: () => {
           this.applyPendingBreakpointUpdates(runtime, onComplete);
         },
