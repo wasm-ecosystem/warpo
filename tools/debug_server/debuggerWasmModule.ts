@@ -4,14 +4,13 @@
 import { readFile } from "node:fs/promises";
 import * as path from "node:path";
 import {
-  SourceMapConsumer,
-  type BasicSourceMapConsumer,
-  type IndexedSourceMapConsumer,
-  type RawIndexMap,
-  type RawSourceMap,
-} from "source-map";
+  DwarfFunctionInfoResolver,
+  getVariablesInFunctionAtBytecodeOffset,
+  type DwarfLocalVariableInfo,
+} from "../dwarf/functionDebugInfo.js";
+import { SourceMapConsumer, type BasicSourceMapConsumer, type RawSourceMap } from "source-map";
 
-export type ParsedSourceMap = BasicSourceMapConsumer | IndexedSourceMapConsumer;
+export type ParsedSourceMap = BasicSourceMapConsumer;
 
 export interface DebuggerBreakpointInfo {
   id: number;
@@ -20,16 +19,15 @@ export interface DebuggerBreakpointInfo {
   source: string;
 }
 
-type RawParsedSourceMap = RawSourceMap | RawIndexMap;
-
-interface LineMappedPosition {
-  source: string;
-  line: number;
-  column?: number;
+export interface DebuggerSourceVariableInfo {
+  name: string;
+  typeName: string;
+  localIndex: number;
 }
 
-interface LineLookupSourceMap {
-  allGeneratedPositionsFor(originalPosition: LineMappedPosition): Array<{ line: number | null; column: number | null }>;
+export interface DebuggerBreakpointLocation {
+  wasmBytecodeOffset: number;
+  sourceLine: number;
 }
 
 export class DebuggerWasmModule {
@@ -41,10 +39,12 @@ export class DebuggerWasmModule {
     readonly wasmFilePath: string,
     readonly sourceMapFilePath: string,
     readonly bytecode: Uint8Array,
-    readonly sourceMap: ParsedSourceMap,
-    sourcesByPath: ReadonlyMap<string, string>
+    private readonly sourceMap: ParsedSourceMap,
+    private readonly functionInfoResolver: DwarfFunctionInfoResolver
   ) {
-    this.sourcesByPath = sourcesByPath;
+    this.sourcesByPath = new Map(
+      sourceMap.sources.map((source) => [DebuggerWasmModule.resolveSourcePath(sourceMapFilePath, source), source])
+    );
   }
 
   static async load(
@@ -56,9 +56,6 @@ export class DebuggerWasmModule {
       readFile(wasmFilePath),
       DebuggerWasmModule.loadSourceMap(sourceMapFilePath),
     ]);
-    const sourcesByPath = new Map(
-      sourceMap.sources.map((source) => [DebuggerWasmModule.resolveSourcePath(sourceMapFilePath, source), source])
-    );
 
     return new DebuggerWasmModule(
       runtimeInfo?.scriptId ?? "",
@@ -67,7 +64,7 @@ export class DebuggerWasmModule {
       sourceMapFilePath,
       bytecode,
       sourceMap,
-      sourcesByPath
+      DwarfFunctionInfoResolver.fromWasm(bytecode)
     );
   }
 
@@ -75,26 +72,62 @@ export class DebuggerWasmModule {
     this.sourceMap.destroy();
   }
 
-  findBytecodeOffset(sourcePath: string, line: number): number | undefined {
+  resolveBreakpointLocation(breakpoint: DebuggerBreakpointInfo): DebuggerBreakpointLocation | undefined {
+    const { source: sourcePath, line } = breakpoint;
     const source = this.findSource(sourcePath);
     if (!source) {
       return undefined;
     }
 
-    const generatedPositions = (this.sourceMap as LineLookupSourceMap).allGeneratedPositionsFor({ source, line });
+    const generatedPositions = this.sourceMap.allGeneratedPositionsFor({ source, line, column: 0 });
 
-    let firstOffset: number | undefined;
+    let firstColumn: number | undefined;
     for (const generatedPosition of generatedPositions) {
       if (generatedPosition.line === null || generatedPosition.column === null) {
         continue;
       }
 
-      if (firstOffset === undefined || generatedPosition.column < firstOffset) {
-        firstOffset = generatedPosition.column;
+      if (firstColumn === undefined || generatedPosition.column < firstColumn) {
+        firstColumn = generatedPosition.column;
       }
     }
 
-    return firstOffset;
+    if (firstColumn === undefined) {
+      return undefined;
+    }
+
+    return {
+      wasmBytecodeOffset: firstColumn,
+      sourceLine: line,
+    };
+  }
+
+  findBytecodeOffset(sourcePath: string, line: number): number | undefined {
+    return this.resolveBreakpointLocation({
+      id: 0,
+      line,
+      verified: true,
+      source: sourcePath,
+    })?.wasmBytecodeOffset;
+  }
+
+  getVariablesAtBytecodeOffset(wasmBytecodeOffset: number): DebuggerSourceVariableInfo[] | undefined {
+    const functionInfo = this.functionInfoResolver.findFunctionByBytecodeOffset(wasmBytecodeOffset);
+    if (!functionInfo) {
+      return undefined;
+    }
+
+    return getVariablesInFunctionAtBytecodeOffset(functionInfo, wasmBytecodeOffset).map((variable) =>
+      DebuggerWasmModule.toSourceVariableInfo(variable)
+    );
+  }
+
+  resolveSourceLine(wasmBytecodeOffset: number): number | undefined {
+    const position = this.sourceMap.originalPositionFor({
+      line: 1,
+      column: wasmBytecodeOffset,
+    });
+    return position.line ?? undefined;
   }
 
   hasSource(sourcePath: string): boolean {
@@ -117,11 +150,19 @@ export class DebuggerWasmModule {
   }
 
   private static async loadSourceMap(sourceMapFilePath: string): Promise<ParsedSourceMap> {
-    const rawSourceMap = JSON.parse(await readFile(sourceMapFilePath, "utf8")) as RawParsedSourceMap;
+    const rawSourceMap = JSON.parse(await readFile(sourceMapFilePath, "utf8")) as RawSourceMap;
     return new SourceMapConsumer(rawSourceMap);
   }
 
   private static resolveSourcePath(sourceMapFilePath: string, sourcePath: string): string {
     return path.resolve(path.dirname(sourceMapFilePath), sourcePath).replaceAll("\\", "/");
+  }
+
+  private static toSourceVariableInfo(variable: DwarfLocalVariableInfo): DebuggerSourceVariableInfo {
+    return {
+      name: variable.name,
+      typeName: variable.typeName,
+      localIndex: variable.localIndex,
+    };
   }
 }

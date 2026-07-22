@@ -190,6 +190,7 @@ warpo
 Wasi
 wasmparser
 wasmtime
+wasmvalue
 Wcast
 Wconversion
 Wdeprecated

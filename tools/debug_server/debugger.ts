@@ -16,6 +16,19 @@ export interface WasmLaunchConfig {
 
 export interface DebugPauseInfo {
   reason: string;
+  wasmBytecodeOffset?: number;
+}
+
+export interface DebugRuntimeVariable {
+  name: string;
+  value: string;
+  type?: string;
+  localIndex: number;
+}
+
+export interface DebugPausedWasmFrame {
+  functionName: string;
+  variables: DebugRuntimeVariable[];
 }
 
 export interface Debugger {
@@ -27,7 +40,8 @@ export interface Debugger {
   pause(): void;
   resume(): Promise<void>;
   finishModuleLoad(): void;
-  setWasmBreakpoint(module: DebuggerWasmModule, bytecodeOffset: number, callbacks?: DebuggerCommandCallbacks): void;
+  maybeGetPausedWasmFrame(): Promise<DebugPausedWasmFrame | undefined>;
+  setWasmBreakpoint(module: DebuggerWasmModule, wasmBytecodeOffset: number, callbacks?: DebuggerCommandCallbacks): void;
 
   onModuleLoad: ((module: DebuggerWasmModule) => void | Promise<void>) | undefined;
   onPause: ((info: DebugPauseInfo) => void | Promise<void>) | undefined;
