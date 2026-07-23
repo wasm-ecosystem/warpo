@@ -21,12 +21,37 @@ if (!fs.existsSync(resolvedPath)) {
 
 const args = rawArgs.map(Number);
 
+function formatError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "string") {
+    return error;
+  }
+
+  if (typeof error === "number" || typeof error === "boolean" || typeof error === "bigint") {
+    return error.toString();
+  }
+
+  return "unknown error";
+}
+
+async function instantiateWasm(filePath: string): Promise<WebAssembly.Instance> {
+  try {
+    const buffer = fs.readFileSync(filePath);
+    const module = await WebAssembly.compile(buffer);
+    return await WebAssembly.instantiate(module, {});
+  } catch (error) {
+    console.error(`Failed to load wasm module "${filePath}": ${formatError(error)}`);
+    process.exit(1);
+  }
+}
+
 async function main() {
   inspector.waitForDebugger();
 
-  const buffer = fs.readFileSync(resolvedPath);
-  const module = await WebAssembly.compile(buffer);
-  const instance = await WebAssembly.instantiate(module, {});
+  const instance = await instantiateWasm(resolvedPath);
 
   inspector.waitForDebugger();
 

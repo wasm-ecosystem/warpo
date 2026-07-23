@@ -15,6 +15,8 @@ const DAP_SERVER = path.resolve(DIRNAME, "..", "..", "..", "dist", "debug_server
 const TEST_MODULE_DIR = path.resolve(DIRNAME, "testModule");
 const TEST_MODULE_SOURCE = path.join(TEST_MODULE_DIR, "debugger_basic.ts");
 const TEST_MODULE_OUTPUT = path.join(TEST_MODULE_DIR, "build/debugger_basic.wasm");
+const TEST_MODULE_BREAKPOINT_LINE = 41;
+const TEST_MODULE_SECOND_BREAKPOINT_LINE = 43;
 
 const waitForExit = (child: DapServerHandle["child"], timeoutMs: number): Promise<boolean> =>
   new Promise((resolve) => {
@@ -39,7 +41,7 @@ const waitForExit = (child: DapServerHandle["child"], timeoutMs: number): Promis
 before(async () => {
   let buildOutput = "";
   const exitCode = await build({
-    argv: [TEST_MODULE_SOURCE, "-o", TEST_MODULE_OUTPUT, "--debug"],
+    argv: [TEST_MODULE_SOURCE, "-o", TEST_MODULE_OUTPUT, "--debug", "--use", "abort="],
     cwd: TEST_MODULE_DIR,
     onStdout: (chunk: string) => {
       buildOutput += chunk;
@@ -95,11 +97,11 @@ void describe("WarpoDebugSession", () => {
 
     const breakpointResponse = await dc.setBreakpointsRequest({
       source: { path: TEST_MODULE_SOURCE },
-      breakpoints: [{ line: 3 }],
+      breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
     });
     assert.equal(breakpointResponse.body.breakpoints.length, 1);
     assert.equal(breakpointResponse.body.breakpoints[0].verified, true);
-    assert.equal(breakpointResponse.body.breakpoints[0].line, 3);
+    assert.equal(breakpointResponse.body.breakpoints[0].line, TEST_MODULE_BREAKPOINT_LINE);
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
       program: string;
@@ -134,7 +136,7 @@ void describe("WarpoDebugSession", () => {
 
     await dc.setBreakpointsRequest({
       source: { path: TEST_MODULE_SOURCE },
-      breakpoints: [{ line: 4 }],
+      breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -166,5 +168,149 @@ void describe("WarpoDebugSession", () => {
     assert.notStrictEqual(variable, undefined);
     assert.equal(variable.type, "i32");
     assert.equal(variable.value, "1");
+  });
+
+  void it("should expand class local variables using DWARF layout", { timeout: 5000 }, async () => {
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: TEST_MODULE_SOURCE },
+      breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: TEST_MODULE_OUTPUT,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    const stoppedPromise = dc.waitForEvent("stopped");
+    await dc.launchRequest(launchArgs);
+    await stoppedPromise;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = stackTraceResponse.body.stackFrames[0];
+    assert.notStrictEqual(frame, undefined);
+
+    const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
+    const localsScope = scopesResponse.body.scopes.find((scope) => scope.name === "Locals");
+    assert.notStrictEqual(localsScope, undefined);
+
+    const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
+    const holder = variablesResponse.body.variables.find((candidate) => candidate.name === "holder");
+    assert.notStrictEqual(holder, undefined);
+    assert.ok(holder.variablesReference > 0);
+    assert.ok(Number(holder.value) > 0);
+
+    const holderFieldsResponse = await dc.variablesRequest({ variablesReference: holder.variablesReference });
+    const count = holderFieldsResponse.body.variables.find((candidate) => candidate.name === "count");
+    assert.notStrictEqual(count, undefined);
+    assert.equal(count.type, "i32");
+    assert.equal(count.value, "7");
+
+    const child = holderFieldsResponse.body.variables.find((candidate) => candidate.name === "child");
+    assert.notStrictEqual(child, undefined);
+    assert.ok(child.type?.endsWith("Child"));
+    assert.ok(child.variablesReference > 0);
+    assert.ok(Number(child.value) > 0);
+
+    const childFieldsResponse = await dc.variablesRequest({ variablesReference: child.variablesReference });
+    const value = childFieldsResponse.body.variables.find((candidate) => candidate.name === "value");
+    assert.notStrictEqual(value, undefined);
+    assert.equal(value.type, "i32");
+    assert.equal(value.value, "11");
+
+    const box = variablesResponse.body.variables.find((candidate) => candidate.name === "box");
+    assert.notStrictEqual(box, undefined);
+    assert.ok(box.type?.endsWith("BaseBox"));
+    assert.ok(box.variablesReference > 0);
+    assert.ok(Number(box.value) > 0);
+
+    const boxFieldsResponse = await dc.variablesRequest({ variablesReference: box.variablesReference });
+    const base = boxFieldsResponse.body.variables.find((candidate) => candidate.name === "base");
+    assert.notStrictEqual(base, undefined);
+    assert.equal(base.type, "i32");
+    assert.equal(base.value, "3");
+    const extra = boxFieldsResponse.body.variables.find((candidate) => candidate.name === "extra");
+    assert.notStrictEqual(extra, undefined);
+    assert.equal(extra.type, "i32");
+    assert.equal(extra.value, "17");
+  });
+
+  void it("should refresh variable references across multiple pauses", { timeout: 5000 }, async () => {
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: TEST_MODULE_SOURCE },
+      breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }, { line: TEST_MODULE_SECOND_BREAKPOINT_LINE }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: TEST_MODULE_OUTPUT,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    const firstStoppedPromise = dc.waitForEvent("stopped");
+    await dc.launchRequest(launchArgs);
+    await firstStoppedPromise;
+
+    const firstStackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const firstScopesResponse = await dc.scopesRequest({ frameId: firstStackTraceResponse.body.stackFrames[0].id });
+    const firstLocalsScope = firstScopesResponse.body.scopes.find((scope) => scope.name === "Locals");
+    assert.notStrictEqual(firstLocalsScope, undefined);
+
+    const firstVariablesResponse = await dc.variablesRequest({
+      variablesReference: firstLocalsScope.variablesReference,
+    });
+    const firstHolder = firstVariablesResponse.body.variables.find((candidate) => candidate.name === "holder");
+    assert.notStrictEqual(firstHolder, undefined);
+    assert.ok(firstHolder.variablesReference > 0);
+    assert.ok(Number(firstHolder.value) > 0);
+
+    const firstHolderFieldsResponse = await dc.variablesRequest({ variablesReference: firstHolder.variablesReference });
+    const firstCount = firstHolderFieldsResponse.body.variables.find((candidate) => candidate.name === "count");
+    assert.notStrictEqual(firstCount, undefined);
+    assert.equal(firstCount.value, "7");
+
+    const secondStoppedPromise = dc.waitForEvent("stopped");
+    await dc.continueRequest({ threadId: 1 });
+    await secondStoppedPromise;
+
+    const staleHolderFieldsResponse = await dc.variablesRequest({ variablesReference: firstHolder.variablesReference });
+    assert.deepEqual(staleHolderFieldsResponse.body.variables, []);
+
+    const secondStackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const secondScopesResponse = await dc.scopesRequest({ frameId: secondStackTraceResponse.body.stackFrames[0].id });
+    const secondLocalsScope = secondScopesResponse.body.scopes.find((scope) => scope.name === "Locals");
+    assert.notStrictEqual(secondLocalsScope, undefined);
+
+    const secondVariablesResponse = await dc.variablesRequest({
+      variablesReference: secondLocalsScope.variablesReference,
+    });
+    const secondHolder = secondVariablesResponse.body.variables.find((candidate) => candidate.name === "holder");
+    assert.notStrictEqual(secondHolder, undefined);
+    assert.ok(secondHolder.variablesReference > 0);
+    assert.notEqual(secondHolder.variablesReference, firstHolder.variablesReference);
+    assert.ok(Number(secondHolder.value) > 0);
+
+    const secondHolderFieldsResponse = await dc.variablesRequest({
+      variablesReference: secondHolder.variablesReference,
+    });
+    const secondCount = secondHolderFieldsResponse.body.variables.find((candidate) => candidate.name === "count");
+    assert.notStrictEqual(secondCount, undefined);
+    assert.equal(secondCount.value, "9");
   });
 });

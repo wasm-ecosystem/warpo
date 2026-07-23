@@ -1,13 +1,15 @@
 // Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+import { OBJECT_HEADER_SIZE } from "../../runtime/objectLayout.js";
+
 // TLSF Allocator Constants (32-bit)
 export const AL_BITS = 4;
 export const AL_SIZE = 1 << AL_BITS; // 16
 export const AL_MASK = AL_SIZE - 1; // 15
 
 export const BLOCK_OVERHEAD = 4; // mmInfo only
-export const OBJECT_OVERHEAD = 16; // nextWithColor + prev + rtId + rtSize
+export const OBJECT_OVERHEAD = OBJECT_HEADER_SIZE; // nextWithColor + prev + rtId + rtSize
 export const TOTAL_OVERHEAD = BLOCK_OVERHEAD + OBJECT_OVERHEAD; // 20
 
 export const SL_BITS = 4;

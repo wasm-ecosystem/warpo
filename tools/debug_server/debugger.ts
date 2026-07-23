@@ -41,8 +41,10 @@ export interface Debugger {
   resume(): Promise<void>;
   finishModuleLoad(): void;
   maybeGetPausedWasmFrame(): Promise<DebugPausedWasmFrame | undefined>;
+  readWasmMemory(address: number, byteLength: number): Promise<Uint8Array | undefined>;
   setWasmBreakpoint(module: DebuggerWasmModule, wasmBytecodeOffset: number, callbacks?: DebuggerCommandCallbacks): void;
 
   onModuleLoad: ((module: DebuggerWasmModule) => void | Promise<void>) | undefined;
   onPause: ((info: DebugPauseInfo) => void | Promise<void>) | undefined;
+  onRuntimeError: ((message: string) => void) | undefined;
 }
