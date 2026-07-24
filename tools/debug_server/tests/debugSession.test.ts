@@ -9,6 +9,7 @@ import { describe, it, before, beforeEach, afterEach } from "node:test";
 import { fileURLToPath } from "node:url";
 import { launchDapServer, type DapServerHandle } from "./launcher.js";
 import { build } from "../../scripts/lib.js";
+import { normalizeDebugPath } from "../debugPath.js";
 
 const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
 const DAP_SERVER = path.resolve(DIRNAME, "..", "..", "..", "dist", "debug_server", "dapServer.js");
@@ -233,7 +234,7 @@ void describe("WarpoDebugSession", () => {
     const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
     const frame = stackTraceResponse.body.stackFrames[0];
     assert.notStrictEqual(frame, undefined);
-    assert.equal(frame.source?.path, TEST_MODULE_SOURCE);
+    assert.equal(frame.source?.path, normalizeDebugPath(TEST_MODULE_SOURCE));
     assert.equal(frame.line, TEST_MODULE_BREAKPOINT_LINE);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });

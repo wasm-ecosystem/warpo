@@ -11,6 +11,7 @@ import {
   type DwarfLocalVariableInfo,
 } from "../dwarf/functionDebugInfo.js";
 import { SourceMapConsumer, type BasicSourceMapConsumer, type RawSourceMap } from "source-map";
+import { normalizeDebugPath } from "./debugPath.js";
 
 export type ParsedSourceMap = BasicSourceMapConsumer;
 
@@ -188,25 +189,21 @@ export class DebuggerWasmModule {
 
   private static resolveSourcePath(sourceMapFilePath: string, sourcePath: string): string {
     if (path.isAbsolute(sourcePath)) {
-      return DebuggerWasmModule.normalizeSourcePath(sourcePath);
+      return normalizeDebugPath(sourcePath);
     }
 
     const sourceMapDir = path.dirname(sourceMapFilePath);
     const sourceMapDirCandidate = path.resolve(sourceMapDir, sourcePath);
     if (existsSync(sourceMapDirCandidate)) {
-      return DebuggerWasmModule.normalizeSourcePath(sourceMapDirCandidate);
+      return normalizeDebugPath(sourceMapDirCandidate);
     }
 
     const sourceMapParentCandidate = path.resolve(sourceMapDir, "..", sourcePath);
     if (existsSync(sourceMapParentCandidate)) {
-      return DebuggerWasmModule.normalizeSourcePath(sourceMapParentCandidate);
+      return normalizeDebugPath(sourceMapParentCandidate);
     }
 
-    return DebuggerWasmModule.normalizeSourcePath(sourceMapDirCandidate);
-  }
-
-  private static normalizeSourcePath(sourcePath: string): string {
-    return sourcePath.replaceAll("\\", "/");
+    return normalizeDebugPath(sourceMapDirCandidate);
   }
 
   private static toSourceVariableInfo(variable: DwarfLocalVariableInfo): DebuggerSourceVariableInfo {

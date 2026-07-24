@@ -21,6 +21,7 @@ import assert from "node:assert/strict";
 import * as path from "node:path";
 import type { ClassField, ClassLayout } from "../dwarf/classDebugInfo.js";
 import { OBJECT_RTID_OFFSET, OBJECT_RTID_SIZE } from "../runtime/objectLayout.js";
+import { normalizeDebugPath } from "./debugPath.js";
 import type { DebuggerBreakpointInfo, DebuggerWasmModule } from "./debuggerWasmModule.js";
 import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
 import { NodeDebugger } from "./nodeDebugger.js";
@@ -83,14 +84,6 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
   }
 
-  private normalizeSourcePath(filePath: string): string {
-    if (filePath === "") {
-      return "";
-    }
-
-    return path.resolve(filePath).replaceAll("\\", "/");
-  }
-
   private sendStoppedEvent(runtime: Debugger, info: DebugPauseInfo): void {
     this.log(`[${runtime.name}] Paused: ${info.reason}`);
     this.clearVariableContainers();
@@ -136,7 +129,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response: DebugProtocol.SetBreakpointsResponse,
     args: DebugProtocol.SetBreakpointsArguments
   ): void {
-    const sourcePath = this.normalizeSourcePath(args.source.path || "");
+    const sourcePath = normalizeDebugPath(args.source.path || "");
     const clientLines = args.breakpoints || [];
 
     const bps: DebuggerBreakpointInfo[] = clientLines.map((bp) => {
