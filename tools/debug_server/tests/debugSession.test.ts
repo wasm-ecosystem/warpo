@@ -101,7 +101,6 @@ before(async () => {
   if (exitCode !== 0) {
     throw new Error(`failed to build import failure test module: ${buildOutput}`);
   }
-
 });
 
 void describe("WarpoDebugSession", () => {
@@ -382,13 +381,17 @@ void describe("WarpoDebugSession", () => {
     const firstVariablesResponse = await dc.variablesRequest({
       variablesReference: firstLocalsScope.variablesReference,
     });
-    const firstHolder = assertDefined(firstVariablesResponse.body.variables.find((candidate) => candidate.name === "holder"));
+    const firstHolder = assertDefined(
+      firstVariablesResponse.body.variables.find((candidate) => candidate.name === "holder")
+    );
     assert.ok(firstHolder.variablesReference > 0);
     assert.ok(firstHolder.type?.endsWith("Holder"));
     assert.equal(firstHolder.value, "");
 
     const firstHolderFieldsResponse = await dc.variablesRequest({ variablesReference: firstHolder.variablesReference });
-    const firstCount = assertDefined(firstHolderFieldsResponse.body.variables.find((candidate) => candidate.name === "count"));
+    const firstCount = assertDefined(
+      firstHolderFieldsResponse.body.variables.find((candidate) => candidate.name === "count")
+    );
     assert.equal(firstCount.value, "7");
 
     const secondStoppedPromise = waitForBreakpointStop(dc);
@@ -405,7 +408,9 @@ void describe("WarpoDebugSession", () => {
     const secondVariablesResponse = await dc.variablesRequest({
       variablesReference: secondLocalsScope.variablesReference,
     });
-    const secondHolder = assertDefined(secondVariablesResponse.body.variables.find((candidate) => candidate.name === "holder"));
+    const secondHolder = assertDefined(
+      secondVariablesResponse.body.variables.find((candidate) => candidate.name === "holder")
+    );
     assert.ok(secondHolder.variablesReference > 0);
     assert.notEqual(secondHolder.variablesReference, firstHolder.variablesReference);
     assert.ok(secondHolder.type?.endsWith("Holder"));
@@ -414,7 +419,9 @@ void describe("WarpoDebugSession", () => {
     const secondHolderFieldsResponse = await dc.variablesRequest({
       variablesReference: secondHolder.variablesReference,
     });
-    const secondCount = assertDefined(secondHolderFieldsResponse.body.variables.find((candidate) => candidate.name === "count"));
+    const secondCount = assertDefined(
+      secondHolderFieldsResponse.body.variables.find((candidate) => candidate.name === "count")
+    );
     assert.equal(secondCount.value, "9");
   });
 });

@@ -40,12 +40,19 @@ function trace(message: string): void {
   }
 }
 
-const READ_WASM_MEMORY_FUNCTION = function (this: WebAssembly.Memory | ArrayBuffer | SharedArrayBuffer, address: number, byteLength: number) {
+const READ_WASM_MEMORY_FUNCTION = function (
+  this: WebAssembly.Memory | ArrayBuffer | SharedArrayBuffer,
+  address: number,
+  byteLength: number
+) {
   const buffer =
     this instanceof ArrayBuffer || (typeof SharedArrayBuffer !== "undefined" && this instanceof SharedArrayBuffer)
       ? this
       : (this as WebAssembly.Memory).buffer;
-  if (!(buffer instanceof ArrayBuffer) && !(typeof SharedArrayBuffer !== "undefined" && buffer instanceof SharedArrayBuffer)) {
+  if (
+    !(buffer instanceof ArrayBuffer) &&
+    !(typeof SharedArrayBuffer !== "undefined" && buffer instanceof SharedArrayBuffer)
+  ) {
     return;
   }
   if (address < 0 || byteLength < 0 || address + byteLength > buffer.byteLength) {
