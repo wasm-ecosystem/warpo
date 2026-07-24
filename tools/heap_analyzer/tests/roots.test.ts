@@ -4,7 +4,7 @@ import { DebugInfoResolver } from "../src/debugInfoResolver.js";
 import { GC_COLOR_TRANSPARENT } from "../src/constants.js";
 import { parseDumpFile } from "../src/dumpReader.js";
 import { findRoots } from "../src/roots.js";
-import { walkBlocks } from "../src/tlsf.js";
+import { walkBlocks } from "../src/tlsfBlockWalker.js";
 import type { DumpedMemory, ObjectHeader, RootInfo } from "../src/types.js";
 import { describeIntegration, type FixtureContext } from "./testHelper.js";
 

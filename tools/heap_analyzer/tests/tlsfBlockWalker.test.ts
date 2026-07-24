@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { before, it } from "node:test";
 import { parseDumpFile } from "../src/dumpReader.js";
-import { walkBlocks } from "../src/tlsf.js";
+import { walkBlocks } from "../src/tlsfBlockWalker.js";
 import { FREE, TAGS_MASK, TOTAL_OVERHEAD, BLOCK_OVERHEAD, AL_MASK, ROOT_SIZE, COLOR_MASK } from "../src/constants.js";
 import type { ObjectHeader, DumpedMemory } from "../src/types.js";
 import { describeIntegration, type FixtureContext } from "./testHelper.js";

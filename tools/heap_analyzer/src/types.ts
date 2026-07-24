@@ -1,6 +1,10 @@
 // Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+import type { ClassField, ClassLayout } from "../../dwarf/classDebugInfo.js";
+export { BuiltinContainerKind } from "../../dwarf/classDebugInfo.js";
+export type { ClassField, ClassLayout, EntryLayout } from "../../dwarf/classDebugInfo.js";
+
 export interface ObjectHeader {
   mmInfo: number;
   rtId: number;
@@ -28,42 +32,6 @@ export interface GlobalRoot {
 export interface DumpedMemory {
   rtGlobals: RuntimeGlobalValues;
   memory: DataView;
-}
-
-export interface ClassField {
-  name: string;
-  offset: number;
-  size: number;
-  isReference: boolean;
-}
-
-export enum BuiltinContainerKind {
-  Array,
-  StaticArray,
-  MapOrSet,
-  SmallTuple,
-  Function,
-}
-
-/** Layout of a single entry in a Set or Map's entries ArrayBuffer. */
-export interface EntryLayout {
-  /** Total byte size of one entry (stride). */
-  size: number;
-  /** Fields within the entry that are managed references. */
-  referenceOffsets: number[];
-}
-
-export interface ClassLayout {
-  rtid: number;
-  name: string;
-  base: string | null;
-  byteSize: number;
-  fields: ClassField[];
-  builtinKind?: BuiltinContainerKind;
-  templateType?: string;
-  templateTypeIsReference?: boolean;
-  /** For Set/Map: describes the layout of entries inside the backing ArrayBuffer. */
-  entryLayout?: EntryLayout;
 }
 
 export function isPointerfree(classLayout: ClassLayout): boolean {

@@ -9,13 +9,17 @@ import {
   Scope,
   StackFrame,
   LoadedSourceEvent,
+  OutputEvent,
   StoppedEvent,
   ContinuedEvent,
+  TerminatedEvent,
   logger,
 } from "@vscode/debugadapter";
 import type { DebugProtocol } from "@vscode/debugprotocol";
 import assert from "node:assert/strict";
 import * as path from "node:path";
+import type { ClassField, ClassLayout } from "../dwarf/classDebugInfo.js";
+import { OBJECT_RTID_OFFSET, OBJECT_RTID_SIZE } from "../runtime/objectLayout.js";
 import type { DebuggerBreakpointInfo, DebuggerWasmModule } from "./debuggerWasmModule.js";
 import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
 import { NodeDebugger } from "./nodeDebugger.js";
@@ -28,12 +32,30 @@ interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArgumen
   args?: number[];
 }
 
+interface BasicVariable {
+  kind: "basic";
+  name: string;
+  value: string;
+  typeName: string | undefined;
+}
+
+interface ClassVariable {
+  kind: "class";
+  name: string;
+  typeName: string;
+  address: number;
+}
+
+type DebugSessionVariable = BasicVariable | ClassVariable;
+
+type VariableContainer = { kind: "locals" } | { kind: "object"; address: number };
+
 export class WarpoDebugSession extends LoggingDebugSession {
   private static threadId = 1;
   private breakpointId = 0;
   private requestedBreakpointsBySource = new Map<string, DebuggerBreakpointInfo[]>();
   private pendingBreakpointUpdatesBySource = new Map<string, DebuggerBreakpointInfo[]>();
-  private variableHandles = new Map<number, DebugProtocol.Variable[]>();
+  private variableContainers = new Map<number, VariableContainer>();
   private nextVariablesReference = 1;
   private loadedModule: DebuggerWasmModule | undefined;
   private runtime: Debugger | undefined;
@@ -53,12 +75,17 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   private sendStoppedEvent(runtime: Debugger, info: DebugPauseInfo): void {
     this.log(`[${runtime.name}] Paused: ${info.reason}`);
+    this.clearVariableContainers();
     const reason = info.reason === "breakpoint" ? "breakpoint" : "pause";
     this.sendEvent(new StoppedEvent(reason, WarpoDebugSession.threadId, info.reason));
   }
 
   private handleRuntimePause(runtime: Debugger, info: DebugPauseInfo): void {
     this.stoppedWasmBytecodeOffset = info.wasmBytecodeOffset;
+    if (info.reason === "other" && !this.loadedModule) {
+      return;
+    }
+
     this.applyPendingBreakpointUpdates(runtime, () => {
       if (info.reason === "other") {
         void runtime.resume().catch((error: unknown) => {
@@ -151,30 +178,42 @@ export class WarpoDebugSession extends LoggingDebugSession {
           return;
         }
 
-        runtime.onModuleLoad = (module) => {
-          this.loadedModule = module;
+        runtime.onModuleLoad = (wasmModule) => {
+          this.loadedModule = wasmModule;
           this.log(
-            `Wasm module loaded: ${module.wasmFilePath} (reported as ${module.url}, scriptId: ${module.scriptId})`
+            `Wasm module loaded: ${wasmModule.wasmFilePath} (reported as ${wasmModule.url}, scriptId: ${wasmModule.scriptId})`
           );
           this.sendEvent(
             new LoadedSourceEvent("new", {
-              name: path.basename(module.wasmFilePath),
-              path: module.wasmFilePath,
+              name: path.basename(wasmModule.wasmFilePath),
+              path: wasmModule.wasmFilePath,
             })
           );
           this.sendEvent(
             new LoadedSourceEvent("new", {
-              name: path.basename(module.sourceMapFilePath),
-              path: module.sourceMapFilePath,
+              name: path.basename(wasmModule.sourceMapFilePath),
+              path: wasmModule.sourceMapFilePath,
             })
           );
 
           this.applyPendingBreakpointUpdates(runtime, () => {
+            if (runtime.isPaused()) {
+              void runtime.resume().catch((error: unknown) => {
+                const message = error instanceof Error ? error.message : "unknown error";
+                this.log(`Failed to resume after module load: ${message}`);
+              });
+              return;
+            }
+
             runtime.finishModuleLoad();
           });
         };
         runtime.onPause = (info) => {
           this.handleRuntimePause(runtime, info);
+        };
+        runtime.onRuntimeError = (message) => {
+          this.sendEvent(new OutputEvent(`${message}\n`, "stderr"));
+          this.sendEvent(new TerminatedEvent());
         };
 
         this.disposeLoadedModule();
@@ -211,14 +250,11 @@ export class WarpoDebugSession extends LoggingDebugSession {
   }
 
   protected scopesRequest(response: DebugProtocol.ScopesResponse, _args: DebugProtocol.ScopesArguments): void {
-    void this.doScopesRequest(response);
+    this.doScopesRequest(response);
   }
 
   protected variablesRequest(response: DebugProtocol.VariablesResponse, args: DebugProtocol.VariablesArguments): void {
-    response.body = {
-      variables: this.variableHandles.get(args.variablesReference) ?? [],
-    };
-    this.sendResponse(response);
+    void this.doVariablesRequest(response, args);
   }
 
   protected continueRequest(response: DebugProtocol.ContinueResponse, _args: DebugProtocol.ContinueArguments): void {
@@ -248,36 +284,63 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.sendResponse(response);
   }
 
-  private async doScopesRequest(response: DebugProtocol.ScopesResponse): Promise<void> {
-    const variables = await this.resolveLocalVariables();
-    const variablesReference = this.createVariableHandle(variables);
+  private doScopesRequest(response: DebugProtocol.ScopesResponse): void {
     response.body = {
-      scopes: [new Scope("Locals", variablesReference, false)],
+      scopes: [new Scope("Locals", this.createVariableContainer({ kind: "locals" }), false)],
     };
     this.sendResponse(response);
   }
 
-  private createVariableHandle(variables: DebugProtocol.Variable[]): number {
-    const variablesReference = this.nextVariablesReference++;
-    this.variableHandles.set(variablesReference, variables);
-    return variablesReference;
+  private async doVariablesRequest(
+    response: DebugProtocol.VariablesResponse,
+    args: DebugProtocol.VariablesArguments
+  ): Promise<void> {
+    const variableContainer = this.variableContainers.get(args.variablesReference);
+
+    switch (variableContainer?.kind) {
+      case "locals": {
+        response.body = { variables: await this.listLocalVariables() };
+        break;
+      }
+      case "object": {
+        response.body = { variables: await this.decodeObjectAtAddress(variableContainer.address) };
+        break;
+      }
+      default: {
+        this.log(`Warning: unknown variables reference ${args.variablesReference}`);
+        response.body = { variables: [] };
+        break;
+      }
+    }
+
+    this.sendResponse(response);
   }
 
-  private async resolveLocalVariables(): Promise<DebugProtocol.Variable[]> {
+  private async listLocalVariables(): Promise<DebugProtocol.Variable[]> {
+    const variables = await this.resolveLocalVariables();
+    return variables.map((variable) => this.toDebugProtocolVariable(variable));
+  }
+
+  private async decodeObjectAtAddress(address: number): Promise<DebugProtocol.Variable[]> {
+    const fields = await this.resolveObjectFields(address);
+    return fields.map((variable) => this.toDebugProtocolVariable(variable));
+  }
+
+  private async resolveLocalVariables(): Promise<DebugSessionVariable[]> {
     const runtimeFrame = await this.runtime?.maybeGetPausedWasmFrame();
-    const module = this.loadedModule;
-    if (!runtimeFrame || !module) {
+    const wasmModule = this.loadedModule;
+    if (!runtimeFrame || !wasmModule) {
       return [];
     }
 
     const wasmBytecodeOffset = this.stoppedWasmBytecodeOffset;
     if (wasmBytecodeOffset === undefined) {
-      return runtimeFrame.variables.map((variable) => this.toDebugProtocolVariable(variable));
+      return runtimeFrame.variables.map((variable) => this.toDebugSessionVariable(variable));
     }
 
-    const sourceVariables = module.getVariablesAtBytecodeOffset(wasmBytecodeOffset);
+    const sourceVariables = wasmModule.getVariablesAtBytecodeOffset(wasmBytecodeOffset);
     if (!sourceVariables) {
-      return runtimeFrame.variables.map((variable) => this.toDebugProtocolVariable(variable));
+      return runtimeFrame.variables.map((variable) => this.toDebugSessionVariable(variable));
     }
 
     const runtimeVariablesByIndex = new Map<number, DebugRuntimeVariable>();
@@ -288,22 +351,193 @@ export class WarpoDebugSession extends LoggingDebugSession {
     return sourceVariables.map((variable) => {
       const runtimeVariable = runtimeVariablesByIndex.get(variable.localIndex);
       assert(runtimeVariable !== undefined);
-      return {
-        name: variable.name,
-        value: runtimeVariable.value,
-        type: variable.typeName,
-        variablesReference: 0,
-      };
+      return this.toDebugSessionVariable(runtimeVariable, variable.name, variable.typeName);
     });
   }
 
-  private toDebugProtocolVariable(variable: DebugRuntimeVariable): DebugProtocol.Variable {
+  private toDebugSessionVariable(
+    variable: DebugRuntimeVariable,
+    name: string = variable.name,
+    typeName: string | undefined = variable.type
+  ): DebugSessionVariable {
+    const objectAddress = typeName === undefined ? undefined : this.parseObjectAddress(typeName, variable.value);
+    if (objectAddress) {
+      return this.createClassVariable(name, typeName, objectAddress);
+    }
+
+    return {
+      kind: "basic",
+      name,
+      value: variable.value,
+      typeName,
+    };
+  }
+
+  private toDebugProtocolVariable(variable: DebugSessionVariable): DebugProtocol.Variable {
     return {
       name: variable.name,
-      value: variable.value,
-      type: variable.type,
-      variablesReference: 0,
+      value: variable.kind === "class" ? variable.address.toString() : variable.value,
+      type: variable.typeName,
+      variablesReference: variable.kind === "class" ? this.toObjectVariablesReference(variable.address) : 0,
     };
+  }
+
+  private createClassVariable(name: string, typeName: string, address: number): ClassVariable {
+    return { kind: "class", name, typeName, address };
+  }
+
+  private parseObjectAddress(typeName: string, value: string): number | undefined {
+    if (!this.loadedModule?.getClassLayout(typeName)) {
+      return undefined;
+    }
+
+    const address = Number(value);
+    return Number.isInteger(address) && address > 0 ? address : undefined;
+  }
+
+  private toObjectVariablesReference(address: number): number {
+    return this.createVariableContainer({ kind: "object", address });
+  }
+
+  private createVariableContainer(variableContainer: VariableContainer): number {
+    const variablesReference = this.nextVariablesReference++;
+    this.variableContainers.set(variablesReference, variableContainer);
+    return variablesReference;
+  }
+
+  private clearVariableContainers(): void {
+    this.variableContainers.clear();
+  }
+
+  private async resolveObjectFields(address: number): Promise<DebugSessionVariable[]> {
+    const wasmModule = this.loadedModule;
+    if (!wasmModule) {
+      this.log(`Warning: cannot expand object at ${address}: wasm module is not loaded`);
+      return [];
+    }
+
+    if (!this.runtime) {
+      this.log(`Warning: cannot expand object at ${address}: runtime is not active`);
+      return [];
+    }
+
+    const classLayout = await this.resolveRuntimeClassLayout(address);
+    if (!classLayout) {
+      this.log(`Warning: cannot expand object at ${address}: runtime class layout is missing`);
+      return [];
+    }
+
+    const memory = await this.runtime.readWasmMemory(address, classLayout.byteSize);
+    if (!memory) {
+      this.log(`Warning: cannot expand object at ${address}: object memory is unavailable`);
+      return [];
+    }
+
+    const view = new DataView(memory.buffer, memory.byteOffset, memory.byteLength);
+    return classLayout.fields.map((field) => this.decodeFieldVariable(view, field));
+  }
+
+  private async resolveRuntimeClassLayout(address: number): Promise<ClassLayout | undefined> {
+    const header = await this.runtime?.readWasmMemory(address + OBJECT_RTID_OFFSET, OBJECT_RTID_SIZE);
+    if (!header) {
+      this.log(`Warning: cannot read object RTID at ${address + OBJECT_RTID_OFFSET}`);
+      return undefined;
+    }
+
+    const headerView = new DataView(header.buffer, header.byteOffset, header.byteLength);
+    const rtid = headerView.getUint32(0, true);
+    const classLayout = this.loadedModule?.getClassLayoutByRtid(rtid);
+    if (!classLayout) {
+      this.log(`Warning: cannot resolve class layout for RTID ${rtid}`);
+    }
+    return classLayout;
+  }
+
+  private decodeFieldVariable(view: DataView, field: ClassField): DebugSessionVariable {
+    const value = this.decodeFieldValue(view, field);
+    const address = field.isReference ? this.parseObjectAddress(field.typeName, value) : undefined;
+    if (address) {
+      return this.createClassVariable(field.name, field.typeName, address);
+    }
+
+    return {
+      kind: "basic",
+      name: field.name,
+      value,
+      typeName: field.typeName,
+    };
+  }
+
+  private decodeFieldValue(view: DataView, field: ClassField): string {
+    if (field.offset + field.size > view.byteLength) {
+      return "<unavailable>";
+    }
+
+    if (field.isReference) {
+      const address = view.getUint32(field.offset, true);
+      return address === 0 ? "null" : address.toString();
+    }
+
+    switch (field.typeName) {
+      case "bool": {
+        return String(view.getUint8(field.offset) !== 0);
+      }
+      case "i8": {
+        return view.getInt8(field.offset).toString();
+      }
+      case "u8": {
+        return view.getUint8(field.offset).toString();
+      }
+      case "i16": {
+        return view.getInt16(field.offset, true).toString();
+      }
+      case "u16": {
+        return view.getUint16(field.offset, true).toString();
+      }
+      case "i32":
+      case "isize": {
+        return view.getInt32(field.offset, true).toString();
+      }
+      case "u32":
+      case "usize": {
+        return view.getUint32(field.offset, true).toString();
+      }
+      case "i64": {
+        return view.getBigInt64(field.offset, true).toString();
+      }
+      case "u64": {
+        return view.getBigUint64(field.offset, true).toString();
+      }
+      case "f32": {
+        return view.getFloat32(field.offset, true).toString();
+      }
+      case "f64": {
+        return view.getFloat64(field.offset, true).toString();
+      }
+      default: {
+        return this.decodeIntegerBySize(view, field);
+      }
+    }
+  }
+
+  private decodeIntegerBySize(view: DataView, field: ClassField): string {
+    switch (field.size) {
+      case 1: {
+        return view.getUint8(field.offset).toString();
+      }
+      case 2: {
+        return view.getUint16(field.offset, true).toString();
+      }
+      case 4: {
+        return view.getUint32(field.offset, true).toString();
+      }
+      case 8: {
+        return view.getBigUint64(field.offset, true).toString();
+      }
+      default: {
+        return "<unavailable>";
+      }
+    }
   }
 
   private async doContinueRequest(response: DebugProtocol.ContinueResponse): Promise<void> {
@@ -316,6 +550,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
       await this.runtime.resume();
       response.body = { allThreadsContinued: true };
       this.sendResponse(response);
+      this.clearVariableContainers();
       this.stoppedWasmBytecodeOffset = undefined;
       this.sendEvent(new ContinuedEvent(WarpoDebugSession.threadId, true));
     } catch (error) {
@@ -353,8 +588,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
   }
 
   private applyPendingBreakpointUpdates(runtime: Debugger, onComplete?: () => void): void {
-    const module = this.loadedModule;
-    if (!module) {
+    const wasmModule = this.loadedModule;
+    if (!wasmModule) {
       onComplete?.();
       return;
     }
@@ -365,7 +600,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
         continue;
       }
 
-      if (!module.hasSource(sourcePath)) {
+      if (!wasmModule.hasSource(sourcePath)) {
         continue;
       }
 
@@ -379,19 +614,25 @@ export class WarpoDebugSession extends LoggingDebugSession {
         this.pendingBreakpointUpdatesBySource.delete(sourcePath);
       }
 
-      const breakpointLocation = module.resolveBreakpointLocation(breakpoint);
+      const breakpointLocation = wasmModule.resolveBreakpointLocation(breakpoint);
       if (!breakpointLocation) {
         this.log(`No source-map match for breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line}`);
         this.applyPendingBreakpointUpdates(runtime, onComplete);
         return;
       }
 
-      runtime.setWasmBreakpoint(module, breakpointLocation.wasmBytecodeOffset, {
+      this.log(
+        `Resolved breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line} -> ${breakpointLocation.wasmBytecodeOffset}`
+      );
+      runtime.setWasmBreakpoint(wasmModule, breakpointLocation.wasmBytecodeOffset, {
         onSuccess: () => {
+          this.log(`Breakpoint installed at ${breakpointLocation.wasmBytecodeOffset}`);
           this.applyPendingBreakpointUpdates(runtime, onComplete);
         },
         onError: (error: Error) => {
-          this.log(`Failed to set breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line}: ${error.message}`);
+          this.log(
+            `Failed to set breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line} at ${breakpointLocation.wasmBytecodeOffset}: ${error.message}`
+          );
           this.applyPendingBreakpointUpdates(runtime, onComplete);
         },
       });
@@ -402,6 +643,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
   }
 
   private disposeLoadedModule(): void {
+    this.clearVariableContainers();
     this.loadedModule?.dispose();
     this.loadedModule = undefined;
   }

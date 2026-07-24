@@ -3,6 +3,7 @@
 
 import { readFile } from "node:fs/promises";
 import * as path from "node:path";
+import { DwarfClassInfoResolver, type ClassLayout } from "../dwarf/classDebugInfo.js";
 import {
   DwarfFunctionInfoResolver,
   getVariablesInFunctionAtBytecodeOffset,
@@ -40,7 +41,8 @@ export class DebuggerWasmModule {
     readonly sourceMapFilePath: string,
     readonly bytecode: Uint8Array,
     private readonly sourceMap: ParsedSourceMap,
-    private readonly functionInfoResolver: DwarfFunctionInfoResolver
+    private readonly functionInfoResolver: DwarfFunctionInfoResolver,
+    private readonly classInfoResolver: DwarfClassInfoResolver
   ) {
     this.sourcesByPath = new Map(
       sourceMap.sources.map((source) => [DebuggerWasmModule.resolveSourcePath(sourceMapFilePath, source), source])
@@ -64,7 +66,8 @@ export class DebuggerWasmModule {
       sourceMapFilePath,
       bytecode,
       sourceMap,
-      DwarfFunctionInfoResolver.fromWasm(bytecode)
+      DwarfFunctionInfoResolver.fromWasm(bytecode),
+      DwarfClassInfoResolver.fromWasm(bytecode)
     );
   }
 
@@ -120,6 +123,14 @@ export class DebuggerWasmModule {
     return getVariablesInFunctionAtBytecodeOffset(functionInfo, wasmBytecodeOffset).map((variable) =>
       DebuggerWasmModule.toSourceVariableInfo(variable)
     );
+  }
+
+  getClassLayout(typeName: string): ClassLayout | undefined {
+    return this.classInfoResolver.getClassLayout(typeName);
+  }
+
+  getClassLayoutByRtid(rtid: number): ClassLayout | undefined {
+    return this.classInfoResolver.getClassDef(rtid);
   }
 
   resolveSourceLine(wasmBytecodeOffset: number): number | undefined {

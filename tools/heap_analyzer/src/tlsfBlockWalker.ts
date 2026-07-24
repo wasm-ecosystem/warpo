@@ -3,6 +3,7 @@
 
 import { ObjectHeader } from "./types.js";
 import { AL_MASK, BLOCK_OVERHEAD, ROOT_SIZE, FREE, TAGS_MASK, TOTAL_OVERHEAD, COLOR_MASK } from "./constants.js";
+import { OBJECT_RTID_OFFSET, OBJECT_RTSIZE_OFFSET } from "../../runtime/objectLayout.js";
 
 /**
  * Walk all TLSF blocks in the heap and return parsed object headers for used blocks.
@@ -43,9 +44,9 @@ export function walkBlocks(memory: DataView, heapBase: number): ObjectHeader[] {
     const isFree = (mmInfo & FREE) !== 0;
     if (!isFree) {
       const gcColor = memory.getUint32(cursor + 4, true) & COLOR_MASK;
-      const rtId = memory.getUint32(cursor + 12, true);
-      const rtSize = memory.getUint32(cursor + 16, true);
       const payloadPtr = cursor + TOTAL_OVERHEAD;
+      const rtId = memory.getUint32(payloadPtr + OBJECT_RTID_OFFSET, true);
+      const rtSize = memory.getUint32(payloadPtr + OBJECT_RTSIZE_OFFSET, true);
 
       objects.push({ mmInfo, rtId, rtSize, payloadPtr, gcColor });
     }

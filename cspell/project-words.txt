@@ -140,6 +140,7 @@ returnof
 revspace
 rotr
 rtid
+RTSIZE
 rtti
 scalbn
 schleifner
@@ -197,6 +198,7 @@ Wdeprecated
 Wdiv
 Wdouble
 Wduplicated
+webassemblymemory
 Wenum
 Werke
 WERROR

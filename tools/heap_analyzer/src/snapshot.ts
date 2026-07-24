@@ -7,7 +7,7 @@ import { buildDominatorTree } from "./dominator.js";
 import { computeRetainedSizes, shallowSize } from "./retainedSize.js";
 import { findRoots } from "./roots.js";
 import { scanReferences } from "./referenceScanner.js";
-import { walkBlocks } from "./tlsf.js";
+import { walkBlocks } from "./tlsfBlockWalker.js";
 import type {
   ConstructorEntry,
   ConstructorInstance,
