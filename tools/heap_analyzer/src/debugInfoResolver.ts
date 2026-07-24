@@ -3,12 +3,7 @@
 
 import { TypeKind } from "wasmparser/dist/cjs/WasmParser.js";
 
-import {
-  DwarfClassInfoResolver,
-  attachBuiltinKind,
-  resolveClassLayouts,
-  type ClassLayout,
-} from "../../dwarf/classDebugInfo.js";
+import { DwarfClassInfoResolver, type ClassLayout } from "../../dwarf/classDebugInfo.js";
 import {
   DW_AT,
   DW_TAG,
@@ -20,7 +15,7 @@ import {
 } from "../../dwarf/dwarfParser.js";
 import type { GlobalRoot } from "./types.js";
 
-export { attachBuiltinKind, resolveClassLayouts };
+export { attachBuiltinKind, resolveClassLayouts } from "../../dwarf/classDebugInfo.js";
 
 type ResolvedTypeInfo = { name?: string };
 

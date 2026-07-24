@@ -15,8 +15,47 @@ const DAP_SERVER = path.resolve(DIRNAME, "..", "..", "..", "dist", "debug_server
 const TEST_MODULE_DIR = path.resolve(DIRNAME, "testModule");
 const TEST_MODULE_SOURCE = path.join(TEST_MODULE_DIR, "debugger_basic.ts");
 const TEST_MODULE_OUTPUT = path.join(TEST_MODULE_DIR, "build/debugger_basic.wasm");
+const IMPORT_FAILURE_SOURCE = path.join(TEST_MODULE_DIR, "import_failure.ts");
+const IMPORT_FAILURE_OUTPUT = path.join(TEST_MODULE_DIR, "build/import_failure.wasm");
 const TEST_MODULE_BREAKPOINT_LINE = 41;
 const TEST_MODULE_SECOND_BREAKPOINT_LINE = 43;
+
+async function waitForLoadedWasmSource(dc: DebugClient): Promise<DebugProtocol.LoadedSourceEvent> {
+  while (true) {
+    const event = await dc.waitForEvent("loadedSource");
+    const body = event.body as { source?: DebugProtocol.Source; reason?: string } | undefined;
+    if (body?.source?.path === path.resolve(TEST_MODULE_OUTPUT)) {
+      return event as DebugProtocol.LoadedSourceEvent;
+    }
+  }
+}
+
+async function waitForBreakpointStop(dc: DebugClient): Promise<DebugProtocol.StoppedEvent> {
+  while (true) {
+    const event = await dc.waitForEvent("stopped");
+    const body = event.body as { reason?: string } | undefined;
+    if (body?.reason === "breakpoint") {
+      return event as DebugProtocol.StoppedEvent;
+    }
+  }
+}
+
+async function waitForStderrOutput(dc: DebugClient): Promise<DebugProtocol.OutputEvent> {
+  while (true) {
+    const event = await dc.waitForEvent("output");
+    const body = event.body as { category?: string } | undefined;
+    if (body?.category === "stderr") {
+      return event as DebugProtocol.OutputEvent;
+    }
+  }
+}
+
+function assertDefined<T>(value: T | undefined, message?: string): T {
+  if (value === undefined) {
+    assert.fail(message ?? "Expected value to be defined");
+  }
+  return value;
+}
 
 const waitForExit = (child: DapServerHandle["child"], timeoutMs: number): Promise<boolean> =>
   new Promise((resolve) => {
@@ -40,7 +79,7 @@ const waitForExit = (child: DapServerHandle["child"], timeoutMs: number): Promis
 
 before(async () => {
   let buildOutput = "";
-  const exitCode = await build({
+  let exitCode = await build({
     argv: [TEST_MODULE_SOURCE, "-o", TEST_MODULE_OUTPUT, "--debug", "--use", "abort="],
     cwd: TEST_MODULE_DIR,
     onStdout: (chunk: string) => {
@@ -50,6 +89,19 @@ before(async () => {
   if (exitCode !== 0) {
     throw new Error(`failed to build debugger test module: ${buildOutput}`);
   }
+
+  buildOutput = "";
+  exitCode = await build({
+    argv: [IMPORT_FAILURE_SOURCE, "-o", IMPORT_FAILURE_OUTPUT, "--debug", "--use", "abort="],
+    cwd: TEST_MODULE_DIR,
+    onStdout: (chunk: string) => {
+      buildOutput += chunk;
+    },
+  });
+  if (exitCode !== 0) {
+    throw new Error(`failed to build import failure test module: ${buildOutput}`);
+  }
+
 });
 
 void describe("WarpoDebugSession", () => {
@@ -115,20 +167,44 @@ void describe("WarpoDebugSession", () => {
       entryFunctionName: "_start",
     };
 
-    const loadedSourcePromise = dc.waitForEvent("loadedSource");
-    const stoppedPromise = dc.waitForEvent("stopped");
+    const loadedSourcePromise = waitForLoadedWasmSource(dc);
+    const stoppedPromise = waitForBreakpointStop(dc);
 
     await dc.launchRequest(launchArgs);
 
     const loadedSourceEvent = await loadedSourcePromise;
     const loadedSourceBody = loadedSourceEvent.body as { source?: DebugProtocol.Source; reason?: string } | undefined;
-    const stoppedEvent = await stoppedPromise;
-    const stoppedBody = stoppedEvent.body as { reason?: string } | undefined;
+    await stoppedPromise;
 
     assert.equal(loadedSourceBody?.reason, "new");
     assert.equal(loadedSourceBody?.source?.path, path.resolve(TEST_MODULE_OUTPUT));
     assert.equal(loadedSourceBody?.source?.name, path.basename(TEST_MODULE_OUTPUT));
-    assert.equal(stoppedBody?.reason, "breakpoint");
+  });
+
+  void it("should terminate when the runtime exits after wasm instantiation fails", { timeout: 5000 }, async () => {
+    await dc.initializeRequest();
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: IMPORT_FAILURE_OUTPUT,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    const stderrPromise = waitForStderrOutput(dc);
+    const terminatedPromise = dc.waitForEvent("terminated");
+
+    await dc.launchRequest(launchArgs);
+
+    const stderrEvent = await stderrPromise;
+    const stderrBody = stderrEvent.body as { output?: string } | undefined;
+    assert.match(stderrBody?.output ?? "", /Failed to load wasm module/);
+    await terminatedPromise;
   });
 
   void it("should expose local variables after hitting a breakpoint", { timeout: 5000 }, async () => {
@@ -151,7 +227,46 @@ void describe("WarpoDebugSession", () => {
       entryFunctionName: "_start",
     };
 
-    const stoppedPromise = dc.waitForEvent("stopped");
+    const stoppedPromise = waitForBreakpointStop(dc);
+    await dc.launchRequest(launchArgs);
+    await stoppedPromise;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = stackTraceResponse.body.stackFrames[0];
+    assert.notStrictEqual(frame, undefined);
+    assert.equal(frame.source?.path, TEST_MODULE_SOURCE);
+    assert.equal(frame.line, TEST_MODULE_BREAKPOINT_LINE);
+
+    const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+
+    const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
+    const variable = assertDefined(variablesResponse.body.variables.find((candidate) => candidate.name === "a"));
+    assert.equal(variable.type, "i32");
+    assert.equal(variable.value, "1");
+  });
+
+  void it("should terminate when the entry function returns", { timeout: 5000 }, async () => {
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: TEST_MODULE_SOURCE },
+      breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: TEST_MODULE_OUTPUT,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    const stoppedPromise = waitForBreakpointStop(dc);
     await dc.launchRequest(launchArgs);
     await stoppedPromise;
 
@@ -160,14 +275,14 @@ void describe("WarpoDebugSession", () => {
     assert.notStrictEqual(frame, undefined);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
-    const localsScope = scopesResponse.body.scopes.find((scope) => scope.name === "Locals");
-    assert.notStrictEqual(localsScope, undefined);
-
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
     const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
-    const variable = variablesResponse.body.variables.find((candidate) => candidate.name === "a");
-    assert.notStrictEqual(variable, undefined);
-    assert.equal(variable.type, "i32");
-    assert.equal(variable.value, "1");
+    const holder = assertDefined(variablesResponse.body.variables.find((candidate) => candidate.name === "holder"));
+    await dc.variablesRequest({ variablesReference: holder.variablesReference });
+
+    const terminatedPromise = dc.waitForEvent("terminated");
+    await dc.continueRequest({ threadId: 1 });
+    await terminatedPromise;
   });
 
   void it("should expand class local variables using DWARF layout", { timeout: 5000 }, async () => {
@@ -190,7 +305,7 @@ void describe("WarpoDebugSession", () => {
       entryFunctionName: "_start",
     };
 
-    const stoppedPromise = dc.waitForEvent("stopped");
+    const stoppedPromise = waitForBreakpointStop(dc);
     await dc.launchRequest(launchArgs);
     await stoppedPromise;
 
@@ -199,46 +314,39 @@ void describe("WarpoDebugSession", () => {
     assert.notStrictEqual(frame, undefined);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
-    const localsScope = scopesResponse.body.scopes.find((scope) => scope.name === "Locals");
-    assert.notStrictEqual(localsScope, undefined);
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
 
     const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
-    const holder = variablesResponse.body.variables.find((candidate) => candidate.name === "holder");
-    assert.notStrictEqual(holder, undefined);
+    const holder = assertDefined(variablesResponse.body.variables.find((candidate) => candidate.name === "holder"));
     assert.ok(holder.variablesReference > 0);
-    assert.ok(Number(holder.value) > 0);
+    assert.ok(holder.type?.endsWith("Holder"));
+    assert.equal(holder.value, "");
 
     const holderFieldsResponse = await dc.variablesRequest({ variablesReference: holder.variablesReference });
-    const count = holderFieldsResponse.body.variables.find((candidate) => candidate.name === "count");
-    assert.notStrictEqual(count, undefined);
+    const count = assertDefined(holderFieldsResponse.body.variables.find((candidate) => candidate.name === "count"));
     assert.equal(count.type, "i32");
     assert.equal(count.value, "7");
 
-    const child = holderFieldsResponse.body.variables.find((candidate) => candidate.name === "child");
-    assert.notStrictEqual(child, undefined);
+    const child = assertDefined(holderFieldsResponse.body.variables.find((candidate) => candidate.name === "child"));
     assert.ok(child.type?.endsWith("Child"));
     assert.ok(child.variablesReference > 0);
-    assert.ok(Number(child.value) > 0);
+    assert.equal(child.value, "");
 
     const childFieldsResponse = await dc.variablesRequest({ variablesReference: child.variablesReference });
-    const value = childFieldsResponse.body.variables.find((candidate) => candidate.name === "value");
-    assert.notStrictEqual(value, undefined);
+    const value = assertDefined(childFieldsResponse.body.variables.find((candidate) => candidate.name === "value"));
     assert.equal(value.type, "i32");
     assert.equal(value.value, "11");
 
-    const box = variablesResponse.body.variables.find((candidate) => candidate.name === "box");
-    assert.notStrictEqual(box, undefined);
+    const box = assertDefined(variablesResponse.body.variables.find((candidate) => candidate.name === "box"));
     assert.ok(box.type?.endsWith("BaseBox"));
     assert.ok(box.variablesReference > 0);
-    assert.ok(Number(box.value) > 0);
+    assert.equal(box.value, "");
 
     const boxFieldsResponse = await dc.variablesRequest({ variablesReference: box.variablesReference });
-    const base = boxFieldsResponse.body.variables.find((candidate) => candidate.name === "base");
-    assert.notStrictEqual(base, undefined);
+    const base = assertDefined(boxFieldsResponse.body.variables.find((candidate) => candidate.name === "base"));
     assert.equal(base.type, "i32");
     assert.equal(base.value, "3");
-    const extra = boxFieldsResponse.body.variables.find((candidate) => candidate.name === "extra");
-    assert.notStrictEqual(extra, undefined);
+    const extra = assertDefined(boxFieldsResponse.body.variables.find((candidate) => candidate.name === "extra"));
     assert.equal(extra.type, "i32");
     assert.equal(extra.value, "17");
   });
@@ -263,29 +371,27 @@ void describe("WarpoDebugSession", () => {
       entryFunctionName: "_start",
     };
 
-    const firstStoppedPromise = dc.waitForEvent("stopped");
+    const firstStoppedPromise = waitForBreakpointStop(dc);
     await dc.launchRequest(launchArgs);
     await firstStoppedPromise;
 
     const firstStackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
     const firstScopesResponse = await dc.scopesRequest({ frameId: firstStackTraceResponse.body.stackFrames[0].id });
-    const firstLocalsScope = firstScopesResponse.body.scopes.find((scope) => scope.name === "Locals");
-    assert.notStrictEqual(firstLocalsScope, undefined);
+    const firstLocalsScope = assertDefined(firstScopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
 
     const firstVariablesResponse = await dc.variablesRequest({
       variablesReference: firstLocalsScope.variablesReference,
     });
-    const firstHolder = firstVariablesResponse.body.variables.find((candidate) => candidate.name === "holder");
-    assert.notStrictEqual(firstHolder, undefined);
+    const firstHolder = assertDefined(firstVariablesResponse.body.variables.find((candidate) => candidate.name === "holder"));
     assert.ok(firstHolder.variablesReference > 0);
-    assert.ok(Number(firstHolder.value) > 0);
+    assert.ok(firstHolder.type?.endsWith("Holder"));
+    assert.equal(firstHolder.value, "");
 
     const firstHolderFieldsResponse = await dc.variablesRequest({ variablesReference: firstHolder.variablesReference });
-    const firstCount = firstHolderFieldsResponse.body.variables.find((candidate) => candidate.name === "count");
-    assert.notStrictEqual(firstCount, undefined);
+    const firstCount = assertDefined(firstHolderFieldsResponse.body.variables.find((candidate) => candidate.name === "count"));
     assert.equal(firstCount.value, "7");
 
-    const secondStoppedPromise = dc.waitForEvent("stopped");
+    const secondStoppedPromise = waitForBreakpointStop(dc);
     await dc.continueRequest({ threadId: 1 });
     await secondStoppedPromise;
 
@@ -294,23 +400,21 @@ void describe("WarpoDebugSession", () => {
 
     const secondStackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
     const secondScopesResponse = await dc.scopesRequest({ frameId: secondStackTraceResponse.body.stackFrames[0].id });
-    const secondLocalsScope = secondScopesResponse.body.scopes.find((scope) => scope.name === "Locals");
-    assert.notStrictEqual(secondLocalsScope, undefined);
+    const secondLocalsScope = assertDefined(secondScopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
 
     const secondVariablesResponse = await dc.variablesRequest({
       variablesReference: secondLocalsScope.variablesReference,
     });
-    const secondHolder = secondVariablesResponse.body.variables.find((candidate) => candidate.name === "holder");
-    assert.notStrictEqual(secondHolder, undefined);
+    const secondHolder = assertDefined(secondVariablesResponse.body.variables.find((candidate) => candidate.name === "holder"));
     assert.ok(secondHolder.variablesReference > 0);
     assert.notEqual(secondHolder.variablesReference, firstHolder.variablesReference);
-    assert.ok(Number(secondHolder.value) > 0);
+    assert.ok(secondHolder.type?.endsWith("Holder"));
+    assert.equal(secondHolder.value, "");
 
     const secondHolderFieldsResponse = await dc.variablesRequest({
       variablesReference: secondHolder.variablesReference,
     });
-    const secondCount = secondHolderFieldsResponse.body.variables.find((candidate) => candidate.name === "count");
-    assert.notStrictEqual(secondCount, undefined);
+    const secondCount = assertDefined(secondHolderFieldsResponse.body.variables.find((candidate) => candidate.name === "count"));
     assert.equal(secondCount.value, "9");
   });
 });

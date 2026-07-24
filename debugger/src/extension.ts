@@ -11,9 +11,12 @@ let serverProcess: ChildProcess | undefined;
 
 interface WarpoDebugConfiguration extends vscode.DebugConfiguration {
   program?: string;
+  wasmFilePath?: string;
   sessionMode?: string;
+  launchType?: string;
   runtime?: string;
   entryFunctionName?: string;
+  debugSessionLogging?: boolean;
   args?: number[];
 }
 
@@ -59,13 +62,17 @@ class WarpoDebugConfigurationProvider implements vscode.DebugConfigurationProvid
   ): vscode.ProviderResult<vscode.DebugConfiguration> {
     const warpoConfig = config as WarpoDebugConfiguration;
 
-    if (!warpoConfig.program) {
-      void vscode.window.showErrorMessage("No 'program' specified in launch configuration.");
+    warpoConfig.wasmFilePath = warpoConfig.wasmFilePath ?? warpoConfig.program;
+    if (!warpoConfig.wasmFilePath) {
+      void vscode.window.showErrorMessage("No 'wasmFilePath' specified in launch configuration.");
       return undefined;
     }
+    warpoConfig.program = warpoConfig.wasmFilePath;
     warpoConfig.sessionMode = warpoConfig.sessionMode ?? "wasm file";
+    warpoConfig.launchType = warpoConfig.sessionMode;
     warpoConfig.runtime = warpoConfig.runtime ?? "node";
     warpoConfig.entryFunctionName = warpoConfig.entryFunctionName ?? "main";
+    warpoConfig.debugSessionLogging = warpoConfig.debugSessionLogging ?? false;
     warpoConfig.args = warpoConfig.args ?? [];
     return warpoConfig;
   }

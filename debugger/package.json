@@ -41,10 +41,10 @@
         "configurationAttributes": {
           "launch": {
             "required": [
-              "program"
+              "wasmFilePath"
             ],
             "properties": {
-              "program": {
+              "wasmFilePath": {
                 "type": "string",
                 "description": "Path to the wasm file to debug."
               },
@@ -61,6 +61,11 @@
                 "type": "string",
                 "default": "main",
                 "description": "Name of the exported Wasm function to call."
+              },
+              "debugSessionLogging": {
+                "type": "boolean",
+                "default": false,
+                "description": "Show Warpo debug session logs in the Debug Console."
               },
               "args": {
                 "type": "array",
@@ -86,9 +91,10 @@
             "type": "warpo",
             "request": "launch",
             "name": "Warpo Debug (wasm file)",
-            "program": "${workspaceFolder}/build/output.wasm",
+            "wasmFilePath": "${workspaceFolder}/build/output.wasm",
             "sessionMode": "wasm file",
             "entryFunctionName": "main",
+            "debugSessionLogging": false,
             "args": []
           }
         ]

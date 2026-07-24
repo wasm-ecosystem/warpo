@@ -101,7 +101,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ["tests/tools/debug_server/**/*.ts"],
+    files: ["tools/debug_server/tests/**/*.ts"],
     rules: {
       "n/no-extraneous-import": "off",
     },

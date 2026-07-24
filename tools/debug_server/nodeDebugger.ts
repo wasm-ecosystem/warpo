@@ -20,6 +20,7 @@ const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
 const DEBUG_SERVER_TRACE_ENABLED = process.env.WARPO_DEBUG_SERVER_TRACE === "1";
 const DEBUG_SERVER_TRACE_FILE = path.join(process.cwd(), ".warpo-debug-server-trace.log");
 const LINEAR_MEMORY_OBJECT_GROUP = "warpo-linear-memory";
+const NODE_WAITING_FOR_DEBUGGER_DISCONNECT = "Waiting for the debugger to disconnect...";
 
 if (DEBUG_SERVER_TRACE_ENABLED) {
   try {
@@ -39,17 +40,18 @@ function trace(message: string): void {
   }
 }
 
-const READ_WASM_MEMORY_FUNCTION = function (this: WebAssembly.Memory, address: number, byteLength: number) {
-  if (
-    !(this instanceof ArrayBuffer) &&
-    !(typeof SharedArrayBuffer !== "undefined" && this instanceof SharedArrayBuffer)
-  ) {
+const READ_WASM_MEMORY_FUNCTION = function (this: WebAssembly.Memory | ArrayBuffer | SharedArrayBuffer, address: number, byteLength: number) {
+  const buffer =
+    this instanceof ArrayBuffer || (typeof SharedArrayBuffer !== "undefined" && this instanceof SharedArrayBuffer)
+      ? this
+      : (this as WebAssembly.Memory).buffer;
+  if (!(buffer instanceof ArrayBuffer) && !(typeof SharedArrayBuffer !== "undefined" && buffer instanceof SharedArrayBuffer)) {
     return;
   }
-  if (address < 0 || byteLength < 0 || address + byteLength > this.byteLength) {
+  if (address < 0 || byteLength < 0 || address + byteLength > buffer.byteLength) {
     return;
   }
-  return Array.from(new Uint8Array(this, address, byteLength));
+  return Array.from(new Uint8Array(buffer, address, byteLength));
 }.toString();
 
 const GET_WASM_MEMORY_BUFFER_FUNCTION = function (this: WebAssembly.Memory | ArrayBuffer | SharedArrayBuffer) {
@@ -132,6 +134,8 @@ export class NodeDebugger implements Debugger {
   onModuleLoad: ((module: DebuggerWasmModule) => void | Promise<void>) | undefined;
   onPause: ((info: DebugPauseInfo) => void | Promise<void>) | undefined;
   onRuntimeError: ((message: string) => void) | undefined;
+  onRuntimeExit: (() => void) | undefined;
+  onLog: ((message: string) => void) | undefined;
 
   private child: ChildProcess | undefined;
   private ws: WebSocket | undefined;
@@ -143,47 +147,87 @@ export class NodeDebugger implements Debugger {
   private pausedCallFrame: CDPCallFrame | undefined;
   private wasmMemoryBufferObjectId: string | undefined;
   private stderrOutput = "";
+  private disposed = false;
+  private runtimeExitPromise: Promise<void> | undefined;
+
+  private log(message: string): void {
+    trace(message);
+    this.onLog?.(`[${this.name}] ${message}`);
+  }
 
   async launch(config: WasmLaunchConfig): Promise<void> {
+    this.disposed = false;
     this.wasmFilePath = config.wasmFilePath;
 
     const port = await findFreePort();
-    trace(
+    this.log(
       `launch wasmFilePath=${config.wasmFilePath} entryFunctionName=${config.entryFunctionName} inspectPort=${port}`
     );
 
     this.child = spawn(
       process.execPath,
       [
-        `--inspect=${port}`,
+        `--inspect-brk=${port}`,
         path.join(DIRNAME, "wasmEntry.js"),
         config.wasmFilePath,
         config.entryFunctionName,
         ...config.args.map(String),
       ],
-      { stdio: ["pipe", "pipe", "pipe"] }
+      { env: getRuntimeEnv(), stdio: ["pipe", "pipe", "pipe"] }
     );
-    this.child.stderr?.on("data", (chunk: Buffer) => {
-      this.stderrOutput += filterRuntimeStderr(chunk.toString());
+    this.log(`runtime child spawned pid=${this.child.pid ?? "unknown"}`);
+    this.runtimeExitPromise = new Promise((resolve) => {
+      this.child?.once("exit", () => resolve());
+      this.child?.once("error", () => resolve());
     });
-    this.child.on("exit", (code) => {
-      trace(`runtime exit code=${code ?? "null"}`);
+    this.child.stdout?.on("data", (chunk: Buffer) => {
+      const text = chunk.toString().trim();
+      if (text) {
+        this.log(`runtime stdout: ${text}`);
+      }
+    });
+    this.child.stderr?.on("data", (chunk: Buffer) => {
+      const stderr = parseRuntimeStderr(chunk.toString());
+      this.stderrOutput += stderr.output;
+      const text = stderr.output.trim();
+      if (text) {
+        this.log(`runtime stderr: ${text}`);
+      }
+      if (stderr.waitingForDebuggerDisconnect) {
+        this.log("runtime waiting for debugger disconnect -> close websocket");
+        this.ws?.close();
+      }
+    });
+    this.child.on("error", (error) => {
+      this.log(`runtime child error: ${error.message}`);
+      this.onRuntimeError?.(error.message);
+      this.onRuntimeExit?.();
+    });
+    this.child.on("exit", (code, signal) => {
+      this.log(`runtime exit code=${code ?? "null"} signal=${signal ?? "null"}`);
+      if (this.disposed) {
+        return;
+      }
       if (code && code !== 0) {
         this.onRuntimeError?.(this.stderrOutput.trim() || `Debug runtime exited with code ${code}`);
       }
+      this.onRuntimeExit?.();
     });
 
     const wsUrl = await this.fetchWsUrl(port);
-    await this.connectCDP(wsUrl);
+    this.log(`inspector websocket discovered: ${wsUrl}`);
+    await Promise.race([this.connectCDP(wsUrl), this.runtimeExitPromise]);
   }
 
   dispose(): void {
+    this.disposed = true;
     this.paused = false;
     this.wasmFilePath = undefined;
     this.wasmScriptId = undefined;
     this.pausedCallFrame = undefined;
     this.wasmMemoryBufferObjectId = undefined;
     this.stderrOutput = "";
+    this.runtimeExitPromise = undefined;
     this.ws?.close();
     this.child?.kill();
   }
@@ -204,6 +248,7 @@ export class NodeDebugger implements Debugger {
   }
 
   finishModuleLoad(): void {
+    this.log("finishModuleLoad -> Runtime.runIfWaitingForDebugger");
     this.sendCommand("Runtime.runIfWaitingForDebugger");
   }
 
@@ -215,18 +260,18 @@ export class NodeDebugger implements Debugger {
     void (async () => {
       try {
         const location = this.resolveWasmBytecodeOffsetLocation(module, wasmBytecodeOffset);
-        trace(`setWasmBreakpoint offset=${wasmBytecodeOffset} url=${module.url}`);
+        this.log(`setWasmBreakpoint offset=${wasmBytecodeOffset} url=${module.url}`);
         await this.waitForCommandResult("Debugger.setBreakpointByUrl", {
           lineNumber: location.lineNumber,
           url: module.url,
           columnNumber: location.columnNumber,
           condition: "",
         });
-        trace(`setWasmBreakpoint success offset=${wasmBytecodeOffset}`);
+        this.log(`setWasmBreakpoint success offset=${wasmBytecodeOffset}`);
         callbacks?.onSuccess?.();
       } catch (error) {
         const commandError = error instanceof Error ? error : new Error(String(error));
-        trace(`setWasmBreakpoint error offset=${wasmBytecodeOffset} message=${commandError.message}`);
+        this.log(`setWasmBreakpoint error offset=${wasmBytecodeOffset} message=${commandError.message}`);
         callbacks?.onError?.(commandError);
       }
     })();
@@ -262,11 +307,14 @@ export class NodeDebugger implements Debugger {
   }
 
   async readWasmMemory(address: number, byteLength: number): Promise<Uint8Array | undefined> {
+    this.log(`readWasmMemory address=${address} byteLength=${byteLength}`);
     const memoryBufferObjectId = await this.getWasmMemoryBufferObjectId();
     if (!memoryBufferObjectId) {
+      this.log("readWasmMemory skipped: memory buffer unavailable");
       return undefined;
     }
 
+    this.log("readWasmMemory -> Runtime.callFunctionOn");
     const result = await this.waitForCommandResult("Runtime.callFunctionOn", {
       objectId: memoryBufferObjectId,
       functionDeclaration: READ_WASM_MEMORY_FUNCTION,
@@ -276,14 +324,17 @@ export class NodeDebugger implements Debugger {
     });
     const remoteObject = getRuntimeEvaluateRemoteObject(result);
     if (!Array.isArray(remoteObject?.value) || !remoteObject.value.every((value) => typeof value === "number")) {
+      this.log("readWasmMemory failed: runtime returned non-byte-array value");
       return undefined;
     }
 
+    this.log(`readWasmMemory success bytes=${remoteObject.value.length}`);
     return Uint8Array.from(remoteObject.value);
   }
 
   private async fetchWsUrl(port: number): Promise<string> {
     const deadline = Date.now() + 5000;
+    this.log(`waiting for inspector endpoint on port ${port}`);
     while (Date.now() < deadline) {
       try {
         const resp = await fetch(`http://127.0.0.1:${port}/json`);
@@ -292,9 +343,11 @@ export class NodeDebugger implements Debugger {
         }
         const [info] = (await resp.json()) as { webSocketDebuggerUrl: string }[];
         if (info?.webSocketDebuggerUrl) {
+          this.log(`inspector endpoint ready on port ${port}`);
           return info.webSocketDebuggerUrl;
         }
-      } catch {
+      } catch (error) {
+        trace(`inspector endpoint not ready: ${error instanceof Error ? error.message : "unknown error"}`);
         // The inspector endpoint is not always ready immediately after spawn.
       }
       await wait(50);
@@ -302,7 +355,7 @@ export class NodeDebugger implements Debugger {
 
     throw new Error(`timed out waiting for inspector endpoint on port ${port}`);
   }
-  private sendCommand(method: string, params?: Record<string, unknown>, callbacks?: CDPCommandCallbacks): void {
+  private sendCommand(method: string, params?: Record<string, unknown>, callbacks?: CDPCommandCallbacks): number {
     if (!this.ws) {
       throw new Error("debugger is not connected");
     }
@@ -311,16 +364,20 @@ export class NodeDebugger implements Debugger {
     if (callbacks) {
       this.pendingCommandCallbacks.set(id, callbacks);
     }
+    this.log(`CDP -> ${method} id=${id}`);
     this.ws.send(JSON.stringify({ id, method, params }));
+    return id;
   }
 
   private waitForCommand(method: string, params?: Record<string, unknown>): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.sendCommand(method, params, {
+      const id = this.sendCommand(method, params, {
         onSuccess: () => {
+          this.log(`CDP command completed ${method} id=${id}`);
           resolve();
         },
         onError: (error) => {
+          this.log(`CDP command failed ${method} id=${id}: ${error.message}`);
           reject(error);
         },
       });
@@ -329,11 +386,13 @@ export class NodeDebugger implements Debugger {
 
   private waitForCommandResult(method: string, params?: Record<string, unknown>): Promise<Record<string, unknown>> {
     return new Promise((resolve, reject) => {
-      this.sendCommand(method, params, {
+      const id = this.sendCommand(method, params, {
         onSuccess: (result) => {
+          this.log(`CDP command completed ${method} id=${id}`);
           resolve(result ?? {});
         },
         onError: (error) => {
+          this.log(`CDP command failed ${method} id=${id}: ${error.message}`);
           reject(error);
         },
       });
@@ -348,15 +407,18 @@ export class NodeDebugger implements Debugger {
       ws.addEventListener("open", () => {
         void (async () => {
           try {
-            trace("ws open -> Debugger.enable");
+            this.log("websocket open -> Runtime.enable");
+            await this.waitForCommand("Runtime.enable");
+            this.log("Runtime.enable complete -> Debugger.enable");
             await this.waitForCommand("Debugger.enable");
-            trace("Debugger.enable -> Debugger.setBreakpointsActive");
-            await this.waitForCommand("Debugger.setBreakpointsActive", { active: true });
-            trace("Debugger.setBreakpointsActive -> Runtime.runIfWaitingForDebugger");
+            this.log("Debugger.enable complete -> Runtime.runIfWaitingForDebugger");
             await this.waitForCommand("Runtime.runIfWaitingForDebugger");
-            trace("Runtime.runIfWaitingForDebugger -> launch ready");
+            this.log("Runtime.runIfWaitingForDebugger complete -> Debugger.setBreakpointsActive");
+            await this.waitForCommand("Debugger.setBreakpointsActive", { active: true });
+            this.log("Debugger.setBreakpointsActive complete -> launch ready");
             resolve();
           } catch (error) {
+            this.log(`CDP setup failed: ${error instanceof Error ? error.message : "unknown error"}`);
             reject(error instanceof Error ? error : new Error(String(error)));
           }
         })();
@@ -364,53 +426,101 @@ export class NodeDebugger implements Debugger {
 
       ws.addEventListener("error", (e) => {
         const message = e instanceof Error ? e.message : "WebSocket connection failed";
+        this.log(`websocket error: ${message}`);
         reject(new Error(message));
+      });
+
+      ws.addEventListener("close", (event) => {
+        this.log(`websocket close code=${event.code} reason=${event.reason || ""}`);
       });
 
       ws.addEventListener("message", (ev) => {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const msg: CDPResponse = JSON.parse(String(ev.data));
-        if (typeof msg.id === "number") {
-          this.handleCommandResponse(msg.id, msg);
-          return;
-        }
-
-        if (msg.method === "Debugger.paused") {
-          const reason = this.getPauseReason(msg.params);
-          this.paused = true;
-          this.pausedCallFrame = this.getPausedWasmCallFrame(msg.params);
-          this.wasmMemoryBufferObjectId = undefined;
-          trace(`Debugger.paused reason=${reason}`);
-          void (async () => {
-            const wasmBytecodeOffset = this.pausedCallFrame
-              ? this.resolveWasmLocationBytecodeOffset(this.pausedCallFrame.location)
-              : undefined;
-            await this.onPause?.({ reason, wasmBytecodeOffset });
-          })().catch((error: unknown) => {
-            trace(`pause handler failed: ${error instanceof Error ? error.message : "unknown error"}`);
-          });
-          return;
-        }
-        if (msg.method === "Debugger.scriptParsed") {
-          const params = msg.params;
-          const lang = typeof params?.scriptLanguage === "string" ? params.scriptLanguage : "unknown";
-          const url = typeof params?.url === "string" ? params.url : "";
-          trace(`Debugger.scriptParsed language=${lang} url=${url}`);
-          if (params && lang === "WebAssembly" && typeof params.scriptId === "string") {
-            this.wasmScriptId = params.scriptId;
-            trace(`wasm module detected scriptId=${params.scriptId}`);
-            void this.handleModuleLoad({
-              scriptId: params.scriptId,
-              url,
-            }).catch((error: unknown) => {
-              const message = error instanceof Error ? error.message : "unknown error";
-              trace(`module load handler failed: ${message}`);
-              process.stderr.write(`Module load handler failed: ${message}\n`);
-            });
-          }
-        }
+        this.handleCdpMessage(msg);
       });
     });
+  }
+
+  private handleCdpMessage(msg: CDPResponse): void {
+    if (typeof msg.id === "number") {
+      this.handleCommandResponse(msg.id, msg);
+      return;
+    }
+
+    if (msg.method === "Debugger.paused") {
+      this.handleDebuggerPaused(msg.params);
+      return;
+    }
+
+    if (msg.method === "Debugger.scriptParsed") {
+      this.handleScriptParsed(msg.params);
+    }
+  }
+
+  private handleDebuggerPaused(params?: Record<string, unknown>): void {
+    const reason = this.getPauseReason(params);
+    if (reason === "Break on start" && !this.wasmScriptId) {
+      this.log("Debugger.paused reason=Break on start location=inspect-brk startup");
+      void this.resumeInternalStartupPause();
+      return;
+    }
+
+    if (reason === "other" && this.wasmScriptId) {
+      this.log("Debugger.paused reason=other location=wasm pre-entry gate");
+      return;
+    }
+
+    this.paused = true;
+    this.pausedCallFrame = this.getPausedWasmCallFrame(params);
+    this.wasmMemoryBufferObjectId = undefined;
+    this.log(`Debugger.paused reason=${reason}`);
+    void this.notifyPause(reason);
+  }
+
+  private async notifyPause(reason: string): Promise<void> {
+    try {
+      const wasmBytecodeOffset = this.pausedCallFrame
+        ? this.resolveWasmLocationBytecodeOffset(this.pausedCallFrame.location)
+        : undefined;
+      await this.onPause?.({ reason, wasmBytecodeOffset });
+    } catch (error) {
+      this.log(`pause handler failed: ${error instanceof Error ? error.message : "unknown error"}`);
+    }
+  }
+
+  private handleScriptParsed(params?: Record<string, unknown>): void {
+    const lang = typeof params?.scriptLanguage === "string" ? params.scriptLanguage : "unknown";
+    const url = typeof params?.url === "string" ? params.url : "";
+    this.log(`Debugger.scriptParsed language=${lang} url=${url}`);
+    if (!params || lang !== "WebAssembly" || typeof params.scriptId !== "string") {
+      return;
+    }
+
+    this.wasmScriptId = params.scriptId;
+    this.log(`wasm module detected scriptId=${params.scriptId}`);
+    void this.handleModuleLoad({
+      scriptId: params.scriptId,
+      url,
+    }).catch((error: unknown) => {
+      const message = error instanceof Error ? error.message : "unknown error";
+      this.log(`module load handler failed: ${message}`);
+      process.stderr.write(`Module load handler failed: ${message}\n`);
+    });
+  }
+
+  private async resumeInternalStartupPause(): Promise<void> {
+    try {
+      await this.waitForCommand("Debugger.resume");
+      this.paused = false;
+      this.pausedCallFrame = undefined;
+      this.wasmMemoryBufferObjectId = undefined;
+      this.log("inspect-brk startup pause resumed");
+    } catch (error) {
+      this.log(
+        `failed to resume inspect-brk startup pause: ${error instanceof Error ? error.message : "unknown error"}`
+      );
+    }
   }
 
   private handleCommandResponse(id: number, msg: CDPResponse): void {
@@ -421,10 +531,12 @@ export class NodeDebugger implements Debugger {
 
     this.pendingCommandCallbacks.delete(id);
     if (msg.error) {
+      this.log(`CDP <- error id=${id} message=${msg.error.message ?? "CDP command failed"}`);
       callbacks.onError?.(new Error(msg.error.message ?? "CDP command failed"));
       return;
     }
 
+    this.log(`CDP <- success id=${id}`);
     callbacks.onSuccess?.(msg.result);
   }
 
@@ -483,11 +595,14 @@ export class NodeDebugger implements Debugger {
       return this.wasmMemoryBufferObjectId;
     }
 
+    this.log("getWasmMemoryBufferObjectId -> getWasmMemoryObjectId");
     const memoryObjectId = await this.getWasmMemoryObjectId();
     if (!memoryObjectId) {
+      this.log("getWasmMemoryBufferObjectId failed: memory object unavailable");
       return undefined;
     }
 
+    this.log("getWasmMemoryBufferObjectId -> Runtime.callFunctionOn buffer");
     const bufferResult = await this.waitForCommandResult("Runtime.callFunctionOn", {
       objectId: memoryObjectId,
       functionDeclaration: GET_WASM_MEMORY_BUFFER_FUNCTION,
@@ -496,6 +611,7 @@ export class NodeDebugger implements Debugger {
     });
     const bufferObject = getRuntimeEvaluateRemoteObject(bufferResult);
     this.wasmMemoryBufferObjectId = bufferObject?.objectId;
+    this.log(`getWasmMemoryBufferObjectId result=${this.wasmMemoryBufferObjectId ?? "undefined"}`);
     return this.wasmMemoryBufferObjectId;
   }
 
@@ -506,6 +622,7 @@ export class NodeDebugger implements Debugger {
       return undefined;
     }
 
+    this.log("getWasmMemoryObjectId -> Runtime.getProperties module scope");
     const result = await this.waitForCommandResult("Runtime.getProperties", {
       objectId,
       ownProperties: false,
@@ -516,12 +633,14 @@ export class NodeDebugger implements Debugger {
       return undefined;
     }
 
+    this.log("getWasmMemoryObjectId -> Runtime.getProperties memories");
     const memoriesResult = await this.waitForCommandResult("Runtime.getProperties", {
       objectId: memoriesProperty.value.objectId,
       ownProperties: false,
     });
     const memories = Array.isArray(memoriesResult.result) ? memoriesResult.result.filter(isCDPPropertyDescriptor) : [];
     const nestedMemory = memories.find((property) => property.value && isWasmMemoryObject(property.value));
+    this.log(`getWasmMemoryObjectId result=${nestedMemory?.value?.objectId ?? "undefined"}`);
     return nestedMemory?.value?.objectId;
   }
 
@@ -540,29 +659,87 @@ export class NodeDebugger implements Debugger {
   }
 
   private async handleModuleLoad(runtimeInfo: { scriptId: string; url: string }): Promise<void> {
+    if (this.hasRuntimeExited()) {
+      this.log("skip wasm module load because runtime already exited");
+      return;
+    }
+
     if (!this.wasmFilePath) {
       throw new Error("wasm file path is not available");
     }
 
+    this.log(`loading wasm debug metadata from ${this.wasmFilePath}`);
     const module = await DebuggerWasmModule.load(this.wasmFilePath, runtimeInfo);
+    this.log(`wasm debug metadata loaded from ${module.sourceMapFilePath}`);
     void this.onModuleLoad?.(module);
+  }
+
+  private hasRuntimeExited(): boolean {
+    return this.child !== undefined && (this.child.exitCode !== null || this.child.signalCode !== null);
   }
 }
 
-function filterRuntimeStderr(text: string): string {
-  return text
+function parseRuntimeStderr(text: string): { output: string; waitingForDebuggerDisconnect: boolean } {
+  let waitingForDebuggerDisconnect = false;
+  const output = text
     .split(/(?<=\n)/)
     .filter((line) => {
       const trimmed = line.trim();
+      if (trimmed === NODE_WAITING_FOR_DEBUGGER_DISCONNECT) {
+        waitingForDebuggerDisconnect = true;
+        return false;
+      }
+
       return (
         trimmed !== "" &&
         !trimmed.startsWith("Debugger listening on") &&
         !trimmed.startsWith("For help, see:") &&
-        trimmed !== "Debugger attached." &&
-        trimmed !== "Waiting for the debugger to disconnect..."
+        trimmed !== "Debugger attached."
       );
     })
     .join("");
+  return { output, waitingForDebuggerDisconnect };
+}
+
+function getRuntimeEnv(): NodeJS.ProcessEnv {
+  const env = { ...process.env };
+  delete env.VSCODE_INSPECTOR_OPTIONS;
+
+  const nodeOptions = filterAutoAttachNodeOptions(env.NODE_OPTIONS);
+  if (nodeOptions) {
+    env.NODE_OPTIONS = nodeOptions;
+  } else {
+    delete env.NODE_OPTIONS;
+  }
+
+  return env;
+}
+
+function filterAutoAttachNodeOptions(nodeOptions: string | undefined): string {
+  if (!nodeOptions) {
+    return "";
+  }
+
+  const parts = nodeOptions.split(/\s+/).filter(Boolean);
+  const filtered: string[] = [];
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    const next = parts[i + 1];
+    if ((part === "--require" || part === "-r") && next && isVsCodeJsDebugBootloader(next)) {
+      i++;
+      continue;
+    }
+    if ((part.startsWith("--require=") || part.startsWith("-r=")) && isVsCodeJsDebugBootloader(part)) {
+      continue;
+    }
+    filtered.push(part);
+  }
+
+  return filtered.join(" ");
+}
+
+function isVsCodeJsDebugBootloader(value: string): boolean {
+  return value.includes("js-debug") || value.includes("vscode-js-debug");
 }
 
 function isCDPPropertyDescriptor(value: unknown): value is CDPPropertyDescriptor {

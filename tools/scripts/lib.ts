@@ -229,14 +229,30 @@ export async function build(options: Option): Promise<number> {
   const cwd = options.cwd ?? process.cwd();
   const argv = applyDefaultBuildOptions(options.argv, cwd);
   const binary = await downloadForCurrentMachineBinary(options.proxy);
-  const ps = spawn(binary, argv, {
-    stdio: options.onStdout === undefined ? "inherit" : ["inherit", "pipe", "inherit"],
-    env: options.env ?? process.env,
-    cwd,
-  });
-  if (options.onStdout !== undefined) {
-    ps.stdout.on("data", (chunk: Buffer) => {
-      options.onStdout(chunk.toString("utf8"));
+  if (binary === null) {
+    throw new Error("Failed to resolve warpo binary path");
+  }
+
+  const onStdout = options.onStdout;
+  const ps =
+    onStdout === undefined
+      ? spawn(binary, argv, {
+          stdio: "inherit",
+          env: options.env ?? process.env,
+          cwd,
+        })
+      : spawn(binary, argv, {
+          stdio: ["inherit", "pipe", "inherit"],
+          env: options.env ?? process.env,
+          cwd,
+        });
+  if (onStdout !== undefined) {
+    const stdout = ps.stdout;
+    if (!stdout) {
+      throw new Error("WARPO process stdout is unavailable");
+    }
+    stdout.on("data", (chunk: Buffer) => {
+      onStdout(chunk.toString("utf8"));
     });
   }
   return new Promise<number>((resolve, reject) => {

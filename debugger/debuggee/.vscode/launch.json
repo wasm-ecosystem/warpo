@@ -5,7 +5,10 @@
       "type": "warpo",
       "request": "launch",
       "name": "Warpo Debug",
-      "program": "${workspaceFolder}/hello.ts"
+      "wasmFilePath": "${workspaceFolder}/hello.wasm",
+      "entryFunctionName": "main",
+      "debugSessionLogging": true,
+      "sessionMode": "wasm file"
     }
   ]
 }

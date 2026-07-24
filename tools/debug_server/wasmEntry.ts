@@ -9,14 +9,12 @@ import * as path from "node:path";
 const [wasmFilePath, entryFunctionName, ...rawArgs] = process.argv.slice(2);
 
 if (!wasmFilePath || !entryFunctionName) {
-  console.error("Usage: wasmEntry.js <wasmFilePath> <entryFunctionName> [args...]");
-  process.exit(1);
+  exitWithError("Usage: wasmEntry.js <wasmFilePath> <entryFunctionName> [args...]");
 }
 
 const resolvedPath = path.resolve(wasmFilePath);
 if (!fs.existsSync(resolvedPath)) {
-  console.error(`Wasm file not found: ${resolvedPath}`);
-  process.exit(1);
+  exitWithError(`Wasm file not found: ${resolvedPath}`);
 }
 
 const args = rawArgs.map(Number);
@@ -37,20 +35,23 @@ function formatError(error: unknown): string {
   return "unknown error";
 }
 
+function exitWithError(message: string): never {
+  console.error(message);
+  inspector.close();
+  process.exit(1);
+}
+
 async function instantiateWasm(filePath: string): Promise<WebAssembly.Instance> {
   try {
     const buffer = fs.readFileSync(filePath);
     const module = await WebAssembly.compile(buffer);
     return await WebAssembly.instantiate(module, {});
   } catch (error) {
-    console.error(`Failed to load wasm module "${filePath}": ${formatError(error)}`);
-    process.exit(1);
+    exitWithError(`Failed to load wasm module "${filePath}": ${formatError(error)}`);
   }
 }
 
 async function main() {
-  inspector.waitForDebugger();
-
   const instance = await instantiateWasm(resolvedPath);
 
   inspector.waitForDebugger();
@@ -58,8 +59,7 @@ async function main() {
   const fn = instance.exports[entryFunctionName];
   if (typeof fn !== "function") {
     const keys = Object.keys(instance.exports).join(", ");
-    console.error(`Export "${entryFunctionName}" is not a function. Available exports: ${keys}`);
-    process.exit(1);
+    exitWithError(`Export "${entryFunctionName}" is not a function. Available exports: ${keys}`);
   }
 
   console.log(`Calling ${entryFunctionName}(${args.join(", ")})...`);
