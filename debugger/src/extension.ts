@@ -9,6 +9,8 @@ import { launchDapServer } from "./launcher";
 
 let serverProcess: ChildProcess | undefined;
 
+const DAP_SERVER_RELATIVE_PATH = path.join("dist", "debug_server", "dapServer.js");
+
 interface WarpoDebugConfiguration extends vscode.DebugConfiguration {
   program?: string;
   wasmFilePath?: string;
@@ -21,7 +23,7 @@ interface WarpoDebugConfiguration extends vscode.DebugConfiguration {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  const factory = new WarpoDebugAdapterFactory();
+  const factory = new WarpoDebugAdapterFactory(context.extensionPath);
   const configProvider = new WarpoDebugConfigurationProvider();
 
   context.subscriptions.push(
@@ -41,7 +43,7 @@ export function deactivate() {
   serverProcess = undefined;
 }
 
-function findDapServer(workspaceFolder: string): string | undefined {
+function findDapServer(workspaceFolder: string, extensionPath: string): string | undefined {
   const config = vscode.workspace.getConfiguration("warpo");
   const override = config.get<string>("debugRuntime");
   if (override) {
@@ -51,8 +53,13 @@ function findDapServer(workspaceFolder: string): string | undefined {
     }
   }
 
-  const candidate = path.join(workspaceFolder, "node_modules", "warpo", "dist", "debug_server", "dapServer.js");
-  return fs.existsSync(candidate) ? candidate : undefined;
+  const projectRuntime = path.join(workspaceFolder, "node_modules", "warpo", DAP_SERVER_RELATIVE_PATH);
+  if (fs.existsSync(projectRuntime)) {
+    return projectRuntime;
+  }
+
+  const developmentRuntime = path.join(extensionPath, "..", DAP_SERVER_RELATIVE_PATH);
+  return fs.existsSync(developmentRuntime) ? developmentRuntime : undefined;
 }
 
 class WarpoDebugConfigurationProvider implements vscode.DebugConfigurationProvider {
@@ -79,16 +86,18 @@ class WarpoDebugConfigurationProvider implements vscode.DebugConfigurationProvid
 }
 
 class WarpoDebugAdapterFactory implements vscode.DebugAdapterDescriptorFactory {
+  constructor(private readonly extensionPath: string) {}
+
   async createDebugAdapterDescriptor(session: vscode.DebugSession): Promise<vscode.DebugAdapterDescriptor> {
     const workspaceFolder = session.workspaceFolder?.uri.fsPath ?? vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
     if (!workspaceFolder) {
       throw new Error("No workspace folder found. Open a folder to use Warpo debugger.");
     }
 
-    const dapServer = findDapServer(workspaceFolder);
+    const dapServer = findDapServer(workspaceFolder, this.extensionPath);
     if (!dapServer) {
       throw new Error(
-        "Warpo debug runtime not found. Make sure 'warpo' is installed in your project (npm install warpo)."
+        "Warpo debug runtime not found. Install 'warpo' in this project, or set 'warpo.debugRuntime' for local development."
       );
     }
 
