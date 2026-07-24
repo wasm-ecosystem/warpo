@@ -17,6 +17,18 @@ interface UnittestPackage {
   readonly filterByName: (fullTestName: string) => boolean;
 }
 
+function createRegexFilter(regexPattern: RegExp): UnittestPackage["filterByName"] {
+  return (fullTestName: string): boolean => regexPattern.test(fullTestName);
+}
+
+function createFailedNameFilter(failedTestNames: string[]): UnittestPackage["filterByName"] {
+  return (fullTestName: string): boolean => failedTestNames.includes(fullTestName);
+}
+
+function acceptAllTests(): boolean {
+  return true;
+}
+
 export function analyze(
   { includes, excludes, testNamePattern, testFiles, entryFiles }: AnalyzeOption,
   failedTestNames: string[]
@@ -52,12 +64,12 @@ function getFilterByName(testNamePattern: string | null, failedTestNames: string
   );
   if (testNamePattern !== null) {
     const regexPattern = new RegExp(testNamePattern);
-    return (fullTestName: string): boolean => regexPattern.test(fullTestName);
+    return createRegexFilter(regexPattern);
   }
   if (failedTestNames.length > 0) {
-    return (fullTestName: string): boolean => failedTestNames.includes(fullTestName);
+    return createFailedNameFilter(failedTestNames);
   }
-  return (): boolean => true;
+  return acceptAllTests;
 }
 
 // a. include in config

@@ -1,6 +1,7 @@
 // Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+import assert from "node:assert/strict";
 import { BLOCK_OVERHEAD, TAGS_MASK } from "./constants.js";
 import { VIRTUAL_ROOT } from "./dominator.js";
 import type { ObjectHeader } from "./types.js";
@@ -67,6 +68,7 @@ function aggregateRetainedSizes(
 
   while (stack.length > 0) {
     const current = stack.pop();
+    assert(current !== undefined);
 
     if (!current.visited) {
       stack.push({ node: current.node, visited: true });

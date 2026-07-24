@@ -80,6 +80,7 @@ function createWebAssemblyCallSite(
     fileName: moduleInfo.wasmPath,
     functionName: getWebAssemblyFunctionName(callSite),
     lineNumber: line ?? -1,
+    // eslint-disable-next-line dot-notation -- env is index-signature typed by the strict test_runner tsconfig.
     columnNumber: env["WARPO_TEST"] ? -1 : (column ?? -1),
   };
 }
@@ -120,7 +121,7 @@ export async function handleWebAssemblyError(
   error.stack; // trigger prepareStackTrace
   Error.prepareStackTrace = originalPrepareStackTrace;
 
-  let sourceMapConsumer = await getSourceMapConsumer(wasmModule.sourceMap);
+  const sourceMapConsumer = await getSourceMapConsumer(wasmModule.sourceMap);
   const stacks = stackTrace
     .map((callSite) => createWebAssemblyCallSite(callSite, { wasmPath: wasmModule.wasm, sourceMapConsumer }))
     .filter((callSite) => callSite !== null);

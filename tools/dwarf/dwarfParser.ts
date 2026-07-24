@@ -20,6 +20,7 @@ import {
   SectionCode,
   Type,
 } from "wasmparser";
+import assert from "node:assert/strict";
 
 // ── DWARF constants ──────────────────────────────────────────────────────────
 
@@ -546,6 +547,7 @@ export function* walkDIEs(root: DwarfDIE): Generator<DwarfDIE> {
   const stack: DwarfDIE[] = [root];
   while (stack.length > 0) {
     const die = stack.pop();
+    assert(die !== undefined);
     yield die;
     for (let i = die.children.length - 1; i >= 0; i--) {
       stack.push(die.children[i]);

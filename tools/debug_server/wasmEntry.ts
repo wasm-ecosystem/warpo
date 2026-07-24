@@ -64,8 +64,7 @@ async function main() {
 
   console.log(`Calling ${entryFunctionName}(${args.join(", ")})...`);
   const result = (fn as (...a: number[]) => unknown)(...args);
-  // eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
-  console.log(`Result: ${result}`);
+  console.log("Result:", result);
 }
 
 await main();

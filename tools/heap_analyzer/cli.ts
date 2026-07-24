@@ -205,7 +205,7 @@ export async function main(args: string[] = processArgv.slice(2)): Promise<void>
   await program.parseAsync(args, { from: "user" });
 }
 
-if (processArgv[1] !== undefined && fileURLToPath(import.meta.url) === processArgv[1]) {
+if (fileURLToPath(import.meta.url) === processArgv[1]) {
   try {
     await main();
   } catch (error: unknown) {

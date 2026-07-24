@@ -23,16 +23,17 @@ export class ExecutionResultSummary {
   failedInfos: FailedInfoMap = new Map();
 
   #prepareFailedInfos(testcaseName: TestCaseName): FailedInfo {
-    if (this.failedInfos.has(testcaseName)) {
-      return this.failedInfos.get(testcaseName)!;
+    const failedInfo = this.failedInfos.get(testcaseName);
+    if (failedInfo !== undefined) {
+      return failedInfo;
     }
-    const failedInfo: FailedInfo = {
+    const newFailedInfo: FailedInfo = {
       hasCrash: false,
       assertMessages: [],
       logMessages: [],
     };
-    this.failedInfos.set(testcaseName, failedInfo);
-    return failedInfo;
+    this.failedInfos.set(testcaseName, newFailedInfo);
+    return newFailedInfo;
   }
 
   #processAssertInfo(failedInfo: AssertFailMessage, expectInfo: ExpectInfo | null) {
@@ -64,8 +65,9 @@ export class ExecutionResultSummary {
    */
   #processLogMessages(failedLogMessages: FailedLogMessages) {
     for (const [testcaseName, failedInfo] of this.failedInfos) {
-      if (failedLogMessages[testcaseName] !== undefined) {
-        failedInfo.logMessages = failedInfo.logMessages.concat(failedLogMessages[testcaseName]);
+      const logMessages = (failedLogMessages as Partial<FailedLogMessages>)[testcaseName];
+      if (logMessages !== undefined) {
+        failedInfo.logMessages = failedInfo.logMessages.concat(logMessages);
       }
     }
   }
@@ -111,7 +113,7 @@ export class ExecutionResultSummary {
   #printErrorMessage(log: (msg: string) => void): void {
     log(chalk.red("Error Message: "));
     // sort failedInfos by testcaseName to keep stability for e2e testing
-    const failedInfosArray = Array.from(this.failedInfos.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+    const failedInfosArray = Array.from(this.failedInfos.entries()).toSorted((a, b) => a[0].localeCompare(b[0]));
     for (const [testcaseName, { hasCrash, assertMessages, logMessages }] of failedInfosArray) {
       log(`  ${testcaseName}: `);
       for (const assertMessage of assertMessages) {

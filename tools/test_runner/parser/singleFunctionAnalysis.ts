@@ -70,8 +70,8 @@ export class SingleFunctionCoverageAnalysis {
 
   private markCoveredBranches(indexSerialInSingleFunction: CodeSnippetIndex[]) {
     for (let i = 1; i < indexSerialInSingleFunction.length; i++) {
-      const first = indexSerialInSingleFunction[i - 1],
-        second = indexSerialInSingleFunction[i];
+      const first = indexSerialInSingleFunction.at(i - 1),
+        second = indexSerialInSingleFunction.at(i);
       assert(first !== undefined);
       assert(second !== undefined);
       const toNodes = this.branchGraph.get(first);
