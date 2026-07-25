@@ -6,6 +6,7 @@ import {
   InitializedEvent,
   Thread,
   Breakpoint,
+  Source,
   Scope,
   StackFrame,
   LoadedSourceEvent,
@@ -20,6 +21,7 @@ import assert from "node:assert/strict";
 import * as path from "node:path";
 import type { ClassField, ClassLayout } from "../dwarf/classDebugInfo.js";
 import { OBJECT_RTID_OFFSET, OBJECT_RTID_SIZE } from "../runtime/objectLayout.js";
+import { normalizeDebugPath } from "./debugPath.js";
 import type { DebuggerBreakpointInfo, DebuggerWasmModule } from "./debuggerWasmModule.js";
 import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
 import { NodeDebugger } from "./nodeDebugger.js";
@@ -29,6 +31,7 @@ interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArgumen
   launchType?: string;
   runtime?: string;
   entryFunctionName?: string;
+  debugSessionLogging?: boolean;
   args?: number[];
 }
 
@@ -50,6 +53,18 @@ type DebugSessionVariable = BasicVariable | ClassVariable;
 
 type VariableContainer = { kind: "locals" } | { kind: "object"; address: number };
 
+function formatUnknownError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "string") {
+    return error;
+  }
+
+  return "unknown error";
+}
+
 export class WarpoDebugSession extends LoggingDebugSession {
   private static threadId = 1;
   private breakpointId = 0;
@@ -60,17 +75,13 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private loadedModule: DebuggerWasmModule | undefined;
   private runtime: Debugger | undefined;
   private stoppedWasmBytecodeOffset: number | undefined;
+  private debugSessionLogging = false;
 
   private log(msg: string): void {
     logger.log(msg);
-  }
-
-  private normalizeSourcePath(filePath: string): string {
-    if (filePath === "") {
-      return "";
+    if (this.debugSessionLogging) {
+      this.sendEvent(new OutputEvent(`${msg}\n`, "stdout"));
     }
-
-    return path.resolve(filePath).replaceAll("\\", "/");
   }
 
   private sendStoppedEvent(runtime: Debugger, info: DebugPauseInfo): void {
@@ -118,7 +129,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response: DebugProtocol.SetBreakpointsResponse,
     args: DebugProtocol.SetBreakpointsArguments
   ): void {
-    const sourcePath = this.normalizeSourcePath(args.source.path || "");
+    const sourcePath = normalizeDebugPath(args.source.path || "");
     const clientLines = args.breakpoints || [];
 
     const bps: DebuggerBreakpointInfo[] = clientLines.map((bp) => {
@@ -165,6 +176,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     args: WarpoLaunchRequestArguments
   ): Promise<void> {
     try {
+      this.debugSessionLogging = args.debugSessionLogging ?? false;
       this.log(`Launch requested for: ${args.program}`);
 
       const launchType = args.launchType ?? "wasm file";
@@ -213,7 +225,12 @@ export class WarpoDebugSession extends LoggingDebugSession {
         };
         runtime.onRuntimeError = (message) => {
           this.sendEvent(new OutputEvent(`${message}\n`, "stderr"));
-          this.sendEvent(new TerminatedEvent());
+        };
+        runtime.onRuntimeExit = () => {
+          this.handleRuntimeExit(runtime);
+        };
+        runtime.onLog = (message) => {
+          this.log(message);
         };
 
         this.disposeLoadedModule();
@@ -254,11 +271,15 @@ export class WarpoDebugSession extends LoggingDebugSession {
   }
 
   protected variablesRequest(response: DebugProtocol.VariablesResponse, args: DebugProtocol.VariablesArguments): void {
-    void this.doVariablesRequest(response, args);
+    void this.doVariablesRequest(response, args).catch((error: unknown) => {
+      const message = formatUnknownError(error);
+      this.log(`Variables request failed: ${message}`);
+      this.sendErrorResponse(response, 1, `Variables request failed: ${message}`);
+    });
   }
 
   protected continueRequest(response: DebugProtocol.ContinueResponse, _args: DebugProtocol.ContinueArguments): void {
-    void this.doContinueRequest(response);
+    this.doContinueRequest(response);
   }
 
   protected disconnectRequest(
@@ -270,6 +291,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.stoppedWasmBytecodeOffset = undefined;
     this.runtime?.dispose();
     this.runtime = undefined;
+    this.debugSessionLogging = false;
     this.log("Debug session ended.");
     this.sendResponse(response);
   }
@@ -277,11 +299,25 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private async doStackTraceRequest(response: DebugProtocol.StackTraceResponse): Promise<void> {
     const frame = await this.runtime?.maybeGetPausedWasmFrame();
     const frameName = frame?.functionName || "wasm";
+    const sourceLocation = this.resolveStoppedSourceLocation();
+    const source = sourceLocation
+      ? new Source(path.basename(sourceLocation.sourcePath), sourceLocation.sourcePath)
+      : undefined;
     response.body = {
-      stackFrames: [new StackFrame(1, frameName)],
+      stackFrames: [new StackFrame(1, frameName, source, sourceLocation?.sourceLine ?? 0, 1)],
       totalFrames: 1,
     };
     this.sendResponse(response);
+  }
+
+  private resolveStoppedSourceLocation(): { sourcePath: string; sourceLine: number } | undefined {
+    const wasmModule = this.loadedModule;
+    const wasmBytecodeOffset = this.stoppedWasmBytecodeOffset;
+    if (!wasmModule || wasmBytecodeOffset === undefined) {
+      return undefined;
+    }
+
+    return wasmModule.resolveSourceLocation(wasmBytecodeOffset);
   }
 
   private doScopesRequest(response: DebugProtocol.ScopesResponse): void {
@@ -376,7 +412,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private toDebugProtocolVariable(variable: DebugSessionVariable): DebugProtocol.Variable {
     return {
       name: variable.name,
-      value: variable.kind === "class" ? variable.address.toString() : variable.value,
+      value: variable.kind === "class" ? "" : variable.value,
       type: variable.typeName,
       variablesReference: variable.kind === "class" ? this.toObjectVariablesReference(variable.address) : 0,
     };
@@ -540,23 +576,45 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
   }
 
-  private async doContinueRequest(response: DebugProtocol.ContinueResponse): Promise<void> {
-    if (!this.runtime) {
+  private doContinueRequest(response: DebugProtocol.ContinueResponse): void {
+    const runtime = this.runtime;
+    if (!runtime) {
       this.sendErrorResponse(response, 1, "No active runtime");
       return;
     }
 
+    response.body = { allThreadsContinued: true };
+    this.sendResponse(response);
+
+    void this.resumeRuntime(runtime);
+  }
+
+  private async resumeRuntime(runtime: Debugger): Promise<void> {
     try {
-      await this.runtime.resume();
-      response.body = { allThreadsContinued: true };
-      this.sendResponse(response);
-      this.clearVariableContainers();
-      this.stoppedWasmBytecodeOffset = undefined;
-      this.sendEvent(new ContinuedEvent(WarpoDebugSession.threadId, true));
+      await runtime.resume();
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      this.sendErrorResponse(response, 1, `Continue failed: ${message}`);
+      this.log(`Continue failed: ${formatUnknownError(error)}`);
+      return;
     }
+
+    if (this.runtime !== runtime) {
+      return;
+    }
+
+    this.clearVariableContainers();
+    this.stoppedWasmBytecodeOffset = undefined;
+    this.sendEvent(new ContinuedEvent(WarpoDebugSession.threadId, true));
+  }
+
+  private handleRuntimeExit(runtime: Debugger): void {
+    if (this.runtime !== runtime) {
+      return;
+    }
+
+    this.clearVariableContainers();
+    this.stoppedWasmBytecodeOffset = undefined;
+    this.runtime = undefined;
+    this.sendEvent(new TerminatedEvent());
   }
 
   private logAllBreakpoints(): void {

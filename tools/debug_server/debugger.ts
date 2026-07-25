@@ -47,4 +47,6 @@ export interface Debugger {
   onModuleLoad: ((module: DebuggerWasmModule) => void | Promise<void>) | undefined;
   onPause: ((info: DebugPauseInfo) => void | Promise<void>) | undefined;
   onRuntimeError: ((message: string) => void) | undefined;
+  onRuntimeExit: (() => void) | undefined;
+  onLog: ((message: string) => void) | undefined;
 }

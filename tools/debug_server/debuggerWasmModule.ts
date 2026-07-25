@@ -1,6 +1,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import * as path from "node:path";
 import { DwarfClassInfoResolver, type ClassLayout } from "../dwarf/classDebugInfo.js";
@@ -10,6 +11,7 @@ import {
   type DwarfLocalVariableInfo,
 } from "../dwarf/functionDebugInfo.js";
 import { SourceMapConsumer, type BasicSourceMapConsumer, type RawSourceMap } from "source-map";
+import { normalizeDebugPath } from "./debugPath.js";
 
 export type ParsedSourceMap = BasicSourceMapConsumer;
 
@@ -28,6 +30,11 @@ export interface DebuggerSourceVariableInfo {
 
 export interface DebuggerBreakpointLocation {
   wasmBytecodeOffset: number;
+  sourceLine: number;
+}
+
+export interface DebuggerSourceLocation {
+  sourcePath: string;
   sourceLine: number;
 }
 
@@ -141,6 +148,21 @@ export class DebuggerWasmModule {
     return position.line ?? undefined;
   }
 
+  resolveSourceLocation(wasmBytecodeOffset: number): DebuggerSourceLocation | undefined {
+    const position = this.sourceMap.originalPositionFor({
+      line: 1,
+      column: wasmBytecodeOffset,
+    });
+    if (!position.source || position.line === null) {
+      return undefined;
+    }
+
+    return {
+      sourcePath: DebuggerWasmModule.resolveSourcePath(this.sourceMapFilePath, position.source),
+      sourceLine: position.line,
+    };
+  }
+
   hasSource(sourcePath: string): boolean {
     return this.findSource(sourcePath) !== undefined;
   }
@@ -166,7 +188,22 @@ export class DebuggerWasmModule {
   }
 
   private static resolveSourcePath(sourceMapFilePath: string, sourcePath: string): string {
-    return path.resolve(path.dirname(sourceMapFilePath), sourcePath).replaceAll("\\", "/");
+    if (path.isAbsolute(sourcePath)) {
+      return normalizeDebugPath(sourcePath);
+    }
+
+    const sourceMapDir = path.dirname(sourceMapFilePath);
+    const sourceMapDirCandidate = path.resolve(sourceMapDir, sourcePath);
+    if (existsSync(sourceMapDirCandidate)) {
+      return normalizeDebugPath(sourceMapDirCandidate);
+    }
+
+    const sourceMapParentCandidate = path.resolve(sourceMapDir, "..", sourcePath);
+    if (existsSync(sourceMapParentCandidate)) {
+      return normalizeDebugPath(sourceMapParentCandidate);
+    }
+
+    return normalizeDebugPath(sourceMapDirCandidate);
   }
 
   private static toSourceVariableInfo(variable: DwarfLocalVariableInfo): DebuggerSourceVariableInfo {
