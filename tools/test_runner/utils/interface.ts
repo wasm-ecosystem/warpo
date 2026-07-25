@@ -114,9 +114,9 @@ export class FunctionCoverageResult {
     ];
     result.branchCoverageRate = Rate.summarize(infos.map((info) => info.branchCoverageRate));
     for (const info of infos) {
-        for (const line of info.uncoveredLines) {
-          result.uncoveredLines.add(line);
-        }
+      for (const line of info.uncoveredLines) {
+        result.uncoveredLines.add(line);
+      }
       for (const [lineIndex, count] of info.sourceUsedCount.entries()) {
         const srcLineUsedCount = result.sourceUsedCount.get(lineIndex);
         result.sourceUsedCount.set(lineIndex, srcLineUsedCount === undefined ? count : srcLineUsedCount + count);

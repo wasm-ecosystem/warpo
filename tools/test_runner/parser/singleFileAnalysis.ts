@@ -44,7 +44,9 @@ export class SingleFileCoverageAnalysis {
 
   getResult(): FileCoverageResult {
     for (const cov of this.result.sourceUsedCount) {
-      if (cov.usedCount === CodeCoverage.default) {continue;}
+      if (cov.usedCount === CodeCoverage.default) {
+        continue;
+      }
       if (cov.usedCount > 0) {
         this.result.lineCoverageRate.used++;
       }
