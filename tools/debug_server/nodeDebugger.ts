@@ -151,7 +151,7 @@ export class NodeDebugger implements Debugger {
   private paused = false;
   private wasmFilePath: string | undefined;
   private wasmScriptId: string | undefined;
-  private pausedCallFrame: CDPCallFrame | undefined;
+  private pausedCallFrames: CDPCallFrame[] = [];
   private wasmMemoryBufferObjectId: string | undefined;
   private stderrOutput = "";
   private disposed = false;
@@ -231,7 +231,7 @@ export class NodeDebugger implements Debugger {
     this.paused = false;
     this.wasmFilePath = undefined;
     this.wasmScriptId = undefined;
-    this.pausedCallFrame = undefined;
+    this.pausedCallFrames = [];
     this.wasmMemoryBufferObjectId = undefined;
     this.stderrOutput = "";
     this.runtimeExitPromise = undefined;
@@ -250,7 +250,7 @@ export class NodeDebugger implements Debugger {
   async resume(): Promise<void> {
     await this.waitForCommand("Debugger.resume");
     this.paused = false;
-    this.pausedCallFrame = undefined;
+    this.pausedCallFrames = [];
     this.wasmMemoryBufferObjectId = undefined;
   }
 
@@ -300,17 +300,25 @@ export class NodeDebugger implements Debugger {
     return location.columnNumber;
   }
 
-  async maybeGetPausedWasmFrame(): Promise<DebugPausedWasmFrame | undefined> {
-    const callFrame = this.pausedCallFrame;
+  getPausedWasmFrames(): DebugPausedWasmFrame[] {
+    const frames = this.pausedCallFrames.map((callFrame) => this.toPausedWasmFrame(callFrame));
+    this.log(`getPausedWasmFrames count=${frames.length}`);
+    for (const [index, frame] of frames.entries()) {
+      this.log(`  wasm frame ${index}: name=${frame.functionName}, offset=${frame.wasmBytecodeOffset ?? "unknown"}`);
+    }
+    return frames;
+  }
+
+  async getPausedWasmFrameVariables(frameIndex: number): Promise<DebugRuntimeVariable[]> {
+    const callFrame = this.pausedCallFrames[frameIndex];
     if (!callFrame) {
-      return undefined;
+      this.log(`getPausedWasmFrameVariables frameIndex=${frameIndex} unavailable`);
+      return [];
     }
 
     const variables = await this.getLocalScopeVariables(callFrame);
-    return {
-      functionName: callFrame.functionName,
-      variables,
-    };
+    this.log(`getPausedWasmFrameVariables frameIndex=${frameIndex} variables=${variables.length}`);
+    return variables;
   }
 
   async readWasmMemory(address: number, byteLength: number): Promise<Uint8Array | undefined> {
@@ -467,6 +475,9 @@ export class NodeDebugger implements Debugger {
 
   private handleDebuggerPaused(params?: Record<string, unknown>): void {
     const reason = this.getPauseReason(params);
+    this.pausedCallFrames = this.getPausedWasmCallFrames(params);
+    this.wasmMemoryBufferObjectId = undefined;
+
     if (reason === "Break on start" && !this.wasmScriptId) {
       this.log("Debugger.paused reason=Break on start location=inspect-brk startup");
       void this.resumeInternalStartupPause();
@@ -479,16 +490,15 @@ export class NodeDebugger implements Debugger {
     }
 
     this.paused = true;
-    this.pausedCallFrame = this.getPausedWasmCallFrame(params);
-    this.wasmMemoryBufferObjectId = undefined;
     this.log(`Debugger.paused reason=${reason}`);
     void this.notifyPause(reason);
   }
 
   private async notifyPause(reason: string): Promise<void> {
     try {
-      const wasmBytecodeOffset = this.pausedCallFrame
-        ? this.resolveWasmLocationBytecodeOffset(this.pausedCallFrame.location)
+      const pausedCallFrame = this.pausedCallFrames[0];
+      const wasmBytecodeOffset = pausedCallFrame
+        ? this.resolveWasmLocationBytecodeOffset(pausedCallFrame.location)
         : undefined;
       await this.onPause?.({ reason, wasmBytecodeOffset });
     } catch (error) {
@@ -520,7 +530,7 @@ export class NodeDebugger implements Debugger {
     try {
       await this.waitForCommand("Debugger.resume");
       this.paused = false;
-      this.pausedCallFrame = undefined;
+      this.pausedCallFrames = [];
       this.wasmMemoryBufferObjectId = undefined;
       this.log("inspect-brk startup pause resumed");
     } catch (error) {
@@ -559,12 +569,27 @@ export class NodeDebugger implements Debugger {
     return "unknown";
   }
 
-  private getPausedWasmCallFrame(params?: Record<string, unknown>): CDPCallFrame | undefined {
+  private getPausedWasmCallFrames(params?: Record<string, unknown>): CDPCallFrame[] {
     if (!Array.isArray(params?.callFrames)) {
-      return undefined;
+      return [];
     }
 
-    return params.callFrames[0] as CDPCallFrame | undefined;
+    const callFrames = params.callFrames.filter(isCDPCallFrame);
+    if (!this.wasmScriptId) {
+      this.log(`getPausedWasmCallFrames skipped ${callFrames.length} non-wasm startup frames before wasm script load`);
+      return [];
+    }
+
+    const wasmCallFrames = callFrames.filter((callFrame) => callFrame.location.scriptId === this.wasmScriptId);
+    this.log(`getPausedWasmCallFrames total=${callFrames.length} wasm=${wasmCallFrames.length}`);
+    return wasmCallFrames;
+  }
+
+  private toPausedWasmFrame(callFrame: CDPCallFrame): DebugPausedWasmFrame {
+    return {
+      functionName: callFrame.functionName,
+      wasmBytecodeOffset: this.resolveWasmLocationBytecodeOffset(callFrame.location),
+    };
   }
 
   private async getLocalScopeVariables(callFrame: CDPCallFrame): Promise<DebugRuntimeVariable[]> {
@@ -623,7 +648,7 @@ export class NodeDebugger implements Debugger {
   }
 
   private async getWasmMemoryObjectId(): Promise<string | undefined> {
-    const moduleScope = this.pausedCallFrame?.scopeChain.find((scope) => scope.type === "module");
+    const moduleScope = this.pausedCallFrames[0]?.scopeChain.find((scope) => scope.type === "module");
     const objectId = moduleScope?.object.objectId;
     if (!objectId) {
       return undefined;
@@ -755,6 +780,33 @@ function isCDPPropertyDescriptor(value: unknown): value is CDPPropertyDescriptor
   }
 
   return typeof (value as Partial<CDPPropertyDescriptor>).name === "string";
+}
+
+function isCDPCallFrame(value: unknown): value is CDPCallFrame {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const callFrame = value as Partial<CDPCallFrame>;
+  return (
+    typeof callFrame.callFrameId === "string" &&
+    typeof callFrame.functionName === "string" &&
+    isCDPLocation(callFrame.location) &&
+    Array.isArray(callFrame.scopeChain)
+  );
+}
+
+function isCDPLocation(value: unknown): value is CDPLocation {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const location = value as Partial<CDPLocation>;
+  return (
+    typeof location.scriptId === "string" &&
+    typeof location.lineNumber === "number" &&
+    typeof location.columnNumber === "number"
+  );
 }
 
 function isWasmMemoryObject(value: CDPRemoteObject): boolean {

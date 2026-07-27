@@ -51,7 +51,18 @@ interface ClassVariable {
 
 type DebugSessionVariable = BasicVariable | ClassVariable;
 
-type VariableContainer = { kind: "locals" } | { kind: "object"; address: number };
+type VariableContainer = { kind: "locals"; frameId: number } | { kind: "object"; address: number };
+
+interface PausedStackFrame {
+  frameIndex: number;
+  functionName: string;
+  wasmBytecodeOffset?: number;
+}
+
+interface StackFrameRuntime extends Debugger {
+  getPausedWasmFrames(): Omit<PausedStackFrame, "frameIndex">[];
+  getPausedWasmFrameVariables(frameIndex: number): Promise<DebugRuntimeVariable[]>;
+}
 
 function formatUnknownError(error: unknown): string {
   if (error instanceof Error) {
@@ -71,6 +82,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private requestedBreakpointsBySource = new Map<string, DebuggerBreakpointInfo[]>();
   private pendingBreakpointUpdatesBySource = new Map<string, DebuggerBreakpointInfo[]>();
   private variableContainers = new Map<number, VariableContainer>();
+  private pausedStackFramesById = new Map<number, PausedStackFrame>();
   private nextVariablesReference = 1;
   private loadedModule: DebuggerWasmModule | undefined;
   private runtime: Debugger | undefined;
@@ -88,6 +100,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.log(`[${runtime.name}] Paused: ${info.reason}`);
     this.clearVariableContainers();
     const reason = info.reason === "breakpoint" ? "breakpoint" : "pause";
+    this.log(`Sending stopped event: reason=${reason}, threadId=${WarpoDebugSession.threadId}`);
     this.sendEvent(new StoppedEvent(reason, WarpoDebugSession.threadId, info.reason));
   }
 
@@ -261,13 +274,13 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   protected stackTraceRequest(
     response: DebugProtocol.StackTraceResponse,
-    _args: DebugProtocol.StackTraceArguments
+    args: DebugProtocol.StackTraceArguments
   ): void {
-    void this.doStackTraceRequest(response);
+    this.doStackTraceRequest(response, args);
   }
 
-  protected scopesRequest(response: DebugProtocol.ScopesResponse, _args: DebugProtocol.ScopesArguments): void {
-    this.doScopesRequest(response);
+  protected scopesRequest(response: DebugProtocol.ScopesResponse, args: DebugProtocol.ScopesArguments): void {
+    this.doScopesRequest(response, args);
   }
 
   protected variablesRequest(response: DebugProtocol.VariablesResponse, args: DebugProtocol.VariablesArguments): void {
@@ -296,23 +309,51 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.sendResponse(response);
   }
 
-  private async doStackTraceRequest(response: DebugProtocol.StackTraceResponse): Promise<void> {
-    const frame = await this.runtime?.maybeGetPausedWasmFrame();
-    const frameName = frame?.functionName || "wasm";
-    const sourceLocation = this.resolveStoppedSourceLocation();
-    const source = sourceLocation
-      ? new Source(path.basename(sourceLocation.sourcePath), sourceLocation.sourcePath)
-      : undefined;
+  private doStackTraceRequest(
+    response: DebugProtocol.StackTraceResponse,
+    args: DebugProtocol.StackTraceArguments
+  ): void {
+    const runtime = this.runtime as StackFrameRuntime | undefined;
+    const frames = runtime ? runtime.getPausedWasmFrames() : [];
+    this.log(
+      `StackTrace request: threadId=${args.threadId}, startFrame=${args.startFrame ?? 0}, levels=${args.levels ?? "all"}, runtimeFrames=${frames.length}`
+    );
+    this.pausedStackFramesById.clear();
+
+    const stackFrames = frames.map((frame, index) => {
+      const id = index + 1;
+      this.pausedStackFramesById.set(id, { ...frame, frameIndex: index });
+
+      const sourceLocation = this.resolveSourceLocation(frame.wasmBytecodeOffset);
+      const sourceLabel = sourceLocation
+        ? `${path.basename(sourceLocation.sourcePath)}:${sourceLocation.sourceLine}`
+        : "unknown";
+      this.log(
+        `  frame ${id}: index=${index}, name=${frame.functionName || "wasm"}, offset=${frame.wasmBytecodeOffset ?? "unknown"}, source=${sourceLabel}`
+      );
+      const source = sourceLocation
+        ? new Source(path.basename(sourceLocation.sourcePath), sourceLocation.sourcePath)
+        : undefined;
+      return new StackFrame(id, frame.functionName || "wasm", source, sourceLocation?.sourceLine ?? 0, 1);
+    });
+
+    const startFrame: number = args.startFrame ?? 0;
+    const requestedStackFrames =
+      args.levels === undefined
+        ? stackFrames.slice(startFrame)
+        : stackFrames.slice(startFrame, startFrame + args.levels);
     response.body = {
-      stackFrames: [new StackFrame(1, frameName, source, sourceLocation?.sourceLine ?? 0, 1)],
-      totalFrames: 1,
+      stackFrames: requestedStackFrames,
+      totalFrames: stackFrames.length,
     };
+    this.log(`StackTrace response: returned=${requestedStackFrames.length}, total=${stackFrames.length}`);
     this.sendResponse(response);
   }
 
-  private resolveStoppedSourceLocation(): { sourcePath: string; sourceLine: number } | undefined {
+  private resolveSourceLocation(
+    wasmBytecodeOffset: number | undefined
+  ): { sourcePath: string; sourceLine: number } | undefined {
     const wasmModule = this.loadedModule;
-    const wasmBytecodeOffset = this.stoppedWasmBytecodeOffset;
     if (!wasmModule || wasmBytecodeOffset === undefined) {
       return undefined;
     }
@@ -320,9 +361,10 @@ export class WarpoDebugSession extends LoggingDebugSession {
     return wasmModule.resolveSourceLocation(wasmBytecodeOffset);
   }
 
-  private doScopesRequest(response: DebugProtocol.ScopesResponse): void {
+  private doScopesRequest(response: DebugProtocol.ScopesResponse, args: DebugProtocol.ScopesArguments): void {
+    this.log(`Scopes request: frameId=${args.frameId}`);
     response.body = {
-      scopes: [new Scope("Locals", this.createVariableContainer({ kind: "locals" }), false)],
+      scopes: [new Scope("Locals", this.createVariableContainer({ kind: "locals", frameId: args.frameId }), false)],
     };
     this.sendResponse(response);
   }
@@ -335,7 +377,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
     switch (variableContainer?.kind) {
       case "locals": {
-        response.body = { variables: await this.listLocalVariables() };
+        this.log(`Variables request: locals for frameId=${variableContainer.frameId}`);
+        response.body = { variables: await this.listLocalVariables(variableContainer.frameId) };
         break;
       }
       case "object": {
@@ -352,8 +395,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.sendResponse(response);
   }
 
-  private async listLocalVariables(): Promise<DebugProtocol.Variable[]> {
-    const variables = await this.resolveLocalVariables();
+  private async listLocalVariables(frameId: number): Promise<DebugProtocol.Variable[]> {
+    const variables = await this.resolveLocalVariables(frameId);
     return variables.map((variable) => this.toDebugProtocolVariable(variable));
   }
 
@@ -362,25 +405,34 @@ export class WarpoDebugSession extends LoggingDebugSession {
     return fields.map((variable) => this.toDebugProtocolVariable(variable));
   }
 
-  private async resolveLocalVariables(): Promise<DebugSessionVariable[]> {
-    const runtimeFrame = await this.runtime?.maybeGetPausedWasmFrame();
+  private async resolveLocalVariables(frameId: number): Promise<DebugSessionVariable[]> {
+    const runtimeFrame = this.resolvePausedStackFrame(frameId);
     const wasmModule = this.loadedModule;
-    if (!runtimeFrame || !wasmModule) {
+    const runtime = this.runtime as StackFrameRuntime | undefined;
+    if (!runtimeFrame || !wasmModule || !runtime) {
+      this.log(
+        `Local variables unavailable: frameId=${frameId}, hasFrame=${runtimeFrame !== undefined}, hasModule=${wasmModule !== undefined}, hasRuntime=${runtime !== undefined}`
+      );
       return [];
     }
 
-    const wasmBytecodeOffset = this.stoppedWasmBytecodeOffset;
+    const runtimeVariables = await runtime.getPausedWasmFrameVariables(runtimeFrame.frameIndex);
+    this.log(
+      `Local variables resolved: frameId=${frameId}, frameIndex=${runtimeFrame.frameIndex}, offset=${runtimeFrame.wasmBytecodeOffset ?? "unknown"}, runtimeVariables=${runtimeVariables.length}`
+    );
+
+    const wasmBytecodeOffset: number | undefined = runtimeFrame.wasmBytecodeOffset;
     if (wasmBytecodeOffset === undefined) {
-      return runtimeFrame.variables.map((variable) => this.toDebugSessionVariable(variable));
+      return runtimeVariables.map((variable) => this.toDebugSessionVariable(variable));
     }
 
     const sourceVariables = wasmModule.getVariablesAtBytecodeOffset(wasmBytecodeOffset);
     if (!sourceVariables) {
-      return runtimeFrame.variables.map((variable) => this.toDebugSessionVariable(variable));
+      return runtimeVariables.map((variable) => this.toDebugSessionVariable(variable));
     }
 
     const runtimeVariablesByIndex = new Map<number, DebugRuntimeVariable>();
-    for (const variable of runtimeFrame.variables) {
+    for (const variable of runtimeVariables) {
       runtimeVariablesByIndex.set(variable.localIndex, variable);
     }
 
@@ -389,6 +441,10 @@ export class WarpoDebugSession extends LoggingDebugSession {
       assert(runtimeVariable !== undefined);
       return this.toDebugSessionVariable(runtimeVariable, variable.name, variable.typeName);
     });
+  }
+
+  private resolvePausedStackFrame(frameId: number): PausedStackFrame | undefined {
+    return this.pausedStackFramesById.get(frameId);
   }
 
   private toDebugSessionVariable(
@@ -445,6 +501,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   private clearVariableContainers(): void {
     this.variableContainers.clear();
+    this.pausedStackFramesById.clear();
   }
 
   private async resolveObjectFields(address: number): Promise<DebugSessionVariable[]> {

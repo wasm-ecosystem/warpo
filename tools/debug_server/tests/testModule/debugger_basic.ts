@@ -35,10 +35,29 @@ class DerivedBox extends BaseBox {
 }
 
 export function _start(): i32 {
+  let callerSeed = 23;
+  return calculate(callerSeed);
+}
+
+function calculate(seed: i32): i32 {
   let a = 1;
   let holder = new Holder(7, new Child(11));
   let box: BaseBox = new DerivedBox(3, 17);
   let first = holder.count + holder.child.value + box.base;
   holder = new Holder(9, new Child(13));
-  return a + first + holder.count + holder.child.value;
+  return seed + a + first + holder.count + holder.child.value;
+}
+
+export function branchEntry(): i32 {
+  return branchLocals(1);
+}
+
+function branchLocals(flag: i32): i32 {
+  if (flag > 0) {
+    let ifOnly = 31;
+    return ifOnly;
+  } else {
+    let elseOnly = 41;
+    return elseOnly;
+  }
 }
