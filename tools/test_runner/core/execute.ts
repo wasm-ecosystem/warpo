@@ -18,7 +18,7 @@ async function nodeExecutor(
   const mockStatusRecorder = new MockStatusRecorder();
 
   const importsArg = new ImportsArgument(executionRecorder);
-  const userDefinedImportsObject = imports === undefined ? {} : imports!(importsArg);
+  const userDefinedImportsObject = imports === undefined || imports === null ? {} : imports(importsArg);
   const importObject: ASImports = {
     __unittest_framework_env: {
       ...executionRecorder.getCollectionFuncSet(importsArg),
@@ -53,13 +53,27 @@ async function nodeExecutor(
   await executionRecorder.runTestFunction(
     `${wasmModule.baseName} - init`,
     () => {
-      (ins.exports["__unit_test_start"] as () => void)();
+      const exports = ins.exports as typeof ins.exports & { __unit_test_start?: () => void };
+      const unitTestStart = exports.__unit_test_start;
+      if (typeof unitTestStart !== "function") {
+        throw new TypeError("missing __unit_test_start export");
+      }
+      unitTestStart();
     },
     exceptionHandler
   );
 
   const execTestFunction = (functionIndex: number) => {
-    ins.exports.table!.get(functionIndex)();
+    const table = ins.exports.table;
+    if (!(table instanceof WebAssembly.Table)) {
+      throw new TypeError("missing wasm function table");
+    }
+
+    const fn = table.get(functionIndex) as (() => void) | undefined;
+    if (typeof fn !== "function") {
+      throw new TypeError(`missing wasm table function at index ${functionIndex}`);
+    }
+    fn();
   };
 
   for (const testCase of executionRecorder.testCases) {

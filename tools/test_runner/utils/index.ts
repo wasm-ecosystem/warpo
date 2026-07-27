@@ -28,7 +28,8 @@ export function isFunctionInsideFile(fileName: string, functionName: string) {
   // `~`: parent is Function
   const regex = new RegExp(`^(start:)?${fileName.slice(0, -3)}[/~](?<rest>.+)`);
   const matchPrefix = regex.exec(functionName);
-  const rest = matchPrefix?.groups?.["rest"] ?? null;
+  const groups = matchPrefix?.groups as { rest?: string } | undefined;
+  const rest = groups?.rest ?? null;
   if (rest === null) {
     return false;
   }
@@ -40,7 +41,7 @@ export function isFunctionInsideFile(fileName: string, functionName: string) {
 }
 
 export function checkGenerics(functionName: string): string | undefined {
-  // FIXME: cannot handle nested generic method in generic class
+  // Cannot handle nested generic method in generic class yet.
   const startIndex = functionName.indexOf("<");
   const endIndex = functionName.lastIndexOf(">");
   if (startIndex !== -1 && endIndex !== -1) {
@@ -70,7 +71,10 @@ export function injectDefaultFunction(
     }
     if (module === "env" && name === "abort") {
       importObjectModule[name] = (msg: number, file: number, line: number, col: number) => {
-        const exports = importsArg.exports!;
+        const exports = importsArg.exports;
+        if (exports === null) {
+          throw new WebAssembly.RuntimeError("missing AssemblyScript exports");
+        }
         throw new WebAssembly.RuntimeError(
           `abort: ${exports.__getString(msg)} at ${exports.__getString(file)}:${line}:${col}`
         );
@@ -79,7 +83,10 @@ export function injectDefaultFunction(
     }
     if (module === "env" && name === "trace") {
       importObjectModule[name] = (msg: number, n: number, ...args: number[]) => {
-        const exports = importsArg.exports!;
+        const exports = importsArg.exports;
+        if (exports === null) {
+          throw new WebAssembly.RuntimeError("missing AssemblyScript exports");
+        }
         importsArg.framework.log(`trace: ${exports.__getString(msg)}${n > 0 ? " " : ""}${args.slice(0, n).join(", ")}`);
       };
       continue;

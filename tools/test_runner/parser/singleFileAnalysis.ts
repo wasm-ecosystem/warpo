@@ -15,11 +15,15 @@ export class SingleFileCoverageAnalysis {
 
   merge(results: FunctionCoverageResult[]) {
     // SingleFileCoverageAnalysis contains FileCoverageResult
-    if (results.length === 0) return;
+    if (results.length === 0) {
+      return;
+    }
     for (const functionCovResult of results) {
-      for (const line of functionCovResult.uncoveredLines) this.result.uncoveredLines.add(line);
+      for (const line of functionCovResult.uncoveredLines) {
+        this.result.uncoveredLines.add(line);
+      }
       for (const [lineIndex, count] of functionCovResult.sourceUsedCount.entries()) {
-        const srcLineUsedCount = this.result.sourceUsedCount[lineIndex - 1];
+        const srcLineUsedCount = this.result.sourceUsedCount.at(lineIndex - 1);
         if (srcLineUsedCount === undefined) {
           throw new Error(
             `unknown error: There is not Line ${lineIndex} in ${JSON.stringify(this.result.sourceUsedCount)}`
@@ -40,7 +44,9 @@ export class SingleFileCoverageAnalysis {
 
   getResult(): FileCoverageResult {
     for (const cov of this.result.sourceUsedCount) {
-      if (cov.usedCount === CodeCoverage.default) continue;
+      if (cov.usedCount === CodeCoverage.default) {
+        continue;
+      }
       if (cov.usedCount > 0) {
         this.result.lineCoverageRate.used++;
       }

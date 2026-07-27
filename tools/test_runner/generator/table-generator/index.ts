@@ -81,8 +81,12 @@ export function genTable(filesInfos: FileCoverageResult[]) {
     .join("\n")
     .replaceAll(/\d+(.\d+)?/g, (str) => {
       const v = Number.parseFloat(str);
-      if (v > reportConfig.warningLimit) return chalk.bold.greenBright(str);
-      if (v > reportConfig.errorLimit) return chalk.bold.yellowBright(str);
+      if (v > reportConfig.warningLimit) {
+        return chalk.bold.greenBright(str);
+      }
+      if (v > reportConfig.errorLimit) {
+        return chalk.bold.yellowBright(str);
+      }
       return chalk.bold.redBright(str);
     });
 

@@ -1,10 +1,8 @@
 import * as os from "node:os";
 import { spawn } from "node:child_process";
-import { createWriteStream, existsSync, readFileSync } from "node:fs";
-import { access, mkdir, readdir, rm } from "node:fs/promises";
+import { existsSync, readFileSync } from "node:fs";
+import { access, mkdir, readdir, rm, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
-import { Readable } from "node:stream";
-import { pipeline } from "node:stream/promises";
 import { fileURLToPath } from "node:url";
 import * as tar from "tar";
 import { fetch, ProxyAgent } from "undici";
@@ -25,22 +23,35 @@ interface ReleaseAsset {
   browser_download_url: string;
 }
 
+interface PackageJson {
+  version: string;
+}
+
 function isTarGzAsset(asset: ReleaseAsset): boolean {
   return asset.name.endsWith(".tar.gz");
 }
 
 function getProxyUrl(proxy?: string): string | undefined {
+  /* eslint-disable dot-notation -- process.env is index-signature typed under strict test_runner checks. */
   return (
-    proxy ?? process.env.HTTPS_PROXY ?? process.env.https_proxy ?? process.env.HTTP_PROXY ?? process.env.http_proxy
+    proxy ??
+    process.env["HTTPS_PROXY"] ??
+    process.env["https_proxy"] ??
+    process.env["HTTP_PROXY"] ??
+    process.env["http_proxy"]
   );
+  /* eslint-enable dot-notation */
 }
 
-function getFetchOptions(proxy?: string): { dispatcher: ProxyAgent | undefined; headers: { "user-agent": string } } {
+function getFetchOptions(proxy?: string): { dispatcher?: ProxyAgent; headers: { "user-agent": string } } {
   const proxyUrl = getProxyUrl(proxy);
-  return {
-    dispatcher: proxyUrl ? new ProxyAgent(proxyUrl) : undefined,
+  const options: { dispatcher?: ProxyAgent; headers: { "user-agent": string } } = {
     headers: { "user-agent": "warpo-release-downloader" },
   };
+  if (proxyUrl) {
+    options.dispatcher = new ProxyAgent(proxyUrl);
+  }
+  return options;
 }
 
 async function getReleaseAssets(version: string, proxy?: string): Promise<ReleaseAsset[]> {
@@ -63,13 +74,14 @@ async function downloadFile(url: string, outputPath: string, proxy?: string): Pr
   if (!response.body) {
     throw new Error(`failed to download ${url}: empty response body`);
   }
-  await pipeline(Readable.fromWeb(response.body), createWriteStream(outputPath));
+  await writeFile(outputPath, Buffer.from(await response.arrayBuffer()));
 }
 
 function getAssetUrl(asset: ReleaseAsset, version: string): string {
-  const base_url =
-    process.env["WARPO_DOWNLOAD_BASE_URL"] ?? `https://github.com/wasm-ecosystem/warpo/releases/download`;
-  return process.env["WARPO_DOWNLOAD_BASE_URL"] ? `${base_url}/${version}/${asset.name}` : asset.browser_download_url;
+  // eslint-disable-next-line dot-notation -- process.env is index-signature typed under strict test_runner checks.
+  const downloadBaseUrl = process.env["WARPO_DOWNLOAD_BASE_URL"];
+  const base_url = downloadBaseUrl ?? `https://github.com/wasm-ecosystem/warpo/releases/download`;
+  return downloadBaseUrl ? `${base_url}/${version}/${asset.name}` : asset.browser_download_url;
 }
 
 function getCurrentMachineAssetName(version: string): string {
@@ -100,6 +112,8 @@ async function extract_archive(archivePath: string): Promise<string> {
   await rm(outputPath, { recursive: true, force: true });
   await mkdir(outputPath, { recursive: true });
   if (archivePath.endsWith(".tar.gz")) {
+    // Release archives are produced by Warpo CI and extracted into a fresh cache directory.
+    // eslint-disable-next-line sonarjs/no-unsafe-unzip
     await tar.x({ file: archivePath, cwd: outputPath });
     return outputPath;
   }
@@ -107,9 +121,9 @@ async function extract_archive(archivePath: string): Promise<string> {
 }
 
 function getVersion(): string {
-  return (
-    process.env["WARPO_DOWNLOAD_VERSION"] || JSON.parse(readFileSync(join(warpoRoot, "package.json"), "utf8")).version
-  );
+  const packageJson = JSON.parse(readFileSync(join(warpoRoot, "package.json"), "utf8")) as PackageJson;
+  // eslint-disable-next-line dot-notation -- process.env is index-signature typed under strict test_runner checks.
+  return process.env["WARPO_DOWNLOAD_VERSION"] || packageJson.version;
 }
 
 async function pathExists(path: string): Promise<boolean> {
@@ -205,12 +219,14 @@ export async function cleanDownloaded(): Promise<string[]> {
 }
 
 async function downloadForCurrentMachineBinary(proxy?: string): Promise<string | null> {
+  /* eslint-disable dot-notation -- process.env is index-signature typed under strict test_runner checks. */
   if (process.env["WARPO_BINARY_PATH"]) {
     return process.env["WARPO_BINARY_PATH"];
   }
   if (process.env["WARPO_FORCE_DOWNLOAD"] !== "1" && existsSync(join(dirname, "warpo"))) {
     return join(dirname, "warpo", getBinaryName());
   }
+  /* eslint-enable dot-notation */
 
   const version = getVersion();
 

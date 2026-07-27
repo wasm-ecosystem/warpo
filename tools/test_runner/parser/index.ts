@@ -12,7 +12,6 @@ import {
   FunctionIndex,
   LineInfoMap,
   FunctionCoverageResult,
-  LineRange,
   COVERAGE_DEBUG_INFO_SECTION_NAME,
 } from "../utils/interface.js";
 import { WebAssemblyModule } from "../utils/wasm.js";
@@ -76,12 +75,14 @@ export class Parser {
         this.functionCovTraceMap.set(name, originTraces.concat(traces));
       }
       const lineInfoMap: LineInfoMap = new Map();
-      info.lineInfo.forEach((ranges: LineRange | null, index: number) => {
+      for (const [index, ranges] of info.lineInfo.entries()) {
         // If instrument return basic block == null, ignore it.
-        if (ranges === null) return;
+        if (ranges === null) {
+          continue;
+        }
         const lineInfoArray = ranges
           .filter((range) => {
-            const filename = debugFiles[range[0]];
+            const filename = debugFiles.at(range[0]);
             if (filename === undefined) {
               throw new Error(`unknown error: not find fileIndex ${range[0]} in ${instrumentResult.wasm}`);
             }
@@ -91,7 +92,7 @@ export class Parser {
           .map((range) => range[1]);
         // basic block index start at 0
         lineInfoMap.set(index, new Set(lineInfoArray));
-      });
+      }
       const covInfo: CovInfo = { branchInfo: info.branchInfo, lineInfo: lineInfoMap };
       this.functionCovInfoMap.set(name, covInfo);
     }

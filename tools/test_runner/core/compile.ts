@@ -1,4 +1,4 @@
-import { join, relative } from "node:path";
+import { join } from "node:path";
 import { compileImpl } from "./compiler.js";
 import { TestOption } from "../testOption.js";
 import { WebAssemblyModule } from "../utils/wasm.js";
@@ -19,10 +19,6 @@ export async function compile(
     collectCoverage,
   });
   return ret;
-}
-
-function getNewPath(newFolder: string, oldFolder: string, srcPath: string): string {
-  return join(newFolder, relative(oldFolder, srcPath)).replaceAll(/\\/g, "/");
 }
 
 function combineWithEntryFiles({

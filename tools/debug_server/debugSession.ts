@@ -396,9 +396,11 @@ export class WarpoDebugSession extends LoggingDebugSession {
     name: string = variable.name,
     typeName: string | undefined = variable.type
   ): DebugSessionVariable {
-    const objectAddress = typeName === undefined ? undefined : this.parseObjectAddress(typeName, variable.value);
-    if (objectAddress) {
-      return this.createClassVariable(name, typeName, objectAddress);
+    if (typeName !== undefined) {
+      const objectAddress = this.parseObjectAddress(typeName, variable.value);
+      if (objectAddress) {
+        return this.createClassVariable(name, typeName, objectAddress);
+      }
     }
 
     return {

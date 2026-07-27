@@ -1,4 +1,3 @@
-import assert from "node:assert";
 import fs from "fs-extra";
 import { glob } from "glob";
 import { dirname, join, relative, resolve } from "node:path";
@@ -22,10 +21,12 @@ export function splitCommand(cmdline: string): { cmd: string; argv: string[] } {
   if (last !== cmdline.length) {
     res.push(cmdline.slice(last));
   }
-  const cmd = res[0];
-  if (cmd === undefined) throw new Error(`Invalid Command: ${cmdline}`);
+  const cmd = res.at(0);
+  if (cmd === undefined) {
+    throw new Error(`Invalid Command: ${cmdline}`);
+  }
   const argv = res.slice(1);
-  return { cmd: cmd, argv: argv };
+  return { cmd, argv };
 }
 
 function getAllFileInFolder(folder: string, filter: (v: string) => boolean = () => true): string[] {
@@ -52,14 +53,16 @@ function getAllFileInFolder(folder: string, filter: (v: string) => boolean = () 
 
 export function findRoot(filePaths: string[]): string {
   if (filePaths.length === 1) {
-    const filePath = filePaths[0];
-    assert(filePath !== undefined);
+    const filePath = filePaths.at(0);
+    if (filePath === undefined) {
+      throw new Error("include length is zeros");
+    }
     return dirname(filePath);
   }
   const absPaths = filePaths.map((p) => {
     return resolve(p);
   });
-  const p0 = absPaths[0];
+  const p0 = absPaths.at(0);
   if (p0 === undefined) {
     throw new Error("include length is zeros");
   }

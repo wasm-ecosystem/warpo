@@ -1,8 +1,8 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-import { openAsBlob } from "fs";
-import { relative } from "path";
+import { readFile } from "node:fs/promises";
+import { relative } from "node:path";
 
 export class WebAssemblyModule {
   baseName: string;
@@ -21,22 +21,34 @@ export class WebAssemblyModule {
   }
 
   async getModule(): Promise<WebAssembly.Module> {
-    if (this.m) return this.m;
-    const bytes = await (await openAsBlob(this.wasm)).arrayBuffer();
+    if (this.m) {
+      return this.m;
+    }
+    const bytes = await readFile(this.wasm);
     this.m = new WebAssembly.Module(bytes);
-    return this.m!;
+    return this.m;
   }
 
   async getCustomSectionPayload(sectionName: string): Promise<Uint8Array | null> {
     const sections = WebAssembly.Module.customSections(await this.getModule(), sectionName);
-    if (sections.length === 0) return null;
-    if (sections.length > 1) throw new Error(`multiple wasm custom sections found: '${sectionName}'`);
-    return new Uint8Array(sections[0]!);
+    if (sections.length === 0) {
+      return null;
+    }
+    if (sections.length > 1) {
+      throw new Error(`multiple wasm custom sections found: '${sectionName}'`);
+    }
+    const section = sections.at(0);
+    if (section === undefined) {
+      return null;
+    }
+    return new Uint8Array(section);
   }
 
   async getCustomSectionUtf8(sectionName: string): Promise<string | null> {
     const payload = await this.getCustomSectionPayload(sectionName);
-    if (payload === null) return null;
+    if (payload === null) {
+      return null;
+    }
     return new TextDecoder("utf-8").decode(payload);
   }
 

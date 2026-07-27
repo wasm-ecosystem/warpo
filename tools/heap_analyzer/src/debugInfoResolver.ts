@@ -108,11 +108,13 @@ export class DebugInfoResolver {
       }
 
       if (wasmGlobalEntry.mutable) {
-        const value = mutableI32GlobalValues[mutableI32Slot];
-        mutableI32Slot++;
-        if (value === undefined) {
+        if (mutableI32Slot >= mutableI32GlobalValues.length) {
+          mutableI32Slot++;
           continue;
         }
+
+        const value = mutableI32GlobalValues[mutableI32Slot];
+        mutableI32Slot++;
         values.set(wasmGlobalEntry.index, value);
         continue;
       }

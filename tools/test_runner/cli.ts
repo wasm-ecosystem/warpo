@@ -1,5 +1,3 @@
-#!/usr/bin/env -S node --experimental-wasi-unstable-preview1
-
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
@@ -10,7 +8,45 @@ import { pathToFileURL } from "node:url";
 import { Command } from "commander";
 import { validateArgument, start } from "./index.js";
 import { TestOption } from "./testOption.js";
+import type { Config } from "./interface.js";
 import { Repository } from "./utils/name.js";
+
+interface CliOptions {
+  config: string;
+  output?: string;
+  mode?: TestOption["mode"];
+  coverageLimit?: string[];
+  collectCoverage?: string;
+  testFiles?: string[];
+  testNamePattern?: string;
+  onlyFailures?: boolean;
+}
+
+type LoadedConfig = Partial<Config>;
+
+function parseCollectCoverage(
+  optionValue: string | undefined,
+  fallback: boolean | undefined,
+  enabledByDefault: boolean
+): boolean {
+  if (optionValue === "false") {
+    return false;
+  }
+  if (optionValue === "true") {
+    return true;
+  }
+  return fallback ?? enabledByDefault;
+}
+
+function formatUnknownError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.stack ?? error.message;
+  }
+  if (typeof error === "string") {
+    return error;
+  }
+  return "unknown error";
+}
 
 function createProgram(): Command {
   const program = new Command();
@@ -34,27 +70,28 @@ export async function runFromCliArgs(args: string[]): Promise<number> {
   const program = createProgram();
   program.parse(args, { from: "user" });
 
-  const options = program.opts();
+  const options = program.opts<CliOptions>();
 
-  const configPath = resolve(".", options["config"]);
+  const configPath = resolve(".", options.config);
   if (!fs.pathExistsSync(configPath)) {
     console.error(chalk.redBright("Miss config file") + "\n");
     console.error(program.helpInformation());
     return 3;
   }
-  const config = (await import(pathToFileURL(configPath).href)).default;
+  const configModule = (await import(pathToFileURL(configPath).href)) as { default: LoadedConfig };
+  const config = configModule.default;
 
   const includes = config.include;
   if (includes === undefined) {
     console.error(chalk.redBright("Miss include in config file") + "\n");
     return 3;
   }
-  const excludes = config.exclude || [];
+  const excludes = config.exclude ?? [];
   validateArgument(includes, excludes);
 
-  const testFiles = options["testFiles"] ?? null;
-  const onlyFailures = options["onlyFailures"] || false;
-  const testNamePattern = options["testNamePattern"] ?? null;
+  const testFiles = options.testFiles ?? null;
+  const onlyFailures = options.onlyFailures || false;
+  const testNamePattern = options.testNamePattern ?? null;
 
   if (onlyFailures && testNamePattern !== null) {
     console.error(chalk.redBright("Cannot use --onlyFailures and --testNamePattern together") + "\n");
@@ -62,15 +99,16 @@ export async function runFromCliArgs(args: string[]): Promise<number> {
   }
 
   // if enabled testcase or testNamePattern or onlyFailures, disable collectCoverage by default
-  const collectCoverage =
-    (options["collectCoverage"] === "false" ? false : options["collectCoverage"] === "true" ? true : null) ??
-    config.collectCoverage ??
-    (testFiles === null && options["testNamePattern"] === undefined && !onlyFailures);
+  const collectCoverage = parseCollectCoverage(
+    options.collectCoverage,
+    config.collectCoverage,
+    testFiles === null && options.testNamePattern === undefined && !onlyFailures
+  );
 
   const entryFiles = config.entryFiles ?? null;
 
-  const warnLimitValue = options["coverageLimit"]?.at(1);
-  const errorLimitValue = options["coverageLimit"]?.at(0);
+  const warnLimitValue = options.coverageLimit?.at(1);
+  const errorLimitValue = options.coverageLimit?.at(0);
 
   const testOption: TestOption = {
     includes,
@@ -82,12 +120,15 @@ export async function runFromCliArgs(args: string[]): Promise<number> {
     collectCoverage,
     onlyFailures,
 
-    flags: config.flags || "",
-    imports: config.imports || undefined,
+    flags: config.flags ?? "",
 
-    outputFolder: options["output"] || config.output || "coverage",
-    mode: options["mode"] || config.mode || "table",
+    outputFolder: options.output ?? config.output ?? "coverage",
+    mode: options.mode ?? config.mode ?? "table",
   };
+
+  if (config.imports !== undefined) {
+    testOption.imports = config.imports;
+  }
 
   if (warnLimitValue !== undefined) {
     testOption.warnLimit = Number(warnLimitValue);
@@ -98,8 +139,9 @@ export async function runFromCliArgs(args: string[]): Promise<number> {
 
   try {
     return await start(testOption);
-  } catch (e: any) {
-    console.error(chalk.redBright("framework crash, error message: ") + chalk.yellowBright(`${e?.stack}`) + "\n");
+  } catch (error: unknown) {
+    const message = formatUnknownError(error);
+    console.error(chalk.redBright("framework crash, error message: ") + chalk.yellowBright(message) + "\n");
     console.error(`please submit an issue at ${Repository}/issues`);
     return 255;
   }

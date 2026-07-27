@@ -5,6 +5,7 @@
     "target": "esnext",
     "outDir": "../dist",
     "declaration": true,
+    "strictNullChecks": true,
     "types": ["node"],
     "sourceMap": true
   },
