@@ -15,12 +15,13 @@ const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
 const DAP_SERVER = path.resolve(DIRNAME, "..", "..", "..", "dist", "debug_server", "dapServer.js");
 const TEST_MODULE_DIR = path.resolve(DIRNAME, "testModule");
 const TEST_MODULE_SOURCE = path.join(TEST_MODULE_DIR, "debugger_basic.ts");
+const TEST_MODULE_CALLEE_SOURCE = path.join(TEST_MODULE_DIR, "debugger_callee.ts");
 const TEST_MODULE_OUTPUT = path.join(TEST_MODULE_DIR, "build/debugger_basic.wasm");
 const IMPORT_FAILURE_SOURCE = path.join(TEST_MODULE_DIR, "import_failure.ts");
 const IMPORT_FAILURE_OUTPUT = path.join(TEST_MODULE_DIR, "build/import_failure.wasm");
-const TEST_MODULE_BREAKPOINT_LINE = 46;
-const TEST_MODULE_SECOND_BREAKPOINT_LINE = 48;
-const TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE = 58;
+const TEST_MODULE_BREAKPOINT_LINE = 41;
+const TEST_MODULE_SECOND_BREAKPOINT_LINE = 43;
+const TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE = 16;
 
 async function waitForLoadedWasmSource(dc: DebugClient): Promise<DebugProtocol.LoadedSourceEvent> {
   while (true) {
@@ -149,7 +150,7 @@ void describe("WarpoDebugSession", () => {
     await dc.initializeRequest();
 
     const breakpointResponse = await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_SOURCE },
+      source: { path: TEST_MODULE_CALLEE_SOURCE },
       breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
     });
     assert.equal(breakpointResponse.body.breakpoints.length, 1);
@@ -212,7 +213,7 @@ void describe("WarpoDebugSession", () => {
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_SOURCE },
+      source: { path: TEST_MODULE_CALLEE_SOURCE },
       breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
     });
 
@@ -235,7 +236,7 @@ void describe("WarpoDebugSession", () => {
     const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
     const frame = stackTraceResponse.body.stackFrames[0];
     assert.notStrictEqual(frame, undefined);
-    assert.equal(frame.source?.path, normalizeDebugPath(TEST_MODULE_SOURCE));
+    assert.equal(frame.source?.path, normalizeDebugPath(TEST_MODULE_CALLEE_SOURCE));
     assert.equal(frame.line, TEST_MODULE_BREAKPOINT_LINE);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
@@ -251,7 +252,7 @@ void describe("WarpoDebugSession", () => {
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_SOURCE },
+      source: { path: TEST_MODULE_CALLEE_SOURCE },
       breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
     });
 
@@ -277,7 +278,7 @@ void describe("WarpoDebugSession", () => {
     const topFrame = stackTraceResponse.body.stackFrames[0];
     const callerFrame = stackTraceResponse.body.stackFrames[1];
     assert.match(topFrame.name, /calculate/);
-    assert.equal(topFrame.source?.path, normalizeDebugPath(TEST_MODULE_SOURCE));
+    assert.equal(topFrame.source?.path, normalizeDebugPath(TEST_MODULE_CALLEE_SOURCE));
     assert.equal(topFrame.line, TEST_MODULE_BREAKPOINT_LINE);
     assert.match(callerFrame.name, /_start/);
     assert.equal(callerFrame.source?.path, normalizeDebugPath(TEST_MODULE_SOURCE));
@@ -344,7 +345,7 @@ void describe("WarpoDebugSession", () => {
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_SOURCE },
+      source: { path: TEST_MODULE_CALLEE_SOURCE },
       breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
     });
 
@@ -383,7 +384,7 @@ void describe("WarpoDebugSession", () => {
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_SOURCE },
+      source: { path: TEST_MODULE_CALLEE_SOURCE },
       breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
     });
 
@@ -449,7 +450,7 @@ void describe("WarpoDebugSession", () => {
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_SOURCE },
+      source: { path: TEST_MODULE_CALLEE_SOURCE },
       breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }, { line: TEST_MODULE_SECOND_BREAKPOINT_LINE }],
     });
 
