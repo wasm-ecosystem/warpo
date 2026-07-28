@@ -562,6 +562,9 @@ export class WarpoDebugSession extends LoggingDebugSession {
     if (classLayout.builtinKind === BuiltinContainerKind.Array) {
       return this.decodeArrayElements(address, view, classLayout);
     }
+    if (classLayout.builtinKind === BuiltinContainerKind.StaticArray) {
+      return this.decodeStaticArrayElements(address, view, classLayout);
+    }
     if (classLayout.builtinKind === BuiltinContainerKind.SmallTuple) {
       return this.decodeTupleElements(address, view, classLayout);
     }
@@ -573,7 +576,10 @@ export class WarpoDebugSession extends LoggingDebugSession {
     address: number,
     classLayout: ClassLayout
   ): Promise<number | undefined> {
-    if (classLayout.builtinKind !== BuiltinContainerKind.SmallTuple) {
+    if (
+      classLayout.builtinKind !== BuiltinContainerKind.SmallTuple &&
+      classLayout.builtinKind !== BuiltinContainerKind.StaticArray
+    ) {
       return classLayout.byteSize;
     }
 
@@ -682,15 +688,59 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
 
     const elementsView = new DataView(elementsMemory.buffer, elementsMemory.byteOffset, elementsMemory.byteLength);
+    return this.decodeArrayElementVariables(
+      elementsView,
+      length,
+      elementTypeName,
+      elementSize,
+      classLayout.templateTypeIsReference === true
+    );
+  }
+
+  private async decodeStaticArrayElements(
+    address: number,
+    view: DataView,
+    classLayout: ClassLayout
+  ): Promise<DebugSessionVariable[]> {
+    assert.equal(classLayout.builtinKind, BuiltinContainerKind.StaticArray);
+
+    const elementTypeName = classLayout.templateType;
+    if (elementTypeName === undefined) {
+      this.log(`Error: cannot expand static array at ${address}: element type is unavailable`);
+      return [];
+    }
+
+    const elementSize = resolveArrayElementSize(elementTypeName, classLayout.templateTypeIsReference === true);
+    if (view.byteLength % elementSize !== 0) {
+      this.log(`Error: cannot expand static array at ${address}: payload size is not element aligned`);
+      return [];
+    }
+
+    return this.decodeArrayElementVariables(
+      view,
+      view.byteLength / elementSize,
+      elementTypeName,
+      elementSize,
+      classLayout.templateTypeIsReference === true
+    );
+  }
+
+  private async decodeArrayElementVariables(
+    view: DataView,
+    length: number,
+    elementTypeName: string,
+    elementSize: number,
+    isReference: boolean
+  ): Promise<DebugSessionVariable[]> {
     const elementVariables: Promise<DebugSessionVariable>[] = [];
     for (let index = 0; index < length; index++) {
       elementVariables.push(
-        this.decodeFieldVariable(elementsView, {
+        this.decodeFieldVariable(view, {
           name: index.toString(),
           typeName: elementTypeName,
           offset: index * elementSize,
           size: elementSize,
-          isReference: classLayout.templateTypeIsReference === true,
+          isReference,
         })
       );
     }

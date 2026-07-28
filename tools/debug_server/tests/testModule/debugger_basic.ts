@@ -1,5 +1,12 @@
 // @ts-nocheck
-import { arrayValues, calculate, classArrayValues, stringValues, tupleValues } from "./debugger_callee";
+import {
+  arrayValues,
+  calculate,
+  classArrayValues,
+  staticArrayValues,
+  stringValues,
+  tupleValues,
+} from "./debugger_callee";
 
 export function _start(): i32 {
   let callerSeed = 23;
@@ -24,6 +31,10 @@ export function classArrayEntry(): i32 {
 
 export function tupleEntry(): i32 {
   return tupleValues();
+}
+
+export function staticArrayEntry(): i32 {
+  return staticArrayValues();
 }
 
 function branchLocals(flag: i32): i32 {

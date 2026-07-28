@@ -25,7 +25,8 @@ const TEST_MODULE_STRING_BREAKPOINT_LINE = 57;
 const TEST_MODULE_ARRAY_BREAKPOINT_LINE = 62;
 const TEST_MODULE_CLASS_ARRAY_BREAKPOINT_LINE = 67;
 const TEST_MODULE_TUPLE_BREAKPOINT_LINE = 72;
-const TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE = 32;
+const TEST_MODULE_STATIC_ARRAY_BREAKPOINT_LINE = 83;
+const TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE = 36;
 
 async function waitForLoadedWasmSource(dc: DebugClient): Promise<DebugProtocol.LoadedSourceEvent> {
   while (true) {
@@ -677,6 +678,89 @@ void describe("WarpoDebugSession", () => {
     const value = assertDefined(childFieldsResponse.body.variables.find((candidate) => candidate.name === "value"));
     assert.equal(value.type, "i32");
     assert.equal(value.value, "55");
+  });
+
+  void it("should expand static array elements by index", { timeout: 5000 }, async () => {
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: TEST_MODULE_CALLEE_SOURCE },
+      breakpoints: [{ line: TEST_MODULE_STATIC_ARRAY_BREAKPOINT_LINE }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: TEST_MODULE_OUTPUT,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "staticArrayEntry",
+    };
+
+    const stoppedPromise = waitForBreakpointStop(dc);
+    await dc.launchRequest(launchArgs);
+    await stoppedPromise;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = stackTraceResponse.body.stackFrames[0];
+    assert.notStrictEqual(frame, undefined);
+
+    const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
+
+    const values = assertDefined(findVariable(variablesResponse.body.variables, "values"));
+    assert.ok(values.type?.startsWith("~lib/staticarray/StaticArray<"));
+    assert.ok(values.variablesReference > 0);
+    assert.equal(values.value, "");
+
+    const valueElementsResponse = await dc.variablesRequest({ variablesReference: values.variablesReference });
+    assert.deepEqual(
+      valueElementsResponse.body.variables.map((variable) => ({
+        name: variable.name,
+        type: variable.type,
+        value: variable.value,
+        variablesReference: variable.variablesReference,
+      })),
+      [
+        { name: "0", type: "i32", value: "13", variablesReference: 0 },
+        { name: "1", type: "i32", value: "21", variablesReference: 0 },
+        { name: "2", type: "i32", value: "34", variablesReference: 0 },
+      ]
+    );
+
+    const children = assertDefined(findVariable(variablesResponse.body.variables, "children"));
+    assert.ok(children.type?.startsWith("~lib/staticarray/StaticArray<"));
+    assert.ok(children.variablesReference > 0);
+    assert.equal(children.value, "");
+
+    const childElementsResponse = await dc.variablesRequest({ variablesReference: children.variablesReference });
+    const firstChild = assertDefined(findVariable(childElementsResponse.body.variables, "0"));
+    assert.ok(firstChild.type?.endsWith("Child"));
+    assert.ok(firstChild.variablesReference > 0);
+    assert.equal(firstChild.value, "");
+
+    const secondChild = assertDefined(findVariable(childElementsResponse.body.variables, "1"));
+    assert.ok(secondChild.type?.endsWith("Child"));
+    assert.ok(secondChild.variablesReference > 0);
+    assert.equal(secondChild.value, "");
+
+    const firstChildFieldsResponse = await dc.variablesRequest({ variablesReference: firstChild.variablesReference });
+    const firstValue = assertDefined(
+      firstChildFieldsResponse.body.variables.find((candidate) => candidate.name === "value")
+    );
+    assert.equal(firstValue.type, "i32");
+    assert.equal(firstValue.value, "44");
+
+    const secondChildFieldsResponse = await dc.variablesRequest({ variablesReference: secondChild.variablesReference });
+    const secondValue = assertDefined(
+      secondChildFieldsResponse.body.variables.find((candidate) => candidate.name === "value")
+    );
+    assert.equal(secondValue.type, "i32");
+    assert.equal(secondValue.value, "55");
   });
 
   void it("should refresh variable references across multiple pauses", { timeout: 5000 }, async () => {
