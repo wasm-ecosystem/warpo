@@ -61,13 +61,6 @@ Abbrev table for offset: 0x00000000
 	DW_AT_low_pc	DW_FORM_addr
 	DW_AT_high_pc	DW_FORM_addr
 
-[15] DW_TAG_subprogram	DW_CHILDREN_yes
-	DW_AT_name	DW_FORM_string
-	DW_AT_low_pc	DW_FORM_addr
-	DW_AT_high_pc	DW_FORM_addr
-	DW_AT_static_link	DW_FORM_data4
-	DW_AT_description	DW_FORM_string
-
 
 .debug_info contents:
 0x00000000: Compile Unit: version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04
@@ -112,6 +105,10 @@ DW_TAG_compile_unit
                   DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#makeAdder")
                   scope start	TestClosure.ts:16
                   scope end	TestClosure.ts:19
+      DW_TAG_variable
+                    DW_AT_name	("~__warpo_debug_closure_env")
+                    DW_AT_type	("usize")
+                    DW_AT_location	(0x00000002)
       DW_TAG_formal_parameter
                     DW_AT_name	("this")
                     DW_AT_type	("tests/dwarf/cases/TestClosure/Counter")
@@ -135,8 +132,10 @@ DW_TAG_compile_unit
                     DW_AT_name	("tests/dwarf/cases/TestClosure/Counter#makeAdder~anonymous|0")
                     scope start	TestClosure.ts:20
                     scope end	TestClosure.ts:22
-                    DW_AT_static_link	(0x00000001)
-                    DW_AT_description	("tests/dwarf/cases/TestClosure/Counter#makeAdder")
+        DW_TAG_variable
+                      DW_AT_name	("~__warpo_debug_closure_env")
+                      DW_AT_type	("usize")
+                      DW_AT_location	(0x00000001)
         DW_TAG_formal_parameter
                       DW_AT_name	("delta")
                       DW_AT_type	("i32")
@@ -358,6 +357,10 @@ DW_TAG_compile_unit
                 DW_AT_name	("tests/dwarf/cases/TestClosure/outer")
                 scope start	TestClosure.ts:2
                 scope end	TestClosure.ts:5
+    DW_TAG_variable
+                  DW_AT_name	("~__warpo_debug_closure_env")
+                  DW_AT_type	("usize")
+                  DW_AT_location	(0x00000002)
     DW_TAG_formal_parameter
                   DW_AT_name	("base")
                   DW_AT_type	("i32")
@@ -381,8 +384,10 @@ DW_TAG_compile_unit
                   DW_AT_name	("tests/dwarf/cases/TestClosure/outer~anonymous|0")
                   scope start	TestClosure.ts:6
                   scope end	TestClosure.ts:8
-                  DW_AT_static_link	(0x00000001)
-                  DW_AT_description	("tests/dwarf/cases/TestClosure/outer")
+      DW_TAG_variable
+                    DW_AT_name	("~__warpo_debug_closure_env")
+                    DW_AT_type	("usize")
+                    DW_AT_location	(0x00000001)
       DW_TAG_formal_parameter
                     DW_AT_name	("delta")
                     DW_AT_type	("i32")
@@ -406,6 +411,10 @@ DW_TAG_compile_unit
                 DW_AT_name	("tests/dwarf/cases/TestClosure/loopCapture")
                 scope start	TestClosure.ts:32
                 scope end	TestClosure.ts:38
+    DW_TAG_variable
+                  DW_AT_name	("~__warpo_debug_closure_env")
+                  DW_AT_type	("usize")
+                  DW_AT_location	(0x00000001)
     DW_TAG_formal_parameter
                   DW_AT_name	("n")
                   DW_AT_type	("i32")
@@ -423,6 +432,10 @@ DW_TAG_compile_unit
                   scope start	TestClosure.ts:34
                   scope end	TestClosure.ts:34
       DW_TAG_variable
+                    DW_AT_name	("~__warpo_debug_closure_env")
+                    DW_AT_type	("usize")
+                    DW_AT_location	(0x00000004)
+      DW_TAG_variable
                     DW_AT_name	("i")
                     DW_AT_type	("i32")
                     DW_AT_data_member_location	(0x00000004)
@@ -436,8 +449,10 @@ DW_TAG_compile_unit
                     DW_AT_name	("tests/dwarf/cases/TestClosure/loopCapture~anonymous|0")
                     scope start	TestClosure.ts:36
                     scope end	TestClosure.ts:36
-                    DW_AT_static_link	(0x00000001)
-                    DW_AT_description	("tests/dwarf/cases/TestClosure/loopCapture")
+        DW_TAG_variable
+                      DW_AT_name	("~__warpo_debug_closure_env")
+                      DW_AT_type	("usize")
+                      DW_AT_location	(0x00000001)
         DW_TAG_formal_parameter
                       DW_AT_name	("v")
                       DW_AT_type	("i32")

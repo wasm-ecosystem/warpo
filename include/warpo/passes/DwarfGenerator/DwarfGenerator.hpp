@@ -34,7 +34,6 @@ public:
 
   struct AbbrevCodes final {
     uint32_t subprogram;
-    uint32_t closureSubprogram;
     uint32_t formalParameter;
     uint32_t tupleFieldFormalParameter;
     uint32_t lexicalBlock;

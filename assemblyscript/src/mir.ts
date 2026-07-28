@@ -17,6 +17,7 @@ import {
   _WarpoCreateBaseType,
   _WarpoCreateClass,
   _WarpoAddHeapVariableStorageLocalIndex,
+  _WarpoEnterClosureScope,
   _WarpoLeaveFunction,
 } from "./warpo";
 
@@ -122,6 +123,10 @@ export function addHeapVariableStorageLocalIndex(subprogram: Function, index: u3
 
 export function enterScope(startLine: u32, endLine: u32): void {
   _WarpoEnterScope(startLine, endLine);
+}
+
+export function enterClosureScope(startLine: u32, endLine: u32, heapVariableStorageLocalIndex: u32): void {
+  _WarpoEnterClosureScope(startLine, endLine, heapVariableStorageLocalIndex);
 }
 
 export function leaveScope(): void {

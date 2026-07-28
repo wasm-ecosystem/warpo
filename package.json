@@ -34,7 +34,7 @@
     "docs:build": "vitepress build docs",
     "prettier": "prettier --check .",
     "prettier:fix": "prettier --write .",
-    "lint": "npx eslint --config ./eslint.config.mjs tools/debug_server/ tools/heap_analyzer/ tools/scripts/ tools/test_runner/ debugger/src/",
+    "lint": "npx eslint --config ./eslint.config.mjs tools/debug_server/ tools/heap_analyzer/ tools/scripts/ tools/test_runner/ debugger/src/ tools/dwarf",
     "cspell": "cspell ."
   },
   "license": "Apache-2.0",

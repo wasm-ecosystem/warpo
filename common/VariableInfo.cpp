@@ -143,10 +143,11 @@ void VariableInfo::addHeapVariableStorageLocalIndex(std::string_view const subPr
   it->second.setHeapVariableStorageLocalIndex(index);
 }
 
-void VariableInfo::enterScope(uint32_t const startLine, uint32_t const endLine) {
+void VariableInfo::enterScope(uint32_t const startLine, uint32_t const endLine,
+                              std::optional<uint32_t> const heapVariableStorageLocalIndex) {
   if (scopeStack_.empty())
     return;
-  std::unique_ptr<BlockInfo> block = std::make_unique<BlockInfo>(startLine, endLine);
+  std::unique_ptr<BlockInfo> block = std::make_unique<BlockInfo>(startLine, endLine, heapVariableStorageLocalIndex);
   ScopeInfo *const ptr = block.get();
   scopeStack_.back()->addChild(std::move(block));
   scopeStack_.push_back(ptr);

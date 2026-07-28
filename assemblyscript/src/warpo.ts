@@ -47,6 +47,7 @@ export declare function _WarpoAddTupleParameter(
 
 export declare function _WarpoAddHeapVariableStorageLocalIndex(subProgramName: string, index: u32): void;
 export declare function _WarpoEnterScope(startLine: u32, endLine: u32): void;
+export declare function _WarpoEnterClosureScope(startLine: u32, endLine: u32, heapVariableStorageLocalIndex: u32): void;
 export declare function _WarpoLeaveScope(): void;
 export declare function _WarpoLeaveFunction(): void;
 

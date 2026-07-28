@@ -118,6 +118,12 @@ void enterScope(uint32_t const startLine, uint32_t const endLine, vb::WasmModule
   pCompiler->asModule_.variableInfo_.enterScope(startLine, endLine);
 }
 
+void enterClosureScope(uint32_t const startLine, uint32_t const endLine, uint32_t const heapVariableStorageLocalIndex,
+                       vb::WasmModule const *const ctx) {
+  FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
+  pCompiler->asModule_.variableInfo_.enterScope(startLine, endLine, heapVariableStorageLocalIndex);
+}
+
 void leaveScope(vb::WasmModule const *const ctx) {
   FrontendCompiler *const pCompiler = static_cast<FrontendCompiler *>(ctx->getContext());
   pCompiler->asModule_.variableInfo_.leaveScope();
@@ -145,6 +151,7 @@ std::vector<vb::NativeSymbol> createVariableInfoAPI() {
       STATIC_LINK("warpo", "_WarpoAddTupleParameter", addTupleParameter),
       STATIC_LINK("warpo", "_WarpoAddHeapVariableStorageLocalIndex", addHeapVariableStorageLocalIndex),
       STATIC_LINK("warpo", "_WarpoEnterScope", enterScope),
+      STATIC_LINK("warpo", "_WarpoEnterClosureScope", enterClosureScope),
       STATIC_LINK("warpo", "_WarpoLeaveScope", leaveScope),
       STATIC_LINK("warpo", "_WarpoLeaveFunction", leaveFunction),
   };

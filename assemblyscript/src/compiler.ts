@@ -2619,15 +2619,24 @@ export class Compiler extends DiagnosticEmitter {
     let targetFunction = outerFlow.targetFunction;
     let loopClosureInfo = this.program.closureScanner.getClosureFunctionInfo(statement);
     let loopClosureTupleInfo: LoopClosureTupleInfo | null = null;
+    let loopStorage: Local | null = null;
     if (loopClosureInfo) {
-      let loopStorage = flow.getTempLocal(Type.i32);
+      loopStorage = flow.getTempLocal(Type.i32);
       targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
       loopClosureTupleInfo = this.finalizeLoopClosureType(targetFunction, statement);
     }
     let bodyStmts = new Array<ExpressionRef>();
     let body = statement.body;
     let doBodySource = body.range.source;
-    mir.enterScope(doBodySource.lineAt(body.range.start), doBodySource.lineAt(body.range.end));
+    if (loopClosureTupleInfo && loopStorage) {
+      mir.enterClosureScope(
+        doBodySource.lineAt(body.range.start),
+        doBodySource.lineAt(body.range.end),
+        loopStorage.index
+      );
+    } else {
+      mir.enterScope(doBodySource.lineAt(body.range.start), doBodySource.lineAt(body.range.end));
+    }
     if (body.kind == NodeKind.Block) {
       this.compileStatements((<BlockStatement>body).statements, bodyStmts);
     } else {
@@ -2739,7 +2748,6 @@ export class Compiler extends DiagnosticEmitter {
     this.currentFlow = flow;
     let stmts = new Array<ExpressionRef>();
     let forSource = statement.range.source;
-    mir.enterScope(forSource.lineAt(statement.range.start), forSource.lineAt(statement.range.end));
     let targetFunction = outerFlow.targetFunction;
     let loopClosureInfo = this.program.closureScanner.getClosureFunctionInfo(statement);
     let loopStorage: Local | null = null;
@@ -2749,6 +2757,15 @@ export class Compiler extends DiagnosticEmitter {
       targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
       // renew pendingInitClosureLocals to later initialize compile
       targetFunction.pendingInitClosureLocals = new ForInitClosureLocals();
+    }
+    if (loopStorage) {
+      mir.enterClosureScope(
+        forSource.lineAt(statement.range.start),
+        forSource.lineAt(statement.range.end),
+        loopStorage.index
+      );
+    } else {
+      mir.enterScope(forSource.lineAt(statement.range.start), forSource.lineAt(statement.range.end));
     }
     let initializer = statement.initializer;
     if (initializer) {
@@ -2938,7 +2955,6 @@ export class Compiler extends DiagnosticEmitter {
     const flow = outerFlow.fork();
     this.currentFlow = flow;
     let forOfSource = statement.range.source;
-    mir.enterScope(forOfSource.lineAt(statement.range.start), forOfSource.lineAt(statement.range.end));
     const targetFunction = outerFlow.targetFunction;
     const loopClosureInfo = program.closureScanner.getClosureFunctionInfo(statement);
     let loopStorage: Local | null = null;
@@ -2946,6 +2962,15 @@ export class Compiler extends DiagnosticEmitter {
       loopStorage = flow.getTempLocal(Type.i32);
       targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
       targetFunction.pendingInitClosureLocals = new ForInitClosureLocals();
+    }
+    if (loopStorage) {
+      mir.enterClosureScope(
+        forOfSource.lineAt(statement.range.start),
+        forOfSource.lineAt(statement.range.end),
+        loopStorage.index
+      );
+    } else {
+      mir.enterScope(forOfSource.lineAt(statement.range.start), forOfSource.lineAt(statement.range.end));
     }
 
     // put iterableExpr to local to ensure lifetime
@@ -3624,15 +3649,24 @@ export class Compiler extends DiagnosticEmitter {
     let targetFunction = outerFlow.targetFunction;
     let loopClosureInfo = this.program.closureScanner.getClosureFunctionInfo(statement);
     let loopClosureTupleInfo: LoopClosureTupleInfo | null = null;
+    let loopStorage: Local | null = null;
     if (loopClosureInfo) {
-      let loopStorage = thenFlow.getTempLocal(Type.i32);
+      loopStorage = thenFlow.getTempLocal(Type.i32);
       targetFunction.pushClosureScope(loopClosureInfo, loopStorage);
       loopClosureTupleInfo = this.finalizeLoopClosureType(targetFunction, statement);
     }
     let bodyStmts = new Array<ExpressionRef>();
     let body = statement.body;
     let whileBodySource = body.range.source;
-    mir.enterScope(whileBodySource.lineAt(body.range.start), whileBodySource.lineAt(body.range.end));
+    if (loopClosureTupleInfo && loopStorage) {
+      mir.enterClosureScope(
+        whileBodySource.lineAt(body.range.start),
+        whileBodySource.lineAt(body.range.end),
+        loopStorage.index
+      );
+    } else {
+      mir.enterScope(whileBodySource.lineAt(body.range.start), whileBodySource.lineAt(body.range.end));
+    }
     if (body.kind == NodeKind.Block) {
       this.compileStatements((<BlockStatement>body).statements, bodyStmts);
     } else {

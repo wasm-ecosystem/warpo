@@ -66,7 +66,8 @@ public:
   void addTupleParameter(std::string variableName, std::string_view const typeName, uint32_t const tupleFieldOffset,
                          uint32_t const storageLocalIndex, bool const nullable);
 
-  void enterScope(uint32_t const startLine, uint32_t const endLine);
+  void enterScope(uint32_t const startLine, uint32_t const endLine,
+                  std::optional<uint32_t> const heapVariableStorageLocalIndex = std::nullopt);
 
   void leaveScope();
 

@@ -10,6 +10,7 @@ import { after, before, describe, it } from "node:test";
 import { fileURLToPath } from "node:url";
 import {
   DwarfFunctionInfoResolver,
+  WARPO_DEBUG_CLOSURE_ENV_LOCAL_NAME,
   getScopeChainInFunctionAtBytecodeOffset,
   getVariablesInFunctionAtBytecodeOffset,
 } from "../functionDebugInfo.js";
@@ -25,7 +26,7 @@ const WASM_PATH = resolve(BUILD_DIR, "functionDebugInfo.wasm");
 
 const COMPUTE_FUNCTION_NAME = "tools/dwarf/tests/fixtures/functionDebugInfo/compute";
 const WITH_CLOSURE_FUNCTION_NAME = "tools/dwarf/tests/fixtures/functionDebugInfo/withClosure";
-const COMPUTE_LINE = 6;
+const COMPUTE_LINE = 8;
 const INNER_LINE = 8;
 const CLOSURE_BODY_LINE = 18;
 
@@ -109,8 +110,11 @@ describe("functionDebugInfo", () => {
     assert.match(functionInfo?.name ?? "", /withClosure~anonymous/);
     assert.equal(functionInfo?.parent?.kind, "function");
     assert.equal(functionInfo.parent.name, WITH_CLOSURE_FUNCTION_NAME);
+    assert.equal(typeof functionInfo.closureEnvLocalIndex, "number");
+    assert.equal(typeof functionInfo.parent.closureEnvLocalIndex, "number");
 
     const variables = getVariablesInFunctionAtBytecodeOffset(functionInfo, bytecodeOffset);
+    assert.ok(!variables.some((variable) => variable.name === WARPO_DEBUG_CLOSURE_ENV_LOCAL_NAME));
     assert.deepEqual(
       variables.map((variable) => [variable.name, variable.typeName]),
       [
