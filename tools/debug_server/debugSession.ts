@@ -19,8 +19,21 @@ import {
 import type { DebugProtocol } from "@vscode/debugprotocol";
 import assert from "node:assert/strict";
 import * as path from "node:path";
-import type { ClassField, ClassLayout } from "../dwarf/classDebugInfo.js";
-import { OBJECT_RTID_OFFSET, OBJECT_RTID_SIZE } from "../runtime/objectLayout.js";
+import {
+  BuiltinContainerKind,
+  resolveArrayElementSize,
+  type ClassField,
+  type ClassLayout,
+} from "../dwarf/classDebugInfo.js";
+import {
+  ARRAY_DATA_START_OFFSET,
+  ARRAY_LENGTH_OFFSET,
+  AS_STRING_CLASS_NAME,
+  OBJECT_RTID_OFFSET,
+  OBJECT_RTID_SIZE,
+  OBJECT_RTSIZE_OFFSET,
+  OBJECT_RTSIZE_SIZE,
+} from "../runtime/objectLayout.js";
 import { normalizeDebugPath } from "./debugPath.js";
 import type { DebuggerBreakpointInfo, DebuggerWasmModule } from "./debuggerWasmModule.js";
 import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
@@ -47,6 +60,7 @@ interface ClassVariable {
   name: string;
   typeName: string;
   address: number;
+  displayValue?: string;
 }
 
 type DebugSessionVariable = BasicVariable | ClassVariable;
@@ -423,12 +437,12 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
     const wasmBytecodeOffset: number | undefined = runtimeFrame.wasmBytecodeOffset;
     if (wasmBytecodeOffset === undefined) {
-      return runtimeVariables.map((variable) => this.toDebugSessionVariable(variable));
+      return Promise.all(runtimeVariables.map((variable) => this.toDebugSessionVariable(variable)));
     }
 
     const sourceVariables = wasmModule.getVariablesAtBytecodeOffset(wasmBytecodeOffset);
     if (!sourceVariables) {
-      return runtimeVariables.map((variable) => this.toDebugSessionVariable(variable));
+      return Promise.all(runtimeVariables.map((variable) => this.toDebugSessionVariable(variable)));
     }
 
     const runtimeVariablesByIndex = new Map<number, DebugRuntimeVariable>();
@@ -436,25 +450,30 @@ export class WarpoDebugSession extends LoggingDebugSession {
       runtimeVariablesByIndex.set(variable.localIndex, variable);
     }
 
-    return sourceVariables.map((variable) => {
+    return Promise.all(sourceVariables.map((variable) => {
       const runtimeVariable = runtimeVariablesByIndex.get(variable.localIndex);
       assert(runtimeVariable !== undefined);
       return this.toDebugSessionVariable(runtimeVariable, variable.name, variable.typeName);
-    });
+    }));
   }
 
   private resolvePausedStackFrame(frameId: number): PausedStackFrame | undefined {
     return this.pausedStackFramesById.get(frameId);
   }
 
-  private toDebugSessionVariable(
+  private async toDebugSessionVariable(
     variable: DebugRuntimeVariable,
     name: string = variable.name,
     typeName: string | undefined = variable.type
-  ): DebugSessionVariable {
+  ): Promise<DebugSessionVariable> {
     if (typeName !== undefined) {
       const objectAddress = this.parseObjectAddress(typeName, variable.value);
       if (objectAddress) {
+        if (typeName === AS_STRING_CLASS_NAME) {
+          const stringValue = await this.decodeStringAtAddress(typeName, objectAddress);
+          return this.createClassVariable(name, typeName, objectAddress, stringValue);
+        }
+
         return this.createClassVariable(name, typeName, objectAddress);
       }
     }
@@ -468,16 +487,18 @@ export class WarpoDebugSession extends LoggingDebugSession {
   }
 
   private toDebugProtocolVariable(variable: DebugSessionVariable): DebugProtocol.Variable {
+    const isExpandableClass = variable.kind === "class" && variable.displayValue === undefined;
+
     return {
-      name: variable.name,
-      value: variable.kind === "class" ? "" : variable.value,
+      name: isExpandableClass ? `${variable.name}: ${variable.typeName}` : variable.name,
+      value: variable.kind === "class" ? variable.displayValue ?? "" : variable.value,
       type: variable.typeName,
-      variablesReference: variable.kind === "class" ? this.toObjectVariablesReference(variable.address) : 0,
+      variablesReference: isExpandableClass ? this.toObjectVariablesReference(variable.address) : 0,
     };
   }
 
-  private createClassVariable(name: string, typeName: string, address: number): ClassVariable {
-    return { kind: "class", name, typeName, address };
+  private createClassVariable(name: string, typeName: string, address: number, displayValue?: string): ClassVariable {
+    return { kind: "class", name, typeName, address, displayValue };
   }
 
   private parseObjectAddress(typeName: string, value: string): number | undefined {
@@ -529,7 +550,55 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
 
     const view = new DataView(memory.buffer, memory.byteOffset, memory.byteLength);
-    return classLayout.fields.map((field) => this.decodeFieldVariable(view, field));
+    if (classLayout.builtinKind === BuiltinContainerKind.Array) {
+      return this.decodeArrayElements(address, view, classLayout);
+    }
+
+    return Promise.all(classLayout.fields.map((field) => this.decodeFieldVariable(view, field)));
+  }
+
+  private async decodeArrayElements(
+    address: number,
+    view: DataView,
+    classLayout: ClassLayout
+  ): Promise<DebugSessionVariable[]> {
+    assert.equal(classLayout.builtinKind, BuiltinContainerKind.Array);
+
+    const elementTypeName = classLayout.templateType;
+    if (elementTypeName === undefined) {
+      this.log(`Error: cannot expand array at ${address}: element type is unavailable`);
+      return [];
+    }
+
+    if (ARRAY_LENGTH_OFFSET + 4 > view.byteLength) {
+      this.log(`Error: cannot expand array at ${address}: array header is unavailable`);
+      return [];
+    }
+
+    const dataStart = view.getUint32(ARRAY_DATA_START_OFFSET, true);
+    const length = view.getUint32(ARRAY_LENGTH_OFFSET, true);
+    const elementSize = resolveArrayElementSize(elementTypeName, classLayout.templateTypeIsReference === true);
+    const elementsMemory = await this.runtime?.readWasmMemory(dataStart, length * elementSize);
+    if (!elementsMemory) {
+      this.log(`Error: cannot expand array at ${address}: array elements memory is unavailable`);
+      return [];
+    }
+
+    const elementsView = new DataView(elementsMemory.buffer, elementsMemory.byteOffset, elementsMemory.byteLength);
+    const elementVariables: Promise<DebugSessionVariable>[] = [];
+    for (let index = 0; index < length; index++) {
+      elementVariables.push(
+        this.decodeFieldVariable(elementsView, {
+          name: index.toString(),
+          typeName: elementTypeName,
+          offset: index * elementSize,
+          size: elementSize,
+          isReference: classLayout.templateTypeIsReference === true,
+        })
+      );
+    }
+
+    return Promise.all(elementVariables);
   }
 
   private async resolveRuntimeClassLayout(address: number): Promise<ClassLayout | undefined> {
@@ -548,10 +617,15 @@ export class WarpoDebugSession extends LoggingDebugSession {
     return classLayout;
   }
 
-  private decodeFieldVariable(view: DataView, field: ClassField): DebugSessionVariable {
+  private async decodeFieldVariable(view: DataView, field: ClassField): Promise<DebugSessionVariable> {
     const value = this.decodeFieldValue(view, field);
     const address = field.isReference ? this.parseObjectAddress(field.typeName, value) : undefined;
     if (address) {
+      if (field.typeName === AS_STRING_CLASS_NAME) {
+        const stringValue = await this.decodeStringAtAddress(field.typeName, address);
+        return this.createClassVariable(field.name, field.typeName, address, stringValue);
+      }
+
       return this.createClassVariable(field.name, field.typeName, address);
     }
 
@@ -633,6 +707,31 @@ export class WarpoDebugSession extends LoggingDebugSession {
         return "<unavailable>";
       }
     }
+  }
+
+  private async decodeStringAtAddress(typeName: string, address: number): Promise<string> {
+    assert.equal(typeName, AS_STRING_CLASS_NAME);
+
+    if (!this.runtime) {
+      this.log(`Error: cannot decode string at ${address}: runtime is not active`);
+      return "<unavailable>";
+    }
+
+    const sizeMemory = await this.runtime.readWasmMemory(address + OBJECT_RTSIZE_OFFSET, OBJECT_RTSIZE_SIZE);
+    if (!sizeMemory) {
+      this.log(`Error: cannot decode string at ${address}: string size memory is unavailable`);
+      return "<unavailable>";
+    }
+
+    const sizeView = new DataView(sizeMemory.buffer, sizeMemory.byteOffset, sizeMemory.byteLength);
+    const byteLength = sizeView.getUint32(0, true);
+    const stringMemory = await this.runtime.readWasmMemory(address, byteLength);
+    if (!stringMemory) {
+      this.log(`Error: cannot decode string at ${address}: string payload memory is unavailable`);
+      return "<unavailable>";
+    }
+
+    return JSON.stringify(Buffer.from(stringMemory).toString("utf16le"));
   }
 
   private doContinueRequest(response: DebugProtocol.ContinueResponse): void {

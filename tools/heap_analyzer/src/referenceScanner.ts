@@ -10,6 +10,7 @@ import {
   type ObjectHeader,
 } from "./types.js";
 import type { DebugInfoResolver } from "./debugInfoResolver.js";
+import { ARRAY_DATA_START_OFFSET, ARRAY_LENGTH_OFFSET } from "../../runtime/objectLayout.js";
 
 function readValidPtr(memory: DataView, addr: number, validPtrs: Set<number>): number | null {
   if (addr + 4 > memory.byteLength) {
@@ -45,8 +46,8 @@ function scanArrayElements(memory: DataView, obj: ObjectHeader, validPtrs: Set<n
   if (obj.rtSize < 16) {
     return;
   }
-  const dataStart = memory.getUint32(obj.payloadPtr + 4, true);
-  const length = memory.getUint32(obj.payloadPtr + 12, true);
+  const dataStart = memory.getUint32(obj.payloadPtr + ARRAY_DATA_START_OFFSET, true);
+  const length = memory.getUint32(obj.payloadPtr + ARRAY_LENGTH_OFFSET, true);
   for (let i = 0; i < length; i++) {
     const ptr = readValidPtr(memory, dataStart + i * 4, validPtrs);
     if (ptr !== null) {
