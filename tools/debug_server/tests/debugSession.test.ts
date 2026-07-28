@@ -24,7 +24,8 @@ const TEST_MODULE_SECOND_BREAKPOINT_LINE = 43;
 const TEST_MODULE_STRING_BREAKPOINT_LINE = 57;
 const TEST_MODULE_ARRAY_BREAKPOINT_LINE = 62;
 const TEST_MODULE_CLASS_ARRAY_BREAKPOINT_LINE = 67;
-const TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE = 28;
+const TEST_MODULE_TUPLE_BREAKPOINT_LINE = 72;
+const TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE = 32;
 
 async function waitForLoadedWasmSource(dc: DebugClient): Promise<DebugProtocol.LoadedSourceEvent> {
   while (true) {
@@ -617,6 +618,65 @@ void describe("WarpoDebugSession", () => {
     );
     assert.equal(secondValue.type, "i32");
     assert.equal(secondValue.value, "34");
+  });
+
+  void it("should expand tuple elements by index", { timeout: 5000 }, async () => {
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: TEST_MODULE_CALLEE_SOURCE },
+      breakpoints: [{ line: TEST_MODULE_TUPLE_BREAKPOINT_LINE }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: TEST_MODULE_OUTPUT,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "tupleEntry",
+    };
+
+    const stoppedPromise = waitForBreakpointStop(dc);
+    await dc.launchRequest(launchArgs);
+    await stoppedPromise;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = stackTraceResponse.body.stackFrames[0];
+    assert.notStrictEqual(frame, undefined);
+
+    const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
+
+    const values = assertDefined(findVariable(variablesResponse.body.variables, "values"));
+    assert.equal(values.type, "~lib/tuple/SmallTuple");
+    assert.ok(values.variablesReference > 0);
+    assert.equal(values.value, "");
+
+    const elementsResponse = await dc.variablesRequest({ variablesReference: values.variablesReference });
+    const first = assertDefined(elementsResponse.body.variables.find((candidate) => candidate.name === "0"));
+    assert.equal(first.type, "usize");
+    assert.equal(first.value, "89");
+    assert.equal(first.variablesReference, 0);
+
+    const second = assertDefined(elementsResponse.body.variables.find((candidate) => candidate.name === "1"));
+    assert.equal(second.type, "~lib/string/String");
+    assert.equal(second.value, '"tuple value"');
+    assert.equal(second.variablesReference, 0);
+
+    const third = assertDefined(findVariable(elementsResponse.body.variables, "2"));
+    assert.ok(third.type?.endsWith("Child"));
+    assert.ok(third.variablesReference > 0);
+    assert.equal(third.value, "");
+
+    const childFieldsResponse = await dc.variablesRequest({ variablesReference: third.variablesReference });
+    const value = assertDefined(childFieldsResponse.body.variables.find((candidate) => candidate.name === "value"));
+    assert.equal(value.type, "i32");
+    assert.equal(value.value, "55");
   });
 
   void it("should refresh variable references across multiple pauses", { timeout: 5000 }, async () => {

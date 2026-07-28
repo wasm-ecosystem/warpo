@@ -33,6 +33,8 @@ import {
   OBJECT_RTID_SIZE,
   OBJECT_RTSIZE_OFFSET,
   OBJECT_RTSIZE_SIZE,
+  SMALL_TUPLE_BITMAP_SIZE,
+  SMALL_TUPLE_SLOT_SIZE,
 } from "../runtime/objectLayout.js";
 import { normalizeDebugPath } from "./debugPath.js";
 import type { DebuggerBreakpointInfo, DebuggerWasmModule } from "./debuggerWasmModule.js";
@@ -543,7 +545,12 @@ export class WarpoDebugSession extends LoggingDebugSession {
       return [];
     }
 
-    const memory = await this.runtime.readWasmMemory(address, classLayout.byteSize);
+    const payloadSize = await this.resolveRuntimeObjectPayloadSize(address, classLayout);
+    if (payloadSize === undefined) {
+      return [];
+    }
+
+    const memory = await this.runtime.readWasmMemory(address, payloadSize);
     if (!memory) {
       this.log(`Warning: cannot expand object at ${address}: object memory is unavailable`);
       return [];
@@ -553,8 +560,92 @@ export class WarpoDebugSession extends LoggingDebugSession {
     if (classLayout.builtinKind === BuiltinContainerKind.Array) {
       return this.decodeArrayElements(address, view, classLayout);
     }
+    if (classLayout.builtinKind === BuiltinContainerKind.SmallTuple) {
+      return this.decodeTupleElements(address, view, classLayout);
+    }
 
     return Promise.all(classLayout.fields.map((field) => this.decodeFieldVariable(view, field)));
+  }
+
+  private async resolveRuntimeObjectPayloadSize(
+    address: number,
+    classLayout: ClassLayout
+  ): Promise<number | undefined> {
+    if (classLayout.builtinKind !== BuiltinContainerKind.SmallTuple) {
+      return classLayout.byteSize;
+    }
+
+    const sizeMemory = await this.runtime?.readWasmMemory(address + OBJECT_RTSIZE_OFFSET, OBJECT_RTSIZE_SIZE);
+    if (!sizeMemory) {
+      this.log(`Warning: cannot read object size at ${address + OBJECT_RTSIZE_OFFSET}`);
+      return undefined;
+    }
+
+    const sizeView = new DataView(sizeMemory.buffer, sizeMemory.byteOffset, sizeMemory.byteLength);
+    return sizeView.getUint32(0, true);
+  }
+
+  private async decodeTupleElements(
+    address: number,
+    view: DataView,
+    classLayout: ClassLayout
+  ): Promise<DebugSessionVariable[]> {
+    assert.equal(classLayout.builtinKind, BuiltinContainerKind.SmallTuple);
+
+    if (view.byteLength <= SMALL_TUPLE_BITMAP_SIZE) {
+      return [];
+    }
+
+    const elementAreaSize = view.byteLength - SMALL_TUPLE_BITMAP_SIZE;
+    if (elementAreaSize % SMALL_TUPLE_SLOT_SIZE !== 0) {
+      this.log(`Error: cannot expand tuple at ${address}: tuple element area is not slot aligned`);
+      return [];
+    }
+
+    const bitmap = view.getBigUint64(elementAreaSize, true);
+    const variables: Promise<DebugSessionVariable>[] = [];
+    for (let index = 0; index < elementAreaSize / SMALL_TUPLE_SLOT_SIZE; index++) {
+      const name = index.toString();
+      const offset = index * SMALL_TUPLE_SLOT_SIZE;
+      const isReference = (bitmap & (1n << BigInt(index))) !== 0n;
+      variables.push(
+        isReference
+          ? this.decodeTupleReferenceElement(view, name, offset)
+          : this.decodeFieldVariable(view, {
+              name,
+              typeName: "usize",
+              offset,
+              size: SMALL_TUPLE_SLOT_SIZE,
+              isReference: false,
+            })
+      );
+    }
+
+    return Promise.all(variables);
+  }
+
+  private async decodeTupleReferenceElement(view: DataView, name: string, offset: number): Promise<DebugSessionVariable> {
+    if (offset + SMALL_TUPLE_SLOT_SIZE > view.byteLength) {
+      return { kind: "basic", name, value: "<unavailable>", typeName: undefined };
+    }
+
+    const elementAddress = view.getUint32(offset, true);
+    if (elementAddress === 0) {
+      return { kind: "basic", name, value: "null", typeName: undefined };
+    }
+
+    const classLayout = await this.resolveRuntimeClassLayout(elementAddress);
+    if (!classLayout) {
+      this.log(`Error: cannot expand tuple reference at ${elementAddress}: runtime class layout is missing`);
+      return { kind: "basic", name, value: elementAddress.toString(), typeName: undefined };
+    }
+
+    if (classLayout.name === AS_STRING_CLASS_NAME) {
+      const stringValue = await this.decodeStringAtAddress(classLayout.name, elementAddress);
+      return this.createClassVariable(name, classLayout.name, elementAddress, stringValue);
+    }
+
+    return this.createClassVariable(name, classLayout.name, elementAddress);
   }
 
   private async decodeArrayElements(

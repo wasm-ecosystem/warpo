@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { arrayValues, calculate, classArrayValues, stringValues } from "./debugger_callee";
+import { arrayValues, calculate, classArrayValues, stringValues, tupleValues } from "./debugger_callee";
 
 export function _start(): i32 {
   let callerSeed = 23;
@@ -20,6 +20,10 @@ export function arrayEntry(): i32 {
 
 export function classArrayEntry(): i32 {
   return classArrayValues();
+}
+
+export function tupleEntry(): i32 {
+  return tupleValues();
 }
 
 function branchLocals(flag: i32): i32 {

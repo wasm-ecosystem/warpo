@@ -66,3 +66,8 @@ export function classArrayValues(): i32 {
   let children = [new Child(21), new Child(34)];
   return children[0].value + children[1].value;
 }
+
+export function tupleValues(): i32 {
+  let values: [i32, string, Child] = [89, "tuple value", new Child(55)];
+  return values[0] + values[1].length + values[2].value;
+}
