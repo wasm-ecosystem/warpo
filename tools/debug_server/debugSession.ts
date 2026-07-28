@@ -452,11 +452,13 @@ export class WarpoDebugSession extends LoggingDebugSession {
       runtimeVariablesByIndex.set(variable.localIndex, variable);
     }
 
-    return Promise.all(sourceVariables.map((variable) => {
-      const runtimeVariable = runtimeVariablesByIndex.get(variable.localIndex);
-      assert(runtimeVariable !== undefined);
-      return this.toDebugSessionVariable(runtimeVariable, variable.name, variable.typeName);
-    }));
+    return Promise.all(
+      sourceVariables.map((variable) => {
+        const runtimeVariable = runtimeVariablesByIndex.get(variable.localIndex);
+        assert(runtimeVariable !== undefined);
+        return this.toDebugSessionVariable(runtimeVariable, variable.name, variable.typeName);
+      })
+    );
   }
 
   private resolvePausedStackFrame(frameId: number): PausedStackFrame | undefined {
@@ -493,7 +495,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
     return {
       name: isExpandableClass ? `${variable.name}: ${variable.typeName}` : variable.name,
-      value: variable.kind === "class" ? variable.displayValue ?? "" : variable.value,
+      value: variable.kind === "class" ? (variable.displayValue ?? "") : variable.value,
       type: variable.typeName,
       variablesReference: isExpandableClass ? this.toObjectVariablesReference(variable.address) : 0,
     };
@@ -624,7 +626,11 @@ export class WarpoDebugSession extends LoggingDebugSession {
     return Promise.all(variables);
   }
 
-  private async decodeTupleReferenceElement(view: DataView, name: string, offset: number): Promise<DebugSessionVariable> {
+  private async decodeTupleReferenceElement(
+    view: DataView,
+    name: string,
+    offset: number
+  ): Promise<DebugSessionVariable> {
     if (offset + SMALL_TUPLE_SLOT_SIZE > view.byteLength) {
       return { kind: "basic", name, value: "<unavailable>", typeName: undefined };
     }
