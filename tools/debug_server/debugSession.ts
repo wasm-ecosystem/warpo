@@ -65,9 +65,19 @@ interface ClassVariable {
   displayValue?: string;
 }
 
-type DebugSessionVariable = BasicVariable | ClassVariable;
+interface MapEntryVariable {
+  kind: "map-entry";
+  name: string;
+  key: DebugSessionVariable;
+  value: DebugSessionVariable;
+}
 
-type VariableContainer = { kind: "locals"; frameId: number } | { kind: "object"; address: number };
+type DebugSessionVariable = BasicVariable | ClassVariable | MapEntryVariable;
+
+type VariableContainer =
+  | { kind: "locals"; frameId: number }
+  | { kind: "object"; address: number }
+  | { kind: "map-entry"; key: DebugSessionVariable; value: DebugSessionVariable };
 
 interface PausedStackFrame {
   frameIndex: number;
@@ -401,6 +411,14 @@ export class WarpoDebugSession extends LoggingDebugSession {
         response.body = { variables: await this.decodeObjectAtAddress(variableContainer.address) };
         break;
       }
+      case "map-entry": {
+        response.body = {
+          variables: [variableContainer.key, variableContainer.value].map((variable) =>
+            this.toDebugProtocolVariable(variable, { showClassNameInName: false })
+          ),
+        };
+        break;
+      }
       default: {
         this.log(`Warning: unknown variables reference ${args.variablesReference}`);
         response.body = { variables: [] };
@@ -490,15 +508,45 @@ export class WarpoDebugSession extends LoggingDebugSession {
     };
   }
 
-  private toDebugProtocolVariable(variable: DebugSessionVariable): DebugProtocol.Variable {
+  private toDebugProtocolVariable(
+    variable: DebugSessionVariable,
+    options: { showClassNameInName?: boolean } = {}
+  ): DebugProtocol.Variable {
     const isExpandableClass = variable.kind === "class" && variable.displayValue === undefined;
+    const showClassNameInName = options.showClassNameInName ?? true;
 
     return {
-      name: isExpandableClass ? `${variable.name}: ${variable.typeName}` : variable.name,
-      value: variable.kind === "class" ? (variable.displayValue ?? "") : variable.value,
-      type: variable.typeName,
-      variablesReference: isExpandableClass ? this.toObjectVariablesReference(variable.address) : 0,
+      name: isExpandableClass && showClassNameInName ? `${variable.name}: ${variable.typeName}` : variable.name,
+      value: this.getVariableDisplayValue(variable),
+      type: variable.kind === "map-entry" ? undefined : variable.typeName,
+      variablesReference: this.getVariableReference(variable, isExpandableClass),
     };
+  }
+
+  private getVariableDisplayValue(variable: DebugSessionVariable): string {
+    switch (variable.kind) {
+      case "basic": {
+        return variable.value;
+      }
+      case "class": {
+        return variable.displayValue ?? "";
+      }
+      case "map-entry": {
+        return "";
+      }
+    }
+  }
+
+  private getVariableReference(variable: DebugSessionVariable, isExpandableClass: boolean): number {
+    if (isExpandableClass && variable.kind === "class") {
+      return this.toObjectVariablesReference(variable.address);
+    }
+
+    if (variable.kind === "map-entry") {
+      return this.createVariableContainer({ kind: "map-entry", key: variable.key, value: variable.value });
+    }
+
+    return 0;
   }
 
   private createClassVariable(name: string, typeName: string, address: number, displayValue?: string): ClassVariable {
@@ -567,6 +615,12 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
     if (classLayout.builtinKind === BuiltinContainerKind.SmallTuple) {
       return this.decodeTupleElements(address, view, classLayout);
+    }
+    if (classLayout.builtinKind === BuiltinContainerKind.MapOrSet && classLayout.name.startsWith("~lib/set/Set<")) {
+      return this.decodeSetElements(address, view, classLayout);
+    }
+    if (classLayout.builtinKind === BuiltinContainerKind.MapOrSet && classLayout.name.startsWith("~lib/map/Map<")) {
+      return this.decodeMapElements(address, view, classLayout);
     }
 
     return Promise.all(classLayout.fields.map((field) => this.decodeFieldVariable(view, field)));
@@ -746,6 +800,162 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
 
     return Promise.all(elementVariables);
+  }
+
+  private async decodeSetElements(
+    address: number,
+    view: DataView,
+    classLayout: ClassLayout
+  ): Promise<DebugSessionVariable[]> {
+    assert.equal(classLayout.builtinKind, BuiltinContainerKind.MapOrSet);
+
+    const elementTypeName = classLayout.templateType;
+    if (elementTypeName === undefined) {
+      this.log(`Error: cannot expand set at ${address}: element type is unavailable`);
+      return [];
+    }
+
+    const entryLayout = classLayout.entryLayout;
+    if (entryLayout === undefined) {
+      this.log(`Error: cannot expand set at ${address}: entry layout is unavailable`);
+      return [];
+    }
+
+    const entriesView = await this.readMapOrSetEntries(address, view, entryLayout.size, "set");
+    if (!entriesView) {
+      return [];
+    }
+
+    const entriesOffset = view.getInt32(16, true);
+    if (entriesOffset <= 0) {
+      return [];
+    }
+
+    const elementSize = resolveArrayElementSize(elementTypeName, classLayout.templateTypeIsReference === true);
+    const elements: Promise<DebugSessionVariable>[] = [];
+    for (let entryIndex = 0; entryIndex < entriesOffset; entryIndex++) {
+      const entryBase = entryIndex * entryLayout.size;
+      const taggedNextOffset = entryBase + entryLayout.size - 4;
+      if (taggedNextOffset + 4 > entriesView.byteLength) {
+        break;
+      }
+
+      const taggedNext = entriesView.getUint32(taggedNextOffset, true);
+      if (taggedNext & 1) {
+        continue;
+      }
+
+      elements.push(
+        this.decodeFieldVariable(entriesView, {
+          name: elements.length.toString(),
+          typeName: elementTypeName,
+          offset: entryBase,
+          size: elementSize,
+          isReference: classLayout.templateTypeIsReference === true,
+        })
+      );
+    }
+
+    return Promise.all(elements);
+  }
+
+  private async decodeMapElements(
+    address: number,
+    view: DataView,
+    classLayout: ClassLayout
+  ): Promise<DebugSessionVariable[]> {
+    assert.equal(classLayout.builtinKind, BuiltinContainerKind.MapOrSet);
+
+    const entryLayout = classLayout.entryLayout;
+    if (entryLayout === undefined) {
+      this.log(`Error: cannot expand map at ${address}: entry layout is unavailable`);
+      return [];
+    }
+
+    const entryClass = this.getMapOrSetEntryClassLayout(classLayout.name);
+    const keyField = entryClass?.fields.find((field) => field.name === "key");
+    const valueField = entryClass?.fields.find((field) => field.name === "value");
+    if (!keyField || !valueField) {
+      this.log(`Error: cannot expand map at ${address}: key/value entry fields are unavailable`);
+      return [];
+    }
+
+    const entriesView = await this.readMapOrSetEntries(address, view, entryLayout.size, "map");
+    if (!entriesView) {
+      return [];
+    }
+
+    const entriesOffset = view.getInt32(16, true);
+    const elements: Promise<DebugSessionVariable>[] = [];
+    for (let entryIndex = 0; entryIndex < entriesOffset; entryIndex++) {
+      const entryBase = entryIndex * entryLayout.size;
+      const taggedNextOffset = entryBase + entryLayout.size - 4;
+      if (taggedNextOffset + 4 > entriesView.byteLength) {
+        break;
+      }
+
+      const taggedNext = entriesView.getUint32(taggedNextOffset, true);
+      if (taggedNext & 1) {
+        continue;
+      }
+
+      elements.push(this.decodeMapEntry(entriesView, elements.length.toString(), entryBase, keyField, valueField));
+    }
+
+    return Promise.all(elements);
+  }
+
+  private getMapOrSetEntryClassLayout(className: string): ClassLayout | undefined {
+    if (className.startsWith("~lib/set/Set<")) {
+      return this.loadedModule?.getInternalClassLayout(className.replace("~lib/set/Set<", "~lib/set/SetEntry<"));
+    }
+
+    if (className.startsWith("~lib/map/Map<")) {
+      return this.loadedModule?.getInternalClassLayout(className.replace("~lib/map/Map<", "~lib/map/MapEntry<"));
+    }
+
+    return undefined;
+  }
+
+  private async decodeMapEntry(
+    entriesView: DataView,
+    name: string,
+    entryBase: number,
+    keyField: ClassField,
+    valueField: ClassField
+  ): Promise<DebugSessionVariable> {
+    const [key, value] = await Promise.all([
+      this.decodeFieldVariable(entriesView, { ...keyField, name: "key", offset: entryBase + keyField.offset }),
+      this.decodeFieldVariable(entriesView, { ...valueField, name: "value", offset: entryBase + valueField.offset }),
+    ]);
+
+    return { kind: "map-entry", name, key, value };
+  }
+
+  private async readMapOrSetEntries(
+    address: number,
+    view: DataView,
+    entrySize: number,
+    containerKind: "map" | "set"
+  ): Promise<DataView | undefined> {
+    if (view.byteLength < 20) {
+      this.log(`Error: cannot expand ${containerKind} at ${address}: ${containerKind} header is unavailable`);
+      return undefined;
+    }
+
+    const entriesPtr = view.getUint32(8, true);
+    const entriesOffset = view.getInt32(16, true);
+    if (entriesPtr === 0 || entriesOffset <= 0) {
+      return new DataView(new ArrayBuffer(0));
+    }
+
+    const entriesMemory = await this.runtime?.readWasmMemory(entriesPtr, entriesOffset * entrySize);
+    if (!entriesMemory) {
+      this.log(`Error: cannot expand ${containerKind} at ${address}: ${containerKind} entries memory is unavailable`);
+      return undefined;
+    }
+
+    return new DataView(entriesMemory.buffer, entriesMemory.byteOffset, entriesMemory.byteLength);
   }
 
   private async resolveRuntimeClassLayout(address: number): Promise<ClassLayout | undefined> {

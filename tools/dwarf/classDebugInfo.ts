@@ -96,6 +96,17 @@ function resolveEntryClassName(className: string): string | undefined {
   return undefined;
 }
 
+function getEntryFieldSize(field: ClassField): number {
+  return resolveArrayElementSize(field.typeName, field.isReference);
+}
+
+function computeAssemblyScriptEntryStride(entryClass: ClassLayout, rawSize: number): number {
+  const valueFields = entryClass.fields.filter((field) => field.name !== "taggedNext");
+  const maxValueSize = valueFields.reduce((size, field) => Math.max(size, getEntryFieldSize(field)), 4);
+  const align = maxValueSize - 1;
+  return (rawSize + align) & ~align;
+}
+
 function attachEntryLayouts(classes: ClassLayout[]): void {
   const classByName = new Map(classes.map((classLayout) => [classLayout.name, classLayout]));
 
@@ -123,7 +134,7 @@ function attachEntryLayouts(classes: ClassLayout[]): void {
     }
 
     classLayout.entryLayout = {
-      size,
+      size: computeAssemblyScriptEntryStride(entryClass, size),
       referenceOffsets,
     };
   }
@@ -148,14 +159,17 @@ export function attachBuiltinKind(classLayout: Pick<ClassLayout, "name" | "built
 export class DwarfClassInfoResolver {
   private readonly layoutMap: Map<number, ClassLayout>;
   private readonly layoutsByName: Map<string, ClassLayout>;
+  private readonly internalLayoutsByName: Map<string, ClassLayout>;
 
-  private constructor(layouts: ClassLayout[]) {
+  private constructor(layouts: ClassLayout[], internalLayouts: ClassLayout[] = layouts) {
     this.layoutMap = new Map(layouts.map((layout) => [layout.rtid, layout]));
     this.layoutsByName = new Map(layouts.map((layout) => [layout.name, layout]));
+    this.internalLayoutsByName = new Map(internalLayouts.map((layout) => [layout.name, layout]));
   }
 
   static fromWasm(wasmBinary: Uint8Array | ArrayBuffer): DwarfClassInfoResolver {
-    return new DwarfClassInfoResolver(resolveClassLayouts(wasmBinary));
+    const internalLayouts = resolveInternalClassLayouts(wasmBinary);
+    return new DwarfClassInfoResolver(internalLayouts.filter(shouldKeepClassLayout), internalLayouts);
   }
 
   getLayouts(): ClassLayout[] {
@@ -174,9 +188,17 @@ export class DwarfClassInfoResolver {
   getClassLayout(typeName: string): ClassLayout | undefined {
     return this.layoutsByName.get(typeName);
   }
+
+  getInternalClassLayout(typeName: string): ClassLayout | undefined {
+    return this.internalLayoutsByName.get(typeName);
+  }
 }
 
 export function resolveClassLayouts(wasmBinary: Uint8Array | ArrayBuffer): ClassLayout[] {
+  return resolveInternalClassLayouts(wasmBinary).filter(shouldKeepClassLayout);
+}
+
+function resolveInternalClassLayouts(wasmBinary: Uint8Array | ArrayBuffer): ClassLayout[] {
   const debugInfo = parseWasmDebugInfo(wasmBinary);
   const classes: ClassLayout[] = [];
 
@@ -190,7 +212,7 @@ export function resolveClassLayouts(wasmBinary: Uint8Array | ArrayBuffer): Class
   flattenInheritedFields(classes);
   attachEntryLayouts(classes);
 
-  return classes.filter(shouldKeepClassLayout);
+  return classes;
 }
 
 class CompilationUnitClassResolver {

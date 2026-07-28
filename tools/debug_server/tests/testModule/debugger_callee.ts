@@ -82,3 +82,32 @@ export function staticArrayValues(): i32 {
   children[1] = new Child(55);
   return values[0] + values[1] + values[2] + children[0].value + children[1].value;
 }
+
+export function setValues(): i32 {
+  let values = new Set<i32>();
+  values.add(5);
+  values.add(8);
+  values.add(13);
+  let children = new Set<Child>();
+  let first = new Child(61);
+  let second = new Child(89);
+  children.add(first);
+  children.add(second);
+  return values.size + first.value + second.value;
+}
+
+export function mapValues(): i32 {
+  let values = new Map<i32, Child>();
+  let first = new Child(144);
+  let second = new Child(233);
+  values.set(5, first);
+  values.set(8, second);
+  return values.size + first.value + second.value;
+}
+
+export function numericMapValues(): i32 {
+  let values = new Map<number, number>();
+  values.set(1, 100);
+  values.set(2, 200);
+  return values.size;
+}
