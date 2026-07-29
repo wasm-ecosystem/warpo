@@ -414,7 +414,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
       case "map-entry": {
         response.body = {
           variables: [variableContainer.key, variableContainer.value].map((variable) =>
-            this.toDebugProtocolVariable(variable, { showClassNameInName: false })
+            this.toDebugProtocolVariable(variable)
           ),
         };
         break;

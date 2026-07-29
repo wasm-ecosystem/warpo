@@ -906,7 +906,7 @@ void describe("WarpoDebugSession", () => {
     const firstEntryFieldsResponse = await dc.variablesRequest({ variablesReference: firstEntry.variablesReference });
     assert.deepEqual(
       firstEntryFieldsResponse.body.variables.map((variable) => variable.name),
-      ["key", "value"]
+      ["key", "value: debugger_callee/Child"]
     );
     const firstKey = assertDefined(
       firstEntryFieldsResponse.body.variables.find((candidate) => candidate.name === "key")
@@ -916,6 +916,7 @@ void describe("WarpoDebugSession", () => {
     assert.equal(firstKey.variablesReference, 0);
 
     const firstValue = assertDefined(findVariable(firstEntryFieldsResponse.body.variables, "value"));
+    assert.match(firstValue.name, /^value: .+Child$/);
     assert.ok(firstValue.type?.endsWith("Child"));
     assert.ok(firstValue.variablesReference > 0);
     assert.equal(firstValue.value, "");
@@ -923,7 +924,7 @@ void describe("WarpoDebugSession", () => {
     const secondEntryFieldsResponse = await dc.variablesRequest({ variablesReference: secondEntry.variablesReference });
     assert.deepEqual(
       secondEntryFieldsResponse.body.variables.map((variable) => variable.name),
-      ["key", "value"]
+      ["key", "value: debugger_callee/Child"]
     );
     const secondKey = assertDefined(
       secondEntryFieldsResponse.body.variables.find((candidate) => candidate.name === "key")
@@ -933,6 +934,7 @@ void describe("WarpoDebugSession", () => {
     assert.equal(secondKey.variablesReference, 0);
 
     const secondValue = assertDefined(findVariable(secondEntryFieldsResponse.body.variables, "value"));
+    assert.match(secondValue.name, /^value: .+Child$/);
     assert.ok(secondValue.type?.endsWith("Child"));
     assert.ok(secondValue.variablesReference > 0);
     assert.equal(secondValue.value, "");
