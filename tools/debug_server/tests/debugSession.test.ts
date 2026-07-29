@@ -29,7 +29,8 @@ const TEST_MODULE_STATIC_ARRAY_BREAKPOINT_LINE = 83;
 const TEST_MODULE_SET_BREAKPOINT_LINE = 96;
 const TEST_MODULE_MAP_BREAKPOINT_LINE = 105;
 const TEST_MODULE_NUMERIC_MAP_BREAKPOINT_LINE = 112;
-const TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE = 58;
+const TEST_MODULE_CLOSURE_BREAKPOINT_LINE = 123;
+const TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE = 62;
 
 async function waitForLoadedWasmSource(dc: DebugClient): Promise<DebugProtocol.LoadedSourceEvent> {
   while (true) {
@@ -1017,6 +1018,61 @@ void describe("WarpoDebugSession", () => {
         ],
       ]
     );
+  });
+
+  void it("should expose closure locals by source name", { timeout: 5000 }, async () => {
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: TEST_MODULE_CALLEE_SOURCE },
+      breakpoints: [{ line: TEST_MODULE_CLOSURE_BREAKPOINT_LINE }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: TEST_MODULE_OUTPUT,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "closureEntry",
+    };
+
+    const stoppedPromise = waitForBreakpointStop(dc);
+    await dc.launchRequest(launchArgs);
+    await stoppedPromise;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = stackTraceResponse.body.stackFrames[0];
+    assert.notStrictEqual(frame, undefined);
+
+    const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
+
+    const base = assertDefined(findVariable(variablesResponse.body.variables, "base"));
+    assert.equal(base.type, "i32");
+    assert.equal(base.value, "21");
+    assert.equal(base.variablesReference, 0);
+
+    const label = assertDefined(findVariable(variablesResponse.body.variables, "label"));
+    assert.equal(label.type, "~lib/string/String");
+    assert.equal(label.value, '"closure label"');
+    assert.equal(label.variablesReference, 0);
+
+    const child = assertDefined(findVariable(variablesResponse.body.variables, "child"));
+    assert.ok(child.type?.endsWith("Child"));
+    assert.ok(child.variablesReference > 0);
+    assert.equal(child.value, "");
+
+    const childFieldsResponse = await dc.variablesRequest({ variablesReference: child.variablesReference });
+    const childValue = assertDefined(
+      childFieldsResponse.body.variables.find((candidate) => candidate.name === "value")
+    );
+    assert.equal(childValue.type, "i32");
+    assert.equal(childValue.value, "77");
   });
 
   void it("should refresh variable references across multiple pauses", { timeout: 5000 }, async () => {

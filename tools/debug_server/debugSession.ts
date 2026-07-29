@@ -37,7 +37,12 @@ import {
   SMALL_TUPLE_SLOT_SIZE,
 } from "../runtime/objectLayout.js";
 import { normalizeDebugPath } from "./debugPath.js";
-import type { DebuggerBreakpointInfo, DebuggerWasmModule } from "./debuggerWasmModule.js";
+import type {
+  DebuggerBreakpointInfo,
+  DebuggerClosureVariableInfo,
+  DebuggerSourceVariableInfo,
+  DebuggerWasmModule,
+} from "./debuggerWasmModule.js";
 import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
 import { NodeDebugger } from "./nodeDebugger.js";
 
@@ -73,6 +78,17 @@ interface MapEntryVariable {
 }
 
 type DebugSessionVariable = BasicVariable | ClassVariable | MapEntryVariable;
+
+interface RawLocalValue {
+  name: string;
+  value: string;
+  typeName: string | undefined;
+}
+
+interface RawTupleElementValue {
+  value: string;
+  isReference: boolean;
+}
 
 type VariableContainer =
   | { kind: "locals"; frameId: number }
@@ -457,12 +473,14 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
     const wasmBytecodeOffset: number | undefined = runtimeFrame.wasmBytecodeOffset;
     if (wasmBytecodeOffset === undefined) {
-      return Promise.all(runtimeVariables.map((variable) => this.toDebugSessionVariable(variable)));
+      this.log(`Error: local variables unavailable: frame ${frameId} has no wasm bytecode offset`);
+      return [];
     }
 
     const sourceVariables = wasmModule.getVariablesAtBytecodeOffset(wasmBytecodeOffset);
     if (!sourceVariables) {
-      return Promise.all(runtimeVariables.map((variable) => this.toDebugSessionVariable(variable)));
+      this.log(`Error: local variables unavailable: no source variables at wasm bytecode offset ${wasmBytecodeOffset}`);
+      return [];
     }
 
     const runtimeVariablesByIndex = new Map<number, DebugRuntimeVariable>();
@@ -470,13 +488,109 @@ export class WarpoDebugSession extends LoggingDebugSession {
       runtimeVariablesByIndex.set(variable.localIndex, variable);
     }
 
-    return Promise.all(
-      sourceVariables.map((variable) => {
-        const runtimeVariable = runtimeVariablesByIndex.get(variable.localIndex);
-        assert(runtimeVariable !== undefined);
-        return this.toDebugSessionVariable(runtimeVariable, variable.name, variable.typeName);
-      })
+    const wasmLocalValuesByIndex = this.readRawWasmLocalValues(sourceVariables, runtimeVariablesByIndex);
+    const { closureEnvLocalIndex, closureLocalsByElementIndex } = this.collectClosureLocals(sourceVariables);
+    const closureTupleValues = await this.readClosureTupleValues(
+      closureEnvLocalIndex,
+      runtimeVariablesByIndex,
+      closureLocalsByElementIndex
     );
+
+    const rawLocalValues = sourceVariables.map((variable): RawLocalValue => {
+      if (variable.kind === "closure") {
+        const elementIndex = variable.fieldOffset / SMALL_TUPLE_SLOT_SIZE;
+        const tupleRawValue = closureTupleValues.get(elementIndex);
+        if (tupleRawValue === undefined) {
+          return {
+            name: variable.name,
+            value: "<unavailable>",
+            typeName: variable.typeName,
+          };
+        }
+
+        return { name: variable.name, value: tupleRawValue, typeName: variable.typeName };
+      }
+
+      const wasmRawValue = wasmLocalValuesByIndex.get(variable.localIndex);
+      assert(wasmRawValue !== undefined);
+      return { name: variable.name, value: wasmRawValue, typeName: variable.typeName };
+    });
+
+    return Promise.all(
+      rawLocalValues.map((variable) =>
+        this.toDebugSessionVariableValue(variable.name, variable.typeName, variable.value)
+      )
+    );
+  }
+
+  private readRawWasmLocalValues(
+    sourceVariables: DebuggerSourceVariableInfo[],
+    runtimeVariablesByIndex: Map<number, DebugRuntimeVariable>
+  ): Map<number, string> {
+    const wasmLocalValuesByIndex = new Map<number, string>();
+    for (const variable of sourceVariables) {
+      if (variable.kind === "closure") {
+        continue;
+      }
+
+      const runtimeVariable = runtimeVariablesByIndex.get(variable.localIndex);
+      assert(runtimeVariable !== undefined);
+      wasmLocalValuesByIndex.set(variable.localIndex, runtimeVariable.value);
+    }
+    return wasmLocalValuesByIndex;
+  }
+
+  private collectClosureLocals(sourceVariables: DebuggerSourceVariableInfo[]): {
+    closureEnvLocalIndex: number | undefined;
+    closureLocalsByElementIndex: Map<number, DebuggerClosureVariableInfo>;
+  } {
+    const closureLocalsByElementIndex = new Map<number, DebuggerClosureVariableInfo>();
+    let closureEnvLocalIndex: number | undefined;
+    for (const variable of sourceVariables) {
+      if (variable.kind !== "closure") {
+        continue;
+      }
+
+      const elementIndex = variable.fieldOffset / SMALL_TUPLE_SLOT_SIZE;
+      if (!Number.isInteger(elementIndex)) {
+        continue;
+      }
+
+      if (closureEnvLocalIndex === undefined) {
+        closureEnvLocalIndex = variable.closureEnvLocalIndex;
+      } else {
+        assert.equal(closureEnvLocalIndex, variable.closureEnvLocalIndex);
+      }
+      closureLocalsByElementIndex.set(elementIndex, variable);
+    }
+
+    return { closureEnvLocalIndex, closureLocalsByElementIndex };
+  }
+
+  private async readClosureTupleValues(
+    closureEnvLocalIndex: number | undefined,
+    runtimeVariablesByIndex: Map<number, DebugRuntimeVariable>,
+    closureLocalsByElementIndex: Map<number, DebuggerClosureVariableInfo>
+  ): Promise<Map<number, string>> {
+    const closureTupleValues = new Map<number, string>();
+    if (closureEnvLocalIndex === undefined) {
+      return closureTupleValues;
+    }
+
+    const closureEnvVariable = runtimeVariablesByIndex.get(closureEnvLocalIndex);
+    assert(closureEnvVariable !== undefined);
+    const address = Number(closureEnvVariable.value);
+    if (!Number.isInteger(address) || address <= 0) {
+      return closureTupleValues;
+    }
+
+    const tupleValues = await this.readTupleElementValues(address);
+    for (const [index, variable] of tupleValues.entries()) {
+      if (closureLocalsByElementIndex.has(index)) {
+        closureTupleValues.set(index, variable.value);
+      }
+    }
+    return closureTupleValues;
   }
 
   private resolvePausedStackFrame(frameId: number): PausedStackFrame | undefined {
@@ -488,8 +602,16 @@ export class WarpoDebugSession extends LoggingDebugSession {
     name: string = variable.name,
     typeName: string | undefined = variable.type
   ): Promise<DebugSessionVariable> {
+    return this.toDebugSessionVariableValue(name, typeName, variable.value);
+  }
+
+  private async toDebugSessionVariableValue(
+    name: string,
+    typeName: string | undefined,
+    value: string
+  ): Promise<DebugSessionVariable> {
     if (typeName !== undefined) {
-      const objectAddress = this.parseObjectAddress(typeName, variable.value);
+      const objectAddress = this.parseObjectAddress(typeName, value);
       if (objectAddress) {
         if (typeName === AS_STRING_CLASS_NAME) {
           const stringValue = await this.decodeStringAtAddress(typeName, objectAddress);
@@ -503,7 +625,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     return {
       kind: "basic",
       name,
-      value: variable.value,
+      value,
       typeName,
     };
   }
@@ -577,6 +699,72 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.pausedStackFramesById.clear();
   }
 
+  private async readTupleElementValues(address: number, classLayout?: ClassLayout): Promise<RawTupleElementValue[]> {
+    if (!this.runtime) {
+      this.log(`Warning: cannot expand tuple at ${address}: runtime is not active`);
+      return [];
+    }
+
+    const tupleClassLayout = classLayout ?? (await this.resolveRuntimeClassLayout(address));
+    if (!tupleClassLayout) {
+      this.log(`Warning: cannot expand tuple at ${address}: runtime class layout is missing`);
+      return [];
+    }
+
+    if (tupleClassLayout.builtinKind !== BuiltinContainerKind.SmallTuple) {
+      this.log(`Warning: cannot expand tuple at ${address}: runtime class layout is not tuple`);
+      return [];
+    }
+
+    const payloadSize = await this.resolveRuntimeObjectPayloadSize(address, tupleClassLayout);
+    if (payloadSize === undefined) {
+      return [];
+    }
+
+    const memory = await this.runtime.readWasmMemory(address, payloadSize);
+    if (!memory) {
+      this.log(`Warning: cannot expand tuple at ${address}: tuple memory is unavailable`);
+      return [];
+    }
+
+    const view = new DataView(memory.buffer, memory.byteOffset, memory.byteLength);
+    assert.equal(tupleClassLayout.builtinKind, BuiltinContainerKind.SmallTuple);
+
+    if (view.byteLength <= SMALL_TUPLE_BITMAP_SIZE) {
+      return [];
+    }
+
+    const elementAreaSize = view.byteLength - SMALL_TUPLE_BITMAP_SIZE;
+    if (elementAreaSize % SMALL_TUPLE_SLOT_SIZE !== 0) {
+      this.log(`Error: cannot expand tuple at ${address}: tuple element area is not slot aligned`);
+      return [];
+    }
+
+    const bitmap = view.getBigUint64(elementAreaSize, true);
+    const values: RawTupleElementValue[] = [];
+    for (let index = 0; index < elementAreaSize / SMALL_TUPLE_SLOT_SIZE; index++) {
+      const offset = index * SMALL_TUPLE_SLOT_SIZE;
+      const isReference = (bitmap & (1n << BigInt(index))) !== 0n;
+      const value = isReference
+        ? this.decodeTupleReferenceValue(view, offset)
+        : this.decodeTupleBasicValue(view, offset);
+      values.push({ value, isReference });
+    }
+
+    return values;
+  }
+
+  private async decodeTupleElements(address: number, classLayout?: ClassLayout): Promise<DebugSessionVariable[]> {
+    const values = await this.readTupleElementValues(address, classLayout);
+    return Promise.all(
+      values.map((value, index) =>
+        value.isReference
+          ? this.decodeTupleReferenceElement(index.toString(), value.value)
+          : this.toDebugSessionVariableValue(index.toString(), "usize", value.value)
+      )
+    );
+  }
+
   private async resolveObjectFields(address: number): Promise<DebugSessionVariable[]> {
     const wasmModule = this.loadedModule;
     if (!wasmModule) {
@@ -593,6 +781,10 @@ export class WarpoDebugSession extends LoggingDebugSession {
     if (!classLayout) {
       this.log(`Warning: cannot expand object at ${address}: runtime class layout is missing`);
       return [];
+    }
+
+    if (classLayout.builtinKind === BuiltinContainerKind.SmallTuple) {
+      return this.decodeTupleElements(address, classLayout);
     }
 
     const payloadSize = await this.resolveRuntimeObjectPayloadSize(address, classLayout);
@@ -612,9 +804,6 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
     if (classLayout.builtinKind === BuiltinContainerKind.StaticArray) {
       return this.decodeStaticArrayElements(address, view, classLayout);
-    }
-    if (classLayout.builtinKind === BuiltinContainerKind.SmallTuple) {
-      return this.decodeTupleElements(address, view, classLayout);
     }
     if (this.isSetClassLayout(classLayout)) {
       return this.decodeSetElements(address, view, classLayout);
@@ -647,57 +836,33 @@ export class WarpoDebugSession extends LoggingDebugSession {
     return sizeView.getUint32(0, true);
   }
 
-  private async decodeTupleElements(
-    address: number,
-    view: DataView,
-    classLayout: ClassLayout
-  ): Promise<DebugSessionVariable[]> {
-    assert.equal(classLayout.builtinKind, BuiltinContainerKind.SmallTuple);
-
-    if (view.byteLength <= SMALL_TUPLE_BITMAP_SIZE) {
-      return [];
-    }
-
-    const elementAreaSize = view.byteLength - SMALL_TUPLE_BITMAP_SIZE;
-    if (elementAreaSize % SMALL_TUPLE_SLOT_SIZE !== 0) {
-      this.log(`Error: cannot expand tuple at ${address}: tuple element area is not slot aligned`);
-      return [];
-    }
-
-    const bitmap = view.getBigUint64(elementAreaSize, true);
-    const variables: Promise<DebugSessionVariable>[] = [];
-    for (let index = 0; index < elementAreaSize / SMALL_TUPLE_SLOT_SIZE; index++) {
-      const name = index.toString();
-      const offset = index * SMALL_TUPLE_SLOT_SIZE;
-      const isReference = (bitmap & (1n << BigInt(index))) !== 0n;
-      variables.push(
-        isReference
-          ? this.decodeTupleReferenceElement(view, name, offset)
-          : this.decodeFieldVariable(view, {
-              name,
-              typeName: "usize",
-              offset,
-              size: SMALL_TUPLE_SLOT_SIZE,
-              isReference: false,
-            })
-      );
-    }
-
-    return Promise.all(variables);
-  }
-
-  private async decodeTupleReferenceElement(
-    view: DataView,
-    name: string,
-    offset: number
-  ): Promise<DebugSessionVariable> {
+  private decodeTupleReferenceValue(view: DataView, offset: number): string {
     if (offset + SMALL_TUPLE_SLOT_SIZE > view.byteLength) {
-      return { kind: "basic", name, value: "<unavailable>", typeName: undefined };
+      return "<unavailable>";
     }
 
     const elementAddress = view.getUint32(offset, true);
+    return elementAddress === 0 ? "null" : elementAddress.toString();
+  }
+
+  private decodeTupleBasicValue(view: DataView, offset: number): string {
+    return this.decodeFieldValue(view, {
+      name: "",
+      typeName: "usize",
+      offset,
+      size: SMALL_TUPLE_SLOT_SIZE,
+      isReference: false,
+    });
+  }
+
+  private async decodeTupleReferenceElement(name: string, value: string): Promise<DebugSessionVariable> {
+    const elementAddress = Number(value);
     if (elementAddress === 0) {
       return { kind: "basic", name, value: "null", typeName: undefined };
+    }
+
+    if (!Number.isInteger(elementAddress) || elementAddress <= 0) {
+      return { kind: "basic", name, value, typeName: undefined };
     }
 
     const classLayout = await this.resolveRuntimeClassLayout(elementAddress);

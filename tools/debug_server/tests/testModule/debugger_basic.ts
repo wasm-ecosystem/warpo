@@ -3,6 +3,7 @@ import {
   arrayValues,
   calculate,
   classArrayValues,
+  closureValues,
   mapValues,
   numericMapValues,
   setValues,
@@ -50,6 +51,10 @@ export function mapEntry(): i32 {
 
 export function numericMapEntry(): i32 {
   return numericMapValues();
+}
+
+export function closureEntry(): i32 {
+  return closureValues();
 }
 
 function branchLocals(flag: i32): i32 {
