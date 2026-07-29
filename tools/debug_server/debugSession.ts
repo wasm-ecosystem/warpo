@@ -616,10 +616,10 @@ export class WarpoDebugSession extends LoggingDebugSession {
     if (classLayout.builtinKind === BuiltinContainerKind.SmallTuple) {
       return this.decodeTupleElements(address, view, classLayout);
     }
-    if (classLayout.builtinKind === BuiltinContainerKind.MapOrSet && classLayout.name.startsWith("~lib/set/Set<")) {
+    if (this.isSetClassLayout(classLayout)) {
       return this.decodeSetElements(address, view, classLayout);
     }
-    if (classLayout.builtinKind === BuiltinContainerKind.MapOrSet && classLayout.name.startsWith("~lib/map/Map<")) {
+    if (this.isMapClassLayout(classLayout)) {
       return this.decodeMapElements(address, view, classLayout);
     }
 
@@ -807,8 +807,6 @@ export class WarpoDebugSession extends LoggingDebugSession {
     view: DataView,
     classLayout: ClassLayout
   ): Promise<DebugSessionVariable[]> {
-    assert.equal(classLayout.builtinKind, BuiltinContainerKind.MapOrSet);
-
     const elementTypeName = classLayout.templateType;
     if (elementTypeName === undefined) {
       this.log(`Error: cannot expand set at ${address}: element type is unavailable`);
@@ -864,8 +862,6 @@ export class WarpoDebugSession extends LoggingDebugSession {
     view: DataView,
     classLayout: ClassLayout
   ): Promise<DebugSessionVariable[]> {
-    assert.equal(classLayout.builtinKind, BuiltinContainerKind.MapOrSet);
-
     const entryLayout = classLayout.entryLayout;
     if (entryLayout === undefined) {
       this.log(`Error: cannot expand map at ${address}: entry layout is unavailable`);
@@ -903,6 +899,14 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
 
     return Promise.all(elements);
+  }
+
+  private isSetClassLayout(classLayout: ClassLayout): boolean {
+    return classLayout.name.startsWith("~lib/set/Set<");
+  }
+
+  private isMapClassLayout(classLayout: ClassLayout): boolean {
+    return classLayout.name.startsWith("~lib/map/Map<");
   }
 
   private getMapOrSetEntryClassLayout(className: string): ClassLayout | undefined {

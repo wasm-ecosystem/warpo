@@ -29,7 +29,7 @@ const TEST_MODULE_STATIC_ARRAY_BREAKPOINT_LINE = 83;
 const TEST_MODULE_SET_BREAKPOINT_LINE = 96;
 const TEST_MODULE_MAP_BREAKPOINT_LINE = 105;
 const TEST_MODULE_NUMERIC_MAP_BREAKPOINT_LINE = 112;
-const TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE = 53;
+const TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE = 58;
 
 async function waitForLoadedWasmSource(dc: DebugClient): Promise<DebugProtocol.LoadedSourceEvent> {
   while (true) {
