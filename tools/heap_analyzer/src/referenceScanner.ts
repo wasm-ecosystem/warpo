@@ -10,6 +10,12 @@ import {
   type ObjectHeader,
 } from "./types.js";
 import type { DebugInfoResolver } from "./debugInfoResolver.js";
+import {
+  ARRAY_DATA_START_OFFSET,
+  ARRAY_LENGTH_OFFSET,
+  SMALL_TUPLE_BITMAP_SIZE,
+  SMALL_TUPLE_SLOT_SIZE,
+} from "../../runtime/objectLayout.js";
 
 function readValidPtr(memory: DataView, addr: number, validPtrs: Set<number>): number | null {
   if (addr + 4 > memory.byteLength) {
@@ -45,8 +51,8 @@ function scanArrayElements(memory: DataView, obj: ObjectHeader, validPtrs: Set<n
   if (obj.rtSize < 16) {
     return;
   }
-  const dataStart = memory.getUint32(obj.payloadPtr + 4, true);
-  const length = memory.getUint32(obj.payloadPtr + 12, true);
+  const dataStart = memory.getUint32(obj.payloadPtr + ARRAY_DATA_START_OFFSET, true);
+  const length = memory.getUint32(obj.payloadPtr + ARRAY_LENGTH_OFFSET, true);
   for (let i = 0; i < length; i++) {
     const ptr = readValidPtr(memory, dataStart + i * 4, validPtrs);
     if (ptr !== null) {
@@ -111,14 +117,13 @@ function scanSetMapEntries(
 }
 
 function scanSmallTupleElements(memory: DataView, obj: ObjectHeader, validPtrs: Set<number>, edges: number[]): void {
-  const bitmapSize = 8;
-  if (obj.rtSize <= bitmapSize) {
+  if (obj.rtSize <= SMALL_TUPLE_BITMAP_SIZE) {
     // An empty SmallTuple has no element slots, only the trailing bitmap.
     // This also safely handles malformed dumps that are too small to contain elements.
     return;
   }
-  const elementCount = (obj.rtSize - bitmapSize) >>> 2;
-  const bitmapAddr = obj.payloadPtr + obj.rtSize - bitmapSize;
+  const elementCount = (obj.rtSize - SMALL_TUPLE_BITMAP_SIZE) >>> 2;
+  const bitmapAddr = obj.payloadPtr + obj.rtSize - SMALL_TUPLE_BITMAP_SIZE;
   const bitmap = memory.getBigUint64(bitmapAddr, true);
 
   for (let i = 0; i < elementCount; i++) {
@@ -126,7 +131,7 @@ function scanSmallTupleElements(memory: DataView, obj: ObjectHeader, validPtrs: 
     if (!isRef) {
       continue;
     }
-    const ptr = readValidPtr(memory, obj.payloadPtr + i * 4, validPtrs);
+    const ptr = readValidPtr(memory, obj.payloadPtr + i * SMALL_TUPLE_SLOT_SIZE, validPtrs);
     if (ptr !== null) {
       edges.push(ptr);
     }
