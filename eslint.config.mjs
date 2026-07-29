@@ -17,6 +17,7 @@ export default tseslint.config(
       "node_modules/**",
       "tools/heap_analyzer/bin/cli.js",
       "tools/heap_analyzer/tests/fixture/**",
+      "tools/dwarf/tests/fixtures/**",
       "tools/debug_server/tests/testModule/**",
     ],
   },

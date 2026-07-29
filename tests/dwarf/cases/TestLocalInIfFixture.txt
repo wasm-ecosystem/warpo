@@ -61,13 +61,6 @@ Abbrev table for offset: 0x00000000
 	DW_AT_low_pc	DW_FORM_addr
 	DW_AT_high_pc	DW_FORM_addr
 
-[15] DW_TAG_subprogram	DW_CHILDREN_yes
-	DW_AT_name	DW_FORM_string
-	DW_AT_low_pc	DW_FORM_addr
-	DW_AT_high_pc	DW_FORM_addr
-	DW_AT_static_link	DW_FORM_data4
-	DW_AT_description	DW_FORM_string
-
 
 .debug_info contents:
 0x00000000: Compile Unit: version = 0x0004 abbr_offset = 0x0000 addr_size = 0x04

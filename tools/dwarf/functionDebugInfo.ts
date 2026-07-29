@@ -4,6 +4,8 @@
 import assert from "node:assert/strict";
 import { DW_AT, DW_TAG, buildOffsetMap, getAttr, parseWasmDebugInfo, type DwarfDIE } from "./dwarfParser.js";
 
+export const WARPO_DEBUG_CLOSURE_ENV_LOCAL_NAME = "~__warpo_debug_closure_env";
+
 export interface DwarfLocalVariableInfo {
   name: string;
   typeName: string;
@@ -24,6 +26,7 @@ export interface DwarfScopeInfo {
   kind: "scope";
   parent: DwarfParentInfo;
   range: DwarfRangeInfo;
+  closureEnvLocalIndex?: number;
   variables: DwarfLocalVariableInfo[];
   children: DwarfScopeChild[];
 }
@@ -33,6 +36,7 @@ export interface DwarfFunctionInfo {
   parent?: DwarfParentInfo;
   name: string;
   range: DwarfRangeInfo;
+  closureEnvLocalIndex?: number;
   parameters: DwarfLocalVariableInfo[];
   variables: DwarfLocalVariableInfo[];
   children: DwarfScopeChild[];
@@ -106,6 +110,7 @@ function resolveFunctionInfo(
   const parameters: DwarfLocalVariableInfo[] = [];
   const variables: DwarfLocalVariableInfo[] = [];
   const children: DwarfScopeChild[] = [];
+  let closureEnvLocalIndex: number | undefined;
 
   const functionInfo: DwarfFunctionInfo = {
     kind: "function",
@@ -118,8 +123,18 @@ function resolveFunctionInfo(
   };
 
   for (const die of subprogramDie.children) {
-    collectFunctionChild(die, offsetMap, functionInfo, parameters, variables, children);
+    const childClosureEnvLocalIndex = collectFunctionChild(
+      die,
+      offsetMap,
+      functionInfo,
+      parameters,
+      variables,
+      children
+    );
+    closureEnvLocalIndex ??= childClosureEnvLocalIndex;
   }
+
+  functionInfo.closureEnvLocalIndex = closureEnvLocalIndex;
 
   sortByRange(children);
 
@@ -133,26 +148,29 @@ function collectFunctionChild(
   parameters: DwarfLocalVariableInfo[],
   variables: DwarfLocalVariableInfo[],
   children: DwarfScopeChild[]
-): void {
+): number | undefined {
   if (die.tag === DW_TAG.formal_parameter) {
     const parameter = resolveVariableInfo(die, offsetMap);
     if (parameter) {
       parameters.push(parameter);
     }
-    return;
+    return undefined;
   }
 
   if (die.tag === DW_TAG.variable) {
     const variable = resolveVariableInfo(die, offsetMap);
     if (variable) {
+      if (isClosureEnvVariable(variable)) {
+        return variable.localIndex;
+      }
       variables.push(variable);
     }
-    return;
+    return undefined;
   }
 
   if (die.tag === DW_TAG.lexical_block) {
     children.push(resolveScopeInfo(die, offsetMap, functionInfo));
-    return;
+    return undefined;
   }
 
   if (die.tag === DW_TAG.subprogram) {
@@ -161,6 +179,8 @@ function collectFunctionChild(
       children.push(childFunctionInfo);
     }
   }
+
+  return undefined;
 }
 
 export function getVariablesInFunctionAtBytecodeOffset(
@@ -227,6 +247,7 @@ function resolveScopeInfo(
 ): DwarfScopeInfo {
   const variables: DwarfLocalVariableInfo[] = [];
   const children: DwarfScopeChild[] = [];
+  let closureEnvLocalIndex: number | undefined;
 
   const scopeInfo: DwarfScopeInfo = {
     kind: "scope",
@@ -237,32 +258,55 @@ function resolveScopeInfo(
   };
 
   for (const die of scopeDie.children) {
-    if (die.tag === DW_TAG.variable) {
-      const variable = resolveVariableInfo(die, offsetMap);
-      if (!variable) {
-        continue;
-      }
-
-      variables.push(variable);
-      continue;
-    }
-
-    if (die.tag === DW_TAG.lexical_block) {
-      children.push(resolveScopeInfo(die, offsetMap, scopeInfo));
-      continue;
-    }
-
-    if (die.tag === DW_TAG.subprogram) {
-      const functionInfo = resolveFunctionInfo(die, offsetMap, scopeInfo);
-      if (functionInfo) {
-        children.push(functionInfo);
-      }
-    }
+    const childClosureEnvLocalIndex = collectScopeChild(die, offsetMap, scopeInfo, variables, children);
+    closureEnvLocalIndex ??= childClosureEnvLocalIndex;
   }
+
+  scopeInfo.closureEnvLocalIndex = closureEnvLocalIndex;
 
   sortByRange(children);
 
   return scopeInfo;
+}
+
+function collectScopeChild(
+  die: DwarfDIE,
+  offsetMap: Map<number, DwarfDIE>,
+  scopeInfo: DwarfScopeInfo,
+  variables: DwarfLocalVariableInfo[],
+  children: DwarfScopeChild[]
+): number | undefined {
+  if (die.tag === DW_TAG.variable) {
+    const variable = resolveVariableInfo(die, offsetMap);
+    if (!variable) {
+      return undefined;
+    }
+
+    if (isClosureEnvVariable(variable)) {
+      return variable.localIndex;
+    }
+
+    variables.push(variable);
+    return undefined;
+  }
+
+  if (die.tag === DW_TAG.lexical_block) {
+    children.push(resolveScopeInfo(die, offsetMap, scopeInfo));
+    return undefined;
+  }
+
+  if (die.tag === DW_TAG.subprogram) {
+    const functionInfo = resolveFunctionInfo(die, offsetMap, scopeInfo);
+    if (functionInfo) {
+      children.push(functionInfo);
+    }
+  }
+
+  return undefined;
+}
+
+function isClosureEnvVariable(variable: DwarfLocalVariableInfo): boolean {
+  return variable.name === WARPO_DEBUG_CLOSURE_ENV_LOCAL_NAME;
 }
 
 function isDwarfScopeInfo(child: DwarfScopeChild): child is DwarfScopeInfo {
