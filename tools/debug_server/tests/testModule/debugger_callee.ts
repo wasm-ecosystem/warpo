@@ -42,3 +42,43 @@ export function calculate(seed: i32): i32 {
   holder = new Holder(9, new Child(13));
   return seed + a + first + holder.count + holder.child.value;
 }
+
+class StringHolder {
+  label: string;
+
+  constructor(label: string) {
+    this.label = label;
+  }
+}
+
+export function stringValues(): i32 {
+  let message = "hello debugger";
+  let holder = new StringHolder("first holder");
+  return message.length + holder.label.length;
+}
+
+export function arrayValues(): i32 {
+  let values = [3, 5, 8];
+  return values[0] + values[1] + values[2];
+}
+
+export function classArrayValues(): i32 {
+  let children = [new Child(21), new Child(34)];
+  return children[0].value + children[1].value;
+}
+
+export function tupleValues(): i32 {
+  let values: [i32, string, Child] = [89, "tuple value", new Child(55)];
+  return values[0] + values[1].length + values[2].value;
+}
+
+export function staticArrayValues(): i32 {
+  let values = new StaticArray<i32>(3);
+  values[0] = 13;
+  values[1] = 21;
+  values[2] = 34;
+  let children = new StaticArray<Child>(2);
+  children[0] = new Child(44);
+  children[1] = new Child(55);
+  return values[0] + values[1] + values[2] + children[0].value + children[1].value;
+}

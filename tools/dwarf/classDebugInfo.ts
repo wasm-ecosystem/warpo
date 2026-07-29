@@ -46,6 +46,32 @@ export interface ClassLayout {
   entryLayout?: EntryLayout;
 }
 
+export function resolveArrayElementSize(typeName: string | undefined, isReference: boolean): number {
+  if (isReference) {
+    return 4;
+  }
+
+  switch (typeName) {
+    case "bool":
+    case "i8":
+    case "u8": {
+      return 1;
+    }
+    case "i16":
+    case "u16": {
+      return 2;
+    }
+    case "i64":
+    case "u64":
+    case "f64": {
+      return 8;
+    }
+    default: {
+      return 4;
+    }
+  }
+}
+
 function shouldKeepClassLayout(classLayout: ClassLayout): boolean {
   return classLayout.rtid !== 0 || classLayout.name === "~lib/object/Object";
 }
