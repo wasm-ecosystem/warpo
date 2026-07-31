@@ -3,6 +3,9 @@ import {
   arrayValues,
   calculate,
   classArrayValues,
+  mapValues,
+  numericMapValues,
+  setValues,
   staticArrayValues,
   stringValues,
   tupleValues,
@@ -35,6 +38,18 @@ export function tupleEntry(): i32 {
 
 export function staticArrayEntry(): i32 {
   return staticArrayValues();
+}
+
+export function setEntry(): i32 {
+  return setValues();
+}
+
+export function mapEntry(): i32 {
+  return mapValues();
+}
+
+export function numericMapEntry(): i32 {
+  return numericMapValues();
 }
 
 function branchLocals(flag: i32): i32 {

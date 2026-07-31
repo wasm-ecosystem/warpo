@@ -136,6 +136,10 @@ export class DebuggerWasmModule {
     return this.classInfoResolver.getClassLayout(typeName);
   }
 
+  getInternalClassLayout(typeName: string): ClassLayout | undefined {
+    return this.classInfoResolver.getInternalClassLayout(typeName);
+  }
+
   getClassLayoutByRtid(rtid: number): ClassLayout | undefined {
     return this.classInfoResolver.getClassDef(rtid);
   }

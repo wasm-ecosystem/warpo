@@ -17,6 +17,7 @@ export function launchDapServer(script: string): Promise<DapServerHandle> {
 
     let buffer = "";
     child.stderr.on("data", (chunk: Buffer) => {
+      process.stderr.write(chunk);
       buffer += chunk.toString();
       const match = /DAP server listening on port (\d+)/.exec(buffer);
       if (match) {

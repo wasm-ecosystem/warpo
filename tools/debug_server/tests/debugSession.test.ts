@@ -26,7 +26,10 @@ const TEST_MODULE_ARRAY_BREAKPOINT_LINE = 62;
 const TEST_MODULE_CLASS_ARRAY_BREAKPOINT_LINE = 67;
 const TEST_MODULE_TUPLE_BREAKPOINT_LINE = 72;
 const TEST_MODULE_STATIC_ARRAY_BREAKPOINT_LINE = 83;
-const TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE = 43;
+const TEST_MODULE_SET_BREAKPOINT_LINE = 96;
+const TEST_MODULE_MAP_BREAKPOINT_LINE = 105;
+const TEST_MODULE_NUMERIC_MAP_BREAKPOINT_LINE = 112;
+const TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE = 58;
 
 async function waitForLoadedWasmSource(dc: DebugClient): Promise<DebugProtocol.LoadedSourceEvent> {
   while (true) {
@@ -719,6 +722,10 @@ void describe("WarpoDebugSession", () => {
 
     const valueElementsResponse = await dc.variablesRequest({ variablesReference: values.variablesReference });
     assert.deepEqual(
+      valueElementsResponse.body.variables.map((variable) => variable.name),
+      ["0", "1", "2"]
+    );
+    assert.deepEqual(
       valueElementsResponse.body.variables.map((variable) => ({
         name: variable.name,
         type: variable.type,
@@ -761,6 +768,255 @@ void describe("WarpoDebugSession", () => {
     );
     assert.equal(secondValue.type, "i32");
     assert.equal(secondValue.value, "55");
+  });
+
+  void it("should expand set elements by index", { timeout: 5000 }, async () => {
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: TEST_MODULE_CALLEE_SOURCE },
+      breakpoints: [{ line: TEST_MODULE_SET_BREAKPOINT_LINE }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: TEST_MODULE_OUTPUT,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "setEntry",
+    };
+
+    const stoppedPromise = waitForBreakpointStop(dc);
+    await dc.launchRequest(launchArgs);
+    await stoppedPromise;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = stackTraceResponse.body.stackFrames[0];
+    assert.notStrictEqual(frame, undefined);
+
+    const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
+
+    const values = assertDefined(findVariable(variablesResponse.body.variables, "values"));
+    assert.ok(values.type?.startsWith("~lib/set/Set<"));
+    assert.ok(values.variablesReference > 0);
+    assert.equal(values.value, "");
+
+    const valueElementsResponse = await dc.variablesRequest({ variablesReference: values.variablesReference });
+    assert.deepEqual(
+      valueElementsResponse.body.variables.map((variable) => ({
+        name: variable.name,
+        type: variable.type,
+        value: variable.value,
+        variablesReference: variable.variablesReference,
+      })),
+      [
+        { name: "0", type: "i32", value: "5", variablesReference: 0 },
+        { name: "1", type: "i32", value: "8", variablesReference: 0 },
+        { name: "2", type: "i32", value: "13", variablesReference: 0 },
+      ]
+    );
+
+    const children = assertDefined(findVariable(variablesResponse.body.variables, "children"));
+    assert.ok(children.type?.startsWith("~lib/set/Set<"));
+    assert.ok(children.variablesReference > 0);
+    assert.equal(children.value, "");
+
+    const childElementsResponse = await dc.variablesRequest({ variablesReference: children.variablesReference });
+    const firstChild = assertDefined(findVariable(childElementsResponse.body.variables, "0"));
+    assert.ok(firstChild.type?.endsWith("Child"));
+    assert.ok(firstChild.variablesReference > 0);
+    assert.equal(firstChild.value, "");
+
+    const secondChild = assertDefined(findVariable(childElementsResponse.body.variables, "1"));
+    assert.ok(secondChild.type?.endsWith("Child"));
+    assert.ok(secondChild.variablesReference > 0);
+    assert.equal(secondChild.value, "");
+
+    const firstChildFieldsResponse = await dc.variablesRequest({ variablesReference: firstChild.variablesReference });
+    const firstValue = assertDefined(
+      firstChildFieldsResponse.body.variables.find((candidate) => candidate.name === "value")
+    );
+    assert.equal(firstValue.type, "i32");
+    assert.equal(firstValue.value, "61");
+
+    const secondChildFieldsResponse = await dc.variablesRequest({ variablesReference: secondChild.variablesReference });
+    const secondValue = assertDefined(
+      secondChildFieldsResponse.body.variables.find((candidate) => candidate.name === "value")
+    );
+    assert.equal(secondValue.type, "i32");
+    assert.equal(secondValue.value, "89");
+  });
+
+  void it("should expand map entries by index", { timeout: 5000 }, async () => {
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: TEST_MODULE_CALLEE_SOURCE },
+      breakpoints: [{ line: TEST_MODULE_MAP_BREAKPOINT_LINE }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: TEST_MODULE_OUTPUT,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "mapEntry",
+    };
+
+    const stoppedPromise = waitForBreakpointStop(dc);
+    await dc.launchRequest(launchArgs);
+    await stoppedPromise;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = stackTraceResponse.body.stackFrames[0];
+    assert.notStrictEqual(frame, undefined);
+
+    const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
+
+    const values = assertDefined(findVariable(variablesResponse.body.variables, "values"));
+    assert.ok(values.type?.startsWith("~lib/map/Map<"));
+    assert.ok(values.variablesReference > 0);
+    assert.equal(values.value, "");
+
+    const entriesResponse = await dc.variablesRequest({ variablesReference: values.variablesReference });
+    assert.deepEqual(
+      entriesResponse.body.variables.map((variable) => variable.name),
+      ["0", "1"]
+    );
+    const firstEntry = assertDefined(entriesResponse.body.variables.find((candidate) => candidate.name === "0"));
+    assert.equal(firstEntry.value, "");
+    assert.ok(firstEntry.variablesReference > 0);
+
+    const secondEntry = assertDefined(entriesResponse.body.variables.find((candidate) => candidate.name === "1"));
+    assert.equal(secondEntry.value, "");
+    assert.ok(secondEntry.variablesReference > 0);
+
+    const firstEntryFieldsResponse = await dc.variablesRequest({ variablesReference: firstEntry.variablesReference });
+    assert.deepEqual(
+      firstEntryFieldsResponse.body.variables.map((variable) => variable.name),
+      ["key", "value: debugger_callee/Child"]
+    );
+    const firstKey = assertDefined(
+      firstEntryFieldsResponse.body.variables.find((candidate) => candidate.name === "key")
+    );
+    assert.equal(firstKey.type, "i32");
+    assert.equal(firstKey.value, "5");
+    assert.equal(firstKey.variablesReference, 0);
+
+    const firstValue = assertDefined(findVariable(firstEntryFieldsResponse.body.variables, "value"));
+    assert.match(firstValue.name, /^value: .+Child$/);
+    assert.ok(firstValue.type?.endsWith("Child"));
+    assert.ok(firstValue.variablesReference > 0);
+    assert.equal(firstValue.value, "");
+
+    const secondEntryFieldsResponse = await dc.variablesRequest({ variablesReference: secondEntry.variablesReference });
+    assert.deepEqual(
+      secondEntryFieldsResponse.body.variables.map((variable) => variable.name),
+      ["key", "value: debugger_callee/Child"]
+    );
+    const secondKey = assertDefined(
+      secondEntryFieldsResponse.body.variables.find((candidate) => candidate.name === "key")
+    );
+    assert.equal(secondKey.type, "i32");
+    assert.equal(secondKey.value, "8");
+    assert.equal(secondKey.variablesReference, 0);
+
+    const secondValue = assertDefined(findVariable(secondEntryFieldsResponse.body.variables, "value"));
+    assert.match(secondValue.name, /^value: .+Child$/);
+    assert.ok(secondValue.type?.endsWith("Child"));
+    assert.ok(secondValue.variablesReference > 0);
+    assert.equal(secondValue.value, "");
+
+    const firstValueFieldsResponse = await dc.variablesRequest({ variablesReference: firstValue.variablesReference });
+    const firstChildValue = assertDefined(
+      firstValueFieldsResponse.body.variables.find((candidate) => candidate.name === "value")
+    );
+    assert.equal(firstChildValue.type, "i32");
+    assert.equal(firstChildValue.value, "144");
+
+    const secondValueFieldsResponse = await dc.variablesRequest({ variablesReference: secondValue.variablesReference });
+    const secondChildValue = assertDefined(
+      secondValueFieldsResponse.body.variables.find((candidate) => candidate.name === "value")
+    );
+    assert.equal(secondChildValue.type, "i32");
+    assert.equal(secondChildValue.value, "233");
+  });
+
+  void it("should expand numeric map entries by index", { timeout: 5000 }, async () => {
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: TEST_MODULE_CALLEE_SOURCE },
+      breakpoints: [{ line: TEST_MODULE_NUMERIC_MAP_BREAKPOINT_LINE }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: TEST_MODULE_OUTPUT,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "numericMapEntry",
+    };
+
+    const stoppedPromise = waitForBreakpointStop(dc);
+    await dc.launchRequest(launchArgs);
+    await stoppedPromise;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = stackTraceResponse.body.stackFrames[0];
+    assert.notStrictEqual(frame, undefined);
+
+    const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
+
+    const values = assertDefined(findVariable(variablesResponse.body.variables, "values"));
+    assert.ok(values.type?.startsWith("~lib/map/Map<"));
+    assert.ok(values.variablesReference > 0);
+    assert.equal(values.value, "");
+
+    const entriesResponse = await dc.variablesRequest({ variablesReference: values.variablesReference });
+    assert.deepEqual(
+      entriesResponse.body.variables.map((variable) => variable.name),
+      ["0", "1"]
+    );
+
+    const entryFields = await Promise.all(
+      entriesResponse.body.variables.map((entry) =>
+        dc.variablesRequest({ variablesReference: entry.variablesReference })
+      )
+    );
+    assert.deepEqual(
+      entryFields.map((response) =>
+        response.body.variables.map((variable) => ({ name: variable.name, type: variable.type, value: variable.value }))
+      ),
+      [
+        [
+          { name: "key", type: "f64", value: "1" },
+          { name: "value", type: "f64", value: "100" },
+        ],
+        [
+          { name: "key", type: "f64", value: "2" },
+          { name: "value", type: "f64", value: "200" },
+        ],
+      ]
+    );
   });
 
   void it("should refresh variable references across multiple pauses", { timeout: 5000 }, async () => {
