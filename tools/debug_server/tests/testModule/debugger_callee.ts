@@ -111,3 +111,14 @@ export function numericMapValues(): i32 {
   values.set(2, 200);
   return values.size;
 }
+
+export function closureValues(): i32 {
+  let base = 21;
+  let label = "closure label";
+  let child = new Child(77);
+  const readCaptured = (delta: i32): i32 => {
+    let inside = base + delta;
+    return inside + label.length + child.value;
+  };
+  return readCaptured(5);
+}

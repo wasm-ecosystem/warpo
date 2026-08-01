@@ -13,6 +13,13 @@ export interface DwarfLocalVariableInfo {
   fieldOffset?: number;
 }
 
+export interface DwarfClosureVariableInfo {
+  name: string;
+  typeName: string;
+  closureEnvLocalIndex: number;
+  fieldOffset: number;
+}
+
 export interface DwarfRangeInfo {
   lowPc: number;
   highPc: number;
@@ -187,7 +194,13 @@ export function getVariablesInFunctionAtBytecodeOffset(
   functionInfo: DwarfFunctionInfo,
   bytecodeOffset: number
 ): DwarfLocalVariableInfo[] {
-  const variables: DwarfLocalVariableInfo[] = [...functionInfo.parameters, ...functionInfo.variables];
+  const variables: DwarfLocalVariableInfo[] = [];
+  for (const parameter of functionInfo.parameters) {
+    variables.push(parameter);
+  }
+  for (const variable of functionInfo.variables) {
+    variables.push(variable);
+  }
   const scope = findClosestScopeByBytecodeOffset(functionInfo.children, bytecodeOffset);
   if (!scope) {
     return variables;
@@ -199,6 +212,29 @@ export function getVariablesInFunctionAtBytecodeOffset(
     for (const variable of activeScope.variables) {
       variables.push(variable);
     }
+  }
+  return variables;
+}
+
+export function getClosureVariablesInFunction(functionInfo: DwarfFunctionInfo): DwarfClosureVariableInfo[] {
+  if (functionInfo.closureEnvLocalIndex === undefined) {
+    return [];
+  }
+
+  const variables: DwarfClosureVariableInfo[] = [];
+  let current = functionInfo.parent;
+  while (current) {
+    for (const variable of getNodeVariables(current)) {
+      if (variable.fieldOffset !== undefined) {
+        variables.push({
+          name: variable.name,
+          typeName: variable.typeName,
+          closureEnvLocalIndex: functionInfo.closureEnvLocalIndex,
+          fieldOffset: variable.fieldOffset,
+        });
+      }
+    }
+    current = current.parent;
   }
   return variables;
 }
@@ -215,6 +251,20 @@ export function getScopeChainInFunctionAtBytecodeOffset(
   const scopeTrace = getScopeTrace(scope);
   assert(scopeTrace !== undefined);
   return scopeTrace.scopes;
+}
+
+function getNodeVariables(node: DwarfFunctionInfo | DwarfScopeInfo): DwarfLocalVariableInfo[] {
+  if (isDwarfFunctionInfo(node)) {
+    const variables: DwarfLocalVariableInfo[] = [];
+    for (const parameter of node.parameters) {
+      variables.push(parameter);
+    }
+    for (const variable of node.variables) {
+      variables.push(variable);
+    }
+    return variables;
+  }
+  return node.variables;
 }
 
 interface DwarfScopeTrace {

@@ -22,11 +22,23 @@ export interface DebuggerBreakpointInfo {
   source: string;
 }
 
-export interface DebuggerSourceVariableInfo {
+interface DebuggerSourceVariableInfoBase {
   name: string;
   typeName: string;
+}
+
+export interface DebuggerWasmLocalVariableInfo extends DebuggerSourceVariableInfoBase {
+  kind: "wasm-local";
   localIndex: number;
 }
+
+export interface DebuggerClosureVariableInfo extends DebuggerSourceVariableInfoBase {
+  kind: "closure";
+  closureEnvLocalIndex: number;
+  fieldOffset: number;
+}
+
+export type DebuggerSourceVariableInfo = DebuggerWasmLocalVariableInfo | DebuggerClosureVariableInfo;
 
 export interface DebuggerBreakpointLocation {
   wasmBytecodeOffset: number;
@@ -127,9 +139,11 @@ export class DebuggerWasmModule {
       return undefined;
     }
 
-    return getVariablesInFunctionAtBytecodeOffset(functionInfo, wasmBytecodeOffset).map((variable) =>
-      DebuggerWasmModule.toSourceVariableInfo(variable)
-    );
+    const variables: DebuggerSourceVariableInfo[] = [];
+    for (const variable of getVariablesInFunctionAtBytecodeOffset(functionInfo, wasmBytecodeOffset)) {
+      variables.push(DebuggerWasmModule.toSourceVariableInfo(variable));
+    }
+    return variables;
   }
 
   getClassLayout(typeName: string): ClassLayout | undefined {
@@ -211,7 +225,18 @@ export class DebuggerWasmModule {
   }
 
   private static toSourceVariableInfo(variable: DwarfLocalVariableInfo): DebuggerSourceVariableInfo {
+    if (variable.fieldOffset !== undefined) {
+      return {
+        kind: "closure",
+        name: variable.name,
+        typeName: variable.typeName,
+        closureEnvLocalIndex: variable.localIndex,
+        fieldOffset: variable.fieldOffset,
+      };
+    }
+
     return {
+      kind: "wasm-local",
       name: variable.name,
       typeName: variable.typeName,
       localIndex: variable.localIndex,
