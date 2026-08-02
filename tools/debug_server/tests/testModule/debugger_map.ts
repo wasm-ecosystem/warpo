@@ -18,5 +18,10 @@ function run(): i32 {
   let second = new Child(233);
   values.set(5, first);
   values.set(8, second);
-  return values.size + first.value + second.value;
+
+  let numericValues = new Map<number, number>();
+  numericValues.set(1, 100);
+  numericValues.set(2, 200);
+
+  return values.size + first.value + second.value + numericValues.size;
 }
