@@ -5,7 +5,7 @@ import { DebugClient } from "@vscode/debugadapter-testsupport";
 import type { DebugProtocol } from "@vscode/debugprotocol";
 import * as assert from "node:assert/strict";
 import * as path from "node:path";
-import { describe, it, before, beforeEach, afterEach } from "node:test";
+import { describe, it, beforeEach, afterEach } from "node:test";
 import { fileURLToPath } from "node:url";
 import { launchDapServer, type DapServerHandle } from "./launcher.js";
 import { build } from "../../scripts/lib.js";
@@ -14,29 +14,37 @@ import { normalizeDebugPath } from "../debugPath.js";
 const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
 const DAP_SERVER = path.resolve(DIRNAME, "..", "..", "..", "dist", "debug_server", "dapServer.js");
 const TEST_MODULE_DIR = path.resolve(DIRNAME, "testModule");
-const TEST_MODULE_SOURCE = path.join(TEST_MODULE_DIR, "debugger_basic.ts");
-const TEST_MODULE_CALLEE_SOURCE = path.join(TEST_MODULE_DIR, "debugger_callee.ts");
-const TEST_MODULE_OUTPUT = path.join(TEST_MODULE_DIR, "build/debugger_basic.wasm");
-const IMPORT_FAILURE_SOURCE = path.join(TEST_MODULE_DIR, "import_failure.ts");
-const IMPORT_FAILURE_OUTPUT = path.join(TEST_MODULE_DIR, "build/import_failure.wasm");
-const TEST_MODULE_BREAKPOINT_LINE = 41;
-const TEST_MODULE_SECOND_BREAKPOINT_LINE = 43;
-const TEST_MODULE_STRING_BREAKPOINT_LINE = 57;
-const TEST_MODULE_ARRAY_BREAKPOINT_LINE = 62;
-const TEST_MODULE_CLASS_ARRAY_BREAKPOINT_LINE = 67;
-const TEST_MODULE_TUPLE_BREAKPOINT_LINE = 72;
-const TEST_MODULE_STATIC_ARRAY_BREAKPOINT_LINE = 83;
-const TEST_MODULE_SET_BREAKPOINT_LINE = 96;
-const TEST_MODULE_MAP_BREAKPOINT_LINE = 105;
-const TEST_MODULE_NUMERIC_MAP_BREAKPOINT_LINE = 112;
-const TEST_MODULE_CLOSURE_BREAKPOINT_LINE = 123;
-const TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE = 62;
 
-async function waitForLoadedWasmSource(dc: DebugClient): Promise<DebugProtocol.LoadedSourceEvent> {
+function sourcePath(name: string): string {
+  return path.join(TEST_MODULE_DIR, name);
+}
+
+function outputPath(source: string): string {
+  return path.join(TEST_MODULE_DIR, "build", `${path.basename(source, ".ts")}.wasm`);
+}
+
+async function buildModule(source: string, extraSources: string[] = []): Promise<string> {
+  const output = outputPath(source);
+  const name = path.basename(source, ".ts");
+  let buildOutput = "";
+  const exitCode = await build({
+    argv: [source, ...extraSources, "-o", output, "--debug", "--use", "abort="],
+    cwd: TEST_MODULE_DIR,
+    onStdout: (chunk: string) => {
+      buildOutput += chunk;
+    },
+  });
+  if (exitCode !== 0) {
+    throw new Error(`failed to build ${name} test module: ${buildOutput}`);
+  }
+  return output;
+}
+
+async function waitForLoadedWasmSource(dc: DebugClient, outputPath: string): Promise<DebugProtocol.LoadedSourceEvent> {
   while (true) {
     const event = await dc.waitForEvent("loadedSource");
     const body = event.body as { source?: DebugProtocol.Source; reason?: string } | undefined;
-    if (body?.source?.path === path.resolve(TEST_MODULE_OUTPUT)) {
+    if (body?.source?.path === path.resolve(outputPath)) {
       return event as DebugProtocol.LoadedSourceEvent;
     }
   }
@@ -122,32 +130,6 @@ const waitForExit = (child: DapServerHandle["child"], timeoutMs: number): Promis
     child.once("exit", onExit);
   });
 
-before(async () => {
-  let buildOutput = "";
-  let exitCode = await build({
-    argv: [TEST_MODULE_SOURCE, "-o", TEST_MODULE_OUTPUT, "--debug", "--use", "abort="],
-    cwd: TEST_MODULE_DIR,
-    onStdout: (chunk: string) => {
-      buildOutput += chunk;
-    },
-  });
-  if (exitCode !== 0) {
-    throw new Error(`failed to build debugger test module: ${buildOutput}`);
-  }
-
-  buildOutput = "";
-  exitCode = await build({
-    argv: [IMPORT_FAILURE_SOURCE, "-o", IMPORT_FAILURE_OUTPUT, "--debug", "--use", "abort="],
-    cwd: TEST_MODULE_DIR,
-    onStdout: (chunk: string) => {
-      buildOutput += chunk;
-    },
-  });
-  if (exitCode !== 0) {
-    throw new Error(`failed to build import failure test module: ${buildOutput}`);
-  }
-});
-
 void describe("WarpoDebugSession", () => {
   let dc: DebugClient;
   let serverChild: DapServerHandle["child"];
@@ -189,15 +171,19 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should report the built wasm as a loaded source on launch", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_basic.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 13;
+
     await dc.initializeRequest();
 
     const breakpointResponse = await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
     assert.equal(breakpointResponse.body.breakpoints.length, 1);
     assert.equal(breakpointResponse.body.breakpoints[0].verified, true);
-    assert.equal(breakpointResponse.body.breakpoints[0].line, TEST_MODULE_BREAKPOINT_LINE);
+    assert.equal(breakpointResponse.body.breakpoints[0].line, breakpointLine);
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
       program: string;
@@ -205,13 +191,13 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
       entryFunctionName: "_start",
     };
 
-    const loadedSourcePromise = waitForLoadedWasmSource(dc);
+    const loadedSourcePromise = waitForLoadedWasmSource(dc, output);
     const stoppedPromise = waitForBreakpointStop(dc);
 
     await dc.launchRequest(launchArgs);
@@ -221,11 +207,14 @@ void describe("WarpoDebugSession", () => {
     await stoppedPromise;
 
     assert.equal(loadedSourceBody?.reason, "new");
-    assert.equal(loadedSourceBody?.source?.path, path.resolve(TEST_MODULE_OUTPUT));
-    assert.equal(loadedSourceBody?.source?.name, path.basename(TEST_MODULE_OUTPUT));
+    assert.equal(loadedSourceBody?.source?.path, path.resolve(output));
+    assert.equal(loadedSourceBody?.source?.name, path.basename(output));
   });
 
   void it("should terminate when the runtime exits after wasm instantiation fails", { timeout: 5000 }, async () => {
+    const source = sourcePath("import_failure.ts");
+    const output = await buildModule(source);
+
     await dc.initializeRequest();
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -234,7 +223,7 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: IMPORT_FAILURE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
       entryFunctionName: "_start",
@@ -252,11 +241,15 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should expose local variables after hitting a breakpoint", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_basic.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 13;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -265,27 +258,40 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
       entryFunctionName: "_start",
     };
 
     const { frame, variablesResponse } = await launchAndReadTopFrameLocals(dc, launchArgs);
-    assert.equal(frame.source?.path, normalizeDebugPath(TEST_MODULE_CALLEE_SOURCE));
-    assert.equal(frame.line, TEST_MODULE_BREAKPOINT_LINE);
+    assert.equal(frame.source?.path, normalizeDebugPath(source));
+    assert.equal(frame.line, breakpointLine);
 
-    const variable = assertDefined(variablesResponse.body.variables.find((candidate) => candidate.name === "a"));
-    assert.equal(variable.type, "i32");
-    assert.equal(variable.value, "1");
+    const a = assertDefined(variablesResponse.body.variables.find((candidate) => candidate.name === "a"));
+    assert.equal(a.type, "i32");
+    assert.equal(a.value, "1");
+
+    const b = assertDefined(variablesResponse.body.variables.find((candidate) => candidate.name === "b"));
+    assert.equal(b.type, "f32");
+
+    const c = assertDefined(variablesResponse.body.variables.find((candidate) => candidate.name === "c"));
+    assert.equal(c.type, "i64");
+
+    const d = assertDefined(variablesResponse.body.variables.find((candidate) => candidate.name === "d"));
+    assert.equal(d.type, "f64");
   });
 
   void it("should expose wasm call stack frames after hitting a breakpoint", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_basic.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 13;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -294,7 +300,7 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
       entryFunctionName: "_start",
@@ -308,10 +314,59 @@ void describe("WarpoDebugSession", () => {
     const topFrame = stackTraceResponse.body.stackFrames[0];
     const callerFrame = stackTraceResponse.body.stackFrames[1];
     assert.match(topFrame.name, /calculate/);
-    assert.equal(topFrame.source?.path, normalizeDebugPath(TEST_MODULE_CALLEE_SOURCE));
-    assert.equal(topFrame.line, TEST_MODULE_BREAKPOINT_LINE);
+    assert.equal(topFrame.source?.path, normalizeDebugPath(source));
+    assert.equal(topFrame.line, breakpointLine);
     assert.match(callerFrame.name, /_start/);
-    assert.equal(callerFrame.source?.path, normalizeDebugPath(TEST_MODULE_SOURCE));
+    assert.equal(callerFrame.source?.path, normalizeDebugPath(source));
+
+    const variablesResponse = await readFrameLocals(dc, topFrame);
+    assertDefined(variablesResponse.body.variables.find((candidate) => candidate.name === "a"));
+
+    const callerVariablesResponse = await readFrameLocals(dc, callerFrame);
+    const callerSeed = assertDefined(
+      callerVariablesResponse.body.variables.find((candidate) => candidate.name === "callerSeed")
+    );
+    assert.equal(callerSeed.type, "i32");
+    assert.equal(callerSeed.value, "23");
+  });
+
+  void it("should resolve call stack frames across multiple source files", { timeout: 5000 }, async () => {
+    const entrySource = sourcePath("debugger_caller.ts");
+    const calleeSource = sourcePath("debugger_callee.ts");
+    const output = await buildModule(entrySource, [calleeSource]);
+    const breakpointLine = 41;
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: calleeSource },
+      breakpoints: [{ line: breakpointLine }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 20 });
+    assert.ok(stackTraceResponse.body.stackFrames.length >= 2);
+
+    const topFrame = stackTraceResponse.body.stackFrames[0];
+    const callerFrame = stackTraceResponse.body.stackFrames[1];
+    assert.match(topFrame.name, /calculate/);
+    assert.equal(topFrame.source?.path, normalizeDebugPath(calleeSource));
+    assert.equal(topFrame.line, breakpointLine);
+    assert.match(callerFrame.name, /_start/);
+    assert.equal(callerFrame.source?.path, normalizeDebugPath(entrySource));
 
     const variablesResponse = await readFrameLocals(dc, topFrame);
     assertDefined(variablesResponse.body.variables.find((candidate) => candidate.name === "a"));
@@ -325,11 +380,15 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should only expose locals from the active if branch scope", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_basic.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 23;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -338,7 +397,7 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
       entryFunctionName: "branchEntry",
@@ -351,8 +410,8 @@ void describe("WarpoDebugSession", () => {
 
     const branchFrame = stackTraceResponse.body.stackFrames[0];
     assert.match(branchFrame.name, /branchLocals/);
-    assert.equal(branchFrame.source?.path, normalizeDebugPath(TEST_MODULE_SOURCE));
-    assert.equal(branchFrame.line, TEST_MODULE_IF_BRANCH_BREAKPOINT_LINE);
+    assert.equal(branchFrame.source?.path, normalizeDebugPath(source));
+    assert.equal(branchFrame.line, breakpointLine);
 
     const variablesResponse = await readFrameLocals(dc, branchFrame);
     const variableNames = new Set(variablesResponse.body.variables.map((variable) => variable.name));
@@ -362,11 +421,15 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should terminate when the entry function returns", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_class.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 45;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -375,7 +438,7 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
       entryFunctionName: "_start",
@@ -391,11 +454,15 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should expand class local variables using DWARF layout", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_class.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 45;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -404,7 +471,7 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
       entryFunctionName: "_start",
@@ -458,11 +525,15 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should display string objects without expanding them", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_string.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 18;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_STRING_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -471,10 +542,10 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
-      entryFunctionName: "stringEntry",
+      entryFunctionName: "_start",
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
@@ -507,11 +578,15 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should expand array elements by index", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_array.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 9;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_ARRAY_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -520,10 +595,10 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
-      entryFunctionName: "arrayEntry",
+      entryFunctionName: "_start",
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
@@ -560,11 +635,15 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should expand class array elements as objects", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_class_array.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 17;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_CLASS_ARRAY_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -573,10 +652,10 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
-      entryFunctionName: "classArrayEntry",
+      entryFunctionName: "_start",
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
@@ -623,11 +702,15 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should expand tuple elements by index", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_tuple.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 17;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_TUPLE_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -636,10 +719,10 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
-      entryFunctionName: "tupleEntry",
+      entryFunctionName: "_start",
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
@@ -682,11 +765,15 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should expand static array elements by index", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_static_array.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 23;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_STATIC_ARRAY_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -695,10 +782,10 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
-      entryFunctionName: "staticArrayEntry",
+      entryFunctionName: "_start",
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
@@ -769,11 +856,15 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should expand set elements by index", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_set.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 25;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_SET_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -782,10 +873,10 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
-      entryFunctionName: "setEntry",
+      entryFunctionName: "_start",
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
@@ -852,11 +943,15 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should expand map entries by index", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_map.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 21;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_MAP_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -865,10 +960,10 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
-      entryFunctionName: "mapEntry",
+      entryFunctionName: "_start",
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
@@ -904,7 +999,7 @@ void describe("WarpoDebugSession", () => {
     const firstEntryFieldsResponse = await dc.variablesRequest({ variablesReference: firstEntry.variablesReference });
     assert.deepEqual(
       firstEntryFieldsResponse.body.variables.map((variable) => variable.name),
-      ["key", "value: debugger_callee/Child"]
+      ["key", "value: debugger_map/Child"]
     );
     const firstKey = assertDefined(
       firstEntryFieldsResponse.body.variables.find((candidate) => candidate.name === "key")
@@ -922,7 +1017,7 @@ void describe("WarpoDebugSession", () => {
     const secondEntryFieldsResponse = await dc.variablesRequest({ variablesReference: secondEntry.variablesReference });
     assert.deepEqual(
       secondEntryFieldsResponse.body.variables.map((variable) => variable.name),
-      ["key", "value: debugger_callee/Child"]
+      ["key", "value: debugger_map/Child"]
     );
     const secondKey = assertDefined(
       secondEntryFieldsResponse.body.variables.find((candidate) => candidate.name === "key")
@@ -953,11 +1048,15 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should expand numeric map entries by index", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_numeric_map.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 11;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_NUMERIC_MAP_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -966,10 +1065,10 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
-      entryFunctionName: "numericMapEntry",
+      entryFunctionName: "_start",
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
@@ -1018,11 +1117,15 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should expose closure locals by source name", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_closure.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 23;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_CLOSURE_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -1031,10 +1134,10 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
-      entryFunctionName: "closureEntry",
+      entryFunctionName: "_start",
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
@@ -1073,11 +1176,16 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should refresh variable references across multiple pauses", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_class.ts");
+    const output = await buildModule(source);
+    const firstBreakpointLine = 45;
+    const secondBreakpointLine = 47;
+
     await dc.initializeRequest();
 
     await dc.setBreakpointsRequest({
-      source: { path: TEST_MODULE_CALLEE_SOURCE },
-      breakpoints: [{ line: TEST_MODULE_BREAKPOINT_LINE }, { line: TEST_MODULE_SECOND_BREAKPOINT_LINE }],
+      source: { path: source },
+      breakpoints: [{ line: firstBreakpointLine }, { line: secondBreakpointLine }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -1086,7 +1194,7 @@ void describe("WarpoDebugSession", () => {
       runtime: string;
       entryFunctionName: string;
     } = {
-      program: TEST_MODULE_OUTPUT,
+      program: output,
       launchType: "wasm file",
       runtime: "node",
       entryFunctionName: "_start",
