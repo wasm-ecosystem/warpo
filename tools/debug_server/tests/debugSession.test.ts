@@ -1229,4 +1229,43 @@ void describe("WarpoDebugSession", () => {
     );
     assert.equal(secondCount.value, "9");
   });
+
+  void it("should expose closure locals captured in an if scope", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_closure_if.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 14;
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+
+    const localScope = assertDefined(await readFrameScopeByName(dc, frame, "Local: foo"));
+    const a = assertDefined(findVariable(localScope.body.variables, "a"));
+    assert.equal(a.type, "i32");
+    assert.equal(a.value, "1");
+
+    const blockScope = assertDefined(await readFrameScopeByName(dc, frame, "Block: foo"));
+    const b = assertDefined(findVariable(blockScope.body.variables, "b"));
+    assert.equal(b.type, "i32");
+    assert.equal(b.value, "2");
+  });
 });
