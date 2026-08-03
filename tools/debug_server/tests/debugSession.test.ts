@@ -95,8 +95,21 @@ async function readFrameLocals(
   frame: DebugProtocol.StackFrame
 ): Promise<DebugProtocol.VariablesResponse> {
   const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
-  const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+  const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name.startsWith("Local:")));
   return dc.variablesRequest({ variablesReference: localsScope.variablesReference });
+}
+
+async function readFrameScopeByName(
+  dc: DebugClient,
+  frame: DebugProtocol.StackFrame,
+  name: string
+): Promise<DebugProtocol.VariablesResponse | undefined> {
+  const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
+  const scope = scopesResponse.body.scopes.find((candidate) => candidate.name === name);
+  if (!scope) {
+    return undefined;
+  }
+  return dc.variablesRequest({ variablesReference: scope.variablesReference });
 }
 
 async function launchAndReadTopFrameLocals(
@@ -330,6 +343,46 @@ void describe("WarpoDebugSession", () => {
     assert.equal(callerSeed.value, "23");
   });
 
+  void it("should expose local variables in separate scopes when shadowed", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_scopes.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 12;
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+
+    const localScope = assertDefined(await readFrameScopeByName(dc, frame, "Local: nestedScopes"));
+    const localA = assertDefined(findVariable(localScope.body.variables, "a"));
+    assert.equal(localA.value, "1");
+    const localB = assertDefined(findVariable(localScope.body.variables, "b"));
+    assert.equal(localB.value, "2");
+
+    const blockScope = assertDefined(await readFrameScopeByName(dc, frame, "Block: nestedScopes"));
+    const blockA = assertDefined(findVariable(blockScope.body.variables, "a"));
+    assert.equal(blockA.value, "10");
+    assert.equal(blockScope.body.variables.length, 1);
+  });
+
   void it("should resolve call stack frames across multiple source files", { timeout: 5000 }, async () => {
     const entrySource = sourcePath("debugger_caller.ts");
     const calleeSource = sourcePath("debugger_callee.ts");
@@ -377,47 +430,6 @@ void describe("WarpoDebugSession", () => {
     );
     assert.equal(callerSeed.type, "i32");
     assert.equal(callerSeed.value, "23");
-  });
-
-  void it("should only expose locals from the active if branch scope", { timeout: 5000 }, async () => {
-    const source = sourcePath("debugger_basic.ts");
-    const output = await buildModule(source);
-    const breakpointLine = 23;
-
-    await dc.initializeRequest();
-
-    await dc.setBreakpointsRequest({
-      source: { path: source },
-      breakpoints: [{ line: breakpointLine }],
-    });
-
-    const launchArgs: DebugProtocol.LaunchRequestArguments & {
-      program: string;
-      launchType: string;
-      runtime: string;
-      entryFunctionName: string;
-    } = {
-      program: output,
-      launchType: "wasm file",
-      runtime: "node",
-      entryFunctionName: "branchEntry",
-    };
-
-    await launchAndWaitForBreakpoint(dc, launchArgs);
-
-    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 20 });
-    assert.ok(stackTraceResponse.body.stackFrames.length >= 2);
-
-    const branchFrame = stackTraceResponse.body.stackFrames[0];
-    assert.match(branchFrame.name, /branchLocals/);
-    assert.equal(branchFrame.source?.path, normalizeDebugPath(source));
-    assert.equal(branchFrame.line, breakpointLine);
-
-    const variablesResponse = await readFrameLocals(dc, branchFrame);
-    const variableNames = new Set(variablesResponse.body.variables.map((variable) => variable.name));
-
-    assert.ok(variableNames.has("ifOnly"));
-    assert.ok(!variableNames.has("elseOnly"));
   });
 
   void it("should terminate when the entry function returns", { timeout: 5000 }, async () => {
@@ -486,7 +498,7 @@ void describe("WarpoDebugSession", () => {
     assert.notStrictEqual(frame, undefined);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
-    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name.startsWith("Local:")));
 
     const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
     const holder = assertDefined(findVariable(variablesResponse.body.variables, "holder"));
@@ -557,7 +569,7 @@ void describe("WarpoDebugSession", () => {
     assert.notStrictEqual(frame, undefined);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
-    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name.startsWith("Local:")));
     const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
 
     const message = assertDefined(variablesResponse.body.variables.find((candidate) => candidate.name === "message"));
@@ -610,7 +622,7 @@ void describe("WarpoDebugSession", () => {
     assert.notStrictEqual(frame, undefined);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
-    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name.startsWith("Local:")));
     const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
 
     const values = assertDefined(findVariable(variablesResponse.body.variables, "values"));
@@ -667,7 +679,7 @@ void describe("WarpoDebugSession", () => {
     assert.notStrictEqual(frame, undefined);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
-    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name.startsWith("Local:")));
     const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
 
     const children = assertDefined(findVariable(variablesResponse.body.variables, "children"));
@@ -734,7 +746,7 @@ void describe("WarpoDebugSession", () => {
     assert.notStrictEqual(frame, undefined);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
-    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name.startsWith("Local:")));
     const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
 
     const values = assertDefined(findVariable(variablesResponse.body.variables, "values"));
@@ -797,7 +809,7 @@ void describe("WarpoDebugSession", () => {
     assert.notStrictEqual(frame, undefined);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
-    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name.startsWith("Local:")));
     const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
 
     const values = assertDefined(findVariable(variablesResponse.body.variables, "values"));
@@ -888,7 +900,7 @@ void describe("WarpoDebugSession", () => {
     assert.notStrictEqual(frame, undefined);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
-    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name.startsWith("Local:")));
     const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
 
     const values = assertDefined(findVariable(variablesResponse.body.variables, "values"));
@@ -975,7 +987,7 @@ void describe("WarpoDebugSession", () => {
     assert.notStrictEqual(frame, undefined);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
-    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name.startsWith("Local:")));
     const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
 
     const values = assertDefined(findVariable(variablesResponse.body.variables, "values"));
@@ -1112,7 +1124,7 @@ void describe("WarpoDebugSession", () => {
     assert.notStrictEqual(frame, undefined);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
-    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name.startsWith("Local:")));
     const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
 
     const base = assertDefined(findVariable(variablesResponse.body.variables, "base"));
@@ -1169,7 +1181,9 @@ void describe("WarpoDebugSession", () => {
 
     const firstStackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
     const firstScopesResponse = await dc.scopesRequest({ frameId: firstStackTraceResponse.body.stackFrames[0].id });
-    const firstLocalsScope = assertDefined(firstScopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const firstLocalsScope = assertDefined(
+      firstScopesResponse.body.scopes.find((scope) => scope.name.startsWith("Local:"))
+    );
 
     const firstVariablesResponse = await dc.variablesRequest({
       variablesReference: firstLocalsScope.variablesReference,
@@ -1194,7 +1208,9 @@ void describe("WarpoDebugSession", () => {
 
     const secondStackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
     const secondScopesResponse = await dc.scopesRequest({ frameId: secondStackTraceResponse.body.stackFrames[0].id });
-    const secondLocalsScope = assertDefined(secondScopesResponse.body.scopes.find((scope) => scope.name === "Locals"));
+    const secondLocalsScope = assertDefined(
+      secondScopesResponse.body.scopes.find((scope) => scope.name.startsWith("Local:"))
+    );
 
     const secondVariablesResponse = await dc.variablesRequest({
       variablesReference: secondLocalsScope.variablesReference,

@@ -7,8 +7,10 @@ import * as path from "node:path";
 import { DwarfClassInfoResolver, type ClassLayout } from "../dwarf/classDebugInfo.js";
 import {
   DwarfFunctionInfoResolver,
+  getScopeChainInFunctionAtBytecodeOffset,
   getVariablesInFunctionAtBytecodeOffset,
   type DwarfLocalVariableInfo,
+  type DwarfScopeInfo,
 } from "../dwarf/functionDebugInfo.js";
 import { SourceMapConsumer, type BasicSourceMapConsumer, type RawSourceMap } from "source-map";
 import { normalizeDebugPath } from "./debugPath.js";
@@ -39,6 +41,11 @@ export interface DebuggerClosureVariableInfo extends DebuggerSourceVariableInfoB
 }
 
 export type DebuggerSourceVariableInfo = DebuggerWasmLocalVariableInfo | DebuggerClosureVariableInfo;
+
+export interface DebuggerVariableScope {
+  name: string;
+  variables: DebuggerSourceVariableInfo[];
+}
 
 export interface DebuggerBreakpointLocation {
   wasmBytecodeOffset: number;
@@ -146,6 +153,39 @@ export class DebuggerWasmModule {
     return variables;
   }
 
+  getVariableScopesAtBytecodeOffset(wasmBytecodeOffset: number): DebuggerVariableScope[] | undefined {
+    const functionInfo = this.functionInfoResolver.findFunctionByBytecodeOffset(wasmBytecodeOffset);
+    if (!functionInfo) {
+      return undefined;
+    }
+
+    const scopeChain = getScopeChainInFunctionAtBytecodeOffset(functionInfo, wasmBytecodeOffset);
+    const scopes: DebuggerVariableScope[] = [];
+    const functionName = DebuggerWasmModule.getFunctionBaseName(functionInfo);
+
+    for (const scope of scopeChain.toReversed()) {
+      if (scope.variables.length > 0) {
+        scopes.push(DebuggerWasmModule.toVariableScope(`Block: ${functionName}`, scope));
+      }
+    }
+
+    const functionVariables: DwarfLocalVariableInfo[] = [];
+    for (const parameter of functionInfo.parameters) {
+      functionVariables.push(parameter);
+    }
+    for (const variable of functionInfo.variables) {
+      functionVariables.push(variable);
+    }
+    if (functionVariables.length > 0) {
+      scopes.push({
+        name: `Local: ${functionName}`,
+        variables: functionVariables.map((variable) => DebuggerWasmModule.toSourceVariableInfo(variable)),
+      });
+    }
+
+    return scopes;
+  }
+
   getClassLayout(typeName: string): ClassLayout | undefined {
     return this.classInfoResolver.getClassLayout(typeName);
   }
@@ -222,6 +262,18 @@ export class DebuggerWasmModule {
     }
 
     return normalizeDebugPath(sourceMapDirCandidate);
+  }
+
+  private static toVariableScope(name: string, scope: DwarfScopeInfo): DebuggerVariableScope {
+    return {
+      name,
+      variables: scope.variables.map((variable) => DebuggerWasmModule.toSourceVariableInfo(variable)),
+    };
+  }
+
+  private static getFunctionBaseName(functionInfo: { name: string }): string {
+    const lastSlash = functionInfo.name.lastIndexOf("/");
+    return lastSlash >= 0 ? functionInfo.name.slice(lastSlash + 1) : functionInfo.name;
   }
 
   private static toSourceVariableInfo(variable: DwarfLocalVariableInfo): DebuggerSourceVariableInfo {
