@@ -91,7 +91,7 @@ interface RawTupleElementValue {
 }
 
 type VariableContainer =
-  | { kind: "locals"; frameId: number }
+  | { kind: "locals"; frameId: number; scopeIndex: number }
   | { kind: "object"; address: number }
   | { kind: "map-entry"; key: DebugSessionVariable; value: DebugSessionVariable };
 
@@ -405,9 +405,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   private doScopesRequest(response: DebugProtocol.ScopesResponse, args: DebugProtocol.ScopesArguments): void {
     this.log(`Scopes request: frameId=${args.frameId}`);
-    response.body = {
-      scopes: [new Scope("Locals", this.createVariableContainer({ kind: "locals", frameId: args.frameId }), false)],
-    };
+    const scopes = this.resolveLocalScopes(args.frameId);
+    response.body = { scopes };
     this.sendResponse(response);
   }
 
@@ -419,8 +418,12 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
     switch (variableContainer?.kind) {
       case "locals": {
-        this.log(`Variables request: locals for frameId=${variableContainer.frameId}`);
-        response.body = { variables: await this.listLocalVariables(variableContainer.frameId) };
+        this.log(
+          `Variables request: locals for frameId=${variableContainer.frameId}, scopeIndex=${variableContainer.scopeIndex}`
+        );
+        response.body = {
+          variables: await this.resolveLocalScopeVariables(variableContainer.frameId, variableContainer.scopeIndex),
+        };
         break;
       }
       case "object": {
@@ -445,17 +448,38 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.sendResponse(response);
   }
 
-  private async listLocalVariables(frameId: number): Promise<DebugProtocol.Variable[]> {
-    const variables = await this.resolveLocalVariables(frameId);
-    return variables.map((variable) => this.toDebugProtocolVariable(variable));
+  private resolveLocalScopes(frameId: number): Scope[] {
+    const runtimeFrame = this.resolvePausedStackFrame(frameId);
+    const wasmModule = this.loadedModule;
+    if (!runtimeFrame || !wasmModule) {
+      this.log(
+        `Scopes unavailable: frameId=${frameId}, hasFrame=${runtimeFrame !== undefined}, hasModule=${wasmModule !== undefined}`
+      );
+      return [];
+    }
+
+    const wasmBytecodeOffset = runtimeFrame.wasmBytecodeOffset;
+    if (wasmBytecodeOffset === undefined) {
+      this.log(`Error: scopes unavailable: frame ${frameId} has no wasm bytecode offset`);
+      return [];
+    }
+
+    const sourceVariableScopes = wasmModule.getVariableScopesAtBytecodeOffset(wasmBytecodeOffset);
+    if (!sourceVariableScopes || sourceVariableScopes.length === 0) {
+      this.log(`Scopes response: frameId=${frameId}, no scopes`);
+      return [];
+    }
+
+    this.log(
+      `Scopes response: frameId=${frameId}, scopes=${sourceVariableScopes.map((scope) => scope.name).join(", ")}`
+    );
+    return sourceVariableScopes.map(
+      (scope, index) =>
+        new Scope(scope.name, this.createVariableContainer({ kind: "locals", frameId, scopeIndex: index }), false)
+    );
   }
 
-  private async decodeObjectAtAddress(address: number): Promise<DebugProtocol.Variable[]> {
-    const fields = await this.resolveObjectFields(address);
-    return fields.map((variable) => this.toDebugProtocolVariable(variable));
-  }
-
-  private async resolveLocalVariables(frameId: number): Promise<DebugSessionVariable[]> {
+  private async resolveLocalScopeVariables(frameId: number, scopeIndex: number): Promise<DebugProtocol.Variable[]> {
     const runtimeFrame = this.resolvePausedStackFrame(frameId);
     const wasmModule = this.loadedModule;
     const runtime = this.runtime as StackFrameRuntime | undefined;
@@ -466,28 +490,35 @@ export class WarpoDebugSession extends LoggingDebugSession {
       return [];
     }
 
-    const runtimeVariables = await runtime.getPausedWasmFrameVariables(runtimeFrame.frameIndex);
-    this.log(
-      `Local variables resolved: frameId=${frameId}, frameIndex=${runtimeFrame.frameIndex}, offset=${runtimeFrame.wasmBytecodeOffset ?? "unknown"}, runtimeVariables=${runtimeVariables.length}`
-    );
-
     const wasmBytecodeOffset: number | undefined = runtimeFrame.wasmBytecodeOffset;
     if (wasmBytecodeOffset === undefined) {
       this.log(`Error: local variables unavailable: frame ${frameId} has no wasm bytecode offset`);
       return [];
     }
 
-    const sourceVariables = wasmModule.getVariablesAtBytecodeOffset(wasmBytecodeOffset);
-    if (!sourceVariables) {
+    const sourceVariableScopes = wasmModule.getVariableScopesAtBytecodeOffset(wasmBytecodeOffset);
+    if (!sourceVariableScopes) {
       this.log(`Error: local variables unavailable: no source variables at wasm bytecode offset ${wasmBytecodeOffset}`);
       return [];
     }
+
+    const sourceVariableScope = sourceVariableScopes[scopeIndex];
+    if (!sourceVariableScope) {
+      this.log(`Error: local variables unavailable: no scope at index ${scopeIndex}`);
+      return [];
+    }
+
+    const runtimeVariables = await runtime.getPausedWasmFrameVariables(runtimeFrame.frameIndex);
+    this.log(
+      `Local variables resolved: frameId=${frameId}, frameIndex=${runtimeFrame.frameIndex}, offset=${wasmBytecodeOffset}, scopeIndex=${scopeIndex}, scope=${sourceVariableScope.name}, runtimeVariables=${runtimeVariables.length}`
+    );
 
     const runtimeVariablesByIndex = new Map<number, DebugRuntimeVariable>();
     for (const variable of runtimeVariables) {
       runtimeVariablesByIndex.set(variable.localIndex, variable);
     }
 
+    const sourceVariables = sourceVariableScope.variables;
     const wasmLocalValuesByIndex = this.readRawWasmLocalValues(sourceVariables, runtimeVariablesByIndex);
     const { closureEnvLocalIndex, closureLocalsByElementIndex } = this.collectClosureLocals(sourceVariables);
     const closureTupleValues = await this.readClosureTupleValues(
@@ -501,11 +532,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
         const elementIndex = variable.fieldOffset / SMALL_TUPLE_SLOT_SIZE;
         const tupleRawValue = closureTupleValues.get(elementIndex);
         if (tupleRawValue === undefined) {
-          return {
-            name: variable.name,
-            value: "<unavailable>",
-            typeName: variable.typeName,
-          };
+          return { name: variable.name, value: "<unavailable>", typeName: variable.typeName };
         }
 
         return { name: variable.name, value: tupleRawValue, typeName: variable.typeName };
@@ -516,11 +543,17 @@ export class WarpoDebugSession extends LoggingDebugSession {
       return { name: variable.name, value: wasmRawValue, typeName: variable.typeName };
     });
 
-    return Promise.all(
+    const variables = await Promise.all(
       rawLocalValues.map((variable) =>
         this.toDebugSessionVariableValue(variable.name, variable.typeName, variable.value)
       )
     );
+    return variables.map((variable) => this.toDebugProtocolVariable(variable));
+  }
+
+  private async decodeObjectAtAddress(address: number): Promise<DebugProtocol.Variable[]> {
+    const fields = await this.resolveObjectFields(address);
+    return fields.map((variable) => this.toDebugProtocolVariable(variable));
   }
 
   private readRawWasmLocalValues(

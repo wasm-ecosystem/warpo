@@ -13,17 +13,3 @@ export function calculate(seed: i32): i32 {
   let sum: i32 = seed + a + i32(b) + i32(c) + i32(d);
   return sum;
 }
-
-export function branchEntry(): i32 {
-  return branchLocals(1);
-}
-
-function branchLocals(flag: i32): i32 {
-  if (flag > 0) {
-    let ifOnly: i32 = 31;
-    return ifOnly;
-  } else {
-    let elseOnly: i32 = 41;
-    return elseOnly;
-  }
-}
