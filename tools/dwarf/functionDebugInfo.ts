@@ -31,6 +31,7 @@ type DwarfTreeNode = DwarfFunctionInfo | DwarfScopeInfo;
 
 export interface DwarfScopeInfo {
   kind: "scope";
+  name: string;
   parent: DwarfParentInfo;
   range: DwarfRangeInfo;
   closureEnvLocalIndex?: number;
@@ -239,6 +240,50 @@ export function getClosureVariablesInFunction(functionInfo: DwarfFunctionInfo): 
   return variables;
 }
 
+export interface DwarfClosureVariableLevel {
+  kind: "function" | "scope";
+  name: string;
+  closureEnvLocalIndex: number;
+  level: number;
+  variables: DwarfLocalVariableInfo[];
+}
+
+export function getClosureVariableLevels(functionInfo: DwarfFunctionInfo): DwarfClosureVariableLevel[] {
+  const levels: DwarfClosureVariableLevel[] = [];
+  const rootClosureEnvLocalIndex = functionInfo.closureEnvLocalIndex;
+  if (rootClosureEnvLocalIndex === undefined) {
+    return levels;
+  }
+
+  let current: DwarfParentInfo | undefined = functionInfo.parent;
+  let previousKind: DwarfParentInfo["kind"] | undefined;
+  let tupleLevel = 0;
+
+  while (current) {
+    const closureVariables = getNodeVariables(current).filter((variable) => variable.fieldOffset !== undefined);
+    if (closureVariables.length === 0) {
+      current = current.parent;
+      continue;
+    }
+
+    if (current.kind === "function" || previousKind !== "scope") {
+      tupleLevel++;
+    }
+
+    levels.push({
+      kind: current.kind,
+      name: current.name,
+      closureEnvLocalIndex: rootClosureEnvLocalIndex,
+      level: tupleLevel,
+      variables: closureVariables,
+    });
+    previousKind = current.kind;
+    current = current.parent;
+  }
+
+  return levels;
+}
+
 export function getScopeChainInFunctionAtBytecodeOffset(
   functionInfo: DwarfFunctionInfo,
   bytecodeOffset: number
@@ -301,6 +346,7 @@ function resolveScopeInfo(
 
   const scopeInfo: DwarfScopeInfo = {
     kind: "scope",
+    name: parent.name,
     parent,
     range: resolveRangeInfo(scopeDie),
     variables,

@@ -1,14 +1,17 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import * as path from "node:path";
 import { DwarfClassInfoResolver, type ClassLayout } from "../dwarf/classDebugInfo.js";
 import {
   DwarfFunctionInfoResolver,
+  getClosureVariableLevels,
   getScopeChainInFunctionAtBytecodeOffset,
   getVariablesInFunctionAtBytecodeOffset,
+  type DwarfClosureVariableLevel,
   type DwarfLocalVariableInfo,
   type DwarfScopeInfo,
 } from "../dwarf/functionDebugInfo.js";
@@ -45,6 +48,9 @@ export type DebuggerSourceVariableInfo = DebuggerWasmLocalVariableInfo | Debugge
 export interface DebuggerVariableScope {
   name: string;
   variables: DebuggerSourceVariableInfo[];
+  closureEnvLocalIndex?: number;
+  rootClosureEnvLocalIndex?: number;
+  tupleLevel?: number;
 }
 
 export interface DebuggerBreakpointLocation {
@@ -161,11 +167,15 @@ export class DebuggerWasmModule {
 
     const scopeChain = getScopeChainInFunctionAtBytecodeOffset(functionInfo, wasmBytecodeOffset);
     const scopes: DebuggerVariableScope[] = [];
-    const functionName = DebuggerWasmModule.getFunctionBaseName(functionInfo);
+    const functionName = DebuggerWasmModule.getFunctionBaseName(functionInfo.name);
+    const closureEnvLocalIndex = functionInfo.closureEnvLocalIndex;
+    const currentTupleLevel = closureEnvLocalIndex === undefined ? undefined : 0;
 
     for (const scope of scopeChain.toReversed()) {
       if (scope.variables.length > 0) {
-        scopes.push(DebuggerWasmModule.toVariableScope(`Block: ${functionName}`, scope));
+        scopes.push(
+          DebuggerWasmModule.toVariableScope(`Block: ${functionName}`, scope, closureEnvLocalIndex, currentTupleLevel)
+        );
       }
     }
 
@@ -177,10 +187,25 @@ export class DebuggerWasmModule {
       functionVariables.push(variable);
     }
     if (functionVariables.length > 0) {
+      const localClosureEnvLocalIndex =
+        closureEnvLocalIndex ?? DebuggerWasmModule.findClosureEnvLocalIndex(functionVariables);
       scopes.push({
         name: `Local: ${functionName}`,
         variables: functionVariables.map((variable) => DebuggerWasmModule.toSourceVariableInfo(variable)),
+        closureEnvLocalIndex: localClosureEnvLocalIndex,
+        rootClosureEnvLocalIndex: localClosureEnvLocalIndex,
+        tupleLevel: localClosureEnvLocalIndex === undefined ? undefined : 0,
       });
+    }
+
+    const closureLevels = getClosureVariableLevels(functionInfo);
+    for (const level of closureLevels) {
+      if (level.level === 0) {
+        continue;
+      }
+      if (level.variables.length > 0) {
+        scopes.push(DebuggerWasmModule.toClosureVariableScope(level, closureEnvLocalIndex ?? -1));
+      }
     }
 
     return scopes;
@@ -264,27 +289,67 @@ export class DebuggerWasmModule {
     return normalizeDebugPath(sourceMapDirCandidate);
   }
 
-  private static toVariableScope(name: string, scope: DwarfScopeInfo): DebuggerVariableScope {
+  private static toVariableScope(
+    name: string,
+    scope: DwarfScopeInfo,
+    functionClosureEnvLocalIndex?: number,
+    tupleLevel?: number
+  ): DebuggerVariableScope {
+    const closureEnvLocalIndex =
+      scope.closureEnvLocalIndex ??
+      DebuggerWasmModule.findClosureEnvLocalIndex(scope.variables) ??
+      functionClosureEnvLocalIndex;
     return {
       name,
       variables: scope.variables.map((variable) => DebuggerWasmModule.toSourceVariableInfo(variable)),
+      closureEnvLocalIndex,
+      rootClosureEnvLocalIndex: closureEnvLocalIndex,
+      tupleLevel: tupleLevel ?? (closureEnvLocalIndex === undefined ? undefined : 0),
     };
   }
 
-  private static getFunctionBaseName(functionInfo: { name: string }): string {
-    const lastSlash = functionInfo.name.lastIndexOf("/");
-    return lastSlash >= 0 ? functionInfo.name.slice(lastSlash + 1) : functionInfo.name;
+  private static findClosureEnvLocalIndex(variables: DwarfLocalVariableInfo[]): number | undefined {
+    for (const variable of variables) {
+      if (variable.fieldOffset !== undefined) {
+        return variable.localIndex;
+      }
+    }
+    return undefined;
+  }
+
+  private static toClosureVariableScope(
+    level: DwarfClosureVariableLevel,
+    rootClosureEnvLocalIndex: number
+  ): DebuggerVariableScope {
+    return {
+      name: level.kind === "scope" ? "Scope" : `Closure(${DebuggerWasmModule.getClosureFunctionName(level.name)})`,
+      variables: level.variables.map((variable) => DebuggerWasmModule.toClosureSourceVariableInfo(variable)),
+      closureEnvLocalIndex: level.closureEnvLocalIndex,
+      rootClosureEnvLocalIndex,
+      tupleLevel: level.level,
+    };
+  }
+
+  private static getFunctionBaseName(name: string): string {
+    const lastSlash = name.lastIndexOf("/");
+    if (lastSlash === -1) {
+      return name;
+    }
+    return name.slice(lastSlash + 1);
+  }
+
+  private static getClosureFunctionName(name: string): string {
+    const functionName = DebuggerWasmModule.getFunctionBaseName(name);
+    const lastSeparator = functionName.lastIndexOf("~");
+    if (lastSeparator === -1) {
+      return functionName;
+    }
+    return functionName.slice(lastSeparator + 1);
   }
 
   private static toSourceVariableInfo(variable: DwarfLocalVariableInfo): DebuggerSourceVariableInfo {
     if (variable.fieldOffset !== undefined) {
-      return {
-        kind: "closure",
-        name: variable.name,
-        typeName: variable.typeName,
-        closureEnvLocalIndex: variable.localIndex,
-        fieldOffset: variable.fieldOffset,
-      };
+      return DebuggerWasmModule.toClosureSourceVariableInfo(variable);
     }
 
     return {
@@ -292,6 +357,17 @@ export class DebuggerWasmModule {
       name: variable.name,
       typeName: variable.typeName,
       localIndex: variable.localIndex,
+    };
+  }
+
+  private static toClosureSourceVariableInfo(variable: DwarfLocalVariableInfo): DebuggerClosureVariableInfo {
+    assert(variable.fieldOffset !== undefined);
+    return {
+      kind: "closure",
+      name: variable.name,
+      typeName: variable.typeName,
+      closureEnvLocalIndex: variable.localIndex,
+      fieldOffset: variable.fieldOffset,
     };
   }
 }

@@ -37,12 +37,7 @@ import {
   SMALL_TUPLE_SLOT_SIZE,
 } from "../runtime/objectLayout.js";
 import { normalizeDebugPath } from "./debugPath.js";
-import type {
-  DebuggerBreakpointInfo,
-  DebuggerClosureVariableInfo,
-  DebuggerSourceVariableInfo,
-  DebuggerWasmModule,
-} from "./debuggerWasmModule.js";
+import type { DebuggerBreakpointInfo, DebuggerSourceVariableInfo, DebuggerWasmModule } from "./debuggerWasmModule.js";
 import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
 import { NodeDebugger } from "./nodeDebugger.js";
 
@@ -520,17 +515,17 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
     const sourceVariables = sourceVariableScope.variables;
     const wasmLocalValuesByIndex = this.readRawWasmLocalValues(sourceVariables, runtimeVariablesByIndex);
-    const { closureEnvLocalIndex, closureLocalsByElementIndex } = this.collectClosureLocals(sourceVariables);
-    const closureTupleValues = await this.readClosureTupleValues(
-      closureEnvLocalIndex,
-      runtimeVariablesByIndex,
-      closureLocalsByElementIndex
+    const closureTupleValuesByLevel = await this.readClosureTupleChain(
+      sourceVariableScope.rootClosureEnvLocalIndex,
+      runtimeVariablesByIndex
     );
 
+    const scopeTupleLevel = sourceVariableScope.tupleLevel ?? 0;
     const rawLocalValues = sourceVariables.map((variable): RawLocalValue => {
       if (variable.kind === "closure") {
         const elementIndex = variable.fieldOffset / SMALL_TUPLE_SLOT_SIZE;
-        const tupleRawValue = closureTupleValues.get(elementIndex);
+        const levelValues = closureTupleValuesByLevel.get(scopeTupleLevel);
+        const tupleRawValue = levelValues?.get(elementIndex);
         if (tupleRawValue === undefined) {
           return { name: variable.name, value: "<unavailable>", typeName: variable.typeName };
         }
@@ -573,57 +568,48 @@ export class WarpoDebugSession extends LoggingDebugSession {
     return wasmLocalValuesByIndex;
   }
 
-  private collectClosureLocals(sourceVariables: DebuggerSourceVariableInfo[]): {
-    closureEnvLocalIndex: number | undefined;
-    closureLocalsByElementIndex: Map<number, DebuggerClosureVariableInfo>;
-  } {
-    const closureLocalsByElementIndex = new Map<number, DebuggerClosureVariableInfo>();
-    let closureEnvLocalIndex: number | undefined;
-    for (const variable of sourceVariables) {
-      if (variable.kind !== "closure") {
-        continue;
-      }
-
-      const elementIndex = variable.fieldOffset / SMALL_TUPLE_SLOT_SIZE;
-      if (!Number.isInteger(elementIndex)) {
-        continue;
-      }
-
-      if (closureEnvLocalIndex === undefined) {
-        closureEnvLocalIndex = variable.closureEnvLocalIndex;
-      } else {
-        assert.equal(closureEnvLocalIndex, variable.closureEnvLocalIndex);
-      }
-      closureLocalsByElementIndex.set(elementIndex, variable);
-    }
-
-    return { closureEnvLocalIndex, closureLocalsByElementIndex };
-  }
-
-  private async readClosureTupleValues(
+  private async readClosureTupleChain(
     closureEnvLocalIndex: number | undefined,
-    runtimeVariablesByIndex: Map<number, DebugRuntimeVariable>,
-    closureLocalsByElementIndex: Map<number, DebuggerClosureVariableInfo>
-  ): Promise<Map<number, string>> {
-    const closureTupleValues = new Map<number, string>();
+    runtimeVariablesByIndex: Map<number, DebugRuntimeVariable>
+  ): Promise<Map<number, Map<number, string>>> {
+    const closureTupleValuesByLevel = new Map<number, Map<number, string>>();
     if (closureEnvLocalIndex === undefined) {
-      return closureTupleValues;
+      return closureTupleValuesByLevel;
     }
 
     const closureEnvVariable = runtimeVariablesByIndex.get(closureEnvLocalIndex);
-    assert(closureEnvVariable !== undefined);
-    const address = Number(closureEnvVariable.value);
-    if (!Number.isInteger(address) || address <= 0) {
-      return closureTupleValues;
+    if (closureEnvVariable === undefined) {
+      return closureTupleValuesByLevel;
     }
 
-    const tupleValues = await this.readTupleElementValues(address);
-    for (const [index, variable] of tupleValues.entries()) {
-      if (closureLocalsByElementIndex.has(index)) {
-        closureTupleValues.set(index, variable.value);
-      }
+    let address = Number(closureEnvVariable.value);
+    if (!Number.isInteger(address) || address <= 0) {
+      return closureTupleValuesByLevel;
     }
-    return closureTupleValues;
+
+    let level = 0;
+    while (true) {
+      const tupleValues = await this.readTupleElementValues(address);
+      const levelValues = new Map<number, string>();
+      for (const [index, value] of tupleValues.entries()) {
+        levelValues.set(index, value.value);
+      }
+      closureTupleValuesByLevel.set(level, levelValues);
+
+      const parentAddress = levelValues.get(0);
+      if (parentAddress === undefined) {
+        break;
+      }
+      const parentAddressNumber = Number(parentAddress);
+      if (!Number.isInteger(parentAddressNumber) || parentAddressNumber <= 0) {
+        break;
+      }
+
+      address = parentAddressNumber;
+      level++;
+    }
+
+    return closureTupleValuesByLevel;
   }
 
   private resolvePausedStackFrame(frameId: number): PausedStackFrame | undefined {
