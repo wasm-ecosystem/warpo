@@ -7,6 +7,7 @@ echo "first build"
   --stats \
   --optimizeLevel 0 --shrinkLevel 0 \
   --disable-feature nontrapping-f2i \
+  --tailCall \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime --exportTable \
   --use ASC_GC_TESTING=1 ASC_GC_IDLEFACTOR=0 ASC_GC_GRANULARITY=64 ASC_GC_SWEEPFACTOR=1000 \
@@ -17,6 +18,7 @@ echo "second build"
   --stats \
   --optimizeLevel 0 --shrinkLevel 0 \
   --disable-feature nontrapping-f2i \
+  --tailCall \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime --exportTable \
   --asc-wasm tests/bootstrap/tmp/debug/assemblyscript.warpo-test.wasm \
@@ -28,6 +30,7 @@ echo "third build"
   --stats \
   --optimizeLevel 0 --shrinkLevel 0 \
   --disable-feature nontrapping-f2i \
+  --tailCall \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime --exportTable \
   --asc-wasm tests/bootstrap/tmp/debug/assemblyscript.warpo-test-bootstrap.wasm \

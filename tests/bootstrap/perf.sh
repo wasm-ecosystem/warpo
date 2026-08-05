@@ -7,6 +7,7 @@ echo "build with trace points"
   --stats \
   --optimizeLevel 3 --shrinkLevel 2 \
   --disable-feature nontrapping-f2i \
+  --tailCall \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime --exportTable \
   --trace-point-mapping-file tests/bootstrap/tmp/perf/trace_points.txt \
@@ -19,6 +20,7 @@ export WARP_TRACING_RECORDER_FILE=tests/bootstrap/tmp/perf/record.bin
   --stats \
   --optimizeLevel 3 --shrinkLevel 2 \
   --disable-feature nontrapping-f2i \
+  --tailCall \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime --exportTable \
   --asc-wasm tests/bootstrap/tmp/perf/assemblyscript.warpo-trace-point.wasm \
