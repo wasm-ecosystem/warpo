@@ -12,6 +12,7 @@ import type {
   DebuggerCommandCallbacks,
   DebugPausedWasmFrame,
   DebugRuntimeVariable,
+  UnitTestLaunchConfig,
   WasmLaunchConfig,
 } from "./debugger.js";
 import { DebuggerWasmModule } from "./debuggerWasmModule.js";
@@ -162,25 +163,26 @@ export class NodeDebugger implements Debugger {
     this.onLog?.(`[${this.name}] ${message}`);
   }
 
-  async launch(config: WasmLaunchConfig): Promise<void> {
+  async launch(config: WasmLaunchConfig | UnitTestLaunchConfig): Promise<void> {
     this.disposed = false;
     this.wasmFilePath = config.wasmFilePath;
 
     const port = await findFreePort();
-    this.log(
-      `launch wasmFilePath=${config.wasmFilePath} entryFunctionName=${config.entryFunctionName} inspectPort=${port}`
-    );
-
+    this.log(`launch wasmFilePath=${config.wasmFilePath} inspectPort=${port}`);
+    const launchArgs =
+      "cwd" in config
+        ? [`--inspect-brk=${port}`, config.warpoPath ?? path.join(DIRNAME, "..", "warpo.js"), "test"]
+        : [
+            `--inspect-brk=${port}`,
+            path.join(DIRNAME, "wasmEntry.js"),
+            config.wasmFilePath,
+            config.entryFunctionName,
+            ...config.args.map(String),
+          ];
     this.child = spawn(
       process.execPath,
-      [
-        `--inspect-brk=${port}`,
-        path.join(DIRNAME, "wasmEntry.js"),
-        config.wasmFilePath,
-        config.entryFunctionName,
-        ...config.args.map(String),
-      ],
-      { env: getRuntimeEnv(), stdio: ["pipe", "pipe", "pipe"] }
+      launchArgs,
+      { cwd: "cwd" in config ? config.cwd : undefined, env: getRuntimeEnv(), stdio: ["pipe", "pipe", "pipe"] }
     );
     this.log(`runtime child spawned pid=${this.child.pid ?? "unknown"}`);
     this.runtimeExitPromise = new Promise((resolve) => {

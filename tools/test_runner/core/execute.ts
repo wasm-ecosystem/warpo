@@ -7,6 +7,7 @@ import { CoverageRecorder } from "./covRecorder.js";
 import { ExecutionError, handleWebAssemblyError } from "../utils/errorTraceHandler.js";
 import { WebAssemblyModule } from "../utils/wasm.js";
 import { injectDefaultFunction } from "../utils/index.js";
+import * as inspector from "node:inspector";
 
 async function nodeExecutor(
   wasmModule: WebAssemblyModule,
@@ -33,6 +34,10 @@ async function nodeExecutor(
   importsArg.module = ins.module;
   importsArg.instance = ins.instance;
   importsArg.exports = ins.exports;
+
+  if (inspector.url() !== undefined) {
+    inspector.waitForDebugger();
+  }
 
   let isCrashed = false; // we don't want to crash any code after crash. AS' heap may be broken.
 

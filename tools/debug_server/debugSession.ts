@@ -42,10 +42,12 @@ import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.
 import { NodeDebugger } from "./nodeDebugger.js";
 
 interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
-  program: string;
+  program?: string;
   launchType?: string;
   runtime?: string;
   entryFunctionName?: string;
+  cwd?: string;
+  warpoPath?: string;
   debugSessionLogging?: boolean;
   args?: number[];
 }
@@ -227,10 +229,17 @@ export class WarpoDebugSession extends LoggingDebugSession {
   ): Promise<void> {
     try {
       this.debugSessionLogging = args.debugSessionLogging ?? false;
-      this.log(`Launch requested for: ${args.program}`);
-
       const launchType = args.launchType ?? "wasm file";
-      if (launchType === "wasm file") {
+      const program =
+        launchType === "unittest"
+          ? path.join(args.cwd ?? process.cwd(), "build_coverage", "test.instrumented.wasm")
+          : args.program;
+      if (!program) {
+        this.sendErrorResponse(response, 1, "No program specified for launch");
+        return;
+      }
+      this.log(`Launch requested for: ${program}`);
+      if (launchType === "wasm file" || launchType === "unittest") {
         const runtimeName = args.runtime ?? "node";
         let runtime: Debugger;
         if (runtimeName === "node") {
@@ -286,13 +295,24 @@ export class WarpoDebugSession extends LoggingDebugSession {
         this.disposeLoadedModule();
         this.runtime?.dispose();
         this.runtime = runtime;
-        await runtime.launch({
-          wasmFilePath: path.resolve(args.program),
-          entryFunctionName: args.entryFunctionName ?? "main",
-          args: args.args ?? [],
-        });
+        if (launchType === "unittest") {
+          await runtime.launch({
+            wasmFilePath: path.resolve(program),
+            cwd: args.cwd ?? process.cwd(),
+            warpoPath: args.warpoPath,
+          });
+        } else {
+          await runtime.launch({
+            wasmFilePath: path.resolve(program),
+            entryFunctionName: args.entryFunctionName ?? "main",
+            args: args.args ?? [],
+          });
+        }
 
         this.log(`[${runtime.name}] Runtime launched`);
+      } else {
+        this.sendErrorResponse(response, 1, `Unknown launch type "${launchType}"`);
+        return;
       }
 
       this.sendResponse(response);

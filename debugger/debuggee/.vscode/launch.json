@@ -9,6 +9,13 @@
       "entryFunctionName": "main",
       "debugSessionLogging": true,
       "sessionMode": "wasm file"
+    },
+    {
+      "type": "warpo",
+      "request": "launch",
+      "name": "Warpo Debug Unittest",
+      "sessionMode": "unittest",
+      "debugSessionLogging": true
     }
   ]
 }
