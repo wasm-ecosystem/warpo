@@ -137,12 +137,12 @@
  (func $assert-nonnull/testAll (param $0 i32) (result i32)
   local.get $0
   i32.const 27
-  call $byn$mgfn-shared$assert-nonnull/testAll
+  return_call $byn$mgfn-shared$assert-nonnull/testAll
  )
  (func $assert-nonnull/testAll2 (param $0 i32) (result i32)
   local.get $0
   i32.const 31
-  call $byn$mgfn-shared$assert-nonnull/testAll
+  return_call $byn$mgfn-shared$assert-nonnull/testAll
  )
  (func $assert-nonnull/testFn (param $0 i32) (result i32)
   local.get $0
@@ -157,7 +157,7 @@
   end
   local.get $0
   i32.load
-  call_indirect (type $1)
+  return_call_indirect (type $1)
  )
  (func $assert-nonnull/testFn2 (param $0 i32) (result i32)
   local.get $0
@@ -172,7 +172,7 @@
   end
   local.get $0
   i32.load
-  call_indirect (type $1)
+  return_call_indirect (type $1)
  )
  (func $assert-nonnull/testRet (param $0 i32) (result i32)
   block $folding-inner0
@@ -212,7 +212,7 @@
   end
   local.get $0
   i32.load
-  call_indirect (type $1)
+  return_call_indirect (type $1)
  )
  (func $assert-nonnull/testObjRet (param $0 i32) (result i32)
   block $folding-inner0

@@ -191,7 +191,7 @@
   local.get $0
   i32.const 0
   call $~lib/array/Array<~lib/array/Array<i32>>#__get
-  call $~lib/string/String#startsWith
+  return_call $~lib/string/String#startsWith
  )
  (func $std/array-access/stringArrayArrayPropertyAccess (param $0 i32) (result i32)
   local.get $0
@@ -211,7 +211,7 @@
   call $~lib/array/Array<~lib/array/Array<i32>>#__get
   i32.const 1
   call $~lib/array/Array<~lib/array/Array<i32>>#__get
-  call $~lib/string/String#startsWith
+  return_call $~lib/string/String#startsWith
  )
  (func $std/array-access/functionArrayElementCall (param $0 i32) (result i32)
   i32.const 123
@@ -219,6 +219,6 @@
   i32.const 0
   call $~lib/array/Array<~lib/array/Array<i32>>#__get
   i32.load
-  call_indirect (type $0)
+  return_call_indirect (type $0)
  )
 )

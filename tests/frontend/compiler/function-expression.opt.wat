@@ -94,7 +94,7 @@
   i32.const 2
   local.get $0
   i32.load
-  call_indirect (type $3)
+  return_call_indirect (type $3)
  )
  (func $start:function-expression~anonymous|5 (param $0 i32) (param $1 i32) (result i32)
   local.get $0
@@ -247,7 +247,7 @@
   else
    i32.const 2
   end
-  call $~lib/rt/itcms/Object#linkTo
+  return_call $~lib/rt/itcms/Object#linkTo
  )
  (func $~lib/rt/itcms/visitRoots
   (local $0 i32)
@@ -820,7 +820,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -980,14 +980,13 @@
     end
     local.get $0
     i32.load
-    call $~lib/rt/itcms/__visit
-    return
+    return_call $~lib/rt/itcms/__visit
    end
    unreachable
   end
   local.get $0
   i32.load offset=4
-  call $~lib/rt/itcms/__visit
+  return_call $~lib/rt/itcms/__visit
  )
  (func $~start
   (local $0 i32)

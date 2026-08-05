@@ -23,6 +23,7 @@ struct Output {
 struct Config {
   uint32_t optimizeLevel;
   uint32_t shrinkLevel;
+  bool tailCall;
   std::string sourceMapURL;
 };
 

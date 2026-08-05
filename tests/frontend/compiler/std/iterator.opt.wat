@@ -223,7 +223,7 @@
   else
    i32.const 2
   end
-  call $~lib/rt/itcms/Object#linkTo
+  return_call $~lib/rt/itcms/Object#linkTo
  )
  (func $~lib/rt/itcms/__visit (param $0 i32)
   local.get $0
@@ -755,7 +755,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -2021,18 +2021,15 @@
        end
        local.get $0
        i32.load
-       call $~lib/rt/itcms/__visit
-       return
+       return_call $~lib/rt/itcms/__visit
       end
       local.get $0
       i32.load
-      call $~lib/rt/itcms/__visit
-      return
+      return_call $~lib/rt/itcms/__visit
      end
      local.get $0
      i32.load offset=4
-     call $~lib/rt/itcms/__visit
-     return
+     return_call $~lib/rt/itcms/__visit
     end
     return
    end
@@ -2040,7 +2037,7 @@
   end
   local.get $0
   i32.load
-  call $~lib/rt/itcms/__visit
+  return_call $~lib/rt/itcms/__visit
  )
  (func $~start
   memory.size
@@ -2076,7 +2073,7 @@
   i32.const 448
   global.set $~lib/rt/itcms/fromSpace
   call $std/iterator/test1
-  call $std/iterator/test2
+  return_call $std/iterator/test2
  )
  (func $std/iterator/MyIterable#constructor@new (result i32)
   (local $0 i32)

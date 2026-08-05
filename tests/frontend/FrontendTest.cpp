@@ -24,6 +24,7 @@
 #include <utility>
 #include <vector>
 #include <wasm-binary.h>
+#include <wasm-traversal.h>
 
 #include "SnapshotDiff.hpp"
 #include "warpo/frontend/Compiler.hpp"
@@ -56,6 +57,26 @@ public:
     setRet<1>(results, 20U);
   }
 };
+
+bool hasReturnCall(wasm::Module &m) {
+  struct Scanner final : public wasm::PostWalker<Scanner> {
+    bool found = false;
+
+    void visitCall(wasm::Call *expr) { found = (found || expr->isReturn); }
+    void visitCallIndirect(wasm::CallIndirect *expr) { found = (found || expr->isReturn); }
+    void visitCallRef(wasm::CallRef *expr) { found = (found || expr->isReturn); }
+  };
+
+  for (std::unique_ptr<wasm::Function> const &func : m.functions) {
+    if (func->imported() || func->body == nullptr)
+      continue;
+    Scanner scanner;
+    scanner.walk(func->body);
+    if (scanner.found)
+      return true;
+  }
+  return false;
+}
 
 cli::Opt<bool> updateFlag{
     cli::Category::All,
@@ -158,6 +179,9 @@ frontend::CompilationResult compile(TestConfigJson const &configJson, std::files
   // validate
   if (!wasm::WasmValidator{}.validate(*asModule.get()))
     throw std::logic_error("validate error");
+  if (asModule.get()->features.hasTailCall() || hasReturnCall(*asModule.get()))
+    // Tail call is not supported in warp yet, skip the test
+    return TestResult::Skip;
 
   // run
   WarpRunner r{nullptr};
@@ -206,6 +230,7 @@ passes::Config getPassConfig() {
   return passes::Config{
       .optimizeLevel = 3U,
       .shrinkLevel = 2U,
+      .tailCall = true,
       .sourceMapURL = "",
   };
 }

@@ -1126,7 +1126,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -2381,7 +2381,7 @@
   local.get $2
   i32.const 1
   i32.shl
-  call $~lib/rt/itcms/__renew
+  return_call $~lib/rt/itcms/__renew
  )
  (func $~lib/string/String.__eq (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -2975,7 +2975,7 @@
   local.get $3
   i32.const 1
   i32.shl
-  call $~lib/rt/itcms/__renew
+  return_call $~lib/rt/itcms/__renew
  )
  (func $~lib/string/String.fromCodePoint (param $0 i32) (result i32)
   (local $1 i32)
@@ -3474,8 +3474,7 @@
     end
     local.get $0
     i32.load
-    call $~lib/rt/itcms/__visit
-    return
+    return_call $~lib/rt/itcms/__visit
    end
    return
   end

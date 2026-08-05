@@ -126,6 +126,12 @@ cli::Opt<uint32_t> shrinkLevelOption{
     },
 };
 
+cli::Opt<bool> tailCallOptimizationOption{
+    cli::Category::Frontend | cli::Category::Optimization,
+    "--tailCall",
+    [](argparse::Argument &arg) -> void { arg.help("Enables tail-call optimization.").flag(); },
+};
+
 cli::Opt<bool> debugOption{
     cli::Category::Frontend | cli::Category::Optimization,
     "--debug",
@@ -203,6 +209,8 @@ FileConfigOptions ConfigProvider::mergedFrontendOptions() {
     merged.optimizeLevel = std::min(3U, optimizeLevelOption.get());
   if (shrinkLevelOption.isSet())
     merged.shrinkLevel = std::min(2U, shrinkLevelOption.get());
+  if (tailCallOptimizationOption.isSet())
+    merged.tailCall = tailCallOptimizationOption.get();
   if (debugOption.isSet())
     merged.debug = debugOption.get();
 
@@ -278,6 +286,17 @@ uint32_t ConfigProvider::shrinkLevel() {
     return std::min(2U, fileCfg->options.shrinkLevel.value());
 
   return 0U;
+}
+
+bool ConfigProvider::tailCallOptimizationEnabled() {
+  if (tailCallOptimizationOption.isSet())
+    return tailCallOptimizationOption.get();
+
+  std::optional<MergedFileConfig> const &fileCfg = MergedFileConfig::getConfigFromFile();
+  if (fileCfg.has_value() && fileCfg->options.tailCall.has_value())
+    return fileCfg->options.tailCall.value();
+
+  return false;
 }
 
 bool ConfigProvider::isDebugEnabled() {

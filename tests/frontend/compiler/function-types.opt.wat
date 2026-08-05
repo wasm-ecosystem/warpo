@@ -42,7 +42,7 @@
   local.get $1
   local.get $2
   i32.load
-  call_indirect (type $0)
+  return_call_indirect (type $0)
  )
  (func $~start
   i32.const 32

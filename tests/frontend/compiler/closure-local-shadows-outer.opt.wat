@@ -17,7 +17,7 @@
   i32.const 10
  )
  (func $closure-local-shadows-outer/test (result i32)
-  call $closure-local-shadows-outer/test~inner
+  return_call $closure-local-shadows-outer/test~inner
  )
  (func $~start
   call $closure-local-shadows-outer/test~inner

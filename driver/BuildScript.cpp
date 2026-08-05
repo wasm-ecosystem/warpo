@@ -46,6 +46,7 @@ BuildScriptRunner::BuildScriptRunner(std::filesystem::path const &buildScriptPat
   passes::Config const passesConfig{
       .optimizeLevel = 0,
       .shrinkLevel = 0,
+      .tailCall = false,
       .sourceMapURL = "",
   };
   passes::Output output = passes::runOnModule(result.m, passesConfig);

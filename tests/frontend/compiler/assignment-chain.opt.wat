@@ -739,7 +739,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -1439,8 +1439,7 @@
     end
     local.get $0
     i32.load
-    call $~lib/rt/itcms/__visit
-    return
+    return_call $~lib/rt/itcms/__visit
    end
    return
   end
@@ -1481,6 +1480,6 @@
   global.set $~lib/rt/itcms/fromSpace
   call $assignment-chain/normal_assignment_chain
   call $assignment-chain/setter_assignment_chain
-  call $assignment-chain/static_setter_assignment_chain
+  return_call $assignment-chain/static_setter_assignment_chain
  )
 )

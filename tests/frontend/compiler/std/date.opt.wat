@@ -552,7 +552,7 @@
   else
    i32.const 2
   end
-  call $~lib/rt/itcms/Object#linkTo
+  return_call $~lib/rt/itcms/Object#linkTo
  )
  (func $~lib/rt/itcms/__visit (param $0 i32)
   local.get $0
@@ -1084,7 +1084,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -1958,7 +1958,7 @@
   i32.sub
   i64.extend_i32_s
   i64.add
-  call $~lib/date/Date#setTime
+  return_call $~lib/date/Date#setTime
  )
  (func $~lib/date/Date#setUTCSeconds (param $0 i32) (param $1 i32)
   local.get $0
@@ -1972,7 +1972,7 @@
   i32.mul
   i64.extend_i32_s
   i64.add
-  call $~lib/date/Date#setTime
+  return_call $~lib/date/Date#setTime
  )
  (func $~lib/date/Date#setUTCMinutes (param $0 i32) (param $1 i32)
   local.get $0
@@ -1986,7 +1986,7 @@
   i32.mul
   i64.extend_i32_s
   i64.add
-  call $~lib/date/Date#setTime
+  return_call $~lib/date/Date#setTime
  )
  (func $~lib/date/Date#setUTCHours (param $0 i32) (param $1 i32)
   local.get $0
@@ -2000,7 +2000,7 @@
   i32.mul
   i64.extend_i32_s
   i64.add
-  call $~lib/date/Date#setTime
+  return_call $~lib/date/Date#setTime
  )
  (func $~lib/date/join (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i64) (result i64)
   i64.const 86400000
@@ -2503,7 +2503,7 @@
   local.get $0
   local.get $2
   i32.const 1
-  call $~lib/rt/itcms/__link
+  return_call $~lib/rt/itcms/__link
  )
  (func $~lib/staticarray/StaticArray<~lib/string/String>#join (param $0 i32) (result i32)
   (local $1 i32)
@@ -3456,7 +3456,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/string/String#substring
+  return_call $~lib/string/String#substring
  )
  (func $~lib/util/string/strtol<i32> (param $0 i32) (result i32)
   (local $1 i32)
@@ -4676,7 +4676,7 @@
   local.get $8
   i64.extend_i32_s
   i64.sub
-  call $~lib/date/Date#constructor@new
+  return_call $~lib/date/Date#constructor@new
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   (local $1 i32)
@@ -4751,13 +4751,11 @@
      end
      local.get $0
      i32.load
-     call $~lib/rt/itcms/__visit
-     return
+     return_call $~lib/rt/itcms/__visit
     end
     local.get $0
     i32.load
-    call $~lib/rt/itcms/__visit
-    return
+    return_call $~lib/rt/itcms/__visit
    end
    return
   end

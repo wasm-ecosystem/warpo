@@ -19,12 +19,11 @@
   if
    local.get $1
    i32.load
-   call_indirect (type $0)
-   return
+   return_call_indirect (type $0)
   end
   local.get $1
   i32.load
-  call_indirect (type $0)
+  return_call_indirect (type $0)
  )
  (func $return/testVoidReturn (param $0 i32)
   nop
@@ -32,6 +31,6 @@
  (func $~start
   i32.const 1
   i32.const 32
-  call $return/testVoidReturnFunction
+  return_call $return/testVoidReturnFunction
  )
 )

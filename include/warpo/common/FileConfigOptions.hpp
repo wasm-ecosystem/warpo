@@ -75,6 +75,11 @@ struct FileConfigOptions {
   /// - cli: `--shrinkLevel <0..2>`
   std::optional<uint32_t> shrinkLevel = std::nullopt;
 
+  /// Enable tail-call optimization (`call; return` -> `return_call`).
+  /// - config: `options.tailCall` / `targets.<name>.tailCall`
+  /// - cli: `--tailCall`
+  std::optional<bool> tailCall = std::nullopt;
+
   /// Debug mode (controls debug info/lines emission).
   /// - config: `options.debug` / `targets.<name>.debug`
   /// - cli: `--debug`
