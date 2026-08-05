@@ -322,10 +322,7 @@ export class DebuggerWasmModule {
     rootClosureEnvLocalIndex: number
   ): DebuggerVariableScope {
     return {
-      name:
-        level.kind === "scope"
-          ? "Scope"
-          : `Closure(${DebuggerWasmModule.getClosureFunctionName(level.name)})`,
+      name: level.kind === "scope" ? "Scope" : `Closure(${DebuggerWasmModule.getClosureFunctionName(level.name)})`,
       variables: level.variables.map((variable) => DebuggerWasmModule.toClosureSourceVariableInfo(variable)),
       closureEnvLocalIndex: level.closureEnvLocalIndex,
       rootClosureEnvLocalIndex,
