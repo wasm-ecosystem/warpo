@@ -1094,7 +1094,7 @@ void describe("WarpoDebugSession", () => {
   void it("should expose closure locals by source name", { timeout: 5000 }, async () => {
     const source = sourcePath("debugger_closure.ts");
     const output = await buildModule(source);
-    const breakpointLine = 23;
+    const breakpointLine = 36;
 
     await dc.initializeRequest();
 
@@ -1124,28 +1124,71 @@ void describe("WarpoDebugSession", () => {
     assert.notStrictEqual(frame, undefined);
 
     const scopesResponse = await dc.scopesRequest({ frameId: frame.id });
-    const localsScope = assertDefined(scopesResponse.body.scopes.find((scope) => scope.name.startsWith("Local:")));
-    const variablesResponse = await dc.variablesRequest({ variablesReference: localsScope.variablesReference });
+    const scopes = scopesResponse.body.scopes;
+    const scopeNames = scopes.map((scope) => scope.name);
+    assert.deepEqual(scopeNames, [
+      "Local: run~middle~inner~anonymous|0",
+      "Scope",
+      "Scope",
+      "Closure(inner)",
+      "Closure(middle)",
+      "Closure(run)",
+    ]);
 
-    const base = assertDefined(findVariable(variablesResponse.body.variables, "base"));
-    assert.equal(base.type, "i32");
-    assert.equal(base.value, "21");
-    assert.equal(base.variablesReference, 0);
+    const localScope = assertDefined(scopes.find((scope) => scope.name === "Local: run~middle~inner~anonymous|0"));
+    const lexicalScopes = scopes.filter((scope) => scope.name === "Scope");
+    assert.equal(lexicalScopes.length, 2);
+    const innerScope = assertDefined(scopes.find((scope) => scope.name === "Closure(inner)"));
+    const middleScope = assertDefined(scopes.find((scope) => scope.name === "Closure(middle)"));
+    const runScope = assertDefined(scopes.find((scope) => scope.name === "Closure(run)"));
+    const [
+      localVariablesResponse,
+      ifScopeResponse,
+      loopScopeResponse,
+      innerVariablesResponse,
+      middleVariablesResponse,
+      runVariablesResponse,
+    ] = await Promise.all([
+      dc.variablesRequest({ variablesReference: localScope.variablesReference }),
+      dc.variablesRequest({ variablesReference: lexicalScopes[0].variablesReference }),
+      dc.variablesRequest({ variablesReference: lexicalScopes[1].variablesReference }),
+      dc.variablesRequest({ variablesReference: innerScope.variablesReference }),
+      dc.variablesRequest({ variablesReference: middleScope.variablesReference }),
+      dc.variablesRequest({ variablesReference: runScope.variablesReference }),
+    ]);
 
-    const label = assertDefined(findVariable(variablesResponse.body.variables, "label"));
-    assert.equal(label.type, "~lib/string/String");
-    assert.equal(label.value, '"closure label"');
-    assert.equal(label.variablesReference, 0);
+    const delta = assertDefined(findVariable(localVariablesResponse.body.variables, "delta"));
+    assert.equal(delta.type, "i32");
+    assert.equal(delta.value, "5");
+    const inside = assertDefined(findVariable(localVariablesResponse.body.variables, "inside"));
+    assert.equal(inside.type, "i32");
+    assert.equal(inside.value, "11193");
 
-    const child = assertDefined(findVariable(variablesResponse.body.variables, "child"));
+    const ifA = assertDefined(findVariable(ifScopeResponse.body.variables, "ifA"));
+    assert.equal(ifA.type, "i32");
+    assert.equal(ifA.value, "10000");
+    const loopA = assertDefined(findVariable(loopScopeResponse.body.variables, "loopA"));
+    assert.equal(loopA.type, "i32");
+    assert.equal(loopA.value, "1000");
+
+    const innerA = assertDefined(findVariable(innerVariablesResponse.body.variables, "innerA"));
+    assert.equal(innerA.type, "i32");
+    assert.equal(innerA.value, "100");
+
+    const middleA = assertDefined(findVariable(middleVariablesResponse.body.variables, "middleA"));
+    assert.equal(middleA.type, "i32");
+    assert.equal(middleA.value, "10");
+    assert.equal(findVariable(middleVariablesResponse.body.variables, "middleNotCaptured"), undefined);
+
+    const outerA = assertDefined(findVariable(runVariablesResponse.body.variables, "outerA"));
+    assert.equal(outerA.type, "i32");
+    assert.equal(outerA.value, "1");
+    assert.equal(findVariable(runVariablesResponse.body.variables, "runNotCaptured"), undefined);
+    const child = assertDefined(findVariable(runVariablesResponse.body.variables, "child"));
     assert.ok(child.type?.endsWith("Child"));
     assert.ok(child.variablesReference > 0);
-    assert.equal(child.value, "");
-
     const childFieldsResponse = await dc.variablesRequest({ variablesReference: child.variablesReference });
-    const childValue = assertDefined(
-      childFieldsResponse.body.variables.find((candidate) => candidate.name === "value")
-    );
+    const childValue = assertDefined(findVariable(childFieldsResponse.body.variables, "value"));
     assert.equal(childValue.type, "i32");
     assert.equal(childValue.value, "77");
   });
