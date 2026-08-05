@@ -295,19 +295,19 @@ export class WarpoDebugSession extends LoggingDebugSession {
         this.disposeLoadedModule();
         this.runtime?.dispose();
         this.runtime = runtime;
-        if (launchType === "unittest") {
-          await runtime.launch({
-            wasmFilePath: path.resolve(program),
-            cwd: args.cwd ?? process.cwd(),
-            warpoPath: args.warpoPath,
-          });
-        } else {
-          await runtime.launch({
-            wasmFilePath: path.resolve(program),
-            entryFunctionName: args.entryFunctionName ?? "main",
-            args: args.args ?? [],
-          });
-        }
+        await runtime.launch(
+          launchType === "unittest"
+            ? {
+                wasmFilePath: path.resolve(program),
+                cwd: args.cwd ?? process.cwd(),
+                warpoPath: args.warpoPath,
+              }
+            : {
+                wasmFilePath: path.resolve(program),
+                entryFunctionName: args.entryFunctionName ?? "main",
+                args: args.args ?? [],
+              }
+        );
 
         this.log(`[${runtime.name}] Runtime launched`);
       } else {

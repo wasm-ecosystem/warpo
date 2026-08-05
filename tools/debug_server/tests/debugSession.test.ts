@@ -185,7 +185,7 @@ void describe("WarpoDebugSession", () => {
   });
 
   void it("should stop in a unit test after returning from main", { timeout: 15000 }, async () => {
-    const testSource = sourcePath("unittest_debug.test.ts");
+    const testSource = sourcePath("unittest_debug.case.ts");
     const implementationSource = sourcePath("unittest_debug.ts");
 
     await dc.initializeRequest();
