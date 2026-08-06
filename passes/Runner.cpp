@@ -29,11 +29,13 @@
 #include "InstrSimplifier.hpp"
 #include "MergeDataSection.hpp"
 #include "Runner.hpp"
+#include "TailCall.hpp"
 #include "binaryen-c.h"
 #include "instrumentation/CoverageInstrumentation.hpp"
 #include "parser/wat-parser.h"
 #include "pass.h"
 #include "warpo/common/AsModule.hpp"
+#include "warpo/common/ConfigProvider.hpp"
 #include "warpo/common/DebugLevel.hpp"
 #include "warpo/common/Features.hpp"
 #include "warpo/common/OptLevel.hpp"
@@ -196,6 +198,10 @@ static void optimize(AsModule const &m, Config const &config) {
       passRunner->add("remove-unused-names");
     }
     passRunner->add(std::unique_ptr<wasm::Pass>{createMergeDataSectionPass()});
+    if (config.tailCall) {
+      passRunner->add("vacuum");
+      passRunner->add(std::unique_ptr<wasm::Pass>{createTailCallOptimizerPass()});
+    }
     passRunner->run();
   }
   ensureValidate(*m.get());
@@ -278,6 +284,7 @@ void passes::runAndEmit(AsModule const &m, std::filesystem::path const &outputPa
   Config const config{
       .optimizeLevel = common::getOptimizationLevel(),
       .shrinkLevel = common::getShrinkLevel(),
+      .tailCall = common::ConfigProvider::instance().features().has(common::Features::tailCall()),
       .sourceMapURL = getBaseName(outputFiles.sourceMap_),
   };
   Output const output = runOnModule(m, config);

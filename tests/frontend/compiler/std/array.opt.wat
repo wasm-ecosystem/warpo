@@ -809,7 +809,7 @@
   else
    i32.const 2
   end
-  call $~lib/rt/itcms/Object#linkTo
+  return_call $~lib/rt/itcms/Object#linkTo
  )
  (func $~lib/rt/itcms/__visit (param $0 i32)
   local.get $0
@@ -1341,7 +1341,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -2401,7 +2401,7 @@
   local.get $1
   local.get $2
   local.get $3
-  call $~lib/array/Array<u8>#fill
+  return_call $~lib/array/Array<u8>#fill
  )
  (func $~lib/array/Array<u32>#fill (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32)
   (local $4 i32)
@@ -2575,7 +2575,7 @@
   local.get $1
   local.get $2
   local.get $3
-  call $~lib/array/Array<u32>#fill
+  return_call $~lib/array/Array<u32>#fill
  )
  (func $~lib/array/Array<f32>#fill (param $0 i32) (param $1 f32) (param $2 i32) (param $3 i32)
   (local $4 i32)
@@ -2787,7 +2787,7 @@
   local.get $1
   local.get $2
   local.get $3
-  call $~lib/array/Array<f32>#fill
+  return_call $~lib/array/Array<f32>#fill
  )
  (func $std/array/internalCapacity<i32> (param $0 i32) (result i32)
   local.get $0
@@ -3023,7 +3023,7 @@
   local.get $0
   local.get $2
   i32.const 1
-  call $~lib/rt/itcms/__link
+  return_call $~lib/rt/itcms/__link
  )
  (func $~lib/array/Array<i32>#at (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -3228,7 +3228,7 @@
   local.get $1
   local.get $2
   local.get $3
-  call $~lib/array/Array<i32>#copyWithin
+  return_call $~lib/array/Array<i32>#copyWithin
  )
  (func $std/array/isArraysEqual<i32> (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -3403,7 +3403,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/array/Array<i32>#slice
+  return_call $~lib/array/Array<i32>#slice
  )
  (func $~lib/array/Array<u8>#reverse (param $0 i32) (result i32)
   (local $1 i32)
@@ -3806,7 +3806,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/array/Array<i32>#lastIndexOf
+  return_call $~lib/array/Array<i32>#lastIndexOf
  )
  (func $~lib/array/Array<i32>#splice (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -3915,7 +3915,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/array/Array<i32>#splice
+  return_call $~lib/array/Array<i32>#splice
  )
  (func $~lib/array/Array<std/array/Ref>#splice (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -4697,7 +4697,7 @@
  )
  (func $start:std/array~anonymous|25 (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   local.get $0
-  call $~lib/util/number/itoa32
+  return_call $~lib/util/number/itoa32
  )
  (func $start:std/array~anonymous|26 (param $0 i32) (param $1 i32) (param $2 i32) (result f32)
   local.get $0
@@ -10386,7 +10386,7 @@
    end
    local.get $0
    local.get $1
-   call $~lib/util/number/dtoa_core
+   return_call $~lib/util/number/dtoa_core
   end
  )
  (func $~lib/array/Array<~lib/string/String|null>#join (param $0 i32) (param $1 i32) (result i32)
@@ -10870,7 +10870,7 @@
   local.get $0
   local.get $1
   i32.const 65535
-  call $byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>
+  return_call $byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>
  )
  (func $~lib/util/number/itoa_buffered<i16> (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -11073,7 +11073,7 @@
   local.get $1
   i32.wrap_i64
   local.get $2
-  call $~lib/util/number/utoa32_dec_lut
+  return_call $~lib/util/number/utoa32_dec_lut
  )
  (func $~lib/util/number/itoa_buffered<u64> (param $0 i32) (param $1 i64) (result i32)
   (local $2 i32)
@@ -11181,7 +11181,7 @@
   local.get $0
   local.get $1
   i32.const 255
-  call $byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>
+  return_call $byn$mgfn-shared$~lib/util/number/itoa_buffered<u16>
  )
  (func $~lib/array/Array<u8>#join (param $0 i32) (result i32)
   (local $1 i32)
@@ -11667,12 +11667,11 @@
    end
    local.get $0
    i32.load offset=4
-   call $~lib/rt/itcms/__visit
-   return
+   return_call $~lib/rt/itcms/__visit
   end
   local.get $0
   i32.load
-  call $~lib/rt/itcms/__visit
+  return_call $~lib/rt/itcms/__visit
  )
  (func $~start
   (local $0 i32)

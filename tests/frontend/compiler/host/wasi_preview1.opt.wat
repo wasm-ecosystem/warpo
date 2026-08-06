@@ -548,7 +548,7 @@
   call $~lib/wasi_snapshot_preview1/bindings/wasi_snapshot_preview1/fd_write
   drop
   i32.const 255
-  call $~lib/wasi_snapshot_preview1/bindings/wasi_snapshot_preview1/proc_exit
+  return_call $~lib/wasi_snapshot_preview1/bindings/wasi_snapshot_preview1/proc_exit
  )
  (func $~lib/wasi_snapshot_preview1/bindings/wasi_snapshot_preview1/errnoToString (param $0 i32) (result i32)
   block $break|0
@@ -1375,7 +1375,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -2056,6 +2056,6 @@
   i32.const 32
   call $~lib/wasi_snapshot_preview1/wasi_process/writeString
   i32.const 3472
-  call $~lib/wasi_snapshot_preview1/wasi_process/writeString
+  return_call $~lib/wasi_snapshot_preview1/wasi_process/writeString
  )
 )

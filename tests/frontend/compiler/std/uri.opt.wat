@@ -832,7 +832,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -1983,7 +1983,7 @@
   i32.const 1
   i32.shr_u
   i32.const 44
-  call $~lib/util/uri/encode
+  return_call $~lib/util/uri/encode
  )
  (func $~lib/string/String.__eq (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -2109,7 +2109,7 @@
   i32.const 1
   i32.shr_u
   i32.const 2364
-  call $~lib/util/uri/encode
+  return_call $~lib/util/uri/encode
  )
  (func $~lib/util/uri/loadHex (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -2528,7 +2528,7 @@
   i32.const 1
   i32.shr_u
   i32.const 1
-  call $~lib/util/uri/decode
+  return_call $~lib/util/uri/decode
  )
  (func $~lib/uri/decodeURI (param $0 i32) (result i32)
   local.get $0
@@ -2539,7 +2539,7 @@
   i32.const 1
   i32.shr_u
   i32.const 0
-  call $~lib/util/uri/decode
+  return_call $~lib/util/uri/decode
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
@@ -2555,8 +2555,7 @@
    end
    local.get $0
    i32.load
-   call $~lib/rt/itcms/__visit
-   return
+   return_call $~lib/rt/itcms/__visit
   end
   unreachable
  )

@@ -54,12 +54,12 @@
  (func $loop-flow/forAny (param $0 i32) (result i32)
   local.get $0
   i32.const 54
-  call $byn$mgfn-shared$loop-flow/forAny
+  return_call $byn$mgfn-shared$loop-flow/forAny
  )
  (func $loop-flow/doAny (param $0 i32) (result i32)
   local.get $0
   i32.const 78
-  call $byn$mgfn-shared$loop-flow/forAny
+  return_call $byn$mgfn-shared$loop-flow/forAny
  )
  (func $loop-flow/whileThrow (result i32)
   i32.const 80

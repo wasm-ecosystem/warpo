@@ -136,10 +136,10 @@ cli::Opt<std::vector<std::string>> disableFeatureOptions{
     cli::Category::Frontend | cli::Category::Optimization,
     "--disable-feature",
     [](argparse::Argument &arg) -> void {
-      arg.help(
-             "disable WebAssembly features, mutable-globals, sign-extension, nontrapping-f2i, bulk-memory, multi-value")
+      arg.help("disable WebAssembly features, mutable-globals, sign-extension, nontrapping-f2i, bulk-memory, "
+               "multi-value, tail-call")
           .nargs(argparse::nargs_pattern::at_least_one)
-          .choices("mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory", "multi-value")
+          .choices("mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory", "multi-value", "tail-call")
           .append();
     },
 };
@@ -206,8 +206,10 @@ FileConfigOptions ConfigProvider::mergedFrontendOptions() {
   if (debugOption.isSet())
     merged.debug = debugOption.get();
 
+  Features features = merged.features.value_or(Features::all());
   if (disableFeatureOptions.isSet())
-    merged.features = Features::all() & ~Features::fromString(disableFeatureOptions.get());
+    features = features & ~Features::fromString(disableFeatureOptions.get());
+  merged.features = features;
 
   return merged;
 }
@@ -248,14 +250,15 @@ std::optional<std::filesystem::path> ConfigProvider::projectPath() {
 }
 
 Features ConfigProvider::features() {
-  if (disableFeatureOptions.isSet())
-    return Features::all() & ~Features::fromString(disableFeatureOptions.get());
-
   std::optional<MergedFileConfig> const &fileCfg = MergedFileConfig::getConfigFromFile();
+  Features features = Features::all();
   if (fileCfg.has_value() && fileCfg->options.features.has_value())
-    return fileCfg->options.features.value();
+    features = fileCfg->options.features.value();
 
-  return Features::all();
+  if (disableFeatureOptions.isSet())
+    features = features & ~Features::fromString(disableFeatureOptions.get());
+
+  return features;
 }
 
 uint32_t ConfigProvider::optimizationLevel() {

@@ -21,6 +21,8 @@ Features Features::fromString(std::vector<std::string> const &featureStrs) {
       res = res | Features::bulkMemory();
     } else if (featureStr == "multi-value") {
       res = res | Features::multiValue();
+    } else if (featureStr == "tail-call") {
+      res = res | Features::tailCall();
     } else {
       throw std::runtime_error("unknown feature: " + featureStr);
     }
@@ -70,6 +72,8 @@ uint32_t Features::toBinaryenFeatureSet() const {
     features |= wasm::FeatureSet::BulkMemoryOpt;
   if (has(Features::multiValue()))
     features |= wasm::FeatureSet::Multivalue;
+  if (has(Features::tailCall()))
+    features |= wasm::FeatureSet::TailCall;
   return features.features;
 }
 

@@ -6,9 +6,9 @@
  (export "baz" (func $inlining-recursive/baz))
  (export "memory" (memory $0))
  (func $inlining-recursive/foo
-  call $inlining-recursive/foo
+  return_call $inlining-recursive/foo
  )
  (func $inlining-recursive/baz
-  call $inlining-recursive/baz
+  return_call $inlining-recursive/baz
  )
 )

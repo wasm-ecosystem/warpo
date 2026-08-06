@@ -213,6 +213,6 @@
   i32.const 304
   call $~lib/util/hash/HASH<~lib/string/String|null>
   i32.const 352
-  call $~lib/util/hash/HASH<~lib/string/String|null>
+  return_call $~lib/util/hash/HASH<~lib/string/String|null>
  )
 )

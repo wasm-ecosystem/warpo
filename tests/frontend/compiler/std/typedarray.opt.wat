@@ -835,7 +835,7 @@
   else
    i32.const 2
   end
-  call $~lib/rt/itcms/Object#linkTo
+  return_call $~lib/rt/itcms/Object#linkTo
  )
  (func $~lib/rt/itcms/__visit (param $0 i32)
   local.get $0
@@ -1367,7 +1367,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -2687,7 +2687,7 @@
   local.get $1
   local.get $2
   i32.const 778
-  call $byn$mgfn-shared$~lib/typedarray/Int32Array#__set
+  return_call $byn$mgfn-shared$~lib/typedarray/Int32Array#__set
  )
  (func $~lib/typedarray/Int32Array#__get (param $0 i32) (param $1 i32) (result i32)
   local.get $1
@@ -2718,7 +2718,7 @@
   local.get $2
   i32.const 2
   i32.const 13
-  call $byn$mgfn-shared$~lib/typedarray/Int32Array#subarray
+  return_call $byn$mgfn-shared$~lib/typedarray/Int32Array#subarray
  )
  (func $~lib/typedarray/Float64Array#__set (param $0 i32) (param $1 i32) (param $2 f64)
   local.get $1
@@ -2750,7 +2750,7 @@
   local.get $2
   i32.const 3
   i32.const 23
-  call $byn$mgfn-shared$~lib/typedarray/Int32Array#subarray
+  return_call $byn$mgfn-shared$~lib/typedarray/Int32Array#subarray
  )
  (func $~lib/util/sort/insertionSort<f64> (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (param $4 i32)
   (local $5 f64)
@@ -3605,7 +3605,7 @@
   end
   local.get $0
   local.get $1
-  call $~lib/typedarray/Float64Array#sort
+  return_call $~lib/typedarray/Float64Array#sort
  )
  (func $~lib/typedarray/Float64Array#__get (param $0 i32) (param $1 i32) (result f64)
   local.get $1
@@ -3889,7 +3889,7 @@
   local.get $1
   local.get $2
   local.get $3
-  call $~lib/typedarray/Int8Array#fill
+  return_call $~lib/typedarray/Int8Array#fill
  )
  (func $~lib/typedarray/Int8Array#subarray (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -4142,7 +4142,7 @@
   local.get $1
   local.get $2
   local.get $3
-  call $~lib/typedarray/Int32Array#fill
+  return_call $~lib/typedarray/Int32Array#fill
  )
  (func $~lib/typedarray/Int32Array#slice (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -4235,7 +4235,7 @@
   local.get $0
   i32.const 0
   local.get $1
-  call $~lib/typedarray/Int32Array#slice
+  return_call $~lib/typedarray/Int32Array#slice
  )
  (func $~lib/typedarray/Int32Array#copyWithin (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
   (local $4 i32)
@@ -4361,7 +4361,7 @@
   local.get $1
   local.get $2
   local.get $3
-  call $~lib/typedarray/Int32Array#copyWithin
+  return_call $~lib/typedarray/Int32Array#copyWithin
  )
  (func $"std/typedarray/testReduce<~lib/typedarray/Int8Array,i8>~anonymous|0" (param $0 i32) (param $1 i32) (param $2 i32) (param $3 i32) (result i32)
   local.get $0
@@ -4440,28 +4440,28 @@
   local.get $1
   local.get $2
   i32.const 486
-  call $byn$mgfn-shared$~lib/typedarray/Int16Array#__set
+  return_call $byn$mgfn-shared$~lib/typedarray/Int16Array#__set
  )
  (func $~lib/typedarray/Uint16Array#__set (param $0 i32) (param $1 i32) (param $2 i32)
   local.get $0
   local.get $1
   local.get $2
   i32.const 632
-  call $byn$mgfn-shared$~lib/typedarray/Int16Array#__set
+  return_call $byn$mgfn-shared$~lib/typedarray/Int16Array#__set
  )
  (func $~lib/typedarray/Uint32Array#__set (param $0 i32) (param $1 i32) (param $2 i32)
   local.get $0
   local.get $1
   local.get $2
   i32.const 924
-  call $byn$mgfn-shared$~lib/typedarray/Int32Array#__set
+  return_call $byn$mgfn-shared$~lib/typedarray/Int32Array#__set
  )
  (func $~lib/typedarray/Int64Array#__set (param $0 i32) (param $1 i32) (param $2 i64)
   local.get $0
   local.get $1
   local.get $2
   i32.const 1070
-  call $byn$mgfn-shared$~lib/typedarray/Int64Array#__set
+  return_call $byn$mgfn-shared$~lib/typedarray/Int64Array#__set
  )
  (func $"std/typedarray/testReduce<~lib/typedarray/Int64Array,i64>~anonymous|0" (param $0 i64) (param $1 i64) (param $2 i32) (param $3 i32) (result i64)
   local.get $0
@@ -4473,7 +4473,7 @@
   local.get $1
   local.get $2
   i32.const 1216
-  call $byn$mgfn-shared$~lib/typedarray/Int64Array#__set
+  return_call $byn$mgfn-shared$~lib/typedarray/Int64Array#__set
  )
  (func $~lib/typedarray/Float32Array#__set (param $0 i32) (param $1 i32) (param $2 f32)
   local.get $1
@@ -7746,7 +7746,7 @@
   local.get $1
   local.get $2
   i32.const 255
-  call $"byn$mgfn-shared$std/typedarray/testArrayForEach<~lib/typedarray/Int8Array,i8>~anonymous|0"
+  return_call $"byn$mgfn-shared$std/typedarray/testArrayForEach<~lib/typedarray/Int8Array,i8>~anonymous|0"
  )
  (func $~lib/typedarray/Uint8Array#forEach (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -7796,7 +7796,7 @@
   local.get $1
   local.get $2
   i32.const 65535
-  call $"byn$mgfn-shared$std/typedarray/testArrayForEach<~lib/typedarray/Int8Array,i8>~anonymous|0"
+  return_call $"byn$mgfn-shared$std/typedarray/testArrayForEach<~lib/typedarray/Int8Array,i8>~anonymous|0"
  )
  (func $"std/typedarray/testArrayForEach<~lib/typedarray/Int32Array,i32>~anonymous|0" (param $0 i32) (param $1 i32) (param $2 i32)
   i32.const 6128
@@ -8600,7 +8600,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/typedarray/Int8Array#lastIndexOf
+  return_call $~lib/typedarray/Int8Array#lastIndexOf
  )
  (func $~lib/typedarray/Int16Array#indexOf (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -8744,7 +8744,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/typedarray/Int16Array#lastIndexOf
+  return_call $~lib/typedarray/Int16Array#lastIndexOf
  )
  (func $~lib/typedarray/Int32Array#indexOf (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -8884,7 +8884,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/typedarray/Int32Array#lastIndexOf
+  return_call $~lib/typedarray/Int32Array#lastIndexOf
  )
  (func $~lib/typedarray/Uint32Array#indexOf (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -9024,7 +9024,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/typedarray/Uint32Array#lastIndexOf
+  return_call $~lib/typedarray/Uint32Array#lastIndexOf
  )
  (func $~lib/typedarray/Int64Array#indexOf (param $0 i32) (param $1 i64) (param $2 i32) (result i32)
   (local $3 i32)
@@ -9164,7 +9164,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/typedarray/Int64Array#lastIndexOf
+  return_call $~lib/typedarray/Int64Array#lastIndexOf
  )
  (func $~lib/typedarray/Uint64Array#indexOf (param $0 i32) (param $1 i64) (param $2 i32) (result i32)
   (local $3 i32)
@@ -9304,7 +9304,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/typedarray/Uint64Array#lastIndexOf
+  return_call $~lib/typedarray/Uint64Array#lastIndexOf
  )
  (func $~lib/typedarray/Float32Array#indexOf (param $0 i32) (param $1 f32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -9444,7 +9444,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/typedarray/Float32Array#lastIndexOf
+  return_call $~lib/typedarray/Float32Array#lastIndexOf
  )
  (func $~lib/typedarray/Float64Array#indexOf (param $0 i32) (param $1 f64) (param $2 i32) (result i32)
   (local $3 i32)
@@ -9584,7 +9584,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/typedarray/Float64Array#lastIndexOf
+  return_call $~lib/typedarray/Float64Array#lastIndexOf
  )
  (func $~lib/util/number/decimalCount32 (param $0 i32) (result i32)
   local.get $0
@@ -10197,7 +10197,7 @@
   local.get $0
   local.get $1
   i32.const 255
-  call $byn$mgfn-shared$~lib/util/number/itoa_buffered<u8>
+  return_call $byn$mgfn-shared$~lib/util/number/itoa_buffered<u8>
  )
  (func $~lib/typedarray/Uint8Array#join (param $0 i32) (result i32)
   (local $1 i32)
@@ -10562,7 +10562,7 @@
   local.get $0
   local.get $1
   i32.const 65535
-  call $byn$mgfn-shared$~lib/util/number/itoa_buffered<u8>
+  return_call $byn$mgfn-shared$~lib/util/number/itoa_buffered<u8>
  )
  (func $~lib/typedarray/Uint16Array#join (param $0 i32) (result i32)
   (local $1 i32)
@@ -11229,7 +11229,7 @@
   local.get $1
   i32.wrap_i64
   local.get $2
-  call $~lib/util/number/utoa32_dec_lut
+  return_call $~lib/util/number/utoa32_dec_lut
  )
  (func $~lib/util/number/itoa_buffered<i64> (param $0 i32) (param $1 i64) (result i32)
   (local $2 i32)
@@ -12719,7 +12719,7 @@
    local.get $0
    local.get $2
    i32.const 1
-   call $~lib/util/number/dtoa_core
+   return_call $~lib/util/number/dtoa_core
   end
  )
  (func $~lib/typedarray/Float32Array#join (param $0 i32) (result i32)
@@ -12983,7 +12983,7 @@
    local.get $0
    local.get $1
    i32.const 0
-   call $~lib/util/number/dtoa_core
+   return_call $~lib/util/number/dtoa_core
   end
  )
  (func $~lib/typedarray/Float64Array#join (param $0 i32) (result i32)
@@ -13995,7 +13995,7 @@
   i32.const 1
   i32.const 8
   i32.const 4
-  call $byn$mgfn-shared$~lib/typedarray/Int16Array#set<~lib/typedarray/Int16Array>
+  return_call $byn$mgfn-shared$~lib/typedarray/Int16Array#set<~lib/typedarray/Int16Array>
  )
  (func $~lib/typedarray/Int16Array#set<~lib/array/Array<i8>> (param $0 i32)
   (local $1 i32)
@@ -14650,7 +14650,7 @@
   i32.const 3
   i32.const 48
   i32.const 6
-  call $byn$mgfn-shared$~lib/typedarray/Int16Array#set<~lib/typedarray/Int16Array>
+  return_call $byn$mgfn-shared$~lib/typedarray/Int16Array#set<~lib/typedarray/Int16Array>
  )
  (func $~lib/typedarray/Int64Array#set<~lib/typedarray/Uint8Array> (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -16541,7 +16541,7 @@
   end
   local.get $0
   local.get $1
-  call $~lib/typedarray/Uint8Array#sort
+  return_call $~lib/typedarray/Uint8Array#sort
  )
  (func $"std/typedarray/testArraySort<~lib/typedarray/Uint8Array,u8>~anonymous|0" (param $0 i32) (param $1 i32) (result i32)
   local.get $1
@@ -22255,12 +22255,11 @@
    end
    local.get $0
    i32.load
-   call $~lib/rt/itcms/__visit
-   return
+   return_call $~lib/rt/itcms/__visit
   end
   local.get $0
   i32.load offset=4
-  call $~lib/rt/itcms/__visit
+  return_call $~lib/rt/itcms/__visit
  )
  (func $~start
   (local $0 i32)
@@ -40722,46 +40721,46 @@
   local.get $0
   local.get $1
   i32.const 1
-  call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+  return_call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
  )
  (func $byn$mgfn-shared$~lib/typedarray/Int16Array#subarray (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   local.get $0
   local.get $1
   local.get $2
   i32.const 1
-  call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
+  return_call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
  )
  (func $byn$mgfn-shared$~lib/typedarray/Int32Array#constructor@new (param $0 i32) (param $1 i32) (result i32)
   local.get $0
   local.get $1
   i32.const 2
-  call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+  return_call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
  )
  (func $byn$mgfn-shared$~lib/typedarray/Int64Array#constructor@new (param $0 i32) (param $1 i32) (result i32)
   local.get $0
   local.get $1
   i32.const 3
-  call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+  return_call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
  )
  (func $byn$mgfn-shared$~lib/typedarray/Int64Array#subarray (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   local.get $0
   local.get $1
   local.get $2
   i32.const 3
-  call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
+  return_call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
  )
  (func $byn$mgfn-shared$~lib/typedarray/Int8Array#constructor@new (param $0 i32) (param $1 i32) (result i32)
   local.get $0
   local.get $1
   i32.const 0
-  call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
+  return_call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#constructor@new
  )
  (func $byn$mgfn-shared$~lib/typedarray/Uint32Array#subarray (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   local.get $0
   local.get $1
   local.get $2
   i32.const 2
-  call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
+  return_call $byn$mgfn-shared$byn$mgfn-shared$~lib/typedarray/Int16Array#subarray
  )
  (func $byn$mgfn-shared$~lib/typedarray/Uint8Array#at (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)

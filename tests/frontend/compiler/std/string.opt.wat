@@ -1074,7 +1074,7 @@
   else
    i32.const 2
   end
-  call $~lib/rt/itcms/Object#linkTo
+  return_call $~lib/rt/itcms/Object#linkTo
  )
  (func $~lib/rt/itcms/__visit (param $0 i32)
   local.get $0
@@ -1606,7 +1606,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -3029,7 +3029,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/string/String#lastIndexOf
+  return_call $~lib/string/String#lastIndexOf
  )
  (func $~lib/string/String#localeCompare (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -5875,7 +5875,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/string/String#slice
+  return_call $~lib/string/String#slice
  )
  (func $~lib/string/String#substr (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -5955,7 +5955,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/string/String#substr
+  return_call $~lib/string/String#substr
  )
  (func $~lib/string/String#substring (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -6058,7 +6058,7 @@
   local.get $0
   local.get $1
   local.get $2
-  call $~lib/string/String#substring
+  return_call $~lib/string/String#substring
  )
  (func $~lib/array/ensureCapacity (param $0 i32) (param $1 i32)
   (local $2 i32)
@@ -7124,7 +7124,7 @@
   local.get $1
   i32.wrap_i64
   local.get $2
-  call $~lib/util/number/utoa32_dec_lut
+  return_call $~lib/util/number/utoa32_dec_lut
  )
  (func $~lib/util/number/utoa64 (param $0 i64) (param $1 i32) (result i32)
   (local $2 i32)
@@ -8466,8 +8466,7 @@
      end
      local.get $0
      i32.load
-     call $~lib/rt/itcms/__visit
-     return
+     return_call $~lib/rt/itcms/__visit
     end
     local.get $0
     i32.load offset=4
@@ -8499,8 +8498,7 @@
     end
     local.get $0
     i32.load
-    call $~lib/rt/itcms/__visit
-    return
+    return_call $~lib/rt/itcms/__visit
    end
    return
   end

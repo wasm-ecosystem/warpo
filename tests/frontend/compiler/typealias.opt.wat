@@ -162,6 +162,6 @@
    call $~lib/builtins/abort
    unreachable
   end
-  call $typealias/outer_function~inner_function
+  return_call $typealias/outer_function~inner_function
  )
 )

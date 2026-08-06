@@ -192,7 +192,7 @@
   else
    i32.const 2
   end
-  call $~lib/rt/itcms/Object#linkTo
+  return_call $~lib/rt/itcms/Object#linkTo
  )
  (func $~lib/rt/itcms/__link (param $0 i32) (param $1 i32)
   local.get $1
@@ -817,7 +817,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -1943,7 +1943,7 @@
   i32.const 15
   i32.const 672
   i32.const 128512
-  call $byn$mgfn-shared$std/string-iterator/string_iterator_surrogate_pair
+  return_call $byn$mgfn-shared$std/string-iterator/string_iterator_surrogate_pair
  )
  (func $std/string-iterator/string_iterator_4byte_utf16_char
   i32.const 29
@@ -1953,7 +1953,7 @@
   i32.const 26
   i32.const 768
   i32.const 134071
-  call $byn$mgfn-shared$std/string-iterator/string_iterator_surrogate_pair
+  return_call $byn$mgfn-shared$std/string-iterator/string_iterator_surrogate_pair
  )
  (func $~lib/rt/__visit_members (param $0 i32)
   block $invalid
@@ -1968,15 +1968,13 @@
      end
      local.get $0
      i32.load offset=8
-     call $~lib/rt/itcms/__visit
-     return
+     return_call $~lib/rt/itcms/__visit
     end
     return
    end
    local.get $0
    i32.load
-   call $~lib/rt/itcms/__visit
-   return
+   return_call $~lib/rt/itcms/__visit
   end
   unreachable
  )
@@ -2029,7 +2027,7 @@
   i32.const 26
   i32.const 768
   i32.const 134071
-  call $byn$mgfn-shared$std/string-iterator/string_iterator_surrogate_pair
+  return_call $byn$mgfn-shared$std/string-iterator/string_iterator_surrogate_pair
  )
  (func $~lib/rt/__decrease_sp (param $0 i32)
   global.get $~lib/memory/__stack_pointer

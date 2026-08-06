@@ -650,7 +650,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -1425,13 +1425,11 @@
      call $~lib/rt/tcms/__visit
      local.get $0
      i32.load offset=40
-     call $~lib/rt/tcms/__visit
-     return
+     return_call $~lib/rt/tcms/__visit
     end
     local.get $0
     i32.load
-    call $~lib/rt/tcms/__visit
-    return
+    return_call $~lib/rt/tcms/__visit
    end
    return
   end

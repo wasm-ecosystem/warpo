@@ -690,8 +690,7 @@
        local.get $0
        i32.const 20
        i32.add
-       call $~lib/rt/__visit_members
-       return
+       return_call $~lib/rt/__visit_members
       end
       local.get $0
       i32.load offset=4
@@ -1074,8 +1073,7 @@
    end
    local.get $0
    i32.load
-   call $~lib/rt/itcms/__visit
-   return
+   return_call $~lib/rt/itcms/__visit
   end
   unreachable
  )

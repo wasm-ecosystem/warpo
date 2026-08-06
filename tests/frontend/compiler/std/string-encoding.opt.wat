@@ -771,7 +771,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -2011,7 +2011,7 @@
   local.get $0
   local.get $1
   i32.const 0
-  call $~lib/string/String.UTF8.encode
+  return_call $~lib/string/String.UTF8.encode
  )
  (func $~lib/string/String.UTF8.decodeUnsafe (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   (local $3 i32)
@@ -2243,7 +2243,7 @@
   i32.sub
   i32.load offset=16
   local.get $1
-  call $~lib/string/String.UTF8.decodeUnsafe
+  return_call $~lib/string/String.UTF8.decodeUnsafe
  )
  (func $std/string-encoding/testRoundtrip (param $0 i32)
   (local $1 i32)
@@ -2314,8 +2314,7 @@
    end
    local.get $0
    i32.load
-   call $~lib/rt/itcms/__visit
-   return
+   return_call $~lib/rt/itcms/__visit
   end
   unreachable
  )

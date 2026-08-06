@@ -236,7 +236,7 @@
   else
    i32.const 2
   end
-  call $~lib/rt/itcms/Object#linkTo
+  return_call $~lib/rt/itcms/Object#linkTo
  )
  (func $~lib/rt/itcms/__visit (param $0 i32)
   local.get $0
@@ -768,7 +768,7 @@
    i32.store offset=1568
    local.get $0
    local.get $1
-   call $~lib/rt/tlsf/insertBlock
+   return_call $~lib/rt/tlsf/insertBlock
   end
  )
  (func $~lib/rt/tlsf/initialize
@@ -1594,7 +1594,7 @@
   i32.store
   local.get $0
   local.get $1
-  call $~lib/rt/itcms/__link
+  return_call $~lib/rt/itcms/__link
  )
  (func $"~lib/map/Map<i8,i32>#set:entries" (param $0 i32) (param $1 i32)
   local.get $0
@@ -1602,7 +1602,7 @@
   i32.store offset=8
   local.get $0
   local.get $1
-  call $~lib/rt/itcms/__link
+  return_call $~lib/rt/itcms/__link
  )
  (func $~lib/util/hash/HASH<i8> (param $0 i32) (result i32)
   local.get $0
@@ -2555,7 +2555,7 @@
   local.get $0
   i32.const 374761394
   i32.const 255
-  call $byn$mgfn-shared$~lib/util/hash/HASH<u8>
+  return_call $byn$mgfn-shared$~lib/util/hash/HASH<u8>
  )
  (func $"~lib/map/Map<u8,i32>#has" (param $0 i32) (param $1 i32) (result i32)
   local.get $0
@@ -3244,7 +3244,7 @@
   local.get $0
   i32.const 374761395
   i32.const 65535
-  call $byn$mgfn-shared$~lib/util/hash/HASH<u8>
+  return_call $byn$mgfn-shared$~lib/util/hash/HASH<u8>
  )
  (func $"~lib/map/Map<u16,i32>#has" (param $0 i32) (param $1 i32) (result i32)
   local.get $0
@@ -5495,8 +5495,7 @@
        end
        local.get $0
        i32.load
-       call $~lib/rt/itcms/__visit
-       return
+       return_call $~lib/rt/itcms/__visit
       end
       local.get $0
       local.get $0
@@ -5542,12 +5541,11 @@
    call $~lib/rt/itcms/__visit
    local.get $0
    i32.load offset=8
-   call $~lib/rt/itcms/__visit
-   return
+   return_call $~lib/rt/itcms/__visit
   end
   local.get $0
   i32.load
-  call $~lib/rt/itcms/__visit
+  return_call $~lib/rt/itcms/__visit
  )
  (func $~start
   (local $0 i32)
