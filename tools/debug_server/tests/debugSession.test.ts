@@ -213,7 +213,10 @@ void describe("WarpoDebugSession", () => {
 
     await launchAndWaitForBreakpoint(dc, launchArgs);
     let stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
-    assert.equal(assertDefined(stackTraceResponse.body.stackFrames[0]).source?.path, implementationSource);
+    assert.equal(
+      assertDefined(stackTraceResponse.body.stackFrames[0]).source?.path,
+      normalizeDebugPath(implementationSource)
+    );
     assert.equal(stackTraceResponse.body.stackFrames[0].line, 5);
 
     const nextStop = waitForBreakpointStop(dc);
@@ -221,7 +224,7 @@ void describe("WarpoDebugSession", () => {
     await nextStop;
 
     stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
-    assert.equal(assertDefined(stackTraceResponse.body.stackFrames[0]).source?.path, testSource);
+    assert.equal(assertDefined(stackTraceResponse.body.stackFrames[0]).source?.path, normalizeDebugPath(testSource));
     assert.equal(stackTraceResponse.body.stackFrames[0].line, 8);
   });
 

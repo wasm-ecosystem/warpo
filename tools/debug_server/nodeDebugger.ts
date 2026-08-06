@@ -179,11 +179,11 @@ export class NodeDebugger implements Debugger {
             config.entryFunctionName,
             ...config.args.map(String),
           ];
-    this.child = spawn(
-      process.execPath,
-      launchArgs,
-      { cwd: "cwd" in config ? config.cwd : undefined, env: getRuntimeEnv(), stdio: ["pipe", "pipe", "pipe"] }
-    );
+    this.child = spawn(process.execPath, launchArgs, {
+      cwd: "cwd" in config ? config.cwd : undefined,
+      env: getRuntimeEnv(),
+      stdio: ["pipe", "pipe", "pipe"],
+    });
     this.log(`runtime child spawned pid=${this.child.pid ?? "unknown"}`);
     this.runtimeExitPromise = new Promise((resolve) => {
       this.child?.once("exit", () => resolve());
