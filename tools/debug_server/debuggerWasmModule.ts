@@ -174,6 +174,14 @@ export class DebuggerWasmModule {
       return undefined;
     }
 
+    return this.getVariableScopes(functionInfo, wasmBytecodeOffset);
+  }
+
+  private getVariableScopes(
+    functionInfo: ReturnType<DwarfFunctionInfoResolver["findFunctionByBytecodeOffset"]>,
+    wasmBytecodeOffset: number
+  ): DebuggerVariableScope[] {
+    assert(functionInfo !== undefined);
     const scopeChain = getScopeChainInFunctionAtBytecodeOffset(functionInfo, wasmBytecodeOffset);
     const scopes: DebuggerVariableScope[] = [];
     const functionName = DebuggerWasmModule.getFunctionBaseName(functionInfo.name);

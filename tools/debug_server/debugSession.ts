@@ -583,11 +583,13 @@ export class WarpoDebugSession extends LoggingDebugSession {
     runtime: StackFrameRuntime
   ): Promise<Map<DebuggerSourceVariableInfo, string>> {
     const rawWasmValues = new Map<DebuggerSourceVariableInfo, string>();
-    const runtimeGlobalsByIndex = sourceVariables.some((variable) => variable.kind === "wasm-global")
-      ? new Map(
-          (await runtime.getPausedWasmGlobalVariables()).map((variable) => [variable.globalIndex, variable.value])
-        )
-      : new Map<number, string>();
+    const runtimeGlobalsByIndex = new Map<number, string>();
+    if (sourceVariables.some((variable) => variable.kind === "wasm-global")) {
+      const pausedWasmGlobalVariables = await runtime.getPausedWasmGlobalVariables();
+      for (const variable of pausedWasmGlobalVariables) {
+        runtimeGlobalsByIndex.set(variable.globalIndex, variable.value);
+      }
+    }
 
     for (const variable of sourceVariables) {
       if (variable.kind === "wasm-local") {
