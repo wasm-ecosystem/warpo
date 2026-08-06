@@ -59,7 +59,7 @@
   f64.const 0
   f64.const 0
   f64.const 0
-  call $~lib/builtins/trace
+  return_call $~lib/builtins/trace
  )
  (func $~lib/rt/itcms/Object#makeGray (param $0 i32)
   (local $1 i32)

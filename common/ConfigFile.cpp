@@ -87,8 +87,6 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
       config.optimizeLevel = jsonOptions["optimizeLevel"].get<uint32_t>();
     if (jsonOptions.contains("shrinkLevel"))
       config.shrinkLevel = jsonOptions["shrinkLevel"].get<uint32_t>();
-    if (jsonOptions.contains("tailCall"))
-      config.tailCall = jsonOptions["tailCall"].get<bool>();
     if (jsonOptions.contains("debug"))
       config.debug = jsonOptions["debug"].get<bool>();
     if (jsonOptions.contains("sourceMap"))
@@ -158,8 +156,6 @@ static FileConfigOptions mergeFileConfigOptions(FileConfigOptions const &baseCon
     result.optimizeLevel = overrideConfig.optimizeLevel;
   if (overrideConfig.shrinkLevel.has_value())
     result.shrinkLevel = overrideConfig.shrinkLevel;
-  if (overrideConfig.tailCall.has_value())
-    result.tailCall = overrideConfig.tailCall;
   if (overrideConfig.debug.has_value())
     result.debug = overrideConfig.debug;
   if (overrideConfig.sourceMap.has_value())
@@ -263,7 +259,6 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
     "host": "none",
     "optimizeLevel": 3,
     "shrinkLevel": 2,
-    "tailCall": false,
     "debug": true,
     "sourceMap": false,
     "use": { "U1": "10" }
@@ -284,7 +279,7 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   EXPECT_EQ(config.host, "none");
   EXPECT_EQ(config.optimizeLevel, 3);
   EXPECT_EQ(config.shrinkLevel, 2);
-  EXPECT_EQ(config.tailCall, false);
+  EXPECT_FALSE(config.features.has_value());
   EXPECT_EQ(config.debug, true);
   EXPECT_EQ(config.sourceMap, false);
   EXPECT_EQ(config.use->at("U1"), "10");
@@ -352,7 +347,7 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   EXPECT_FALSE(emptyConfig.host.has_value());
   EXPECT_FALSE(emptyConfig.optimizeLevel.has_value());
   EXPECT_FALSE(emptyConfig.shrinkLevel.has_value());
-  EXPECT_FALSE(emptyConfig.tailCall.has_value());
+  EXPECT_FALSE(emptyConfig.features.has_value());
   EXPECT_FALSE(emptyConfig.debug.has_value());
   EXPECT_FALSE(emptyConfig.sourceMap.has_value());
   EXPECT_FALSE(emptyConfig.use.has_value());

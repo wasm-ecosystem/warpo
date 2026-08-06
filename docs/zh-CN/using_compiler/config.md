@@ -49,6 +49,37 @@ Options 用于控制构建过程与输出。它们可以全局设置（`options`
 }
 ```
 
+### WebAssembly Features
+
+WARPO 通过统一的 feature 集合管理 WebAssembly 特性，`tail-call` 与 `multi-value` 使用同一套开关机制。
+
+在 `asconfig.json` 中，可以通过 `disable` 关闭指定特性：
+
+```json
+{
+  "options": {
+    "disable": ["multi-value", "tail-call"]
+  }
+}
+```
+
+`disable` 支持的特性名称：
+
+- `mutable-globals`
+- `sign-extension`
+- `nontrapping-f2i`
+- `bulk-memory`
+- `multi-value`
+- `tail-call`
+
+等价 CLI 写法：
+
+```bash
+warpo assembly/index.ts -o build/app.wasm --disable-feature multi-value tail-call
+```
+
+兼容性说明：旧的独立 `tailCall` 配置项和 `--tailCall` 命令行开关已不再使用。
+
 ### `host`
 
 <p style="display: flex; gap: 10px;">

@@ -107,7 +107,7 @@ public:
     frontend::Config config = frontend::Config::getDefault();
     config.useColorfulDiagMessage = false;
     config.features = common::Features::bulkMemory() | common::Features::mutableGlobals() |
-                      common::Features::signExtension() | common::Features::multiValue();
+                      common::Features::signExtension() | common::Features::multiValue() | common::Features::tailCall();
     if (configJson_.contains("asc_flags")) {
       nlohmann::json::array_t const &ascFlags = configJson_["asc_flags"].get<nlohmann::json::array_t>();
       for (nlohmann::basic_json<> const &flag : ascFlags) {

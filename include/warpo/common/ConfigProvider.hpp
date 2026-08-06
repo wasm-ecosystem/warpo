@@ -34,7 +34,6 @@ public:
   Features features();
   uint32_t optimizationLevel();
   uint32_t shrinkLevel();
-  bool tailCallOptimizationEnabled();
   bool isDebugEnabled();
 
 private:

@@ -7,7 +7,6 @@ echo "=============origin asc build============="
   --stats \
   --optimizeLevel 3 --shrinkLevel 2 \
   --disable-feature nontrapping-f2i \
-  --tailCall \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime \
   -o tests/bootstrap/tmp/bench/assemblyscript.warpo-test.wasm
@@ -18,7 +17,6 @@ echo "\n=============optimized build============="
   --stats \
   --optimizeLevel 3 --shrinkLevel 2 \
   --disable-feature nontrapping-f2i \
-  --tailCall \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime \
   --asc-wasm tests/bootstrap/tmp/bench/assemblyscript.warpo-test.wasm \
