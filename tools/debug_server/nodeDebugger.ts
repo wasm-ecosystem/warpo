@@ -462,7 +462,9 @@ export class NodeDebugger implements Debugger {
             await this.waitForCommand("Runtime.runIfWaitingForDebugger");
             this.log("Runtime.runIfWaitingForDebugger complete -> Debugger.setBreakpointsActive");
             await this.waitForCommand("Debugger.setBreakpointsActive", { active: true });
-            this.log("Debugger.setBreakpointsActive complete -> launch ready");
+            this.log("Debugger.setBreakpointsActive complete -> Debugger.setPauseOnExceptions");
+            await this.waitForCommand("Debugger.setPauseOnExceptions", { state: "all" });
+            this.log("Debugger.setPauseOnExceptions complete -> launch ready");
             resolve();
           } catch (error) {
             this.log(`CDP setup failed: ${error instanceof Error ? error.message : "unknown error"}`);
@@ -519,6 +521,15 @@ export class NodeDebugger implements Debugger {
 
     if (reason === "other" && this.wasmScriptId) {
       this.log("Debugger.paused reason=other location=wasm pre-entry gate");
+      return;
+    }
+
+    const isWasmTrap =
+      (reason === "exception" || reason === "promiseRejection") && this.pausedCallFrames.length > 0;
+    if (isWasmTrap) {
+      this.paused = true;
+      this.log(`Debugger.paused reason=${reason} (wasm trap)`);
+      void this.notifyPause("exception");
       return;
     }
 

@@ -1460,4 +1460,39 @@ void describe("WarpoDebugSession", () => {
     assert.equal(b.type, "i32");
     assert.equal(b.value, "2");
   });
+
+  void it("should stop at a wasm trap and terminate on resume", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_trap.ts");
+    const output = await buildModule(source);
+
+    await dc.initializeRequest();
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    const stoppedPromise = dc.waitForEvent("stopped");
+    const terminatedPromise = dc.waitForEvent("terminated");
+    await dc.launchRequest(launchArgs);
+
+    const stoppedEvent = await stoppedPromise;
+    const stoppedBody = stoppedEvent.body as { reason?: string } | undefined;
+    assert.equal(stoppedBody?.reason, "exception");
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+    assert.equal(frame.source?.path, normalizeDebugPath(source));
+    assert.equal(frame.line, 9);
+
+    await dc.continueRequest({ threadId: 1 });
+    await terminatedPromise;
+  });
 });
