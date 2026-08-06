@@ -114,18 +114,16 @@ export class DebuggerWasmModule {
       return undefined;
     }
 
-    const generatedPositions = this.sourceMap.allGeneratedPositionsFor({ source, line, column: 0 });
-
     let firstColumn: number | undefined;
-    for (const generatedPosition of generatedPositions) {
-      if (generatedPosition.line === null || generatedPosition.column === null) {
-        continue;
+    this.sourceMap.eachMapping((mapping) => {
+      if (mapping.source !== source || mapping.originalLine !== line || mapping.generatedLine !== 1) {
+        return;
       }
 
-      if (firstColumn === undefined || generatedPosition.column < firstColumn) {
-        firstColumn = generatedPosition.column;
+      if (firstColumn === undefined || mapping.generatedColumn < firstColumn) {
+        firstColumn = mapping.generatedColumn;
       }
-    }
+    });
 
     if (firstColumn === undefined) {
       return undefined;

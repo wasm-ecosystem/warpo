@@ -477,6 +477,43 @@ void describe("WarpoDebugSession", () => {
     assert.equal(callerSeed.value, "23");
   });
 
+  void it("should stop on a return breakpoint before evaluating its value", { timeout: 5000 }, async () => {
+    const entrySource = sourcePath("debugger_caller.ts");
+    const calleeSource = sourcePath("debugger_callee.ts");
+    const output = await buildModule(entrySource, [calleeSource]);
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: entrySource },
+      breakpoints: [{ line: 6 }],
+    });
+    await dc.setBreakpointsRequest({
+      source: { path: calleeSource },
+      breakpoints: [{ line: 41 }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const topFrame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+    assert.match(topFrame.name, /_start/);
+    assert.equal(topFrame.source?.path, normalizeDebugPath(entrySource));
+    assert.equal(topFrame.line, 6);
+  });
+
   void it("should terminate when the entry function returns", { timeout: 5000 }, async () => {
     const source = sourcePath("debugger_class.ts");
     const output = await buildModule(source);
