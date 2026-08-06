@@ -20,6 +20,12 @@ export interface DwarfClosureVariableInfo {
   fieldOffset: number;
 }
 
+export interface DwarfGlobalVariableInfo {
+  name: string;
+  typeName: string;
+  globalIndex: number;
+}
+
 export interface DwarfRangeInfo {
   lowPc: number;
   highPc: number;
@@ -52,17 +58,23 @@ export interface DwarfFunctionInfo {
 
 export class DwarfFunctionInfoResolver {
   private readonly functions: DwarfFunctionInfo[];
+  private readonly globals: DwarfGlobalVariableInfo[];
 
-  private constructor(functions: DwarfFunctionInfo[]) {
+  private constructor(functions: DwarfFunctionInfo[], globals: DwarfGlobalVariableInfo[]) {
     this.functions = functions;
+    this.globals = globals;
   }
 
   static fromWasm(wasmBinary: Uint8Array | ArrayBuffer): DwarfFunctionInfoResolver {
     const debugInfo = parseWasmDebugInfo(wasmBinary);
     const functions: DwarfFunctionInfo[] = [];
+    const globals: DwarfGlobalVariableInfo[] = [];
 
     for (const unit of debugInfo.compilationUnits) {
       const offsetMap = buildOffsetMap(unit.rootDIE);
+      for (const global of resolveGlobalVariables(unit.rootDIE, offsetMap)) {
+        globals.push(global);
+      }
       for (const subprogramDie of findRootSubprogramDIEs(unit.rootDIE)) {
         const functionInfo = resolveFunctionInfo(subprogramDie, offsetMap);
         if (functionInfo) {
@@ -72,18 +84,44 @@ export class DwarfFunctionInfoResolver {
     }
 
     sortByRange(functions);
+    globals.sort((left, right) => left.globalIndex - right.globalIndex);
 
-    return new DwarfFunctionInfoResolver(functions);
+    return new DwarfFunctionInfoResolver(functions, globals);
   }
 
   getFunctions(): DwarfFunctionInfo[] {
     return this.functions;
   }
 
+  getGlobals(): DwarfGlobalVariableInfo[] {
+    return this.globals;
+  }
+
   findFunctionByBytecodeOffset(bytecodeOffset: number): DwarfFunctionInfo | undefined {
     const node = findClosestNodeByBytecodeOffset(this.functions, bytecodeOffset);
     return node ? getScopeTrace(node)?.functionInfo : undefined;
   }
+}
+
+function resolveGlobalVariables(rootDie: DwarfDIE, offsetMap: Map<number, DwarfDIE>): DwarfGlobalVariableInfo[] {
+  const globals: DwarfGlobalVariableInfo[] = [];
+
+  for (const die of rootDie.children) {
+    if (die.tag !== DW_TAG.variable) {
+      continue;
+    }
+
+    const variable = resolveVariableInfo(die, offsetMap);
+    if (variable && !variable.name.startsWith("~lib")) {
+      globals.push({
+        name: variable.name,
+        typeName: variable.typeName,
+        globalIndex: variable.localIndex,
+      });
+    }
+  }
+
+  return globals;
 }
 
 function findRootSubprogramDIEs(root: DwarfDIE): DwarfDIE[] {

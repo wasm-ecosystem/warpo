@@ -1178,6 +1178,7 @@ void describe("WarpoDebugSession", () => {
       "Closure(inner)",
       "Closure(middle)",
       "Closure(run)",
+      "Global",
     ]);
 
     const localScope = assertDefined(scopes.find((scope) => scope.name === "Local: run~middle~inner~anonymous|0"));
@@ -1236,6 +1237,73 @@ void describe("WarpoDebugSession", () => {
     const childValue = assertDefined(findVariable(childFieldsResponse.body.variables, "value"));
     assert.equal(childValue.type, "i32");
     assert.equal(childValue.value, "77");
+  });
+
+  void it("should expose and decode global variables", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_global.ts");
+    const output = await buildModule(source);
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: 11 }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+    const stoppedPromise = waitForBreakpointStop(dc);
+    await dc.launchRequest(launchArgs);
+    await stoppedPromise;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+    const globalScope = assertDefined(await readFrameScopeByName(dc, frame, "Global"));
+
+    const globalCounter = assertDefined(
+      globalScope.body.variables.find((variable) => variable.name.endsWith("/globalCounter"))
+    );
+    assert.equal(globalCounter.type, "i32");
+    assert.equal(globalCounter.value, "24");
+
+    const message = assertDefined(
+      globalScope.body.variables.find((variable) => variable.name.endsWith("/globalMessage"))
+    );
+    assert.equal(message.type, "~lib/string/String");
+    assert.equal(message.value, '"global debugger"');
+    assert.equal(message.variablesReference, 0);
+
+    const values = assertDefined(findVariable(globalScope.body.variables, "debugger_global/globalValues"));
+    assert.ok(values.type?.startsWith("~lib/array/Array<"));
+    const valueElements = await dc.variablesRequest({ variablesReference: values.variablesReference });
+    assert.deepEqual(
+      valueElements.body.variables.map((variable) => variable.value),
+      ["13", "21"]
+    );
+
+    const entries = assertDefined(findVariable(globalScope.body.variables, "debugger_global/globalEntries"));
+    assert.ok(entries.type?.startsWith("~lib/map/Map<"));
+    const mapEntries = await dc.variablesRequest({ variablesReference: entries.variablesReference });
+    assert.equal(mapEntries.body.variables.length, 1);
+    const entryFields = await dc.variablesRequest({
+      variablesReference: mapEntries.body.variables[0].variablesReference,
+    });
+    assert.deepEqual(
+      entryFields.body.variables.map((variable) => ({ name: variable.name, value: variable.value })),
+      [
+        { name: "key", value: "5" },
+        { name: "value", value: "34" },
+      ]
+    );
   });
 
   void it("should refresh variable references across multiple pauses", { timeout: 5000 }, async () => {

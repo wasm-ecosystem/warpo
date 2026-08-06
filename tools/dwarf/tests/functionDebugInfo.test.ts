@@ -26,9 +26,9 @@ const WASM_PATH = resolve(BUILD_DIR, "functionDebugInfo.wasm");
 
 const COMPUTE_FUNCTION_NAME = "tools/dwarf/tests/fixtures/functionDebugInfo/compute";
 const WITH_CLOSURE_FUNCTION_NAME = "tools/dwarf/tests/fixtures/functionDebugInfo/withClosure";
-const COMPUTE_LINE = 8;
-const INNER_LINE = 8;
-const CLOSURE_BODY_LINE = 18;
+const COMPUTE_LINE = 10;
+const INNER_LINE = 10;
+const CLOSURE_BODY_LINE = 20;
 
 describe("functionDebugInfo", () => {
   let resolver: DwarfFunctionInfoResolver;
@@ -68,6 +68,16 @@ describe("functionDebugInfo", () => {
 
     const functionInfo = resolver.findFunctionByBytecodeOffset(bytecodeOffset);
     assert.equal(functionInfo?.name, COMPUTE_FUNCTION_NAME);
+  });
+
+  it("resolves globals with their wasm global indices", () => {
+    const globalCount = resolver.getGlobals().find((variable) => variable.name.endsWith("/globalCount"));
+    assert.deepEqual(globalCount, {
+      name: "tools/dwarf/tests/fixtures/functionDebugInfo/globalCount",
+      typeName: "i32",
+      globalIndex: 0,
+    });
+    assert.ok(resolver.getGlobals().every((variable) => !variable.name.startsWith("~lib")));
   });
 
   it("returns variables active on the bytecode scope parent chain", () => {

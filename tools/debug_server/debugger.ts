@@ -32,6 +32,12 @@ export interface DebugRuntimeVariable {
   localIndex: number;
 }
 
+export interface DebugRuntimeGlobal {
+  globalIndex: number;
+  value: string;
+  type?: string;
+}
+
 export interface DebugPausedWasmFrame {
   functionName: string;
   wasmBytecodeOffset?: number;
@@ -48,6 +54,7 @@ export interface Debugger {
   finishModuleLoad(): void;
   getPausedWasmFrames(): DebugPausedWasmFrame[];
   getPausedWasmFrameVariables(frameIndex: number): Promise<DebugRuntimeVariable[]>;
+  getPausedWasmGlobalVariables(): Promise<DebugRuntimeGlobal[]>;
   readWasmMemory(address: number, byteLength: number): Promise<Uint8Array | undefined>;
   setWasmBreakpoint(module: DebuggerWasmModule, wasmBytecodeOffset: number, callbacks?: DebuggerCommandCallbacks): void;
 

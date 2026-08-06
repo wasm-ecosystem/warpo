@@ -12,6 +12,7 @@ import {
   getScopeChainInFunctionAtBytecodeOffset,
   getVariablesInFunctionAtBytecodeOffset,
   type DwarfClosureVariableLevel,
+  type DwarfGlobalVariableInfo,
   type DwarfLocalVariableInfo,
   type DwarfScopeInfo,
 } from "../dwarf/functionDebugInfo.js";
@@ -43,7 +44,15 @@ export interface DebuggerClosureVariableInfo extends DebuggerSourceVariableInfoB
   fieldOffset: number;
 }
 
-export type DebuggerSourceVariableInfo = DebuggerWasmLocalVariableInfo | DebuggerClosureVariableInfo;
+export interface DebuggerWasmGlobalVariableInfo extends DebuggerSourceVariableInfoBase {
+  kind: "wasm-global";
+  globalIndex: number;
+}
+
+export type DebuggerSourceVariableInfo =
+  | DebuggerWasmLocalVariableInfo
+  | DebuggerClosureVariableInfo
+  | DebuggerWasmGlobalVariableInfo;
 
 export interface DebuggerVariableScope {
   name: string;
@@ -208,6 +217,14 @@ export class DebuggerWasmModule {
       }
     }
 
+    const globals = this.functionInfoResolver.getGlobals();
+    if (globals.length > 0) {
+      scopes.push({
+        name: "Global",
+        variables: globals.map((variable) => DebuggerWasmModule.toGlobalSourceVariableInfo(variable)),
+      });
+    }
+
     return scopes;
   }
 
@@ -368,6 +385,15 @@ export class DebuggerWasmModule {
       typeName: variable.typeName,
       closureEnvLocalIndex: variable.localIndex,
       fieldOffset: variable.fieldOffset,
+    };
+  }
+
+  private static toGlobalSourceVariableInfo(variable: DwarfGlobalVariableInfo): DebuggerWasmGlobalVariableInfo {
+    return {
+      kind: "wasm-global",
+      name: variable.name,
+      typeName: variable.typeName,
+      globalIndex: variable.globalIndex,
     };
   }
 }
