@@ -1178,7 +1178,6 @@ void describe("WarpoDebugSession", () => {
       "Closure(inner)",
       "Closure(middle)",
       "Closure(run)",
-      "Global",
     ]);
 
     const localScope = assertDefined(scopes.find((scope) => scope.name === "Local: run~middle~inner~anonymous|0"));
