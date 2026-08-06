@@ -583,13 +583,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     runtime: StackFrameRuntime
   ): Promise<Map<DebuggerSourceVariableInfo, string>> {
     const rawWasmValues = new Map<DebuggerSourceVariableInfo, string>();
-    const runtimeGlobalsByIndex = new Map<number, string>();
-    if (sourceVariables.some((variable) => variable.kind === "wasm-global")) {
-      const pausedWasmGlobalVariables = await runtime.getPausedWasmGlobalVariables();
-      for (const variable of pausedWasmGlobalVariables) {
-        runtimeGlobalsByIndex.set(variable.globalIndex, variable.value);
-      }
-    }
+    let runtimeGlobalsByIndex: Map<number, string> | undefined;
 
     for (const variable of sourceVariables) {
       if (variable.kind === "wasm-local") {
@@ -597,6 +591,12 @@ export class WarpoDebugSession extends LoggingDebugSession {
         assert(runtimeVariable !== undefined);
         rawWasmValues.set(variable, runtimeVariable.value);
       } else if (variable.kind === "wasm-global") {
+        if (runtimeGlobalsByIndex === undefined) {
+          const pausedWasmGlobalVariables = await runtime.getPausedWasmGlobalVariables();
+          runtimeGlobalsByIndex = new Map(
+            pausedWasmGlobalVariables.map((runtimeVariable) => [runtimeVariable.globalIndex, runtimeVariable.value])
+          );
+        }
         rawWasmValues.set(variable, runtimeGlobalsByIndex.get(variable.globalIndex) ?? "<unavailable>");
       }
     }
