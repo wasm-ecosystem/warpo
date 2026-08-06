@@ -553,12 +553,6 @@ export class WarpoDebugSession extends LoggingDebugSession {
         return { name: variable.name, value: tupleRawValue, typeName: variable.typeName };
       }
 
-      if (variable.kind === "wasm-global") {
-        const wasmRawValue = rawWasmValues.get(variable);
-        assert(wasmRawValue !== undefined);
-        return { name: variable.name, value: wasmRawValue, typeName: variable.typeName };
-      }
-
       const wasmRawValue = rawWasmValues.get(variable);
       assert(wasmRawValue !== undefined);
       return { name: variable.name, value: wasmRawValue, typeName: variable.typeName };
