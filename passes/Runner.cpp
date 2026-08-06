@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "AdvancedInlining.hpp"
-#include "BasicReturnCall.hpp"
 #include "BinaryWriter.hpp"
 #include "Closure.hpp"
 #include "CombineSwitchTargets.hpp"
@@ -30,6 +29,7 @@
 #include "InstrSimplifier.hpp"
 #include "MergeDataSection.hpp"
 #include "Runner.hpp"
+#include "TailCall.hpp"
 #include "binaryen-c.h"
 #include "instrumentation/CoverageInstrumentation.hpp"
 #include "parser/wat-parser.h"
@@ -199,7 +199,7 @@ static void optimize(AsModule const &m, Config const &config) {
     }
     passRunner->add(std::unique_ptr<wasm::Pass>{createMergeDataSectionPass()});
     if (config.tailCall)
-      passRunner->add(std::unique_ptr<wasm::Pass>{createBasicReturnCallPass()});
+      passRunner->add(std::unique_ptr<wasm::Pass>{createTailCallOptimizerPass()});
     passRunner->run();
   }
   ensureValidate(*m.get());

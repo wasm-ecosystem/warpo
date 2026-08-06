@@ -7,6 +7,6 @@
 
 namespace warpo::passes {
 
-wasm::Pass *createBasicReturnCallPass();
+wasm::Pass *createTailCallOptimizerPass();
 
 } // namespace warpo::passes

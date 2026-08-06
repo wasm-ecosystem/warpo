@@ -3,7 +3,7 @@
 
 #include <iterator>
 
-#include "BasicReturnCall.hpp"
+#include "TailCall.hpp"
 #include "pass.h"
 #include "wasm-traversal.h"
 #include "wasm.h"
@@ -11,7 +11,19 @@
 namespace warpo::passes {
 namespace {
 
-struct BasicReturnCall : public wasm::WalkerPass<wasm::PostWalker<BasicReturnCall>> {
+// A minimal tail-call optimization pass.
+//
+// It does NOT perform any control-flow analysis.  It only rewrites the following
+// local patterns into Binaryen's return_call / return_call_indirect form:
+//
+//   1. An adjacent void "call; return" pair inside a block.
+//   2. A call that is the last expression of a function body (implicit return).
+//   3. A "return (call ...)" where the return's value is produced directly by
+//      the call.
+//
+// Patterns that require CFG/try-catch/loop analysis are intentionally left for
+// future, more advanced passes.
+struct TailCallOptimizer : public wasm::WalkerPass<wasm::PostWalker<TailCallOptimizer>> {
   bool modifiesBinaryenIR() override { return true; }
 
   bool tryConvertExpressionToReturnCall(wasm::Expression *expr, wasm::Module *m, wasm::Function *func) {
@@ -47,7 +59,7 @@ struct BasicReturnCall : public wasm::WalkerPass<wasm::PostWalker<BasicReturnCal
     // Step 1: Walk all blocks in this function. Any explicit `call; return`
     // pair is safe to fold because the return proves the call is in tail
     // position, even when the pair is inside a nested block.
-    wasm::WalkerPass<wasm::PostWalker<BasicReturnCall>>::runOnFunction(m, func);
+    wasm::WalkerPass<wasm::PostWalker<TailCallOptimizer>>::runOnFunction(m, func);
 
     // Step 2: Check the function-level implicit-return case.
     wasm::Expression *tail = func->body;
@@ -86,12 +98,17 @@ struct BasicReturnCall : public wasm::WalkerPass<wasm::PostWalker<BasicReturnCal
     }
     curr->finalize();
   }
+
+  void visitReturn(wasm::Return *curr) {
+    if (curr->value != nullptr && tryConvertExpressionToReturnCall(curr->value, getModule(), getFunction()))
+      replaceCurrent(curr->value);
+  }
 };
 
 } // namespace
 } // namespace warpo::passes
 
-wasm::Pass *warpo::passes::createBasicReturnCallPass() { return new BasicReturnCall(); }
+wasm::Pass *warpo::passes::createTailCallOptimizerPass() { return new TailCallOptimizer(); }
 
 #ifdef WARPO_ENABLE_UNIT_TESTS
 
@@ -103,7 +120,7 @@ wasm::Pass *warpo::passes::createBasicReturnCallPass() { return new BasicReturnC
 
 namespace warpo::passes::ut {
 
-TEST(BasicReturnCallTest, ConvertsDirectCallFollowedByReturn) {
+TEST(TailCallOptimizerTest, ConvertsDirectCallFollowedByReturn) {
   auto m = loadWat(R"(
     (module
       (func $callee)
@@ -117,7 +134,7 @@ TEST(BasicReturnCallTest, ConvertsDirectCallFollowedByReturn) {
   wasm::Function *const func = m->getFunction("caller");
 
   wasm::PassRunner runner{m.get()};
-  runner.add(std::unique_ptr<wasm::Pass>{createBasicReturnCallPass()});
+  runner.add(std::unique_ptr<wasm::Pass>{createTailCallOptimizerPass()});
   runner.run();
 
   ASSERT_TRUE(func->body->is<wasm::Block>());
@@ -130,7 +147,33 @@ TEST(BasicReturnCallTest, ConvertsDirectCallFollowedByReturn) {
   EXPECT_TRUE(call->type == wasm::Type::unreachable);
 }
 
-TEST(BasicReturnCallTest, ConvertsFinalDirectCallInVoidFunctionBody) {
+TEST(TailCallOptimizerTest, ConvertsReturnedDirectCallWithResult) {
+  auto m = loadWat(R"(
+    (module
+      (func $callee (result i32)
+        i32.const 1
+      )
+      (func $caller (result i32)
+        call $callee
+        return
+      )
+    )
+  )");
+  m->features.setTailCall();
+  wasm::Function *const func = m->getFunction("caller");
+
+  wasm::PassRunner runner{m.get()};
+  runner.add(std::unique_ptr<wasm::Pass>{createTailCallOptimizerPass()});
+  runner.run();
+
+  ASSERT_TRUE(func->body->is<wasm::Call>());
+  wasm::Call *const call = func->body->cast<wasm::Call>();
+  EXPECT_EQ(call->target, "callee");
+  EXPECT_TRUE(call->isReturn);
+  EXPECT_EQ(call->type, wasm::Type::unreachable);
+}
+
+TEST(TailCallOptimizerTest, ConvertsFinalDirectCallInVoidFunctionBody) {
   auto m = loadWat(R"(
     (module
       (func $callee)
@@ -143,7 +186,7 @@ TEST(BasicReturnCallTest, ConvertsFinalDirectCallInVoidFunctionBody) {
   wasm::Function *const func = m->getFunction("caller");
 
   wasm::PassRunner runner{m.get()};
-  runner.add(std::unique_ptr<wasm::Pass>{createBasicReturnCallPass()});
+  runner.add(std::unique_ptr<wasm::Pass>{createTailCallOptimizerPass()});
   runner.run();
 
   ASSERT_TRUE(func->body->is<wasm::Call>());
@@ -153,7 +196,7 @@ TEST(BasicReturnCallTest, ConvertsFinalDirectCallInVoidFunctionBody) {
   EXPECT_TRUE(call->type == wasm::Type::unreachable);
 }
 
-TEST(BasicReturnCallTest, ConvertsIndirectCallFollowedByReturn) {
+TEST(TailCallOptimizerTest, ConvertsIndirectCallFollowedByReturn) {
   auto m = loadWat(R"(
     (module
       (type $callee_type (func))
@@ -171,7 +214,7 @@ TEST(BasicReturnCallTest, ConvertsIndirectCallFollowedByReturn) {
   wasm::Function *const func = m->getFunction("caller");
 
   wasm::PassRunner runner{m.get()};
-  runner.add(std::unique_ptr<wasm::Pass>{createBasicReturnCallPass()});
+  runner.add(std::unique_ptr<wasm::Pass>{createTailCallOptimizerPass()});
   runner.run();
 
   ASSERT_TRUE(func->body->is<wasm::Block>());
@@ -183,7 +226,7 @@ TEST(BasicReturnCallTest, ConvertsIndirectCallFollowedByReturn) {
   EXPECT_TRUE(call->type == wasm::Type::unreachable);
 }
 
-TEST(BasicReturnCallTest, ConvertsFinalIndirectCallInFunctionBody) {
+TEST(TailCallOptimizerTest, ConvertsFinalIndirectCallInFunctionBody) {
   auto m = loadWat(R"(
     (module
       (type $callee_type (func))
@@ -200,7 +243,7 @@ TEST(BasicReturnCallTest, ConvertsFinalIndirectCallInFunctionBody) {
   wasm::Function *const func = m->getFunction("caller");
 
   wasm::PassRunner runner{m.get()};
-  runner.add(std::unique_ptr<wasm::Pass>{createBasicReturnCallPass()});
+  runner.add(std::unique_ptr<wasm::Pass>{createTailCallOptimizerPass()});
   runner.run();
 
   ASSERT_TRUE(func->body->is<wasm::CallIndirect>());
@@ -209,7 +252,7 @@ TEST(BasicReturnCallTest, ConvertsFinalIndirectCallInFunctionBody) {
   EXPECT_TRUE(call->type == wasm::Type::unreachable);
 }
 
-TEST(BasicReturnCallTest, KeepsNonTailCall) {
+TEST(TailCallOptimizerTest, KeepsNonTailCall) {
   auto m = loadWat(R"(
     (module
       (func $callee)
@@ -224,7 +267,7 @@ TEST(BasicReturnCallTest, KeepsNonTailCall) {
   wasm::Function *const func = m->getFunction("caller");
 
   wasm::PassRunner runner{m.get()};
-  runner.add(std::unique_ptr<wasm::Pass>{createBasicReturnCallPass()});
+  runner.add(std::unique_ptr<wasm::Pass>{createTailCallOptimizerPass()});
   runner.run();
 
   using namespace matcher;

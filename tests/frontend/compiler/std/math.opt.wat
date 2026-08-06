@@ -10243,8 +10243,7 @@
    local.get $0
    f64.const 0
    i32.const 1
-   call $~lib/math/tan_kern
-   return
+   return_call $~lib/math/tan_kern
   end
   local.get $2
   i32.const 2146435072
