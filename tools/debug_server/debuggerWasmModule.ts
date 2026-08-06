@@ -65,6 +65,7 @@ export interface DebuggerSourceLocation {
 
 export class DebuggerWasmModule {
   private readonly sourcesByPath: ReadonlyMap<string, string>;
+  private readonly breakpointLocations = new Map<string, number | undefined>();
 
   private constructor(
     readonly scriptId: string,
@@ -114,6 +115,12 @@ export class DebuggerWasmModule {
       return undefined;
     }
 
+    const cacheKey = `${source}:${line}`;
+    if (this.breakpointLocations.has(cacheKey)) {
+      const wasmBytecodeOffset = this.breakpointLocations.get(cacheKey);
+      return wasmBytecodeOffset === undefined ? undefined : { wasmBytecodeOffset, sourceLine: line };
+    }
+
     let firstColumn: number | undefined;
     this.sourceMap.eachMapping((mapping) => {
       if (mapping.source !== source || mapping.originalLine !== line || mapping.generatedLine !== 1) {
@@ -125,6 +132,7 @@ export class DebuggerWasmModule {
       }
     });
 
+    this.breakpointLocations.set(cacheKey, firstColumn);
     if (firstColumn === undefined) {
       return undefined;
     }
