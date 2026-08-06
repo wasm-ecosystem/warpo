@@ -198,8 +198,11 @@ static void optimize(AsModule const &m, Config const &config) {
       passRunner->add("remove-unused-names");
     }
     passRunner->add(std::unique_ptr<wasm::Pass>{createMergeDataSectionPass()});
-    if (config.tailCall)
+    if (config.tailCall) {
+      m.get()->features.setTailCall();
+      passRunner->add("vacuum");
       passRunner->add(std::unique_ptr<wasm::Pass>{createTailCallOptimizerPass()});
+    }
     passRunner->run();
   }
   ensureValidate(*m.get());

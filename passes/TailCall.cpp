@@ -1,8 +1,6 @@
 // Copyright (C) 2026 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
-#include <iterator>
-
 #include "TailCall.hpp"
 #include "pass.h"
 #include "wasm-traversal.h"
@@ -25,6 +23,8 @@ namespace {
 // future, more advanced passes.
 struct TailCallOptimizer : public wasm::WalkerPass<wasm::PostWalker<TailCallOptimizer>> {
   bool modifiesBinaryenIR() override { return true; }
+  bool isFunctionParallel() override { return true; }
+  std::unique_ptr<wasm::Pass> create() override { return std::make_unique<TailCallOptimizer>(); }
 
   bool tryConvertExpressionToReturnCall(wasm::Expression *expr, wasm::Module *m, wasm::Function *func) {
     if (auto *call = expr->dynCast<wasm::Call>()) {
@@ -45,16 +45,6 @@ struct TailCallOptimizer : public wasm::WalkerPass<wasm::PostWalker<TailCallOpti
 
     return false;
   }
-
-  void run(wasm::Module *m) override {
-    m->features.setTailCall();
-    for (std::unique_ptr<wasm::Function> const &func : m->functions) {
-      if (func->imported() || func->body == nullptr)
-        continue;
-      runOnFunction(m, func.get());
-    }
-  }
-
   void runOnFunction(wasm::Module *m, wasm::Function *func) override {
     // Step 1: Walk all blocks in this function. Any explicit `call; return`
     // pair is safe to fold because the return proves the call is in tail
@@ -73,29 +63,19 @@ struct TailCallOptimizer : public wasm::WalkerPass<wasm::PostWalker<TailCallOpti
   }
 
   void visitBlock(wasm::Block *curr) {
-    // This handles only adjacent explicit returns. A block's last expression may
-    // be inside a nested block, so implicit function-tail calls are handled in
-    // runOnFunction instead.
-    for (auto it = curr->list.begin(); it != curr->list.end();) {
-      auto next = std::next(it);
-      if (next == curr->list.end())
-        break;
+    if (curr->list.size() < 2U)
+      return;
 
-      wasm::Return *const returnExpr = (*next)->dynCast<wasm::Return>();
-      if (returnExpr == nullptr || returnExpr->value != nullptr) {
-        it = next;
-        continue;
-      }
+    wasm::Return *const returnExpr = curr->list.back()->dynCast<wasm::Return>();
+    wasm::Expression *const call = curr->list[curr->list.size() - 2U];
+    if (returnExpr == nullptr || returnExpr->value != nullptr)
+      return;
 
-      bool const converted = tryConvertExpressionToReturnCall(*it, getModule(), getFunction());
-      if (!converted) {
-        it = next;
-        continue;
-      }
+    bool const converted = tryConvertExpressionToReturnCall(call, getModule(), getFunction());
+    if (!converted)
+      return;
 
-      curr->list.erase(next);
-      ++it;
-    }
+    curr->list.pop_back();
     curr->finalize();
   }
 
