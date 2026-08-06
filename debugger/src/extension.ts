@@ -18,6 +18,8 @@ interface WarpoDebugConfiguration extends vscode.DebugConfiguration {
   launchType?: string;
   runtime?: string;
   entryFunctionName?: string;
+  cwd?: string;
+  warpoPath?: string;
   debugSessionLogging?: boolean;
   args?: number[];
 }
@@ -64,18 +66,35 @@ function findDapServer(workspaceFolder: string, extensionPath: string): string |
 
 class WarpoDebugConfigurationProvider implements vscode.DebugConfigurationProvider {
   resolveDebugConfiguration(
-    _folder: vscode.WorkspaceFolder | undefined,
+    folder: vscode.WorkspaceFolder | undefined,
     config: vscode.DebugConfiguration
   ): vscode.ProviderResult<vscode.DebugConfiguration> {
     const warpoConfig = config as WarpoDebugConfiguration;
+    const workspaceFolder = folder?.uri.fsPath ?? vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 
-    warpoConfig.wasmFilePath = warpoConfig.wasmFilePath ?? warpoConfig.program;
-    if (!warpoConfig.wasmFilePath) {
-      void vscode.window.showErrorMessage("No 'wasmFilePath' specified in launch configuration.");
+    warpoConfig.sessionMode = warpoConfig.sessionMode ?? "wasm file";
+    if (warpoConfig.sessionMode === "unittest") {
+      if (!workspaceFolder) {
+        void vscode.window.showErrorMessage("Open a workspace folder to debug unit tests.");
+        return undefined;
+      }
+      warpoConfig.program = path.join(workspaceFolder, "build_coverage", "test.instrumented.wasm");
+      warpoConfig.cwd = workspaceFolder;
+      if (warpoConfig.warpoPath && !path.isAbsolute(warpoConfig.warpoPath)) {
+        warpoConfig.warpoPath = path.join(workspaceFolder, warpoConfig.warpoPath);
+      }
+    } else {
+      warpoConfig.wasmFilePath = warpoConfig.wasmFilePath ?? warpoConfig.program;
+      if (!warpoConfig.wasmFilePath) {
+        void vscode.window.showErrorMessage("No 'wasmFilePath' specified in launch configuration.");
+        return undefined;
+      }
+      warpoConfig.program = warpoConfig.wasmFilePath;
+    }
+    if (!warpoConfig.program) {
+      void vscode.window.showErrorMessage("No program specified in launch configuration.");
       return undefined;
     }
-    warpoConfig.program = warpoConfig.wasmFilePath;
-    warpoConfig.sessionMode = warpoConfig.sessionMode ?? "wasm file";
     warpoConfig.launchType = warpoConfig.sessionMode;
     warpoConfig.runtime = warpoConfig.runtime ?? "node";
     warpoConfig.entryFunctionName = warpoConfig.entryFunctionName ?? "main";

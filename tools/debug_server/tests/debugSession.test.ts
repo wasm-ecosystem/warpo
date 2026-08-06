@@ -13,6 +13,7 @@ import { normalizeDebugPath } from "../debugPath.js";
 
 const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
 const DAP_SERVER = path.resolve(DIRNAME, "..", "..", "..", "dist", "debug_server", "dapServer.js");
+const WARPO_CLI = path.resolve(DIRNAME, "..", "..", "..", "dist", "warpo.js");
 const TEST_MODULE_DIR = path.resolve(DIRNAME, "testModule");
 
 function sourcePath(name: string): string {
@@ -181,6 +182,50 @@ void describe("WarpoDebugSession", () => {
     assert.equal(response.body.breakpoints[0].line, 5);
     assert.equal(response.body.breakpoints[1].verified, true);
     assert.equal(response.body.breakpoints[1].line, 10);
+  });
+
+  void it("should stop in a unit test after returning from main", { timeout: 15000 }, async () => {
+    const testSource = sourcePath("unittest_debug.case.ts");
+    const implementationSource = sourcePath("unittest_debug.ts");
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: testSource },
+      breakpoints: [{ line: 8 }],
+    });
+    await dc.setBreakpointsRequest({
+      source: { path: implementationSource },
+      breakpoints: [{ line: 5 }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      launchType: string;
+      runtime: string;
+      cwd: string;
+      warpoPath: string;
+    } = {
+      launchType: "unittest",
+      runtime: "node",
+      cwd: TEST_MODULE_DIR,
+      warpoPath: WARPO_CLI,
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+    let stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    assert.equal(
+      assertDefined(stackTraceResponse.body.stackFrames[0]).source?.path,
+      normalizeDebugPath(implementationSource)
+    );
+    assert.equal(stackTraceResponse.body.stackFrames[0].line, 5);
+
+    const nextStop = waitForBreakpointStop(dc);
+    await dc.continueRequest({ threadId: 1 });
+    await nextStop;
+
+    stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    assert.equal(assertDefined(stackTraceResponse.body.stackFrames[0]).source?.path, normalizeDebugPath(testSource));
+    assert.equal(stackTraceResponse.body.stackFrames[0].line, 8);
   });
 
   void it("should report the built wasm as a loaded source on launch", { timeout: 5000 }, async () => {

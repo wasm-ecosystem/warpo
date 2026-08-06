@@ -14,6 +14,12 @@ export interface WasmLaunchConfig {
   args: number[];
 }
 
+export interface UnitTestLaunchConfig {
+  wasmFilePath: string;
+  cwd: string;
+  warpoPath?: string;
+}
+
 export interface DebugPauseInfo {
   reason: string;
   wasmBytecodeOffset?: number;
@@ -34,7 +40,7 @@ export interface DebugPausedWasmFrame {
 export interface Debugger {
   readonly name: string;
 
-  launch(config: WasmLaunchConfig): Promise<void>;
+  launch(config: WasmLaunchConfig | UnitTestLaunchConfig): Promise<void>;
   dispose(): void;
   isPaused(): boolean;
   pause(): void;

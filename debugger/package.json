@@ -52,10 +52,15 @@
                 "type": "string",
                 "enum": [
                   "wasm file",
-                  "js file"
+                  "js file",
+                  "unittest"
                 ],
                 "default": "wasm file",
                 "description": "Which Warpo debugging workflow to use for this session."
+              },
+              "warpoPath": {
+                "type": "string",
+                "description": "Optional path to the Warpo CLI entry script used by unittest mode. Defaults to the bundled CLI."
               },
               "entryFunctionName": {
                 "type": "string",
@@ -96,6 +101,13 @@
             "entryFunctionName": "main",
             "debugSessionLogging": false,
             "args": []
+          },
+          {
+            "type": "warpo",
+            "request": "launch",
+            "name": "Warpo Debug (unittest)",
+            "sessionMode": "unittest",
+            "debugSessionLogging": false
           }
         ]
       }

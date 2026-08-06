@@ -1,10 +1,12 @@
 ## User experience design
 
-### 1. launch a basic Wasm file
+### 1. Launch a basic Wasm file
 
 ```json
 {
-  "type": "wasm file",
+  "type": "warpo",
+  "request": "launch",
+  "sessionMode": "wasm file",
   "wasmFilePath": "some/demo/path.wasm",
   "entryFunctionName": "foo",
   "args": [1, 2, 3]
@@ -20,7 +22,33 @@ In this case, the debugger server will:
 
 Warp Runtime: TBD
 
-### 2. launch a Javascript file
+### 2. Debug a unit test
+
+The debugger starts the existing Warpo test runner in a Node process with the inspector enabled. The test runner itself still compiles the test module, supplies its usual imports, and executes the tests.
+
+```json
+{
+  "type": "warpo",
+  "request": "launch",
+  "name": "Warpo Debug Unittest",
+  "sessionMode": "unittest"
+}
+```
+
+The debugger starts the Warpo CLI with `node dist/warpo.js test` under Node inspection. It uses the workspace folder as the test runner's working directory and loads debug metadata from `build_coverage/test.instrumented.wasm`.
+
+Set `warpoPath` to use a Warpo CLI entry script outside `node_modules`; relative paths are resolved from the workspace folder.
+
+```json
+{
+  "type": "warpo",
+  "request": "launch",
+  "sessionMode": "unittest",
+  "warpoPath": "../warpo/dist/warpo.js"
+}
+```
+
+### 3. Launch a Javascript file
 
 ```json
 {
