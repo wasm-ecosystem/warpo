@@ -728,6 +728,52 @@ void describe("WarpoDebugSession", () => {
     );
   });
 
+  void it("should expand ArrayBuffer values by index", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_array_buffer.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 12;
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    const { variablesResponse } = await launchAndReadTopFrameLocals(dc, launchArgs);
+    const buffer = assertDefined(findVariable(variablesResponse.body.variables, "buffer"));
+    assert.equal(buffer.type, "~lib/arraybuffer/ArrayBuffer");
+    assert.ok(buffer.variablesReference > 0);
+    assert.equal(buffer.value, "");
+
+    const bufferElementsResponse = await dc.variablesRequest({ variablesReference: buffer.variablesReference });
+    assert.deepEqual(
+      bufferElementsResponse.body.variables.map((variable) => ({
+        name: variable.name,
+        type: variable.type,
+        value: variable.value,
+        variablesReference: variable.variablesReference,
+      })),
+      [
+        { name: "0", type: "u8", value: "13", variablesReference: 0 },
+        { name: "1", type: "u8", value: "21", variablesReference: 0 },
+        { name: "2", type: "u8", value: "34", variablesReference: 0 },
+      ]
+    );
+  });
+
   void it("should expand class array elements as objects", { timeout: 5000 }, async () => {
     const source = sourcePath("debugger_class_array.ts");
     const output = await buildModule(source);
