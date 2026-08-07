@@ -515,6 +515,10 @@ export class NodeDebugger implements Debugger {
     if (!params || lang !== "WebAssembly" || typeof params.scriptId !== "string") {
       return;
     }
+    if (!this.isExpectedWasmModule(params)) {
+      this.log(`ignoring non-target wasm module scriptId=${params.scriptId} url=${url}`);
+      return;
+    }
 
     this.wasmScriptId = params.scriptId;
     this.log(`wasm module detected scriptId=${params.scriptId}`);
@@ -526,6 +530,14 @@ export class NodeDebugger implements Debugger {
       this.log(`module load handler failed: ${message}`);
       process.stderr.write(`Module load handler failed: ${message}\n`);
     });
+  }
+
+  private isExpectedWasmModule(params: Record<string, unknown>): boolean {
+    if (!this.wasmFilePath) {
+      return false;
+    }
+
+    return params.sourceMapURL === `${path.basename(this.wasmFilePath)}.map`;
   }
 
   private async resumeInternalStartupPause(): Promise<void> {

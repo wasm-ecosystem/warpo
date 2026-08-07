@@ -192,7 +192,7 @@ void describe("WarpoDebugSession", () => {
 
     await dc.setBreakpointsRequest({
       source: { path: testSource },
-      breakpoints: [{ line: 8 }],
+      breakpoints: [{ line: 9 }],
     });
     await dc.setBreakpointsRequest({
       source: { path: implementationSource },
@@ -225,7 +225,7 @@ void describe("WarpoDebugSession", () => {
 
     stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
     assert.equal(assertDefined(stackTraceResponse.body.stackFrames[0]).source?.path, normalizeDebugPath(testSource));
-    assert.equal(stackTraceResponse.body.stackFrames[0].line, 8);
+    assert.equal(stackTraceResponse.body.stackFrames[0].line, 9);
   });
 
   void it("should report the built wasm as a loaded source on launch", { timeout: 5000 }, async () => {
