@@ -126,6 +126,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private loadedModule: DebuggerWasmModule | undefined;
   private runtime: Debugger | undefined;
   private stoppedWasmBytecodeOffset: number | undefined;
+  private stoppedForTrap = false;
   private debugSessionLogging = false;
 
   private log(msg: string): void {
@@ -138,13 +139,21 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private sendStoppedEvent(runtime: Debugger, info: DebugPauseInfo): void {
     this.log(`[${runtime.name}] Paused: ${info.reason}`);
     this.clearVariableContainers();
-    const reason = info.reason === "breakpoint" ? "breakpoint" : "pause";
+    let reason: string;
+    if (info.reason === "breakpoint") {
+      reason = "breakpoint";
+    } else if (info.reason === "exception") {
+      reason = "exception";
+    } else {
+      reason = "pause";
+    }
     this.log(`Sending stopped event: reason=${reason}, threadId=${WarpoDebugSession.threadId}`);
     this.sendEvent(new StoppedEvent(reason, WarpoDebugSession.threadId, info.reason));
   }
 
   private handleRuntimePause(runtime: Debugger, info: DebugPauseInfo): void {
     this.stoppedWasmBytecodeOffset = info.wasmBytecodeOffset;
+    this.stoppedForTrap = info.reason === "exception";
     if (info.reason === "other" && !this.loadedModule) {
       return;
     }
@@ -356,12 +365,11 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response: DebugProtocol.DisconnectResponse,
     _args: DebugProtocol.DisconnectArguments
   ): void {
-    this.disposeLoadedModule();
-    this.pendingBreakpointUpdatesBySource.clear();
-    this.stoppedWasmBytecodeOffset = undefined;
     this.runtime?.dispose();
     this.runtime = undefined;
+    this.resetRuntimeState();
     this.debugSessionLogging = false;
+    this.dispose();
     this.log("Debug session ended.");
     this.sendResponse(response);
   }
@@ -1318,6 +1326,12 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response.body = { allThreadsContinued: true };
     this.sendResponse(response);
 
+    if (this.stoppedForTrap) {
+      this.log("Continue requested from wasm trap; terminating debug session");
+      this.disposeRuntimeAndTerminate(runtime);
+      return;
+    }
+
     void this.resumeRuntime(runtime);
   }
 
@@ -1343,10 +1357,23 @@ export class WarpoDebugSession extends LoggingDebugSession {
       return;
     }
 
-    this.clearVariableContainers();
-    this.stoppedWasmBytecodeOffset = undefined;
-    this.runtime = undefined;
+    this.disposeRuntimeAndTerminate(runtime);
+  }
+
+  private disposeRuntimeAndTerminate(runtime: Debugger): void {
+    runtime.dispose();
+    if (this.runtime === runtime) {
+      this.runtime = undefined;
+    }
+    this.resetRuntimeState();
     this.sendEvent(new TerminatedEvent());
+  }
+
+  private resetRuntimeState(): void {
+    this.disposeLoadedModule();
+    this.pendingBreakpointUpdatesBySource.clear();
+    this.stoppedWasmBytecodeOffset = undefined;
+    this.stoppedForTrap = false;
   }
 
   private logAllBreakpoints(): void {

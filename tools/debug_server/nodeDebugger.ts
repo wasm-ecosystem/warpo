@@ -462,7 +462,9 @@ export class NodeDebugger implements Debugger {
             await this.waitForCommand("Runtime.runIfWaitingForDebugger");
             this.log("Runtime.runIfWaitingForDebugger complete -> Debugger.setBreakpointsActive");
             await this.waitForCommand("Debugger.setBreakpointsActive", { active: true });
-            this.log("Debugger.setBreakpointsActive complete -> launch ready");
+            this.log("Debugger.setBreakpointsActive complete -> Debugger.setPauseOnExceptions");
+            await this.waitForCommand("Debugger.setPauseOnExceptions", { state: "all" });
+            this.log("Debugger.setPauseOnExceptions complete -> launch ready");
             resolve();
           } catch (error) {
             this.log(`CDP setup failed: ${error instanceof Error ? error.message : "unknown error"}`);
@@ -522,6 +524,24 @@ export class NodeDebugger implements Debugger {
       return;
     }
 
+    const isExceptionPause = reason === "exception" || reason === "promiseRejection";
+    // CDP can only pause on exceptions for the whole Node process, not for a specific wasm module. We need
+    // "all" because the JavaScript wrapper can catch a wasm trap, but that also pauses for unrelated JavaScript
+    // exceptions. Treat the top frame belonging to our wasm module as the filter for a debugger-visible trap.
+    if (isExceptionPause && !this.isTopFrameWasm(params)) {
+      this.log(`Debugger.paused reason=${reason} outside wasm -> resume`);
+      void this.resumeIgnoredPause();
+      return;
+    }
+
+    const isWasmTrap = isExceptionPause;
+    if (isWasmTrap) {
+      this.paused = true;
+      this.log(`Debugger.paused reason=${reason} (wasm trap)`);
+      void this.notifyPause("exception");
+      return;
+    }
+
     this.paused = true;
     this.log(`Debugger.paused reason=${reason}`);
     void this.notifyPause(reason);
@@ -572,17 +592,19 @@ export class NodeDebugger implements Debugger {
   }
 
   private async resumeInternalStartupPause(): Promise<void> {
+    await this.resumeIgnoredPause("inspect-brk startup pause");
+  }
+
+  private async resumeIgnoredPause(description: string = "non-wasm exception pause"): Promise<void> {
     try {
       await this.waitForCommand("Debugger.resume");
       this.paused = false;
       this.pausedCallFrames = [];
       this.wasmMemoryBufferObjectId = undefined;
       this.wasmGlobalsObjectId = undefined;
-      this.log("inspect-brk startup pause resumed");
+      this.log(`${description} resumed`);
     } catch (error) {
-      this.log(
-        `failed to resume inspect-brk startup pause: ${error instanceof Error ? error.message : "unknown error"}`
-      );
+      this.log(`failed to resume ${description}: ${error instanceof Error ? error.message : "unknown error"}`);
     }
   }
 
@@ -629,6 +651,15 @@ export class NodeDebugger implements Debugger {
     const wasmCallFrames = callFrames.filter((callFrame) => callFrame.location.scriptId === this.wasmScriptId);
     this.log(`getPausedWasmCallFrames total=${callFrames.length} wasm=${wasmCallFrames.length}`);
     return wasmCallFrames;
+  }
+
+  private isTopFrameWasm(params?: Record<string, unknown>): boolean {
+    if (!Array.isArray(params?.callFrames) || !this.wasmScriptId) {
+      return false;
+    }
+
+    const topCallFrame = params.callFrames.find(isCDPCallFrame);
+    return topCallFrame?.location.scriptId === this.wasmScriptId;
   }
 
   private toPausedWasmFrame(callFrame: CDPCallFrame): DebugPausedWasmFrame {
