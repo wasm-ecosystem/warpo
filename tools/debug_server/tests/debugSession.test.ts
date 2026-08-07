@@ -284,7 +284,15 @@ void describe("WarpoDebugSession", () => {
       entryFunctionName: "_start",
     };
 
-    await assert.rejects(dc.launchRequest(launchArgs), /Wasm file does not exist/);
+    const stderrPromise = waitForStderrOutput(dc);
+    const terminatedPromise = dc.waitForEvent("terminated");
+
+    await dc.launchRequest(launchArgs);
+
+    const stderrEvent = await stderrPromise;
+    const stderrBody = stderrEvent.body as { output?: string } | undefined;
+    assert.match(stderrBody?.output ?? "", /Wasm file not found/);
+    await terminatedPromise;
   });
 
   void it("should terminate when the runtime exits after wasm instantiation fails", { timeout: 5000 }, async () => {

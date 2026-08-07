@@ -260,6 +260,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
         this.sendErrorResponse(response, 1, "No program specified for launch");
         return;
       }
+      const wasmFilePath = path.resolve(program);
       this.log(`Launch requested for: ${program}`);
       if (launchType === "wasm file" || launchType === "unittest") {
         const runtimeName = args.runtime ?? "node";
@@ -320,12 +321,12 @@ export class WarpoDebugSession extends LoggingDebugSession {
         await runtime.launch(
           launchType === "unittest"
             ? {
-                wasmFilePath: path.resolve(program),
+                wasmFilePath,
                 cwd,
                 warpoPath: args.warpoPath,
               }
             : {
-                wasmFilePath: path.resolve(program),
+                wasmFilePath,
                 entryFunctionName: args.entryFunctionName ?? "main",
                 args: args.args ?? [],
               }
