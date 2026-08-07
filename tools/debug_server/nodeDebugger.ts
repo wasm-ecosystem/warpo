@@ -524,8 +524,14 @@ export class NodeDebugger implements Debugger {
       return;
     }
 
-    const isWasmTrap =
-      (reason === "exception" || reason === "promiseRejection") && this.pausedCallFrames.length > 0;
+    const isExceptionPause = reason === "exception" || reason === "promiseRejection";
+    if (isExceptionPause && !this.isTopFrameWasm(params)) {
+      this.log(`Debugger.paused reason=${reason} outside wasm -> resume`);
+      void this.resumeIgnoredPause();
+      return;
+    }
+
+    const isWasmTrap = isExceptionPause;
     if (isWasmTrap) {
       this.paused = true;
       this.log(`Debugger.paused reason=${reason} (wasm trap)`);
@@ -583,17 +589,19 @@ export class NodeDebugger implements Debugger {
   }
 
   private async resumeInternalStartupPause(): Promise<void> {
+    await this.resumeIgnoredPause("inspect-brk startup pause");
+  }
+
+  private async resumeIgnoredPause(description: string = "non-wasm exception pause"): Promise<void> {
     try {
       await this.waitForCommand("Debugger.resume");
       this.paused = false;
       this.pausedCallFrames = [];
       this.wasmMemoryBufferObjectId = undefined;
       this.wasmGlobalsObjectId = undefined;
-      this.log("inspect-brk startup pause resumed");
+      this.log(`${description} resumed`);
     } catch (error) {
-      this.log(
-        `failed to resume inspect-brk startup pause: ${error instanceof Error ? error.message : "unknown error"}`
-      );
+      this.log(`failed to resume ${description}: ${error instanceof Error ? error.message : "unknown error"}`);
     }
   }
 
@@ -640,6 +648,15 @@ export class NodeDebugger implements Debugger {
     const wasmCallFrames = callFrames.filter((callFrame) => callFrame.location.scriptId === this.wasmScriptId);
     this.log(`getPausedWasmCallFrames total=${callFrames.length} wasm=${wasmCallFrames.length}`);
     return wasmCallFrames;
+  }
+
+  private isTopFrameWasm(params?: Record<string, unknown>): boolean {
+    if (!Array.isArray(params?.callFrames) || !this.wasmScriptId) {
+      return false;
+    }
+
+    const topCallFrame = params.callFrames.find(isCDPCallFrame);
+    return topCallFrame?.location.scriptId === this.wasmScriptId;
   }
 
   private toPausedWasmFrame(callFrame: CDPCallFrame): DebugPausedWasmFrame {
