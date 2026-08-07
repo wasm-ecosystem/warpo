@@ -100,6 +100,10 @@ function getBinaryName(): string {
   return os.platform() === "win32" ? "warpo_asc.exe" : "warpo_asc";
 }
 
+function getTraceVisualizerBinaryName(): string {
+  return os.platform() === "win32" ? "warpo_trace_visualizer.exe" : "warpo_trace_visualizer";
+}
+
 function getExtractedPath(archivePath: string): string {
   if (archivePath.endsWith(".tar.gz")) {
     return join(dirname, basename(archivePath, ".tar.gz"));
@@ -241,14 +245,33 @@ async function downloadForCurrentMachineBinary(proxy?: string): Promise<string |
   return join(outputPath, "warpo", getBinaryName());
 }
 
-export async function build(options: Option): Promise<number> {
-  const cwd = options.cwd ?? process.cwd();
-  const argv = applyDefaultBuildOptions(options.argv, cwd);
-  const binary = await downloadForCurrentMachineBinary(options.proxy);
-  if (binary === null) {
-    throw new Error("Failed to resolve warpo binary path");
+async function downloadForCurrentMachineTraceVisualizer(proxy?: string): Promise<string | null> {
+  /* eslint-disable dot-notation -- process.env is index-signature typed under strict test_runner checks. */
+  if (process.env["WARPO_TRACE_VISUALIZER_BINARY_PATH"]) {
+    return process.env["WARPO_TRACE_VISUALIZER_BINARY_PATH"];
+  }
+  const cachedBinary = join(dirname, "warpo", getTraceVisualizerBinaryName());
+  if (process.env["WARPO_FORCE_DOWNLOAD"] !== "1" && existsSync(cachedBinary)) {
+    return cachedBinary;
+  }
+  /* eslint-enable dot-notation */
+
+  const version = getVersion();
+
+  if (version === "0.0.0") {
+    // for development purpose, use local build
+    return join(warpoRoot, "build", "warpo", getTraceVisualizerBinaryName());
   }
 
+  const asset = createCurrentMachineAsset(version);
+  const outputPath = getExtractedPathForAsset(asset);
+  await downloadAndExtractAsset(asset, version, proxy);
+  return join(outputPath, "warpo", getTraceVisualizerBinaryName());
+}
+
+function runBinary(binary: string, options: Option): Promise<number> {
+  const cwd = options.cwd ?? process.cwd();
+  const argv = options.argv;
   const onStdout = options.onStdout;
   const ps =
     onStdout === undefined
@@ -284,4 +307,22 @@ export async function build(options: Option): Promise<number> {
       resolve(code ?? 0);
     });
   });
+}
+
+export async function build(options: Option): Promise<number> {
+  const cwd = options.cwd ?? process.cwd();
+  const argv = applyDefaultBuildOptions(options.argv, cwd);
+  const binary = await downloadForCurrentMachineBinary(options.proxy);
+  if (binary === null) {
+    throw new Error("Failed to resolve warpo binary path");
+  }
+  return await runBinary(binary, { ...options, argv });
+}
+
+export async function traceVisualizer(options: Option): Promise<number> {
+  const binary = await downloadForCurrentMachineTraceVisualizer(options.proxy);
+  if (binary === null) {
+    throw new Error("Failed to resolve warpo trace visualizer binary path");
+  }
+  return await runBinary(binary, options);
 }

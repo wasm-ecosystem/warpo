@@ -25,4 +25,5 @@
 - [使用 WARPO CLI 进行构建与测试](/zh-CN/using_compiler/build_and_test)
 - [闭包函数](/en/using_language/details/closure)
 - [Heap Analyzer](/zh-CN/executing_webassembly/heap-analyzer)
+- [CPU 性能分析](/zh-CN/executing_webassembly/profiling)
 - [Multi Return](/en/using_language/details/multi_return)
