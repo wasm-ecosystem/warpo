@@ -847,6 +847,9 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
 
     const view = new DataView(memory.buffer, memory.byteOffset, memory.byteLength);
+    if (classLayout.builtinKind === BuiltinContainerKind.ArrayBuffer) {
+      return this.decodeArrayBufferElements(view);
+    }
     if (classLayout.builtinKind === BuiltinContainerKind.Array) {
       return this.decodeArrayElements(address, view, classLayout);
     }
@@ -869,7 +872,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
   ): Promise<number | undefined> {
     if (
       classLayout.builtinKind !== BuiltinContainerKind.SmallTuple &&
-      classLayout.builtinKind !== BuiltinContainerKind.StaticArray
+      classLayout.builtinKind !== BuiltinContainerKind.StaticArray &&
+      classLayout.builtinKind !== BuiltinContainerKind.ArrayBuffer
     ) {
       return classLayout.byteSize;
     }
@@ -962,6 +966,19 @@ export class WarpoDebugSession extends LoggingDebugSession {
       elementSize,
       classLayout.templateTypeIsReference === true
     );
+  }
+
+  private decodeArrayBufferElements(view: DataView): DebugSessionVariable[] {
+    const elements: DebugSessionVariable[] = [];
+    for (let index = 0; index < view.byteLength; index++) {
+      elements.push({
+        kind: "basic",
+        name: index.toString(),
+        value: view.getUint8(index).toString(),
+        typeName: "u8",
+      });
+    }
+    return elements;
   }
 
   private async decodeStaticArrayElements(

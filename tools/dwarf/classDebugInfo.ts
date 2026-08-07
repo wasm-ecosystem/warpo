@@ -23,6 +23,7 @@ export interface ClassField {
 
 export enum BuiltinContainerKind {
   Array,
+  ArrayBuffer,
   StaticArray,
   MapOrSet,
   SmallTuple,
@@ -145,6 +146,8 @@ export function attachBuiltinKind(classLayout: Pick<ClassLayout, "name" | "built
 
   if (className.startsWith("~lib/array/Array<")) {
     classLayout.builtinKind = BuiltinContainerKind.Array;
+  } else if (className === "~lib/arraybuffer/ArrayBuffer") {
+    classLayout.builtinKind = BuiltinContainerKind.ArrayBuffer;
   } else if (className.startsWith("~lib/staticarray/StaticArray<")) {
     classLayout.builtinKind = BuiltinContainerKind.StaticArray;
   } else if (className.startsWith("~lib/map/Map<") || className.startsWith("~lib/set/Set<")) {
