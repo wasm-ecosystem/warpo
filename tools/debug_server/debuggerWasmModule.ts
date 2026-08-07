@@ -74,6 +74,7 @@ export interface DebuggerSourceLocation {
 
 export class DebuggerWasmModule {
   private readonly sourcesByPath: ReadonlyMap<string, string>;
+  private readonly breakpointLocations = new Map<string, number | undefined>();
 
   private constructor(
     readonly scriptId: string,
@@ -123,19 +124,24 @@ export class DebuggerWasmModule {
       return undefined;
     }
 
-    const generatedPositions = this.sourceMap.allGeneratedPositionsFor({ source, line, column: 0 });
-
-    let firstColumn: number | undefined;
-    for (const generatedPosition of generatedPositions) {
-      if (generatedPosition.line === null || generatedPosition.column === null) {
-        continue;
-      }
-
-      if (firstColumn === undefined || generatedPosition.column < firstColumn) {
-        firstColumn = generatedPosition.column;
-      }
+    const cacheKey = `${source}:${line}`;
+    if (this.breakpointLocations.has(cacheKey)) {
+      const wasmBytecodeOffset = this.breakpointLocations.get(cacheKey);
+      return wasmBytecodeOffset === undefined ? undefined : { wasmBytecodeOffset, sourceLine: line };
     }
 
+    let firstColumn: number | undefined;
+    this.sourceMap.eachMapping((mapping) => {
+      if (mapping.source !== source || mapping.originalLine !== line || mapping.generatedLine !== 1) {
+        return;
+      }
+
+      if (firstColumn === undefined || mapping.generatedColumn < firstColumn) {
+        firstColumn = mapping.generatedColumn;
+      }
+    });
+
+    this.breakpointLocations.set(cacheKey, firstColumn);
     if (firstColumn === undefined) {
       return undefined;
     }
