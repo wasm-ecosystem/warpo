@@ -18,6 +18,7 @@ import {
 } from "@vscode/debugadapter";
 import type { DebugProtocol } from "@vscode/debugprotocol";
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import * as path from "node:path";
 import {
   BuiltinContainerKind,
@@ -40,6 +41,7 @@ import { normalizeDebugPath } from "./debugPath.js";
 import type { DebuggerBreakpointInfo, DebuggerSourceVariableInfo, DebuggerWasmModule } from "./debuggerWasmModule.js";
 import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
 import { NodeDebugger } from "./nodeDebugger.js";
+import { loadConfig } from "../test_runner/config.js";
 
 interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
   program?: string;
@@ -113,6 +115,19 @@ function formatUnknownError(error: unknown): string {
   }
 
   return "unknown error";
+}
+
+async function resolveUnitTestWasmPath(cwd: string): Promise<string> {
+  const configPath = path.join(cwd, "as-test.config.js");
+  let outputFolder = "coverage";
+  if (existsSync(configPath)) {
+    const config = await loadConfig(configPath);
+    if (typeof config.output === "string") {
+      outputFolder = config.output;
+    }
+  }
+
+  return path.resolve(cwd, outputFolder, "test.instrumented.wasm");
 }
 
 export class WarpoDebugSession extends LoggingDebugSession {
@@ -239,14 +254,13 @@ export class WarpoDebugSession extends LoggingDebugSession {
     try {
       this.debugSessionLogging = args.debugSessionLogging ?? false;
       const launchType = args.launchType ?? "wasm file";
-      const program =
-        launchType === "unittest"
-          ? path.join(args.cwd ?? process.cwd(), "build_coverage", "test.instrumented.wasm")
-          : args.program;
+      const cwd = args.cwd ?? process.cwd();
+      const program = launchType === "unittest" ? await resolveUnitTestWasmPath(cwd) : args.program;
       if (!program) {
         this.sendErrorResponse(response, 1, "No program specified for launch");
         return;
       }
+      const wasmFilePath = path.resolve(program);
       this.log(`Launch requested for: ${program}`);
       if (launchType === "wasm file" || launchType === "unittest") {
         const runtimeName = args.runtime ?? "node";
@@ -307,12 +321,12 @@ export class WarpoDebugSession extends LoggingDebugSession {
         await runtime.launch(
           launchType === "unittest"
             ? {
-                wasmFilePath: path.resolve(program),
-                cwd: args.cwd ?? process.cwd(),
+                wasmFilePath,
+                cwd,
                 warpoPath: args.warpoPath,
               }
             : {
-                wasmFilePath: path.resolve(program),
+                wasmFilePath,
                 entryFunctionName: args.entryFunctionName ?? "main",
                 args: args.args ?? [],
               }
