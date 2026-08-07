@@ -525,6 +525,9 @@ export class NodeDebugger implements Debugger {
     }
 
     const isExceptionPause = reason === "exception" || reason === "promiseRejection";
+    // CDP can only pause on exceptions for the whole Node process, not for a specific wasm module. We need
+    // "all" because the JavaScript wrapper can catch a wasm trap, but that also pauses for unrelated JavaScript
+    // exceptions. Treat the top frame belonging to our wasm module as the filter for a debugger-visible trap.
     if (isExceptionPause && !this.isTopFrameWasm(params)) {
       this.log(`Debugger.paused reason=${reason} outside wasm -> resume`);
       void this.resumeIgnoredPause();
