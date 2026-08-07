@@ -276,15 +276,15 @@ function runBinary(binary: string, options: Option): Promise<number> {
   const ps =
     onStdout === undefined
       ? spawn(binary, argv, {
-        stdio: "inherit",
-        env: options.env ?? process.env,
-        cwd,
-      })
+          stdio: "inherit",
+          env: options.env ?? process.env,
+          cwd,
+        })
       : spawn(binary, argv, {
-        stdio: ["inherit", "pipe", "inherit"],
-        env: options.env ?? process.env,
-        cwd,
-      });
+          stdio: ["inherit", "pipe", "inherit"],
+          env: options.env ?? process.env,
+          cwd,
+        });
   if (onStdout !== undefined) {
     const stdout = ps.stdout;
     if (!stdout) {
