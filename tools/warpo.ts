@@ -3,6 +3,7 @@
 // Copyright (C) 2025 wasm-ecosystem
 // SPDX-License-Identifier: Apache-2.0
 
+import { realpathSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { argv as processArgv, exit as processExit } from "node:process";
 import { main as runCli } from "./warpo_internal.js";
@@ -43,7 +44,7 @@ export async function download(options: DownloadOption = {}): Promise<string | s
   return await downloadForCurrentMachine(options.proxy);
 }
 
-if (processArgv[1] !== undefined && fileURLToPath(import.meta.url) === processArgv[1]) {
+if (processArgv[1] !== undefined && realpathSync(fileURLToPath(import.meta.url)) === realpathSync(processArgv[1])) {
   runCli({ argv: processArgv.slice(2) })
     .then((code) => {
       return processExit(code);
