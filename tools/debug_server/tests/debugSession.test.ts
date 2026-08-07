@@ -269,6 +269,24 @@ void describe("WarpoDebugSession", () => {
     assert.equal(loadedSourceBody?.source?.name, path.basename(output));
   });
 
+  void it("should reject a wasm launch when the file is missing", { timeout: 5000 }, async () => {
+    await dc.initializeRequest();
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: path.join(TEST_MODULE_DIR, "missing.wasm"),
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await assert.rejects(dc.launchRequest(launchArgs), /Wasm file does not exist/);
+  });
+
   void it("should terminate when the runtime exits after wasm instantiation fails", { timeout: 5000 }, async () => {
     const source = sourcePath("import_failure.ts");
     const output = await buildModule(source);

@@ -4,11 +4,10 @@
 import chalk from "chalk";
 import fs from "fs-extra";
 import { resolve } from "node:path";
-import { pathToFileURL } from "node:url";
 import { Command } from "commander";
 import { validateArgument, start } from "./index.js";
+import { loadConfig } from "./config.js";
 import { TestOption } from "./testOption.js";
-import type { Config } from "./interface.js";
 import { Repository } from "./utils/name.js";
 
 interface CliOptions {
@@ -21,8 +20,6 @@ interface CliOptions {
   testNamePattern?: string;
   onlyFailures?: boolean;
 }
-
-type LoadedConfig = Partial<Config>;
 
 function parseCollectCoverage(
   optionValue: string | undefined,
@@ -78,8 +75,7 @@ export async function runFromCliArgs(args: string[]): Promise<number> {
     console.error(program.helpInformation());
     return 3;
   }
-  const configModule = (await import(pathToFileURL(configPath).href)) as { default: LoadedConfig };
-  const config = configModule.default;
+  const config = await loadConfig(configPath);
 
   const includes = config.include;
   if (includes === undefined) {

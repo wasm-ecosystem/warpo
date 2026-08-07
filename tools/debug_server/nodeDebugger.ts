@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { spawn, type ChildProcess } from "node:child_process";
-import { appendFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, writeFileSync } from "node:fs";
 import * as path from "node:path";
 import * as net from "node:net";
 import { fileURLToPath } from "node:url";
@@ -166,6 +166,10 @@ export class NodeDebugger implements Debugger {
   }
 
   async launch(config: WasmLaunchConfig | UnitTestLaunchConfig): Promise<void> {
+    if (!existsSync(config.wasmFilePath)) {
+      throw new Error(`Wasm file does not exist: ${config.wasmFilePath}`);
+    }
+
     this.disposed = false;
     this.wasmFilePath = config.wasmFilePath;
 
