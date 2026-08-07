@@ -3,6 +3,8 @@
 
 // @ts-nocheck
 
+let globalCount: i32 = 7;
+
 export function compute(input: i32): i32 {
   const outer = input + 1;
   if (outer > 0) {
@@ -22,5 +24,5 @@ export function withClosure(input: i32): i32 {
 }
 
 export function _start(): i32 {
-  return compute(1) + withClosure(2);
+  return compute(1) + withClosure(2) + globalCount;
 }

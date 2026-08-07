@@ -534,7 +534,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
 
     const sourceVariables = sourceVariableScope.variables;
-    const wasmLocalValuesByIndex = this.readRawWasmLocalValues(sourceVariables, runtimeVariablesByIndex);
+    const rawWasmValues = await this.resolveRawWasmValues(sourceVariables, runtimeVariablesByIndex, runtime);
     const closureTupleValuesByLevel = await this.readClosureTupleChain(
       sourceVariableScope.rootClosureEnvLocalIndex,
       runtimeVariablesByIndex
@@ -553,7 +553,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
         return { name: variable.name, value: tupleRawValue, typeName: variable.typeName };
       }
 
-      const wasmRawValue = wasmLocalValuesByIndex.get(variable.localIndex);
+      const wasmRawValue = rawWasmValues.get(variable);
       assert(wasmRawValue !== undefined);
       return { name: variable.name, value: wasmRawValue, typeName: variable.typeName };
     });
@@ -571,21 +571,30 @@ export class WarpoDebugSession extends LoggingDebugSession {
     return fields.map((variable) => this.toDebugProtocolVariable(variable));
   }
 
-  private readRawWasmLocalValues(
+  private async resolveRawWasmValues(
     sourceVariables: DebuggerSourceVariableInfo[],
-    runtimeVariablesByIndex: Map<number, DebugRuntimeVariable>
-  ): Map<number, string> {
-    const wasmLocalValuesByIndex = new Map<number, string>();
-    for (const variable of sourceVariables) {
-      if (variable.kind === "closure") {
-        continue;
-      }
+    runtimeVariablesByIndex: Map<number, DebugRuntimeVariable>,
+    runtime: StackFrameRuntime
+  ): Promise<Map<DebuggerSourceVariableInfo, string>> {
+    const rawWasmValues = new Map<DebuggerSourceVariableInfo, string>();
+    let runtimeGlobalsByIndex: Map<number, string> | undefined;
 
-      const runtimeVariable = runtimeVariablesByIndex.get(variable.localIndex);
-      assert(runtimeVariable !== undefined);
-      wasmLocalValuesByIndex.set(variable.localIndex, runtimeVariable.value);
+    for (const variable of sourceVariables) {
+      if (variable.kind === "wasm-local") {
+        const runtimeVariable = runtimeVariablesByIndex.get(variable.localIndex);
+        assert(runtimeVariable !== undefined);
+        rawWasmValues.set(variable, runtimeVariable.value);
+      } else if (variable.kind === "wasm-global") {
+        if (runtimeGlobalsByIndex === undefined) {
+          const pausedWasmGlobalVariables = await runtime.getPausedWasmGlobalVariables();
+          runtimeGlobalsByIndex = new Map(
+            pausedWasmGlobalVariables.map((runtimeVariable) => [runtimeVariable.globalIndex, runtimeVariable.value])
+          );
+        }
+        rawWasmValues.set(variable, runtimeGlobalsByIndex.get(variable.globalIndex) ?? "<unavailable>");
+      }
     }
-    return wasmLocalValuesByIndex;
+    return rawWasmValues;
   }
 
   private async readClosureTupleChain(

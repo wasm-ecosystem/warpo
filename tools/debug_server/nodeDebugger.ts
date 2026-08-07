@@ -11,6 +11,7 @@ import type {
   Debugger,
   DebuggerCommandCallbacks,
   DebugPausedWasmFrame,
+  DebugRuntimeGlobal,
   DebugRuntimeVariable,
   UnitTestLaunchConfig,
   WasmLaunchConfig,
@@ -154,6 +155,7 @@ export class NodeDebugger implements Debugger {
   private wasmScriptId: string | undefined;
   private pausedCallFrames: CDPCallFrame[] = [];
   private wasmMemoryBufferObjectId: string | undefined;
+  private wasmGlobalsObjectId: string | undefined;
   private stderrOutput = "";
   private disposed = false;
   private runtimeExitPromise: Promise<void> | undefined;
@@ -235,6 +237,7 @@ export class NodeDebugger implements Debugger {
     this.wasmScriptId = undefined;
     this.pausedCallFrames = [];
     this.wasmMemoryBufferObjectId = undefined;
+    this.wasmGlobalsObjectId = undefined;
     this.stderrOutput = "";
     this.runtimeExitPromise = undefined;
     this.ws?.close();
@@ -254,6 +257,7 @@ export class NodeDebugger implements Debugger {
     this.paused = false;
     this.pausedCallFrames = [];
     this.wasmMemoryBufferObjectId = undefined;
+    this.wasmGlobalsObjectId = undefined;
   }
 
   finishModuleLoad(): void {
@@ -321,6 +325,32 @@ export class NodeDebugger implements Debugger {
     const variables = await this.getLocalScopeVariables(callFrame);
     this.log(`getPausedWasmFrameVariables frameIndex=${frameIndex} variables=${variables.length}`);
     return variables;
+  }
+
+  async getPausedWasmGlobalVariables(): Promise<DebugRuntimeGlobal[]> {
+    const globalsObjectId = await this.getWasmGlobalsObjectId();
+    if (!globalsObjectId) {
+      return [];
+    }
+
+    const globalsResult = await this.waitForCommandResult("Runtime.getProperties", {
+      objectId: globalsObjectId,
+      ownProperties: true,
+    });
+    const globals = Array.isArray(globalsResult.result) ? globalsResult.result.filter(isCDPPropertyDescriptor) : [];
+    const values: DebugRuntimeGlobal[] = [];
+    for (const [globalIndex, global] of globals.entries()) {
+      if (!global.value) {
+        continue;
+      }
+
+      values.push({
+        globalIndex,
+        value: await this.readRemoteObjectValue(global.value),
+        type: global.value.description ?? global.value.type,
+      });
+    }
+    return values;
   }
 
   async readWasmMemory(address: number, byteLength: number): Promise<Uint8Array | undefined> {
@@ -479,6 +509,7 @@ export class NodeDebugger implements Debugger {
     const reason = this.getPauseReason(params);
     this.pausedCallFrames = this.getPausedWasmCallFrames(params);
     this.wasmMemoryBufferObjectId = undefined;
+    this.wasmGlobalsObjectId = undefined;
 
     if (reason === "Break on start" && !this.wasmScriptId) {
       this.log("Debugger.paused reason=Break on start location=inspect-brk startup");
@@ -534,6 +565,7 @@ export class NodeDebugger implements Debugger {
       this.paused = false;
       this.pausedCallFrames = [];
       this.wasmMemoryBufferObjectId = undefined;
+      this.wasmGlobalsObjectId = undefined;
       this.log("inspect-brk startup pause resumed");
     } catch (error) {
       this.log(
@@ -676,6 +708,28 @@ export class NodeDebugger implements Debugger {
     const nestedMemory = memories.find((property) => property.value && isWasmMemoryObject(property.value));
     this.log(`getWasmMemoryObjectId result=${nestedMemory?.value?.objectId ?? "undefined"}`);
     return nestedMemory?.value?.objectId;
+  }
+
+  private async getWasmGlobalsObjectId(): Promise<string | undefined> {
+    if (this.wasmGlobalsObjectId) {
+      return this.wasmGlobalsObjectId;
+    }
+
+    const moduleScope = this.pausedCallFrames[0]?.scopeChain.find((scope) => scope.type === "module");
+    const moduleObjectId = moduleScope?.object.objectId;
+    if (!moduleObjectId) {
+      return undefined;
+    }
+
+    const moduleResult = await this.waitForCommandResult("Runtime.getProperties", {
+      objectId: moduleObjectId,
+      ownProperties: false,
+    });
+    const moduleProperties = Array.isArray(moduleResult.result)
+      ? moduleResult.result.filter(isCDPPropertyDescriptor)
+      : [];
+    this.wasmGlobalsObjectId = moduleProperties.find((property) => property.name === "globals")?.value?.objectId;
+    return this.wasmGlobalsObjectId;
   }
 
   private async readRemoteObjectValue(value: CDPRemoteObject): Promise<string> {
