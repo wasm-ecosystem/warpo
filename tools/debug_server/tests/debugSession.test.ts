@@ -413,6 +413,51 @@ void describe("WarpoDebugSession", () => {
     assert.match(secondFrame.name, /identity</);
   });
 
+  void it("should expose this in a class member function", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_member_function.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 12;
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+    assert.match(frame.name, /Counter#add/);
+
+    const variablesResponse = await readFrameLocals(dc, frame);
+    const thisVariable = assertDefined(findVariable(variablesResponse.body.variables, "this"));
+    assert.ok(thisVariable.type?.endsWith("Counter"));
+    assert.ok(thisVariable.variablesReference > 0);
+
+    const thisFieldsResponse = await dc.variablesRequest({ variablesReference: thisVariable.variablesReference });
+    const value = assertDefined(thisFieldsResponse.body.variables.find((candidate) => candidate.name === "value"));
+    assert.equal(value.type, "i32");
+    assert.equal(value.value, "40");
+
+    const delta = assertDefined(findVariable(variablesResponse.body.variables, "delta"));
+    assert.equal(delta.type, "i32");
+    assert.equal(delta.value, "2");
+  });
+
   void it("should expose wasm call stack frames after hitting a breakpoint", { timeout: 5000 }, async () => {
     const source = sourcePath("debugger_basic.ts");
     const output = await buildModule(source);
