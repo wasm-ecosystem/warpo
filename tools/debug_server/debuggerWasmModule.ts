@@ -12,6 +12,7 @@ import {
   getScopeChainInFunctionAtBytecodeOffset,
   getVariablesInFunctionAtBytecodeOffset,
   type DwarfClosureVariableLevel,
+  type DwarfFunctionInfo,
   type DwarfGlobalVariableInfo,
   type DwarfLocalVariableInfo,
   type DwarfScopeInfo,
@@ -74,7 +75,7 @@ export interface DebuggerSourceLocation {
 
 export class DebuggerWasmModule {
   private readonly sourcesByPath: ReadonlyMap<string, string>;
-  private readonly breakpointLocations = new Map<string, number | undefined>();
+  private readonly breakpointLocations = new Map<string, number[]>();
 
   private constructor(
     readonly scriptId: string,
@@ -117,39 +118,54 @@ export class DebuggerWasmModule {
     this.sourceMap.destroy();
   }
 
-  resolveBreakpointLocation(breakpoint: DebuggerBreakpointInfo): DebuggerBreakpointLocation | undefined {
+  resolveBreakpointLocations(breakpoint: DebuggerBreakpointInfo): DebuggerBreakpointLocation[] {
     const { source: sourcePath, line } = breakpoint;
     const source = this.findSource(sourcePath);
     if (!source) {
-      return undefined;
+      return [];
     }
 
     const cacheKey = `${source}:${line}`;
-    if (this.breakpointLocations.has(cacheKey)) {
-      const wasmBytecodeOffset = this.breakpointLocations.get(cacheKey);
-      return wasmBytecodeOffset === undefined ? undefined : { wasmBytecodeOffset, sourceLine: line };
+    const cachedWasmBytecodeOffsets = this.breakpointLocations.get(cacheKey);
+    if (cachedWasmBytecodeOffsets !== undefined) {
+      return cachedWasmBytecodeOffsets.map((wasmBytecodeOffset) => ({ wasmBytecodeOffset, sourceLine: line }));
     }
 
-    let firstColumn: number | undefined;
+    const wasmBytecodeOffsetsByFunction = new Map<DwarfFunctionInfo, number>();
+    let firstWasmBytecodeOffsetWithoutFunction: number | undefined;
     this.sourceMap.eachMapping((mapping) => {
       if (mapping.source !== source || mapping.originalLine !== line || mapping.generatedLine !== 1) {
         return;
       }
 
-      if (firstColumn === undefined || mapping.generatedColumn < firstColumn) {
-        firstColumn = mapping.generatedColumn;
+      const functionInfo = this.functionInfoResolver.findFunctionByBytecodeOffset(mapping.generatedColumn);
+      if (!functionInfo) {
+        if (
+          firstWasmBytecodeOffsetWithoutFunction === undefined ||
+          mapping.generatedColumn < firstWasmBytecodeOffsetWithoutFunction
+        ) {
+          firstWasmBytecodeOffsetWithoutFunction = mapping.generatedColumn;
+        }
+        return;
+      }
+
+      const existingOffset = wasmBytecodeOffsetsByFunction.get(functionInfo);
+      if (existingOffset === undefined || mapping.generatedColumn < existingOffset) {
+        wasmBytecodeOffsetsByFunction.set(functionInfo, mapping.generatedColumn);
       }
     });
 
-    this.breakpointLocations.set(cacheKey, firstColumn);
-    if (firstColumn === undefined) {
-      return undefined;
+    const wasmBytecodeOffsets = Array.from(wasmBytecodeOffsetsByFunction.values());
+    if (firstWasmBytecodeOffsetWithoutFunction !== undefined) {
+      wasmBytecodeOffsets.push(firstWasmBytecodeOffsetWithoutFunction);
     }
+    const sortedWasmBytecodeOffsets = wasmBytecodeOffsets.toSorted((left, right) => left - right);
+    this.breakpointLocations.set(cacheKey, sortedWasmBytecodeOffsets);
+    return sortedWasmBytecodeOffsets.map((wasmBytecodeOffset) => ({ wasmBytecodeOffset, sourceLine: line }));
+  }
 
-    return {
-      wasmBytecodeOffset: firstColumn,
-      sourceLine: line,
-    };
+  resolveBreakpointLocation(breakpoint: DebuggerBreakpointInfo): DebuggerBreakpointLocation | undefined {
+    return this.resolveBreakpointLocations(breakpoint)[0];
   }
 
   findBytecodeOffset(sourcePath: string, line: number): number | undefined {

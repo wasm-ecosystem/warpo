@@ -38,7 +38,12 @@ import {
   SMALL_TUPLE_SLOT_SIZE,
 } from "../runtime/objectLayout.js";
 import { normalizeDebugPath } from "./debugPath.js";
-import type { DebuggerBreakpointInfo, DebuggerSourceVariableInfo, DebuggerWasmModule } from "./debuggerWasmModule.js";
+import type {
+  DebuggerBreakpointInfo,
+  DebuggerBreakpointLocation,
+  DebuggerSourceVariableInfo,
+  DebuggerWasmModule,
+} from "./debuggerWasmModule.js";
 import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
 import { NodeDebugger } from "./nodeDebugger.js";
 import { loadConfig } from "../test_runner/config.js";
@@ -1462,32 +1467,63 @@ export class WarpoDebugSession extends LoggingDebugSession {
         this.pendingBreakpointUpdatesBySource.delete(sourcePath);
       }
 
-      const breakpointLocation = wasmModule.resolveBreakpointLocation(breakpoint);
-      if (!breakpointLocation) {
+      const breakpointLocations = wasmModule.resolveBreakpointLocations(breakpoint);
+      if (breakpointLocations.length === 0) {
         this.log(`No source-map match for breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line}`);
         this.applyPendingBreakpointUpdates(runtime, onComplete);
         return;
       }
 
-      this.log(
-        `Resolved breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line} -> ${breakpointLocation.wasmBytecodeOffset}`
-      );
-      runtime.setWasmBreakpoint(wasmModule, breakpointLocation.wasmBytecodeOffset, {
-        onSuccess: () => {
-          this.log(`Breakpoint installed at ${breakpointLocation.wasmBytecodeOffset}`);
-          this.applyPendingBreakpointUpdates(runtime, onComplete);
-        },
-        onError: (error: Error) => {
-          this.log(
-            `Failed to set breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line} at ${breakpointLocation.wasmBytecodeOffset}: ${error.message}`
-          );
-          this.applyPendingBreakpointUpdates(runtime, onComplete);
-        },
-      });
+      this.installBreakpointLocations(runtime, wasmModule, breakpoint, breakpointLocations, 0, onComplete);
       return;
     }
 
     onComplete?.();
+  }
+
+  private installBreakpointLocations(
+    runtime: Debugger,
+    wasmModule: DebuggerWasmModule,
+    breakpoint: DebuggerBreakpointInfo,
+    breakpointLocations: DebuggerBreakpointLocation[],
+    locationIndex: number,
+    onComplete?: () => void
+  ): void {
+    const breakpointLocation = breakpointLocations[locationIndex];
+    if (!breakpointLocation) {
+      this.applyPendingBreakpointUpdates(runtime, onComplete);
+      return;
+    }
+
+    this.log(
+      `Resolved breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line} -> ${breakpointLocation.wasmBytecodeOffset}`
+    );
+    runtime.setWasmBreakpoint(wasmModule, breakpointLocation.wasmBytecodeOffset, {
+      onSuccess: () => {
+        this.log(`Breakpoint installed at ${breakpointLocation.wasmBytecodeOffset}`);
+        this.installBreakpointLocations(
+          runtime,
+          wasmModule,
+          breakpoint,
+          breakpointLocations,
+          locationIndex + 1,
+          onComplete
+        );
+      },
+      onError: (error: Error) => {
+        this.log(
+          `Failed to set breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line} at ${breakpointLocation.wasmBytecodeOffset}: ${error.message}`
+        );
+        this.installBreakpointLocations(
+          runtime,
+          wasmModule,
+          breakpoint,
+          breakpointLocations,
+          locationIndex + 1,
+          onComplete
+        );
+      },
+    });
   }
 
   private disposeLoadedModule(): void {
