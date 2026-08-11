@@ -413,6 +413,118 @@ void describe("WarpoDebugSession", () => {
     assert.match(secondFrame.name, /identity</);
   });
 
+  void it("should remove a breakpoint from a concrete function", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_basic.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 13;
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+
+    const terminatedPromise = dc.waitForEvent("terminated");
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [],
+    });
+    await dc.continueRequest({ threadId: 1 });
+    await terminatedPromise;
+  });
+
+  void it("should remove breakpoints from every instantiated generic function", { timeout: 10000 }, async () => {
+    const source = sourcePath("debugger_generic_function.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 4;
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "main",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+
+    const terminatedPromise = dc.waitForEvent("terminated");
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [],
+    });
+    await dc.continueRequest({ threadId: 1 });
+    await terminatedPromise;
+  });
+
+  void it("should add a breakpoint while the program is executing", { timeout: 10000 }, async () => {
+    const source = sourcePath("debugger_breakpoint_update.ts");
+    const output = await buildModule(source);
+    const initialBreakpointLine = 6;
+    const addedBreakpointLine = 8;
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: initialBreakpointLine }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+
+    const secondStop = waitForBreakpointStop(dc);
+    await dc.continueRequest({ threadId: 1 });
+    const breakpointResponse = await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: addedBreakpointLine }],
+    });
+    assert.equal(breakpointResponse.body.breakpoints[0].line, addedBreakpointLine);
+    await secondStop;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    assert.equal(assertDefined(stackTraceResponse.body.stackFrames[0]).line, addedBreakpointLine);
+
+    await dc.disconnectRequest({ terminateDebuggee: true });
+  });
+
   void it("should expose this in a class member function", { timeout: 5000 }, async () => {
     const source = sourcePath("debugger_member_function.ts");
     const output = await buildModule(source);

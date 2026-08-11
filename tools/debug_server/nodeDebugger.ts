@@ -150,6 +150,7 @@ export class NodeDebugger implements Debugger {
   private ws: WebSocket | undefined;
   private cdpId = 0;
   private readonly pendingCommandCallbacks = new Map<number, CDPCommandCallbacks>();
+  private readonly wasmBreakpointIds = new Set<string>();
   private paused = false;
   private wasmFilePath: string | undefined;
   private wasmScriptId: string | undefined;
@@ -240,6 +241,7 @@ export class NodeDebugger implements Debugger {
     this.wasmGlobalsObjectId = undefined;
     this.stderrOutput = "";
     this.runtimeExitPromise = undefined;
+    this.wasmBreakpointIds.clear();
     this.ws?.close();
     this.child?.kill();
   }
@@ -265,7 +267,36 @@ export class NodeDebugger implements Debugger {
     this.sendCommand("Runtime.runIfWaitingForDebugger");
   }
 
-  setWasmBreakpoint(
+  setWasmBreakpoints(
+    module: DebuggerWasmModule,
+    wasmBytecodeOffsets: number[],
+    callbacks?: DebuggerCommandCallbacks
+  ): void {
+    this.clearWasmBreakpoints({
+      onSuccess: () => this.installWasmBreakpoints(module, wasmBytecodeOffsets, 0, callbacks),
+      onError: callbacks?.onError,
+    });
+  }
+
+  private installWasmBreakpoints(
+    module: DebuggerWasmModule,
+    wasmBytecodeOffsets: number[],
+    offsetIndex: number,
+    callbacks?: DebuggerCommandCallbacks
+  ): void {
+    if (offsetIndex >= wasmBytecodeOffsets.length) {
+      callbacks?.onSuccess?.();
+      return;
+    }
+    const wasmBytecodeOffset = wasmBytecodeOffsets[offsetIndex];
+
+    this.setNodeWasmBreakpoint(module, wasmBytecodeOffset, {
+      onSuccess: () => this.installWasmBreakpoints(module, wasmBytecodeOffsets, offsetIndex + 1, callbacks),
+      onError: () => this.installWasmBreakpoints(module, wasmBytecodeOffsets, offsetIndex + 1, callbacks),
+    });
+  }
+
+  private setNodeWasmBreakpoint(
     module: DebuggerWasmModule,
     wasmBytecodeOffset: number,
     callbacks?: DebuggerCommandCallbacks
@@ -274,17 +305,59 @@ export class NodeDebugger implements Debugger {
       try {
         const location = this.resolveWasmBytecodeOffsetLocation(module, wasmBytecodeOffset);
         this.log(`setWasmBreakpoint offset=${wasmBytecodeOffset} url=${module.url}`);
-        await this.waitForCommandResult("Debugger.setBreakpointByUrl", {
+        const result = await this.waitForCommandResult("Debugger.setBreakpointByUrl", {
           lineNumber: location.lineNumber,
           url: module.url,
           columnNumber: location.columnNumber,
           condition: "",
         });
+        const breakpointId = result.breakpointId;
+        if (typeof breakpointId !== "string") {
+          throw new TypeError("CDP did not return a breakpoint ID");
+        }
+        this.wasmBreakpointIds.add(breakpointId);
         this.log(`setWasmBreakpoint success offset=${wasmBytecodeOffset}`);
         callbacks?.onSuccess?.();
       } catch (error) {
         const commandError = error instanceof Error ? error : new Error(String(error));
         this.log(`setWasmBreakpoint error offset=${wasmBytecodeOffset} message=${commandError.message}`);
+        callbacks?.onError?.(commandError);
+      }
+    })();
+  }
+
+  private clearWasmBreakpoints(callbacks?: DebuggerCommandCallbacks): void {
+    const breakpointIds = Array.from(this.wasmBreakpointIds);
+    const removeNext = (index: number): void => {
+      if (index >= breakpointIds.length) {
+        callbacks?.onSuccess?.();
+        return;
+      }
+      const breakpointId = breakpointIds[index];
+
+      this.removeNodeBreakpoint(breakpointId, {
+        onSuccess: () => {
+          this.wasmBreakpointIds.delete(breakpointId);
+          removeNext(index + 1);
+        },
+        onError: () => {
+          removeNext(index + 1);
+        },
+      });
+    };
+
+    removeNext(0);
+  }
+
+  private removeNodeBreakpoint(breakpointId: string, callbacks?: DebuggerCommandCallbacks): void {
+    void (async () => {
+      try {
+        await this.waitForCommand("Debugger.removeBreakpoint", { breakpointId });
+        this.log(`removeWasmBreakpoint success id=${breakpointId}`);
+        callbacks?.onSuccess?.();
+      } catch (error) {
+        const commandError = error instanceof Error ? error : new Error(String(error));
+        this.log(`removeWasmBreakpoint error id=${breakpointId} message=${commandError.message}`);
         callbacks?.onError?.(commandError);
       }
     })();
