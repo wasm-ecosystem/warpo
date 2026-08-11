@@ -51,6 +51,8 @@ export interface Debugger {
   isPaused(): boolean;
   pause(): void;
   resume(): Promise<void>;
+  stepInstruction(): Promise<void>;
+  stepOver(): Promise<void>;
   finishModuleLoad(): void;
   getPausedWasmFrames(): DebugPausedWasmFrame[];
   getPausedWasmFrameVariables(frameIndex: number): Promise<DebugRuntimeVariable[]>;

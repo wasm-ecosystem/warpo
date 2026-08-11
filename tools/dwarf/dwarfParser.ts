@@ -21,6 +21,7 @@ import {
   Type,
 } from "wasmparser";
 import assert from "node:assert/strict";
+import { readULEB128 as readUnsignedLEB128 } from "../common/leb128.js";
 
 // ── DWARF constants ──────────────────────────────────────────────────────────
 
@@ -110,10 +111,12 @@ export interface WasmDebugInfo {
 
 class BufferReader {
   readonly view: DataView;
+  private readonly bytes: Uint8Array;
   offset: number;
 
   constructor(data: DataView | Uint8Array, offset: number = 0) {
     this.view = data instanceof Uint8Array ? new DataView(data.buffer, data.byteOffset, data.byteLength) : data;
+    this.bytes = new Uint8Array(this.view.buffer, this.view.byteOffset, this.view.byteLength);
     this.offset = offset;
   }
 
@@ -138,19 +141,9 @@ class BufferReader {
   }
 
   readULEB128(): number {
-    let result = 0;
-    let shift = 0;
-    let byte: number;
-    const start = this.offset;
-    do {
-      if (this.offset >= this.view.byteLength) {
-        throw new Error(`ULEB128 read past end of buffer at offset ${start}`);
-      }
-      byte = this.view.getUint8(this.offset++);
-      result |= (byte & 0x7f) << shift;
-      shift += 7;
-    } while (byte & 0x80);
-    return result >>> 0;
+    const result = readUnsignedLEB128(this.bytes, this.offset);
+    this.offset = result.nextOffset;
+    return result.value;
   }
 
   readString(): string {

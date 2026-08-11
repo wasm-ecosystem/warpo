@@ -154,6 +154,7 @@ export class NodeDebugger implements Debugger {
   private paused = false;
   private wasmFilePath: string | undefined;
   private wasmScriptId: string | undefined;
+  private wasmModule: DebuggerWasmModule | undefined;
   private pausedCallFrames: CDPCallFrame[] = [];
   private wasmMemoryBufferObjectId: string | undefined;
   private wasmGlobalsObjectId: string | undefined;
@@ -236,6 +237,7 @@ export class NodeDebugger implements Debugger {
     this.paused = false;
     this.wasmFilePath = undefined;
     this.wasmScriptId = undefined;
+    this.wasmModule = undefined;
     this.pausedCallFrames = [];
     this.wasmMemoryBufferObjectId = undefined;
     this.wasmGlobalsObjectId = undefined;
@@ -256,6 +258,22 @@ export class NodeDebugger implements Debugger {
 
   async resume(): Promise<void> {
     await this.waitForCommand("Debugger.resume");
+    this.paused = false;
+    this.pausedCallFrames = [];
+    this.wasmMemoryBufferObjectId = undefined;
+    this.wasmGlobalsObjectId = undefined;
+  }
+
+  async stepInstruction(): Promise<void> {
+    await this.waitForCommand("Debugger.stepInto");
+    this.paused = false;
+    this.pausedCallFrames = [];
+    this.wasmMemoryBufferObjectId = undefined;
+    this.wasmGlobalsObjectId = undefined;
+  }
+
+  async stepOver(): Promise<void> {
+    await this.waitForCommand("Debugger.stepOver");
     this.paused = false;
     this.pausedCallFrames = [];
     this.wasmMemoryBufferObjectId = undefined;
@@ -611,16 +629,16 @@ export class NodeDebugger implements Debugger {
     if (isWasmTrap) {
       this.paused = true;
       this.log(`Debugger.paused reason=${reason} (wasm trap)`);
-      void this.notifyPause("exception");
+      void this.notifyPause("exception", params);
       return;
     }
 
     this.paused = true;
     this.log(`Debugger.paused reason=${reason}`);
-    void this.notifyPause(reason);
+    void this.notifyPause(reason, params);
   }
 
-  private async notifyPause(reason: string): Promise<void> {
+  private async notifyPause(reason: string, _params?: Record<string, unknown>): Promise<void> {
     try {
       const pausedCallFrame = this.pausedCallFrames[0];
       const wasmBytecodeOffset = pausedCallFrame
@@ -874,6 +892,7 @@ export class NodeDebugger implements Debugger {
 
     this.log(`loading wasm debug metadata from ${this.wasmFilePath}`);
     const module = await DebuggerWasmModule.load(this.wasmFilePath, runtimeInfo);
+    this.wasmModule = module;
     this.log(`wasm debug metadata loaded from ${module.sourceMapFilePath}`);
     void this.onModuleLoad?.(module);
   }

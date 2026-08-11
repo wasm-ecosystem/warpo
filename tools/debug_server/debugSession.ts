@@ -38,7 +38,12 @@ import {
   SMALL_TUPLE_SLOT_SIZE,
 } from "../runtime/objectLayout.js";
 import { normalizeDebugPath } from "./debugPath.js";
-import type { DebuggerBreakpointInfo, DebuggerSourceVariableInfo, DebuggerWasmModule } from "./debuggerWasmModule.js";
+import type {
+  DebuggerBreakpointInfo,
+  DebuggerSourceLocation,
+  DebuggerSourceVariableInfo,
+  DebuggerWasmModule,
+} from "./debuggerWasmModule.js";
 import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
 import { NodeDebugger } from "./nodeDebugger.js";
 import { loadConfig } from "../test_runner/config.js";
@@ -105,6 +110,12 @@ interface StackFrameRuntime extends Debugger {
   getPausedWasmFrameVariables(frameIndex: number): Promise<DebugRuntimeVariable[]>;
 }
 
+enum StepMode {
+  None,
+  Into,
+  Over,
+}
+
 function formatUnknownError(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
@@ -142,6 +153,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private runtime: Debugger | undefined;
   private stoppedWasmBytecodeOffset: number | undefined;
   private stoppedForTrap = false;
+  private stepMode = StepMode.None;
+  private stepStartSourceLocation: DebuggerSourceLocation | undefined;
   private debugSessionLogging = false;
 
   private log(msg: string): void {
@@ -179,6 +192,16 @@ export class WarpoDebugSession extends LoggingDebugSession {
           const message = error instanceof Error ? error.message : "unknown error";
           this.log(`Failed to resume after breakpoint update: ${message}`);
         });
+        return;
+      }
+
+      if (info.reason === "breakpoint" || info.reason === "exception") {
+        this.handleNonStepPause(runtime, info);
+        return;
+      }
+
+      if (this.stepMode !== StepMode.None) {
+        void this.handleStepPause(runtime, info);
         return;
       }
 
@@ -379,6 +402,14 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   protected continueRequest(response: DebugProtocol.ContinueResponse, _args: DebugProtocol.ContinueArguments): void {
     this.doContinueRequest(response);
+  }
+
+  protected stepInRequest(response: DebugProtocol.StepInResponse, _args: DebugProtocol.StepInArguments): void {
+    this.doStepRequest(response, StepMode.Into);
+  }
+
+  protected nextRequest(response: DebugProtocol.NextResponse, _args: DebugProtocol.NextArguments): void {
+    this.doStepRequest(response, StepMode.Over);
   }
 
   protected disconnectRequest(
@@ -1369,7 +1400,113 @@ export class WarpoDebugSession extends LoggingDebugSession {
       return;
     }
 
+    this.cancelStep();
     void this.resumeRuntime(runtime);
+  }
+
+  private doStepRequest(response: DebugProtocol.StepInResponse | DebugProtocol.NextResponse, mode: StepMode): void {
+    const runtime = this.runtime;
+    if (!runtime) {
+      this.sendErrorResponse(response, 1, "No active runtime");
+      return;
+    }
+
+    if (!runtime.isPaused()) {
+      this.sendErrorResponse(response, 1, "Runtime is not paused");
+      return;
+    }
+
+    if (this.stoppedForTrap) {
+      this.sendResponse(response);
+      this.log("Step requested from wasm trap; terminating debug session");
+      this.disposeRuntimeAndTerminate(runtime);
+      return;
+    }
+
+    this.stepMode = mode;
+    this.stepStartSourceLocation = this.resolveSourceLocation(this.stoppedWasmBytecodeOffset);
+    this.clearVariableContainers();
+    this.sendResponse(response);
+    this.sendEvent(new ContinuedEvent(WarpoDebugSession.threadId, true));
+    void this.advanceStep(runtime).catch((error: unknown) => {
+      this.handleStepFailure(error);
+    });
+  }
+
+  private async handleStepPause(runtime: Debugger, info: DebugPauseInfo): Promise<void> {
+    try {
+      if (this.hasReachedNextSourceLine(info.wasmBytecodeOffset)) {
+        this.completeStep(runtime, info);
+        return;
+      }
+
+      await this.advanceStep(runtime);
+    } catch (error) {
+      this.handleStepFailure(error);
+    }
+  }
+
+  private handleNonStepPause(runtime: Debugger, info: DebugPauseInfo): void {
+    this.cancelStep();
+    if (this.runtime !== runtime) {
+      return;
+    }
+
+    this.sendStoppedEvent(runtime, info);
+  }
+
+  private hasReachedNextSourceLine(wasmBytecodeOffset: number | undefined): boolean {
+    const sourceLocation = this.resolveSourceLocation(wasmBytecodeOffset);
+    if (!sourceLocation) {
+      return false;
+    }
+
+    const startSourceLocation = this.stepStartSourceLocation;
+    return (
+      startSourceLocation === undefined ||
+      sourceLocation.sourcePath !== startSourceLocation.sourcePath ||
+      sourceLocation.sourceLine !== startSourceLocation.sourceLine
+    );
+  }
+
+  private async advanceStep(runtime: Debugger): Promise<void> {
+    if (this.runtime !== runtime || this.stepMode === StepMode.None) {
+      return;
+    }
+
+    const wasmModule = this.loadedModule;
+    const wasmBytecodeOffset = this.stoppedWasmBytecodeOffset;
+    if (
+      this.stepMode === StepMode.Over &&
+      wasmModule &&
+      wasmBytecodeOffset !== undefined &&
+      wasmModule.getNextBytecodeOffsetAfterCall(wasmBytecodeOffset) !== undefined
+    ) {
+      await runtime.stepOver();
+      return;
+    }
+
+    await runtime.stepInstruction();
+  }
+
+  private completeStep(runtime: Debugger, info: DebugPauseInfo): void {
+    this.cancelStep();
+    if (this.runtime !== runtime) {
+      return;
+    }
+
+    this.clearVariableContainers();
+    this.sendStoppedEvent(runtime, info);
+  }
+
+  private handleStepFailure(error: unknown): void {
+    this.log(`Step failed: ${formatUnknownError(error)}`);
+    this.cancelStep();
+  }
+
+  private cancelStep(): void {
+    this.stepMode = StepMode.None;
+    this.stepStartSourceLocation = undefined;
   }
 
   private async resumeRuntime(runtime: Debugger): Promise<void> {
@@ -1411,6 +1548,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.pendingBreakpointSources.clear();
     this.stoppedWasmBytecodeOffset = undefined;
     this.stoppedForTrap = false;
+    this.stepMode = StepMode.None;
+    this.stepStartSourceLocation = undefined;
   }
 
   private logAllBreakpoints(): void {

@@ -17,7 +17,9 @@ import {
   type DwarfLocalVariableInfo,
   type DwarfScopeInfo,
 } from "../dwarf/functionDebugInfo.js";
+import { readULEB128 } from "../common/leb128.js";
 import { SourceMapConsumer, type BasicSourceMapConsumer, type RawSourceMap } from "source-map";
+import { OperatorCode } from "wasmparser";
 import { normalizeDebugPath } from "./debugPath.js";
 
 export type ParsedSourceMap = BasicSourceMapConsumer;
@@ -71,6 +73,32 @@ export interface DebuggerBreakpointLocation {
 export interface DebuggerSourceLocation {
   sourcePath: string;
   sourceLine: number;
+}
+
+export function getNextBytecodeOffsetAfterCall(bytecode: Uint8Array, wasmBytecodeOffset: number): number | undefined {
+  if (wasmBytecodeOffset < 0 || wasmBytecodeOffset >= bytecode.byteLength) {
+    return undefined;
+  }
+
+  const opcode = bytecode[wasmBytecodeOffset] as OperatorCode;
+  if (opcode !== OperatorCode.call && opcode !== OperatorCode.call_indirect && opcode !== OperatorCode.call_ref) {
+    return undefined;
+  }
+
+  const immediateOffset = wasmBytecodeOffset + 1;
+  if (immediateOffset >= bytecode.byteLength) {
+    return undefined;
+  }
+
+  try {
+    const immediate = readULEB128(bytecode, immediateOffset);
+    if (opcode === OperatorCode.call_indirect) {
+      return readULEB128(bytecode, immediate.nextOffset).nextOffset;
+    }
+    return immediate.nextOffset;
+  } catch {
+    return undefined;
+  }
 }
 
 export class DebuggerWasmModule {
@@ -175,6 +203,10 @@ export class DebuggerWasmModule {
       verified: true,
       source: sourcePath,
     })?.wasmBytecodeOffset;
+  }
+
+  getNextBytecodeOffsetAfterCall(wasmBytecodeOffset: number): number | undefined {
+    return getNextBytecodeOffsetAfterCall(this.bytecode, wasmBytecodeOffset);
   }
 
   getVariablesAtBytecodeOffset(wasmBytecodeOffset: number): DebuggerSourceVariableInfo[] | undefined {
