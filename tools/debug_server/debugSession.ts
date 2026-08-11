@@ -1476,6 +1476,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
     const wasmModule = this.loadedModule;
     const wasmBytecodeOffset = this.stoppedWasmBytecodeOffset;
+    // Source-level stepping advances through runtime primitives until the source location changes. Calls use the
+    // runtime's call-aware operation because their following bytecode may be a structural `end`, not an executable instruction.
     if (
       this.stepMode === StepMode.Over &&
       wasmModule &&

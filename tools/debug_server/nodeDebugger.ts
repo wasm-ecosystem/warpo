@@ -257,23 +257,22 @@ export class NodeDebugger implements Debugger {
   }
 
   async resume(): Promise<void> {
+    this.clearPausedState();
     await this.waitForCommand("Debugger.resume");
-    this.paused = false;
-    this.pausedCallFrames = [];
-    this.wasmMemoryBufferObjectId = undefined;
-    this.wasmGlobalsObjectId = undefined;
   }
 
   async stepInstruction(): Promise<void> {
+    this.clearPausedState();
     await this.waitForCommand("Debugger.stepInto");
-    this.paused = false;
-    this.pausedCallFrames = [];
-    this.wasmMemoryBufferObjectId = undefined;
-    this.wasmGlobalsObjectId = undefined;
   }
 
+  // CDP owns the runtime-specific call and return semantics; the session uses this primitive as part of source-level stepping.
   async stepOver(): Promise<void> {
+    this.clearPausedState();
     await this.waitForCommand("Debugger.stepOver");
+  }
+
+  private clearPausedState(): void {
     this.paused = false;
     this.pausedCallFrames = [];
     this.wasmMemoryBufferObjectId = undefined;
