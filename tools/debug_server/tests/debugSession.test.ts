@@ -366,6 +366,98 @@ void describe("WarpoDebugSession", () => {
     assert.equal(d.type, "f64");
   });
 
+  void it("should stop in every instantiated generic function", { timeout: 10000 }, async () => {
+    const source = sourcePath("debugger_generic_function.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 4;
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "main",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+    const firstStackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const firstFrame = assertDefined(firstStackTraceResponse.body.stackFrames[0]);
+    const firstVariablesResponse = await readFrameLocals(dc, firstFrame);
+    const firstValue = assertDefined(findVariable(firstVariablesResponse.body.variables, "value"));
+
+    const secondStop = waitForBreakpointStop(dc);
+    await dc.continueRequest({ threadId: 1 });
+    await secondStop;
+
+    const secondStackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const secondFrame = assertDefined(secondStackTraceResponse.body.stackFrames[0]);
+    const secondVariablesResponse = await readFrameLocals(dc, secondFrame);
+    const secondValue = assertDefined(findVariable(secondVariablesResponse.body.variables, "value"));
+
+    assert.deepEqual(
+      [firstValue.type, secondValue.type].toSorted((left, right) => (left ?? "").localeCompare(right ?? "")),
+      ["f64", "i32"]
+    );
+    assert.match(firstFrame.name, /identity</);
+    assert.match(secondFrame.name, /identity</);
+  });
+
+  void it("should expose this in a class member function", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_member_function.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 12;
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+    assert.match(frame.name, /Counter#add/);
+
+    const variablesResponse = await readFrameLocals(dc, frame);
+    const thisVariable = assertDefined(findVariable(variablesResponse.body.variables, "this"));
+    assert.ok(thisVariable.type?.endsWith("Counter"));
+    assert.ok(thisVariable.variablesReference > 0);
+
+    const thisFieldsResponse = await dc.variablesRequest({ variablesReference: thisVariable.variablesReference });
+    const value = assertDefined(thisFieldsResponse.body.variables.find((candidate) => candidate.name === "value"));
+    assert.equal(value.type, "i32");
+    assert.equal(value.value, "40");
+
+    const delta = assertDefined(findVariable(variablesResponse.body.variables, "delta"));
+    assert.equal(delta.type, "i32");
+    assert.equal(delta.value, "2");
+  });
+
   void it("should expose wasm call stack frames after hitting a breakpoint", { timeout: 5000 }, async () => {
     const source = sourcePath("debugger_basic.ts");
     const output = await buildModule(source);
