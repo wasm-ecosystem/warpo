@@ -59,8 +59,19 @@ jobs:
         run: npm run build:ts
 
       - name: Test debug server
+        id: test_debug_server
         working-directory: .
+        env:
+          WARPO_DEBUG_SERVER_TRACE: "1"
         run: npm run test:debug_server
+
+      - name: Upload debug server trace
+        if: ${{ failure() && steps.test_debug_server.outcome == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-server-trace-${{ matrix.os }}
+          path: .warpo-debug-server-trace.log
+          if-no-files-found: warn
 
       - name: Install debugger deps
         working-directory: debugger

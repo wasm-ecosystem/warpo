@@ -152,6 +152,7 @@ export class NodeDebugger implements Debugger {
   private readonly pendingCommandCallbacks = new Map<number, CDPCommandCallbacks>();
   private readonly wasmBreakpointIds = new Set<string>();
   private paused = false;
+  private pauseRequested = false;
   private wasmFilePath: string | undefined;
   private wasmScriptId: string | undefined;
   private wasmModule: DebuggerWasmModule | undefined;
@@ -235,6 +236,7 @@ export class NodeDebugger implements Debugger {
   dispose(): void {
     this.disposed = true;
     this.paused = false;
+    this.pauseRequested = false;
     this.wasmFilePath = undefined;
     this.wasmScriptId = undefined;
     this.wasmModule = undefined;
@@ -253,6 +255,7 @@ export class NodeDebugger implements Debugger {
   }
 
   pause(): void {
+    this.pauseRequested = true;
     this.sendCommand("Debugger.pause");
   }
 
@@ -599,6 +602,8 @@ export class NodeDebugger implements Debugger {
 
   private handleDebuggerPaused(params?: Record<string, unknown>): void {
     const reason = this.getPauseReason(params);
+    const pauseWasRequested = this.pauseRequested;
+    this.pauseRequested = false;
     this.pausedCallFrames = this.getPausedWasmCallFrames(params);
     this.wasmMemoryBufferObjectId = undefined;
     this.wasmGlobalsObjectId = undefined;
@@ -609,7 +614,7 @@ export class NodeDebugger implements Debugger {
       return;
     }
 
-    if (reason === "other" && this.wasmScriptId) {
+    if (reason === "other" && this.wasmScriptId && !pauseWasRequested) {
       this.log("Debugger.paused reason=other location=wasm pre-entry gate");
       return;
     }
