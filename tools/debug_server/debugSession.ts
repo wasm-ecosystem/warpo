@@ -1392,7 +1392,6 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
 
     response.body = { allThreadsContinued: true };
-    this.sendResponse(response);
 
     if (this.stoppedForTrap) {
       this.log("Continue requested from wasm trap; terminating debug session");
@@ -1402,6 +1401,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
     this.cancelStep();
     void this.resumeRuntime(runtime);
+    this.sendResponse(response);
   }
 
   private doStepRequest(response: DebugProtocol.StepInResponse | DebugProtocol.NextResponse, mode: StepMode): void {
