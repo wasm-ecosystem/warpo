@@ -20,7 +20,7 @@ const outputWasm = outputWat.replace(/wat$/g, "wasm");
 describe("driver: dwarf", { concurrency: true }, () => {
   it("builds and matches snapshot", async () => {
     const code = await warpoMain({
-      argv: ["build", entry, "-o", outputWat],
+      argv: ["build", entry, "-o", outputWat, "--enable-feature", "tail-call"],
       env,
       cwd: projectRoot,
     });

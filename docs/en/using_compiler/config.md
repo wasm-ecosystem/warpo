@@ -51,19 +51,21 @@ It supports two forms:
 
 ### WebAssembly Features
 
-WARPO manages WebAssembly features through a single feature set, the same model used for features like `multi-value`.
+WARPO manages WebAssembly features through a single feature set. `tail-call` is disabled by default and must be enabled
+when it is needed.
 
-In `asconfig.json`, use `disable` to turn specific features off:
+In `asconfig.json`, use `enable` and `disable` to control features:
 
 ```json
 {
   "options": {
-    "disable": ["multi-value", "tail-call"]
+    "enable": ["tail-call"],
+    "disable": ["multi-value"]
   }
 }
 ```
 
-Supported feature names in `disable` are:
+Supported feature names are:
 
 - `mutable-globals`
 - `sign-extension`
@@ -75,10 +77,10 @@ Supported feature names in `disable` are:
 Equivalent CLI usage:
 
 ```bash
-warpo assembly/index.ts -o build/app.wasm --disable-feature multi-value tail-call
+warpo assembly/index.ts -o build/app.wasm --enable-feature tail-call --disable-feature multi-value
 ```
 
-Compatibility note: the legacy standalone `tailCall` config key and `--tailCall` CLI flag are no longer used.
+When the same feature appears in both options, `disable` takes precedence.
 
 ### `host`
 

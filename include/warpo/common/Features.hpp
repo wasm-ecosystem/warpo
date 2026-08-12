@@ -31,6 +31,7 @@ public:
   static Features fromCLI();
   constexpr static Features none() { return Features{FeaturesEnum::None}; }
   constexpr static Features all() { return Features{FeaturesEnum::All}; }
+  static Features defaultFeatures() { return all() & ~tailCall(); }
   constexpr static Features mutableGlobals() { return Features{FeaturesEnum::MutableGlobals}; }
   constexpr static Features signExtension() { return Features{FeaturesEnum::SignExtension}; }
   constexpr static Features nontrappingF2I() { return Features{FeaturesEnum::NontrappingF2I}; }

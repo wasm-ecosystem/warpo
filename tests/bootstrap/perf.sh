@@ -6,6 +6,7 @@ echo "build with trace points"
 ./build/warpo/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
   --stats \
   --optimizeLevel 3 --shrinkLevel 2 \
+  --enable-feature tail-call \
   --disable-feature nontrapping-f2i \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime --exportTable \
@@ -18,6 +19,7 @@ export WARP_TRACING_RECORDER_FILE=tests/bootstrap/tmp/perf/record.bin
 ./build/warpo/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
   --stats \
   --optimizeLevel 3 --shrinkLevel 2 \
+  --enable-feature tail-call \
   --disable-feature nontrapping-f2i \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime --exportTable \

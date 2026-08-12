@@ -6,6 +6,7 @@
     "exportTable": true,
     "optimizeLevel": 0,
     "debug": true,
+    "enable": ["tail-call"],
     "disable": ["nontrapping-f2i"],
     "use": {
       "U1": "5",

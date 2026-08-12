@@ -106,8 +106,14 @@ static FileConfigOptions parseFileConfigOptions(nlohmann::json const &jsonOption
         throw std::runtime_error{"'use' must be an object or an array of strings"};
       }
     }
-    if (jsonOptions.contains("disable"))
-      config.features = Features::all() & ~Features::fromString(jsonOptions["disable"].get<std::vector<std::string>>());
+    if (jsonOptions.contains("enable") || jsonOptions.contains("disable")) {
+      Features features = Features::defaultFeatures();
+      if (jsonOptions.contains("enable"))
+        features = features | Features::fromString(jsonOptions["enable"].get<std::vector<std::string>>());
+      if (jsonOptions.contains("disable"))
+        features = features & ~Features::fromString(jsonOptions["disable"].get<std::vector<std::string>>());
+      config.features = features;
+    }
   } catch (std::exception const &e) {
     throw std::runtime_error{fmt::format("Failed to parse json options: {}", e.what())};
   }
@@ -352,6 +358,25 @@ TEST(TestConfigFile, TestParseFileConfigOptions) {
   EXPECT_FALSE(emptyConfig.sourceMap.has_value());
   EXPECT_FALSE(emptyConfig.use.has_value());
   EXPECT_FALSE(emptyConfig.project.has_value());
+}
+
+TEST(TestConfigFile, TestParseFeatureOptions) {
+  EXPECT_FALSE(Features::defaultFeatures().has(Features::tailCall()));
+
+  nlohmann::json const enableTailCall = nlohmann::json::parse(R"({
+    "enable": ["tail-call"]
+  })");
+  FileConfigOptions const enabledConfig = parseFileConfigOptions(enableTailCall);
+  ASSERT_TRUE(enabledConfig.features.has_value());
+  EXPECT_TRUE(enabledConfig.features->has(Features::tailCall()));
+
+  nlohmann::json const enableAndDisableTailCall = nlohmann::json::parse(R"({
+    "enable": ["tail-call"],
+    "disable": ["tail-call"]
+  })");
+  FileConfigOptions const disabledConfig = parseFileConfigOptions(enableAndDisableTailCall);
+  ASSERT_TRUE(disabledConfig.features.has_value());
+  EXPECT_FALSE(disabledConfig.features->has(Features::tailCall()));
 }
 
 TEST(TestConfigFile, TestMergeFileConfigOptions) {

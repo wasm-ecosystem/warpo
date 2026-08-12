@@ -132,6 +132,18 @@ cli::Opt<bool> debugOption{
     [](argparse::Argument &arg) -> void { arg.help("Enables debug information in emitted binaries.").flag(); },
 };
 
+cli::Opt<std::vector<std::string>> enableFeatureOptions{
+    cli::Category::Frontend | cli::Category::Optimization,
+    "--enable-feature",
+    [](argparse::Argument &arg) -> void {
+      arg.help("enable WebAssembly features, mutable-globals, sign-extension, nontrapping-f2i, bulk-memory, "
+               "multi-value, tail-call")
+          .nargs(argparse::nargs_pattern::at_least_one)
+          .choices("mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory", "multi-value", "tail-call")
+          .append();
+    },
+};
+
 cli::Opt<std::vector<std::string>> disableFeatureOptions{
     cli::Category::Frontend | cli::Category::Optimization,
     "--disable-feature",
@@ -206,7 +218,9 @@ FileConfigOptions ConfigProvider::mergedFrontendOptions() {
   if (debugOption.isSet())
     merged.debug = debugOption.get();
 
-  Features features = merged.features.value_or(Features::all());
+  Features features = merged.features.value_or(Features::defaultFeatures());
+  if (enableFeatureOptions.isSet())
+    features = features | Features::fromString(enableFeatureOptions.get());
   if (disableFeatureOptions.isSet())
     features = features & ~Features::fromString(disableFeatureOptions.get());
   merged.features = features;
@@ -251,10 +265,12 @@ std::optional<std::filesystem::path> ConfigProvider::projectPath() {
 
 Features ConfigProvider::features() {
   std::optional<MergedFileConfig> const &fileCfg = MergedFileConfig::getConfigFromFile();
-  Features features = Features::all();
+  Features features = Features::defaultFeatures();
   if (fileCfg.has_value() && fileCfg->options.features.has_value())
     features = fileCfg->options.features.value();
 
+  if (enableFeatureOptions.isSet())
+    features = features | Features::fromString(enableFeatureOptions.get());
   if (disableFeatureOptions.isSet())
     features = features & ~Features::fromString(disableFeatureOptions.get());
 
