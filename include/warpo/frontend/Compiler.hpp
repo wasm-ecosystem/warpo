@@ -96,7 +96,7 @@ struct Config {
   bool useColorfulDiagMessage = false;
 
   // directly from common
-  common::Features features = common::Features::all();
+  common::Features features = common::Features::defaultFeatures();
   uint32_t optimizationLevel = 0U;
   uint32_t shrinkLevel = 0U;
   bool emitDebugLine = false;

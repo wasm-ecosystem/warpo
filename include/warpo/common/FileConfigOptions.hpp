@@ -92,8 +92,8 @@ struct FileConfigOptions {
   std::optional<UsesOption> use = std::nullopt;
 
   /// Enabled WebAssembly features.
-  /// - config: derived from `disable` (list of features to disable)
-  /// - cli: derived from `--disable-feature <feature...>`
+  /// - config: derived from `enable` and `disable`
+  /// - cli: derived from `--enable-feature` and `--disable-feature`
   std::optional<Features> features = std::nullopt;
 
   /// Host API selection.
