@@ -19,3 +19,14 @@ export function indirectStart(): i32 {
   let after: i32 = value + 1;
   return after;
 }
+
+function tailCall(value: i32): i32 {
+  return stepTarget(value);
+}
+
+export function tailCallStart(): i32 {
+  let before: i32 = 1;
+  let value: i32 = tailCall(before);
+  let after: i32 = value + 1;
+  return after;
+}

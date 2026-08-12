@@ -848,6 +848,42 @@ void describe("WarpoDebugSession", () => {
     assert.equal(frame.line, 11);
   });
 
+  void it("should step over a call that is the last instruction of a function", { timeout: 10000 }, async () => {
+    const entrySource = sourcePath("debugger_stepping.ts");
+    const output = await buildModule(entrySource);
+
+    await dc.initializeRequest();
+
+    const breakpointResponse = await dc.setBreakpointsRequest({
+      source: { path: entrySource },
+      breakpoints: [{ line: 24 }],
+    });
+    assert.equal(breakpointResponse.body.breakpoints.length, 1);
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "tailCallStart",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+    const stoppedPromise = dc.waitForEvent("stopped");
+    await dc.nextRequest({ threadId: 1 });
+    await stoppedPromise;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+    assert.match(frame.name, /tailCallStart/);
+    assert.equal(frame.source?.path, normalizeDebugPath(entrySource));
+    assert.equal(frame.line, 29);
+  });
+
   void it("should stop on a return breakpoint before evaluating its value", { timeout: 5000 }, async () => {
     const entrySource = sourcePath("debugger_caller.ts");
     const calleeSource = sourcePath("debugger_callee.ts");
