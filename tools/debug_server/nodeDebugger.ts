@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { spawn, type ChildProcess } from "node:child_process";
-import { appendFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, mkdirSync } from "node:fs";
 import * as path from "node:path";
 import * as net from "node:net";
 import { fileURLToPath } from "node:url";
@@ -20,13 +20,15 @@ import { DebuggerWasmModule } from "./debuggerWasmModule.js";
 
 const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
 const DEBUG_SERVER_TRACE_ENABLED = process.env.WARPO_DEBUG_SERVER_TRACE === "1";
-const DEBUG_SERVER_TRACE_FILE = path.join(process.cwd(), ".warpo-debug-server-trace.log");
+const DEBUG_SERVER_TRACE_FILE =
+  process.env.WARPO_DEBUG_SERVER_TRACE_FILE ?? path.join(process.cwd(), ".warpo-debug-server-trace.log");
 const LINEAR_MEMORY_OBJECT_GROUP = "warpo-linear-memory";
 const NODE_WAITING_FOR_DEBUGGER_DISCONNECT = "Waiting for the debugger to disconnect...";
 
 if (DEBUG_SERVER_TRACE_ENABLED) {
   try {
-    writeFileSync(DEBUG_SERVER_TRACE_FILE, "");
+    mkdirSync(path.dirname(DEBUG_SERVER_TRACE_FILE), { recursive: true });
+    appendFileSync(DEBUG_SERVER_TRACE_FILE, "");
   } catch {
     // Tracing should never block launching the runtime.
   }

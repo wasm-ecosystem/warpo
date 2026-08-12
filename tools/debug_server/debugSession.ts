@@ -1394,6 +1394,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response.body = { allThreadsContinued: true };
 
     if (this.stoppedForTrap) {
+      this.sendResponse(response);
       this.log("Continue requested from wasm trap; terminating debug session");
       this.disposeRuntimeAndTerminate(runtime);
       return;
