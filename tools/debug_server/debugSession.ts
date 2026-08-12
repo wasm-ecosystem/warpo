@@ -38,12 +38,7 @@ import {
   SMALL_TUPLE_SLOT_SIZE,
 } from "../runtime/objectLayout.js";
 import { normalizeDebugPath } from "./debugPath.js";
-import type {
-  DebuggerBreakpointInfo,
-  DebuggerBreakpointLocation,
-  DebuggerSourceVariableInfo,
-  DebuggerWasmModule,
-} from "./debuggerWasmModule.js";
+import type { DebuggerBreakpointInfo, DebuggerSourceVariableInfo, DebuggerWasmModule } from "./debuggerWasmModule.js";
 import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
 import { NodeDebugger } from "./nodeDebugger.js";
 import { loadConfig } from "../test_runner/config.js";
@@ -139,7 +134,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private static threadId = 1;
   private breakpointId = 0;
   private requestedBreakpointsBySource = new Map<string, DebuggerBreakpointInfo[]>();
-  private pendingBreakpointUpdatesBySource = new Map<string, DebuggerBreakpointInfo[]>();
+  private pendingBreakpointSources = new Set<string>();
   private variableContainers = new Map<number, VariableContainer>();
   private pausedStackFramesById = new Map<number, PausedStackFrame>();
   private nextVariablesReference = 1;
@@ -226,7 +221,10 @@ export class WarpoDebugSession extends LoggingDebugSession {
     });
 
     this.requestedBreakpointsBySource.set(sourcePath, bps);
-    this.pendingBreakpointUpdatesBySource.set(sourcePath, [...bps]);
+    this.pendingBreakpointSources.clear();
+    for (const pendingSourcePath of this.requestedBreakpointsBySource.keys()) {
+      this.pendingBreakpointSources.add(pendingSourcePath);
+    }
 
     const breakpoints: DebugProtocol.Breakpoint[] = bps.map((bp) => {
       const dbp = new Breakpoint(bp.verified, bp.line) as DebugProtocol.Breakpoint;
@@ -235,9 +233,12 @@ export class WarpoDebugSession extends LoggingDebugSession {
     });
 
     response.body = { breakpoints };
-    this.sendResponse(response);
-
-    this.requestBreakpointUpdate();
+    if (this.runtime?.isPaused() && this.loadedModule) {
+      this.requestBreakpointUpdate(() => this.sendResponse(response));
+    } else {
+      this.sendResponse(response);
+      this.requestBreakpointUpdate();
+    }
   }
 
   protected configurationDoneRequest(
@@ -1407,7 +1408,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   private resetRuntimeState(): void {
     this.disposeLoadedModule();
-    this.pendingBreakpointUpdatesBySource.clear();
+    this.pendingBreakpointSources.clear();
     this.stoppedWasmBytecodeOffset = undefined;
     this.stoppedForTrap = false;
   }
@@ -1422,22 +1423,18 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.log("==============================");
   }
 
-  private requestBreakpointUpdate(): void {
-    if (!this.runtime || !this.loadedModule || this.pendingBreakpointUpdatesBySource.size === 0) {
+  private requestBreakpointUpdate(onComplete?: () => void): void {
+    if (!this.runtime || !this.loadedModule || this.pendingBreakpointSources.size === 0) {
+      onComplete?.();
       return;
     }
 
     if (this.runtime.isPaused()) {
-      this.applyPendingBreakpointUpdates(this.runtime);
+      this.applyPendingBreakpointUpdates(this.runtime, onComplete);
       return;
     }
 
-    for (const sourcePath of this.pendingBreakpointUpdatesBySource.keys()) {
-      if (this.loadedModule.hasSource(sourcePath)) {
-        this.runtime.pause();
-        return;
-      }
-    }
+    this.runtime.pause();
   }
 
   private applyPendingBreakpointUpdates(runtime: Debugger, onComplete?: () => void): void {
@@ -1447,83 +1444,42 @@ export class WarpoDebugSession extends LoggingDebugSession {
       return;
     }
 
-    for (const [sourcePath, breakpoints] of this.pendingBreakpointUpdatesBySource) {
-      if (breakpoints.length === 0) {
-        this.pendingBreakpointUpdatesBySource.delete(sourcePath);
-        continue;
-      }
-
-      if (!wasmModule.hasSource(sourcePath)) {
-        continue;
-      }
-
-      const breakpoint = breakpoints.shift();
-      if (!breakpoint) {
-        this.pendingBreakpointUpdatesBySource.delete(sourcePath);
-        continue;
-      }
-
-      if (breakpoints.length === 0) {
-        this.pendingBreakpointUpdatesBySource.delete(sourcePath);
-      }
-
-      const breakpointLocations = wasmModule.resolveBreakpointLocations(breakpoint);
-      if (breakpointLocations.length === 0) {
-        this.log(`No source-map match for breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line}`);
-        this.applyPendingBreakpointUpdates(runtime, onComplete);
-        return;
-      }
-
-      this.installBreakpointLocations(runtime, wasmModule, breakpoint, breakpointLocations, 0, onComplete);
+    if (this.pendingBreakpointSources.size === 0) {
+      onComplete?.();
       return;
     }
 
-    onComplete?.();
-  }
-
-  private installBreakpointLocations(
-    runtime: Debugger,
-    wasmModule: DebuggerWasmModule,
-    breakpoint: DebuggerBreakpointInfo,
-    breakpointLocations: DebuggerBreakpointLocation[],
-    locationIndex: number,
-    onComplete?: () => void
-  ): void {
-    const breakpointLocation = breakpointLocations[locationIndex];
-    if (!breakpointLocation) {
-      this.applyPendingBreakpointUpdates(runtime, onComplete);
-      return;
+    this.pendingBreakpointSources.clear();
+    const wasmBytecodeOffsets = new Set<number>();
+    for (const [sourcePath, breakpoints] of this.requestedBreakpointsBySource) {
+      for (const breakpoint of breakpoints) {
+        const breakpointLocations = wasmModule.resolveBreakpointLocations(breakpoint);
+        if (breakpointLocations.length === 0) {
+          this.log(`No source-map match for breakpoint ${path.basename(sourcePath)}:${breakpoint.line}`);
+        }
+        for (const location of breakpointLocations) {
+          wasmBytecodeOffsets.add(location.wasmBytecodeOffset);
+          this.log(
+            `Resolved breakpoint ${path.basename(sourcePath)}:${breakpoint.line} -> ${location.wasmBytecodeOffset}`
+          );
+        }
+      }
     }
 
-    this.log(
-      `Resolved breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line} -> ${breakpointLocation.wasmBytecodeOffset}`
+    runtime.setWasmBreakpoints(
+      wasmModule,
+      Array.from(wasmBytecodeOffsets).toSorted((left, right) => left - right),
+      {
+        onSuccess: () => {
+          this.log(`Breakpoint set installed: ${wasmBytecodeOffsets.size} locations`);
+          onComplete?.();
+        },
+        onError: (error) => {
+          this.log(`Failed to update breakpoints: ${error.message}`);
+          onComplete?.();
+        },
+      }
     );
-    runtime.setWasmBreakpoint(wasmModule, breakpointLocation.wasmBytecodeOffset, {
-      onSuccess: () => {
-        this.log(`Breakpoint installed at ${breakpointLocation.wasmBytecodeOffset}`);
-        this.installBreakpointLocations(
-          runtime,
-          wasmModule,
-          breakpoint,
-          breakpointLocations,
-          locationIndex + 1,
-          onComplete
-        );
-      },
-      onError: (error: Error) => {
-        this.log(
-          `Failed to set breakpoint ${path.basename(breakpoint.source)}:${breakpoint.line} at ${breakpointLocation.wasmBytecodeOffset}: ${error.message}`
-        );
-        this.installBreakpointLocations(
-          runtime,
-          wasmModule,
-          breakpoint,
-          breakpointLocations,
-          locationIndex + 1,
-          onComplete
-        );
-      },
-    });
   }
 
   private disposeLoadedModule(): void {
