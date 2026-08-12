@@ -23,7 +23,6 @@
     }
   },
   "required": ["entries", "options", "targets"],
-
   "$defs": {
     "OptionsSchema": {
       "type": "object",
@@ -90,7 +89,16 @@
           "items": {
             "type": "string",
             "description": "Name of a feature to disable.",
-            "enum": ["mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory"]
+            "enum": ["mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory", "multi-value", "tail-call"]
+          }
+        },
+        "enable": {
+          "type": "array",
+          "description": "List of compiler features to enable.",
+          "items": {
+            "type": "string",
+            "description": "Name of a feature to enable.",
+            "enum": ["mutable-globals", "sign-extension", "nontrapping-f2i", "bulk-memory", "multi-value", "tail-call"]
           }
         },
         "debug": {

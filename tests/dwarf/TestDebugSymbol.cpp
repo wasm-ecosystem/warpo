@@ -209,6 +209,7 @@ protected:
 
 TEST_P(TestDebugSymbol_P, DebugInfo) {
   warpo::frontend::Config config = warpo::frontend::Config::getDefault();
+  config.features = config.features | warpo::common::Features::tailCall();
   config.useColorfulDiagMessage = false;
   config.emitDebugInfo = true;
   config.emitDebugLine = true;

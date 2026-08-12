@@ -29,7 +29,7 @@ async function buildModule(source: string, extraSources: string[] = []): Promise
   const name = path.basename(source, ".ts");
   let buildOutput = "";
   const exitCode = await build({
-    argv: [source, ...extraSources, "-o", output, "--debug", "--use", "abort="],
+    argv: [source, ...extraSources, "-o", output, "--debug", "--enable-feature", "tail-call", "--use", "abort="],
     cwd: TEST_MODULE_DIR,
     onStdout: (chunk: string) => {
       buildOutput += chunk;

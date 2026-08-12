@@ -23,6 +23,8 @@ async function buildWithWARPO({
     "--exportStart",
     "__unit_test_start",
     "--debug",
+    "--enable-feature",
+    "tail-call",
     // instrumentation flags
     "--instrument",
   ];

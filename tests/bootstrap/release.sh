@@ -6,6 +6,7 @@ echo "first build"
 ./build/warpo/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
   --stats \
   --optimizeLevel 3 --shrinkLevel 2 \
+  --enable-feature tail-call \
   --disable-feature nontrapping-f2i \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime --exportTable \
@@ -16,6 +17,7 @@ echo "second build"
 ./build/warpo/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
   --stats \
   --optimizeLevel 3 --shrinkLevel 2 \
+  --enable-feature tail-call \
   --disable-feature nontrapping-f2i \
   --initialMemory 768 \
   --exportStart _initialize --exportRuntime --exportTable \
@@ -28,6 +30,7 @@ if [ "${BOOTSTRAP_RELEASE_SKIP_THIRD:-0}" != "1" ]; then
   ./build/warpo/warpo_asc assemblyscript/src/glue/wasm/index.ts assemblyscript/src/index-wasm.ts \
     --stats \
     --optimizeLevel 3 --shrinkLevel 2 \
+    --enable-feature tail-call \
     --disable-feature nontrapping-f2i \
     --initialMemory 768 \
     --exportStart _initialize --exportRuntime --exportTable \

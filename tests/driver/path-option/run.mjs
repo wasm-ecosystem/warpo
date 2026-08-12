@@ -18,7 +18,7 @@ mkdirSync(outputDir, { recursive: true });
 describe("driver: path-option", () => {
   it("resolves packages from explicit --path search roots", { concurrency: false }, async () => {
     const code = await warpoMain({
-      argv: ["build", entry, "-o", resolvedPathWat, "--path", searchPath],
+      argv: ["build", entry, "-o", resolvedPathWat, "--path", searchPath, "--enable-feature", "tail-call"],
     });
     expect(code).toBe(0);
 

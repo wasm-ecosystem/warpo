@@ -90,7 +90,7 @@ Config Config::getDefault() {
 
       .useColorfulDiagMessage = support::isTTY(),
 
-      .features = common::Features::all(),
+      .features = common::Features::defaultFeatures(),
       .optimizationLevel = 0U,
       .shrinkLevel = 0U,
       .emitDebugLine = false,
