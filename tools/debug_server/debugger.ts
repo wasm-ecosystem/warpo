@@ -51,6 +51,9 @@ export interface Debugger {
   isPaused(): boolean;
   pause(): void;
   resume(): Promise<void>;
+  // Source-level stepping is coordinated by the session, while the runtime provides primitives for ordinary instruction and call-aware stepping.
+  stepInstruction(): Promise<void>;
+  stepOver(): Promise<void>;
   finishModuleLoad(): void;
   getPausedWasmFrames(): DebugPausedWasmFrame[];
   getPausedWasmFrameVariables(frameIndex: number): Promise<DebugRuntimeVariable[]>;

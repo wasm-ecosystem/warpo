@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { spawn, type ChildProcess } from "node:child_process";
-import { appendFileSync, writeFileSync } from "node:fs";
+import { appendFileSync, mkdirSync } from "node:fs";
 import * as path from "node:path";
 import * as net from "node:net";
 import { fileURLToPath } from "node:url";
@@ -20,13 +20,15 @@ import { DebuggerWasmModule } from "./debuggerWasmModule.js";
 
 const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
 const DEBUG_SERVER_TRACE_ENABLED = process.env.WARPO_DEBUG_SERVER_TRACE === "1";
-const DEBUG_SERVER_TRACE_FILE = path.join(process.cwd(), ".warpo-debug-server-trace.log");
+const DEBUG_SERVER_TRACE_FILE =
+  process.env.WARPO_DEBUG_SERVER_TRACE_FILE ?? path.join(process.cwd(), ".warpo-debug-server-trace.log");
 const LINEAR_MEMORY_OBJECT_GROUP = "warpo-linear-memory";
 const NODE_WAITING_FOR_DEBUGGER_DISCONNECT = "Waiting for the debugger to disconnect...";
 
 if (DEBUG_SERVER_TRACE_ENABLED) {
   try {
-    writeFileSync(DEBUG_SERVER_TRACE_FILE, "");
+    mkdirSync(path.dirname(DEBUG_SERVER_TRACE_FILE), { recursive: true });
+    appendFileSync(DEBUG_SERVER_TRACE_FILE, "");
   } catch {
     // Tracing should never block launching the runtime.
   }
@@ -152,8 +154,10 @@ export class NodeDebugger implements Debugger {
   private readonly pendingCommandCallbacks = new Map<number, CDPCommandCallbacks>();
   private readonly wasmBreakpointIds = new Set<string>();
   private paused = false;
+  private pauseRequested = false;
   private wasmFilePath: string | undefined;
   private wasmScriptId: string | undefined;
+  private wasmModule: DebuggerWasmModule | undefined;
   private pausedCallFrames: CDPCallFrame[] = [];
   private wasmMemoryBufferObjectId: string | undefined;
   private wasmGlobalsObjectId: string | undefined;
@@ -234,8 +238,10 @@ export class NodeDebugger implements Debugger {
   dispose(): void {
     this.disposed = true;
     this.paused = false;
+    this.pauseRequested = false;
     this.wasmFilePath = undefined;
     this.wasmScriptId = undefined;
+    this.wasmModule = undefined;
     this.pausedCallFrames = [];
     this.wasmMemoryBufferObjectId = undefined;
     this.wasmGlobalsObjectId = undefined;
@@ -251,11 +257,27 @@ export class NodeDebugger implements Debugger {
   }
 
   pause(): void {
+    this.pauseRequested = true;
     this.sendCommand("Debugger.pause");
   }
 
   async resume(): Promise<void> {
+    this.clearPausedState();
     await this.waitForCommand("Debugger.resume");
+  }
+
+  async stepInstruction(): Promise<void> {
+    this.clearPausedState();
+    await this.waitForCommand("Debugger.stepInto");
+  }
+
+  // CDP owns the runtime-specific call and return semantics; the session uses this primitive as part of source-level stepping.
+  async stepOver(): Promise<void> {
+    this.clearPausedState();
+    await this.waitForCommand("Debugger.stepOver");
+  }
+
+  private clearPausedState(): void {
     this.paused = false;
     this.pausedCallFrames = [];
     this.wasmMemoryBufferObjectId = undefined;
@@ -582,6 +604,8 @@ export class NodeDebugger implements Debugger {
 
   private handleDebuggerPaused(params?: Record<string, unknown>): void {
     const reason = this.getPauseReason(params);
+    const pauseWasRequested = this.pauseRequested;
+    this.pauseRequested = false;
     this.pausedCallFrames = this.getPausedWasmCallFrames(params);
     this.wasmMemoryBufferObjectId = undefined;
     this.wasmGlobalsObjectId = undefined;
@@ -592,7 +616,7 @@ export class NodeDebugger implements Debugger {
       return;
     }
 
-    if (reason === "other" && this.wasmScriptId) {
+    if (reason === "other" && this.wasmScriptId && !pauseWasRequested) {
       this.log("Debugger.paused reason=other location=wasm pre-entry gate");
       return;
     }
@@ -611,16 +635,16 @@ export class NodeDebugger implements Debugger {
     if (isWasmTrap) {
       this.paused = true;
       this.log(`Debugger.paused reason=${reason} (wasm trap)`);
-      void this.notifyPause("exception");
+      void this.notifyPause("exception", params);
       return;
     }
 
     this.paused = true;
     this.log(`Debugger.paused reason=${reason}`);
-    void this.notifyPause(reason);
+    void this.notifyPause(reason, params);
   }
 
-  private async notifyPause(reason: string): Promise<void> {
+  private async notifyPause(reason: string, _params?: Record<string, unknown>): Promise<void> {
     try {
       const pausedCallFrame = this.pausedCallFrames[0];
       const wasmBytecodeOffset = pausedCallFrame
@@ -874,6 +898,7 @@ export class NodeDebugger implements Debugger {
 
     this.log(`loading wasm debug metadata from ${this.wasmFilePath}`);
     const module = await DebuggerWasmModule.load(this.wasmFilePath, runtimeInfo);
+    this.wasmModule = module;
     this.log(`wasm debug metadata loaded from ${module.sourceMapFilePath}`);
     void this.onModuleLoad?.(module);
   }
