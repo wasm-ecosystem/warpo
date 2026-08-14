@@ -269,6 +269,43 @@ void describe("WarpoDebugSession", () => {
     assert.equal(loadedSourceBody?.source?.name, path.basename(output));
   });
 
+  void it("should restart the debuggee and restore breakpoints", { timeout: 10000 }, async () => {
+    const source = sourcePath("debugger_basic.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 13;
+
+    await dc.initializeRequest();
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+
+    const restartedStop = waitForBreakpointStop(dc);
+    await dc.restartRequest({});
+    await restartedStop;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+    assert.equal(frame.source?.path, normalizeDebugPath(source));
+    assert.equal(frame.line, breakpointLine);
+
+    await dc.disconnectRequest({ terminateDebuggee: true });
+  });
+
   void it("should reject a wasm launch when the file is missing", { timeout: 5000 }, async () => {
     await dc.initializeRequest();
 
