@@ -778,7 +778,11 @@ void describe("WarpoDebugSession", () => {
 
     await dc.initializeRequest();
 
-    const loadedSourcePromise = waitForLoadedWasmSource(dc, output);
+    await dc.setBreakpointsRequest({
+      source: { path: entrySource },
+      breakpoints: [{ line: 4 }],
+    });
+
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
       program: string;
       launchType: string;
@@ -790,8 +794,11 @@ void describe("WarpoDebugSession", () => {
       runtime: "node",
       entryFunctionName: "_start",
     };
-    await dc.launchRequest(launchArgs);
-    await loadedSourcePromise;
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+    const continuedPromise = dc.waitForEvent("continued");
+    await dc.continueRequest({ threadId: 1 });
+    await continuedPromise;
 
     const stoppedPromise = dc.waitForEvent("stopped");
     await dc.pauseRequest({ threadId: 1 });
