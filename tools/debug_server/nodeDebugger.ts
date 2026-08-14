@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { spawn, type ChildProcess } from "node:child_process";
-import { appendFileSync, mkdirSync } from "node:fs";
 import * as path from "node:path";
 import * as net from "node:net";
 import { fileURLToPath } from "node:url";
@@ -17,31 +16,14 @@ import type {
   WasmLaunchConfig,
 } from "./debugger.js";
 import { DebuggerWasmModule } from "./debuggerWasmModule.js";
+import { trace as writeTrace } from "./debugTrace.js";
 
 const DIRNAME = path.dirname(fileURLToPath(import.meta.url));
-const DEBUG_SERVER_TRACE_ENABLED = process.env.WARPO_DEBUG_SERVER_TRACE === "1";
-const DEBUG_SERVER_TRACE_FILE =
-  process.env.WARPO_DEBUG_SERVER_TRACE_FILE ?? path.join(process.cwd(), ".warpo-debug-server-trace.log");
 const LINEAR_MEMORY_OBJECT_GROUP = "warpo-linear-memory";
 const NODE_WAITING_FOR_DEBUGGER_DISCONNECT = "Waiting for the debugger to disconnect...";
 
-if (DEBUG_SERVER_TRACE_ENABLED) {
-  try {
-    mkdirSync(path.dirname(DEBUG_SERVER_TRACE_FILE), { recursive: true });
-    appendFileSync(DEBUG_SERVER_TRACE_FILE, "");
-  } catch {
-    // Tracing should never block launching the runtime.
-  }
-}
-
 function trace(message: string): void {
-  if (DEBUG_SERVER_TRACE_ENABLED) {
-    try {
-      appendFileSync(DEBUG_SERVER_TRACE_FILE, `[node-debugger] ${message}\n`);
-    } catch {
-      // Tracing should never block launching the runtime.
-    }
-  }
+  writeTrace("node-debugger", message);
 }
 
 const READ_WASM_MEMORY_FUNCTION = function (
@@ -298,6 +280,11 @@ export class NodeDebugger implements Debugger {
   async stepOver(): Promise<void> {
     this.clearPausedState();
     await this.waitForCommand("Debugger.stepOver");
+  }
+
+  async stepOut(): Promise<void> {
+    this.clearPausedState();
+    await this.waitForCommand("Debugger.stepOut");
   }
 
   private clearPausedState(): void {
@@ -654,6 +641,12 @@ export class NodeDebugger implements Debugger {
       return;
     }
 
+    if (this.isJavaScriptImportPause(params)) {
+      this.log("Debugger.paused inside JavaScript import -> step out");
+      void this.stepOutOfJavaScriptImport(reason, params);
+      return;
+    }
+
     const isWasmTrap = isExceptionPause;
     if (isWasmTrap) {
       this.paused = true;
@@ -665,6 +658,21 @@ export class NodeDebugger implements Debugger {
     this.paused = true;
     this.log(`Debugger.paused reason=${reason}`);
     void this.notifyPause(reason, params);
+  }
+  private isJavaScriptImportPause(params?: Record<string, unknown>): boolean {
+    return this.pausedCallFrames.length > 0 && !this.isTopFrameWasm(params);
+  }
+
+  private async stepOutOfJavaScriptImport(reason: string, params?: Record<string, unknown>): Promise<void> {
+    const wasmCallFrames = this.pausedCallFrames;
+    try {
+      await this.stepOut();
+    } catch (error) {
+      this.paused = true;
+      this.pausedCallFrames = wasmCallFrames;
+      this.log(`Failed to step out of JavaScript import: ${error instanceof Error ? error.message : "unknown error"}`);
+      await this.notifyPause(reason, params);
+    }
   }
 
   private async notifyPause(reason: string, _params?: Record<string, unknown>): Promise<void> {

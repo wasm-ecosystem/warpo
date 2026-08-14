@@ -47,6 +47,7 @@ import type {
 import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
 import { NodeDebugger } from "./nodeDebugger.js";
 import { loadConfig } from "../test_runner/config.js";
+import { trace } from "./debugTrace.js";
 
 interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
   program?: string;
@@ -114,6 +115,7 @@ enum StepMode {
   None,
   Into,
   Over,
+  Out,
 }
 
 function formatUnknownError(error: unknown): string {
@@ -159,6 +161,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   private log(msg: string): void {
     logger.log(msg);
+    trace("debug-session", msg);
     if (this.debugSessionLogging) {
       this.sendEvent(new OutputEvent(`${msg}\n`, "stdout"));
     }
@@ -231,6 +234,9 @@ export class WarpoDebugSession extends LoggingDebugSession {
   ): void {
     const sourcePath = normalizeDebugPath(args.source.path || "");
     const clientLines = args.breakpoints || [];
+    this.log(
+      `SetBreakpoints request: source=${sourcePath}, lines=${clientLines.map((breakpoint) => breakpoint.line).join(",") || "none"}`
+    );
 
     const bps: DebuggerBreakpointInfo[] = clientLines.map((bp) => {
       const id = ++this.breakpointId;
@@ -328,6 +334,9 @@ export class WarpoDebugSession extends LoggingDebugSession {
           this.loadedModule = wasmModule;
           this.log(
             `Wasm module loaded: ${wasmModule.wasmFilePath} (reported as ${wasmModule.url}, scriptId: ${wasmModule.scriptId})`
+          );
+          this.log(
+            `Module load breakpoint state: requestedSources=${this.requestedBreakpointsBySource.size}, pendingSources=${this.pendingBreakpointSources.size}`
           );
           this.sendEvent(
             new LoadedSourceEvent("new", {
@@ -432,6 +441,10 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   protected nextRequest(response: DebugProtocol.NextResponse, _args: DebugProtocol.NextArguments): void {
     this.doStepRequest(response, StepMode.Over);
+  }
+
+  protected stepOutRequest(response: DebugProtocol.StepOutResponse, _args: DebugProtocol.StepOutArguments): void {
+    this.doStepRequest(response, StepMode.Out);
   }
 
   protected disconnectRequest(
@@ -1436,7 +1449,10 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.sendResponse(response);
   }
 
-  private doStepRequest(response: DebugProtocol.StepInResponse | DebugProtocol.NextResponse, mode: StepMode): void {
+  private doStepRequest(
+    response: DebugProtocol.StepInResponse | DebugProtocol.NextResponse | DebugProtocol.StepOutResponse,
+    mode: StepMode
+  ): void {
     const runtime = this.runtime;
     if (!runtime) {
       this.sendErrorResponse(response, 1, "No active runtime");
@@ -1508,19 +1524,21 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
     const wasmModule = this.loadedModule;
     const wasmBytecodeOffset = this.stoppedWasmBytecodeOffset;
-    // Source-level stepping advances through runtime primitives until the source location changes. Calls use the
-    // runtime's call-aware operation because their following bytecode may be a structural `end`, not an executable instruction.
-    if (
+    if (this.stepMode === StepMode.Out) {
+      this.stepMode = StepMode.Into;
+      await runtime.stepOut();
+    } else if (
       this.stepMode === StepMode.Over &&
       wasmModule &&
       wasmBytecodeOffset !== undefined &&
       wasmModule.getNextBytecodeOffsetAfterCall(wasmBytecodeOffset) !== undefined
     ) {
       await runtime.stepOver();
-      return;
+    } else {
+      // Source-level stepping advances through runtime primitives until the source location changes. Calls use the
+      // runtime's call-aware operation because their following bytecode may be a structural `end`, not an executable instruction.
+      await runtime.stepInstruction();
     }
-
-    await runtime.stepInstruction();
   }
 
   private completeStep(runtime: Debugger, info: DebugPauseInfo): void {
@@ -1607,7 +1625,11 @@ export class WarpoDebugSession extends LoggingDebugSession {
   }
 
   private requestBreakpointUpdate(onComplete?: () => void): void {
+    this.log(
+      `Breakpoint update requested: hasRuntime=${this.runtime !== undefined}, hasModule=${this.loadedModule !== undefined}, pendingSources=${this.pendingBreakpointSources.size}, runtimePaused=${this.runtime?.isPaused() ?? false}`
+    );
     if (!this.runtime || !this.loadedModule || this.pendingBreakpointSources.size === 0) {
+      this.log("Breakpoint update skipped: runtime, module, or pending source is unavailable");
       onComplete?.();
       return;
     }
@@ -1623,23 +1645,39 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private applyPendingBreakpointUpdates(runtime: Debugger, onComplete?: () => void): void {
     const wasmModule = this.loadedModule;
     if (!wasmModule) {
+      this.log("Breakpoint update skipped: no loaded wasm module");
       onComplete?.();
       return;
     }
 
     if (this.pendingBreakpointSources.size === 0) {
+      this.log("Breakpoint update skipped: no pending breakpoint sources");
       onComplete?.();
       return;
     }
 
+    this.log(
+      `Applying breakpoint updates: requestedSources=${this.requestedBreakpointsBySource.size}, pendingSources=${this.pendingBreakpointSources.size}`
+    );
     this.pendingBreakpointSources.clear();
     const wasmBytecodeOffsets = new Set<number>();
     for (const [sourcePath, breakpoints] of this.requestedBreakpointsBySource) {
       for (const breakpoint of breakpoints) {
+        const sourceMapHasSource = wasmModule.hasSource(sourcePath);
+        this.log(
+          `Resolving breakpoint: source=${sourcePath}, line=${breakpoint.line}, sourceMapHasSource=${sourceMapHasSource}`
+        );
         const breakpointLocations = wasmModule.resolveBreakpointLocations(breakpoint);
         if (breakpointLocations.length === 0) {
-          this.log(`No source-map match for breakpoint ${path.basename(sourcePath)}:${breakpoint.line}`);
+          this.log(
+            `Source-map lookup failed for breakpoint ${path.basename(sourcePath)}:${breakpoint.line}: ${
+              sourceMapHasSource ? "source present but line has no mapping" : "source is absent"
+            }`
+          );
         }
+        this.log(
+          `Breakpoint resolution result: source=${sourcePath}, line=${breakpoint.line}, locations=${breakpointLocations.length}, offsets=${breakpointLocations.map((location) => location.wasmBytecodeOffset).join(",") || "none"}`
+        );
         for (const location of breakpointLocations) {
           wasmBytecodeOffsets.add(location.wasmBytecodeOffset);
           this.log(
@@ -1654,7 +1692,13 @@ export class WarpoDebugSession extends LoggingDebugSession {
       Array.from(wasmBytecodeOffsets).toSorted((left, right) => left - right),
       {
         onSuccess: () => {
-          this.log(`Breakpoint set installed: ${wasmBytecodeOffsets.size} locations`);
+          this.log(
+            `Breakpoint set installed: ${wasmBytecodeOffsets.size} locations, offsets=${
+              Array.from(wasmBytecodeOffsets)
+                .toSorted((left, right) => left - right)
+                .join(",") || "none"
+            }`
+          );
           onComplete?.();
         },
         onError: (error) => {

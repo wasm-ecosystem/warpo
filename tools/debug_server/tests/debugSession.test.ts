@@ -228,6 +228,39 @@ void describe("WarpoDebugSession", () => {
     assert.equal(stackTraceResponse.body.stackFrames[0].line, 9);
   });
 
+  void it("should step over a JavaScript import during step into", { timeout: 15000 }, async () => {
+    const implementationSource = sourcePath("debugger_import.ts");
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: implementationSource },
+      breakpoints: [{ line: 7 }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      launchType: string;
+      runtime: string;
+      cwd: string;
+      warpoPath: string;
+    } = {
+      launchType: "unittest",
+      runtime: "node",
+      cwd: TEST_MODULE_DIR,
+      warpoPath: WARPO_CLI,
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+    const stoppedPromise = dc.waitForEvent("stopped");
+    await dc.stepInRequest({ threadId: 1 });
+    await stoppedPromise;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+    assert.equal(frame.source?.path, normalizeDebugPath(implementationSource));
+    assert.equal(frame.line, 8);
+  });
+
   void it("should report the built wasm as a loaded source on launch", { timeout: 5000 }, async () => {
     const source = sourcePath("debugger_basic.ts");
     const output = await buildModule(source);
@@ -774,6 +807,45 @@ void describe("WarpoDebugSession", () => {
     const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
     assert.equal(frame.source?.path, normalizeDebugPath(entrySource));
     assert.equal(frame.line, 11);
+  });
+
+  void it("should step out of a callee and stop at the caller", { timeout: 10000 }, async () => {
+    const entrySource = sourcePath("debugger_stepping.ts");
+    const output = await buildModule(entrySource);
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: entrySource },
+      breakpoints: [{ line: 5 }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+    const enteredCallee = dc.waitForEvent("stopped");
+    await dc.stepInRequest({ threadId: 1 });
+    await enteredCallee;
+
+    const returnedToCaller = dc.waitForEvent("stopped");
+    await dc.stepOutRequest({ threadId: 1 });
+    await returnedToCaller;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+    assert.match(frame.name, /_start/);
+    assert.equal(frame.source?.path, normalizeDebugPath(entrySource));
+    assert.equal(frame.line, 5);
   });
 
   void it("should step over a callee and stop at the caller's next line", { timeout: 10000 }, async () => {
