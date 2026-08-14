@@ -222,6 +222,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response.body.supportsBreakpointLocationsRequest = false;
     response.body.supportsLoadedSourcesRequest = true;
     response.body.supportsEvaluateForHovers = false;
+    response.body.supportsRestartRequest = true;
 
     this.sendResponse(response);
     this.sendEvent(new InitializedEvent());
@@ -285,6 +286,28 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   protected launchRequest(response: DebugProtocol.LaunchResponse, args: WarpoLaunchRequestArguments): void {
     void this.doLaunchRequest(response, args);
+  }
+
+  protected restartRequest(response: DebugProtocol.RestartResponse, _args: DebugProtocol.RestartArguments): void {
+    const runtime = this.runtime;
+    if (!runtime) {
+      this.sendErrorResponse(response, 1, "No active runtime to restart");
+      return;
+    }
+
+    this.log("Restart requested");
+    this.resetRuntimeState();
+    this.queueAllBreakpointUpdates();
+    void this.doRestartRequest(response, runtime);
+  }
+
+  private async doRestartRequest(response: DebugProtocol.RestartResponse, runtime: Debugger): Promise<void> {
+    try {
+      await runtime.restart();
+      this.sendResponse(response);
+    } catch (error: unknown) {
+      this.sendErrorResponse(response, 1, `Restart failed: ${formatUnknownError(error)}`);
+    }
   }
 
   private async doLaunchRequest(
@@ -359,7 +382,6 @@ export class WarpoDebugSession extends LoggingDebugSession {
         };
 
         this.disposeLoadedModule();
-        this.runtime?.dispose();
         this.runtime = runtime;
         await runtime.launch(
           launchType === "unittest"
@@ -434,8 +456,17 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response: DebugProtocol.DisconnectResponse,
     _args: DebugProtocol.DisconnectArguments
   ): void {
-    this.runtime?.dispose();
+    void this.doDisconnectRequest(response);
+  }
+
+  private async doDisconnectRequest(response: DebugProtocol.DisconnectResponse): Promise<void> {
+    const runtime = this.runtime;
     this.runtime = undefined;
+    try {
+      await runtime?.dispose();
+    } catch (error) {
+      this.log(`Failed to dispose runtime: ${formatUnknownError(error)}`);
+    }
     this.resetRuntimeState();
     this.debugSessionLogging = false;
     this.dispose();
@@ -1414,7 +1445,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     if (this.stoppedForTrap) {
       this.sendResponse(response);
       this.log("Continue requested from wasm trap; terminating debug session");
-      this.disposeRuntimeAndTerminate(runtime);
+      void this.disposeRuntimeAndTerminate(runtime);
       return;
     }
 
@@ -1441,7 +1472,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     if (this.stoppedForTrap) {
       this.sendResponse(response);
       this.log("Step requested from wasm trap; terminating debug session");
-      this.disposeRuntimeAndTerminate(runtime);
+      void this.disposeRuntimeAndTerminate(runtime);
       return;
     }
 
@@ -1557,13 +1588,17 @@ export class WarpoDebugSession extends LoggingDebugSession {
       return;
     }
 
-    this.disposeRuntimeAndTerminate(runtime);
+    void this.disposeRuntimeAndTerminate(runtime);
   }
 
-  private disposeRuntimeAndTerminate(runtime: Debugger): void {
-    runtime.dispose();
+  private async disposeRuntimeAndTerminate(runtime: Debugger): Promise<void> {
     if (this.runtime === runtime) {
       this.runtime = undefined;
+    }
+    try {
+      await runtime.dispose();
+    } catch (error) {
+      this.log(`Failed to dispose runtime: ${formatUnknownError(error)}`);
     }
     this.resetRuntimeState();
     this.sendEvent(new TerminatedEvent());
@@ -1576,6 +1611,12 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.stoppedForTrap = false;
     this.stepMode = StepMode.None;
     this.stepStartSourceLocation = undefined;
+  }
+
+  private queueAllBreakpointUpdates(): void {
+    for (const sourcePath of this.requestedBreakpointsBySource.keys()) {
+      this.pendingBreakpointSources.add(sourcePath);
+    }
   }
 
   private logAllBreakpoints(): void {
