@@ -230,13 +230,22 @@ export class WarpoDebugSession extends LoggingDebugSession {
   ): void {
     const sourcePath = normalizeDebugPath(args.source.path || "");
     const clientLines = args.breakpoints || [];
+    const wasmModule = this.loadedModule;
 
     const bps: DebuggerBreakpointInfo[] = clientLines.map((bp) => {
       const id = ++this.breakpointId;
+      const verified =
+        wasmModule === undefined ||
+        wasmModule.resolveBreakpointLocations({
+          id,
+          line: bp.line,
+          verified: true,
+          source: sourcePath,
+        }).length > 0;
       const info: DebuggerBreakpointInfo = {
         id,
         line: bp.line,
-        verified: true,
+        verified,
         source: sourcePath,
       };
       this.log(`Breakpoint set: ${path.basename(sourcePath)}:${bp.line}`);
@@ -249,11 +258,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
       this.pendingBreakpointSources.add(pendingSourcePath);
     }
 
-    const breakpoints: DebugProtocol.Breakpoint[] = bps.map((bp) => {
-      const dbp = new Breakpoint(bp.verified, bp.line) as DebugProtocol.Breakpoint;
-      dbp.id = bp.id;
-      return dbp;
-    });
+    const breakpoints: DebugProtocol.Breakpoint[] = bps.map((bp) => this.toDebugProtocolBreakpoint(bp));
 
     response.body = { breakpoints };
     if (this.runtime?.isPaused() && this.loadedModule) {
@@ -1563,6 +1568,12 @@ export class WarpoDebugSession extends LoggingDebugSession {
       }
     }
     this.log("==============================");
+  }
+
+  private toDebugProtocolBreakpoint(breakpoint: DebuggerBreakpointInfo): DebugProtocol.Breakpoint {
+    const dbp = new Breakpoint(breakpoint.verified, breakpoint.line) as DebugProtocol.Breakpoint;
+    dbp.id = breakpoint.id;
+    return dbp;
   }
 
   private requestBreakpointUpdate(onComplete?: () => void): void {
