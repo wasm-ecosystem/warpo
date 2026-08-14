@@ -47,7 +47,8 @@ export interface Debugger {
   readonly name: string;
 
   launch(config: WasmLaunchConfig | UnitTestLaunchConfig): Promise<void>;
-  dispose(): void;
+  restart(): Promise<void>;
+  dispose(): Promise<void>;
   isPaused(): boolean;
   pause(): void;
   resume(): Promise<void>;

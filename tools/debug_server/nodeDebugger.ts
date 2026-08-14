@@ -146,6 +146,7 @@ export class NodeDebugger implements Debugger {
   private stderrOutput = "";
   private disposed = false;
   private runtimeExitPromise: Promise<void> | undefined;
+  private launchConfig: WasmLaunchConfig | UnitTestLaunchConfig | undefined;
 
   private log(message: string): void {
     trace(message);
@@ -153,6 +154,21 @@ export class NodeDebugger implements Debugger {
   }
 
   async launch(config: WasmLaunchConfig | UnitTestLaunchConfig): Promise<void> {
+    this.launchConfig = config;
+    await this.start(config);
+  }
+
+  async restart(): Promise<void> {
+    const config = this.launchConfig;
+    if (!config) {
+      throw new Error("debugger has not been launched");
+    }
+
+    await this.dispose();
+    await this.start(config);
+  }
+
+  private async start(config: WasmLaunchConfig | UnitTestLaunchConfig): Promise<void> {
     this.disposed = false;
     this.wasmFilePath = config.wasmFilePath;
 
@@ -175,8 +191,7 @@ export class NodeDebugger implements Debugger {
     });
     this.log(`runtime child spawned pid=${this.child.pid ?? "unknown"}`);
     this.runtimeExitPromise = new Promise((resolve) => {
-      this.child?.once("exit", () => resolve());
-      this.child?.once("error", () => resolve());
+      this.child?.once("close", () => resolve());
     });
     this.child.stdout?.on("data", (chunk: Buffer) => {
       const text = chunk.toString().trim();
@@ -217,7 +232,7 @@ export class NodeDebugger implements Debugger {
     await Promise.race([this.connectCDP(wsUrl), this.runtimeExitPromise]);
   }
 
-  dispose(): void {
+  async dispose(): Promise<void> {
     this.disposed = true;
     this.paused = false;
     this.pauseRequested = false;
@@ -228,10 +243,18 @@ export class NodeDebugger implements Debugger {
     this.wasmMemoryBufferObjectId = undefined;
     this.wasmGlobalsObjectId = undefined;
     this.stderrOutput = "";
-    this.runtimeExitPromise = undefined;
     this.wasmBreakpointIds.clear();
+
+    const child = this.child;
+    const runtimeExitPromise = this.runtimeExitPromise;
     this.ws?.close();
-    this.child?.kill();
+    if (child && child.exitCode === null && child.signalCode === null) {
+      child.kill();
+    }
+    await runtimeExitPromise;
+    this.child = undefined;
+    this.ws = undefined;
+    this.runtimeExitPromise = undefined;
   }
 
   isPaused(): boolean {
