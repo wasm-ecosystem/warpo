@@ -462,6 +462,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
 
     this.cancelStep();
+    // StepMode.Into is used as a sentinel to reuse the step-pause handling path; no actual step-in is performed.
     this.stepMode = StepMode.Into;
     this.stepStartSourceLocation = undefined;
     this.clearVariableContainers();
