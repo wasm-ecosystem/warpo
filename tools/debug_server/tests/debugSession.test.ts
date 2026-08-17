@@ -88,7 +88,13 @@ async function launchAndWaitForBreakpoint(
 ): Promise<void> {
   const stoppedPromise = waitForBreakpointStop(dc);
   await dc.launchRequest(launchArgs);
+  await dc.configurationDoneRequest({});
   await stoppedPromise;
+}
+
+async function launchAndConfigure(dc: DebugClient, launchArgs: DebugProtocol.LaunchRequestArguments): Promise<void> {
+  await dc.launchRequest(launchArgs);
+  await dc.configurationDoneRequest({});
 }
 
 async function readFrameLocals(
@@ -339,7 +345,7 @@ void describe("WarpoDebugSession", () => {
     const loadedSourcePromise = waitForLoadedWasmSource(dc, output);
     const stoppedPromise = waitForBreakpointStop(dc);
 
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
 
     const loadedSourceEvent = await loadedSourcePromise;
     const loadedSourceBody = loadedSourceEvent.body as { source?: DebugProtocol.Source; reason?: string } | undefined;
@@ -405,7 +411,7 @@ void describe("WarpoDebugSession", () => {
     const stderrPromise = waitForStderrOutput(dc);
     const terminatedPromise = dc.waitForEvent("terminated");
 
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
 
     const stderrEvent = await stderrPromise;
     const stderrBody = stderrEvent.body as { output?: string } | undefined;
@@ -434,7 +440,7 @@ void describe("WarpoDebugSession", () => {
     const stderrPromise = waitForStderrOutput(dc);
     const terminatedPromise = dc.waitForEvent("terminated");
 
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
 
     const stderrEvent = await stderrPromise;
     const stderrBody = stderrEvent.body as { output?: string } | undefined;
@@ -601,7 +607,7 @@ void describe("WarpoDebugSession", () => {
     await terminatedPromise;
   });
 
-  void it("should add a breakpoint while the program is executing", { timeout: 10000 }, async () => {
+  void it("should add breakpoints after launch and while the program is executing", { timeout: 10000 }, async () => {
     const source = sourcePath("debugger_breakpoint_update.ts");
     const output = await buildModule(source);
     const initialBreakpointLine = 6;
@@ -626,7 +632,15 @@ void describe("WarpoDebugSession", () => {
       entryFunctionName: "_start",
     };
 
-    await launchAndWaitForBreakpoint(dc, launchArgs);
+    const firstStop = waitForBreakpointStop(dc);
+    await dc.launchRequest(launchArgs);
+    const initialBreakpointResponse = await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: initialBreakpointLine }],
+    });
+    assert.equal(initialBreakpointResponse.body.breakpoints[0].line, initialBreakpointLine);
+    await dc.configurationDoneRequest({});
+    await firstStop;
 
     const secondStop = waitForBreakpointStop(dc);
     await dc.continueRequest({ threadId: 1 });
@@ -1180,7 +1194,7 @@ void describe("WarpoDebugSession", () => {
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
     await stoppedPromise;
 
     const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
@@ -1251,7 +1265,7 @@ void describe("WarpoDebugSession", () => {
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
     await stoppedPromise;
 
     const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
@@ -1304,7 +1318,7 @@ void describe("WarpoDebugSession", () => {
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
     await stoppedPromise;
 
     const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
@@ -1407,7 +1421,7 @@ void describe("WarpoDebugSession", () => {
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
     await stoppedPromise;
 
     const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
@@ -1474,7 +1488,7 @@ void describe("WarpoDebugSession", () => {
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
     await stoppedPromise;
 
     const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
@@ -1537,7 +1551,7 @@ void describe("WarpoDebugSession", () => {
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
     await stoppedPromise;
 
     const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
@@ -1628,7 +1642,7 @@ void describe("WarpoDebugSession", () => {
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
     await stoppedPromise;
 
     const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
@@ -1715,7 +1729,7 @@ void describe("WarpoDebugSession", () => {
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
     await stoppedPromise;
 
     const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
@@ -1852,7 +1866,7 @@ void describe("WarpoDebugSession", () => {
     };
 
     const stoppedPromise = waitForBreakpointStop(dc);
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
     await stoppedPromise;
 
     const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
@@ -1952,7 +1966,7 @@ void describe("WarpoDebugSession", () => {
       entryFunctionName: "_start",
     };
     const stoppedPromise = waitForBreakpointStop(dc);
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
     await stoppedPromise;
 
     const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
@@ -2022,7 +2036,7 @@ void describe("WarpoDebugSession", () => {
     };
 
     const firstStoppedPromise = waitForBreakpointStop(dc);
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
     await firstStoppedPromise;
 
     const firstStackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
@@ -2135,7 +2149,7 @@ void describe("WarpoDebugSession", () => {
 
     const stoppedPromise = dc.waitForEvent("stopped");
     const terminatedPromise = dc.waitForEvent("terminated");
-    await dc.launchRequest(launchArgs);
+    await launchAndConfigure(dc, launchArgs);
 
     const stoppedEvent = await stoppedPromise;
     const stoppedBody = stoppedEvent.body as { reason?: string } | undefined;
