@@ -1427,6 +1427,73 @@ void describe("WarpoDebugSession", () => {
     assert.equal(value.variablesReference, 0);
   });
 
+  void it("should expand typed array values by index", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_typed_array.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 41;
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    const { variablesResponse } = await launchAndReadTopFrameLocals(dc, launchArgs);
+    const expected = [
+      { name: "int8", type: "~lib/typedarray/Int8Array", elementType: "i8", values: ["-8", "8"] },
+      { name: "uint8", type: "~lib/typedarray/Uint8Array", elementType: "u8", values: ["9", "19"] },
+      {
+        name: "uint8Clamped",
+        type: "~lib/typedarray/Uint8ClampedArray",
+        elementType: "u8",
+        values: ["29", "39"],
+      },
+      { name: "int16", type: "~lib/typedarray/Int16Array", elementType: "i16", values: ["-49", "49"] },
+      { name: "uint16", type: "~lib/typedarray/Uint16Array", elementType: "u16", values: ["59", "69"] },
+      { name: "int32", type: "~lib/typedarray/Int32Array", elementType: "i32", values: ["-79", "79"] },
+      { name: "uint32", type: "~lib/typedarray/Uint32Array", elementType: "u32", values: ["89", "99"] },
+      { name: "int64", type: "~lib/typedarray/Int64Array", elementType: "i64", values: ["-109", "109"] },
+      { name: "uint64", type: "~lib/typedarray/Uint64Array", elementType: "u64", values: ["119", "129"] },
+      { name: "float32", type: "~lib/typedarray/Float32Array", elementType: "f32", values: ["1.5", "2.5"] },
+      { name: "float64", type: "~lib/typedarray/Float64Array", elementType: "f64", values: ["3.5", "4.5"] },
+    ];
+
+    for (const expectedArray of expected) {
+      const variable = assertDefined(findVariable(variablesResponse.body.variables, expectedArray.name));
+      assert.equal(variable.type, expectedArray.type);
+      assert.ok(variable.variablesReference > 0);
+
+      const elementsResponse = await dc.variablesRequest({ variablesReference: variable.variablesReference });
+      assert.deepEqual(
+        elementsResponse.body.variables.map((element) => ({
+          name: element.name,
+          type: element.type,
+          value: element.value,
+          variablesReference: element.variablesReference,
+        })),
+        expectedArray.values.map((value, index) => ({
+          name: index.toString(),
+          type: expectedArray.elementType,
+          value,
+          variablesReference: 0,
+        }))
+      );
+    }
+  });
+
   void it("should expand class array elements as objects", { timeout: 5000 }, async () => {
     const source = sourcePath("debugger_class_array.ts");
     const output = await buildModule(source);

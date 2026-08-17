@@ -136,6 +136,19 @@ const UTF8_CONST_STR_CLASS_NAME = "~lib/warpo/utf8/const_str/ConstStr";
 function isDisplayableStringClass(typeName: string): boolean {
   return typeName === AS_STRING_CLASS_NAME || typeName === UTF8_CONST_STR_CLASS_NAME;
 }
+const TYPED_ARRAY_ELEMENT_TYPES = new Map<string, string>([
+  ["~lib/typedarray/Int8Array", "i8"],
+  ["~lib/typedarray/Uint8Array", "u8"],
+  ["~lib/typedarray/Uint8ClampedArray", "u8"],
+  ["~lib/typedarray/Int16Array", "i16"],
+  ["~lib/typedarray/Uint16Array", "u16"],
+  ["~lib/typedarray/Int32Array", "i32"],
+  ["~lib/typedarray/Uint32Array", "u32"],
+  ["~lib/typedarray/Int64Array", "i64"],
+  ["~lib/typedarray/Uint64Array", "u64"],
+  ["~lib/typedarray/Float32Array", "f32"],
+  ["~lib/typedarray/Float64Array", "f64"],
+]);
 
 async function resolveUnitTestWasmPath(cwd: string): Promise<string> {
   const configPath = path.join(cwd, "as-test.config.js");
@@ -991,6 +1004,10 @@ export class WarpoDebugSession extends LoggingDebugSession {
     if (classLayout.builtinKind === BuiltinContainerKind.ArrayBuffer) {
       return this.decodeArrayBufferElements(view);
     }
+    const typedArrayElementType = TYPED_ARRAY_ELEMENT_TYPES.get(classLayout.name);
+    if (typedArrayElementType !== undefined) {
+      return this.decodeTypedArrayElements(address, view, classLayout, typedArrayElementType);
+    }
     if (classLayout.builtinKind === BuiltinContainerKind.Array) {
       return this.decodeArrayElements(address, view, classLayout);
     }
@@ -1014,7 +1031,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
     if (
       classLayout.builtinKind !== BuiltinContainerKind.SmallTuple &&
       classLayout.builtinKind !== BuiltinContainerKind.StaticArray &&
-      classLayout.builtinKind !== BuiltinContainerKind.ArrayBuffer
+      classLayout.builtinKind !== BuiltinContainerKind.ArrayBuffer &&
+      !TYPED_ARRAY_ELEMENT_TYPES.has(classLayout.name)
     ) {
       return classLayout.byteSize;
     }
@@ -1120,6 +1138,49 @@ export class WarpoDebugSession extends LoggingDebugSession {
       });
     }
     return elements;
+  }
+
+  private async decodeTypedArrayElements(
+    address: number,
+    view: DataView,
+    classLayout: ClassLayout,
+    elementTypeName: string
+  ): Promise<DebugSessionVariable[]> {
+    const dataStartField = classLayout.fields.find((field) => field.name === "dataStart");
+    const byteLengthField = classLayout.fields.find((field) => field.name === "byteLength");
+    if (!dataStartField || !byteLengthField) {
+      this.log(`Error: cannot expand typed array at ${address}: typed array header is unavailable`);
+      return [];
+    }
+
+    const dataStart = Number(this.decodeFieldValue(view, dataStartField));
+    const byteLength = Number(this.decodeFieldValue(view, byteLengthField));
+    const elementSize = resolveArrayElementSize(elementTypeName, false);
+    if (
+      !Number.isInteger(dataStart) ||
+      dataStart < 0 ||
+      !Number.isInteger(byteLength) ||
+      byteLength < 0 ||
+      byteLength % elementSize !== 0
+    ) {
+      this.log(`Error: cannot expand typed array at ${address}: typed array data is invalid`);
+      return [];
+    }
+
+    const elementsMemory = await this.runtime?.readWasmMemory(dataStart, byteLength);
+    if (!elementsMemory) {
+      this.log(`Error: cannot expand typed array at ${address}: typed array data is unavailable`);
+      return [];
+    }
+
+    const elementsView = new DataView(elementsMemory.buffer, elementsMemory.byteOffset, elementsMemory.byteLength);
+    return this.decodeArrayElementVariables(
+      elementsView,
+      byteLength / elementSize,
+      elementTypeName,
+      elementSize,
+      false
+    );
   }
 
   private async decodeStaticArrayElements(
