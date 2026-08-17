@@ -52,7 +52,6 @@
                 "type": "string",
                 "enum": [
                   "wasm file",
-                  "js file",
                   "unittest"
                 ],
                 "default": "wasm file",

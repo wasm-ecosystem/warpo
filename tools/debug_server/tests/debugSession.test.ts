@@ -847,6 +847,50 @@ void describe("WarpoDebugSession", () => {
     assert.equal(frame.line, 11);
   });
 
+  void it("should pause at a valid source line", { timeout: 10000 }, async () => {
+    const entrySource = sourcePath("debugger_pause.ts");
+    const output = await buildModule(entrySource);
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: entrySource },
+      breakpoints: [{ line: 4 }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+    const continuedPromise = dc.waitForEvent("continued");
+    await dc.continueRequest({ threadId: 1 });
+    await continuedPromise;
+
+    const stoppedPromise = dc.waitForEvent("stopped");
+    await dc.pauseRequest({ threadId: 1 });
+    const stoppedEvent = await stoppedPromise;
+    const stoppedBody = stoppedEvent.body as { reason?: string } | undefined;
+    assert.equal(stoppedBody?.reason, "pause");
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+    assert.equal(frame.source?.path, normalizeDebugPath(entrySource));
+    assert.ok(frame.line > 0);
+
+    const terminatedPromise = dc.waitForEvent("terminated");
+    await dc.terminateRequest({ restart: false });
+    await terminatedPromise;
+  });
+
   void it("should step out of a callee and stop at the caller", { timeout: 10000 }, async () => {
     const entrySource = sourcePath("debugger_stepping.ts");
     const output = await buildModule(entrySource);

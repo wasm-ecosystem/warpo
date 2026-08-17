@@ -76,6 +76,7 @@ jobs:
           name: debug-server-trace-${{ matrix.os }}
           path: ${{ github.workspace }}/.warpo-debug-server-trace.log
           if-no-files-found: error
+          include-hidden-files: true
 
       - name: Install debugger deps
         working-directory: debugger
