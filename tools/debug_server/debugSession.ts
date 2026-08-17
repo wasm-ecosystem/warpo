@@ -154,6 +154,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
   private nextVariablesReference = 1;
   private loadedModule: DebuggerWasmModule | undefined;
   private runtime: Debugger | undefined;
+  private configurationDone = false;
   private stoppedWasmBytecodeOffset: number | undefined;
   private stoppedForTrap = false;
   private stepMode = StepMode.None;
@@ -285,8 +286,10 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response: DebugProtocol.ConfigurationDoneResponse,
     _args: DebugProtocol.ConfigurationDoneArguments
   ): void {
+    this.configurationDone = true;
     super.configurationDoneRequest(response, _args);
     this.logAllBreakpoints();
+    this.maybeStartRuntime();
   }
 
   protected launchRequest(response: DebugProtocol.LaunchResponse, args: WarpoLaunchRequestArguments): void {
@@ -361,17 +364,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
             })
           );
 
-          this.applyPendingBreakpointUpdates(runtime, () => {
-            if (runtime.isPaused()) {
-              void runtime.resume().catch((error: unknown) => {
-                const message = error instanceof Error ? error.message : "unknown error";
-                this.log(`Failed to resume after module load: ${message}`);
-              });
-              return;
-            }
-
-            runtime.finishModuleLoad();
-          });
+          this.applyPendingBreakpointUpdates(runtime, () => this.maybeStartRuntime());
         };
         runtime.onPause = (info) => {
           this.handleRuntimePause(runtime, info);
@@ -1685,6 +1678,23 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
 
     this.runtime.pause();
+  }
+
+  private maybeStartRuntime(): void {
+    const runtime = this.runtime;
+    if (!this.configurationDone || !runtime || !this.loadedModule) {
+      return;
+    }
+
+    if (runtime.isPaused()) {
+      void runtime.resume().catch((error: unknown) => {
+        const message = error instanceof Error ? error.message : "unknown error";
+        this.log(`Failed to resume after configuration: ${message}`);
+      });
+      return;
+    }
+
+    runtime.finishModuleLoad();
   }
 
   private applyPendingBreakpointUpdates(runtime: Debugger, onComplete?: () => void): void {
