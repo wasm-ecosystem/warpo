@@ -982,6 +982,9 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
 
     const view = new DataView(memory.buffer, memory.byteOffset, memory.byteLength);
+    if (classLayout.builtinKind === BuiltinContainerKind.Function) {
+      return this.decodeFunctionElements(view, classLayout);
+    }
     if (classLayout.builtinKind === BuiltinContainerKind.ArrayBuffer) {
       return this.decodeArrayBufferElements(view);
     }
@@ -999,6 +1002,23 @@ export class WarpoDebugSession extends LoggingDebugSession {
     }
 
     return Promise.all(classLayout.fields.map((field) => this.decodeFieldVariable(view, field)));
+  }
+
+  private decodeFunctionElements(view: DataView, classLayout: ClassLayout): DebugSessionVariable[] {
+    const indexField = classLayout.fields.find((field) => field.name === "_index" || field.name === "index");
+    if (!indexField) {
+      this.log(`Warning: cannot expand function: index field is unavailable`);
+      return [];
+    }
+
+    const indexValue = this.decodeFieldValue(view, indexField);
+    const functionIndex = Number(indexValue);
+    if (!Number.isInteger(functionIndex) || functionIndex < 0) {
+      return [{ kind: "basic", name: "name", value: "<unavailable>", typeName: "string" }];
+    }
+
+    const functionName = this.loadedModule?.getFunctionNameByTableIndex(functionIndex);
+    return [{ kind: "basic", name: "name", value: functionName ?? "<unavailable>", typeName: "string" }];
   }
 
   private async resolveRuntimeObjectPayloadSize(
