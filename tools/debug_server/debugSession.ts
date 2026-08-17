@@ -191,6 +191,11 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
     this.applyPendingBreakpointUpdates(runtime, () => {
       if (info.reason === "other") {
+        if (this.stepMode !== StepMode.None) {
+          void this.handleStepPause(runtime, info);
+          return;
+        }
+
         void runtime.resume().catch((error: unknown) => {
           const message = error instanceof Error ? error.message : "unknown error";
           this.log(`Failed to resume after breakpoint update: ${message}`);
@@ -222,6 +227,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     response.body.supportsBreakpointLocationsRequest = false;
     response.body.supportsLoadedSourcesRequest = true;
     response.body.supportsEvaluateForHovers = false;
+    response.body.supportsTerminateRequest = true;
     response.body.supportsRestartRequest = true;
 
     this.sendResponse(response);
@@ -441,6 +447,35 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   protected nextRequest(response: DebugProtocol.NextResponse, _args: DebugProtocol.NextArguments): void {
     this.doStepRequest(response, StepMode.Over);
+  }
+
+  protected pauseRequest(response: DebugProtocol.PauseResponse, _args: DebugProtocol.PauseArguments): void {
+    const runtime = this.runtime;
+    if (!runtime) {
+      this.sendErrorResponse(response, 1, "No active runtime");
+      return;
+    }
+
+    if (runtime.isPaused()) {
+      this.sendResponse(response);
+      return;
+    }
+
+    this.cancelStep();
+    // StepMode.Into is used as a sentinel to reuse the step-pause handling path; no actual step-in is performed.
+    this.stepMode = StepMode.Into;
+    this.stepStartSourceLocation = undefined;
+    this.clearVariableContainers();
+    runtime.pause();
+    this.sendResponse(response);
+  }
+
+  protected terminateRequest(response: DebugProtocol.TerminateResponse, _args: DebugProtocol.TerminateArguments): void {
+    const runtime = this.runtime;
+    if (runtime) {
+      this.disposeRuntimeAndTerminate(runtime);
+    }
+    this.sendResponse(response);
   }
 
   protected stepOutRequest(response: DebugProtocol.StepOutResponse, _args: DebugProtocol.StepOutArguments): void {
