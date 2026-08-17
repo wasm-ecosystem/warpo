@@ -169,7 +169,7 @@ void describe("WarpoDebugSession", () => {
     }
   });
 
-  void it("should accept breakpoints before a wasm module is loaded", async () => {
+  void it("should return breakpoints unverified before a wasm module is loaded", async () => {
     await dc.initializeRequest();
 
     const response = await dc.setBreakpointsRequest({
@@ -178,9 +178,9 @@ void describe("WarpoDebugSession", () => {
     });
 
     assert.equal(response.body.breakpoints.length, 2);
-    assert.equal(response.body.breakpoints[0].verified, true);
+    assert.equal(response.body.breakpoints[0].verified, false);
     assert.equal(response.body.breakpoints[0].line, 5);
-    assert.equal(response.body.breakpoints[1].verified, true);
+    assert.equal(response.body.breakpoints[1].verified, false);
     assert.equal(response.body.breakpoints[1].line, 10);
   });
 
@@ -191,10 +191,13 @@ void describe("WarpoDebugSession", () => {
 
     await dc.initializeRequest();
 
-    await dc.setBreakpointsRequest({
+    const initialResponse = await dc.setBreakpointsRequest({
       source: { path: source },
       breakpoints: [{ line: validLine }],
     });
+    assert.equal(initialResponse.body.breakpoints[0].verified, false);
+
+    const breakpointChangedPromise = dc.waitForEvent("breakpoint");
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
       program: string;
@@ -209,6 +212,13 @@ void describe("WarpoDebugSession", () => {
     };
 
     await launchAndWaitForBreakpoint(dc, launchArgs);
+
+    const breakpointChangedEvent = await breakpointChangedPromise;
+    const breakpointChangedBody = breakpointChangedEvent.body as
+      | { reason?: string; breakpoint?: DebugProtocol.Breakpoint }
+      | undefined;
+    assert.equal(breakpointChangedBody?.reason, "changed");
+    assert.equal(breakpointChangedBody?.breakpoint?.verified, true);
 
     const response = await dc.setBreakpointsRequest({
       source: { path: source },
@@ -311,7 +321,7 @@ void describe("WarpoDebugSession", () => {
       breakpoints: [{ line: breakpointLine }],
     });
     assert.equal(breakpointResponse.body.breakpoints.length, 1);
-    assert.equal(breakpointResponse.body.breakpoints[0].verified, true);
+    assert.equal(breakpointResponse.body.breakpoints[0].verified, false);
     assert.equal(breakpointResponse.body.breakpoints[0].line, breakpointLine);
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {

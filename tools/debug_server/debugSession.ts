@@ -6,6 +6,7 @@ import {
   InitializedEvent,
   Thread,
   Breakpoint,
+  BreakpointEvent,
   Source,
   Scope,
   StackFrame,
@@ -245,25 +246,23 @@ export class WarpoDebugSession extends LoggingDebugSession {
       `SetBreakpoints request: source=${sourcePath}, lines=${clientLines.map((breakpoint) => breakpoint.line).join(",") || "none"}`
     );
 
-    const bps: DebuggerBreakpointInfo[] = clientLines.map((bp) => {
+    const bps: DebuggerBreakpointInfo[] = [];
+    for (const bp of clientLines) {
       const id = ++this.breakpointId;
-      const verified =
-        wasmModule === undefined ||
-        wasmModule.resolveBreakpointLocations({
-          id,
-          line: bp.line,
-          verified: true,
-          source: sourcePath,
-        }).length > 0;
-      const info: DebuggerBreakpointInfo = {
+      bps.push({
         id,
         line: bp.line,
-        verified,
+        verified: false,
         source: sourcePath,
-      };
+      });
       this.log(`Breakpoint set: ${path.basename(sourcePath)}:${bp.line}`);
-      return info;
-    });
+    }
+
+    if (wasmModule !== undefined) {
+      for (const breakpoint of bps) {
+        breakpoint.verified = wasmModule.resolveBreakpointLocations(breakpoint).length > 0;
+      }
+    }
 
     this.requestedBreakpointsBySource.set(sourcePath, bps);
     this.pendingBreakpointSources.clear();
@@ -478,7 +477,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
   protected terminateRequest(response: DebugProtocol.TerminateResponse, _args: DebugProtocol.TerminateArguments): void {
     const runtime = this.runtime;
     if (runtime) {
-      this.disposeRuntimeAndTerminate(runtime);
+      void this.disposeRuntimeAndTerminate(runtime);
     }
     this.sendResponse(response);
   }
@@ -1706,32 +1705,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
       `Applying breakpoint updates: requestedSources=${this.requestedBreakpointsBySource.size}, pendingSources=${this.pendingBreakpointSources.size}`
     );
     this.pendingBreakpointSources.clear();
-    const wasmBytecodeOffsets = new Set<number>();
-    for (const [sourcePath, breakpoints] of this.requestedBreakpointsBySource) {
-      for (const breakpoint of breakpoints) {
-        const sourceMapHasSource = wasmModule.hasSource(sourcePath);
-        this.log(
-          `Resolving breakpoint: source=${sourcePath}, line=${breakpoint.line}, sourceMapHasSource=${sourceMapHasSource}`
-        );
-        const breakpointLocations = wasmModule.resolveBreakpointLocations(breakpoint);
-        if (breakpointLocations.length === 0) {
-          this.log(
-            `Source-map lookup failed for breakpoint ${path.basename(sourcePath)}:${breakpoint.line}: ${
-              sourceMapHasSource ? "source present but line has no mapping" : "source is absent"
-            }`
-          );
-        }
-        this.log(
-          `Breakpoint resolution result: source=${sourcePath}, line=${breakpoint.line}, locations=${breakpointLocations.length}, offsets=${breakpointLocations.map((location) => location.wasmBytecodeOffset).join(",") || "none"}`
-        );
-        for (const location of breakpointLocations) {
-          wasmBytecodeOffsets.add(location.wasmBytecodeOffset);
-          this.log(
-            `Resolved breakpoint ${path.basename(sourcePath)}:${breakpoint.line} -> ${location.wasmBytecodeOffset}`
-          );
-        }
-      }
-    }
+    const wasmBytecodeOffsets = this.collectBreakpointOffsets(wasmModule);
 
     runtime.setWasmBreakpoints(
       wasmModule,
@@ -1753,6 +1727,47 @@ export class WarpoDebugSession extends LoggingDebugSession {
         },
       }
     );
+  }
+
+  private collectBreakpointOffsets(wasmModule: DebuggerWasmModule): Set<number> {
+    const wasmBytecodeOffsets = new Set<number>();
+    for (const [sourcePath, breakpoints] of this.requestedBreakpointsBySource) {
+      for (const breakpoint of breakpoints) {
+        this.collectBreakpointLocations(wasmModule, sourcePath, breakpoint, wasmBytecodeOffsets);
+      }
+    }
+    return wasmBytecodeOffsets;
+  }
+
+  private collectBreakpointLocations(
+    wasmModule: DebuggerWasmModule,
+    sourcePath: string,
+    breakpoint: DebuggerBreakpointInfo,
+    wasmBytecodeOffsets: Set<number>
+  ): void {
+    const sourceMapHasSource = wasmModule.hasSource(sourcePath);
+    this.log(
+      `Resolving breakpoint: source=${sourcePath}, line=${breakpoint.line}, sourceMapHasSource=${sourceMapHasSource}`
+    );
+    const breakpointLocations = wasmModule.resolveBreakpointLocations(breakpoint);
+    if (breakpointLocations.length > 0 && !breakpoint.verified) {
+      breakpoint.verified = true;
+      this.sendEvent(new BreakpointEvent("changed", this.toDebugProtocolBreakpoint(breakpoint)));
+    }
+    if (breakpointLocations.length === 0) {
+      this.log(
+        `Source-map lookup failed for breakpoint ${path.basename(sourcePath)}:${breakpoint.line}: ${
+          sourceMapHasSource ? "source present but line has no mapping" : "source is absent"
+        }`
+      );
+    }
+    this.log(
+      `Breakpoint resolution result: source=${sourcePath}, line=${breakpoint.line}, locations=${breakpointLocations.length}, offsets=${breakpointLocations.map((location) => location.wasmBytecodeOffset).join(",") || "none"}`
+    );
+    for (const location of breakpointLocations) {
+      wasmBytecodeOffsets.add(location.wasmBytecodeOffset);
+      this.log(`Resolved breakpoint ${path.basename(sourcePath)}:${breakpoint.line} -> ${location.wasmBytecodeOffset}`);
+    }
   }
 
   private disposeLoadedModule(): void {
