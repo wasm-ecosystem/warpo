@@ -131,6 +131,12 @@ function formatUnknownError(error: unknown): string {
   return "unknown error";
 }
 
+const UTF8_CONST_STR_CLASS_NAME = "~lib/warpo/utf8/const_str/ConstStr";
+
+function isDisplayableStringClass(typeName: string): boolean {
+  return typeName === AS_STRING_CLASS_NAME || typeName === UTF8_CONST_STR_CLASS_NAME;
+}
+
 async function resolveUnitTestWasmPath(cwd: string): Promise<string> {
   const configPath = path.join(cwd, "as-test.config.js");
   let outputFolder = "coverage";
@@ -796,7 +802,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     if (typeName !== undefined) {
       const objectAddress = this.parseObjectAddress(typeName, value);
       if (objectAddress) {
-        if (typeName === AS_STRING_CLASS_NAME) {
+        if (isDisplayableStringClass(typeName)) {
           const stringValue = await this.decodeStringAtAddress(typeName, objectAddress);
           return this.createClassVariable(name, typeName, objectAddress, stringValue);
         }
@@ -859,7 +865,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
   }
 
   private parseObjectAddress(typeName: string, value: string): number | undefined {
-    if (!this.loadedModule?.getClassLayout(typeName)) {
+    if (typeName !== UTF8_CONST_STR_CLASS_NAME && !this.loadedModule?.getClassLayout(typeName)) {
       return undefined;
     }
 
@@ -1058,7 +1064,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
       return { kind: "basic", name, value: elementAddress.toString(), typeName: undefined };
     }
 
-    if (classLayout.name === AS_STRING_CLASS_NAME) {
+    if (isDisplayableStringClass(classLayout.name)) {
       const stringValue = await this.decodeStringAtAddress(classLayout.name, elementAddress);
       return this.createClassVariable(name, classLayout.name, elementAddress, stringValue);
     }
@@ -1347,7 +1353,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     const value = this.decodeFieldValue(view, field);
     const address = field.isReference ? this.parseObjectAddress(field.typeName, value) : undefined;
     if (address) {
-      if (field.typeName === AS_STRING_CLASS_NAME) {
+      if (isDisplayableStringClass(field.typeName)) {
         const stringValue = await this.decodeStringAtAddress(field.typeName, address);
         return this.createClassVariable(field.name, field.typeName, address, stringValue);
       }
@@ -1436,7 +1442,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
   }
 
   private async decodeStringAtAddress(typeName: string, address: number): Promise<string> {
-    assert.equal(typeName, AS_STRING_CLASS_NAME);
+    assert.ok(isDisplayableStringClass(typeName));
 
     if (!this.runtime) {
       this.log(`Error: cannot decode string at ${address}: runtime is not active`);
@@ -1457,7 +1463,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
       return "<unavailable>";
     }
 
-    return JSON.stringify(Buffer.from(stringMemory).toString("utf16le"));
+    const encoding = typeName === UTF8_CONST_STR_CLASS_NAME ? "utf8" : "utf16le";
+    return JSON.stringify(Buffer.from(stringMemory).toString(encoding));
   }
 
   private doContinueRequest(response: DebugProtocol.ContinueResponse): void {

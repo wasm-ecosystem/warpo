@@ -1396,6 +1396,37 @@ void describe("WarpoDebugSession", () => {
     );
   });
 
+  void it("should display utf8.ConstStr values", { timeout: 5000 }, async () => {
+    const source = sourcePath("debugger_utf8_const_str.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 11;
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: breakpointLine }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    const { variablesResponse } = await launchAndReadTopFrameLocals(dc, launchArgs);
+    const value = assertDefined(findVariable(variablesResponse.body.variables, "s"));
+    assert.equal(value.type, "~lib/warpo/utf8/const_str/ConstStr");
+    assert.equal(value.value, '"abcdef"');
+    assert.equal(value.variablesReference, 0);
+  });
+
   void it("should expand class array elements as objects", { timeout: 5000 }, async () => {
     const source = sourcePath("debugger_class_array.ts");
     const output = await buildModule(source);
