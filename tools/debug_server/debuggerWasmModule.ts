@@ -19,10 +19,23 @@ import {
 } from "../dwarf/functionDebugInfo.js";
 import { readULEB128 } from "../common/leb128.js";
 import { SourceMapConsumer, type BasicSourceMapConsumer, type RawSourceMap } from "source-map";
-import { OperatorCode } from "wasmparser";
+import {
+  BinaryReader,
+  BinaryReaderState,
+  NameType,
+  OperatorCode,
+  type IElementSegment,
+  type IFunctionNameEntry,
+  type IOperatorInformation,
+} from "wasmparser";
 import { normalizeDebugPath } from "./debugPath.js";
 
 export type ParsedSourceMap = BasicSourceMapConsumer;
+
+interface WasmFunctionTableInfo {
+  functionIndicesByTableIndex: Map<number, number>;
+  namesByFunctionIndex: Map<number, string>;
+}
 
 export interface DebuggerBreakpointInfo {
   id: number;
@@ -112,6 +125,7 @@ export class DebuggerWasmModule {
     readonly sourceMapFilePath: string,
     readonly bytecode: Uint8Array,
     private readonly sourceMap: ParsedSourceMap,
+    private readonly functionTableInfo: WasmFunctionTableInfo,
     private readonly functionInfoResolver: DwarfFunctionInfoResolver,
     private readonly classInfoResolver: DwarfClassInfoResolver
   ) {
@@ -137,6 +151,7 @@ export class DebuggerWasmModule {
       sourceMapFilePath,
       bytecode,
       sourceMap,
+      parseWasmFunctionTableInfo(bytecode),
       DwarfFunctionInfoResolver.fromWasm(bytecode),
       DwarfClassInfoResolver.fromWasm(bytecode)
     );
@@ -207,6 +222,11 @@ export class DebuggerWasmModule {
 
   getNextBytecodeOffsetAfterCall(wasmBytecodeOffset: number): number | undefined {
     return getNextBytecodeOffsetAfterCall(this.bytecode, wasmBytecodeOffset);
+  }
+
+  getFunctionNameByTableIndex(tableIndex: number): string | undefined {
+    const functionIndex = this.functionTableInfo.functionIndicesByTableIndex.get(tableIndex);
+    return functionIndex === undefined ? undefined : this.functionTableInfo.namesByFunctionIndex.get(functionIndex);
   }
 
   getVariablesAtBytecodeOffset(wasmBytecodeOffset: number): DebuggerSourceVariableInfo[] | undefined {
@@ -458,4 +478,97 @@ export class DebuggerWasmModule {
       globalIndex: variable.globalIndex,
     };
   }
+}
+
+class WasmFunctionTableInfoParser {
+  private readonly functionIndicesByTableIndex = new Map<number, number>();
+  private readonly namesByFunctionIndex = new Map<number, string>();
+  private readonly decoder = new TextDecoder();
+  private activeTableIndex: number | undefined;
+  private activeTableOffset: number | undefined;
+  private activeElementIndex = 0;
+  private elementFunctionIndex: number | undefined;
+
+  parse(wasmBinary: Uint8Array): WasmFunctionTableInfo {
+    const reader = new BinaryReader();
+    reader.setData(wasmBinary.buffer as ArrayBuffer, wasmBinary.byteOffset, wasmBinary.byteLength);
+
+    while (reader.read()) {
+      this.handleReaderState(reader);
+    }
+
+    return {
+      functionIndicesByTableIndex: this.functionIndicesByTableIndex,
+      namesByFunctionIndex: this.namesByFunctionIndex,
+    };
+  }
+
+  private handleReaderState(reader: BinaryReader): void {
+    switch (reader.state) {
+      case BinaryReaderState.BEGIN_ELEMENT_SECTION_ENTRY: {
+        const segment = reader.result as IElementSegment;
+        this.activeTableIndex = (segment.mode as number) === 0 ? (segment.tableIndex ?? 0) : undefined;
+        this.activeTableOffset = undefined;
+        this.activeElementIndex = 0;
+        break;
+      }
+      case BinaryReaderState.OFFSET_EXPRESSION_OPERATOR: {
+        const operator = reader.result as IOperatorInformation;
+        if (operator.code === OperatorCode.i32_const && typeof operator.literal === "number") {
+          this.activeTableOffset = Number(operator.literal);
+        }
+        break;
+      }
+      case BinaryReaderState.BEGIN_INIT_EXPRESSION_BODY: {
+        this.elementFunctionIndex = undefined;
+        break;
+      }
+      case BinaryReaderState.INIT_EXPRESSION_OPERATOR: {
+        const operator = reader.result as IOperatorInformation;
+        if (operator.code === OperatorCode.ref_func && typeof operator.funcIndex === "number") {
+          this.elementFunctionIndex = operator.funcIndex;
+        }
+        break;
+      }
+      case BinaryReaderState.END_INIT_EXPRESSION_BODY: {
+        this.recordElementInit();
+        break;
+      }
+      case BinaryReaderState.END_ELEMENT_SECTION_ENTRY: {
+        this.activeTableIndex = undefined;
+        this.activeTableOffset = undefined;
+        break;
+      }
+      case BinaryReaderState.NAME_SECTION_ENTRY: {
+        this.recordFunctionName(reader.result as IFunctionNameEntry);
+        break;
+      }
+      case BinaryReaderState.ERROR: {
+        throw new Error("Failed to parse wasm function metadata");
+      }
+    }
+  }
+
+  private recordElementInit(): void {
+    if (
+      this.activeTableIndex !== undefined &&
+      this.activeTableOffset !== undefined &&
+      this.elementFunctionIndex !== undefined
+    ) {
+      this.functionIndicesByTableIndex.set(this.activeTableOffset + this.activeElementIndex, this.elementFunctionIndex);
+    }
+    this.activeElementIndex++;
+  }
+
+  private recordFunctionName(nameEntry: IFunctionNameEntry): void {
+    if (nameEntry.type === NameType.Function) {
+      for (const naming of nameEntry.names) {
+        this.namesByFunctionIndex.set(naming.index, this.decoder.decode(naming.name));
+      }
+    }
+  }
+}
+
+function parseWasmFunctionTableInfo(wasmBinary: Uint8Array): WasmFunctionTableInfo {
+  return new WasmFunctionTableInfoParser().parse(wasmBinary);
 }

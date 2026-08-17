@@ -702,6 +702,61 @@ void describe("WarpoDebugSession", () => {
     assert.equal(delta.value, "2");
   });
 
+  void it("should expose a function object's name without its runtime fields", { timeout: 10000 }, async () => {
+    const source = sourcePath("debugger_function_closure.ts");
+    const output = await buildModule(source);
+
+    await dc.initializeRequest();
+    await dc.setBreakpointsRequest({
+      source: { path: source },
+      breakpoints: [{ line: 22 }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+    const variablesResponse = await readFrameLocals(dc, frame);
+
+    const f1 = assertDefined(findVariable(variablesResponse.body.variables, "f1"));
+    assert.ok(f1.variablesReference > 0);
+
+    const f1FieldsResponse = await dc.variablesRequest({ variablesReference: f1.variablesReference });
+    assert.deepEqual(
+      f1FieldsResponse.body.variables.map((variable) => variable.name),
+      ["name"]
+    );
+    const f1Name = assertDefined(findVariable(f1FieldsResponse.body.variables, "name"));
+    assert.match(f1Name.value, /outer/);
+    assert.equal(f1Name.type, "string");
+    assert.equal(f1Name.variablesReference, 0);
+
+    const f2 = assertDefined(findVariable(variablesResponse.body.variables, "f2"));
+    assert.ok(f2.variablesReference > 0);
+
+    const f2FieldsResponse = await dc.variablesRequest({ variablesReference: f2.variablesReference });
+    assert.deepEqual(
+      f2FieldsResponse.body.variables.map((variable) => variable.name),
+      ["name"]
+    );
+    const f2Name = assertDefined(findVariable(f2FieldsResponse.body.variables, "name"));
+    assert.match(f2Name.value, /outer/);
+    assert.equal(f2Name.type, "string");
+    assert.equal(f2Name.variablesReference, 0);
+  });
+
   void it("should expose wasm call stack frames after hitting a breakpoint", { timeout: 5000 }, async () => {
     const source = sourcePath("debugger_basic.ts");
     const output = await buildModule(source);
