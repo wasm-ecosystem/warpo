@@ -229,6 +229,17 @@ export class DebuggerWasmModule {
     return functionIndex === undefined ? undefined : this.functionTableInfo.namesByFunctionIndex.get(functionIndex);
   }
 
+  getClosureVariableScopesByFunctionName(functionName: string): DebuggerVariableScope[] | undefined {
+    const closureLevels = this.functionInfoResolver.getClosureVariableLevelsByFunctionName(functionName);
+    if (!closureLevels) {
+      return undefined;
+    }
+
+    return closureLevels
+      .filter((level) => level.variables.length > 0)
+      .map((level) => DebuggerWasmModule.toFunctionObjectClosureVariableScope(level));
+  }
+
   getVariablesAtBytecodeOffset(wasmBytecodeOffset: number): DebuggerSourceVariableInfo[] | undefined {
     const functionInfo = this.functionInfoResolver.findFunctionByBytecodeOffset(wasmBytecodeOffset);
     if (!functionInfo) {
@@ -426,6 +437,14 @@ export class DebuggerWasmModule {
       closureEnvLocalIndex: level.closureEnvLocalIndex,
       rootClosureEnvLocalIndex,
       tupleLevel: level.level,
+    };
+  }
+
+  private static toFunctionObjectClosureVariableScope(level: DwarfClosureVariableLevel): DebuggerVariableScope {
+    return {
+      name: level.kind === "scope" ? "Scope" : `Closure(${DebuggerWasmModule.getClosureFunctionName(level.name)})`,
+      variables: level.variables.map((variable) => DebuggerWasmModule.toClosureSourceVariableInfo(variable)),
+      tupleLevel: level.level - 1,
     };
   }
 

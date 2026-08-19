@@ -709,7 +709,7 @@ void describe("WarpoDebugSession", () => {
     await dc.initializeRequest();
     await dc.setBreakpointsRequest({
       source: { path: source },
-      breakpoints: [{ line: 22 }],
+      breakpoints: [{ line: 25 }],
     });
 
     const launchArgs: DebugProtocol.LaunchRequestArguments & {
@@ -736,12 +736,43 @@ void describe("WarpoDebugSession", () => {
     const f1FieldsResponse = await dc.variablesRequest({ variablesReference: f1.variablesReference });
     assert.deepEqual(
       f1FieldsResponse.body.variables.map((variable) => variable.name),
-      ["name"]
+      ["name", "[[scopes]]"]
     );
     const f1Name = assertDefined(findVariable(f1FieldsResponse.body.variables, "name"));
     assert.match(f1Name.value, /outer/);
     assert.equal(f1Name.type, "string");
     assert.equal(f1Name.variablesReference, 0);
+
+    const f1Scopes = assertDefined(findVariable(f1FieldsResponse.body.variables, "[[scopes]]"));
+    assert.equal(f1Scopes.value, "Scopes[]");
+    assert.equal(f1Scopes.type, "Scopes");
+    assert.ok(f1Scopes.variablesReference > 0);
+    const f1ScopeArrayResponse = await dc.variablesRequest({ variablesReference: f1Scopes.variablesReference });
+    assert.deepEqual(
+      f1ScopeArrayResponse.body.variables.map((variable) => variable.name),
+      ["0", "1"]
+    );
+    const f1MiddleScope = assertDefined(findVariable(f1ScopeArrayResponse.body.variables, "0"));
+    assert.equal(f1MiddleScope.value, "Closure(middle)");
+    assert.ok(f1MiddleScope.variablesReference > 0);
+    const f1MiddleScopeResponse = await dc.variablesRequest({ variablesReference: f1MiddleScope.variablesReference });
+    const f1CapturedB = assertDefined(findVariable(f1MiddleScopeResponse.body.variables, "b"));
+    assert.equal(f1CapturedB.value, "2");
+    assert.equal(f1CapturedB.type, "i32");
+
+    const f1OuterScope = assertDefined(findVariable(f1ScopeArrayResponse.body.variables, "1"));
+    assert.equal(f1OuterScope.value, "Closure(outer)");
+    assert.ok(f1OuterScope.variablesReference > 0);
+    const f1OuterScopeResponse = await dc.variablesRequest({ variablesReference: f1OuterScope.variablesReference });
+    const f1CapturedA = assertDefined(findVariable(f1OuterScopeResponse.body.variables, "a"));
+    assert.equal(f1CapturedA.value, "5");
+    assert.equal(f1CapturedA.type, "i32");
+    const f1CapturedC = assertDefined(findVariable(f1OuterScopeResponse.body.variables, "c"));
+    assert.ok(f1CapturedC.variablesReference > 0);
+    const f1CapturedCResponse = await dc.variablesRequest({ variablesReference: f1CapturedC.variablesReference });
+    const f1CapturedCValue = assertDefined(findVariable(f1CapturedCResponse.body.variables, "a"));
+    assert.equal(f1CapturedCValue.value, "10");
+    assert.equal(f1CapturedCValue.type, "i32");
 
     const f2 = assertDefined(findVariable(variablesResponse.body.variables, "f2"));
     assert.ok(f2.variablesReference > 0);
@@ -749,12 +780,43 @@ void describe("WarpoDebugSession", () => {
     const f2FieldsResponse = await dc.variablesRequest({ variablesReference: f2.variablesReference });
     assert.deepEqual(
       f2FieldsResponse.body.variables.map((variable) => variable.name),
-      ["name"]
+      ["name", "[[scopes]]"]
     );
     const f2Name = assertDefined(findVariable(f2FieldsResponse.body.variables, "name"));
     assert.match(f2Name.value, /outer/);
     assert.equal(f2Name.type, "string");
     assert.equal(f2Name.variablesReference, 0);
+
+    const f2Scopes = assertDefined(findVariable(f2FieldsResponse.body.variables, "[[scopes]]"));
+    assert.equal(f2Scopes.value, "Scopes[]");
+    assert.equal(f2Scopes.type, "Scopes");
+    assert.ok(f2Scopes.variablesReference > 0);
+    const f2ScopeArrayResponse = await dc.variablesRequest({ variablesReference: f2Scopes.variablesReference });
+    assert.deepEqual(
+      f2ScopeArrayResponse.body.variables.map((variable) => variable.name),
+      ["0", "1"]
+    );
+    const f2MiddleScope = assertDefined(findVariable(f2ScopeArrayResponse.body.variables, "0"));
+    assert.equal(f2MiddleScope.value, "Closure(middle)");
+    assert.ok(f2MiddleScope.variablesReference > 0);
+    const f2MiddleScopeResponse = await dc.variablesRequest({ variablesReference: f2MiddleScope.variablesReference });
+    const f2CapturedB = assertDefined(findVariable(f2MiddleScopeResponse.body.variables, "b"));
+    assert.equal(f2CapturedB.value, "2");
+    assert.equal(f2CapturedB.type, "i32");
+
+    const f2OuterScope = assertDefined(findVariable(f2ScopeArrayResponse.body.variables, "1"));
+    assert.equal(f2OuterScope.value, "Closure(outer)");
+    assert.ok(f2OuterScope.variablesReference > 0);
+    const f2OuterScopeResponse = await dc.variablesRequest({ variablesReference: f2OuterScope.variablesReference });
+    const f2CapturedA = assertDefined(findVariable(f2OuterScopeResponse.body.variables, "a"));
+    assert.equal(f2CapturedA.value, "10");
+    assert.equal(f2CapturedA.type, "i32");
+    const f2CapturedC = assertDefined(findVariable(f2OuterScopeResponse.body.variables, "c"));
+    assert.ok(f2CapturedC.variablesReference > 0);
+    const f2CapturedCResponse = await dc.variablesRequest({ variablesReference: f2CapturedC.variablesReference });
+    const f2CapturedCValue = assertDefined(findVariable(f2CapturedCResponse.body.variables, "a"));
+    assert.equal(f2CapturedCValue.value, "15");
+    assert.equal(f2CapturedCValue.type, "i32");
   });
 
   void it("should expose wasm call stack frames after hitting a breakpoint", { timeout: 5000 }, async () => {

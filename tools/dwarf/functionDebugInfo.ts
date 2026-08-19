@@ -58,10 +58,12 @@ export interface DwarfFunctionInfo {
 
 export class DwarfFunctionInfoResolver {
   private readonly functions: DwarfFunctionInfo[];
+  private readonly functionsByName: ReadonlyMap<string, DwarfFunctionInfo>;
   private readonly globals: DwarfGlobalVariableInfo[];
 
   private constructor(functions: DwarfFunctionInfo[], globals: DwarfGlobalVariableInfo[]) {
     this.functions = functions;
+    this.functionsByName = buildFunctionNameMap(functions);
     this.globals = globals;
   }
 
@@ -91,6 +93,15 @@ export class DwarfFunctionInfoResolver {
 
   getFunctions(): DwarfFunctionInfo[] {
     return this.functions;
+  }
+
+  findFunctionByName(functionName: string): DwarfFunctionInfo | undefined {
+    return this.functionsByName.get(functionName);
+  }
+
+  getClosureVariableLevelsByFunctionName(functionName: string): DwarfClosureVariableLevel[] | undefined {
+    const functionInfo = this.findFunctionByName(functionName);
+    return functionInfo === undefined ? undefined : getClosureVariableLevels(functionInfo);
   }
 
   getGlobals(): DwarfGlobalVariableInfo[] {
@@ -348,6 +359,26 @@ function getNodeVariables(node: DwarfFunctionInfo | DwarfScopeInfo): DwarfLocalV
     return variables;
   }
   return node.variables;
+}
+
+function buildFunctionNameMap(functions: DwarfFunctionInfo[]): Map<string, DwarfFunctionInfo> {
+  const functionsByName = new Map<string, DwarfFunctionInfo>();
+
+  function visit(node: DwarfFunctionInfo | DwarfScopeInfo): void {
+    if (node.kind === "function" && !functionsByName.has(node.name)) {
+      functionsByName.set(node.name, node);
+    }
+
+    for (const child of node.children) {
+      visit(child);
+    }
+  }
+
+  for (const functionInfo of functions) {
+    visit(functionInfo);
+  }
+
+  return functionsByName;
 }
 
 interface DwarfScopeTrace {
