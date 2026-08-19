@@ -108,7 +108,12 @@ interface SyntheticVariable {
 type VariableContainer =
   | { kind: "locals"; frameId: number; scopeIndex: number }
   | { kind: "object"; address: number }
-  | { kind: "closure-scopes"; functionName: string; envAddress: number }
+  | {
+      kind: "closure-scopes";
+      functionName: string;
+      envAddress: number;
+      scopeLevels: DebuggerVariableScope[] | undefined;
+    }
   | { kind: "variables"; variables: DebugProtocol.Variable[] }
   | { kind: "map-entry"; key: DebugSessionVariable; value: DebugSessionVariable };
 
@@ -618,7 +623,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
         response.body = {
           variables: await this.resolveClosureScopeVariables(
             variableContainer.functionName,
-            variableContainer.envAddress
+            variableContainer.envAddress,
+            variableContainer.scopeLevels
           ),
         };
         break;
@@ -789,7 +795,8 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   private async resolveClosureScopeVariables(
     functionName: string,
-    envAddress: number
+    envAddress: number,
+    scopeLevels: DebuggerVariableScope[] | undefined
   ): Promise<DebugProtocol.Variable[]> {
     const wasmModule = this.loadedModule;
     if (!wasmModule) {
@@ -797,7 +804,6 @@ export class WarpoDebugSession extends LoggingDebugSession {
       return [];
     }
 
-    const scopeLevels = wasmModule.getClosureVariableScopesByFunctionName(functionName);
     if (!scopeLevels) {
       this.log(`Warning: cannot expand closure scopes for ${functionName}: DWARF function is unavailable`);
       return [];
@@ -1126,17 +1132,19 @@ export class WarpoDebugSession extends LoggingDebugSession {
       this.log(`Warning: cannot expand function: env field is unavailable`);
     }
 
+    const closureScopes =
+      functionName === undefined ? undefined : this.loadedModule?.getClosureVariableScopesByFunctionName(functionName);
     return [
       { kind: "basic", name: "name", value: functionName ?? "<unavailable>", typeName: "string" },
       {
         kind: "synthetic",
         name: "[[scopes]]",
-        value: "Scopes[]",
+        value: `Scopes[${closureScopes?.length ?? 0}]`,
         typeName: "Scopes",
         container:
           functionName === undefined || envAddress === undefined
             ? undefined
-            : { kind: "closure-scopes", functionName, envAddress },
+            : { kind: "closure-scopes", functionName, envAddress, scopeLevels: closureScopes },
       },
     ];
   }

@@ -744,7 +744,7 @@ void describe("WarpoDebugSession", () => {
     assert.equal(f1Name.variablesReference, 0);
 
     const f1Scopes = assertDefined(findVariable(f1FieldsResponse.body.variables, "[[scopes]]"));
-    assert.equal(f1Scopes.value, "Scopes[]");
+    assert.equal(f1Scopes.value, "Scopes[2]");
     assert.equal(f1Scopes.type, "Scopes");
     assert.ok(f1Scopes.variablesReference > 0);
     const f1ScopeArrayResponse = await dc.variablesRequest({ variablesReference: f1Scopes.variablesReference });
@@ -788,7 +788,7 @@ void describe("WarpoDebugSession", () => {
     assert.equal(f2Name.variablesReference, 0);
 
     const f2Scopes = assertDefined(findVariable(f2FieldsResponse.body.variables, "[[scopes]]"));
-    assert.equal(f2Scopes.value, "Scopes[]");
+    assert.equal(f2Scopes.value, "Scopes[2]");
     assert.equal(f2Scopes.type, "Scopes");
     assert.ok(f2Scopes.variablesReference > 0);
     const f2ScopeArrayResponse = await dc.variablesRequest({ variablesReference: f2Scopes.variablesReference });
