@@ -9,10 +9,13 @@ class C10 {
 function outer(a: i32): () => i32 {
   let c = new C10();
   c.a += a;
-  const inner = (): i32 => {
-    return a + 1 + c.a;
-  };
-  return inner;
+  function middle(b: i32): () => i32 {
+    const inner = (): i32 => {
+      return a + b + 1 + c.a;
+    };
+    return inner;
+  }
+  return middle(2);
 }
 
 export function _start(): i32 {

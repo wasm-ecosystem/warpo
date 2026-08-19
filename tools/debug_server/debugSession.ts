@@ -43,6 +43,7 @@ import type {
   DebuggerBreakpointInfo,
   DebuggerSourceLocation,
   DebuggerSourceVariableInfo,
+  DebuggerVariableScope,
   DebuggerWasmModule,
 } from "./debuggerWasmModule.js";
 import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
@@ -83,7 +84,7 @@ interface MapEntryVariable {
   value: DebugSessionVariable;
 }
 
-type DebugSessionVariable = BasicVariable | ClassVariable | MapEntryVariable;
+type DebugSessionVariable = BasicVariable | ClassVariable | MapEntryVariable | SyntheticVariable;
 
 interface RawLocalValue {
   name: string;
@@ -96,9 +97,24 @@ interface RawTupleElementValue {
   isReference: boolean;
 }
 
+interface SyntheticVariable {
+  kind: "synthetic";
+  name: string;
+  value: string;
+  typeName?: string;
+  container?: VariableContainer;
+}
+
 type VariableContainer =
   | { kind: "locals"; frameId: number; scopeIndex: number }
   | { kind: "object"; address: number }
+  | {
+      kind: "closure-scopes";
+      functionName: string;
+      envAddress: number;
+      scopeLevels: DebuggerVariableScope[] | undefined;
+    }
+  | { kind: "variables"; variables: DebugProtocol.Variable[] }
   | { kind: "map-entry"; key: DebugSessionVariable; value: DebugSessionVariable };
 
 interface PausedStackFrame {
@@ -599,6 +615,20 @@ export class WarpoDebugSession extends LoggingDebugSession {
         response.body = { variables: await this.decodeObjectAtAddress(variableContainer.address) };
         break;
       }
+      case "variables": {
+        response.body = { variables: variableContainer.variables };
+        break;
+      }
+      case "closure-scopes": {
+        response.body = {
+          variables: await this.resolveClosureScopeVariables(
+            variableContainer.functionName,
+            variableContainer.envAddress,
+            variableContainer.scopeLevels
+          ),
+        };
+        break;
+      }
       case "map-entry": {
         response.body = {
           variables: [variableContainer.key, variableContainer.value].map((variable) =>
@@ -689,35 +719,106 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
     const sourceVariables = sourceVariableScope.variables;
     const rawWasmValues = await this.resolveRawWasmValues(sourceVariables, runtimeVariablesByIndex, runtime);
-    const closureTupleValuesByLevel = await this.readClosureTupleChain(
+    const firstTupleAddress = this.resolveClosureTupleAddress(
       sourceVariableScope.rootClosureEnvLocalIndex,
       runtimeVariablesByIndex
     );
+    const decodedScopes = await this.decodeScopeChainVariables([sourceVariableScope], firstTupleAddress, rawWasmValues);
+    return decodedScopes[0] ?? [];
+  }
 
-    const scopeTupleLevel = sourceVariableScope.tupleLevel ?? 0;
-    const rawLocalValues = sourceVariables.map((variable): RawLocalValue => {
-      if (variable.kind === "closure") {
-        const elementIndex = variable.fieldOffset / SMALL_TUPLE_SLOT_SIZE;
-        const levelValues = closureTupleValuesByLevel.get(scopeTupleLevel);
-        const tupleRawValue = levelValues?.get(elementIndex);
-        if (tupleRawValue === undefined) {
-          return { name: variable.name, value: "<unavailable>", typeName: variable.typeName };
+  private async decodeScopeChainVariables(
+    scopeLevels: DebuggerVariableScope[],
+    firstTupleAddress: number | undefined,
+    rawWasmValues: Map<DebuggerSourceVariableInfo, string>
+  ): Promise<DebugProtocol.Variable[][]> {
+    const closureTupleValuesByLevel = new Map<number, Map<number, string>>();
+    const visitedAddresses = new Set<number>();
+    if (firstTupleAddress !== undefined && Number.isInteger(firstTupleAddress) && firstTupleAddress > 0) {
+      let currentAddress = firstTupleAddress;
+      let tupleLevel = 0;
+      while (!visitedAddresses.has(currentAddress)) {
+        visitedAddresses.add(currentAddress);
+        const tupleValues = await this.readTupleElementValues(currentAddress);
+        const levelValues = new Map<number, string>();
+        for (const [index, value] of tupleValues.entries()) {
+          levelValues.set(index, value.value);
+        }
+        closureTupleValuesByLevel.set(tupleLevel, levelValues);
+
+        const parentTuple = tupleValues[0];
+        if (!parentTuple) {
+          break;
         }
 
-        return { name: variable.name, value: tupleRawValue, typeName: variable.typeName };
+        const parentAddress = Number(parentTuple.value);
+        if (!Number.isInteger(parentAddress) || parentAddress <= 0) {
+          break;
+        }
+
+        currentAddress = parentAddress;
+        tupleLevel++;
       }
+    }
 
-      const wasmRawValue = rawWasmValues.get(variable);
-      assert(wasmRawValue !== undefined);
-      return { name: variable.name, value: wasmRawValue, typeName: variable.typeName };
-    });
+    return Promise.all(
+      scopeLevels.map(async (scopeLevel) => {
+        const rawLocalValues = scopeLevel.variables.map((variable): RawLocalValue => {
+          if (variable.kind === "closure") {
+            const elementIndex = variable.fieldOffset / SMALL_TUPLE_SLOT_SIZE;
+            const levelValues = closureTupleValuesByLevel.get(scopeLevel.tupleLevel ?? 0);
+            const tupleRawValue = levelValues?.get(elementIndex);
+            if (tupleRawValue === undefined) {
+              return { name: variable.name, value: "<unavailable>", typeName: variable.typeName };
+            }
 
-    const variables = await Promise.all(
-      rawLocalValues.map((variable) =>
-        this.toDebugSessionVariableValue(variable.name, variable.typeName, variable.value)
-      )
+            return { name: variable.name, value: tupleRawValue, typeName: variable.typeName };
+          }
+
+          const wasmRawValue = rawWasmValues.get(variable);
+          return {
+            name: variable.name,
+            value: wasmRawValue ?? "<unavailable>",
+            typeName: variable.typeName,
+          };
+        });
+
+        const variables = await Promise.all(
+          rawLocalValues.map((variable) =>
+            this.toDebugSessionVariableValue(variable.name, variable.typeName, variable.value)
+          )
+        );
+        return variables.map((variable) => this.toDebugProtocolVariable(variable));
+      })
     );
-    return variables.map((variable) => this.toDebugProtocolVariable(variable));
+  }
+
+  private async resolveClosureScopeVariables(
+    functionName: string,
+    envAddress: number,
+    scopeLevels: DebuggerVariableScope[] | undefined
+  ): Promise<DebugProtocol.Variable[]> {
+    const wasmModule = this.loadedModule;
+    if (!wasmModule) {
+      this.log(`Warning: cannot expand closure scopes for ${functionName}: wasm module is not loaded`);
+      return [];
+    }
+
+    if (!scopeLevels) {
+      this.log(`Warning: cannot expand closure scopes for ${functionName}: DWARF function is unavailable`);
+      return [];
+    }
+
+    const decodedScopeVariables = await this.decodeScopeChainVariables(scopeLevels, envAddress, new Map());
+    return scopeLevels.map((scopeLevel, index) => {
+      const variable: SyntheticVariable = {
+        kind: "synthetic",
+        name: index.toString(),
+        value: scopeLevel.name,
+        container: { kind: "variables", variables: decodedScopeVariables[index] ?? [] },
+      };
+      return this.toDebugProtocolVariable(variable);
+    });
   }
 
   private async decodeObjectAtAddress(address: number): Promise<DebugProtocol.Variable[]> {
@@ -751,48 +852,21 @@ export class WarpoDebugSession extends LoggingDebugSession {
     return rawWasmValues;
   }
 
-  private async readClosureTupleChain(
+  private resolveClosureTupleAddress(
     closureEnvLocalIndex: number | undefined,
     runtimeVariablesByIndex: Map<number, DebugRuntimeVariable>
-  ): Promise<Map<number, Map<number, string>>> {
-    const closureTupleValuesByLevel = new Map<number, Map<number, string>>();
+  ): number | undefined {
     if (closureEnvLocalIndex === undefined) {
-      return closureTupleValuesByLevel;
+      return undefined;
     }
 
     const closureEnvVariable = runtimeVariablesByIndex.get(closureEnvLocalIndex);
     if (closureEnvVariable === undefined) {
-      return closureTupleValuesByLevel;
+      return undefined;
     }
 
-    let address = Number(closureEnvVariable.value);
-    if (!Number.isInteger(address) || address <= 0) {
-      return closureTupleValuesByLevel;
-    }
-
-    let level = 0;
-    while (true) {
-      const tupleValues = await this.readTupleElementValues(address);
-      const levelValues = new Map<number, string>();
-      for (const [index, value] of tupleValues.entries()) {
-        levelValues.set(index, value.value);
-      }
-      closureTupleValuesByLevel.set(level, levelValues);
-
-      const parentAddress = levelValues.get(0);
-      if (parentAddress === undefined) {
-        break;
-      }
-      const parentAddressNumber = Number(parentAddress);
-      if (!Number.isInteger(parentAddressNumber) || parentAddressNumber <= 0) {
-        break;
-      }
-
-      address = parentAddressNumber;
-      level++;
-    }
-
-    return closureTupleValuesByLevel;
+    const address = Number(closureEnvVariable.value);
+    return Number.isInteger(address) && address > 0 ? address : undefined;
   }
 
   private resolvePausedStackFrame(frameId: number): PausedStackFrame | undefined {
@@ -858,12 +932,19 @@ export class WarpoDebugSession extends LoggingDebugSession {
       case "map-entry": {
         return "";
       }
+      case "synthetic": {
+        return variable.value;
+      }
     }
   }
 
   private getVariableReference(variable: DebugSessionVariable, isExpandableClass: boolean): number {
     if (isExpandableClass && variable.kind === "class") {
       return this.toObjectVariablesReference(variable.address);
+    }
+
+    if (variable.kind === "synthetic") {
+      return variable.container === undefined ? 0 : this.createVariableContainer(variable.container);
     }
 
     if (variable.kind === "map-entry") {
@@ -1029,19 +1110,43 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   private decodeFunctionElements(view: DataView, classLayout: ClassLayout): DebugSessionVariable[] {
     const indexField = classLayout.fields.find((field) => field.name === "_index" || field.name === "index");
-    if (!indexField) {
+    let functionName: string | undefined;
+    if (indexField) {
+      const indexValue = this.decodeFieldValue(view, indexField);
+      const functionIndex = Number(indexValue);
+      if (Number.isInteger(functionIndex) && functionIndex >= 0) {
+        functionName = this.loadedModule?.getFunctionNameByTableIndex(functionIndex);
+      }
+    } else {
       this.log(`Warning: cannot expand function: index field is unavailable`);
-      return [];
     }
 
-    const indexValue = this.decodeFieldValue(view, indexField);
-    const functionIndex = Number(indexValue);
-    if (!Number.isInteger(functionIndex) || functionIndex < 0) {
-      return [{ kind: "basic", name: "name", value: "<unavailable>", typeName: "string" }];
+    const envField = classLayout.fields.find((field) => field.name === "_env" || field.name === "env");
+    let envAddress: number | undefined;
+    if (envField) {
+      const envValue = Number(this.decodeFieldValue(view, envField));
+      if (Number.isInteger(envValue) && envValue > 0) {
+        envAddress = envValue;
+      }
+    } else {
+      this.log(`Warning: cannot expand function: env field is unavailable`);
     }
 
-    const functionName = this.loadedModule?.getFunctionNameByTableIndex(functionIndex);
-    return [{ kind: "basic", name: "name", value: functionName ?? "<unavailable>", typeName: "string" }];
+    const closureScopes =
+      functionName === undefined ? undefined : this.loadedModule?.getClosureVariableScopesByFunctionName(functionName);
+    return [
+      { kind: "basic", name: "name", value: functionName ?? "<unavailable>", typeName: "string" },
+      {
+        kind: "synthetic",
+        name: "[[scopes]]",
+        value: `Scopes[${closureScopes?.length ?? 0}]`,
+        typeName: "Scopes",
+        container:
+          functionName === undefined || envAddress === undefined
+            ? undefined
+            : { kind: "closure-scopes", functionName, envAddress, scopeLevels: closureScopes },
+      },
+    ];
   }
 
   private async resolveRuntimeObjectPayloadSize(
