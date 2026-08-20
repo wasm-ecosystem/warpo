@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "icon": "icon.png",
   "type": "commonjs",
-  "publisher": "wasm-ecosystem",
+  "publisher": "Schleifner",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
