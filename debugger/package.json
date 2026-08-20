@@ -41,9 +41,7 @@
         ],
         "configurationAttributes": {
           "launch": {
-            "required": [
-              "wasmFilePath"
-            ],
+            "required": [],
             "properties": {
               "wasmFilePath": {
                 "type": "string",
