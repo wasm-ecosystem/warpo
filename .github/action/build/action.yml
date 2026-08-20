@@ -39,6 +39,7 @@ runs:
       shell: pwsh
       run: |
         choco install ccache ninja -y
+        echo "C:\ProgramData\chocolatey\bin" >> $env:GITHUB_PATH
     - if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1
     - if: runner.os == 'Windows'

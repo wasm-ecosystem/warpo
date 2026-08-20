@@ -4,26 +4,38 @@
 import { appendFileSync, mkdirSync } from "node:fs";
 import * as path from "node:path";
 
-const DEBUG_SERVER_TRACE_ENABLED = process.env.WARPO_DEBUG_SERVER_TRACE === "1";
-const DEBUG_SERVER_TRACE_FILE =
-  process.env.WARPO_DEBUG_SERVER_TRACE_FILE ?? path.join(process.cwd(), ".warpo-debug-server-trace.log");
+let debugServerTraceFile: string | undefined;
 
-if (DEBUG_SERVER_TRACE_ENABLED) {
-  try {
-    mkdirSync(path.dirname(DEBUG_SERVER_TRACE_FILE), { recursive: true });
-    appendFileSync(DEBUG_SERVER_TRACE_FILE, "");
-  } catch {
-    // Tracing should never block launching the runtime.
+function initializeTraceFile(filePath: string): void {
+  mkdirSync(path.dirname(filePath), { recursive: true });
+  appendFileSync(filePath, "");
+}
+
+export function configureTrace(filePath: string | undefined, cwd = process.cwd()): void {
+  const configuredFile = filePath?.trim() || process.env.WARPO_DEBUG_SERVER_TRACE_FILE?.trim();
+  if (!configuredFile) {
+    debugServerTraceFile = undefined;
+    return;
   }
+
+  const resolvedFile = path.isAbsolute(configuredFile) ? configuredFile : path.resolve(cwd, configuredFile);
+  try {
+    initializeTraceFile(resolvedFile);
+  } catch (error: unknown) {
+    debugServerTraceFile = undefined;
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Unable to create debug trace file "${resolvedFile}": ${message}`);
+  }
+  debugServerTraceFile = resolvedFile;
 }
 
 export function trace(component: string, message: string): void {
-  if (!DEBUG_SERVER_TRACE_ENABLED) {
+  if (!debugServerTraceFile) {
     return;
   }
 
   try {
-    appendFileSync(DEBUG_SERVER_TRACE_FILE, `[${component}] ${message}\n`);
+    appendFileSync(debugServerTraceFile, `[${component}] ${message}\n`);
   } catch {
     // Tracing should never block launching the runtime.
   }
