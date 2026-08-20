@@ -3,6 +3,7 @@
   "displayName": "Warpo Debugger",
   "description": "Debug adapter for Warpo WebAssembly projects",
   "version": "1.0.0",
+  "icon": "icon.png",
   "type": "commonjs",
   "publisher": "wasm-ecosystem",
   "license": "Apache-2.0",
