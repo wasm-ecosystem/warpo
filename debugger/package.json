@@ -2,7 +2,7 @@
   "name": "warpo-debugger",
   "displayName": "Warpo Debugger",
   "description": "Debug adapter for Warpo WebAssembly projects",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "type": "commonjs",
   "publisher": "wasm-ecosystem",
   "license": "Apache-2.0",
@@ -71,6 +71,10 @@
                 "default": false,
                 "description": "Show Warpo debug session logs in the Debug Console."
               },
+              "debugSessionLogFile": {
+                "type": "string",
+                "description": "Optional file path for detailed Warpo debug session logs. Relative paths are resolved from the workspace folder."
+              },
               "args": {
                 "type": "array",
                 "items": {
@@ -86,6 +90,10 @@
                 ],
                 "default": "node",
                 "description": "Which runtime to use for launching the Wasm file."
+              },
+              "cwd": {
+                "type": "string",
+                "description": "Working directory for resolving relative paths in the debug session. Defaults to workspace folder."
               }
             }
           }

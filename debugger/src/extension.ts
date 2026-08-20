@@ -21,6 +21,7 @@ interface WarpoDebugConfiguration extends vscode.DebugConfiguration {
   cwd?: string;
   warpoPath?: string;
   debugSessionLogging?: boolean;
+  debugSessionLogFile?: string;
   args?: number[];
 }
 
@@ -73,13 +74,15 @@ class WarpoDebugConfigurationProvider implements vscode.DebugConfigurationProvid
     const workspaceFolder = folder?.uri.fsPath ?? vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 
     warpoConfig.sessionMode = warpoConfig.sessionMode ?? "wasm file";
+    if (workspaceFolder) {
+      warpoConfig.cwd = warpoConfig.cwd ?? workspaceFolder;
+    }
     if (warpoConfig.sessionMode === "unittest") {
       if (!workspaceFolder) {
         void vscode.window.showErrorMessage("Open a workspace folder to debug unit tests.");
         return undefined;
       }
       warpoConfig.program = path.join(workspaceFolder, "build_coverage", "test.instrumented.wasm");
-      warpoConfig.cwd = workspaceFolder;
       if (warpoConfig.warpoPath && !path.isAbsolute(warpoConfig.warpoPath)) {
         warpoConfig.warpoPath = path.join(workspaceFolder, warpoConfig.warpoPath);
       }

@@ -4,6 +4,7 @@
 import { DebugClient } from "@vscode/debugadapter-testsupport";
 import type { DebugProtocol } from "@vscode/debugprotocol";
 import * as assert from "node:assert/strict";
+import * as fs from "node:fs";
 import * as path from "node:path";
 import { describe, it, beforeEach, afterEach } from "node:test";
 import { fileURLToPath } from "node:url";
@@ -319,6 +320,10 @@ void describe("WarpoDebugSession", () => {
     const source = sourcePath("debugger_basic.ts");
     const output = await buildModule(source);
     const breakpointLine = 13;
+    const traceFile = path.join(TEST_MODULE_DIR, "build", "test_debug_trace.log");
+    if (fs.existsSync(traceFile)) {
+      fs.unlinkSync(traceFile);
+    }
 
     await dc.initializeRequest();
 
@@ -335,11 +340,13 @@ void describe("WarpoDebugSession", () => {
       launchType: string;
       runtime: string;
       entryFunctionName: string;
+      debugSessionLogFile?: string;
     } = {
       program: output,
       launchType: "wasm file",
       runtime: "node",
       entryFunctionName: "_start",
+      debugSessionLogFile: traceFile,
     };
 
     const loadedSourcePromise = waitForLoadedWasmSource(dc, output);
@@ -354,6 +361,11 @@ void describe("WarpoDebugSession", () => {
     assert.equal(loadedSourceBody?.reason, "new");
     assert.equal(loadedSourceBody?.source?.path, path.resolve(output));
     assert.equal(loadedSourceBody?.source?.name, path.basename(output));
+
+    assert.equal(fs.existsSync(traceFile), true, "debugSessionLogFile should be created on launch");
+    if (fs.existsSync(traceFile)) {
+      fs.unlinkSync(traceFile);
+    }
   });
 
   void it("should restart the debuggee and restore breakpoints", { timeout: 10000 }, async () => {

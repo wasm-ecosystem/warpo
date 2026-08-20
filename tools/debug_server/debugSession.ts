@@ -49,7 +49,7 @@ import type {
 import type { DebugPauseInfo, Debugger, DebugRuntimeVariable } from "./debugger.js";
 import { NodeDebugger } from "./nodeDebugger.js";
 import { loadConfig } from "../test_runner/config.js";
-import { trace } from "./debugTrace.js";
+import { configureTrace, trace } from "./debugTrace.js";
 
 interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArguments {
   program?: string;
@@ -59,6 +59,7 @@ interface WarpoLaunchRequestArguments extends DebugProtocol.LaunchRequestArgumen
   cwd?: string;
   warpoPath?: string;
   debugSessionLogging?: boolean;
+  debugSessionLogFile?: string;
   args?: number[];
 }
 
@@ -367,6 +368,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
         return;
       }
       const wasmFilePath = path.resolve(program);
+      configureTrace(args.debugSessionLogFile, cwd);
       this.log(`Launch requested for: ${program}`);
       if (launchType === "wasm file" || launchType === "unittest") {
         const runtimeName = args.runtime ?? "node";
