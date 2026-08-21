@@ -55,11 +55,12 @@
   "files": [
     "asconfig.schema.json",
     "assemblyscript/build-parser/**/*",
-    "assemblyscript/std/assembly/index.d.ts",
+    "assemblyscript/std/**/*",
     "create",
     "dist",
     "tsconfig-warpo.json",
-    "types"
+    "types",
+    "warpo_extension/std/**/*"
   ],
   "devDependencies": {
     "@eslint/js": "^9.0.0",

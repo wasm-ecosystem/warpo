@@ -7,6 +7,7 @@
 #include <argparse/argparse.hpp>
 #include <cassert>
 #include <functional>
+#include <filesystem>
 
 namespace warpo::cli {
 
@@ -70,5 +71,7 @@ private:
 /// @param cat Category of this program
 // NOLINTNEXTLINE(modernize-avoid-c-arrays)
 void init(Category cat, argparse::ArgumentParser &program, int argc, char const *argv[]);
+
+std::filesystem::path getExecutablePath();
 
 } // namespace warpo::cli

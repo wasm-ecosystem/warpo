@@ -10,6 +10,7 @@
 #include <cstring>
 #include <fmt/base.h>
 #include <fmt/format.h>
+#include <filesystem>
 #include <optional>
 #include <set>
 #include <string>
@@ -30,6 +31,8 @@ class FrontendCompiler final {
 
   WarpRunner r;
   ModuleResolver moduleResolver_;
+  std::filesystem::path libraryPath_;
+  std::filesystem::path extensionLibraryPath_;
 
   size_t errorCount_ = 0;
   std::string errorMessage_;
