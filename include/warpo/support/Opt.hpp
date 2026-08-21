@@ -6,8 +6,8 @@
 
 #include <argparse/argparse.hpp>
 #include <cassert>
-#include <functional>
 #include <filesystem>
+#include <functional>
 
 namespace warpo::cli {
 
