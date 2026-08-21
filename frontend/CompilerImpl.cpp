@@ -42,11 +42,12 @@ enum WasmFFIBool : uint32_t { WASM_FALSE = 0, WASM_TRUE = 1 };
 std::filesystem::path findPackageRoot() {
   std::filesystem::path const executablePath = cli::getExecutablePath();
 
-  for (std::filesystem::path currentPath = executablePath.parent_path();
-       currentPath.filename() != "warpo" && currentPath.parent_path() != currentPath;
+  for (std::filesystem::path currentPath = executablePath.parent_path(); currentPath.parent_path() != currentPath;
        currentPath = currentPath.parent_path()) {
     if (std::filesystem::is_directory(currentPath / "assemblyscript" / "std" / "assembly"))
       return currentPath;
+    if (currentPath.filename() == "warpo")
+      break;
   }
   throw std::runtime_error{fmt::format("cannot find assemblyscript/std for executable '{}'", executablePath.string())};
 }
