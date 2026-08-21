@@ -46,7 +46,7 @@ std::filesystem::path findPackageRoot() {
        currentPath = currentPath.parent_path()) {
     if (std::filesystem::is_directory(currentPath / "assemblyscript" / "std" / "assembly"))
       return currentPath;
-    if (currentPath.filename() == "warpo")
+    if (currentPath.filename() == "warpo" && std::filesystem::is_regular_file(currentPath / "package.json"))
       break;
   }
   throw std::runtime_error{fmt::format("cannot find assemblyscript/std for executable '{}'", executablePath.string())};
