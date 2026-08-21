@@ -42,31 +42,16 @@ enum WasmFFIBool : uint32_t { WASM_FALSE = 0, WASM_TRUE = 1 };
 std::filesystem::path findPackageRoot() {
   std::filesystem::path const executablePath = cli::getExecutablePath();
 
-  std::filesystem::path const executableDirectory = executablePath.parent_path();
-  std::optional<std::filesystem::path> topLevelWarpoPath;
-  std::filesystem::path currentPath = executableDirectory;
-  while (!currentPath.empty()) {
+  for (std::filesystem::path currentPath = executablePath.parent_path();; currentPath = currentPath.parent_path()) {
+    if (std::filesystem::is_directory(currentPath / "assemblyscript" / "std" / "assembly"))
+      return currentPath;
     if (currentPath.filename() == "warpo")
-      topLevelWarpoPath = currentPath;
+      break;
     std::filesystem::path const parentPath = currentPath.parent_path();
     if (parentPath == currentPath)
       break;
-    currentPath = parentPath;
   }
-  if (!topLevelWarpoPath.has_value())
-    throw std::runtime_error{
-        fmt::format("cannot find top-level 'warpo' directory for executable '{}'", executablePath.string())};
-
-  currentPath = executableDirectory;
-  while (true) {
-    if (std::filesystem::is_directory(currentPath / "assemblyscript" / "std" / "assembly"))
-      return currentPath;
-    if (currentPath == *topLevelWarpoPath)
-      break;
-    currentPath = currentPath.parent_path();
-  }
-  throw std::runtime_error{fmt::format("cannot find assemblyscript/std under top-level 'warpo' directory '{}'",
-                                       topLevelWarpoPath->string())};
+  throw std::runtime_error{fmt::format("cannot find assemblyscript/std for executable '{}'", executablePath.string())};
 }
 
 std::optional<std::filesystem::path> findLibraryFile(std::filesystem::path const &libraryPath,
