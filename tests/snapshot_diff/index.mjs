@@ -12,6 +12,13 @@ const isDebugMode = argv.includes("--debug");
 const isUpdateMode = argv.includes("--update") || argv.includes("-u");
 const caseRegex = argv.includes("--case") ? argv[argv.indexOf("--case") + 1] : null;
 const buildDir = argv.includes("--build-dir") ? argv[argv.indexOf("--build-dir") + 1] : "build";
+const testRunner = path.join(
+  buildDir,
+  "tests",
+  "snapshot_diff",
+  "test_runner",
+  `warpo_test_runner${process.platform === "win32" ? ".exe" : ""}`
+);
 
 async function cmd(program, args) {
   if (isDebugMode) console.log(`${program} ${args.map((arg) => `'${arg}'`).join(" ")}`);
@@ -73,16 +80,8 @@ class TestCase {
 
     const functionFilter = fileConfig.func ? ["--func", fileConfig.func] : [];
 
-    await cmd(`${buildDir}/tests/snapshot_diff/test_runner/warpo_test_runner`, [
-      this.file,
-      ...optArgs,
-      ...functionFilter,
-    ]);
-    await cmd(`${buildDir}/tests/snapshot_diff/test_runner/warpo_test_runner`, [
-      this.file,
-      ...baseArgs,
-      ...functionFilter,
-    ]);
+    await cmd(testRunner, [this.file, ...optArgs, ...functionFilter]);
+    await cmd(testRunner, [this.file, ...baseArgs, ...functionFilter]);
 
     const commentLine = (l) => (l.startsWith("  ") ? `;;${l.slice(2)}` : l.length > 0 ? `;;${l}` : l);
     const commentLines = (lines) => lines.split("\n").map(commentLine).join("\n");

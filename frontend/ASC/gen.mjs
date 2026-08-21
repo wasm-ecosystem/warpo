@@ -7,7 +7,6 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import assert from "node:assert";
 import { project_root } from "./helper.mjs";
-import { createExtensionLibrarySources, createLibrarySources } from "./std.mjs";
 import { generateDiagnostics } from "./diag.mjs";
 
 const target_folder = process.argv[2];
@@ -15,8 +14,6 @@ const build_target = process.argv[3];
 assert(build_target === "debug" || build_target === "release", "invalid build target");
 
 generateDiagnostics();
-createLibrarySources(target_folder);
-createExtensionLibrarySources(target_folder);
 
 execSync(
   `npx asc --config asconfig.json --target ${build_target} -o ${target_folder}/assemblyscript.${build_target}.wasm -t ${target_folder}/assemblyscript.${build_target}.wast`,

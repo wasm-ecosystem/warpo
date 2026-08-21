@@ -18,12 +18,12 @@
     "build:release": "npm run build:ts && npm run build:cpp:release",
     "test:as:ut": "node dist/warpo.js test",
     "test:cpp:ut": "cd build && ctest --output-on-failure",
-    "test:as:snapshot": "cross-env-shell ./build/tests/frontend/warpo_frontend_test",
+    "test:as:snapshot": "node tests/run_native_test.mjs ./build/tests/frontend/warpo_frontend_test",
     "test:opt:snapshot": "node tests/snapshot_diff/index.mjs",
     "test:bootstrap:debug": "./tests/bootstrap/debug.sh",
     "test:bootstrap:release": "./tests/bootstrap/release.sh",
-    "test:debug_symbol": "cross-env-shell ./build/tests/dwarf/TestDebugSymbol",
-    "test:debug_symbol:update": "cross-env-shell build/tests/dwarf/TestDebugSymbol --update-fixtures",
+    "test:debug_symbol": "node tests/run_native_test.mjs ./build/tests/dwarf/TestDebugSymbol",
+    "test:debug_symbol:update": "node tests/run_native_test.mjs ./build/tests/dwarf/TestDebugSymbol --update-fixtures",
     "test:dwarf": "node --import tsx --test tools/dwarf/tests/**/*.test.ts",
     "test:debug_server": "node --import tsx --test tools/debug_server/tests/**/*.test.ts",
     "test:heap_analyzer": "cd tools/heap_analyzer && npm test",
@@ -55,11 +55,12 @@
   "files": [
     "asconfig.schema.json",
     "assemblyscript/build-parser/**/*",
-    "assemblyscript/std/assembly/index.d.ts",
+    "assemblyscript/std/**/*",
     "create",
     "dist",
     "tsconfig-warpo.json",
-    "types"
+    "types",
+    "warpo_extension/std/**/*"
   ],
   "devDependencies": {
     "@eslint/js": "^9.0.0",
@@ -71,7 +72,6 @@
     "@vscode/vsce": "^3.0.0",
     "assemblyscript": "^0.28.9",
     "assemblyscript-prettier": "^3.0.4",
-    "cross-env": "^10.1.0",
     "cspell": "^9.3.0",
     "diff": "^8.0.0",
     "esbuild": "^0.28.1",

@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <fmt/base.h>
 #include <fmt/format.h>
 #include <optional>
@@ -30,6 +31,8 @@ class FrontendCompiler final {
 
   WarpRunner r;
   ModuleResolver moduleResolver_;
+  std::filesystem::path libraryPath_;
+  std::filesystem::path extensionLibraryPath_;
 
   size_t errorCount_ = 0;
   std::string errorMessage_;

@@ -24,6 +24,7 @@
 #include "ModuleResolver.hpp"
 #include "warpo/frontend/Compiler.hpp"
 #include "warpo/support/FileSystem.hpp"
+#include "warpo/support/Opt.hpp"
 #include "warpo/support/Statistics.hpp"
 
 #include "src/WasmModule/WasmModule.hpp"
@@ -37,6 +38,48 @@ namespace warpo::frontend {
 namespace {
 
 enum WasmFFIBool : uint32_t { WASM_FALSE = 0, WASM_TRUE = 1 };
+
+std::filesystem::path findPackageRoot() {
+  std::filesystem::path const executablePath = cli::getExecutablePath();
+
+  for (std::filesystem::path currentPath = executablePath.parent_path(); currentPath.parent_path() != currentPath;
+       currentPath = currentPath.parent_path()) {
+    if (std::filesystem::is_directory(currentPath / "assemblyscript" / "std" / "assembly"))
+      return currentPath;
+    if (currentPath.filename() == "warpo" && std::filesystem::is_regular_file(currentPath / "package.json"))
+      break;
+  }
+  throw std::runtime_error{fmt::format("cannot find assemblyscript/std for executable '{}'", executablePath.string())};
+}
+
+std::optional<std::filesystem::path> findLibraryFile(std::filesystem::path const &libraryPath,
+                                                     std::string const &libraryName, bool const index) {
+  std::filesystem::path const filePath =
+      index ? libraryPath / libraryName / "index.ts" : libraryPath / (libraryName + extension);
+  if (!std::filesystem::is_regular_file(filePath))
+    return std::nullopt;
+  return filePath;
+}
+
+std::optional<Dependency> getLibraryDependency(std::filesystem::path const &libraryPath, std::string const &libraryName,
+                                               bool const index) {
+  const std::optional<std::filesystem::path> filePath = findLibraryFile(libraryPath, libraryName, index);
+  if (!filePath.has_value())
+    return std::nullopt;
+  return Dependency{.text = readTextFile(*filePath), .path = libraryPrefix + libraryName + extension};
+}
+
+std::vector<std::filesystem::path> getTopLevelLibraryFiles(std::filesystem::path const &libraryPath) {
+  std::vector<std::filesystem::path> files;
+  for (std::filesystem::directory_entry const &entry : std::filesystem::directory_iterator{libraryPath}) {
+    if (!entry.is_regular_file() || entry.path().extension() != extension ||
+        entry.path().filename().string().ends_with(".d.ts"))
+      continue;
+    files.push_back(entry.path());
+  }
+  std::ranges::sort(files);
+  return files;
+}
 
 std::string normalizePathForPlatform(std::filesystem::path const &filePath) {
   // NOLINTNEXTLINE(misc-const-correctness)
@@ -67,18 +110,16 @@ Dependency FrontendCompiler::getDependency(std::string const &nextFileInternalPa
     return moduleResolver_.getDependencyForUserCode(nextFileInternalPath);
 
   std::string const plainName = nextFileInternalPath.substr(std::string_view{libraryPrefix}.size());
-  if (embed_library_sources.contains(plainName))
-    return {.text = std::string{embed_library_sources.at(plainName)}, .path = libraryPrefix + plainName + extension};
-  if (embed_extension_library_sources.contains(plainName))
-    return {.text = std::string{embed_extension_library_sources.at(plainName)},
-            .path = libraryPrefix + plainName + extension};
+  if (std::optional<Dependency> dependency = getLibraryDependency(libraryPath_, plainName, false))
+    return *dependency;
+  if (std::optional<Dependency> dependency = getLibraryDependency(extensionLibraryPath_, plainName, false))
+    return *dependency;
 
   std::string const indexName = plainName + "/index";
-  if (embed_library_sources.contains(indexName))
-    return {.text = std::string{embed_library_sources.at(indexName)}, .path = libraryPrefix + indexName + extension};
-  if (embed_extension_library_sources.contains(indexName))
-    return {.text = std::string{embed_extension_library_sources.at(indexName)},
-            .path = libraryPrefix + indexName + extension};
+  if (std::optional<Dependency> dependency = getLibraryDependency(libraryPath_, indexName, false))
+    return *dependency;
+  if (std::optional<Dependency> dependency = getLibraryDependency(extensionLibraryPath_, indexName, false))
+    return *dependency;
   // cache miss
   int32_t const dependee = r.callExportedFunctionWithName<1>("getDependee", program, nextFile)[0].i32;
   std::string const dependeePath = r.getString(static_cast<uint32_t>(dependee));
@@ -126,7 +167,9 @@ FrontendCompiler::~FrontendCompiler() {
 }
 
 FrontendCompiler::FrontendCompiler(Config const &config, Pluggable *plugin)
-    : r{this}, moduleResolver_(plugin, config.packageSearchPaths), config_{config} {
+    : r{this}, moduleResolver_(plugin, config.packageSearchPaths),
+      libraryPath_{findPackageRoot() / "assemblyscript" / "std" / "assembly"},
+      extensionLibraryPath_{findPackageRoot() / "warpo_extension" / "std"}, config_{config} {
   if (config.ascWasmPath) [[unlikely]] {
     support::PerfRAII const p{support::PerfItemKind::CompilationHIR_PrepareWASMModule};
     std::string const wasmBytes = readBinaryFile(*config.ascWasmPath);
@@ -214,11 +257,9 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
 
     support::PerfRAII parseStat{support::PerfItemKind::CompilationHIR_Parsing};
     support::PerfRAII parseLibStat{support::PerfItemKind::CompilationHIR_Parsing_BuiltinLib};
-    for (auto const &[libName, libSource] : warpo::frontend::embed_library_sources) {
-      // in sub-directory: imported on demand
-      if (libName.find('/') != std::string::npos)
-        continue;
-      parseFile(program, libSource, libraryPrefix + libName + extension, IsEntry::NO);
+    for (std::filesystem::path const &filePath : getTopLevelLibraryFiles(libraryPath_)) {
+      std::string const libName = filePath.stem().string();
+      parseFile(program, readTextFile(filePath), libraryPrefix + libName + extension, IsEntry::NO);
     }
     if (config_.host == HostKind::WasiSnapshotPreview1) {
       static constexpr std::array<std::string_view, 5> wasiStdLibs{
@@ -227,17 +268,21 @@ warpo::frontend::CompilationResult FrontendCompiler::compile(std::vector<std::st
           "wasi_snapshot_preview1/wasi_process",
       };
       for (auto const &libName : wasiStdLibs) {
-        auto const it = embed_extension_library_sources.find(std::string{libName});
-        if (it == embed_extension_library_sources.end())
+        std::optional<std::filesystem::path> const filePath =
+            findLibraryFile(extensionLibraryPath_, std::string{libName}, false);
+        if (!filePath.has_value())
           continue;
-        parseFile(program, it->second, libraryPrefix + std::string{libName} + extension, IsEntry::NO);
+        parseFile(program, readTextFile(*filePath), libraryPrefix + std::string{libName} + extension, IsEntry::NO);
       }
     }
 
-    std::string_view const rtIndexSource = warpo::frontend::embed_library_sources.at(
-        config_.runtime == RuntimeKind::Incremental ? "rt/index-incremental" : "rt/index-radical");
+    std::string const rtIndexName =
+        config_.runtime == RuntimeKind::Incremental ? "rt/index-incremental" : "rt/index-radical";
+    std::optional<std::filesystem::path> const rtIndexPath = findLibraryFile(libraryPath_, rtIndexName, false);
+    if (!rtIndexPath.has_value())
+      throw std::runtime_error{fmt::format("cannot find AssemblyScript runtime source: {}", rtIndexName)};
     std::string const rtIndexFilePath = libraryPrefix + std::string{"rt/index"} + extension;
-    parseFile(program, rtIndexSource, rtIndexFilePath, IsEntry::NO);
+    parseFile(program, readTextFile(*rtIndexPath), rtIndexFilePath, IsEntry::NO);
     parseLibStat.release();
 
     for (std::string const &filePath : entryFilePaths) {
