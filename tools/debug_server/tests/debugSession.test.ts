@@ -368,6 +368,61 @@ void describe("WarpoDebugSession", () => {
     }
   });
 
+  void it("should stop at a breakpoint in the AssemblyScript standard library", { timeout: 15000 }, async () => {
+    const source = sourcePath("debugger_std_array.ts");
+    const stdSource = path.resolve(DIRNAME, "..", "..", "..", "assemblyscript", "std", "assembly", "array.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 101;
+    const traceFile = path.join(TEST_MODULE_DIR, "build", "test_std_breakpoint_trace.log");
+    if (fs.existsSync(traceFile)) {
+      fs.unlinkSync(traceFile);
+    }
+
+    await dc.initializeRequest();
+
+    const breakpointResponse = await dc.setBreakpointsRequest({
+      source: { path: stdSource },
+      breakpoints: [{ line: breakpointLine }],
+    });
+    assert.equal(breakpointResponse.body.breakpoints[0].verified, false);
+
+    const breakpointChangedPromise = dc.waitForEvent("breakpoint");
+    const stoppedPromise = waitForBreakpointStop(dc);
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+      debugSessionLogFile: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+      debugSessionLogFile: traceFile,
+    };
+
+    await launchAndConfigure(dc, launchArgs);
+
+    const breakpointChangedEvent = await breakpointChangedPromise;
+    const breakpointChangedBody = breakpointChangedEvent.body as
+      | { reason?: string; breakpoint?: DebugProtocol.Breakpoint }
+      | undefined;
+    assert.equal(breakpointChangedBody?.reason, "changed");
+    assert.equal(breakpointChangedBody?.breakpoint?.verified, true);
+
+    await stoppedPromise;
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+    assert.equal(frame.source?.path, normalizeDebugPath(stdSource));
+    assert.equal(frame.line, breakpointLine);
+
+    assert.equal(fs.existsSync(traceFile), true, "debugSessionLogFile should be created on launch");
+    if (fs.existsSync(traceFile)) {
+      fs.unlinkSync(traceFile);
+    }
+  });
+
   void it("should restart the debuggee and restore breakpoints", { timeout: 10000 }, async () => {
     const source = sourcePath("debugger_basic.ts");
     const output = await buildModule(source);

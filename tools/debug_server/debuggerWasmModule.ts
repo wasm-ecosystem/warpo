@@ -5,6 +5,7 @@ import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import { DwarfClassInfoResolver, type ClassLayout } from "../dwarf/classDebugInfo.js";
 import {
   DwarfFunctionInfoResolver,
@@ -29,6 +30,25 @@ import {
   type IOperatorInformation,
 } from "wasmparser";
 import { normalizeDebugPath } from "./debugPath.js";
+
+const WARPO_ROOT = findWarpoRoot(fileURLToPath(import.meta.url));
+
+function findWarpoRoot(modulePath: string): string {
+  for (
+    let currentPath = path.dirname(modulePath);
+    path.dirname(currentPath) !== currentPath;
+    currentPath = path.dirname(currentPath)
+  ) {
+    if (existsSync(path.join(currentPath, "assemblyscript", "std", "assembly"))) {
+      return currentPath;
+    }
+    if (path.basename(currentPath) === "warpo" && existsSync(path.join(currentPath, "package.json"))) {
+      break;
+    }
+  }
+
+  throw new Error(`Unable to find Warpo package root from ${modulePath}`);
+}
 
 export type ParsedSourceMap = BasicSourceMapConsumer;
 
@@ -361,13 +381,14 @@ export class DebuggerWasmModule {
   }
 
   private findSource(sourcePath: string): string | undefined {
+    const sourceMapPath = DebuggerWasmModule.toSourceMapPath(sourcePath);
     const directSource = this.sourcesByPath.get(sourcePath);
     if (directSource) {
       return directSource;
     }
 
     for (const source of this.sourceMap.sources) {
-      if (sourcePath === source || sourcePath.endsWith(`/${source}`)) {
+      if (sourceMapPath === source || sourceMapPath.endsWith(`/${source}`)) {
         return source;
       }
     }
@@ -385,6 +406,11 @@ export class DebuggerWasmModule {
       return normalizeDebugPath(sourcePath);
     }
 
+    const assemblyScriptSourcePath = DebuggerWasmModule.resolveAssemblyScriptSourcePath(sourceMapFilePath, sourcePath);
+    if (assemblyScriptSourcePath) {
+      return assemblyScriptSourcePath;
+    }
+
     const sourceMapDir = path.dirname(sourceMapFilePath);
     const sourceMapDirCandidate = path.resolve(sourceMapDir, sourcePath);
     if (existsSync(sourceMapDirCandidate)) {
@@ -397,6 +423,45 @@ export class DebuggerWasmModule {
     }
 
     return normalizeDebugPath(sourceMapDirCandidate);
+  }
+
+  private static resolveAssemblyScriptSourcePath(sourceMapFilePath: string, sourcePath: string): string | undefined {
+    if (!sourcePath.startsWith("~lib/")) {
+      return undefined;
+    }
+
+    const libraryRelativePath = sourcePath.slice("~lib/".length);
+    const projectSourcePath = path.resolve(
+      path.dirname(sourceMapFilePath),
+      "..",
+      "node_modules",
+      "warpo",
+      "assemblyscript",
+      "std",
+      "assembly",
+      libraryRelativePath
+    );
+    if (existsSync(projectSourcePath)) {
+      return normalizeDebugPath(projectSourcePath);
+    }
+
+    const physicalSourcePath = path.join(WARPO_ROOT, "assemblyscript", "std", "assembly", libraryRelativePath);
+    if (!existsSync(physicalSourcePath)) {
+      return undefined;
+    }
+
+    return normalizeDebugPath(physicalSourcePath);
+  }
+
+  private static toSourceMapPath(sourcePath: string): string {
+    const normalizedSourcePath = normalizeDebugPath(sourcePath);
+    const assemblyScriptPath = "/assemblyscript/std/assembly/";
+    const assemblyScriptPathStart = normalizedSourcePath.lastIndexOf(assemblyScriptPath);
+    if (assemblyScriptPathStart === -1) {
+      return normalizedSourcePath;
+    }
+
+    return `~lib/${normalizedSourcePath.slice(assemblyScriptPathStart + assemblyScriptPath.length)}`;
   }
 
   private static toVariableScope(
