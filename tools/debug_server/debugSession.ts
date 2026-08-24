@@ -1710,6 +1710,18 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   private async handleStepPause(runtime: Debugger, info: DebugPauseInfo): Promise<void> {
     try {
+      const sourceLocation = this.resolveSourceLocation(info.wasmBytecodeOffset);
+      if (
+        this.stepStartSourceLocation &&
+        !this.isLibrarySource(this.stepStartSourceLocation.sourcePath) &&
+        sourceLocation &&
+        this.isLibrarySource(sourceLocation.sourcePath)
+      ) {
+        this.log("Skipping library source location during step");
+        await runtime.stepOut();
+        return;
+      }
+
       if (this.hasReachedNextSourceLine(info.wasmBytecodeOffset)) {
         this.completeStep(runtime, info);
         return;
@@ -1742,6 +1754,10 @@ export class WarpoDebugSession extends LoggingDebugSession {
       sourceLocation.sourcePath !== startSourceLocation.sourcePath ||
       sourceLocation.sourceLine !== startSourceLocation.sourceLine
     );
+  }
+
+  private isLibrarySource(sourcePath: string): boolean {
+    return sourcePath.startsWith("~lib/") || sourcePath.includes("/assemblyscript/std/assembly/");
   }
 
   private async advanceStep(runtime: Debugger): Promise<void> {

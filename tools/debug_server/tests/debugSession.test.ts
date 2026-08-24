@@ -1055,6 +1055,87 @@ void describe("WarpoDebugSession", () => {
     assert.equal(frame.line, 11);
   });
 
+  void it("should skip library frames during step into", { timeout: 10000 }, async () => {
+    const entrySource = sourcePath("debugger_closure_stepping.ts");
+    const output = await buildModule(entrySource);
+
+    await dc.initializeRequest();
+
+    await dc.setBreakpointsRequest({
+      source: { path: entrySource },
+      breakpoints: [{ line: 11 }],
+    });
+
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "main",
+    };
+
+    await launchAndWaitForBreakpoint(dc, launchArgs);
+    const stoppedPromise = dc.waitForEvent("stopped");
+    await dc.stepInRequest({ threadId: 1 });
+    await stoppedPromise;
+
+    const stackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const frame = assertDefined(stackTraceResponse.body.stackFrames[0]);
+    assert.equal(frame.source?.path, normalizeDebugPath(entrySource));
+    assert.equal(frame.line, 6);
+  });
+
+  void it("should step within a standard library function", { timeout: 15000 }, async () => {
+    const source = sourcePath("debugger_string_stepping.ts");
+    const stdSource = path.resolve(DIRNAME, "..", "..", "..", "assemblyscript", "std", "assembly", "string.ts");
+    const output = await buildModule(source);
+    const breakpointLine = 102;
+
+    await dc.initializeRequest();
+
+    const breakpointResponse = await dc.setBreakpointsRequest({
+      source: { path: stdSource },
+      breakpoints: [{ line: breakpointLine }],
+    });
+    assert.equal(breakpointResponse.body.breakpoints[0].verified, false);
+
+    const breakpointChangedPromise = dc.waitForEvent("breakpoint");
+    const stoppedPromise = waitForBreakpointStop(dc);
+    const launchArgs: DebugProtocol.LaunchRequestArguments & {
+      program: string;
+      launchType: string;
+      runtime: string;
+      entryFunctionName: string;
+    } = {
+      program: output,
+      launchType: "wasm file",
+      runtime: "node",
+      entryFunctionName: "_start",
+    };
+
+    await launchAndConfigure(dc, launchArgs);
+    await breakpointChangedPromise;
+    await stoppedPromise;
+
+    const firstStackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const firstFrame = assertDefined(firstStackTraceResponse.body.stackFrames[0]);
+    assert.equal(firstFrame.source?.path, normalizeDebugPath(stdSource));
+    assert.equal(firstFrame.line, breakpointLine);
+
+    const nextStoppedPromise = dc.waitForEvent("stopped");
+    await dc.stepInRequest({ threadId: 1 });
+    await nextStoppedPromise;
+
+    const nextStackTraceResponse = await dc.stackTraceRequest({ threadId: 1, startFrame: 0, levels: 1 });
+    const nextFrame = assertDefined(nextStackTraceResponse.body.stackFrames[0]);
+    assert.equal(nextFrame.source?.path, normalizeDebugPath(stdSource));
+    assert.notEqual(nextFrame.line, breakpointLine);
+  });
+
   void it("should pause at a valid source line", { timeout: 10000 }, async () => {
     const entrySource = sourcePath("debugger_pause.ts");
     const output = await buildModule(entrySource);
