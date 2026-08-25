@@ -371,9 +371,13 @@ export class DebuggerWasmModule {
     }
 
     return {
-      sourcePath: DebuggerWasmModule.resolveSourcePath(this.sourceMapFilePath, position.source),
+      sourcePath: position.source,
       sourceLine: position.line,
     };
+  }
+
+  patchSourcePath(sourcePath: string): string {
+    return DebuggerWasmModule.resolveSourcePath(this.sourceMapFilePath, sourcePath);
   }
 
   hasSource(sourcePath: string): boolean {

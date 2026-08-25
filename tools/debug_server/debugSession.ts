@@ -554,15 +554,13 @@ export class WarpoDebugSession extends LoggingDebugSession {
       this.pausedStackFramesById.set(id, { ...frame, frameIndex: index });
 
       const sourceLocation = this.resolveSourceLocation(frame.wasmBytecodeOffset);
-      const sourceLabel = sourceLocation
-        ? `${path.basename(sourceLocation.sourcePath)}:${sourceLocation.sourceLine}`
-        : "unknown";
+      const sourcePath = sourceLocation ? this.loadedModule?.patchSourcePath(sourceLocation.sourcePath) : undefined;
+      const sourceLabel =
+        sourceLocation && sourcePath ? `${path.basename(sourcePath)}:${sourceLocation.sourceLine}` : "unknown";
       this.log(
         `  frame ${id}: index=${index}, name=${frame.functionName || "wasm"}, offset=${frame.wasmBytecodeOffset ?? "unknown"}, source=${sourceLabel}`
       );
-      const source = sourceLocation
-        ? new Source(path.basename(sourceLocation.sourcePath), sourceLocation.sourcePath)
-        : undefined;
+      const source = sourcePath ? new Source(path.basename(sourcePath), sourcePath) : undefined;
       return new StackFrame(id, frame.functionName || "wasm", source, sourceLocation?.sourceLine ?? 0, 1);
     });
 
@@ -579,9 +577,7 @@ export class WarpoDebugSession extends LoggingDebugSession {
     this.sendResponse(response);
   }
 
-  private resolveSourceLocation(
-    wasmBytecodeOffset: number | undefined
-  ): { sourcePath: string; sourceLine: number } | undefined {
+  private resolveSourceLocation(wasmBytecodeOffset: number | undefined): DebuggerSourceLocation | undefined {
     const wasmModule = this.loadedModule;
     if (!wasmModule || wasmBytecodeOffset === undefined) {
       return undefined;
@@ -1710,6 +1706,18 @@ export class WarpoDebugSession extends LoggingDebugSession {
 
   private async handleStepPause(runtime: Debugger, info: DebugPauseInfo): Promise<void> {
     try {
+      const sourceLocation = this.resolveSourceLocation(info.wasmBytecodeOffset);
+      if (
+        this.stepStartSourceLocation &&
+        !this.isLibrarySource(this.stepStartSourceLocation.sourcePath) &&
+        sourceLocation &&
+        this.isLibrarySource(sourceLocation.sourcePath)
+      ) {
+        this.log("Skipping library source location during step");
+        await runtime.stepOut();
+        return;
+      }
+
       if (this.hasReachedNextSourceLine(info.wasmBytecodeOffset)) {
         this.completeStep(runtime, info);
         return;
@@ -1742,6 +1750,10 @@ export class WarpoDebugSession extends LoggingDebugSession {
       sourceLocation.sourcePath !== startSourceLocation.sourcePath ||
       sourceLocation.sourceLine !== startSourceLocation.sourceLine
     );
+  }
+
+  private isLibrarySource(sourcePath: string): boolean {
+    return sourcePath.startsWith("~lib/");
   }
 
   private async advanceStep(runtime: Debugger): Promise<void> {
