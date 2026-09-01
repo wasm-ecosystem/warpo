@@ -1,7 +1,5 @@
 import { ffi } from "warpo/ffi";
 
-// @ts-ignore: decorator
-@external("env", "multi_return_api")
 declare function multi_return_api(): ffi.MultiReturn<[i32, i32]>;
 
 let inferredGlobal = multi_return_api();
