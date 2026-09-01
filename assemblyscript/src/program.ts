@@ -4036,6 +4036,18 @@ export abstract class VariableLikeElement extends TypedElement {
     this.variableLikeBase = variableLikeBase;
   }
 
+  /* @override */
+  setType(type: Type): void {
+    if (type.containsFfiMultiReturn) {
+      let reportNode: Node | null = this.typeNode;
+      if (!reportNode) reportNode = this.initializerNode;
+      if (reportNode && !reportNode.range.source.isNative) {
+        this.program.error(DiagnosticCode.Type_0_is_illegal_in_this_context, reportNode.range, type.toString());
+      }
+    }
+    super.setType(type);
+  }
+
   get identifierNode(): IdentifierExpression {
     return this.variableLikeBase.name;
   }

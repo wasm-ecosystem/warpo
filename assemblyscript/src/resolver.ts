@@ -2732,6 +2732,14 @@ export class Resolver extends DiagnosticEmitter {
     return functionType;
   }
 
+  private checkFfiMultiReturnUsage(type: Type, reportNode: Node, allowed: bool, reportMode: ReportMode): bool {
+    if (!type.containsFfiMultiReturn || (allowed && type.isFfiMultiReturn)) return true;
+    if (reportMode == ReportMode.Report) {
+      this.error(DiagnosticCode.Type_0_is_illegal_in_this_context, reportNode.range, type.toString());
+    }
+    return false;
+  }
+
   // ==================================================== Elements =====================================================
 
   /** Resolves a function prototype using the specified concrete type arguments. */
@@ -2813,6 +2821,7 @@ export class Resolver extends DiagnosticEmitter {
     let parameterTypes = new Array<Type>(numSignatureParameters);
     let requiredParameters = 0;
     let hasRest = false;
+    let checkFfiMultiReturn = !signatureNode.range.source.isNative;
     for (let i = 0; i < numSignatureParameters; ++i) {
       let parameterDeclaration = signatureParameters[i];
       if (parameterDeclaration.parameterKind == ParameterKind.Default) {
@@ -2841,6 +2850,16 @@ export class Resolver extends DiagnosticEmitter {
         }
         return null;
       }
+      if (
+        checkFfiMultiReturn &&
+        !this.checkFfiMultiReturnUsage(
+          parameterType,
+          typeNode,
+          prototype.internalName == BuiltinNames.multi_return_to_tuple,
+          reportMode
+        )
+      )
+        return null;
       parameterTypes[i] = parameterType;
     }
 
@@ -2868,6 +2887,17 @@ export class Resolver extends DiagnosticEmitter {
       if (!type) return null;
       returnType = type;
     }
+
+    if (
+      checkFfiMultiReturn &&
+      !this.checkFfiMultiReturnUsage(
+        returnType,
+        signatureNode.returnType,
+        prototype.is(CommonFlags.Ambient),
+        reportMode
+      )
+    )
+      return null;
 
     let signature = Signature.create(this.program, parameterTypes, returnType, thisType, requiredParameters, hasRest);
 

@@ -1,0 +1,12 @@
+{
+  "stderr": [
+    "AS214: Type '~lib/warpo/ffi/ffi.MultiReturn<[i32, i32]>' is illegal in this context.",
+    "AS214: Type '~lib/warpo/ffi/ffi.MultiReturn<[i32, i32]>' is illegal in this context.",
+    "AS214: Type '~lib/warpo/ffi/ffi.MultiReturn<[i32, i32]>' is illegal in this context.",
+    "AS214: Type '~lib/warpo/ffi/ffi.MultiReturn<[i32, i32]>' is illegal in this context.",
+    "AS214: Type '~lib/warpo/ffi/ffi.MultiReturn<[i32, i32]>' is illegal in this context.",
+    "AS214: Type '~lib/warpo/ffi/ffi.MultiReturn<[i32, i32]>' is illegal in this context.",
+    "AS214: Type '~lib/warpo/ffi/ffi.MultiReturn<[i32, i32]>' is illegal in this context.",
+    "EOF"
+  ]
+}
