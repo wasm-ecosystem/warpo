@@ -2732,8 +2732,8 @@ export class Resolver extends DiagnosticEmitter {
     return functionType;
   }
 
-  private checkFfiMultiReturnUsage(type: Type, reportNode: Node, allowed: bool, reportMode: ReportMode): bool {
-    if (!type.containsFfiMultiReturn || (allowed && type.isFfiMultiReturn)) return true;
+  private checkFfiMultiReturnUsage(type: Type, reportNode: Node, reportMode: ReportMode): bool {
+    if (!type.isFfiMultiReturn) return true;
     if (reportMode == ReportMode.Report) {
       this.error(DiagnosticCode.Type_0_is_illegal_in_this_context, reportNode.range, type.toString());
     }
@@ -2852,12 +2852,8 @@ export class Resolver extends DiagnosticEmitter {
       }
       if (
         checkFfiMultiReturn &&
-        !this.checkFfiMultiReturnUsage(
-          parameterType,
-          typeNode,
-          prototype.internalName == BuiltinNames.multi_return_to_tuple,
-          reportMode
-        )
+        prototype.internalName != BuiltinNames.multi_return_to_tuple &&
+        !this.checkFfiMultiReturnUsage(parameterType, typeNode, reportMode)
       )
         return null;
       parameterTypes[i] = parameterType;
@@ -2890,12 +2886,8 @@ export class Resolver extends DiagnosticEmitter {
 
     if (
       checkFfiMultiReturn &&
-      !this.checkFfiMultiReturnUsage(
-        returnType,
-        signatureNode.returnType,
-        prototype.is(CommonFlags.Ambient),
-        reportMode
-      )
+      !prototype.is(CommonFlags.Ambient) &&
+      !this.checkFfiMultiReturnUsage(returnType, signatureNode.returnType, reportMode)
     )
       return null;
 

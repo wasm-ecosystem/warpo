@@ -4038,7 +4038,7 @@ export abstract class VariableLikeElement extends TypedElement {
 
   /* @override */
   setType(type: Type): void {
-    if (type.containsFfiMultiReturn) {
+    if (type.isFfiMultiReturn) {
       let reportNode: Node | null = this.typeNode;
       if (!reportNode) reportNode = this.initializerNode;
       if (reportNode && !reportNode.range.source.isNative) {

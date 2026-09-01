@@ -324,40 +324,6 @@ export class Type {
     return classReference != null && classReference.prototype.internalName == "~lib/warpo/ffi/ffi.MultiReturn";
   }
 
-  get containsFfiMultiReturn(): bool {
-    if (this.isFfiMultiReturn) return true;
-    let classReference = this.getClass();
-    if (classReference) {
-      do {
-        let typeArguments = classReference.typeArguments;
-        if (typeArguments) {
-          for (let i = 0, k = typeArguments.length; i < k; ++i) {
-            if (typeArguments[i].containsFfiMultiReturn) return true;
-          }
-        }
-        classReference = classReference.base;
-      } while (classReference);
-    } else {
-      let signatureReference = this.getSignature();
-      if (signatureReference) {
-        let thisType = signatureReference.thisType;
-        if (thisType && thisType.containsFfiMultiReturn) return true;
-        let parameterTypes = signatureReference.parameterTypes;
-        for (let i = 0, k = parameterTypes.length; i < k; ++i) {
-          if (parameterTypes[i].containsFfiMultiReturn) return true;
-        }
-        if (signatureReference.returnType.containsFfiMultiReturn) return true;
-      }
-    }
-    let tupleInfo = this.tupleInfo;
-    if (tupleInfo) {
-      for (let i = 0, k = tupleInfo.elementCount; i < k; ++i) {
-        if (tupleInfo.elements[i].type.containsFfiMultiReturn) return true;
-      }
-    }
-    return false;
-  }
-
   /** Tests if this type represents a class. */
   get isClass(): bool {
     return this.getClass() != null;
